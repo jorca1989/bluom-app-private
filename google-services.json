@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "769417597120",
+    "project_id": "bluomapp",
+    "storage_bucket": "bluomapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:769417597120:android:ab031cb3f6b8a35e9a9d25",
+        "android_client_info": {
+          "package_name": "com.jwfca.bluom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "769417597120-4lifnclmepkmscbntn10ld94au5cj7t6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jwfca.bluom",
+            "certificate_hash": "7544cd22d08be227d8f8a88c5b61aedd2476ad2a"
+          }
+        },
+        {
+          "client_id": "769417597120-mmd1t1qh0rfpc54tf36u03nreakdha6v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jwfca.bluom",
+            "certificate_hash": "4b27968812d659dc597bc4689165e2d1a3444a34"
+          }
+        },
+        {
+          "client_id": "769417597120-d2r0fvl2fjcirbhc17k24eoqem94okc5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfHUMKMO17mkroW6oDeDWHc3OdCkBRaE0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "769417597120-d2r0fvl2fjcirbhc17k24eoqem94okc5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "769417597120-b9g72gt78bjm10kes8u63q1rgqs41kem.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jwfca.bluom"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

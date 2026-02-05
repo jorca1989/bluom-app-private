@@ -1,0 +1,18 @@
+- THE STACK: Convex (Backend), Clerk (Auth), Expo Router (Navigation).
+- ACTION: If you see 'supabase', 'axios', or 'AsyncStorage' in my code, do NOT fix the paths. DELETE them and replace them with Convex queries/mutations or React state.
+- UI: Always use 'getBottomContentPadding' and 'SafeAreaView'. The bottom tabs must never be blocked by the OS navigation bar.
+- REASONING: If the user says "Keep logic," they mean the UI flow and component structure,
+Always assume we are working in the Convex Development (Cloud) environment. Do not attempt to run npx convex deploy or change environment variables unless explicitly asked. If you need to add a new environment variable, remind me to add it in the Convex Dashboard for the 'uncommon-puma-401' project.
+
+
+
+
+
+
+
+
+
+
+
+
+
