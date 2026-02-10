@@ -15,6 +15,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import { useUser as useClerkUser } from '@clerk/clerk-expo';
 import { useAction, useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
@@ -27,6 +28,8 @@ import { sendHydrationReminder, sendMealReminder } from '@/utils/notifications';
 
 
 import PhotoRecognitionModal from '@/components/PhotoRecognitionModal';
+import Tooltip from '@/components/Tooltip';
+import CoachMark from '@/components/CoachMark';
 import Svg, { Circle } from 'react-native-svg';
 
 const { width } = Dimensions.get('window');
@@ -141,6 +144,18 @@ export default function FuelScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [loadingSearch, setLoadingSearch] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false); // Disabled for production
+
+  useEffect(() => {
+    // Coach marks disabled for production
+    /*
+    SecureStore.getItemAsync('bluom_show_coach_marks').then(val => {
+      if (val === 'true') {
+        setShowTooltip(true);
+      }
+    });
+    */
+  }, []);
 
   const [waterAmount, setWaterAmount] = useState('');
   const [waterUnit, setWaterUnit] = useState<string>(''); // Will set in effect based on preferences
@@ -445,6 +460,15 @@ export default function FuelScreen() {
               <Text style={styles.subtitle}>Track your nutrition</Text>
             </View>
             <View style={styles.headerButtons}>
+              <CoachMark
+                visible={showTooltip} // Re-using existing state for simplicity, or change to new state
+                message="Snap a photo to track macros instantly."
+                onClose={() => {
+                  setShowTooltip(false);
+                  SecureStore.deleteItemAsync('bluom_show_coach_marks');
+                }}
+                position="bottom"
+              />
               {/* Removed diamond icon */}
               <TouchableOpacity
                 style={[styles.headerButton, styles.plusButton]}

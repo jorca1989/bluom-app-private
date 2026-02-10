@@ -1,7 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, ActivityIndicator, Dimensions, TextInput, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+// ... imports
+
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
@@ -10,6 +12,8 @@ import PanicButton from '../../components/PanicButton';
 import MeditationHub from '../../components/MeditationHub';
 import GamesHub from '../../components/GamesHub';
 import MindWorldScreen from '../../components/mindworld/MindWorldScreen';
+import LifeGoalsHub from '../../components/LifeGoalsHub';
+import UniversityHub from '../../components/UniversityHub';
 import { triggerSound, SoundEffect } from '../../utils/soundEffects';
 import { getBottomContentPadding } from '../../utils/layout';
 
@@ -18,8 +22,10 @@ const UNLOCK_ALL_INSIGHTS = true;
 
 export default function WellnessScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
+
   const user = useQuery(api.users.getUserByClerkId, clerkUser ? { clerkId: clerkUser.id } : "skip");
 
   const today = new Date().toISOString().split('T')[0];
@@ -51,6 +57,8 @@ export default function WellnessScreen() {
   const [showMeditationHub, setShowMeditationHub] = useState(false);
   const [showGamesHub, setShowGamesHub] = useState(false);
   const [showMindWorld, setShowMindWorld] = useState(false);
+  const [showLifeGoals, setShowLifeGoals] = useState(params.showLifeGoals === 'true');
+  const [showUniversity, setShowUniversity] = useState(false);
   const [sleepInput, setSleepInput] = useState('');
 
   const moods = [
@@ -106,7 +114,7 @@ export default function WellnessScreen() {
         contentContainerStyle={{ paddingBottom: getBottomContentPadding(insets.bottom) }}
         showsVerticalScrollIndicator={false}
       >
-        
+
         {/* Header */}
         <View style={styles.header}>
           <View><Text style={styles.title}>Wellness</Text><Text style={styles.subtitle}>Daily Health Tracking</Text></View>
@@ -115,8 +123,8 @@ export default function WellnessScreen() {
 
         {showDropdown && (
           <View style={styles.menu}>
-            <TouchableOpacity style={styles.menuItem} onPress={() => {setShowDropdown(false); setShowSleepModal(true);}}><Ionicons name="moon" size={20} color="#8b5cf6" /><Text style={styles.menuText}>Log Sleep</Text></TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => {setShowDropdown(false); setShowMoodModal(true);}}><Ionicons name="happy" size={20} color="#eab308" /><Text style={styles.menuText}>Log Mood</Text></TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => { setShowDropdown(false); setShowSleepModal(true); }}><Ionicons name="moon" size={20} color="#8b5cf6" /><Text style={styles.menuText}>Log Sleep</Text></TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => { setShowDropdown(false); setShowMoodModal(true); }}><Ionicons name="happy" size={20} color="#eab308" /><Text style={styles.menuText}>Log Mood</Text></TouchableOpacity>
           </View>
         )}
 
@@ -141,12 +149,14 @@ export default function WellnessScreen() {
 
         {/* Hub Grid */}
         <View style={styles.hubGrid}>
-          <TouchableOpacity style={[styles.hubCard, { backgroundColor: '#6366f1' }]} onPress={() => {triggerSound(SoundEffect.UI_TAP); setShowMeditationHub(true);}}><Ionicons name="leaf" size={24} color="#fff" /><Text style={styles.hubText}>Meditate</Text></TouchableOpacity>
+          <TouchableOpacity style={[styles.hubCard, { backgroundColor: '#6366f1' }]} onPress={() => { triggerSound(SoundEffect.UI_TAP); setShowMeditationHub(true); }}><Ionicons name="leaf" size={24} color="#fff" /><Text style={styles.hubText}>Meditate</Text></TouchableOpacity>
           <TouchableOpacity style={[styles.hubCard, { backgroundColor: '#db2777' }]} onPress={() => router.push('/reflections-hub' as any)}><Ionicons name="journal" size={24} color="#fff" /><Text style={styles.hubText}>Reflections</Text></TouchableOpacity>
-          <TouchableOpacity style={[styles.hubCard, { backgroundColor: '#a855f7' }]} onPress={() => {triggerSound(SoundEffect.UI_TAP); setShowGamesHub(true);}}><Ionicons name="game-controller" size={24} color="#fff" /><Text style={styles.hubText}>Games</Text></TouchableOpacity>
+          <TouchableOpacity style={[styles.hubCard, { backgroundColor: '#a855f7' }]} onPress={() => { triggerSound(SoundEffect.UI_TAP); setShowGamesHub(true); }}><Ionicons name="game-controller" size={24} color="#fff" /><Text style={styles.hubText}>Games</Text></TouchableOpacity>
           <TouchableOpacity style={[styles.hubCard, { backgroundColor: '#16a34a' }]} onPress={() => router.push('/habit-hub' as any)}><Ionicons name="locate" size={24} color="#fff" /><Text style={styles.hubText}>Habits</Text></TouchableOpacity>
           <TouchableOpacity style={[styles.hubCard, { backgroundColor: '#14b8a6' }]} onPress={() => setShowInsightsModal(true)}><Ionicons name="stats-chart" size={24} color="#fff" /><Text style={styles.hubText}>Insights</Text></TouchableOpacity>
           <TouchableOpacity style={[styles.hubCard, { backgroundColor: '#4CAF50' }]} onPress={() => setShowMindWorld(true)}><Ionicons name="planet" size={24} color="#fff" /><Text style={styles.hubText}>Mind World</Text></TouchableOpacity>
+          <TouchableOpacity style={[styles.hubCard, { backgroundColor: '#f59e0b' }]} onPress={() => setShowLifeGoals(true)}><Ionicons name="flag" size={24} color="#fff" /><Text style={styles.hubText}>Life Goals</Text></TouchableOpacity>
+          <TouchableOpacity style={[styles.hubCard, { backgroundColor: '#3b82f6' }]} onPress={() => setShowUniversity(true)}><Ionicons name="school" size={24} color="#fff" /><Text style={styles.hubText}>University</Text></TouchableOpacity>
         </View>
       </ScrollView>
 
@@ -159,23 +169,23 @@ export default function WellnessScreen() {
           </View>
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.metricItem}>
-               <Text style={styles.metricTitle}>Habit Completion</Text>
-               <Text style={styles.metricValue}>{totalHabitsCount > 0 ? Math.round((completedHabitsCount / totalHabitsCount) * 100) : 0}%</Text>
+              <Text style={styles.metricTitle}>Habit Completion</Text>
+              <Text style={styles.metricValue}>{totalHabitsCount > 0 ? Math.round((completedHabitsCount / totalHabitsCount) * 100) : 0}%</Text>
             </View>
             <View style={styles.metricItem}>
-               <Text style={styles.metricTitle}>7-Day Sleep Avg</Text>
-               <Text style={styles.metricValue}>{sleepAvg}h</Text>
+              <Text style={styles.metricTitle}>7-Day Sleep Avg</Text>
+              <Text style={styles.metricValue}>{sleepAvg}h</Text>
             </View>
             <View style={styles.metricItem}>
-               <Text style={styles.metricTitle}>Meditation (Week)</Text>
-               <Text style={styles.metricValue}>{meditationMinutes7d}m</Text>
+              <Text style={styles.metricTitle}>Meditation (Week)</Text>
+              <Text style={styles.metricValue}>{meditationMinutes7d}m</Text>
             </View>
             <View style={[styles.metricItem, !isPremiumActive && { opacity: 0.5 }]}>
-               <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                 <Text style={styles.metricTitle}>Mood Stability</Text>
-                 {!isPremiumActive && <Ionicons name="lock-closed" size={14} style={{marginLeft: 8}} />}
-               </View>
-               <Text style={styles.metricValue}>Stable</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.metricTitle}>Mood Stability</Text>
+                {!isPremiumActive && <Ionicons name="lock-closed" size={14} style={{ marginLeft: 8 }} />}
+              </View>
+              <Text style={styles.metricValue}>Stable</Text>
             </View>
           </ScrollView>
         </SafeAreaView>
@@ -192,21 +202,23 @@ export default function WellnessScreen() {
 
       <Modal visible={showMoodModal} animationType="slide">
         <SafeAreaView style={styles.modalContent}>
-           <View style={styles.modalHeader}><Text style={styles.modalTitle}>Mood Log</Text><TouchableOpacity onPress={() => setShowMoodModal(false)}><Ionicons name="close" size={28} /></TouchableOpacity></View>
-           <View style={{ gap: 10 }}>
+          <View style={styles.modalHeader}><Text style={styles.modalTitle}>Mood Log</Text><TouchableOpacity onPress={() => setShowMoodModal(false)}><Ionicons name="close" size={28} /></TouchableOpacity></View>
+          <View style={{ gap: 10 }}>
             {moods.map((m) => (
               <TouchableOpacity key={m.value} style={styles.moodItem} onPress={() => handleLogMood(m.value)}>
                 <Ionicons name={m.icon as any} size={28} color={m.color} />
                 <Text style={styles.moodText}>{m.label}</Text>
               </TouchableOpacity>
             ))}
-           </View>
+          </View>
         </SafeAreaView>
       </Modal>
 
       {showMeditationHub && <MeditationHub userId={user._id} onClose={() => setShowMeditationHub(false)} />}
       {showGamesHub && <GamesHub userId={user._id} onClose={() => setShowGamesHub(false)} />}
       {showMindWorld && <MindWorldScreen visible={true} onClose={() => setShowMindWorld(false)} />}
+      {showLifeGoals && <LifeGoalsHub userId={user._id} onClose={() => setShowLifeGoals(false)} />}
+      {showUniversity && <UniversityHub onClose={() => setShowUniversity(false)} />}
       <PanicButton userId={user._id} />
     </SafeAreaView>
   );

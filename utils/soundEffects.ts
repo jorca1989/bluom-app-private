@@ -68,7 +68,7 @@ const LOG_MEAL_PRIMARY = require('../assets/sounds/LogMeal.wav');
 const LOG_MEAL_FALLBACK = require('../assets/sounds/LogWater.wav');
 
 const SOUND_ASSETS: Record<SoundEffect, any> = {
-  [SoundEffect.LOG_MEAL]: LOG_MEAL_PRIMARY,
+  [SoundEffect.LOG_MEAL]: require('../assets/sounds/LogWater.wav'), // Fallback until LogMeal.wav is fixed
   [SoundEffect.LOG_WATER]: require('../assets/sounds/LogWater.wav'),
   [SoundEffect.LOG_STEPS]: require('../assets/sounds/LogSteps.wav'),
   // Note: filename has a typo in your assets: LogWorkot.wav

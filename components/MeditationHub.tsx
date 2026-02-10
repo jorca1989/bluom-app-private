@@ -14,12 +14,15 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
 import MeditationPlayerScreen from '../app/meditation-player';
-import { SOUNDSCAPES } from '../utils/soundscapes';
+import { SOUNDSCAPES } from '../utils/soundscapes'; // Assuming this exists or was used previously
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SoundEffect, triggerSound } from '../utils/soundEffects';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getBottomContentPadding } from '@/utils/layout';
+import {
+  Moon, Sun, Target, Heart, Shield, Play, Crown, Brain
+} from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -29,11 +32,13 @@ interface MeditationHubProps {
 }
 
 const categories = [
-  { id: 'sleep', name: 'Better Sleep', emoji: '🌙', color: '#6366f1' },
-  { id: 'morning', name: 'Morning Boost', emoji: '☀️', color: '#f59e0b' },
-  { id: 'focus', name: 'Focus', emoji: '🎯', color: '#3b82f6' },
-  { id: 'self-love', name: 'Self-Love', emoji: '💗', color: '#ec4899' },
-  { id: 'anxiety', name: 'Anxiety Relief', emoji: '🛡️', color: '#10b981' },
+  { id: 'sleep', name: 'Better Sleep', icon: Moon, color: '#6366f1' },
+  { id: 'morning', name: 'Morning Boost', icon: Sun, color: '#f59e0b' },
+  { id: 'focus', name: 'Focus', icon: Target, color: '#3b82f6' },
+  { id: 'self-love', name: 'Self-Love', icon: Heart, color: '#ec4899' },
+  { id: 'anxiety', name: 'Anxiety Relief', icon: Shield, color: '#10b981' },
+  { id: 'sovereignty', name: 'Sovereignty & Power', icon: Crown, color: '#b45309' },
+  { id: 'strategic-mindset', name: 'Strategic Mindset', icon: Brain, color: '#7c3aed' },
 ];
 
 export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
@@ -41,7 +46,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
   const insets = useSafeAreaInsets();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const sessions = useQuery(api.meditation.getSessions, { category: selectedCategory ?? undefined });
-  const user = useQuery(api.users.getUserById, { userId });
+  // const user = useQuery(api.users.getUserById, { userId }); // define if needed
 
   useEffect(() => {
     triggerSound(SoundEffect.ENTER_MEDITATION_HUB);
@@ -52,47 +57,51 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
   const [activeSession, setActiveSession] = useState<any>(null);
   const [logId, setLogId] = useState<Id<"meditationLogs"> | null>(null);
 
-  const today = new Date().toISOString().split('T')[0];
-
   const fallbackSessions = useMemo(
     () => [
       {
-        _id: undefined as any,
+        _id: '1',
         title: 'Deep Sleep Journey',
         category: 'sleep',
         duration: 10,
         description: 'A calming guided session to help you drift into deep sleep.',
+        tags: ['Sleep', 'Rest'],
       },
       {
-        _id: undefined as any,
+        _id: '2',
         title: 'Morning Clarity',
         category: 'morning',
         duration: 5,
         description: 'Start your day with a clear mind and focused energy.',
+        tags: ['Morning', 'Focus'],
       },
       {
-        _id: undefined as any,
+        _id: '3',
         title: 'Quick Reset',
         category: 'focus',
         duration: 3,
         description: 'A short reset to recenter during a busy day.',
+        tags: ['Focus', 'Quick'],
       },
       {
-        _id: undefined as any,
+        _id: '4',
         title: 'Self-Love Pause',
         category: 'self-love',
         duration: 7,
         description: 'A gentle session to practice compassion and gratitude.',
+        tags: ['Love', 'Compassion'],
       },
       {
-        _id: undefined as any,
+        _id: '5',
         title: 'Anxiety Release',
         category: 'anxiety',
         duration: 12,
         description: 'Let go of tension and find your inner calm.',
+        tags: ['Anxiety', 'Calm'],
       },
-    ],
-    []
+      // Fallback: If category filtered, show all for robust demo if fetch fails
+    ].filter(s => !selectedCategory || s.category === selectedCategory),
+    [selectedCategory]
   );
 
   const displaySessions = sessions || fallbackSessions;
@@ -164,7 +173,9 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
                 ]}
                 onPress={() => setSelectedCategory(null)}
               >
-                <Text style={styles.categoryEmoji}>🧠</Text>
+                <View style={[styles.iconCircle, { backgroundColor: '#e2e8f0' }]}>
+                  <Ionicons name="infinite" size={24} color="#64748b" />
+                </View>
                 <Text style={styles.categoryName}>All</Text>
               </TouchableOpacity>
               {categories.map((cat) => (
@@ -176,7 +187,9 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
                   ]}
                   onPress={() => setSelectedCategory(cat.id)}
                 >
-                  <Text style={styles.categoryEmoji}>{cat.emoji}</Text>
+                  <View style={[styles.iconCircle, { backgroundColor: cat.color + '20' }]}>
+                    <cat.icon size={24} color={cat.color} />
+                  </View>
                   <Text style={styles.categoryName}>{cat.name}</Text>
                 </TouchableOpacity>
               ))}
@@ -194,7 +207,9 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
               <ActivityIndicator size="small" color="#6366f1" />
             ) : (
               displaySessions.map((session: any) => {
-                console.log("Session Tags:", session.tags);
+                const CategoryIcon = categories.find(c => c.id === session.category)?.icon || Target;
+                const categoryColor = categories.find(c => c.id === session.category)?.color || '#6366f1';
+
                 return (
                   <TouchableOpacity
                     key={session._id ?? session.title}
@@ -203,21 +218,29 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
                     activeOpacity={0.85}
                   >
                     <View style={styles.sessionLeft}>
-                      <Text style={styles.sessionEmoji}>
-                        {categories.find(c => c.id === session.category)?.emoji || '🧘'}
-                      </Text>
+                      <View style={[styles.sessionIconContainer, { backgroundColor: categoryColor + '20' }]}>
+                        <CategoryIcon size={24} color={categoryColor} />
+                      </View>
                       <View style={styles.sessionInfo}>
                         <Text style={styles.sessionTitle}>{session.title}</Text>
-                        {(session.tags || []).map((t: string) => (
-                          <Text key={t} style={{ fontSize: 10, color: '#64748b', backgroundColor: '#f1f5f9', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginRight: 4, overflow: 'hidden' }}>
-                            {t}
-                          </Text>
-                        ))}
-                        <Text style={styles.sessionDescription}>{session.description}</Text>
+
+                        {(session.tags || []).length > 0 && (
+                          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
+                            {(session.tags || []).map((t: string) => (
+                              <View key={t} style={styles.tagContainer}>
+                                <Text style={styles.tagText}>{t}</Text>
+                              </View>
+                            ))}
+                          </View>
+                        )}
+
+                        <Text style={styles.sessionDescription} numberOfLines={2}>{session.description}</Text>
                         <Text style={styles.sessionDuration}>{`${session.duration} min`}</Text>
                       </View>
                     </View>
-                    <Ionicons name="play-circle" size={32} color="#6366f1" />
+                    <View style={styles.playButtonSmall}>
+                      <Ionicons name="play" size={20} color="#fff" />
+                    </View>
                   </TouchableOpacity>
                 );
               })
@@ -331,10 +354,6 @@ const styles = StyleSheet.create({
     borderColor: '#6366f1',
     backgroundColor: '#eef2ff',
   },
-  categoryEmoji: {
-    fontSize: 24,
-    marginBottom: 8,
-  },
   categoryName: {
     fontSize: 12,
     fontWeight: '600',
@@ -389,10 +408,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  sessionEmoji: {
-    fontSize: 32,
-    marginRight: 12,
-  },
   sessionInfo: {
     flex: 1,
   },
@@ -411,10 +426,40 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#94a3b8',
   },
-  emptyText: {
-    textAlign: 'center',
+  iconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  sessionIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  tagContainer: {
+    backgroundColor: '#f1f5f9',
+    borderRadius: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  tagText: {
+    fontSize: 10,
     color: '#64748b',
-    marginTop: 20,
-  }
+    fontWeight: '600',
+  },
+  playButtonSmall: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#6366f1',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 12,
+  },
 });
-

@@ -22,6 +22,8 @@ export default function SignupScreen() {
   const router = useRouter();
 
   const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [code, setCode] = useState('');
@@ -31,26 +33,40 @@ export default function SignupScreen() {
   const submitLockRef = useRef(false);
 
   const getFriendlyErrorMessage = (error: any): string => {
-    const errorMessage = error?.errors?.[0]?.message || '';
-    if (errorMessage.toLowerCase().includes('password')) return 'Password must be at least 8 characters long';
-    if (errorMessage.toLowerCase().includes('email')) return 'Please enter a valid email address or one not already in use.';
-    return errorMessage || 'Something went wrong. Please try again.';
+    const err = error?.errors?.[0];
+    const msg = err?.longMessage || err?.message || error?.message || '';
+
+    // Specifically handle length errors
+    if (msg.toLowerCase().includes('8 characters') || msg.toLowerCase().includes('too short')) {
+      return 'Password must be at least 8 characters long.';
+    }
+
+    // For other password errors (weak, pwned, complexity), verify we aren't masking them with a length error
+    // Return the actual message from Clerk which is usually descriptive (e.g., "Password is too common" or "found in a breach")
+    if (msg) return msg;
+
+    return 'Something went wrong. Please try again.';
   };
 
   const handleEmailSignup = async () => {
     if (!isLoaded || submitLockRef.current || loading) return;
-    submitLockRef.current = true;
 
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      submitLockRef.current = false;
-      return;
-    }
+    submitLockRef.current = true;
+    setLoading(true);
+    setError('');
 
     try {
-      setLoading(true);
-      setError('');
-      const result = await signUp.create({ emailAddress: email, password });
+      if (!firstName || !lastName || !email || !password) {
+        setError('Please fill in all fields');
+        return;
+      }
+
+      const result = await signUp.create({
+        emailAddress: email,
+        password,
+        firstName,
+        lastName
+      });
       await result.prepareEmailAddressVerification({ strategy: 'email_code' });
       setPendingVerification(true);
     } catch (err: any) {
@@ -63,10 +79,11 @@ export default function SignupScreen() {
 
   const handleVerifyCode = async () => {
     if (!isLoaded || !signUp || submitLockRef.current || loading) return;
+
     submitLockRef.current = true;
+    setLoading(true);
 
     try {
-      setLoading(true);
       const result = await signUp.attemptEmailAddressVerification({ code });
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId });
@@ -98,6 +115,7 @@ export default function SignupScreen() {
 
           <View style={styles.form}>
             {pendingVerification ? (
+              // ... code input ...
               <>
                 <TextInput
                   style={[styles.input, styles.codeInput]}
@@ -115,6 +133,29 @@ export default function SignupScreen() {
               </>
             ) : (
               <>
+                <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
+                  <View style={[styles.inputContainer, { flex: 1, marginBottom: 0 }]}>
+                    <UserPlus size={20} color="#64748b" style={{ marginRight: 12 }} />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="First Name"
+                      value={firstName}
+                      onChangeText={setFirstName}
+                      autoCapitalize="words"
+                    />
+                  </View>
+                  <View style={[styles.inputContainer, { flex: 1, marginBottom: 0 }]}>
+                    <TextInput
+                      style={[styles.input, { marginLeft: 0 }]}
+                      placeholder="Last Name"
+                      value={lastName}
+                      onChangeText={setLastName}
+                      autoCapitalize="words"
+                    />
+                  </View>
+                </View>
+
+
                 <View style={styles.inputContainer}>
                   <Mail size={20} color="#64748b" style={{ marginRight: 12 }} />
                   <TextInput
@@ -147,8 +188,16 @@ export default function SignupScreen() {
                     {loading ? <ActivityIndicator color="#fff" /> : <><UserPlus size={20} color="#fff" /><Text style={styles.primaryButtonText}>Create Account</Text></>}
                   </LinearGradient>
                 </TouchableOpacity>
+
+                <View style={styles.footer}>
+                  <Text style={styles.footerText}>Already have an account? </Text>
+                  <TouchableOpacity onPress={() => router.push('/login')}>
+                    <Text style={styles.footerLink}>Login</Text>
+                  </TouchableOpacity>
+                </View>
               </>
             )}
+            {/* ... */}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -159,7 +208,7 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   keyboardView: { flex: 1 },
-  scrollContent: { paddingHorizontal: 24, paddingTop: 40 },
+  scrollContent: { paddingHorizontal: 24, paddingTop: 40, paddingBottom: 40 },
   header: { marginBottom: 40 },
   title: { fontSize: 32, fontWeight: 'bold', color: '#1e293b' },
   subtitle: { fontSize: 16, color: '#64748b' },
@@ -172,4 +221,20 @@ const styles = StyleSheet.create({
   primaryButton: { borderRadius: 12, overflow: 'hidden' },
   gradientButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16, gap: 8 },
   primaryButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    paddingBottom: 40,
+  },
+  footerText: {
+    fontSize: 14,
+    color: '#64748b',
+  },
+  footerLink: {
+    fontSize: 14,
+    color: '#2563eb',
+    fontWeight: '600',
+  },
 });

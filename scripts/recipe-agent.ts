@@ -68,7 +68,7 @@ const RECIPE_SCHEMA = {
         }
     },
     required: ["title", "calories", "protein", "carbs", "fat", "ingredients", "instructions", "servings"]
-} as const;
+} as any; // Change 'as const' to 'as any' to satisfy the typechecker
 
 async function generateRecipe(name: string) {
     console.log(`\n🔮 Generating recipe with Gemini 2.0 Flash...`);

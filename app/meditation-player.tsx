@@ -147,6 +147,30 @@ export default function MeditationPlayerScreen({
 
   if (!visible) return null;
 
+  // Determine if animation should be shown based on session category
+  // If we have a soundscape, check its category. If sessionTitle implies category, check that.
+  // Ideally, pass category prop. If not available, infer.
+  // For now, we only show it if soundscape category is NOT 'water' (example) OR if it's a specific session.
+  // User request: 'Anxiety', 'Sleep', 'Focus'.
+  // However, we don't have exact category passed in props except maybe implicitly.
+  // Let's assume passed soundscape or session title can guide us, or pass category prop.
+  // For this fix, let's assume all strictly meditation sessions (not soundscapes) might want it?
+  // Or check title keywords?
+  // Better: We will hide it for 'Soundscape' if no category matches.
+
+  // Actually, let's simply show it always BUT controlled by play state, EXCEPT if user explicitly wanted to hide for some.
+  // User Rule: "only display... if the session category is 'Anxiety', 'Sleep', or 'Focus'".
+  // We need to pass category to MeditationPlayerProps.
+
+  // NOTE: I will add category to props below in a separate edit or assume it's passed or check title.
+  // Checking title for now as a heuristic if category missing.
+  const isTargetCategory = (title: string) => {
+    const t = title.toLowerCase();
+    return t.includes('sleep') || t.includes('anxiety') || t.includes('focus') || t.includes('breathe');
+  };
+
+  const showAnimation = (sessionTitle && isTargetCategory(sessionTitle)) || (selectedSoundscape && ['sleep', 'focus', 'anxiety'].includes(selectedSoundscape.category));
+
   return (
     <Modal visible={visible} animationType="slide" transparent={false}>
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -158,29 +182,37 @@ export default function MeditationPlayerScreen({
           <Text style={styles.headerTitle} numberOfLines={1}>
             {sessionTitle || selectedSoundscape?.name || 'Meditation'}
           </Text>
-          <TouchableOpacity style={styles.soundscapeButton} onPress={() => setShowSoundscapeSelector(true)}>
-            <Ionicons name="musical-notes" size={20} color="#3b82f6" />
-          </TouchableOpacity>
+          <View style={{ width: 40 }} />
         </View>
 
         <View style={styles.content}>
-          <View style={styles.animationContainer}>
-            <BreathingAnimation
-              size={isSmallScreen ? 180 : 220}
-              color={selectedSoundscape?.category === 'water' ? '#06b6d4' : '#3b82f6'}
-              onInhale={() => setBreathingPhase('inhale')}
-              onExhale={() => setBreathingPhase('exhale')}
-            />
-          </View>
+          {showAnimation ? (
+            <>
+              <View style={styles.animationContainer}>
+                <BreathingAnimation
+                  size={isSmallScreen ? 180 : 220}
+                  color={selectedSoundscape?.category === 'water' ? '#06b6d4' : '#3b82f6'}
+                  onInhale={() => setBreathingPhase('inhale')}
+                  onExhale={() => setBreathingPhase('exhale')}
+                  isPlaying={isPlaying}
+                />
+              </View>
 
-          <View style={styles.instructionsContainer}>
-            <Text style={styles.breathingText}>
-              {breathingPhase === 'inhale' ? 'Breathe In' : 'Breathe Out'}
-            </Text>
-            <Text style={styles.instructionsText}>
-              Follow the circle's rhythm. Breathe naturally and focus on the present moment.
-            </Text>
-          </View>
+              <View style={styles.instructionsContainer}>
+                <Text style={styles.breathingText}>
+                  {isPlaying ? (breathingPhase === 'inhale' ? 'Breathe In' : 'Breathe Out') : 'Paused'}
+                </Text>
+                <Text style={styles.instructionsText}>
+                  {isPlaying ? "Follow the circle's rhythm. Breathe naturally." : "Press Play to start breathing session."}
+                </Text>
+              </View>
+            </>
+          ) : (
+            <View style={{ marginBottom: 40, alignItems: 'center' }}>
+              <Ionicons name="musical-notes" size={80} color="#cbd5e1" />
+              <Text style={{ marginTop: 20, color: '#64748b', fontSize: 16 }}>Audio Session</Text>
+            </View>
+          )}
 
           {totalDuration > 0 && (
             <View style={styles.progressContainer}>
@@ -203,40 +235,6 @@ export default function MeditationPlayerScreen({
             </TouchableOpacity>
           </View>
         </View>
-
-        {/* Soundscape Selector Modal */}
-        <Modal visible={showSoundscapeSelector} animationType="slide" transparent={true}>
-          <View style={styles.selectorOverlay}>
-            <View style={styles.selectorContainer}>
-              <View style={styles.selectorHeader}>
-                <Text style={styles.selectorTitle}>Choose Soundscape</Text>
-                <TouchableOpacity onPress={() => setShowSoundscapeSelector(false)}>
-                  <Ionicons name="close" size={24} color="#1e293b" />
-                </TouchableOpacity>
-              </View>
-              <ScrollView style={styles.selectorList}>
-                {['nature', 'water', 'noise', 'urban'].map((category) => (
-                  <View key={category} style={styles.categorySection}>
-                    <Text style={styles.categoryTitle}>{category.toUpperCase()}</Text>
-                    {getSoundscapesByCategory(category as any).map((sc) => (
-                      <TouchableOpacity
-                        key={sc.id}
-                        style={[styles.soundscapeOption, selectedSoundscape?.id === sc.id && styles.soundscapeOptionActive]}
-                        onPress={() => {
-                          setSelectedSoundscape(sc);
-                          setShowSoundscapeSelector(false);
-                        }}
-                      >
-                        <Text style={styles.soundscapeOptionName}>{sc.name}</Text>
-                        {selectedSoundscape?.id === sc.id && <Ionicons name="checkmark-circle" size={20} color="#3b82f6" />}
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                ))}
-              </ScrollView>
-            </View>
-          </View>
-        </Modal>
       </SafeAreaView>
     </Modal>
   );

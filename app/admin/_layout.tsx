@@ -94,7 +94,7 @@ export default function AdminLayout() {
                 </Text>
                 <View style={{ gap: 12, width: '100%', maxWidth: 240 }}>
                     <TouchableOpacity
-                        onPress={() => router.push(user ? '/' : '/(auth)/login' as any)}
+                        onPress={() => router.push(user ? '/' : '/login' as any)}
                         style={{ backgroundColor: '#2563eb', padding: 16, borderRadius: 16, alignItems: 'center', shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 }}
                     >
                         <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 16 }}>
@@ -104,7 +104,7 @@ export default function AdminLayout() {
 
                     {user && (
                         <TouchableOpacity
-                            onPress={() => router.replace('/(auth)/login' as any)}
+                            onPress={() => router.replace('/login' as any)}
                             style={{ padding: 16, alignItems: 'center' }}
                         >
                             <Text style={{ color: '#64748b', fontWeight: '700' }}>Switch Account</Text>

@@ -29,47 +29,54 @@ interface GamesHubProps {
   onClose: () => void;
 }
 
+import {
+  Zap, Wind, Brain, Activity, Search, List, ArrowUpCircle, Waves, Repeat, Eye,
+  Files, MousePointer, Timer, Triangle, Droplets, Palette, Music, Coffee, Grid, Type,
+  Hash, BookOpen, PenTool, Hand, Watch, Compass, Mic, Move
+} from 'lucide-react-native';
+
 type GameDef = {
   id: string;
   name: string;
-  emoji: string;
+  icon: any; // Icon component
   color: string;
   description: string;
   implemented?: boolean;
+  emoji?: string;
 };
 
 const games: GameDef[] = [
-  { id: 'reaction', name: 'Wait for Green', emoji: '⚡', color: '#10b981', description: 'Test reaction time', implemented: true },
-  { id: 'breathing', name: 'Breath Match', emoji: '💨', color: '#06b6d4', description: 'Match breathing rhythm', implemented: true },
-  { id: 'memory', name: 'Memory Path', emoji: '🧠', color: '#a855f7', description: 'Remember sequences', implemented: true },
-  { id: 'balance', name: 'Balance', emoji: '🎯', color: '#f97316', description: 'Keep centered', implemented: true },
+  { id: 'reaction', name: 'Wait for Green', icon: Zap, color: '#10b981', description: 'Test reaction time', implemented: true },
+  { id: 'breathing', name: 'Breath Match', icon: Wind, color: '#06b6d4', description: 'Match breathing rhythm', implemented: true },
+  { id: 'memory', name: 'Memory Path', icon: Brain, color: '#a855f7', description: 'Remember sequences', implemented: true },
+  { id: 'balance', name: 'Balance', icon: Activity, color: '#f97316', description: 'Keep centered', implemented: true },
 
-  // Restored from old repo (most were placeholders there as well)
-  { id: 'spot-difference', name: 'Spot Difference', emoji: '🔍', color: '#6366f1', description: 'Find changes', implemented: true },
-  { id: 'sequence-recall', name: 'Sequence Recall', emoji: '📋', color: '#14b8a6', description: 'Remember numbers', implemented: true },
-  { id: 'focus-frenzy', name: 'Focus Frenzy', emoji: '👆', color: '#ec4899', description: 'Click targets fast', implemented: true },
-  { id: 'wave-rider', name: 'Wave Rider', emoji: '🌊', color: '#3b82f6', description: 'Breathe with waves', implemented: true },
-  { id: 'focus-shift', name: 'Focus Shift', emoji: '🔄', color: '#06b6d4', description: 'Switch tasks', implemented: true },
-  { id: 'visual-filter', name: 'Visual Filter', emoji: '👁️', color: '#8b5cf6', description: 'Find patterns', implemented: true },
-  { id: 'task-switcher', name: 'Task Switcher', emoji: '📚', color: '#6366f1', description: 'Quick switching', implemented: true },
-  { id: 'attention-trainer', name: 'Attention Trainer', emoji: '👆', color: '#ec4899', description: 'Click targets', implemented: true },
-  { id: 'concentration-challenge', name: 'Concentration', emoji: '⏰', color: '#f59e0b', description: 'Focus longer', implemented: true },
-  { id: 'breathe-mountain', name: 'Breathe Mountain', emoji: '⛰️', color: '#10b981', description: 'Mountain breathing', implemented: true },
-  { id: 'relaxing-ripples', name: 'Relaxing Ripples', emoji: '💧', color: '#06b6d4', description: 'Create ripples', implemented: true },
-  { id: 'calm-colors', name: 'Calm Colors', emoji: '🎨', color: '#ec4899', description: 'Color breathing', implemented: true },
-  { id: 'soothing-soundscape', name: 'Soundscape', emoji: '🎵', color: '#14b8a6', description: 'Peaceful sounds' },
-  { id: 'mindful-moments', name: 'Mindful Moments', emoji: '🎯', color: '#6366f1', description: 'Present moment' },
-  { id: 'memory-matrix-2', name: 'Memory Matrix', emoji: '🔲', color: '#a855f7', description: 'Grid memory', implemented: true },
-  { id: 'word-scramble', name: 'Word Scramble', emoji: '🔀', color: '#f97316', description: 'Unscramble words', implemented: true },
-  { id: 'math-bingo-2', name: 'Math Bingo', emoji: '🔢', color: '#10b981', description: 'Solve math', implemented: true },
-  { id: 'storyteller-2', name: 'Storyteller', emoji: '📖', color: '#f59e0b', description: 'Recall story' },
-  { id: 'anagram-challenge', name: 'Anagram', emoji: '✍️', color: '#3b82f6', description: 'Solve anagrams', implemented: true },
-  { id: 'finger-tapping', name: 'Finger Tap', emoji: '👋', color: '#ec4899', description: 'Tap sequence', implemented: true },
-  { id: 'reaction-time-challenge', name: 'Reaction Time', emoji: '⏱️', color: '#10b981', description: 'React quickly' },
-  { id: 'maze-runner-2', name: 'Maze Runner', emoji: '🧭', color: '#a855f7', description: 'Navigate maze' },
-  { id: 'rhythm-tap-2', name: 'Rhythm Tap', emoji: '🎵', color: '#3b82f6', description: 'Tap to beat', implemented: true },
-  { id: 'balance-challenge', name: 'Balance Challenge', emoji: '⚖️', color: '#f97316', description: 'Virtual balance' },
-  { id: 'mindful-walking', name: 'Mindful Walk', emoji: '👣', color: '#3b82f6', description: 'Walking practice' },
+  // Restored/Refined
+  { id: 'spot-difference', name: 'Spot Difference', icon: Search, color: '#6366f1', description: 'Find changes', implemented: true },
+  { id: 'sequence-recall', name: 'Sequence Recall', icon: List, color: '#14b8a6', description: 'Remember numbers', implemented: true },
+  { id: 'focus-frenzy', name: 'Focus Frenzy', icon: ArrowUpCircle, color: '#ec4899', description: 'Click targets fast', implemented: true },
+  { id: 'wave-rider', name: 'Wave Rider', icon: Waves, color: '#3b82f6', description: 'Breathe with waves', implemented: true },
+  { id: 'focus-shift', name: 'Focus Shift', icon: Repeat, color: '#06b6d4', description: 'Switch tasks', implemented: true },
+  { id: 'visual-filter', name: 'Visual Filter', icon: Eye, color: '#8b5cf6', description: 'Find patterns', implemented: true },
+  { id: 'task-switcher', name: 'Task Switcher', icon: Files, color: '#6366f1', description: 'Quick switching', implemented: true },
+  { id: 'attention-trainer', name: 'Attention Trainer', icon: MousePointer, color: '#ec4899', description: 'Click targets', implemented: true },
+  { id: 'concentration-challenge', name: 'Concentration', icon: Timer, color: '#f59e0b', description: 'Focus longer', implemented: true },
+  { id: 'breathe-mountain', name: 'Breathe Mountain', icon: Triangle, color: '#10b981', description: 'Mountain breathing', implemented: true },
+  { id: 'relaxing-ripples', name: 'Relaxing Ripples', icon: Droplets, color: '#06b6d4', description: 'Create ripples', implemented: true },
+  { id: 'calm-colors', name: 'Calm Colors', icon: Palette, color: '#ec4899', description: 'Color breathing', implemented: true },
+  { id: 'soothing-soundscape', name: 'Soundscape', icon: Music, color: '#14b8a6', description: 'Peaceful sounds' },
+  { id: 'mindful-moments', name: 'Mindful Moments', icon: Coffee, color: '#6366f1', description: 'Present moment' },
+  { id: 'memory-matrix-2', name: 'Memory Matrix', icon: Grid, color: '#a855f7', description: 'Grid memory', implemented: true },
+  { id: 'word-scramble', name: 'Word Scramble', icon: Type, color: '#f97316', description: 'Unscramble words', implemented: true },
+  { id: 'math-bingo-2', name: 'Math Bingo', icon: Hash, color: '#10b981', description: 'Solve math', implemented: true },
+  { id: 'storyteller-2', name: 'Storyteller', icon: BookOpen, color: '#f59e0b', description: 'Recall story' },
+  { id: 'anagram-challenge', name: 'Anagram', icon: PenTool, color: '#3b82f6', description: 'Solve anagrams', implemented: true },
+  { id: 'finger-tapping', name: 'Finger Tap', icon: Hand, color: '#ec4899', description: 'Tap sequence', implemented: true },
+  { id: 'reaction-time-challenge', name: 'Reaction Time', icon: Watch, color: '#10b981', description: 'React quickly' },
+  { id: 'maze-runner-2', name: 'Maze Runner', icon: Compass, color: '#a855f7', description: 'Navigate maze' },
+  { id: 'rhythm-tap-2', name: 'Rhythm Tap', icon: Mic, color: '#3b82f6', description: 'Tap to beat', implemented: true },
+  { id: 'balance-challenge', name: 'Balance Challenge', icon: Activity, color: '#f97316', description: 'Virtual balance' },
+  { id: 'mindful-walking', name: 'Mindful Walk', icon: Move, color: '#3b82f6', description: 'Walking practice' },
 ];
 
 export default function GamesHub({ userId, onClose }: GamesHubProps) {
@@ -282,7 +289,9 @@ export default function GamesHub({ userId, onClose }: GamesHubProps) {
                     style={[styles.gameCard, { backgroundColor: game.color }]}
                     activeOpacity={0.85}
                   >
-                    <Text style={styles.gameEmoji}>{game.emoji}</Text>
+                    <View style={{ marginBottom: 16, width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center' }}>
+                      <game.icon size={26} color="#fff" />
+                    </View>
                     <Text style={styles.gameName}>{game.name}</Text>
                     <Text style={styles.gameDescription}>{game.description}</Text>
                     {!game.implemented && (
@@ -857,14 +866,14 @@ function FocusShiftGame({ onBack, onComplete }: { onBack: () => void; onComplete
     const b = Math.floor(Math.random() * 20) + 1;
     const operations = ['+', '-', '×'];
     const op = operations[Math.floor(Math.random() * operations.length)];
-    
+
     let result = 0;
     switch (op) {
       case '+': result = a + b; break;
       case '-': result = a - b; break;
       case '×': result = a * b; break;
     }
-    
+
     setQuestion(`${a} ${op} ${b} = ?`);
     setAnswer(result.toString());
   };
@@ -882,7 +891,7 @@ function FocusShiftGame({ onBack, onComplete }: { onBack: () => void; onComplete
     setTask(newTask);
     setUserInput('');
     setFeedback('');
-    
+
     if (newTask === 'math') {
       generateMathTask();
     } else {
@@ -922,7 +931,7 @@ function FocusShiftGame({ onBack, onComplete }: { onBack: () => void; onComplete
       <Text style={styles.gameTitle}>Focus Shift</Text>
       <Text style={styles.gameSubtitle}>Quickly switch between math and word tasks</Text>
       <Text style={styles.limitText}>Round: {round}/8 • Score: {score}</Text>
-      
+
       <View style={styles.bigCard}>
         <Text style={styles.bigCardTitle}>{task === 'math' ? '🧮 Math Task' : '📝 Word Task'}</Text>
         <Text style={styles.bigCardValue}>{question}</Text>
@@ -954,7 +963,7 @@ function MemoryMatrixGame({ onBack, onComplete }: { onBack: () => void; onComple
   const generatePattern = (size: number) => {
     const pattern = Array(size * size).fill(false);
     const cellsToReveal = Math.min(3 + level, 8);
-    
+
     for (let i = 0; i < cellsToReveal; i++) {
       let index;
       do {
@@ -962,7 +971,7 @@ function MemoryMatrixGame({ onBack, onComplete }: { onBack: () => void; onComple
       } while (pattern[index]);
       pattern[index] = true;
     }
-    
+
     return pattern;
   };
 
@@ -971,7 +980,7 @@ function MemoryMatrixGame({ onBack, onComplete }: { onBack: () => void; onComple
     setGrid(pattern);
     setRevealed(Array(gridSize * gridSize).fill(false));
     setShowingPattern(true);
-    
+
     setTimeout(() => {
       setShowingPattern(false);
     }, 1500 + level * 200);
@@ -979,11 +988,11 @@ function MemoryMatrixGame({ onBack, onComplete }: { onBack: () => void; onComple
 
   const handleCellPress = (index: number) => {
     if (showingPattern || gameOver) return;
-    
+
     const newRevealed = [...revealed];
     newRevealed[index] = true;
     setRevealed(newRevealed);
-    
+
     if (grid[index]) {
       setScore(s => s + 1);
     } else {
@@ -992,7 +1001,7 @@ function MemoryMatrixGame({ onBack, onComplete }: { onBack: () => void; onComple
       setTimeout(() => onComplete(score), 1500);
       return;
     }
-    
+
     if (newRevealed.filter((r, i) => grid[i] && r).length === grid.filter(g => g).length) {
       setTimeout(() => {
         setLevel(l => l + 1);
@@ -1017,7 +1026,7 @@ function MemoryMatrixGame({ onBack, onComplete }: { onBack: () => void; onComple
       <Text style={styles.gameTitle}>Memory Matrix</Text>
       <Text style={styles.gameSubtitle}>Remember and repeat the pattern</Text>
       <Text style={styles.limitText}>Level: {level}/5 • Score: {score}</Text>
-      
+
       <View style={styles.memoryGrid}>
         {Array.from({ length: gridSize * gridSize }).map((_, index) => (
           <TouchableOpacity
@@ -1027,9 +1036,9 @@ function MemoryMatrixGame({ onBack, onComplete }: { onBack: () => void; onComple
             style={[
               styles.memoryColor,
               {
-                backgroundColor: showingPattern && grid[index] ? '#10b981' : 
-                               revealed[index] ? (grid[index] ? '#10b981' : '#ef4444') : 
-                               '#e5e7eb'
+                backgroundColor: showingPattern && grid[index] ? '#10b981' :
+                  revealed[index] ? (grid[index] ? '#10b981' : '#ef4444') :
+                    '#e5e7eb'
               },
               (showingPattern || gameOver) && styles.memoryColorDisabled
             ]}
@@ -1042,7 +1051,7 @@ function MemoryMatrixGame({ onBack, onComplete }: { onBack: () => void; onComple
           </TouchableOpacity>
         ))}
       </View>
-      
+
       {showingPattern && <Text style={styles.limitText}>Watch the pattern...</Text>}
       {gameOver && <Text style={styles.warningText}>Game Over! Final Score: {score}</Text>}
     </View>
@@ -1074,7 +1083,7 @@ function WordScrambleGame({ onBack, onComplete }: { onBack: () => void; onComple
   const generateWord = () => {
     const newWord = words[Math.floor(Math.random() * words.length)];
     const scrambledWord = scrambleWord(newWord);
-    
+
     // Make sure it's actually scrambled
     let attempts = 0;
     while (scrambledWord === newWord && attempts < 10) {
@@ -1085,7 +1094,7 @@ function WordScrambleGame({ onBack, onComplete }: { onBack: () => void; onComple
         break;
       }
     }
-    
+
     setWord(newWord);
     setScrambled(scrambledWord);
     setUserInput('');
@@ -1122,7 +1131,7 @@ function WordScrambleGame({ onBack, onComplete }: { onBack: () => void; onComple
       <Text style={styles.gameTitle}>Word Scramble</Text>
       <Text style={styles.gameSubtitle}>Unscramble the word</Text>
       <Text style={styles.limitText}>Round: {round}/6 • Score: {score}</Text>
-      
+
       <View style={styles.bigCard}>
         <Text style={styles.bigCardTitle}>🔀 Unscramble this word:</Text>
         <Text style={styles.bigCardValue}>{scrambled}</Text>
@@ -1158,7 +1167,7 @@ function MathBingoGame({ onBack, onComplete }: { onBack: () => void; onComplete:
       numbers.push(Math.floor(Math.random() * 50) + 1);
     }
     setGrid(numbers);
-    
+
     // Generate a target that exists in the grid
     const targetNumber = numbers[Math.floor(Math.random() * numbers.length)];
     setTarget(targetNumber);
@@ -1166,7 +1175,7 @@ function MathBingoGame({ onBack, onComplete }: { onBack: () => void; onComplete:
 
   useEffect(() => {
     generateGrid();
-    
+
     intervalRef.current = setInterval(() => {
       setTimeLeft((t) => {
         if (t <= 1) {
@@ -1179,13 +1188,13 @@ function MathBingoGame({ onBack, onComplete }: { onBack: () => void; onComplete:
         return t - 1;
       });
     }, 1000);
-    
+
     return () => intervalRef.current && clearInterval(intervalRef.current);
   }, []);
 
   const handleCellPress = (number: number) => {
     if (gameOver) return;
-    
+
     if (number === target) {
       setScore(s => s + 1);
       if (round >= 5) {
@@ -1206,12 +1215,12 @@ function MathBingoGame({ onBack, onComplete }: { onBack: () => void; onComplete:
       <Text style={styles.gameTitle}>Math Bingo</Text>
       <Text style={styles.gameSubtitle}>Find the target number</Text>
       <Text style={styles.limitText}>Round: {round}/5 • Score: {score} • Time: {timeLeft}s</Text>
-      
+
       <View style={styles.bigCard}>
         <Text style={styles.bigCardTitle}>🎯 Find this number:</Text>
         <Text style={styles.bigCardValue}>{target}</Text>
       </View>
-      
+
       <View style={styles.grid16}>
         {grid.map((number, index) => (
           <TouchableOpacity
@@ -1227,7 +1236,7 @@ function MathBingoGame({ onBack, onComplete }: { onBack: () => void; onComplete:
           </TouchableOpacity>
         ))}
       </View>
-      
+
       {gameOver && <Text style={styles.warningText}>Game Over! Final Score: {score}</Text>}
     </View>
   );
@@ -1272,7 +1281,7 @@ function AnagramChallengeGame({ onBack, onComplete }: { onBack: () => void; onCo
   const generateWord = () => {
     const wordObj = words[Math.floor(Math.random() * words.length)];
     const scrambledWord = scrambleWord(wordObj.word);
-    
+
     // Make sure it's actually scrambled
     let attempts = 0;
     let finalScrambled = scrambledWord;
@@ -1280,7 +1289,7 @@ function AnagramChallengeGame({ onBack, onComplete }: { onBack: () => void; onCo
       attempts++;
       finalScrambled = scrambleWord(wordObj.word);
     }
-    
+
     setWord(wordObj.word);
     setScrambled(finalScrambled);
     setUserInput('');
@@ -1326,7 +1335,7 @@ function AnagramChallengeGame({ onBack, onComplete }: { onBack: () => void; onCo
       <Text style={styles.gameTitle}>Anagram Challenge</Text>
       <Text style={styles.gameSubtitle}>Rearrange letters to form a word</Text>
       <Text style={styles.limitText}>Round: {round}/6 • Score: {score} • Hints: {hints}</Text>
-      
+
       <View style={styles.bigCard}>
         <Text style={styles.bigCardTitle}>✍️ Rearrange these letters:</Text>
         <Text style={styles.bigCardValue}>{scrambled}</Text>
@@ -1342,8 +1351,8 @@ function AnagramChallengeGame({ onBack, onComplete }: { onBack: () => void; onCo
           <TouchableOpacity style={[styles.gameButton, { backgroundColor: '#3b82f6', flex: 1 }]} onPress={checkAnswer}>
             <Text style={styles.gameButtonText}>Submit</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.gameButton, { backgroundColor: hints > 0 ? '#f59e0b' : '#9ca3af', flex: 1 }]} 
+          <TouchableOpacity
+            style={[styles.gameButton, { backgroundColor: hints > 0 ? '#f59e0b' : '#9ca3af', flex: 1 }]}
             onPress={useHint}
             disabled={hints === 0}
           >
@@ -1378,14 +1387,14 @@ function FingerTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
   const showSequence = () => {
     setShowingSequence(true);
     setUserSequence([]);
-    
+
     sequence.forEach((finger, index) => {
       setTimeout(() => {
         setActiveFinger(finger);
         setTimeout(() => setActiveFinger(null), 400);
       }, index * 600);
     });
-    
+
     setTimeout(() => {
       setShowingSequence(false);
       setActiveFinger(null);
@@ -1404,10 +1413,10 @@ function FingerTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
 
   const handleFingerPress = (fingerIndex: number) => {
     if (showingSequence || gameOver) return;
-    
+
     const newUserSequence = [...userSequence, fingerIndex];
     setUserSequence(newUserSequence);
-    
+
     // Check if the pressed finger is correct
     if (sequence[newUserSequence.length - 1] !== fingerIndex) {
       triggerSound(SoundEffect.GAME_LOSS);
@@ -1415,7 +1424,7 @@ function FingerTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
       setTimeout(() => onComplete(score), 2000);
       return;
     }
-    
+
     // Check if sequence is complete
     if (newUserSequence.length === sequence.length) {
       setScore(s => s + 1);
@@ -1438,7 +1447,7 @@ function FingerTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
       <Text style={styles.gameTitle}>Finger Tap</Text>
       <Text style={styles.gameSubtitle}>Repeat the finger sequence</Text>
       <Text style={styles.limitText}>Level: {level}/5 • Score: {score}</Text>
-      
+
       <View style={styles.bigCard}>
         <Text style={styles.bigCardTitle}>
           {showingSequence ? 'Watch the sequence...' : 'Repeat the sequence!'}
@@ -1475,7 +1484,7 @@ function FingerTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
           ))}
         </View>
       </View>
-      
+
       {gameOver && <Text style={styles.warningText}>Game Over! Final Score: {score}</Text>}
     </View>
   );
@@ -1505,7 +1514,7 @@ function RhythmTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
     setUserTaps(Array(pattern.length).fill(false));
     setCurrentBeat(0);
     setPlaying(true);
-    
+
     // Play the pattern
     let beatIndex = 0;
     intervalRef.current = setInterval(() => {
@@ -1526,20 +1535,20 @@ function RhythmTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
 
   const handleTap = () => {
     if (playing || gameOver) return;
-    
+
     const newUserTaps = [...userTaps];
     const tapIndex = newUserTaps.findIndex(tap => !tap);
-    
+
     if (tapIndex === -1) return; // Already tapped for all beats
-    
+
     newUserTaps[tapIndex] = true;
     setUserTaps(newUserTaps);
-    
+
     // Check if tap matches the pattern
     if (beats[tapIndex]) {
       setScore(s => s + 1);
     }
-    
+
     // Check if round is complete
     if (newUserTaps.every(tap => tap)) {
       setTimeout(() => {
@@ -1562,12 +1571,12 @@ function RhythmTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
       <Text style={styles.gameTitle}>Rhythm Tap</Text>
       <Text style={styles.gameSubtitle}>Tap to the rhythm</Text>
       <Text style={styles.limitText}>Round: {round}/5 • Score: {score}</Text>
-      
+
       <View style={styles.bigCard}>
         <Text style={styles.bigCardTitle}>
           {playing ? 'Listen to the rhythm...' : 'Tap the rhythm!'}
         </Text>
-        
+
         <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 20 }}>
           {beats.map((beat, index) => (
             <View
@@ -1578,7 +1587,7 @@ function RhythmTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
                   height: 40,
                   borderRadius: 20,
                   backgroundColor: playing && currentBeat === index ? '#3b82f6' :
-                                 beat ? '#10b981' : '#e5e7eb',
+                    beat ? '#10b981' : '#e5e7eb',
                   marginHorizontal: 4,
                   borderWidth: 2,
                   borderColor: userTaps[index] ? '#10b981' : '#d1d5db'
@@ -1587,13 +1596,13 @@ function RhythmTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
             />
           ))}
         </View>
-        
+
         <TouchableOpacity
           onPress={handleTap}
           disabled={playing || gameOver}
           style={[
             styles.gameButton,
-            { 
+            {
               backgroundColor: playing || gameOver ? '#9ca3af' : '#3b82f6',
               marginTop: 20
             }
@@ -1603,12 +1612,12 @@ function RhythmTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
             {playing ? 'Listening...' : 'TAP!'}
           </Text>
         </TouchableOpacity>
-        
+
         <Text style={[styles.limitText, { marginTop: 10 }]}>
           Green = Tap, Gray = Don't Tap
         </Text>
       </View>
-      
+
       {gameOver && <Text style={styles.warningText}>Game Over! Final Score: {score}</Text>}
     </View>
   );
@@ -1638,16 +1647,16 @@ function CalmColorsGame({ onBack, onComplete }: { onBack: () => void; onComplete
       .filter(c => c.name !== correctColor.name)
       .sort(() => Math.random() - 0.5)
       .slice(0, 2);
-    
+
     const allOptions = [correctColor, ...wrongOptions]
       .sort(() => Math.random() - 0.5)
       .map(c => c.name);
-    
+
     setCurrentColor(correctColor.hex);
     setColorName(correctColor.name);
     setOptions(allOptions);
     setBreathingPhase('inhale');
-    
+
     // Start breathing animation
     Animated.sequence([
       Animated.timing(animValue, { toValue: 1.3, duration: 2000, useNativeDriver: true }),
@@ -1690,12 +1699,12 @@ function CalmColorsGame({ onBack, onComplete }: { onBack: () => void; onComplete
       <Text style={styles.gameTitle}>Calm Colors</Text>
       <Text style={styles.gameSubtitle}>Breathe with the colors</Text>
       <Text style={styles.limitText}>Round: {round}/6 • Score: {score}</Text>
-      
+
       <View style={styles.breathingContainer}>
-        <Animated.View 
+        <Animated.View
           style={[
             styles.breathingCircle,
-            { 
+            {
               backgroundColor: currentColor,
               transform: [{ scale }]
             }
@@ -1705,7 +1714,7 @@ function CalmColorsGame({ onBack, onComplete }: { onBack: () => void; onComplete
           {breathingPhase === 'inhale' ? 'Breathe In...' : 'Breathe Out...'}
         </Text>
       </View>
-      
+
       <View style={styles.bigCard}>
         <Text style={styles.bigCardTitle}>What color do you see?</Text>
         <View style={styles.buttonRow}>
@@ -1714,7 +1723,7 @@ function CalmColorsGame({ onBack, onComplete }: { onBack: () => void; onComplete
               key={option}
               style={[
                 styles.gameButton,
-                { 
+                {
                   backgroundColor: colors.find(c => c.name === option)?.hex || '#6b7280',
                   flex: 1,
                   marginHorizontal: 4
@@ -1751,13 +1760,13 @@ function RelaxingRipplesGame({ onBack, onComplete }: { onBack: () => void; onCom
         return t - 1;
       });
     }, 1000);
-    
+
     return () => intervalRef.current && clearInterval(intervalRef.current);
   }, []);
 
   const createRipple = (event: any) => {
     if (gameOver) return;
-    
+
     const { locationX, locationY } = event.nativeEvent;
     const newRipple = {
       id: Date.now(),
@@ -1765,17 +1774,17 @@ function RelaxingRipplesGame({ onBack, onComplete }: { onBack: () => void; onCom
       y: locationY,
       size: 20
     };
-    
+
     setRipples(prev => [...prev, newRipple]);
     setScore(s => s + 1);
-    
+
     // Animate ripple growth and fade
     setTimeout(() => {
-      setRipples(prev => prev.map(r => 
+      setRipples(prev => prev.map(r =>
         r.id === newRipple.id ? { ...r, size: 100 } : r
       ));
     }, 100);
-    
+
     setTimeout(() => {
       setRipples(prev => prev.filter(r => r.id !== newRipple.id));
     }, 2000);
@@ -1789,7 +1798,7 @@ function RelaxingRipplesGame({ onBack, onComplete }: { onBack: () => void; onCom
       <Text style={styles.gameTitle}>Relaxing Ripples</Text>
       <Text style={styles.gameSubtitle}>Create peaceful ripples</Text>
       <Text style={styles.limitText}>Time: {timeLeft}s • Score: {score}</Text>
-      
+
       <TouchableOpacity
         style={styles.playfield}
         onPress={createRipple}
@@ -1813,10 +1822,10 @@ function RelaxingRipplesGame({ onBack, onComplete }: { onBack: () => void; onCom
             ]}
           />
         ))}
-        <Text style={{ 
-          position: 'absolute', 
-          top: '50%', 
-          left: '50%', 
+        <Text style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
           transform: [{ translateX: -50 }, { translateY: -50 }],
           fontSize: 18,
           color: '#64748b',
@@ -1825,7 +1834,7 @@ function RelaxingRipplesGame({ onBack, onComplete }: { onBack: () => void; onCom
           Tap to create ripples
         </Text>
       </TouchableOpacity>
-      
+
       {gameOver && <Text style={styles.warningText}>Time's up! Final Score: {score}</Text>}
     </View>
   );

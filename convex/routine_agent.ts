@@ -37,13 +37,15 @@ export const generateRoutine = action({
         equipment: v.optional(v.string()), // e.g. "Dumbbells"
     },
     handler: async (ctx, args) => {
-        if (!GEMINI_API_KEY) {
-            throw new Error("GEMINI_API_KEY is not set in environment variables");
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            console.error("Error: GEMINI_API_KEY is not set in environment variables.");
+            throw new Error("Server Error: Configuration missing. GEMINI_API_KEY is not set.");
         }
 
-        const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+        const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-            model: "gemini-2.0-flash",
+            model: "gemini-1.5-flash-latest",
             generationConfig: {
                 responseMimeType: "application/json",
                 responseSchema: ROUTINE_SCHEMA,
@@ -65,13 +67,20 @@ export const generateRoutine = action({
     `;
 
         try {
+            console.log("Generating routine with prompt:", prompt);
             const result = await model.generateContent(prompt);
             const response = result.response;
             const text = response.text();
+            console.log("Gemini response:", text);
             return JSON.parse(text);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Gemini generation failed:", error);
-            throw new Error("Failed to generate routine. Please try again.");
+            // Check for specific API key related errors if possible
+            if (error.message?.includes("API key")) {
+                throw new Error("Server Error: Invalid API Configuration.");
+            }
+            // Throw the actual error for debugging purposes in development
+            throw new Error(`Failed to generate routine: ${error.message}`);
         }
     },
 });

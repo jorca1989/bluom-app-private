@@ -30,7 +30,7 @@ function getModel() {
   };
 }
 
-function safeJsonParse<T>(text: string): T | null {
+export function safeJsonParse<T>(text: string): T | null {
   try {
     return JSON.parse(text) as T;
   } catch {
@@ -48,7 +48,7 @@ function isModelNotFoundOrUnsupported(err: unknown) {
   );
 }
 
-async function generateContentWithFallback(parts: any[]) {
+export async function generateContentWithFallback(parts: any[]) {
   const { genAI, models } = getModel();
   let lastErr: unknown = null;
   for (const modelName of models) {

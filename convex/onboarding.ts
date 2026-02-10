@@ -138,22 +138,22 @@ function calculateHolisticScore(args: OnboardingArgs): number {
 
 type OnboardingArgs = {
   clerkId: string;
-  name: string;
+  name?: string;
   biologicalSex: "male" | "female";
-  age: string;
-  weight: string;
-  height: string;
-  targetWeight?: string;
+  age: number;
+  weight: number;
+  height: number;
+  targetWeight?: number;
   fitnessGoal:
-    | "lose_weight"
-    | "build_muscle"
-    | "maintain"
-    | "improve_health"
-    | "improve_endurance"
-    | "general_health";
+  | "lose_weight"
+  | "build_muscle"
+  | "maintain"
+  | "improve_health"
+  | "improve_endurance"
+  | "general_health";
   fitnessExperience: "beginner" | "intermediate" | "advanced";
   workoutPreference: "strength" | "cardio" | "hiit" | "yoga" | "mixed";
-  weeklyWorkoutTime: string;
+  weeklyWorkoutTime: number;
   activityLevel:
   | "sedentary"
   | "lightly_active"
@@ -166,12 +166,21 @@ type OnboardingArgs = {
   | "low_carb"
   | "plant_based"
   | "flexible";
-  sleepHours: string;
+  sleepHours: number;
   stressLevel: "low" | "moderate" | "high" | "very_high";
   motivations: string[];
   challenges: string[];
-  mealsPerDay: string;
-  threeMonthGoal: string;
+  mealsPerDay: number;
+  twelveMonthGoal?: string;
+  peakEnergy?: string;
+  lifeStressor?: string;
+  coachingStyle?: string;
+  preferredLanguage?: string;
+  preferredUnits?: {
+    weight: string;
+    height: string;
+    volume?: string;
+  };
 };
 
 /**
@@ -189,12 +198,12 @@ type OnboardingArgs = {
 export const onboardUser = mutation({
   args: {
     clerkId: v.string(),
-    name: v.string(),
+    name: v.optional(v.string()), // Made optional as per request
     biologicalSex: v.union(v.literal("male"), v.literal("female")),
-    age: v.string(),
-    weight: v.string(),
-    height: v.string(),
-    targetWeight: v.optional(v.string()),
+    age: v.number(),
+    weight: v.number(),
+    height: v.number(),
+    targetWeight: v.optional(v.number()),
     fitnessGoal: v.union(
       v.literal("lose_weight"),
       v.literal("build_muscle"),
@@ -215,7 +224,7 @@ export const onboardUser = mutation({
       v.literal("yoga"),
       v.literal("mixed")
     ),
-    weeklyWorkoutTime: v.string(),
+    weeklyWorkoutTime: v.number(),
     activityLevel: v.union(
       v.literal("sedentary"),
       v.literal("lightly_active"),
@@ -230,7 +239,7 @@ export const onboardUser = mutation({
       v.literal("plant_based"),
       v.literal("flexible")
     ),
-    sleepHours: v.string(),
+    sleepHours: v.number(),
     stressLevel: v.union(
       v.literal("low"),
       v.literal("moderate"),
@@ -239,26 +248,28 @@ export const onboardUser = mutation({
     ),
     motivations: v.array(v.string()),
     challenges: v.array(v.string()),
-    mealsPerDay: v.string(),
-    threeMonthGoal: v.string(),
+    mealsPerDay: v.number(),
+    twelveMonthGoal: v.optional(v.string()), // Renamed from threeMonthGoal
     peakEnergy: v.optional(v.string()),
     lifeStressor: v.optional(v.string()),
-    coachingStyle: v.optional(v.string()),
+    coachingStyle: v.optional(v.string()), // Made optional per request
     preferredLanguage: v.optional(v.string()), // Added for localization support
-    preferredUnits: v.optional(v.any()), // Preferred units (metric/imperial)
+    preferredUnits: v.optional(v.object({
+      weight: v.string(),
+      height: v.string(),
+      volume: v.optional(v.string()),
+    })),
   },
   handler: async (ctx, args) => {
     console.log("Onboarding mutation v2 called with:", args.preferredLanguage);
-    // STEP 1: Convert string inputs to float64
-    const age = parseFloat(args.age);
-    const weight = parseFloat(args.weight);
-    const height = parseFloat(args.height);
-    const targetWeight = args.targetWeight
-      ? parseFloat(args.targetWeight)
-      : undefined;
-    const weeklyWorkoutTime = parseFloat(args.weeklyWorkoutTime);
-    const sleepHours = parseFloat(args.sleepHours);
-    const mealsPerDay = parseFloat(args.mealsPerDay);
+    // STEP 1: Use args directly as numbers
+    const age = args.age;
+    const weight = args.weight;
+    const height = args.height;
+    const targetWeight = args.targetWeight;
+    const weeklyWorkoutTime = args.weeklyWorkoutTime;
+    const sleepHours = args.sleepHours;
+    const mealsPerDay = args.mealsPerDay;
 
     // Validate inputs
     if (isNaN(age) || isNaN(weight) || isNaN(height)) {
@@ -324,12 +335,18 @@ export const onboardUser = mutation({
       stressLevel: args.stressLevel,
       motivations: args.motivations,
       challenges: args.challenges,
-      threeMonthGoal: args.threeMonthGoal,
+      twelveMonthGoal: args.twelveMonthGoal,
       peakEnergy: args.peakEnergy,
       lifeStressor: args.lifeStressor,
+
       coachingStyle: args.coachingStyle,
       ...(args.preferredLanguage && { preferredLanguage: args.preferredLanguage }),
-      ...(args.preferredUnits && { preferredUnits: args.preferredUnits }),
+      ...(args.preferredUnits && {
+        preferredUnits: {
+          ...args.preferredUnits,
+          volume: args.preferredUnits.volume ?? 'ml'
+        }
+      }),
 
       // Calculated targets (Mifflin-St Jeor)
       dailyCalories: Math.round(dailyCalories),

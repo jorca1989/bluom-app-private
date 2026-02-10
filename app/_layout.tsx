@@ -1,5 +1,5 @@
 import '../global.css';
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View, Text, Platform } from 'react-native';
@@ -32,6 +32,8 @@ const tokenCache = {
       const item = await SecureStore.getItemAsync(key);
       return item;
     } catch (error) {
+      console.warn('SecureStore get item error: ', error);
+      await SecureStore.deleteItemAsync(key).catch(() => null);
       return null;
     }
   },
@@ -39,6 +41,7 @@ const tokenCache = {
     try {
       return SecureStore.setItemAsync(key, value);
     } catch (err) {
+      console.warn('SecureStore set item error: ', err);
       return;
     }
   },
@@ -99,74 +102,73 @@ function InitialLayout() {
   const showAuthLoading = isLoaded && isSignedIn && !convexAuthenticated;
   const showConvexUserLoading = isLoaded && isSignedIn && convexAuthenticated && convexUser === undefined;
 
+
   useEffect(() => {
-    // Web is a marketing landing page (app/index.tsx renders <LandingPage />).
-    // Avoid native auth/onboarding redirects on web to prevent routing into native-only screens.
     if (Platform.OS === 'web') return;
     if (!isLoaded || convexLoading) return;
 
-
-    const inAuthGroup = segments[0] === '(auth)';
-    const inTabsGroup = segments[0] === '(tabs)';
-    const isOnboarding = segments[0] === 'onboarding';
-    const isRoot = (segments as string[]).length === 0;
-
-    console.log("Routing Check:", { isSignedIn, convexAuthenticated, hasConvexUser: !!convexUser, segments: segments[0] });
-
     if (isSignedIn && convexAuthenticated) {
-      // User is logged in and authenticated with Convex AND user data exists
-      if (convexUser === undefined) return; // Loading user data
+      if (convexUser === undefined) return;
+
       if (convexUser === null) {
-        // Standard behavior for store submission: if user record is missing, go to onboarding immediately.
-        if (!isOnboarding) router.replace("/onboarding");
+        if (segments[0] !== 'onboarding') router.replace('/onboarding');
         return;
       }
 
-      if (convexUser) {
-        // Redirect to tabs only if we are currently in an auth screen or at the root
-        // AND the user has completed onboarding (checked via age > 0)
-        if ((convexUser.age ?? 0) > 0) {
-          // Only redirect if we're not already in the app
-          if (inAuthGroup || (segments as string[]).length === 0 || isOnboarding) {
-            router.replace("/(tabs)");
-          }
-        } else if ((convexUser.age ?? 0) === 0 && !isOnboarding) {
-          // Force redirect to onboarding if age is 0 and not already there
-          console.log("Redirecting to onboarding (incomplete profile)");
-          router.replace("/onboarding");
+      if ((convexUser.age ?? 0) > 0) {
+        const inAuth = segments[0] === '(auth)';
+        const isOnb = segments[0] === 'onboarding';
+        if (inAuth || (segments.length as number) === 0 || isOnb) {
+          router.replace('/(tabs)');
         }
+      } else {
+        if (segments[0] !== 'onboarding') router.replace('/onboarding');
       }
     } else if (!isSignedIn) {
-      // User is not signed in
-      if (isRoot) {
-        // First install: show onboarding slider once. Any later signed-out session should go straight to auth.
-        (async () => {
-          try {
-            const hasSeen = await SecureStore.getItemAsync(HAS_SEEN_ONBOARDING_KEY);
-            if (hasSeen === '1') {
-              router.replace("/(auth)/login");
-            } else {
-              router.replace("/onboarding");
-            }
-          } catch (e) {
-            // If SecureStore fails, fall back to onboarding so first-time users aren't blocked.
-            router.replace("/onboarding");
-          }
-        })();
-        return;
-      }
-
-      // Redirect to login only if we are not already in an auth group or onboarding
-      if (!inAuthGroup && !isOnboarding) {
-        router.replace("/(auth)/login");
+      if (segments[0] !== '(auth)') {
+        router.replace('/login');
       }
     }
   }, [isSignedIn, isLoaded, convexLoading, convexAuthenticated, convexUser, segments]);
 
-  if (showAuthLoading) {
-    return <LoadingScreen message="Signing you in..." />;
+  const [isTimedOut, setIsTimedOut] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // If we are still loading after 10 seconds, show timeout message
+      if ((!isLoaded || showAuthLoading || showConvexUserLoading) && Platform.OS !== 'web') {
+        setIsTimedOut(true);
+      }
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, [isLoaded, showAuthLoading, showConvexUserLoading]);
+
+  if (isTimedOut) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#ffffff', justifyContent: 'center', alignItems: 'center', padding: 24, gap: 16 }}>
+        <ActivityIndicator size="large" color="#ef4444" />
+        <Text style={{ color: '#0f172a', fontSize: 18, fontWeight: '700', textAlign: 'center' }}>Connection Timeout</Text>
+        <Text style={{ color: '#64748b', fontSize: 14, textAlign: 'center' }}>
+          The app is taking too long to load. This might be a network issue.
+        </Text>
+        <Text
+          style={{ color: '#2563eb', fontWeight: '600', marginTop: 8 }}
+          onPress={() => {
+            // Simple reload attempt
+            router.replace('/');
+            setIsTimedOut(false);
+          }}
+        >
+          Tap to Retry
+        </Text>
+      </View>
+    );
   }
 
+  if (!isLoaded || showAuthLoading || (isSignedIn && !convexAuthenticated && !convexUser)) {
+    return <LoadingScreen message="App is loading..." />;
+  }
   if (showConvexUserLoading) {
     return <LoadingScreen message="Setting up your account..." />;
   }
@@ -243,24 +245,69 @@ function InitialLayout() {
   );
 }
 
+
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("Root ErrorBoundary caught an error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Something went wrong</Text>
+          <Text style={{ color: 'gray' }}>We've noted this issue. Please restart the app.</Text>
+        </View>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 export default function RootLayout() {
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+  const convexUrl = process.env.EXPO_PUBLIC_CONVEX_URL;
+
   useFrameworkReady();
   useSoundEffects();
   useEffect(() => {
     warnIfMissingGoogleOAuthClientIds();
   }, []);
 
-  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+  if (!publishableKey || !convexUrl) {
+    return (
+      <View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: '#dc2626' }}>Configuration Error</Text>
+        <Text style={{ color: '#64748b', textAlign: 'center' }}>
+          Missing environment variables.{'\n'}
+          {!publishableKey && 'EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY\n'}
+          {!convexUrl && 'EXPO_PUBLIC_CONVEX_URL'}
+        </Text>
+      </View>
+    );
+  }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-          <ConvexProviderWithClerk client={convex} useAuth={useConvexClerkAuth}>
-            <InitialLayout />
-          </ConvexProviderWithClerk>
-        </ClerkProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <ErrorBoundary>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+            <ConvexProviderWithClerk client={convex} useAuth={useConvexClerkAuth}>
+              <InitialLayout />
+            </ConvexProviderWithClerk>
+          </ClerkProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }

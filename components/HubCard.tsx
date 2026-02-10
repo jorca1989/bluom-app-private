@@ -12,7 +12,7 @@ interface HubCardProps {
   bgColor?: string;
 }
 
-export function HubCard({ title, subtitle, Icon, onPress, color = '#2563eb', bgColor = '#eff6ff' }: HubCardProps) {
+export function HubCard({ title, subtitle, Icon, onPress, color = '#2563eb', bgColor = '#eff6ff', children }: any) {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -27,7 +27,8 @@ export function HubCard({ title, subtitle, Icon, onPress, color = '#2563eb', bgC
         )}
       </View>
       <Text className="text-slate-900 font-black text-base leading-tight mb-1">{title}</Text>
-      <Text className="text-slate-500 font-bold text-[10px] uppercase tracking-wider">{subtitle}</Text>
+      <Text className="text-slate-500 font-bold text-[10px] uppercase tracking-wider mb-2">{subtitle}</Text>
+      {children}
     </TouchableOpacity>
   );
 }

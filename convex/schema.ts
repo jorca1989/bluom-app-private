@@ -14,7 +14,7 @@ export default defineSchema({
     preferredUnits: v.optional(v.object({
       height: v.string(), // 'cm' | 'ft'
       weight: v.string(), // 'kg' | 'lbs'
-      volume: v.string(), // 'ml' | 'oz'
+      volume: v.optional(v.string()), // 'ml' | 'oz'
     })),
 
     // Strava Integration
@@ -86,6 +86,7 @@ export default defineSchema({
     peakEnergy: v.optional(v.string()), // Early Morning, Mid-Day, Evening, Late Night
     lifeStressor: v.optional(v.string()), // Work, Family, etc.
     coachingStyle: v.optional(v.string()), // Direct, Gentle, etc.
+    twelveMonthGoal: v.optional(v.string()), // Replaces threeMonthGoal as "North Star"
 
     // Calculated Daily Targets (Mifflin-St Jeor)
     dailyCalories: v.optional(v.float64()),
@@ -98,6 +99,9 @@ export default defineSchema({
     premiumExpiry: v.optional(v.float64()), // timestamp
     subscriptionStatus: v.optional(v.string()), // "pro" or "free"
     endsOn: v.optional(v.number()), // Unix timestamp for expiration
+
+
+
     rcUserId: v.optional(v.string()), // RevenueCat App User ID
 
     // Role-based access control
@@ -124,6 +128,22 @@ export default defineSchema({
   })
     .index("by_clerk_id", ["clerkId"])
     .index("by_email", ["email"]),
+
+  // Life Goals Table
+  lifeGoals: defineTable({
+    userId: v.id("users"),
+    title: v.string(),
+    description: v.optional(v.string()),
+    category: v.string(), // 'Work', 'Travel', 'Health', 'Personal'
+    status: v.string(), // 'pending', 'achieved', 'savings'
+    weblink: v.optional(v.string()),
+    targetCost: v.optional(v.float64()),
+    startDate: v.optional(v.string()),
+    deadline: v.optional(v.string()),
+    completedAt: v.optional(v.string()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_status", ["userId", "status"]),
 
   // Custom Local Food Database
   customFoods: defineTable({
@@ -387,10 +407,10 @@ export default defineSchema({
     estimatedCalories: v.optional(v.float64()),
     exercises: v.array(v.object({
       name: v.string(),
-      sets: v.float64(),
+      sets: v.number(),
       reps: v.string(), // string to allow "10-12" or "Failure"
       weight: v.optional(v.string()), // string for flexibility
-      rest: v.optional(v.float64()), // seconds
+      rest: v.optional(v.number()), // seconds
     })),
     createdAt: v.float64(),
     updatedAt: v.float64(),

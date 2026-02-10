@@ -137,13 +137,23 @@ export default function PhotoRecognitionModal(props: {
             </View>
           )}
 
+          {loading && (
+            <View style={styles.loadingOverlay}>
+              <View style={styles.loadingBox}>
+                <ActivityIndicator size="large" color="#ffffff" />
+                <Text style={styles.loadingText}>Analyzing Food...</Text>
+                <Text style={styles.loadingSubText}>Estimating calories & macros</Text>
+              </View>
+            </View>
+          )}
+
           <TouchableOpacity
             style={[styles.button, (!canRecognize || loading) && styles.buttonDisabled]}
             onPress={handleRecognize}
             activeOpacity={0.8}
             disabled={!canRecognize || loading}
           >
-            {loading ? <ActivityIndicator color="#ffffff" /> : <Text style={styles.buttonText}>Recognize Food</Text>}
+            <Text style={styles.buttonText}>Recognize Food</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -153,8 +163,9 @@ export default function PhotoRecognitionModal(props: {
               onClose();
             }}
             activeOpacity={0.8}
+            disabled={loading}
           >
-            <Text style={styles.buttonText}>Close</Text>
+            <Text style={[styles.buttonText, { color: '#64748b' }]}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -271,11 +282,43 @@ const styles = StyleSheet.create({
     backgroundColor: '#94a3b8',
   },
   closeButton: {
+    backgroundColor: '#f1f5f9',
     marginTop: 10,
   },
   buttonText: {
     color: '#ffffff',
-    fontWeight: '600',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    zIndex: 50,
+  },
+  loadingBox: {
+    backgroundColor: '#1e293b',
+    padding: 24,
+    borderRadius: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  loadingText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 16,
+  },
+  loadingSubText: {
+    color: '#cbd5e1',
+    fontSize: 14,
+    marginTop: 4,
   },
 });
 

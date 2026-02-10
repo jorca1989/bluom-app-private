@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import AIRoutineModal from '@/components/AIRoutineModal';
+import Tooltip from '@/components/Tooltip';
+import CoachMark from '@/components/CoachMark';
 import {
   View,
   Text,
@@ -15,7 +17,9 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import { useUser as useClerkUser } from '@clerk/clerk-expo';
 import { useMutation, useQuery, useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
@@ -60,7 +64,18 @@ function addDays(date: Date, days: number) {
 
 export default function MoveScreen() {
   const router = useRouter();
+  const [showRoutineCoach, setShowRoutineCoach] = useState(false);
+
+  // Coach marks disabled for production
+  /*
+  useEffect(() => {
+    SecureStore.getItemAsync('bluom_show_coach_marks').then(val => {
+      if (val === 'true') setShowRoutineCoach(true);
+    });
+  }, []);
+  */
   const [showRoutineModal, setShowRoutineModal] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false); // Disabled for production
   const params = useLocalSearchParams<{ openWorkouts?: string }>();
   const insets = useSafeAreaInsets();
 
@@ -79,6 +94,7 @@ export default function MoveScreen() {
   const showFatBurnCardio = fastingHours >= 12 && fastingHours < 18;
 
   const logExerciseEntry = useMutation(api.exercise.logExerciseEntry);
+  const deleteRoutine = useMutation(api.routines.deleteRoutine);
   // Strava sync disabled for store submission (avoid broken OAuth flows / bad links).
   const addStepsEntry = useMutation(api.steps.addStepsEntry);
   const deleteExerciseEntry = useMutation(api.exercise.deleteExerciseEntry);
@@ -269,6 +285,8 @@ export default function MoveScreen() {
     api.steps.getStepsEntriesByDate,
     convexUser?._id ? { userId: convexUser._id, date: currentDate } : 'skip'
   );
+
+  const myRoutines = useQuery(api.routines.listRoutines) || [];
 
   const weekStart = useMemo(() => toIsoDateString(addDays(today, -6)), [today]);
   const weekEnd = currentDate;
@@ -708,6 +726,8 @@ export default function MoveScreen() {
           </TouchableOpacity>
         )}
 
+
+
         {/* Activity Summary */}
         <View style={styles.activitySummary}>
           <View style={styles.summaryCard}>
@@ -911,6 +931,81 @@ export default function MoveScreen() {
             </View>
           )}
         </View>
+
+        {/* My Routines Section (Relocated) */}
+        {myRoutines.length > 0 && (
+          <View style={[styles.sectionContainer, { zIndex: 100, marginBottom: 24 }]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, paddingHorizontal: 24 }}>
+              <Text style={[styles.sectionTitle, { marginBottom: 0, paddingHorizontal: 0 }]}>My Routines</Text>
+              <CoachMark
+                visible={showRoutineCoach}
+                message="Your custom AI routines appear here."
+                onClose={() => {
+                  setShowRoutineCoach(false);
+                  SecureStore.deleteItemAsync('bluom_show_coach_marks');
+                }}
+                position="bottom"
+              />
+            </View>
+            <View style={{ paddingHorizontal: 0, gap: 12 }}>
+              {myRoutines.map((routine: any) => (
+                <View key={routine._id} style={{ borderRadius: 16, overflow: 'hidden', width: 'auto', marginBottom: 8, marginHorizontal: 24 }}>
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={() => {
+                      Alert.alert("Routine", `${routine.name}\n${routine.description || ''}`);
+                    }}
+                  >
+                    <LinearGradient colors={['#4f46e5', '#4338ca']} style={{ padding: 20, borderRadius: 16, minHeight: 110 }}>
+                      <View style={{ flex: 1, marginRight: 12 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                          <Ionicons name="barbell" size={20} color="#fff" />
+                          <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}>{routine.name}</Text>
+                        </View>
+                        <Text style={{ fontSize: 13, color: '#e0e7ff', opacity: 0.9 }}>
+                          {routine.exercises.length} Exercises • {routine.exercises.reduce((acc: number, ex: any) => acc + (ex.sets || 0), 0)} Sets • {routine.estimatedDuration || '45'} min • {routine.estimatedCalories || '300'} kcal
+                        </Text>
+                        <Text style={{ fontSize: 12, color: '#c7d2fe', marginTop: 4, width: '85%' }} numberOfLines={1}>
+                          {routine.exercises.map((e: any) => e.name).join(', ')}
+                        </Text>
+                      </View>
+
+                      {/* Delete Action - Bottom Right Absolute */}
+                      <TouchableOpacity
+                        style={{
+                          position: 'absolute',
+                          bottom: 16,
+                          right: 16,
+                          backgroundColor: 'rgba(255,255,255,0.1)',
+                          padding: 8,
+                          borderRadius: 20,
+                        }}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          Alert.alert(
+                            "Delete Routine",
+                            "Are you sure you want to delete this routine?",
+                            [
+                              { text: "Cancel", style: "cancel" },
+                              {
+                                text: "Delete",
+                                style: "destructive",
+                                onPress: () => deleteRoutine({ routineId: routine._id })
+                              }
+                            ]
+                          );
+                        }}
+                      >
+                        <Ionicons name="trash" size={16} color="#fca5a5" />
+                      </TouchableOpacity>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
 
         {/* Achievements */}
         <View style={styles.card}>
@@ -1524,6 +1619,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 4,
   },
+
+  sectionContainer: { marginBottom: 24, marginTop: 8 },
+  sectionTitle: { fontSize: 18, fontWeight: '700', color: '#1e293b', paddingHorizontal: 20, marginBottom: 12 },
+  routineCard: { width: 160, height: 140, marginRight: 12, borderRadius: 16, overflow: 'hidden' },
+  routineGradient: { flex: 1, padding: 16, justifyContent: 'flex-end' },
+  routineName: { fontSize: 16, fontWeight: 'bold', color: '#fff', marginBottom: 4 },
+  routineStats: { fontSize: 12, color: '#e0e7ff' },
+
   card: {
     backgroundColor: '#ffffff',
     marginHorizontal: 24,

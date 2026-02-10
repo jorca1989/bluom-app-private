@@ -27,7 +27,7 @@ export default function ProfileScreen() {
 
   const handleResetOnboarding = () => {
     Alert.alert(
-      'Restart Onboarding',
+      'Reset/Restart Goal',
       'This will reset your fitness goals and biometric data. You will need to complete the assessment again. Are you sure?',
       [
         { text: 'Cancel', style: 'cancel' },
@@ -60,7 +60,7 @@ export default function ProfileScreen() {
           onPress: async () => {
             try {
               await signOut();
-              router.replace('/(auth)/login');
+              router.replace('/login');
             } catch (error) {
               console.error('Sign out error:', error);
             }
@@ -206,7 +206,7 @@ export default function ProfileScreen() {
               <View style={[styles.menuIconContainer, { backgroundColor: '#fff7ed' }]}>
                 <RefreshCcw size={20} color="#f97316" />
               </View>
-              <Text style={styles.menuItemText}>Restart Onboarding</Text>
+              <Text style={styles.menuItemText}>Reset/Restart Goal</Text>
             </View>
             <Text style={styles.menuItemChevron}>›</Text>
           </TouchableOpacity>
@@ -391,21 +391,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        {convexUser && (
-          <View style={styles.statsSection}>
-            <Text style={styles.statsTitle}>Your Progress</Text>
-            <View style={styles.statsGrid}>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{convexUser?.dailyCalories ?? 0}</Text>
-                <Text style={styles.statLabel}>Daily Calories</Text>
-              </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{(convexUser?.dailyProtein ?? 0)}g</Text>
-                <Text style={styles.statLabel}>Protein</Text>
-              </View>
-            </View>
-          </View>
-        )}
+
       </ScrollView>
     </SafeAreaView >
   );

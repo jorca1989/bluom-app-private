@@ -3,16 +3,17 @@ import 'dotenv/config';
 export default {
     expo: {
         name: "Bluom",
-        slug: "BluomApp",
+        slug: "bolt-expo-nativewind",
         owner: "ggovsaas",
-        version: "1.0.1",
+        version: "1.0.4",
         scheme: "bluom",
         userInterfaceStyle: "automatic",
-        runtimeVersion: "1.0.0", // Fixed here
+        runtimeVersion: "1.0.4",
         ios: {
             bundleIdentifier: "com.jwfca.bluom",
             googleServicesFile: "./GoogleService-Info.plist",
             infoPlist: {
+                ITSAppUsesNonExemptEncryption: false,
                 CFBundleURLTypes: [
                     {
                         CFBundleURLSchemes: [
@@ -27,18 +28,21 @@ export default {
         },
         android: {
             package: "com.jwfca.bluom",
-            versionCode: 10,
-            googleServicesFile: process.env.GOOGLE_SERVICES_JSON || "./google-services.json",
+            versionCode: 34,
+            googleServicesFile: "./google-services.json",
             permissions: [
                 "android.permission.CAMERA",
                 "android.permission.RECORD_AUDIO",
-                "android.permission.health.READ_STEPS",
-                "android.permission.health.WRITE_STEPS",
                 "android.permission.MODIFY_AUDIO_SETTINGS",
                 "android.permission.FOREGROUND_SERVICE",
                 "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
                 "android.permission.WAKE_LOCK"
             ]
+        },
+        splash: {
+            image: "./assets/images/icon.png",
+            resizeMode: "contain",
+            backgroundColor: "#ffffff"
         },
         plugins: [
             "expo-router",
@@ -46,8 +50,9 @@ export default {
             "expo-web-browser",
             "expo-audio",
             "expo-asset",
-            "react-native-health",
+            "expo-splash-screen",
             "@react-native-google-signin/google-signin",
+            "@react-native-community/datetimepicker",
             [
                 "expo-camera",
                 {

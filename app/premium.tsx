@@ -14,6 +14,7 @@ import {
   purchasePackageSafe,
 } from '@/utils/revenuecat';
 import { BlurView } from 'expo-blur';
+import * as SecureStore from 'expo-secure-store';
 
 const { width } = Dimensions.get('window');
 
@@ -25,7 +26,31 @@ const POWER_FEATURES = [
     pro: true
   },
   {
-    icon: '🌸',
+    icon: '👁️',
+    title: 'AI Vision',
+    description: 'Photo-based calorie & macro tracking with instant metabolic analysis',
+    pro: true
+  },
+  {
+    icon: '�',
+    title: 'Bluom University',
+    description: 'Exclusive high-performance protocols & science-backed guides',
+    pro: true
+  },
+  {
+    icon: '🎬',
+    title: 'Guided Video Workouts',
+    description: 'Pro-led sessions for every goal, from HIIT to Yoga',
+    pro: true
+  },
+  {
+    icon: '📊',
+    title: 'Advanced Bio-Analytics',
+    description: 'Deep insights into your recovery, metabolism, and trends',
+    pro: true
+  },
+  {
+    icon: '�🌸',
     title: 'Hormonal Optimization',
     description: 'Unlock full Women\'s/Men\'s Health Hubs with cycle-based recommendations',
     pro: true
@@ -43,12 +68,6 @@ const POWER_FEATURES = [
     pro: true
   },
   {
-    icon: '👁️',
-    title: 'Sugar Vision',
-    description: 'AI-powered scanning for instant metabolic impact analysis',
-    pro: true
-  },
-  {
     icon: '🛒',
     title: 'Auto-Pilot Grocery Sync',
     description: 'Instant shopping lists from your meal plans',
@@ -58,12 +77,6 @@ const POWER_FEATURES = [
     icon: '🧪',
     title: 'Cognitive Lab',
     description: 'Unlimited brain training games & stress-reduction logs',
-    pro: true
-  },
-  {
-    icon: '📚',
-    title: 'The Blueprint Library',
-    description: 'Science-backed protocols for every life stage',
     pro: true
   }
 ];
@@ -174,14 +187,33 @@ export default function PremiumScreen() {
     };
   }
 
+  async function handleDismiss() {
+    try {
+      await SecureStore.deleteItemAsync('bluom_show_premium');
+    } catch (e) {
+      console.log('Error clearing premium flag', e);
+    } finally {
+      router.replace('/(tabs)');
+    }
+  }
+
   let annualMonthlyNote: string | null = null;
+  let annualWeeklyNote: string | null = null;
+
   if (pkgs?.annual?.product) {
-    // monthly cost breakdown (exact math line requested)
+    // monthly cost breakdown
     const monthlyEquivalent = pkgs.annual.product.price / 12;
     annualMonthlyNote = new Intl.NumberFormat(undefined, {
       style: 'currency',
       currency: pkgs.annual.product.currencyCode,
     }).format(monthlyEquivalent);
+
+    // weekly cost breakdown
+    const weeklyEquivalent = pkgs.annual.product.price / 52;
+    annualWeeklyNote = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: pkgs.annual.product.currencyCode,
+    }).format(weeklyEquivalent);
   }
 
   async function purchase(kind: 'monthly' | 'annual') {
@@ -195,11 +227,18 @@ export default function PremiumScreen() {
     }
     setUpgrading(true);
     try {
-      await purchasePackageSafe(pkg);
+      const customerInfo = await purchasePackageSafe(pkg);
+      // purchasePackageSafe returns null if the user cancelled
+      if (!customerInfo) {
+        return;
+      }
+
       Alert.alert('Success', 'Purchase complete. Pro access may take a moment to sync.');
-      router.back();
+      handleDismiss();
     } catch (e: any) {
-      Alert.alert('Purchase failed', e?.message ? String(e.message) : 'Please try again.');
+      if (!e?.userCancelled) {
+        Alert.alert('Purchase failed', e?.message ? String(e.message) : 'Please try again.');
+      }
     } finally {
       setUpgrading(false);
     }
@@ -218,7 +257,7 @@ export default function PremiumScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 8 }]}>
-        <TouchableOpacity style={styles.headerBtn} onPress={() => router.back()} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.headerBtn} onPress={handleDismiss} activeOpacity={0.8}>
           <Ionicons name="close" size={22} color="#1e293b" />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
@@ -232,7 +271,7 @@ export default function PremiumScreen() {
         <View style={[styles.card, { margin: 16 }]}>
           <Text style={styles.proTitle}>You’re already Pro</Text>
           <Text style={styles.proSub}>No upgrade needed.</Text>
-          <TouchableOpacity style={styles.primaryBtn} onPress={() => router.back()} activeOpacity={0.85}>
+          <TouchableOpacity style={styles.primaryBtn} onPress={handleDismiss} activeOpacity={0.85}>
             <Text style={styles.primaryText}>Close</Text>
           </TouchableOpacity>
         </View>
@@ -302,7 +341,7 @@ export default function PremiumScreen() {
             />
             <PlanCard
               title="Annual Pro"
-              subtitle="Save 50% — Only $1.20 per week"
+              subtitle={`Save 50% — Only ${annualWeeklyNote || '$1.20'} per week`}
               price={pkgs?.annual?.product?.priceString ?? '—'}
               priceNote={annualMonthlyNote ? `(${annualMonthlyNote}/mo)` : null}
               popular={true}
@@ -318,8 +357,8 @@ export default function PremiumScreen() {
             </ScrollView>
           </View>
 
-          <TouchableOpacity onPress={() => router.back()} style={styles.notNow} activeOpacity={0.8}>
-            <Text style={styles.notNowText}>Not now</Text>
+          <TouchableOpacity onPress={handleDismiss} style={styles.notNow} activeOpacity={0.8}>
+            <Text style={[styles.notNowText, { textDecorationLine: 'underline' }]}>Continue with basic version</Text>
           </TouchableOpacity>
         </ScrollView>
       )}
@@ -390,7 +429,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
   headerSub: { marginTop: 2, fontSize: 12, fontWeight: '700', color: '#64748b' },
-  
+
   // Value Comparison
   comparisonSection: { marginBottom: 24 },
   comparisonTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a', textAlign: 'center', marginBottom: 16 },
@@ -428,7 +467,7 @@ const styles = StyleSheet.create({
     borderColor: '#d97706',
   },
   pricelessText: { color: '#0f172a', fontWeight: '900', fontSize: 14 },
-  
+
   // Features
   featuresSection: { marginBottom: 24 },
   sectionTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a', marginBottom: 16 },
@@ -438,14 +477,14 @@ const styles = StyleSheet.create({
   iconText: { fontSize: 20 },
   featureTitle: { fontSize: 16, fontWeight: '900', color: '#0f172a', marginBottom: 8 },
   featureDescription: { fontSize: 13, fontWeight: '700', color: '#475569', lineHeight: 18 },
-  
+
   // Pricing
   pricingSection: { marginBottom: 24 },
-  
+
   // Social Proof
   socialProof: { marginBottom: 20 },
   socialProofText: { fontSize: 14, fontWeight: '800', color: '#059669', paddingHorizontal: 20 },
-  
+
   // Cards
   card: {
     backgroundColor: '#ffffff',
@@ -475,7 +514,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   popularPillGold: {
-    backgroundColor: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+    backgroundColor: '#16a34a',
   },
   popularText: { color: '#fff', fontWeight: '900', fontSize: 11 },
   planTitle: { fontSize: 16, fontWeight: '900', color: '#0f172a' },

@@ -29,9 +29,13 @@ export async function configureRevenueCat(appUserId: string) {
   }
   if (configuredForUserId === appUserId) return;
 
-  Purchases.setLogLevel(Purchases.LOG_LEVEL.INFO);
-  Purchases.configure({ apiKey, appUserID: appUserId });
-  configuredForUserId = appUserId;
+  try {
+    Purchases.setLogLevel(Purchases.LOG_LEVEL.INFO);
+    Purchases.configure({ apiKey, appUserID: appUserId });
+    configuredForUserId = appUserId;
+  } catch (e) {
+    console.warn('[revenuecat] Failed to configure Purchases:', e);
+  }
 }
 
 export async function getCustomerInfoSafe(): Promise<CustomerInfo | null> {
@@ -70,7 +74,7 @@ export function pickMonthlyAndAnnualPackages(offering: PurchasesOffering | null)
   all: PurchasesPackage[];
 } {
   if (!offering) return { all: [] };
-  
+
   const pkgs = offering.availablePackages;
 
   const monthlyProductId = process.env.EXPO_PUBLIC_REVENUECAT_MONTHLY_PRODUCT_ID;
@@ -102,7 +106,7 @@ export async function purchasePackageSafe(pkg: PurchasesPackage): Promise<Custom
   } catch (e: any) {
     const msg = String(e?.message ?? '');
     // User cancelled -> not an error for UI
-    if (msg.toLowerCase().includes('cancel')) return null;
+    if (e?.userCancelled || msg.toLowerCase().includes('cancel')) return null;
     throw e;
   }
 }

@@ -5,15 +5,15 @@ export const createRoutine = mutation({
     args: {
         name: v.string(),
         description: v.optional(v.string()),
-        plannedVolume: v.optional(v.float64()),
-        estimatedDuration: v.optional(v.float64()),
-        estimatedCalories: v.optional(v.float64()),
+        plannedVolume: v.optional(v.number()),
+        estimatedDuration: v.optional(v.number()),
+        estimatedCalories: v.optional(v.number()),
         exercises: v.array(v.object({
             name: v.string(),
-            sets: v.float64(),
+            sets: v.number(),
             reps: v.string(),
             weight: v.optional(v.string()),
-            rest: v.optional(v.float64()),
+            rest: v.optional(v.number()),
         })),
     },
     handler: async (ctx, args) => {
@@ -66,5 +66,35 @@ export const listRoutines = query({
             .withIndex("by_user", (q) => q.eq("userId", user._id))
             .order("desc")
             .collect();
+    },
+});
+
+export const deleteRoutine = mutation({
+    args: {
+        routineId: v.id("routines"),
+    },
+    handler: async (ctx, args) => {
+        const userId = await ctx.auth.getUserIdentity();
+        if (!userId) {
+            throw new Error("Unauthenticated call to deleteRoutine");
+        }
+        // Verify ownership? Or just rely on RLS logic if implemented (currently no RLS on delete, assuming client passes correct ID owned by them.
+        // Good practice: check if user owns it.
+        const routine = await ctx.db.get(args.routineId);
+        if (!routine) {
+            throw new Error("Routine not found");
+        }
+
+        // Check ownership
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", userId.subject))
+            .first();
+
+        if (!user || routine.userId !== user._id) {
+            throw new Error("Unauthorized");
+        }
+
+        await ctx.db.delete(args.routineId);
     },
 });

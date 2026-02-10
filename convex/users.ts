@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query, internalQuery } from "./_generated/server";
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.toLowerCase().trim();
 const MASTER_ADMIN_EMAILS = new Set(
@@ -116,6 +116,13 @@ export const getUserByClerkId = query({
  * Get user by ID
  */
 export const getUserById = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.userId);
+  },
+});
+
+export const internalGetUserById = internalQuery({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.userId);

@@ -7,6 +7,7 @@ interface BreathingAnimationProps {
   duration?: number;
   onInhale?: () => void;
   onExhale?: () => void;
+  isPlaying?: boolean;
 }
 
 export default function BreathingAnimation({
@@ -15,13 +16,24 @@ export default function BreathingAnimation({
   duration = 4000,
   onInhale,
   onExhale,
+  isPlaying = true,
 }: BreathingAnimationProps) {
   const scaleAnim = useRef(new Animated.Value(0.6)).current;
   const opacityAnim = useRef(new Animated.Value(0.7)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const isPlayingRef = useRef(isPlaying);
 
   useEffect(() => {
+    isPlayingRef.current = isPlaying;
+    if (!isPlaying) {
+      // Optional: Reset values?
+      return;
+    }
+
+    // Start loop
     const breathingCycle = () => {
+      if (!isPlayingRef.current) return;
+
       Animated.parallel([
         Animated.timing(scaleAnim, {
           toValue: 1,
@@ -34,8 +46,9 @@ export default function BreathingAnimation({
           useNativeDriver: true,
         }),
       ]).start(() => {
+        if (!isPlayingRef.current) return;
         if (onInhale) onInhale();
-        
+
         Animated.parallel([
           Animated.timing(scaleAnim, {
             toValue: 0.6,
@@ -48,21 +61,32 @@ export default function BreathingAnimation({
             useNativeDriver: true,
           }),
         ]).start(() => {
+          if (!isPlayingRef.current) return;
           if (onExhale) onExhale();
           breathingCycle();
         });
       });
     };
 
-    Animated.loop(
+    breathingCycle();
+
+    const pulseLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, { toValue: 1.1, duration: 1000, useNativeDriver: true }),
         Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
       ])
-    ).start();
+    );
 
-    breathingCycle();
-  }, []);
+    if (isPlaying) {
+      pulseLoop.start();
+    } else {
+      pulseLoop.stop();
+    }
+
+    return () => {
+      pulseLoop.stop();
+    };
+  }, [isPlaying]);
 
   return (
     <View style={[styles.container, { width: size, height: size }]}>

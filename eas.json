@@ -11,11 +11,24 @@
     },
     "preview": {
       "distribution": "internal",
-      "channel": "preview"
+      "channel": "preview",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_CONVEX_URL": "https://cheerful-snake-681.convex.cloud",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuYmx1b20uYXBwJA",
+        "EXPO_PUBLIC_CLERK_JWT_TEMPLATE_ID": "jtmp_37ixCZjxhFlM4THbZIBUlZYoFLr"
+      }
     },
     "production": {
       "autoIncrement": true,
-      "channel": "production"
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_CONVEX_URL": "https://cheerful-snake-681.convex.cloud",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuYmx1b20uYXBwJA",
+        "EXPO_PUBLIC_CLERK_JWT_TEMPLATE_ID": "jtmp_37ixCZjxhFlM4THbZIBUlZYoFLr"
+      }
     }
   },
   "submit": {

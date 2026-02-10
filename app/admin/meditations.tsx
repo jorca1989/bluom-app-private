@@ -46,12 +46,15 @@ export default function MeditationsManager() {
         { id: 'focus', name: 'Focus', emoji: '🎯', color: '#3b82f6' },
         { id: 'self-love', name: 'Self-Love', emoji: '💗', color: '#ec4899' },
         { id: 'anxiety', name: 'Anxiety Relief', emoji: '🛡️', color: '#10b981' },
+        { id: 'sovereignty', name: 'Sovereignty & Power', emoji: '👑', color: '#b45309' },
+        { id: 'strategic-mindset', name: 'Strategic Mindset', emoji: '🧠', color: '#7c3aed' },
     ];
 
     const TAGS = [
         'Biohacking', 'Stoicism', 'Psychology', 'Charisma', 'Modern Man',
         'Modern Woman', 'Shadow Work', 'Frame Control', 'Sleep', 'Anxiety',
-        'Focus', 'Morning', 'Evening', 'Weight Loss', 'Muscle'
+        'Focus', 'Morning', 'Evening', 'Weight Loss', 'Muscle',
+        'Machiavelli', 'Dark Psychology'
     ];
 
     const [form, setForm] = useState({

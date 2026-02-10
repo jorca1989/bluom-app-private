@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+
 import {
   View,
   Text,
@@ -8,9 +9,11 @@ import {
   Dimensions,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import { useUser } from '@clerk/clerk-expo';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
@@ -45,6 +48,8 @@ import {
 } from 'lucide-react-native';
 import { CircularProgress } from '@/components/CircularProgress';
 import { useAccessControl } from '@/hooks/useAccessControl';
+import CoachMark from '@/components/CoachMark';
+import NorthStarWidget from '@/components/NorthStarWidget';
 
 
 
@@ -58,7 +63,18 @@ export default function IndexScreen() {
   const { user: clerkUser } = useUser();
   const { isLoading: isAccessLoading } = useAccessControl();
   const [showAllDiscovery, setShowAllDiscovery] = useState(false);
+  const [showBlueprintCoach, setShowBlueprintCoach] = useState(false);
 
+  useEffect(() => {
+    // Coach marks disabled
+    /*
+    SecureStore.getItemAsync('bluom_show_coach_marks').then(val => {
+      if (val === 'true') {
+        setShowBlueprintCoach(true);
+      }
+    });
+    */
+  }, []);
   const todayISO = useMemo(() => getTodayISO(), []);
 
   // -- Queries --
@@ -151,7 +167,7 @@ export default function IndexScreen() {
     // { Icon: Music, label: 'Radio', path: '/music-hub', color: '#8b5cf6', bgColor: '#f5f3ff' }, // hidden per request
     { Icon: Timer, label: 'Focus Mode', path: '/focus-mode', color: '#3b82f6', bgColor: '#eff6ff' },
     { Icon: Utensils, label: 'Recipes', path: '/recipes', color: '#f97316', bgColor: '#fff7ed' },
-    // { Icon: ShoppingBag, label: 'Store', path: '/Shop', color: '#2563eb', bgColor: '#eff6ff' }, // hidden per request
+    { Icon: ShoppingBag, label: 'Shop', path: '/shop', color: '#2563eb', bgColor: '#eff6ff' },
     { Icon: Play, label: 'Workouts', path: '/workouts', color: '#16a34a', bgColor: '#f0fdf4' },
     { Icon: TrendingDown, label: 'Metabolic Hub', path: '/sugar-dashboard', color: '#ef4444', bgColor: '#fee2e2' },
   ] as const, []);
@@ -253,9 +269,24 @@ export default function IndexScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* -- 1. Vitality Header -- */}
         <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) }]}>
-          <Text style={styles.sectionTitle}>Vitality Score TEST</Text>
+          <Image
+            source={require('../../assets/images/logo.png')}
+            style={{ width: 100, height: 32, marginBottom: 16 }}
+            resizeMode="contain"
+          />
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.sectionTitle}>Vitality Score</Text>
+            <CoachMark
+              visible={showBlueprintCoach}
+              message="New! Your AI Blueprint starts here."
+              onClose={() => {
+                setShowBlueprintCoach(false);
+                SecureStore.deleteItemAsync('bluom_show_coach_marks');
+              }}
+              position="bottom"
+            />
+          </View>
           <View style={styles.vitalityContainer}>
             <View style={styles.vitalityCircleWrap}>
               <CircularProgress
@@ -277,6 +308,8 @@ export default function IndexScreen() {
             </Text>
           </View>
         </View>
+
+
 
         {/* -- 2. Today's Balance -- */}
         <View style={styles.card}>
@@ -407,6 +440,7 @@ export default function IndexScreen() {
             ))}
           </View>
 
+
           <TouchableOpacity
             onPress={() => setShowAllDiscovery(!showAllDiscovery)}
             style={styles.toggleBtn}
@@ -421,8 +455,14 @@ export default function IndexScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* -- North Star -- */}
+        <NorthStarWidget
+          goal={convexUser?.twelveMonthGoal}
+          onPress={() => router.push('/wellness?showLifeGoals=true')}
+        />
+
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
 

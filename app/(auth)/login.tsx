@@ -103,80 +103,71 @@ export default function LoginScreen() {
     if (!isLoaded) return;
     // Hard guard against same-tick double taps before React state updates propagate.
     if (submitLockRef.current || loading) return;
+
     submitLockRef.current = true;
     setLoading(true);
+    setError('');
 
-    if (!email || !password) {
-      setError('Please enter both email and password');
-      setLoading(false);
-      submitLockRef.current = false;
-      return;
-    }
+    try {
+      if (!email || !password) {
+        setError('Please enter both email and password');
+        return;
+      }
 
-    console.log('Login Attempt:', { email, password });
+      console.log('Login Attempt:', { email, password });
 
-    // Prevent "zombie" session errors: don't start a new sign-in if one is already in progress.
-    // Clerk uses `signIn.status` to track an ongoing sign-in attempt.
-    if ((signIn as any)?.status) {
-      const status = (signIn as any)?.status;
-      console.warn('[Auth] signIn is already in progress', status);
-      // Bypass 2FA dead-end: if Clerk says we need a second factor, request an email code.
-      if (status === 'needs_second_factor') {
-        setLoading(false);
-        submitLockRef.current = false;
+      // Handle stale sign-in sessions.
+      // After a failed password attempt, Clerk leaves signIn.status as 'needs_first_factor'.
+      // We only guard against 'needs_second_factor' (MFA). For everything else, we proceed
+      // with signIn.create() which will start a fresh attempt.
+      if ((signIn as any)?.status === 'needs_second_factor') {
+        console.warn('[Auth] signIn requires second factor');
         try {
           await prepareEmailCodeMfa();
         } catch (e) {
-          // prepareEmailCodeMfa handles alerts; swallow to avoid crashes.
           console.error('[Auth] prepareEmailCodeMfa failed:', e);
         }
         return;
       }
-      setLoading(false);
-      submitLockRef.current = false;
-      return;
-    }
 
-    try {
-      setError('');
+      try {
+        const result = await signIn.create({
+          identifier: email,
+          password,
+        });
 
-      const result = await signIn.create({
-        identifier: email,
-        password,
-      });
-
-      if (result.status === 'complete') {
-        await setActive({ session: result.createdSessionId });
-        // Web: take admins straight to the admin dashboard.
-        if (Platform.OS === 'web') {
-          router.replace(isAdminEmail(email) ? '/admin' : '/');
-        }
-      } else {
-        console.warn('[Auth] signIn.create returned non-complete status:', result.status);
-        if (result.status === 'needs_second_factor') {
-          try {
-            await prepareEmailCodeMfa();
-          } catch (e) {
-            console.error('[Auth] prepareEmailCodeMfa failed:', e);
+        if (result.status === 'complete') {
+          await setActive({ session: result.createdSessionId });
+          // Web: take admins straight to the admin dashboard.
+          if (Platform.OS === 'web') {
+            router.replace(isAdminEmail(email) ? '/admin' : '/');
           }
         } else {
-          setError(`Login incomplete (${result.status}). Please try again.`);
+          console.warn('[Auth] signIn.create returned non-complete status:', result.status);
+          if (result.status === 'needs_second_factor') {
+            try {
+              await prepareEmailCodeMfa();
+            } catch (e) {
+              console.error('[Auth] prepareEmailCodeMfa failed:', e);
+            }
+          } else {
+            setError(`Login incomplete (${result.status}). Please try again.`);
+          }
         }
-      }
-    } catch (err: any) {
-      const code = err?.errors?.[0]?.code;
-      const message = err?.errors?.[0]?.message ?? err?.message ?? '';
-      const longMessage = err?.errors?.[0]?.longMessage;
+      } catch (err: any) {
+        const code = err?.errors?.[0]?.code;
+        const message = err?.errors?.[0]?.message ?? err?.message ?? '';
+        const longMessage = err?.errors?.[0]?.longMessage;
 
-      // If Clerk is requiring CAPTCHA or thinks fields are missing, log full object for debugging.
-      if (String(code).includes('identifier') || String(code).includes('password') || String(message).toLowerCase().includes('identifier') || String(message).toLowerCase().includes('password')) {
-        console.error('Login error (full):', err);
-      } else {
-        console.error('Login error:', err);
-      }
+        if (String(code).includes('identifier') || String(code).includes('password') || String(message).toLowerCase().includes('identifier') || String(message).toLowerCase().includes('password')) {
+          console.error('Login error (full):', err);
+        } else {
+          console.error('Login error:', err);
+        }
 
-      Alert.alert('Login Failed', longMessage || message || 'Failed to sign in.');
-      setError(err.errors?.[0]?.message || 'Failed to sign in. Please check your credentials.');
+        Alert.alert('Login Failed', longMessage || message || 'Failed to sign in.');
+        setError(err.errors?.[0]?.message || 'Failed to sign in. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
       submitLockRef.current = false;
@@ -318,7 +309,7 @@ export default function LoginScreen() {
                     ) : (
                       <>
                         <LogIn size={20} color="#ffffff" />
-                        <Text style={styles.primaryButtonText}>Sign In</Text>
+                        <Text style={styles.primaryButtonText}>Login</Text>
                       </>
                     )}
                   </LinearGradient>
@@ -329,8 +320,8 @@ export default function LoginScreen() {
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => router.push('/(auth)/signup')} disabled={loading}>
-              <Text style={styles.footerLink}>Sign Up</Text>
+            <TouchableOpacity onPress={() => router.push('/signup')} disabled={loading}>
+              <Text style={styles.footerLink}>Create Account</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

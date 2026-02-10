@@ -14,7 +14,7 @@ import {
     Platform
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAction, useMutation } from 'convex/react';
+import { useAction, useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { BlurView } from 'expo-blur';
 
@@ -24,6 +24,8 @@ interface AIRoutineModalProps {
     visible: boolean;
     onClose: () => void;
 }
+
+const workoutCategories = ['All', 'Strength', 'Cardio', 'HIIT', 'Flexibility'] as const;
 
 export default function AIRoutineModal({ visible, onClose }: AIRoutineModalProps) {
     const [activeTab, setActiveTab] = useState<'ai' | 'manual'>('ai');
@@ -40,9 +42,18 @@ export default function AIRoutineModal({ visible, onClose }: AIRoutineModalProps
     const [manualDesc, setManualDesc] = useState('');
     const [manualExercises, setManualExercises] = useState<any[]>([]);
 
+    // Exercise Picker State
+    const [showPicker, setShowPicker] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('All');
+
     // Convex Hooks
     const generateRoutine = useAction(api.routine_agent.generateRoutine);
     const createRoutine = useMutation(api.routines.createRoutine);
+    const exerciseLibrary = useQuery(api.exercises.list, {
+        search: searchQuery || undefined,
+        category: selectedCategory === 'All' ? undefined : selectedCategory
+    }) || [];
 
     const handleGenerate = async () => {
         if (!goal.trim()) {
@@ -84,19 +95,33 @@ export default function AIRoutineModal({ visible, onClose }: AIRoutineModalProps
             setGoal('');
             setManualName('');
             setManualExercises([]);
+            setManualDesc('');
         } catch (e: any) {
             Alert.alert("Error", e.message || "Failed to save routine.");
         }
     };
 
-    // Helper for manual mode (simplified for demo)
-    const addManualExercise = () => {
-        setManualExercises([...manualExercises, { name: '', sets: 3, reps: '10', weight: '', rest: 60 }]);
+    const addManualExercise = (exercise: any) => {
+        setManualExercises([...manualExercises, {
+            name: typeof exercise.name === 'object' ? exercise.name.en : exercise.name,
+            sets: 3,
+            reps: '10',
+            weight: '',
+            rest: 60,
+            _id: exercise._id
+        }]);
+        setShowPicker(false);
     };
 
     const updateManualExercise = (index: number, field: string, value: any) => {
         const updated = [...manualExercises];
         updated[index] = { ...updated[index], [field]: value };
+        setManualExercises(updated);
+    };
+
+    const removeManualExercise = (index: number) => {
+        const updated = [...manualExercises];
+        updated.splice(index, 1);
         setManualExercises(updated);
     };
 
@@ -165,15 +190,13 @@ export default function AIRoutineModal({ visible, onClose }: AIRoutineModalProps
                                         />
 
                                         <TouchableOpacity
-                                            style={[styles.button, isGenerating && styles.buttonDisabled]}
-                                            onPress={handleGenerate}
-                                            disabled={isGenerating}
+                                            style={[styles.button, styles.buttonDisabled]} // Always disabled style
+                                            onPress={() => {
+                                                Alert.alert("Coming Soon", "We are fine-tuning our AI engine to bring you the best routines. Check back soon!", [{ text: "OK" }]);
+                                            }}
+                                            activeOpacity={0.7}
                                         >
-                                            {isGenerating ? (
-                                                <ActivityIndicator color="#fff" />
-                                            ) : (
-                                                <Text style={styles.buttonText}>Generate with Gemini</Text>
-                                            )}
+                                            <Text style={styles.buttonText}>Generate with Gemini (Coming Soon)</Text>
                                         </TouchableOpacity>
                                     </>
                                 ) : (
@@ -225,75 +248,150 @@ export default function AIRoutineModal({ visible, onClose }: AIRoutineModalProps
                             </View>
                         ) : (
                             <View>
-                                <Text style={styles.label}>Routine Name</Text>
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="e.g. My Upper Body Blast"
-                                    value={manualName}
-                                    onChangeText={setManualName}
-                                />
-
-                                <Text style={styles.label}>Description</Text>
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="Optional description..."
-                                    value={manualDesc}
-                                    onChangeText={setManualDesc}
-                                />
-
-                                <Text style={styles.sectionHeader}>Exercises</Text>
-                                {manualExercises.map((ex, idx) => (
-                                    <View key={idx} style={styles.manualExerciseCard}>
-                                        <TextInput
-                                            style={[styles.input, { marginBottom: 8 }]}
-                                            placeholder="Exercise Name"
-                                            value={ex.name}
-                                            onChangeText={(v) => updateManualExercise(idx, 'name', v)}
-                                        />
-                                        <View style={{ flexDirection: 'row', gap: 8 }}>
-                                            <TextInput
-                                                style={[styles.input, { flex: 1 }]}
-                                                placeholder="Sets"
-                                                keyboardType="numeric"
-                                                value={String(ex.sets)}
-                                                onChangeText={(v) => updateManualExercise(idx, 'sets', Number(v))}
-                                            />
-                                            <TextInput
-                                                style={[styles.input, { flex: 1 }]}
-                                                placeholder="Reps"
-                                                value={ex.reps}
-                                                onChangeText={(v) => updateManualExercise(idx, 'reps', v)}
-                                            />
+                                {showPicker ? (
+                                    <View style={{ flex: 1 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                                            <TouchableOpacity onPress={() => setShowPicker(false)} style={{ padding: 8 }}>
+                                                <Ionicons name="arrow-back" size={24} color="#1e293b" />
+                                            </TouchableOpacity>
+                                            <Text style={styles.sectionHeader}>Select Exercise</Text>
                                         </View>
+
+                                        <TextInput
+                                            style={[styles.input, { marginBottom: 12 }]}
+                                            placeholder="Search exercises..."
+                                            value={searchQuery}
+                                            onChangeText={setSearchQuery}
+                                        />
+
+                                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ maxHeight: 40, marginBottom: 12 }}>
+                                            {workoutCategories.map(cat => (
+                                                <TouchableOpacity
+                                                    key={cat}
+                                                    style={[styles.categoryChip, selectedCategory === cat && styles.categoryChipActive]}
+                                                    onPress={() => setSelectedCategory(cat)}
+                                                >
+                                                    <Text style={[styles.categoryChipText, selectedCategory === cat && styles.categoryChipTextActive]}>{cat}</Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </ScrollView>
+
+                                        <ScrollView style={{ maxHeight: 400 }}>
+                                            {exerciseLibrary?.map((ex: any) => (
+                                                <TouchableOpacity
+                                                    key={ex._id}
+                                                    style={styles.exerciseResultItem}
+                                                    onPress={() => addManualExercise(ex)}
+                                                >
+                                                    <View style={{ flex: 1 }}>
+                                                        <Text style={styles.exerciseName}>{typeof ex.name === 'object' ? ex.name.en : ex.name}</Text>
+                                                        <Text style={styles.exerciseDetails}>{ex.category} • {ex.muscleGroups?.join(', ')}</Text>
+                                                    </View>
+                                                    <Ionicons name="add-circle" size={24} color="#2563eb" />
+                                                </TouchableOpacity>
+                                            ))}
+                                            {exerciseLibrary?.length === 0 && (
+                                                <Text style={{ textAlign: 'center', color: '#64748b', marginTop: 20 }}>No exercises found.</Text>
+                                            )}
+                                        </ScrollView>
                                     </View>
-                                ))}
+                                ) : (
+                                    <>
+                                        <Text style={styles.label}>Routine Name</Text>
+                                        <TextInput
+                                            style={styles.input}
+                                            placeholder="e.g. My Upper Body Blast"
+                                            value={manualName}
+                                            onChangeText={setManualName}
+                                        />
 
-                                <TouchableOpacity style={styles.addButton} onPress={addManualExercise}>
-                                    <Ionicons name="add" size={20} color="#2563eb" />
-                                    <Text style={styles.addButtonText}>Add Exercise</Text>
-                                </TouchableOpacity>
+                                        <Text style={styles.label}>Description</Text>
+                                        <TextInput
+                                            style={styles.input}
+                                            placeholder="Optional description..."
+                                            value={manualDesc}
+                                            onChangeText={setManualDesc}
+                                        />
 
-                                <View style={{ height: 20 }} />
+                                        <Text style={styles.sectionHeader}>Exercises</Text>
+                                        {manualExercises.map((ex, idx) => (
+                                            <View key={idx} style={styles.manualExerciseCard}>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+                                                    <Text style={{ fontWeight: '600', fontSize: 16 }}>{ex.name}</Text>
+                                                    <TouchableOpacity onPress={() => removeManualExercise(idx)}>
+                                                        <Ionicons name="trash" size={18} color="#ef4444" />
+                                                    </TouchableOpacity>
+                                                </View>
+                                                <View style={{ flexDirection: 'row', gap: 8 }}>
+                                                    <View style={{ flex: 1 }}>
+                                                        <Text style={styles.metaText}>Sets</Text>
+                                                        <TextInput
+                                                            style={styles.input}
+                                                            placeholder="Sets"
+                                                            keyboardType="numeric"
+                                                            value={String(ex.sets)}
+                                                            onChangeText={(v) => updateManualExercise(idx, 'sets', Number(v))}
+                                                        />
+                                                    </View>
+                                                    <View style={{ flex: 1 }}>
+                                                        <Text style={styles.metaText}>Reps</Text>
+                                                        <TextInput
+                                                            style={styles.input}
+                                                            placeholder="Reps"
+                                                            value={ex.reps}
+                                                            onChangeText={(v) => updateManualExercise(idx, 'reps', v)}
+                                                        />
+                                                    </View>
+                                                    <View style={{ flex: 1 }}>
+                                                        <Text style={styles.metaText}>Weight</Text>
+                                                        <TextInput
+                                                            style={styles.input}
+                                                            placeholder="kg"
+                                                            value={ex.weight}
+                                                            onChangeText={(v) => updateManualExercise(idx, 'weight', v)}
+                                                        />
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        ))}
 
-                                <TouchableOpacity
-                                    style={styles.button}
-                                    onPress={() => {
-                                        if (!manualName.trim()) {
-                                            Alert.alert("Error", "Please enter a routine name.");
-                                            return;
-                                        }
-                                        handleSave({
-                                            name: manualName,
-                                            description: manualDesc,
-                                            exercises: manualExercises,
-                                            plannedVolume: manualExercises.reduce((acc, ex) => acc + ex.sets, 0),
-                                            estimatedDuration: manualExercises.length * 5, // Rough estimate
-                                            estimatedCalories: manualExercises.length * 30, // Rough estimate
-                                        });
-                                    }}
-                                >
-                                    <Text style={styles.buttonText}>Save Manual Routine</Text>
-                                </TouchableOpacity>
+                                        <TouchableOpacity style={styles.addButton} onPress={() => setShowPicker(true)}>
+                                            <Ionicons name="search" size={20} color="#2563eb" />
+                                            <Text style={styles.addButtonText}>Find Exercise</Text>
+                                        </TouchableOpacity>
+
+                                        <View style={{ height: 20 }} />
+
+                                        <TouchableOpacity
+                                            style={styles.button}
+                                            onPress={() => {
+                                                if (!manualName.trim()) {
+                                                    Alert.alert("Error", "Please enter a routine name.");
+                                                    return;
+                                                }
+                                                const calculatedDuration = manualExercises.reduce((acc, ex) => acc + ((ex.sets || 1) * 3), 0); // ~3 mins per set
+                                                const calculatedCalories = manualExercises.reduce((acc, ex) => {
+                                                    const sets = ex.sets || 1;
+                                                    const met = ex.met || 4; // Default MET
+                                                    // Est: MET * 3.5 * 70kg / 200 * duration(mins)
+                                                    // Simplified: sets * 3mins * met * 1.2
+                                                    return acc + (sets * 3 * met * 1.2);
+                                                }, 0);
+
+                                                handleSave({
+                                                    name: manualName,
+                                                    description: manualDesc,
+                                                    exercises: manualExercises,
+                                                    plannedVolume: manualExercises.reduce((acc, ex) => acc + (ex.sets || 0), 0),
+                                                    estimatedDuration: Math.round(calculatedDuration),
+                                                    estimatedCalories: Math.round(calculatedCalories),
+                                                });
+                                            }}
+                                        >
+                                            <Text style={styles.buttonText}>Save Manual Routine</Text>
+                                        </TouchableOpacity>
+                                    </>
+                                )}
                             </View>
                         )}
                     </ScrollView>
@@ -506,5 +604,33 @@ const styles = StyleSheet.create({
     addButtonText: {
         color: '#2563eb',
         fontWeight: '600',
-    }
+    },
+    categoryChip: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
+        backgroundColor: '#f1f5f9',
+        marginRight: 8,
+    },
+    categoryChipActive: {
+        backgroundColor: '#2563eb',
+    },
+    categoryChipText: {
+        fontSize: 14,
+        color: '#64748b',
+        fontWeight: '500',
+    },
+    categoryChipTextActive: {
+        color: '#ffffff',
+    },
+    exerciseResultItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 12,
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        marginBottom: 8,
+        borderWidth: 1,
+        borderColor: '#f1f5f9',
+    },
 });
