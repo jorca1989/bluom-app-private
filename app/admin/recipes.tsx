@@ -404,28 +404,8 @@ export default function RecipesManager() {
                             value={newRecipe.instructionsText}
                             onChangeText={(t) => setNewRecipe((p) => ({ ...p, instructionsText: t }))}
                         />
-                        <Text style={styles.label}>Tags</Text>
-                        <View style={styles.tagContainer}>
-                            {['Biohacking', 'Stoicism', 'Psychology', 'Charisma', 'Modern Man', 'Modern Woman', 'Shadow Work', 'Frame Control', 'Weight Loss', 'Muscle'].map(tag => {
-                                // @ts-ignore
-                                const selected = (newRecipe.tags || []).includes(tag);
-                                return (
-                                    <TouchableOpacity
-                                        key={tag}
-                                        style={[styles.chip, selected && styles.chipSelected]}
-                                        onPress={() => {
-                                            const currentTags = (newRecipe.tags || []) as string[];
-                                            // @ts-ignore
-                                            if (selected) setNewRecipe(p => ({ ...p, tags: currentTags.filter(t => t !== tag) }));
-                                            // @ts-ignore
-                                            else setNewRecipe(p => ({ ...p, tags: [...currentTags, tag] }));
-                                        }}
-                                    >
-                                        <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{tag}</Text>
-                                    </TouchableOpacity>
-                                );
-                            })}
-                        </View>
+
+
 
                     </ScrollView>
                 </View>
