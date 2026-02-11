@@ -8,7 +8,7 @@ export default {
         version: "1.0.4",
         scheme: "bluom",
         userInterfaceStyle: "automatic",
-        runtimeVersion: "1.0.4",
+        runtimeVersion: "1.0.5",
         ios: {
             bundleIdentifier: "com.jwfca.bluom",
             googleServicesFile: "./GoogleService-Info.plist",
@@ -28,7 +28,7 @@ export default {
         },
         android: {
             package: "com.jwfca.bluom",
-            versionCode: 34,
+            versionCode: 38,
             googleServicesFile: "./google-services.json",
             permissions: [
                 "android.permission.CAMERA",
@@ -43,6 +43,11 @@ export default {
             image: "./assets/images/icon.png",
             resizeMode: "contain",
             backgroundColor: "#ffffff"
+        },
+        web: {
+            bundler: "metro",
+            output: "single",
+            favicon: "./assets/images/icon.png"
         },
         plugins: [
             "expo-router",
