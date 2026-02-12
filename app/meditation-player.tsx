@@ -178,8 +178,14 @@ export default function MeditationPlayerScreen({
   const onPlaybackStatusUpdate = useCallback((status: AVPlaybackStatus) => {
     if (!status.isLoaded) return;
 
-    // Update position (skip if user is dragging the slider)
-    if (!isSeeking) {
+    // 1. Only update isPlaying if it actually changed to prevent "blinking"
+    if (status.isPlaying !== isPlaying) {
+      setIsPlaying(status.isPlaying);
+    }
+
+    // 2. Fix the "Dot jumping to 0"
+    // If we are seeking, or if the engine randomly reports 0 while it should be playing, IGNORE it.
+    if (!isSeeking && status.positionMillis > 0) {
       setPositionMs(status.positionMillis);
     }
 
@@ -188,13 +194,11 @@ export default function MeditationPlayerScreen({
       setDurationMs(status.durationMillis);
     }
 
-    setIsPlaying(status.isPlaying);
-
     // Track finished naturally
     if (status.didJustFinish && !status.isLooping) {
       handleComplete();
     }
-  }, [isSeeking]);
+  }, [isSeeking, isPlaying]);
 
   // ─── Load sound ──────────────────────────────────────────────
   const loadSound = useCallback(async () => {
@@ -388,7 +392,6 @@ export default function MeditationPlayerScreen({
                   source={{ uri: coverImage }}
                   style={styles.coverImage}
                   contentFit="cover"
-                  transition={1000}
                 />
               ) : (
                 <>

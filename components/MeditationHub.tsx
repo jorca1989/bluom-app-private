@@ -20,6 +20,7 @@ import { useRouter } from 'expo-router';
 import { SoundEffect, triggerSound } from '../utils/soundEffects';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getBottomContentPadding } from '@/utils/layout';
+import { Image } from 'expo-image';
 import {
   Moon, Sun, Target, Heart, Shield, Play, Crown, Brain, Wind
 } from 'lucide-react-native';
@@ -108,6 +109,9 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
   const displaySessions = sessions || fallbackSessions;
 
   const handleStartSession = (session: any) => {
+    if (session.coverImage) {
+      Image.prefetch(session.coverImage);
+    }
     setActiveSession({
       ...session,
     });

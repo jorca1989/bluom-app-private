@@ -53,7 +53,7 @@ export default function RecipesManager() {
         carbs: '0',
         fat: '0',
         ingredientsText: '',
-        ingredientsText: '',
+
         instructionsText: '',
         tags: [] as string[],
         status: 'published',
@@ -73,7 +73,7 @@ export default function RecipesManager() {
             fat: '0',
             ingredientsText: '',
             instructionsText: '',
-            instructionsText: '',
+
             tags: [],
             status: 'published',
         });
@@ -128,7 +128,7 @@ export default function RecipesManager() {
                 fat: Number(newRecipe.fat || 0) || 0,
                 ingredients: parseLines(newRecipe.ingredientsText),
                 instructions: parseLines(newRecipe.instructionsText),
-                instructions: parseLines(newRecipe.instructionsText),
+
                 tags: newRecipe.tags,
                 status: newRecipe.status,
                 isPremium: false,
@@ -198,31 +198,33 @@ export default function RecipesManager() {
                         <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#64748b' }}>DRAFT</Text>
                     </View>
                 )}
-            </View>
-            <View style={styles.recipeMeta}>
-                <View style={styles.metaItem}>
-                    <Flame size={12} color="#f59e0b" />
-                    <Text style={styles.metaText}>{item.calories} kcal</Text>
-                </View>
-                <View style={styles.metaItem}>
-                    <Clock size={12} color="#64748b" />
-                    <Text style={styles.metaText}>{item.cookTimeMinutes} min</Text>
-                </View>
-                {item.isPremium && (
-                    <View style={styles.premiumBadge}>
-                        <Text style={styles.premiumText}>PRO</Text>
+
+                <View style={styles.recipeMeta}>
+                    <View style={styles.metaItem}>
+                        <Flame size={12} color="#f59e0b" />
+                        <Text style={styles.metaText}>{item.calories} kcal</Text>
                     </View>
-                )}
-            </View>
-            <View style={styles.macroRow}>
-                <View style={styles.macroPill}>
-                    <Text style={styles.macroPillText}>P: {item.protein}g</Text>
+                    <View style={styles.metaItem}>
+                        <Clock size={12} color="#64748b" />
+                        <Text style={styles.metaText}>{item.cookTimeMinutes} min</Text>
+                    </View>
+                    {item.isPremium && (
+                        <View style={styles.premiumBadge}>
+                            <Text style={styles.premiumText}>PRO</Text>
+                        </View>
+                    )}
                 </View>
-                <View style={styles.macroPill}>
-                    <Text style={styles.macroPillText}>C: {item.carbs}g</Text>
-                </View>
-                <View style={styles.macroPill}>
-                    <Text style={styles.macroPillText}>F: {item.fat}g</Text>
+
+                <View style={styles.macroRow}>
+                    <View style={styles.macroPill}>
+                        <Text style={styles.macroPillText}>P: {item.protein}g</Text>
+                    </View>
+                    <View style={styles.macroPill}>
+                        <Text style={styles.macroPillText}>C: {item.carbs}g</Text>
+                    </View>
+                    <View style={styles.macroPill}>
+                        <Text style={styles.macroPillText}>F: {item.fat}g</Text>
+                    </View>
                 </View>
             </View>
         </View>

@@ -205,6 +205,9 @@ export default function MeditationsManager() {
                             <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#64748b' }}>DRAFT</Text>
                         </View>
                     )}
+                    <TouchableOpacity onPress={() => handleEdit(item)}>
+                        <FilePen size={20} color="#64748b" />
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => handleDelete(item._id, item.title)}>
                         <X size={20} color="#ef4444" />
                     </TouchableOpacity>
