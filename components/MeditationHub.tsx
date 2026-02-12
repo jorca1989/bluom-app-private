@@ -108,7 +108,9 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
   const displaySessions = sessions || fallbackSessions;
 
   const handleStartSession = (session: any) => {
-    setActiveSession(session);
+    setActiveSession({
+      ...session,
+    });
     setShowMeditationPlayer(true);
   };
 

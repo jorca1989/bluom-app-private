@@ -382,6 +382,7 @@ export default function MeditationPlayerScreen({
             <View style={{ marginBottom: 40, alignItems: 'center' }}>
               {coverImage ? (
                 <Image
+                  key={coverImage}
                   source={{ uri: coverImage }}
                   style={styles.coverImage}
                   contentFit="cover"
