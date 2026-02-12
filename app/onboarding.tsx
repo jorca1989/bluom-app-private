@@ -260,7 +260,12 @@ const STEP_GROUPS: StepGroup[] = [
         id: 'mealFrequency',
         question: "Meals Per Day",
         type: 'select',
-        options: ['2 meals', '3 meals', '4-5 meals', '6+ meals', 'Fasting']
+        options: [
+          { label: '2 meals (Intermittent Fasting)', value: '2' },
+          { label: '3 meals (Standard / IF)', value: '3' },
+          { label: '4-5 meals (High Performance)', value: '4' },
+          { label: '6+ meals (Hyper-Metabolic)', value: '6' },
+        ]
       },
       {
         id: 'peakEnergy',
@@ -301,7 +306,7 @@ const WELCOME_SLIDES = [
     id: '3',
     title: 'Your Blueprint',
     subtitle: 'Ready to Evolve?',
-    description: 'Answer a few quick questions to get your custom nutrition plan and workout recommendations.',
+    description: 'Answer a few quick questions to unlock your blueprint for Life Optimization & Performance Architecture.',
     icon: Sparkles,
     colors: ['#2563EB', '#1d4ed8'],
     bgColor: '#EFF6FF',
@@ -621,6 +626,8 @@ export default function OnboardingScreen() {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
+        initialNumToRender={3}
+        windowSize={5}
         onViewableItemsChanged={useRef(({ viewableItems }: any) => {
           if (viewableItems[0]) setWelcomeIndex(viewableItems[0].index);
         }).current}
@@ -632,17 +639,17 @@ export default function OnboardingScreen() {
             ) : item.id === '2' ? (
               <View style={{ marginBottom: 40, flexDirection: 'row', gap: 16 }}>
                 <View style={[styles.pillarCard, { backgroundColor: '#dbeafe', borderColor: '#2563eb' }]}>
-                  <Ionicons name="sunny" size={32} color="#2563eb" />
+                  <Text style={{ fontSize: 30 }}>🌞</Text>
                   <Text style={[styles.pillarText, { color: '#2563eb' }]}>Nutrition</Text>
                   <Text style={{ fontSize: 10, textAlign: 'center', paddingHorizontal: 4 }}>Precision energy for your specific metabolism.</Text>
                 </View>
                 <View style={[styles.pillarCard, { backgroundColor: '#dbeafe', borderColor: '#2563eb' }]}>
-                  <Ionicons name="fitness" size={32} color="#2563eb" />
+                  <Text style={{ fontSize: 30 }}>💪</Text>
                   <Text style={[styles.pillarText, { color: '#2563eb' }]}>Move</Text>
                   <Text style={{ fontSize: 10, textAlign: 'center', paddingHorizontal: 4 }}>Workouts that evolve with your progress.</Text>
                 </View>
                 <View style={[styles.pillarCard, { backgroundColor: '#dbeafe', borderColor: '#2563eb' }]}>
-                  <Ionicons name="leaf" size={32} color="#2563eb" />
+                  <Text style={{ fontSize: 30 }}>🧠</Text>
                   <Text style={[styles.pillarText, { color: '#2563eb' }]}>Mind</Text>
                   <Text style={{ fontSize: 10, textAlign: 'center', paddingHorizontal: 4 }}>The cognitive foundation for long-term consistency.</Text>
                 </View>

@@ -30,9 +30,9 @@ interface GamesHubProps {
 }
 
 import {
-  Zap, Wind, Brain, Activity, Search, List, ArrowUpCircle, Waves, Repeat, Eye,
-  Files, MousePointer, Timer, Triangle, Droplets, Palette, Music, Coffee, Grid, Type,
-  Hash, BookOpen, PenTool, Hand, Watch, Compass, Mic, Move
+  Zap, Activity, Search, List, ArrowUpCircle, Waves, Repeat, Eye,
+  Files, MousePointer, Droplets, Palette, Coffee, Grid, Type,
+  Hash, PenTool, Hand, Compass, Mic
 } from 'lucide-react-native';
 
 type GameDef = {
@@ -47,11 +47,7 @@ type GameDef = {
 
 const games: GameDef[] = [
   { id: 'reaction', name: 'Wait for Green', icon: Zap, color: '#10b981', description: 'Test reaction time', implemented: true },
-  { id: 'breathing', name: 'Breath Match', icon: Wind, color: '#06b6d4', description: 'Match breathing rhythm', implemented: true },
-  { id: 'memory', name: 'Memory Path', icon: Brain, color: '#a855f7', description: 'Remember sequences', implemented: true },
   { id: 'balance', name: 'Balance', icon: Activity, color: '#f97316', description: 'Keep centered', implemented: true },
-
-  // Restored/Refined
   { id: 'spot-difference', name: 'Spot Difference', icon: Search, color: '#6366f1', description: 'Find changes', implemented: true },
   { id: 'sequence-recall', name: 'Sequence Recall', icon: List, color: '#14b8a6', description: 'Remember numbers', implemented: true },
   { id: 'focus-frenzy', name: 'Focus Frenzy', icon: ArrowUpCircle, color: '#ec4899', description: 'Click targets fast', implemented: true },
@@ -60,23 +56,17 @@ const games: GameDef[] = [
   { id: 'visual-filter', name: 'Visual Filter', icon: Eye, color: '#8b5cf6', description: 'Find patterns', implemented: true },
   { id: 'task-switcher', name: 'Task Switcher', icon: Files, color: '#6366f1', description: 'Quick switching', implemented: true },
   { id: 'attention-trainer', name: 'Attention Trainer', icon: MousePointer, color: '#ec4899', description: 'Click targets', implemented: true },
-  { id: 'concentration-challenge', name: 'Concentration', icon: Timer, color: '#f59e0b', description: 'Focus longer', implemented: true },
-  { id: 'breathe-mountain', name: 'Breathe Mountain', icon: Triangle, color: '#10b981', description: 'Mountain breathing', implemented: true },
   { id: 'relaxing-ripples', name: 'Relaxing Ripples', icon: Droplets, color: '#06b6d4', description: 'Create ripples', implemented: true },
   { id: 'calm-colors', name: 'Calm Colors', icon: Palette, color: '#ec4899', description: 'Color breathing', implemented: true },
-  { id: 'soothing-soundscape', name: 'Soundscape', icon: Music, color: '#14b8a6', description: 'Peaceful sounds' },
   { id: 'mindful-moments', name: 'Mindful Moments', icon: Coffee, color: '#6366f1', description: 'Present moment' },
   { id: 'memory-matrix-2', name: 'Memory Matrix', icon: Grid, color: '#a855f7', description: 'Grid memory', implemented: true },
   { id: 'word-scramble', name: 'Word Scramble', icon: Type, color: '#f97316', description: 'Unscramble words', implemented: true },
   { id: 'math-bingo-2', name: 'Math Bingo', icon: Hash, color: '#10b981', description: 'Solve math', implemented: true },
-  { id: 'storyteller-2', name: 'Storyteller', icon: BookOpen, color: '#f59e0b', description: 'Recall story' },
   { id: 'anagram-challenge', name: 'Anagram', icon: PenTool, color: '#3b82f6', description: 'Solve anagrams', implemented: true },
   { id: 'finger-tapping', name: 'Finger Tap', icon: Hand, color: '#ec4899', description: 'Tap sequence', implemented: true },
-  { id: 'reaction-time-challenge', name: 'Reaction Time', icon: Watch, color: '#10b981', description: 'React quickly' },
   { id: 'maze-runner-2', name: 'Maze Runner', icon: Compass, color: '#a855f7', description: 'Navigate maze' },
   { id: 'rhythm-tap-2', name: 'Rhythm Tap', icon: Mic, color: '#3b82f6', description: 'Tap to beat', implemented: true },
   { id: 'balance-challenge', name: 'Balance Challenge', icon: Activity, color: '#f97316', description: 'Virtual balance' },
-  { id: 'mindful-walking', name: 'Mindful Walk', icon: Move, color: '#3b82f6', description: 'Walking practice' },
 ];
 
 export default function GamesHub({ userId, onClose }: GamesHubProps) {
@@ -156,16 +146,7 @@ export default function GamesHub({ userId, onClose }: GamesHubProps) {
               onBack={() => setActiveGame(null)}
               onComplete={(reactionMs) => handleGameComplete({ gameId: 'reaction', gameName: 'Wait for Green', reactionMs, score: 0 })}
             />
-          ) : activeGame === 'breathing' ? (
-            <BreathingGame
-              onBack={() => setActiveGame(null)}
-              onComplete={(score) => handleGameComplete({ gameId: 'breathing', gameName: 'Breath Match', score })}
-            />
-          ) : activeGame === 'memory' ? (
-            <MemoryGame
-              onBack={() => setActiveGame(null)}
-              onComplete={(score) => handleGameComplete({ gameId: 'memory', gameName: 'Memory Path', score })}
-            />
+
           ) : activeGame === 'balance' ? (
             <BalanceGame
               onBack={() => setActiveGame(null)}
@@ -206,16 +187,7 @@ export default function GamesHub({ userId, onClose }: GamesHubProps) {
               onBack={() => setActiveGame(null)}
               onComplete={(score) => handleGameComplete({ gameId: 'attention-trainer', gameName: 'Attention Trainer', score })}
             />
-          ) : activeGame === 'concentration-challenge' ? (
-            <ConcentrationChallengeGame
-              onBack={() => setActiveGame(null)}
-              onComplete={(score) => handleGameComplete({ gameId: 'concentration-challenge', gameName: 'Concentration', score })}
-            />
-          ) : activeGame === 'breathe-mountain' ? (
-            <BreatheMountainGame
-              onBack={() => setActiveGame(null)}
-              onComplete={(score) => handleGameComplete({ gameId: 'breathe-mountain', gameName: 'Breathe Mountain', score })}
-            />
+
           ) : activeGame === 'focus-shift' ? (
             <FocusShiftGame
               onBack={() => setActiveGame(null)}
@@ -276,6 +248,20 @@ export default function GamesHub({ userId, onClose }: GamesHubProps) {
             />
           ) : (
             <>
+              {/* Beta banner */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#eff6ff', borderWidth: 1, borderColor: '#bfdbfe', borderRadius: 12, padding: 12, marginBottom: 14, gap: 10 }}>
+                <Text style={{ fontSize: 22 }}>🚀</Text>
+                <View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                    <View style={{ backgroundColor: '#3b82f6', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 }}>
+                      <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800', letterSpacing: 1 }}>BETA</Text>
+                    </View>
+                    <Text style={{ fontSize: 13, fontWeight: '700', color: '#1e40af' }}>Games are being improved</Text>
+                  </View>
+                  <Text style={{ fontSize: 11, color: '#64748b' }}>We're actively enhancing game quality and adding new ones!</Text>
+                </View>
+              </View>
+
               <View style={styles.limitRow}>
                 <Text style={styles.limitText}>
                   {isPro ? 'Premium: unlimited games' : `Free: ${Math.min(2, playsToday)}/2 games today`}
@@ -377,170 +363,9 @@ function ReactionTestGame({ onBack, onComplete }: { onBack: () => void; onComple
   );
 }
 
-function BreathingGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
-  const [cycle, setCycle] = useState(0);
-  const [phase, setPhase] = useState<'inhale' | 'hold' | 'exhale' | 'pause'>('inhale');
-  const [isPlaying, setIsPlaying] = useState(false);
-  const phaseTimerRef = useRef<any>(null);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  useEffect(() => () => phaseTimerRef.current && clearTimeout(phaseTimerRef.current), []);
 
-  const startBreathingCycle = (nextCycle: number) => {
-    setPhase('inhale');
-    Animated.sequence([
-      Animated.timing(scaleAnim, { toValue: 1.5, duration: 2000, useNativeDriver: true }),
-      Animated.timing(scaleAnim, { toValue: 1.0, duration: 2000, useNativeDriver: true }),
-    ]).start();
 
-    phaseTimerRef.current = setTimeout(() => {
-      setPhase('hold');
-      phaseTimerRef.current = setTimeout(() => {
-        setPhase('exhale');
-        phaseTimerRef.current = setTimeout(() => {
-          setPhase('pause');
-          phaseTimerRef.current = setTimeout(() => {
-            setCycle(nextCycle);
-            if (nextCycle >= 5) {
-              setIsPlaying(false);
-              onComplete(nextCycle);
-            } else {
-              startBreathingCycle(nextCycle + 1);
-            }
-          }, 800);
-        }, 1600);
-      }, 800);
-    }, 1600);
-  };
-
-  const start = () => {
-    setCycle(1);
-    setIsPlaying(true);
-    startBreathingCycle(1);
-  };
-
-  const label = phase === 'inhale' ? 'Breathe In' : phase === 'hold' ? 'Hold' : phase === 'exhale' ? 'Breathe Out' : 'Pause';
-
-  return (
-    <View style={styles.gameContainer}>
-      <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
-      </TouchableOpacity>
-      <Text style={styles.gameTitle}>Breath Match</Text>
-      <Text style={styles.gameSubtitle}>Complete 5 breathing cycles</Text>
-      <Text style={styles.limitText}>Cycle: {cycle}/5</Text>
-
-      <View style={styles.breathingContainer}>
-        <Animated.View style={[styles.breathingCircle, { transform: [{ scale: scaleAnim }] }]}>
-          <Text style={styles.gameEmoji}>💨</Text>
-        </Animated.View>
-        <Text style={styles.breathingPhase}>{label}</Text>
-      </View>
-
-      {!isPlaying ? (
-        <TouchableOpacity onPress={start} style={[styles.gameButton, { backgroundColor: '#06b6d4' }]}>
-          <Text style={styles.gameButtonText}>Start</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity onPress={() => { setIsPlaying(false); onComplete(cycle); }} style={[styles.gameButton, { backgroundColor: '#9ca3af' }]}>
-          <Text style={styles.gameButtonText}>Stop</Text>
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-}
-
-function MemoryGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
-  const [sequence, setSequence] = useState<number[]>([]);
-  const [userSequence, setUserSequence] = useState<number[]>([]);
-  const [isShowing, setIsShowing] = useState(false);
-  const [level, setLevel] = useState(1);
-  const [gameOver, setGameOver] = useState(false);
-  const [activeColor, setActiveColor] = useState<number | null>(null);
-  const colors = ['#ef4444', '#3b82f6', '#10b981', '#eab308'];
-
-  const showSequence = (seq: number[]) => {
-    setIsShowing(true);
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index < seq.length) {
-        setActiveColor(seq[index]);
-        setTimeout(() => {
-          setActiveColor(null);
-          index++;
-          if (index >= seq.length) {
-            clearInterval(interval);
-            setIsShowing(false);
-          }
-        }, 400);
-      }
-    }, 650);
-  };
-
-  const generate = (nextLevel: number) => {
-    const newSeq: number[] = [];
-    for (let i = 0; i < nextLevel + 2; i++) newSeq.push(Math.floor(Math.random() * 4));
-    setSequence(newSeq);
-    setUserSequence([]);
-    showSequence(newSeq);
-  };
-
-  const start = () => {
-    setLevel(1);
-    setGameOver(false);
-    generate(1);
-  };
-
-  const press = (idx: number) => {
-    if (isShowing || gameOver) return;
-    const next = [...userSequence, idx];
-    setUserSequence(next);
-    if (next[next.length - 1] !== sequence[next.length - 1]) {
-      triggerSound(SoundEffect.GAME_LOSS);
-      setGameOver(true);
-      onComplete(level - 1);
-      return;
-    }
-    if (next.length === sequence.length) {
-      const nextLevel = level + 1;
-      setLevel(nextLevel);
-      setTimeout(() => generate(nextLevel), 700);
-    }
-  };
-
-  return (
-    <View style={styles.gameContainer}>
-      <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
-      </TouchableOpacity>
-      <Text style={styles.gameTitle}>Memory Path</Text>
-      <Text style={styles.gameSubtitle}>Repeat the sequence</Text>
-      <Text style={styles.limitText}>Level: {level}</Text>
-      {sequence.length === 0 && !gameOver && (
-        <TouchableOpacity onPress={start} style={[styles.gameButton, { backgroundColor: '#a855f7' }]}>
-          <Text style={styles.gameButtonText}>Start</Text>
-        </TouchableOpacity>
-      )}
-      <View style={styles.memoryGrid}>
-        {colors.map((c, i) => (
-          <TouchableOpacity
-            key={i}
-            onPress={() => press(i)}
-            disabled={isShowing || gameOver}
-            style={[
-              styles.memoryColor,
-              { backgroundColor: c },
-              activeColor === i && styles.memoryColorActive,
-              (isShowing || gameOver) && styles.memoryColorDisabled,
-            ]}
-          />
-        ))}
-      </View>
-      {gameOver && <Text style={styles.warningText}>Game Over! Score: {Math.max(0, level - 1)}</Text>}
-      {isShowing && <Text style={styles.limitText}>Watch...</Text>}
-    </View>
-  );
-}
 
 function BalanceGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
   const [balance, setBalance] = useState(0);

@@ -214,6 +214,7 @@ export const createMeditationSession = mutation({
         duration: v.float64(),
         description: v.string(),
         audioUrl: v.optional(v.string()),
+        coverImage: v.optional(v.string()),
         tags: v.optional(v.array(v.string())),
         isPremium: v.boolean(),
     },
@@ -225,6 +226,7 @@ export const createMeditationSession = mutation({
             duration: args.duration,
             description: args.description.trim(),
             audioUrl: args.audioUrl?.trim(),
+            coverImage: args.coverImage?.trim(),
             tags: args.tags ?? [],
             isPremium: args.isPremium,
         });
@@ -240,6 +242,7 @@ export const updateMeditationSession = mutation({
         duration: v.optional(v.float64()),
         description: v.optional(v.string()),
         audioUrl: v.optional(v.string()),
+        coverImage: v.optional(v.string()),
         tags: v.optional(v.array(v.string())),
         isPremium: v.optional(v.boolean()),
     },
@@ -252,6 +255,7 @@ export const updateMeditationSession = mutation({
             ...(args.duration !== undefined && { duration: args.duration }),
             ...(args.description && { description: args.description.trim() }),
             ...(args.audioUrl && { audioUrl: args.audioUrl.trim() }),
+            ...(args.coverImage && { coverImage: args.coverImage.trim() }),
             ...(args.tags && { tags: args.tags }),
             ...(args.isPremium !== undefined && { isPremium: args.isPremium }),
         });

@@ -180,6 +180,7 @@ export default defineSchema({
     storageUrl: v.string(), // The Cloudflare Public URL
     source: v.union(v.literal("R2"), v.literal("Spotify")),
     duration: v.number(),
+    coverImage: v.optional(v.string()),
   }).index("by_category", ["category"]),
 
   // --- Admin & CMS Tables ---
@@ -597,6 +598,7 @@ export default defineSchema({
     duration: v.float64(), // minutes
     description: v.string(),
     audioUrl: v.optional(v.string()),
+    coverImage: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
     isPremium: v.boolean(),
   }).index("by_category", ["category"]),
@@ -659,12 +661,12 @@ export default defineSchema({
         exercises: v.array(
           v.object({
             name: v.string(),
-            sets: v.float64(),
-            reps: v.float64(),
-            rest: v.float64(), // seconds
+            sets: v.union(v.float64(), v.string()),
+            reps: v.union(v.float64(), v.string()),
+            rest: v.union(v.float64(), v.string()), // seconds
           })
         ),
-        estimatedDuration: v.float64(), // minutes
+        estimatedDuration: v.optional(v.union(v.float64(), v.string())), // minutes
       })
     ),
 

@@ -5,7 +5,7 @@ export default {
         name: "Bluom",
         slug: "bolt-expo-nativewind",
         owner: "ggovsaas",
-        version: "1.0.4",
+        version: "1.0.5",
         scheme: "bluom",
         userInterfaceStyle: "automatic",
         runtimeVersion: "1.0.5",
@@ -28,7 +28,7 @@ export default {
         },
         android: {
             package: "com.jwfca.bluom",
-            versionCode: 38,
+            versionCode: 40,
             googleServicesFile: "./google-services.json",
             permissions: [
                 "android.permission.CAMERA",

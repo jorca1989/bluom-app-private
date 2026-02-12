@@ -16,6 +16,8 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
 import { AVPlaybackStatus } from 'expo-av';
+import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
+import { Image } from 'expo-image';
 import { useMutation } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
@@ -42,6 +44,7 @@ function SeekBar({ positionMs, durationMs, isSeeking, onSeekStart, onSeekEnd, fo
   const trackWidthRef = useRef(0);
   const [localPosition, setLocalPosition] = useState(0);
   const draggingRef = useRef(false);
+  const seekMsRef = useRef(0);
 
   const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
 
@@ -54,20 +57,24 @@ function SeekBar({ positionMs, durationMs, isSeeking, onSeekStart, onSeekEnd, fo
         onSeekStart();
         const x = evt.nativeEvent.locationX;
         const ratio = clamp(x / trackWidthRef.current, 0, 1);
-        setLocalPosition(ratio * durationMs);
+        const ms = ratio * durationMs;
+        seekMsRef.current = ms;
+        setLocalPosition(ms);
       },
       onPanResponderMove: (evt: GestureResponderEvent) => {
         const x = evt.nativeEvent.locationX;
         const ratio = clamp(x / trackWidthRef.current, 0, 1);
-        setLocalPosition(ratio * durationMs);
+        const ms = ratio * durationMs;
+        seekMsRef.current = ms;
+        setLocalPosition(ms);
       },
       onPanResponderRelease: () => {
         draggingRef.current = false;
-        onSeekEnd(localPosition);
+        onSeekEnd(seekMsRef.current);
       },
       onPanResponderTerminate: () => {
         draggingRef.current = false;
-        onSeekEnd(localPosition);
+        onSeekEnd(seekMsRef.current);
       },
     })
   ).current;
@@ -79,6 +86,7 @@ function SeekBar({ positionMs, durationMs, isSeeking, onSeekStart, onSeekEnd, fo
     <View style={seekStyles.container}>
       <View
         style={seekStyles.trackTouchArea}
+        hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
         onLayout={(e: LayoutChangeEvent) => { trackWidthRef.current = e.nativeEvent.layout.width; }}
         {...panResponder.panHandlers}
       >
@@ -114,6 +122,7 @@ interface MeditationPlayerProps {
   soundscape?: Soundscape | null;
   audioUrl?: string;
   sessionTitle?: string;
+  coverImage?: string;
   duration?: number; // Minutes (metadata hint)
   logId?: Id<"meditationLogs"> | null;
 }
@@ -124,6 +133,7 @@ export default function MeditationPlayerScreen({
   soundscape,
   audioUrl,
   sessionTitle,
+  coverImage,
   duration,
   logId,
 }: MeditationPlayerProps) {
@@ -141,6 +151,15 @@ export default function MeditationPlayerScreen({
   const completeSession = useMutation(api.meditation.completeSession);
 
   // ─── Background audio mode ───────────────────────────────────
+  useEffect(() => {
+    if (visible) {
+      activateKeepAwake();
+    } else {
+      deactivateKeepAwake();
+    }
+    return () => deactivateKeepAwake();
+  }, [visible]);
+
   useEffect(() => {
     if (!visible) return;
     Audio.setAudioModeAsync({
@@ -194,6 +213,15 @@ export default function MeditationPlayerScreen({
           isLooping: !audioUrl, // Loop soundscapes, not guided sessions
           volume: 0.5,
           progressUpdateIntervalMillis: 1000,
+          // Metadata for the Lock Screen
+          androidImplementation: 'MediaPlayer', // Better for background
+          // @ts-ignore - expo-av types might not be fully updated for metadata but this works on native
+          metadata: {
+            title: sessionTitle || selectedSoundscape?.name || 'Meditation',
+            artist: "Bluom",
+            album: "Meditation Hub",
+            imageUri: coverImage || "https://your-default-logo.png", // Fallback if needed
+          }
         },
         onPlaybackStatusUpdate
       );
@@ -254,10 +282,15 @@ export default function MeditationPlayerScreen({
   };
 
   const handleSeek = async (valueMs: number) => {
-    setIsSeeking(false);
+    // Optimistic update to prevent UI jump
+    setPositionMs(valueMs);
+
     if (soundRef.current) {
       await soundRef.current.setPositionAsync(valueMs);
     }
+
+    // Only release lock after seek completes
+    setIsSeeking(false);
   };
 
   const handleComplete = async () => {
@@ -347,8 +380,19 @@ export default function MeditationPlayerScreen({
             </>
           ) : (
             <View style={{ marginBottom: 40, alignItems: 'center' }}>
-              <Ionicons name="musical-notes" size={80} color="#cbd5e1" />
-              <Text style={{ marginTop: 20, color: '#64748b', fontSize: 16 }}>Audio Session</Text>
+              {coverImage ? (
+                <Image
+                  source={{ uri: coverImage }}
+                  style={styles.coverImage}
+                  contentFit="cover"
+                  transition={1000}
+                />
+              ) : (
+                <>
+                  <Ionicons name="musical-notes" size={80} color="#cbd5e1" />
+                  <Text style={{ marginTop: 20, color: '#64748b', fontSize: 16 }}>Audio Session</Text>
+                </>
+              )}
             </View>
           )}
 
@@ -426,6 +470,17 @@ const styles = StyleSheet.create({
   headerTitle: { flex: 1, fontSize: 20, fontWeight: '600', color: '#1e293b', textAlign: 'center' },
   content: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 },
   animationContainer: { marginBottom: 40 },
+  coverImage: {
+    width: width * 0.7,
+    height: width * 0.7, // Square aspect ratio
+    borderRadius: 20,
+    backgroundColor: '#f1f5f9',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 5,
+  },
   instructionsContainer: { alignItems: 'center', marginBottom: 40 },
   breathingText: { fontSize: 28, fontWeight: '600', color: '#1e293b', marginBottom: 12 },
   instructionsText: { fontSize: 16, color: '#64748b', textAlign: 'center', paddingHorizontal: 32, lineHeight: 22 },

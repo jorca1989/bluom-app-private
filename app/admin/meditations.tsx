@@ -63,6 +63,7 @@ export default function MeditationsManager() {
         duration: '10',
         description: '',
         audioUrl: '',
+        coverImage: '',
         tags: [] as string[],
         isPremium: false,
     });
@@ -76,6 +77,7 @@ export default function MeditationsManager() {
             duration: '10',
             description: '',
             audioUrl: '',
+            coverImage: '',
             tags: [],
             isPremium: false,
         });
@@ -90,6 +92,7 @@ export default function MeditationsManager() {
             duration: String(session.duration || 10),
             description: session.description || '',
             audioUrl: session.audioUrl || '',
+            coverImage: session.coverImage || '',
             tags: session.tags || [],
             isPremium: session.isPremium || false,
         });
@@ -113,6 +116,7 @@ export default function MeditationsManager() {
                 duration,
                 description,
                 audioUrl: form.audioUrl.trim() || undefined,
+                coverImage: form.coverImage.trim() || undefined,
                 tags: form.tags,
                 isPremium: !!form.isPremium,
             };
@@ -329,6 +333,14 @@ export default function MeditationsManager() {
                             style={styles.input}
                             value={form.audioUrl}
                             onChangeText={(t) => setForm((p) => ({ ...p, audioUrl: t }))}
+                            placeholder="https://..."
+                        />
+
+                        <Text style={styles.label}>Cover Image URL (optional)</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={form.coverImage}
+                            onChangeText={(t) => setForm((p) => ({ ...p, coverImage: t }))}
                             placeholder="https://..."
                         />
 

@@ -139,14 +139,20 @@ export const generateAllPlans = action({
     
     1. NUTRITION PLAN:
        - Calculate approx calories/macros (TDEE + goal adjustment).
-       - Provide 'mealTemplates' for Breakfast, Lunch, Dinner, Snack (and more if mealsPerDay > 4).
-       - Each template needs: mealType, calories, protein, carbs, fat, suggestions (array of strings).
+       - Generate EXACTLY ${user.mealsPerDay || 4} meal templates.
+       - If 3 meals: Breakfast, Lunch, Dinner.
+       - If 4 meals: Breakfast, Lunch, Dinner, Snack.
+       - If 5 meals: Breakfast, Mid-Morning Snack, Lunch, Afternoon Snack, Dinner.
+       - If 6+: Breakfast, Mid-Morning Snack, Lunch, Afternoon Snack, Dinner, Evening Snack.
+       - Each template MUST include: mealType (string), calories (number), protein (number), carbs (number), fat (number), suggestions (array of 3-5 specific food items, not generic categories).
+       - Suggestions should be real, specific foods like "3 scrambled eggs with spinach", "grilled chicken breast 200g with sweet potato".
     
     2. FITNESS PLAN:
        - Determine best 'workoutSplit' (e.g. Full Body, UL, PPL)
-       - Determine 'daysPerWeek'
-       - Provide 'workouts' array. Each workout: day, focus, estimatedDuration, exercises[].
-       - Each exercise: name, sets, reps, rest(sec).
+       - Determine 'daysPerWeek' (must be a number).
+       - Provide 'workouts' array. Each workout: day, focus, estimatedDuration (number or omit), exercises[].
+       - Each exercise: name, sets (number or string like "3-4"), reps (number or string like "8-12" or "To Failure"), rest in seconds (number or string).
+       - IMPORTANT: All nutrition values (calories, protein, carbs, fat) MUST be pure numbers. For exercises, reps and sets CAN be strings (e.g., "10-12" or "To Failure").
     
     3. WELLNESS PLAN:
        - 'sleepRecommendation': targetHours, bedTimeWindow, tips[].

@@ -21,7 +21,7 @@ import { SoundEffect, triggerSound } from '../utils/soundEffects';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getBottomContentPadding } from '@/utils/layout';
 import {
-  Moon, Sun, Target, Heart, Shield, Play, Crown, Brain
+  Moon, Sun, Target, Heart, Shield, Play, Crown, Brain, Wind
 } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
@@ -39,6 +39,7 @@ const categories = [
   { id: 'anxiety', name: 'Anxiety Relief', icon: Shield, color: '#10b981' },
   { id: 'sovereignty', name: 'Sovereignty & Power', icon: Crown, color: '#b45309' },
   { id: 'strategic-mindset', name: 'Strategic Mindset', icon: Brain, color: '#7c3aed' },
+  { id: 'breathwork', name: 'Breathwork', icon: Wind, color: '#0d9488' },
 ];
 
 export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
@@ -261,6 +262,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
           soundscape={selectedSoundscape}
           audioUrl={activeSession?.audioUrl}
           sessionTitle={activeSession?.title}
+          coverImage={activeSession?.coverImage}
           duration={activeSession?.duration}
           logId={logId}
         />
