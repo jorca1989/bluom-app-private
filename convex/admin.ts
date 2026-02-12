@@ -165,6 +165,7 @@ export const createPublicRecipe = mutation({
         isPremium: v.optional(v.boolean()),
         ingredients: v.optional(v.array(v.string())),
         instructions: v.optional(v.array(v.string())),
+        status: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         await checkAdminPower(ctx);
@@ -186,6 +187,7 @@ export const createPublicRecipe = mutation({
             isPremium: args.isPremium,
             ingredients: args.ingredients,
             instructions: args.instructions,
+            status: args.status ?? 'draft',
             createdAt: now,
             updatedAt: now,
         });
@@ -216,6 +218,7 @@ export const createMeditationSession = mutation({
         audioUrl: v.optional(v.string()),
         coverImage: v.optional(v.string()),
         tags: v.optional(v.array(v.string())),
+        status: v.optional(v.string()),
         isPremium: v.boolean(),
     },
     handler: async (ctx, args) => {
@@ -228,9 +231,19 @@ export const createMeditationSession = mutation({
             audioUrl: args.audioUrl?.trim(),
             coverImage: args.coverImage?.trim(),
             tags: args.tags ?? [],
+            status: args.status ?? 'draft',
             isPremium: args.isPremium,
         });
         return id;
+    },
+});
+
+export const deleteMeditationSession = mutation({
+    args: { sessionId: v.id("meditationSessions") },
+    handler: async (ctx, args) => {
+        await checkAdminPower(ctx);
+        await ctx.db.delete(args.sessionId);
+        return { success: true };
     },
 });
 
@@ -244,6 +257,7 @@ export const updateMeditationSession = mutation({
         audioUrl: v.optional(v.string()),
         coverImage: v.optional(v.string()),
         tags: v.optional(v.array(v.string())),
+        status: v.optional(v.string()),
         isPremium: v.optional(v.boolean()),
     },
     handler: async (ctx, args) => {
@@ -257,6 +271,7 @@ export const updateMeditationSession = mutation({
             ...(args.audioUrl && { audioUrl: args.audioUrl.trim() }),
             ...(args.coverImage && { coverImage: args.coverImage.trim() }),
             ...(args.tags && { tags: args.tags }),
+            ...(args.status && { status: args.status }),
             ...(args.isPremium !== undefined && { isPremium: args.isPremium }),
         });
 
@@ -281,6 +296,7 @@ export const updatePublicRecipe = mutation({
         isPremium: v.optional(v.boolean()),
         ingredients: v.optional(v.array(v.string())),
         instructions: v.optional(v.array(v.string())),
+        status: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         await checkAdminPower(ctx);
@@ -304,6 +320,7 @@ export const updatePublicRecipe = mutation({
         if (args.isPremium !== undefined) updateFields.isPremium = args.isPremium;
         if (args.ingredients) updateFields.ingredients = args.ingredients;
         if (args.instructions) updateFields.instructions = args.instructions;
+        if (args.status) updateFields.status = args.status;
 
         await ctx.db.patch(args.recipeId, updateFields);
         return { success: true };

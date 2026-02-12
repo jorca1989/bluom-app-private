@@ -37,6 +37,8 @@ export default function MeditationsManager() {
     const createSession = useMutation(api.admin.createMeditationSession);
     const updateSession = useMutation(api.admin.updateMeditationSession);
 
+    const deleteSession = useMutation(api.admin.deleteMeditationSession);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSession, setSelectedSession] = useState<any>(null);
 
@@ -65,6 +67,7 @@ export default function MeditationsManager() {
         audioUrl: '',
         coverImage: '',
         tags: [] as string[],
+        status: 'published',
         isPremium: false,
     });
 
@@ -79,6 +82,7 @@ export default function MeditationsManager() {
             audioUrl: '',
             coverImage: '',
             tags: [],
+            status: 'published',
             isPremium: false,
         });
         setSelectedSession(null);
@@ -94,6 +98,7 @@ export default function MeditationsManager() {
             audioUrl: session.audioUrl || '',
             coverImage: session.coverImage || '',
             tags: session.tags || [],
+            status: session.status || 'published',
             isPremium: session.isPremium || false,
         });
         setIsModalOpen(true);
@@ -118,6 +123,7 @@ export default function MeditationsManager() {
                 audioUrl: form.audioUrl.trim() || undefined,
                 coverImage: form.coverImage.trim() || undefined,
                 tags: form.tags,
+                status: form.status,
                 isPremium: !!form.isPremium,
             };
 
@@ -135,6 +141,23 @@ export default function MeditationsManager() {
         } catch (e: any) {
             Alert.alert('Save failed', e?.message ?? 'Could not save session.');
         }
+    };
+
+    const handleDelete = (sessionId: any, title: string) => {
+        Alert.alert('Delete Session', `Are you sure you want to delete "${title}"?`, [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete',
+                style: 'destructive',
+                onPress: async () => {
+                    try {
+                        await deleteSession({ sessionId });
+                    } catch (e: any) {
+                        Alert.alert('Error', 'Failed to delete session');
+                    }
+                }
+            }
+        ]);
     };
 
     const renderMeditation = ({ item }: { item: any }) => (
@@ -176,7 +199,16 @@ export default function MeditationsManager() {
                 </View>
             </View>
             <View style={styles.actionBtn}>
-                <FilePen size={20} color="#cbd5e1" />
+                <View style={{ flexDirection: 'row', gap: 12 }}>
+                    {item.status === 'draft' && (
+                        <View style={{ backgroundColor: '#f1f5f9', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, alignSelf: 'center' }}>
+                            <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#64748b' }}>DRAFT</Text>
+                        </View>
+                    )}
+                    <TouchableOpacity onPress={() => handleDelete(item._id, item.title)}>
+                        <X size={20} color="#ef4444" />
+                    </TouchableOpacity>
+                </View>
             </View>
         </TouchableOpacity>
     );
@@ -343,6 +375,22 @@ export default function MeditationsManager() {
                             onChangeText={(t) => setForm((p) => ({ ...p, coverImage: t }))}
                             placeholder="https://..."
                         />
+
+                        <Text style={styles.label}>Visibility</Text>
+                        <View style={{ flexDirection: 'row', gap: 12 }}>
+                            <TouchableOpacity
+                                style={[styles.typeOption, form.status === 'published' && styles.typeOptionActive]}
+                                onPress={() => setForm({ ...form, status: 'published' })}
+                            >
+                                <Text style={[styles.typeText, form.status === 'published' && styles.typeTextActive]}>Published</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.typeOption, form.status === 'draft' && styles.typeOptionActive]}
+                                onPress={() => setForm({ ...form, status: 'draft' })}
+                            >
+                                <Text style={[styles.typeText, form.status === 'draft' && styles.typeTextActive]}>Draft</Text>
+                            </TouchableOpacity>
+                        </View>
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 16 }}>
                             <Text style={{ fontWeight: '800', color: '#64748b', textTransform: 'uppercase', fontSize: 13 }}>
@@ -529,5 +577,26 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: '#1e293b',
         fontWeight: '600',
+    },
+    typeOption: {
+        flex: 1,
+        backgroundColor: '#f8fafc',
+        padding: 12,
+        borderRadius: 12,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+    },
+    typeOptionActive: {
+        backgroundColor: '#eff6ff',
+        borderColor: '#3b82f6',
+    },
+    typeText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#64748b',
+    },
+    typeTextActive: {
+        color: '#3b82f6',
     },
 });

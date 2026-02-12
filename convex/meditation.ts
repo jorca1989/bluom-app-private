@@ -18,7 +18,9 @@ export const getSessions = query({
     } else {
       sessions = await ctx.db.query("meditationSessions").collect();
     }
-    return sessions.map(s => ({ ...s, tags: s.tags ?? [] }));
+    return sessions
+      .filter(s => s.status !== 'draft')
+      .map(s => ({ ...s, tags: s.tags ?? [] }));
   },
 });
 

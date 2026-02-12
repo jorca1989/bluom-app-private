@@ -157,7 +157,9 @@ export default function MeditationPlayerScreen({
     } else {
       deactivateKeepAwake();
     }
-    return () => deactivateKeepAwake();
+    return () => {
+      deactivateKeepAwake();
+    };
   }, [visible]);
 
   useEffect(() => {

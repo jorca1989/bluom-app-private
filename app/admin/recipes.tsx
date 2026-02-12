@@ -53,8 +53,10 @@ export default function RecipesManager() {
         carbs: '0',
         fat: '0',
         ingredientsText: '',
+        ingredientsText: '',
         instructionsText: '',
         tags: [] as string[],
+        status: 'published',
     });
 
     const resetForm = () => {
@@ -71,7 +73,9 @@ export default function RecipesManager() {
             fat: '0',
             ingredientsText: '',
             instructionsText: '',
+            instructionsText: '',
             tags: [],
+            status: 'published',
         });
         setSelectedRecipe(null);
     };
@@ -92,6 +96,7 @@ export default function RecipesManager() {
             ingredientsText: (recipe.ingredients || []).join('\n'),
             instructionsText: (recipe.instructions || []).join('\n'),
             tags: recipe.tags || [],
+            status: recipe.status || 'published',
         });
         setIsModalOpen(true);
     };
@@ -123,7 +128,9 @@ export default function RecipesManager() {
                 fat: Number(newRecipe.fat || 0) || 0,
                 ingredients: parseLines(newRecipe.ingredientsText),
                 instructions: parseLines(newRecipe.instructionsText),
+                instructions: parseLines(newRecipe.instructionsText),
                 tags: newRecipe.tags,
+                status: newRecipe.status,
                 isPremium: false,
             };
 
@@ -186,34 +193,40 @@ export default function RecipesManager() {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={styles.recipeMeta}>
-                    <View style={styles.metaItem}>
-                        <Flame size={12} color="#f59e0b" />
-                        <Text style={styles.metaText}>{item.calories} kcal</Text>
+                {item.status === 'draft' && (
+                    <View style={{ backgroundColor: '#f1f5f9', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginTop: 4, alignSelf: 'flex-start' }}>
+                        <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#64748b' }}>DRAFT</Text>
                     </View>
-                    <View style={styles.metaItem}>
-                        <Clock size={12} color="#64748b" />
-                        <Text style={styles.metaText}>{item.cookTimeMinutes} min</Text>
-                    </View>
-                    {item.isPremium && (
-                        <View style={styles.premiumBadge}>
-                            <Text style={styles.premiumText}>PRO</Text>
-                        </View>
-                    )}
+                )}
+            </View>
+            <View style={styles.recipeMeta}>
+                <View style={styles.metaItem}>
+                    <Flame size={12} color="#f59e0b" />
+                    <Text style={styles.metaText}>{item.calories} kcal</Text>
                 </View>
-                <View style={styles.macroRow}>
-                    <View style={styles.macroPill}>
-                        <Text style={styles.macroPillText}>P: {item.protein}g</Text>
+                <View style={styles.metaItem}>
+                    <Clock size={12} color="#64748b" />
+                    <Text style={styles.metaText}>{item.cookTimeMinutes} min</Text>
+                </View>
+                {item.isPremium && (
+                    <View style={styles.premiumBadge}>
+                        <Text style={styles.premiumText}>PRO</Text>
                     </View>
-                    <View style={styles.macroPill}>
-                        <Text style={styles.macroPillText}>C: {item.carbs}g</Text>
-                    </View>
-                    <View style={styles.macroPill}>
-                        <Text style={styles.macroPillText}>F: {item.fat}g</Text>
-                    </View>
+                )}
+            </View>
+            <View style={styles.macroRow}>
+                <View style={styles.macroPill}>
+                    <Text style={styles.macroPillText}>P: {item.protein}g</Text>
+                </View>
+                <View style={styles.macroPill}>
+                    <Text style={styles.macroPillText}>C: {item.carbs}g</Text>
+                </View>
+                <View style={styles.macroPill}>
+                    <Text style={styles.macroPillText}>F: {item.fat}g</Text>
                 </View>
             </View>
         </View>
+
     );
 
     return (
@@ -340,6 +353,22 @@ export default function RecipesManager() {
                             value={newRecipe.imageUrl}
                             onChangeText={(t) => setNewRecipe((p) => ({ ...p, imageUrl: t }))}
                         />
+
+                        <Text style={styles.label}>Visibility</Text>
+                        <View style={{ flexDirection: 'row', gap: 12 }}>
+                            <TouchableOpacity
+                                style={[styles.typeOption, newRecipe.status === 'published' && styles.typeOptionActive]}
+                                onPress={() => setNewRecipe(prev => ({ ...prev, status: 'published' }))}
+                            >
+                                <Text style={[styles.typeText, newRecipe.status === 'published' && styles.typeTextActive]}>Published</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.typeOption, newRecipe.status === 'draft' && styles.typeOptionActive]}
+                                onPress={() => setNewRecipe(prev => ({ ...prev, status: 'draft' }))}
+                            >
+                                <Text style={[styles.typeText, newRecipe.status === 'draft' && styles.typeTextActive]}>Draft</Text>
+                            </TouchableOpacity>
+                        </View>
 
                         <Text style={styles.label}>Nutrition facts</Text>
                         <View style={styles.inputGrid}>
@@ -653,4 +682,25 @@ const styles = StyleSheet.create({
     chipSelected: { backgroundColor: '#eff6ff', borderColor: '#2563eb' },
     chipText: { fontSize: 13, color: '#64748b' },
     chipTextSelected: { color: '#2563eb', fontWeight: '600' },
+    typeOption: {
+        flex: 1,
+        backgroundColor: '#f8fafc',
+        padding: 12,
+        borderRadius: 12,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+    },
+    typeOptionActive: {
+        backgroundColor: '#eff6ff',
+        borderColor: '#3b82f6',
+    },
+    typeText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#64748b',
+    },
+    typeTextActive: {
+        color: '#3b82f6',
+    },
 });

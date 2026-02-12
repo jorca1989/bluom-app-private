@@ -14,6 +14,9 @@ export const list = query({
 
     let recipes = await ctx.db.query("publicRecipes").collect();
 
+    // Filter out drafts (undefined status treated as published for backward compatibility)
+    recipes = recipes.filter(r => r.status !== 'draft');
+
     if (category && category !== "All") {
       recipes = recipes.filter((r) => (r.category ?? "") === category);
     }

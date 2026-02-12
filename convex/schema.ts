@@ -432,6 +432,7 @@ export default defineSchema({
     fat: v.float64(),
     tags: v.optional(v.array(v.string())),
     category: v.optional(v.string()),
+    status: v.optional(v.string()), // 'published' | 'draft'
     isPremium: v.optional(v.boolean()),
     ingredients: v.optional(v.array(v.string())),
     instructions: v.optional(v.array(v.string())),
@@ -600,6 +601,7 @@ export default defineSchema({
     audioUrl: v.optional(v.string()),
     coverImage: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
+    status: v.optional(v.string()), // 'published' | 'draft'
     isPremium: v.boolean(),
   }).index("by_category", ["category"]),
 
