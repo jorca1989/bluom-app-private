@@ -11,6 +11,8 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -97,7 +99,7 @@ export default function RecipesScreen() {
         style={styles.scrollView}
         contentContainerStyle={{
           paddingBottom: getBottomContentPadding(insets.bottom),
-          paddingTop: Math.max(insets.top, 12) + 8,
+          paddingTop: Platform.OS === 'android' ? Math.max(insets.top, StatusBar.currentHeight || 24) + 24 : Math.max(insets.top, 12) + 8,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -197,7 +199,10 @@ export default function RecipesScreen() {
           <SafeAreaView style={styles.detailContainer} edges={['top', 'bottom']}>
             <ScrollView
               style={styles.scrollView}
-              contentContainerStyle={{ paddingBottom: getBottomContentPadding(insets.bottom) }}
+              contentContainerStyle={{
+                paddingBottom: getBottomContentPadding(insets.bottom),
+                paddingTop: Platform.OS === 'android' ? Math.max(insets.top, StatusBar.currentHeight || 24) + 24 : Math.max(insets.top, 12) + 16,
+              }}
               showsVerticalScrollIndicator={false}
             >
               <View style={styles.detailHeader}>
