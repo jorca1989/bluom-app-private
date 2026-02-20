@@ -106,6 +106,15 @@ function InitialLayout() {
   const showConvexUserLoading = isLoaded && isSignedIn && convexAuthenticated && convexUser === undefined;
 
   const [isTimedOut, setIsTimedOut] = useState(false);
+  const [minSplashTimeElapsed, setMinSplashTimeElapsed] = useState(false);
+
+  // Minimum Splash Screen Delay Timer
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinSplashTimeElapsed(true);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Navigation Logic Effect
   useEffect(() => {
@@ -150,12 +159,13 @@ function InitialLayout() {
   // Splash Screen Hiding Effect
   useEffect(() => {
     if (
-      isTimedOut ||
-      (isLoaded && (!isSignedIn || (isSignedIn && convexAuthenticated && convexUser !== undefined)))
+      (isTimedOut ||
+        (isLoaded && (!isSignedIn || (isSignedIn && convexAuthenticated && convexUser !== undefined))))
+      && minSplashTimeElapsed
     ) {
       SplashScreen.hideAsync();
     }
-  }, [isLoaded, isSignedIn, convexAuthenticated, convexUser, isTimedOut]);
+  }, [isLoaded, isSignedIn, convexAuthenticated, convexUser, isTimedOut, minSplashTimeElapsed]);
 
   // --- RENDER LOGIC STARTS HERE (No Hooks below this line) ---
 
