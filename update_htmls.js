@@ -28,7 +28,7 @@ const NEW_FOOTER = `    <footer class="bg-white border-t border-blue-100 pt-24 p
                 <!-- About -->
                 <div>
                     <p class="text-slate-600 font-inter font-medium leading-relaxed">
-                        Blüom is built on Wellness, Vigor, and Scientific Precision. We believe a ‘Blümie’ is more than just a user; they are a glow of satisfaction and the start of a transformative lifestyle. Focused on personal development and high achievement, Blüom empowers you to prove to yourself—and the world—what you are truly made of. By sustaining your Body, Mind, and Spirit, Blüom is the ultimate definition of Life.
+                        Live with Vigor. Optimize with Precision. Become the ultimate version of yourself.
                     </p>
                 </div>
 
@@ -125,15 +125,9 @@ ${NEW_HEADER}
             <img src="/logo.png" alt="Bluom Logo" class="h-16 w-auto mx-auto mb-8" />
             <h1 class="text-4xl font-black font-outfit mb-8 text-slate-900">About Us</h1>
             
-            <div class="prose prose-slate max-w-none text-left">
+            <div class="prose prose-slate max-w-none text-center">
                 <p class="text-xl text-slate-700 leading-relaxed font-medium mb-6">
-                    Blüom is built on Wellness, Vigor, and Scientific Precision.
-                </p>
-                <p class="text-lg text-slate-600 leading-relaxed mb-6">
-                    We believe a ‘Blümie’ is more than just a user; they are a glow of satisfaction and the start of a transformative lifestyle. Focused on personal development and high achievement, Blüom empowers you to prove to yourself—and the world—what you are truly made of.
-                </p>
-                <p class="text-lg text-slate-600 leading-relaxed">
-                    By sustaining your Body, Mind, and Spirit, Blüom is the ultimate definition of Life.
+                    Live with Vigor. Optimize with Precision. Become the ultimate version of yourself.
                 </p>
             </div>
         </div>

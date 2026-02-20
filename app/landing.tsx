@@ -289,7 +289,7 @@ export default function LandingPage() {
                             {/* About */}
                             <div>
                                 <p className="text-slate-600 font-inter font-medium leading-relaxed">
-                                    Blüom is built on Wellness, Vigor, and Scientific Precision. We believe a ‘Blümie’ is more than just a user; they are a glow of satisfaction and the start of a transformative lifestyle. Focused on personal development and high achievement, Blüom empowers you to prove to yourself—and the world—what you are truly made of. By sustaining your Body, Mind, and Spirit, Blüom is the ultimate definition of Life.
+                                    Live with Vigor. Optimize with Precision. Become the ultimate version of yourself.
                                 </p>
                             </div>
 
