@@ -49,23 +49,24 @@
 </head>
 
 <body class="bg-[#ebf1fe] text-[#1e293b] min-h-screen font-sans">
-    <header class="bg-white border-b border-blue-100">
+        <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/70 border-b border-blue-100">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <img src="/logo.png" alt="Bluom Logo" class="h-10 w-auto" />
+            <a href="/"><img src="/logo.png" alt="Bluom Logo" class="h-10 w-auto" /></a>
             <nav class="hidden md:flex items-center space-x-10 text-sm font-bold tracking-tight text-slate-600">
-                <a href="/" class="hover:text-[#2563eb] transition-colors">Home</a>
-                <a href="/legal/privacy" class="hover:text-[#2563eb] transition-colors">Privacy</a>
-                <a href="/legal/terms" class="hover:text-[#2563eb] transition-colors">Terms</a>
-                <a href="/legal/data-deletion" class="hover:text-[#2563eb] transition-colors">Data Deletion</a>
-                <a href="/legal/subscription-faq" class="hover:text-[#2563eb] transition-colors">Billing FAQ</a>
-                <a href="/legal/ai-safety" class="text-[#2563eb] hover:text-blue-700 transition-colors">AI Safety</a>
-                <a href="/legal/refund-policy" class="hover:text-[#2563eb] transition-colors">Refund Policy</a>
-                <a href="/support" class="hover:text-[#2563eb] transition-colors">Support</a>
+                <a href="/#fuel" class="hover:text-[#2563eb] transition-colors">Fuel</a>
+                <a href="/#move" class="hover:text-[#5fc660] transition-colors">Move</a>
+                <a href="/#wellness" class="hover:text-[#ef8a34] transition-colors">Wellness</a>
+                <a href="/#shop" class="hover:text-[#2563eb] transition-colors">Shop</a>
             </nav>
+            <div class="flex items-center gap-4">
+                <a href="/#download" class="bg-[#2563eb] text-white px-6 py-2.5 rounded-full text-sm font-bold hover:shadow-lg hover:shadow-blue-200 transition-all transform hover:scale-105">
+                    Download App
+                </a>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-6 py-12">
+    <main class="max-w-4xl mx-auto px-6 pt-32 pb-12">
         <div class="bg-white rounded-2xl p-8 md:p-12 shadow-lg">
             <h1 class="text-4xl font-black font-outfit mb-8 text-slate-900">AI Safety & Responsibility</h1>
 
@@ -118,22 +119,50 @@
         </div>
     </main>
 
-    <footer class="bg-white border-t border-blue-100 pt-24 pb-12 px-6">
-        <div class="max-w-7xl mx-auto text-center">
-            <img src="/logo.png" alt="Bluom" class="h-14 w-auto mx-auto mb-10" />
-            <div
-                class="flex flex-wrap justify-center gap-4 md:gap-8 text-slate-400 text-xs font-black uppercase tracking-widest mb-16">
-                <a href="/legal/privacy" class="hover:text-[#2563eb] transition-colors">Privacy</a>
-                <a href="/legal/terms" class="hover:text-[#2563eb] transition-colors">Terms</a>
-                <a href="/legal/data-deletion" class="hover:text-[#2563eb] transition-colors">Data Deletion</a>
-                <a href="/legal/subscription-faq" class="hover:text-[#2563eb] transition-colors">Billing FAQ</a>
-                <a href="/legal/ai-safety" class="hover:text-[#2563eb] transition-colors">AI Safety</a>
-                <a href="/legal/refund-policy" class="hover:text-[#2563eb] transition-colors">Refund Policy</a>
-                <a href="/support" class="hover:text-[#2563eb] transition-colors">Support</a>
+        <footer class="bg-white border-t border-blue-100 pt-24 pb-12 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center gap-3 mb-10">
+                <img src="/logo.png" alt="Bluom" class="h-10 w-auto" />
             </div>
-            <p class="text-slate-300 text-[10px] font-bold uppercase tracking-[0.3em]">
-                © 2025 Bluom Precision Technology
-            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-14 pb-14 border-b border-slate-100">
+                <!-- About -->
+                <div>
+                    <p class="text-slate-600 font-inter font-medium leading-relaxed">
+                        Blüom is built on Wellness, Vigor, and Scientific Precision. We believe a ‘Blümie’ is more than just a user; they are a glow of satisfaction and the start of a transformative lifestyle. Focused on personal development and high achievement, Blüom empowers you to prove to yourself—and the world—what you are truly made of. By sustaining your Body, Mind, and Spirit, Blüom is the ultimate definition of Life.
+                    </p>
+                </div>
+
+                <!-- Company -->
+                <div>
+                    <h4 class="text-slate-900 font-black uppercase tracking-widest text-xs mb-4">Company</h4>
+                    <div class="space-y-3 text-slate-500 text-sm font-bold">
+                        <a href="/about" class="block hover:text-[#2563eb] transition-colors">About Us</a>
+                        <a href="/legal/privacy" class="block hover:text-[#2563eb] transition-colors">Privacy</a>
+                        <a href="/legal/terms" class="block hover:text-[#2563eb] transition-colors">Terms</a>
+                        <a href="/legal/ai-safety" class="block hover:text-[#2563eb] transition-colors">AI Safety</a>
+                        <a href="/legal/refund-policy" class="block hover:text-[#2563eb] transition-colors">Refund Policy</a>
+                        <a href="/legal/data-deletion" class="block hover:text-[#2563eb] transition-colors">Data Deletion</a>
+                    </div>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="text-slate-900 font-black uppercase tracking-widest text-xs mb-4">Support</h4>
+                    <div class="space-y-3 text-slate-500 text-sm font-bold">
+                        <a href="/support" class="block hover:text-[#2563eb] transition-colors">Help Center</a>
+                        <a href="/legal/subscription-faq" class="block hover:text-[#2563eb] transition-colors">Billing FAQ</a>
+                        <a href="/feedback" class="block hover:text-[#2563eb] transition-colors">Feedback</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-10 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-[0.25em]">
+                    © 2026 Bluom Precision Technology
+                </p>
+                <p class="text-slate-300 text-xs font-bold uppercase tracking-[0.25em]">Precision in Living. Power in Bloom.</p>
+            </div>
         </div>
     </footer>
 </body>

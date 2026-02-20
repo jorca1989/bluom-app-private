@@ -13,6 +13,7 @@ import {
     ActivityIndicator,
     Linking,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialCommunityIcons, Feather, FontAwesome5 } from '@expo/vector-icons';
@@ -353,6 +354,20 @@ export default function SettingsScreen() {
                         <TouchableOpacity
                             style={styles.item}
                             activeOpacity={0.7}
+                            onPress={() => openExternalUrl('https://www.bluom.app/about')}
+                        >
+                            <View style={styles.itemLeft}>
+                                <Text style={styles.itemLabel}>About Us</Text>
+                                <Text style={styles.itemValue}>Learn about Bluom</Text>
+                            </View>
+                            <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
+                        </TouchableOpacity>
+
+                        <View style={styles.divider} />
+
+                        <TouchableOpacity
+                            style={styles.item}
+                            activeOpacity={0.7}
                             onPress={() => openExternalUrl('https://www.bluom.app/support')}
                         >
                             <View style={styles.itemLeft}>
@@ -394,12 +409,11 @@ export default function SettingsScreen() {
                 </View>
 
                 {/* App Info Footer */}
-                <View style={styles.footer}>
-                    <View style={styles.appLogo}>
-                        <Text style={styles.logoText}>Ai</Text>
+                <View style={[styles.footer, { paddingBottom: 60 }]}>
+                    <View style={[styles.appLogo, { backgroundColor: '#ffffff', borderWidth: 1, borderColor: '#e2e8f0', overflow: 'hidden' }]}>
+                        <Image source={require('../assets/images/icon.png')} style={{ width: 40, height: 40, borderRadius: 10 }} contentFit="cover" />
                     </View>
-                    <Text style={styles.appName}>AiFit</Text>
-                    <Text style={styles.versionText}>Version 1.0.0</Text>
+                    <Text style={styles.appName}>Bluom</Text>
                 </View>
             </ScrollView>
 

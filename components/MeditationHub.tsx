@@ -172,10 +172,14 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
           {/* Categories */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Browse by Category</Text>
-            <View style={styles.categoryGrid}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoryScrollContent}
+            >
               <TouchableOpacity
                 style={[
-                  styles.categoryCard,
+                  styles.categoryCardHorizontal,
                   selectedCategory === null && styles.categoryCardActive
                 ]}
                 onPress={() => setSelectedCategory(null)}
@@ -183,13 +187,20 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
                 <View style={[styles.iconCircle, { backgroundColor: '#e2e8f0' }]}>
                   <Ionicons name="infinite" size={24} color="#64748b" />
                 </View>
-                <Text style={styles.categoryName}>All</Text>
+                <Text
+                  style={styles.categoryName}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.6}
+                >
+                  All
+                </Text>
               </TouchableOpacity>
               {categories.map((cat) => (
                 <TouchableOpacity
                   key={cat.id}
                   style={[
-                    styles.categoryCard,
+                    styles.categoryCardHorizontal,
                     selectedCategory === cat.id && styles.categoryCardActive
                   ]}
                   onPress={() => setSelectedCategory(cat.id)}
@@ -197,10 +208,17 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
                   <View style={[styles.iconCircle, { backgroundColor: cat.color + '20' }]}>
                     <cat.icon size={24} color={cat.color} />
                   </View>
-                  <Text style={styles.categoryName}>{cat.name}</Text>
+                  <Text
+                    style={styles.categoryName}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.7}
+                  >
+                    {cat.name}
+                  </Text>
                 </TouchableOpacity>
               ))}
-            </View>
+            </ScrollView>
           </View>
 
           {/* Sessions List */}
@@ -343,20 +361,21 @@ const styles = StyleSheet.create({
     color: '#1e293b',
     marginBottom: 16,
   },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+  categoryScrollContent: {
+    gap: 12,
+    paddingRight: 20, // Add some padding at the end of the scroll
   },
-  categoryCard: {
-    width: (width - 60) / 3,
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 2,
+  categoryCardHorizontal: {
+    width: 140,
+    height: 110,
+    padding: 12,
+    borderRadius: 16,
+    borderWidth: 1.5,
     borderColor: '#e5e7eb',
     alignItems: 'center',
-    marginBottom: 12,
+    justifyContent: 'center',
     backgroundColor: '#ffffff',
+    gap: 8,
   },
   categoryCardActive: {
     borderColor: '#6366f1',

@@ -656,7 +656,7 @@ export default function MoveScreen() {
               style={styles.plusMenuItem}
               onPress={() => {
                 closeAllOverlays();
-                setShowWorkoutModal(true);
+                setShowExerciseSearch(true);
                 setShowCustomExercise(false);
               }}
               activeOpacity={0.7}

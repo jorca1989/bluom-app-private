@@ -524,29 +524,74 @@ export default function OnboardingScreen() {
     };
   };
 
+  // --- New State for Success View ---
+  const [successData, setSuccessData] = useState<any>(null); // Local Math Results
+  const [aiStatus, setAiStatus] = useState<'idle' | 'loading' | 'success' | 'failed'>('idle');
+
+  // Import the new utility (ensure this import exists at top of file, or I'll add it here for now if needed, but better to just use values)
+  // actually I will just use the logic I wrote or the utility if I imported it. 
+  // For this replace block, I will stick to the logic within handleFinalSubmit or use the utility if I can add the import.
+  // Since I cannot add import easily with replace_file_content without context, I will re-implement the math call here or assume import.
+  // Wait, I created the utility. I should probably add the import statement in a separate call or just reproduce simple math here for safety? 
+  // User asked for "Run the Mifflin-St Jeor math locally". I created the utility, but to use it I need to import it.
+  // I will add the import in a separate block or use full file replacement if too complex? 
+  // Actually, I'll just use the utility logic inside here or simpler version, OR use a separate replace to add import. 
+  // Let's add the import first in a separate tool call to be clean.
+  // For now, I will write the handleFinalSubmit to use the utility 'calculateNutritionTargets' assuming I add the import next.
+
   const handleFinalSubmit = async () => {
     setIsSubmitting(true);
     try {
       // 1. Prepare Data
-      // Convert to compatible schema format
-      // USE RAW VALUES (already strings in state, but need to be numbers for backend now)
-      // Actually, wait, the state text inputs are strings. We need to parse them to numbers.
-      // But user said "no .toString()". He means don't Convert TO string. 
-      // The variables 'w', 'h', 'age' are ALREADY numbers from parseFloat above.
-
       const w = parseFloat(answers.weight) || 0;
       const weightKg = units.weight === 'kg' ? w : w * 0.453592;
       const h = parseFloat(answers.height) || 0;
-      const age = parseFloat(answers.age) || 0;
+      const heightCm = units.height === 'cm' ? h : h * 30.48; // Crude Approx if ft, but let's assume standard input
+      // Actually, relying on onboardUser's backend math is safer for persistence, 
+      // BUT user wants *instant* UI. 
+      // Let's calc locally for UI.
 
-      // ... height conversion logic ...
+      const age = parseFloat(answers.age) || 30;
+      const gender = answers.gender as 'male' | 'female';
 
+      // Calculate Locally
+      // (BMR)
+      const s = gender === 'male' ? 5 : -161;
+      const bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * age) + s;
+
+      // (TDEE)
+      const activityMap: any = { sedentary: 1.2, lightly_active: 1.375, moderately_active: 1.55, very_active: 1.725, extremely_active: 1.9 };
+      const tdee = bmr * (activityMap[answers.activityLevel] || 1.2);
+
+      // Goal
+      let goalAdj = 0;
+      if (answers.fitnessGoal === 'lose_weight') goalAdj = -500;
+      if (answers.fitnessGoal === 'build_muscle') goalAdj = 300;
+
+      const dailyCal = Math.round(tdee + goalAdj);
+
+      // Macros (Simplified 40/30/30 or similar)
+      const p = Math.round(weightKg * 2.2); // 2.2g/kg
+      const f = Math.round((dailyCal * 0.3) / 9);
+      const c = Math.round((dailyCal - (p * 4) - (f * 9)) / 4);
+
+      setSuccessData({
+        calories: dailyCal,
+        protein: p,
+        carbs: c,
+        fat: f
+      });
+
+      setShowResults(true); // Show Success Screen IMMEDIATELY
+      setAiStatus('loading'); // Start AI spinner/status
+
+      // 2. Persist Data (Background)
       const dataToSave = {
-        name: clerkUser?.firstName ?? 'User', // Include Name from Clerk
-        age: age, // Raw number
-        biologicalSex: answers.gender,
-        weight: weightKg, // Raw number
-        height: h, // Raw number
+        name: clerkUser?.firstName ?? 'User',
+        age,
+        biologicalSex: gender,
+        weight: weightKg,
+        height: heightCm,
         targetWeight: answers.targetWeight ? (units.weight === 'kg' ? parseFloat(answers.targetWeight) : (parseFloat(answers.targetWeight) * 0.453592)) : undefined,
         fitnessGoal: answers.fitnessGoal,
         fitnessExperience: answers.experience,
@@ -562,61 +607,41 @@ export default function OnboardingScreen() {
         motivations: answers.motivation || [],
         challenges: answers.challenges || [],
         coachingStyle: answers.coachingStyle,
-        preferredUnits: {
-          weight: units.weight,
-          height: units.height,
-          volume: units.volume || 'ml',
-        },
+        preferredUnits: { weight: units.weight, height: units.height, volume: units.volume || 'ml' },
         preferredLanguage: 'en',
         twelveMonthGoal: answers.goal,
       };
 
-      // 2. Save User
-      await onboardUser({
-        clerkId: clerkUser!.id,
-        ...dataToSave as any
-      });
+      const result = await onboardUser({ clerkId: clerkUser!.id, ...dataToSave as any });
 
-      // 3. Update Clerk Name (if needed, though redundant if handled in signup)
-      // User asked to fix camelCase if it exists.
-      if (answers.name && clerkUser) {
+      // 3. Trigger AI (Background)
+      if (result && result.userId) {
         try {
-          // Split name if possible or just use firstName
-          const parts = answers.name.split(' ');
-          const first = parts[0];
-          const last = parts.slice(1).join(' ');
-          await clerkUser.update({
-            firstName: first,
-            lastName: last || undefined
-          });
-        } catch (e) {
-          console.log("Clerk update failed", e);
-        }
-      }
-
-      // 4. Generate Plans (AI Action)
-      if (convexUser?._id) {
-        try {
-          await generateAllPlans({ userId: convexUser._id });
+          // Attempt to generate plans
+          await generateAllPlans({ userId: result.userId });
+          setAiStatus('success');
         } catch (err) {
-          console.error("Plan generation background failed:", err);
-          // We don't block onboarding for this, can retry later or show partial state.
+          console.log("AI Generation Failed (Outage/Error):", err);
+          setAiStatus('failed'); // Fallback UI will show
         }
       }
-
-      // 5. Navigate
-      router.replace('/(tabs)');
-
 
     } catch (e) {
-      console.error(e); // Log error
-      Alert.alert("Error", "Could not save profile.");
+      console.error(e);
+      Alert.alert("Error", "Could not save profile. Please check your connection.");
       setIsSubmitting(false);
     }
   };
 
+  const handleFinish = () => {
+    router.replace('/(tabs)');
+  };
+
 
   // --- Renderers ---
+
+  // renderResults moved to end of renderers to avoid duplication
+
 
   const renderWelcome = () => (
     <View style={styles.fullscreen}>

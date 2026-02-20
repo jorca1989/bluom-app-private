@@ -297,6 +297,7 @@ export default function LandingPage() {
                             <div>
                                 <h4 className="text-slate-900 font-black uppercase tracking-widest text-xs mb-4">Company</h4>
                                 <div className="space-y-3 text-slate-500 text-sm font-bold">
+                                    <a href="/about" className="block hover:text-[#2563eb] transition-colors">About Us</a>
                                     <a href="/legal/privacy" className="block hover:text-[#2563eb] transition-colors">Privacy</a>
                                     <a href="/legal/terms" className="block hover:text-[#2563eb] transition-colors">Terms</a>
                                     <a href="/legal/ai-safety" className="block hover:text-[#2563eb] transition-colors">AI Safety</a>

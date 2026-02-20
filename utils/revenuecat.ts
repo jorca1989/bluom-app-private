@@ -8,23 +8,25 @@ import { Platform } from 'react-native';
 
 let configuredForUserId: string | null = null;
 
-export function getRevenueCatAndroidApiKey(): string | null {
-  const key =
+export function getRevenueCatApiKey(): string | null {
+  if (Platform.OS === 'ios') {
+    return process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY ?? null;
+  }
+  return (
     process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY ??
-    // Back-compat with older env naming used in this repo
-    process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_KEY;
-  if (!key) return null;
-  return String(key);
+    process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_KEY ??
+    null
+  );
 }
 
 export async function configureRevenueCat(appUserId: string) {
   // RevenueCat SDK is native-only; on web this will be undefined and can crash.
   if (Platform.OS === 'web') return;
-  const apiKey = getRevenueCatAndroidApiKey();
+  const apiKey = getRevenueCatApiKey();
   if (!apiKey) {
     // Keep this non-fatal in dev so the app can run without purchases configured yet.
     // eslint-disable-next-line no-console
-    console.warn('[revenuecat] Missing EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY');
+    console.warn('[revenuecat] Missing EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY or ANDROID_API_KEY');
     return;
   }
   if (configuredForUserId === appUserId) return;

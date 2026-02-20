@@ -5,12 +5,13 @@ export default {
         name: "Bluom",
         slug: "bolt-expo-nativewind",
         owner: "ggovsaas",
-        version: "1.0.6",
+        version: "1.0.11",
         scheme: "bluom",
         userInterfaceStyle: "automatic",
-        runtimeVersion: "1.0.6",
+        runtimeVersion: "1.0.11",
         ios: {
             bundleIdentifier: "com.jwfca.bluom",
+            buildNumber: "12",
             googleServicesFile: "./GoogleService-Info.plist",
             infoPlist: {
                 ITSAppUsesNonExemptEncryption: false,
@@ -28,7 +29,7 @@ export default {
         },
         android: {
             package: "com.jwfca.bluom",
-            versionCode: 41,
+            versionCode: 12,
             googleServicesFile: "./google-services.json",
             permissions: [
                 "android.permission.CAMERA",
@@ -39,8 +40,9 @@ export default {
                 "android.permission.WAKE_LOCK"
             ]
         },
+        icon: "./assets/images/icon.png",
         splash: {
-            image: "./assets/images/icon.png",
+            image: "./assets/images/splash.png",
             resizeMode: "contain",
             backgroundColor: "#ffffff"
         },

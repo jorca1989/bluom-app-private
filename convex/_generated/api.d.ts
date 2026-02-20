@@ -58,6 +58,7 @@ import type * as strava from "../strava.js";
 import type * as streaks from "../streaks.js";
 import type * as sugar from "../sugar.js";
 import type * as support from "../support.js";
+import type * as system from "../system.js";
 import type * as testUsers from "../testUsers.js";
 import type * as todos from "../todos.js";
 import type * as users from "../users.js";
@@ -122,6 +123,7 @@ declare const fullApi: ApiFromModules<{
   streaks: typeof streaks;
   sugar: typeof sugar;
   support: typeof support;
+  system: typeof system;
   testUsers: typeof testUsers;
   todos: typeof todos;
   users: typeof users;

@@ -1,6 +1,7 @@
 import '../global.css';
 import React, { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View, Text, Platform } from 'react-native';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
@@ -18,7 +19,9 @@ import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { CelebrationProvider } from '@/context/CelebrationContext';
 import { AudioProvider } from '@/context/AudioContext';
+
 import { warnIfMissingGoogleOAuthClientIds } from '@/utils/googleOAuthEnv';
+import { AnalyticsProvider } from '@/components/AnalyticsProvider';
 
 // Polyfill Buffer for libraries like react-native-svg (used by lucide-react-native).
 import { Buffer } from 'buffer';
@@ -102,7 +105,9 @@ function InitialLayout() {
   const showAuthLoading = isLoaded && isSignedIn && !convexAuthenticated;
   const showConvexUserLoading = isLoaded && isSignedIn && convexAuthenticated && convexUser === undefined;
 
+  const [isTimedOut, setIsTimedOut] = useState(false);
 
+  // Navigation Logic Effect
   useEffect(() => {
     if (Platform.OS === 'web') return;
     if (!isLoaded || convexLoading) return;
@@ -131,11 +136,9 @@ function InitialLayout() {
     }
   }, [isSignedIn, isLoaded, convexLoading, convexAuthenticated, convexUser, segments]);
 
-  const [isTimedOut, setIsTimedOut] = useState(false);
-
+  // Timeout Timer Effect
   useEffect(() => {
     const timer = setTimeout(() => {
-      // If we are still loading after 10 seconds, show timeout message
       if ((!isLoaded || showAuthLoading || showConvexUserLoading) && Platform.OS !== 'web') {
         setIsTimedOut(true);
       }
@@ -143,6 +146,18 @@ function InitialLayout() {
 
     return () => clearTimeout(timer);
   }, [isLoaded, showAuthLoading, showConvexUserLoading]);
+
+  // Splash Screen Hiding Effect
+  useEffect(() => {
+    if (
+      isTimedOut ||
+      (isLoaded && (!isSignedIn || (isSignedIn && convexAuthenticated && convexUser !== undefined)))
+    ) {
+      SplashScreen.hideAsync();
+    }
+  }, [isLoaded, isSignedIn, convexAuthenticated, convexUser, isTimedOut]);
+
+  // --- RENDER LOGIC STARTS HERE (No Hooks below this line) ---
 
   if (isTimedOut) {
     return (
@@ -155,7 +170,6 @@ function InitialLayout() {
         <Text
           style={{ color: '#2563eb', fontWeight: '600', marginTop: 8 }}
           onPress={() => {
-            // Simple reload attempt
             router.replace('/');
             setIsTimedOut(false);
           }}
@@ -166,13 +180,10 @@ function InitialLayout() {
     );
   }
 
-  if (!isLoaded || showAuthLoading || (isSignedIn && !convexAuthenticated && !convexUser)) {
-    return <LoadingScreen message="App is loading..." />;
+  if (!isLoaded || showAuthLoading || (isSignedIn && !convexAuthenticated && !convexUser) || showConvexUserLoading) {
+    // Instead of null, return a View that matches your splash background color perfectly
+    return <View style={{ flex: 1, backgroundColor: '#ffffff' }} />;
   }
-  if (showConvexUserLoading) {
-    return <LoadingScreen message="Setting up your account..." />;
-  }
-  // Standard behavior: while redirect triggers, keep rendering the app shell.
 
   return (
     <>
@@ -187,54 +198,13 @@ function InitialLayout() {
               }}
             >
               <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="(auth)/login"
-                options={{
-                  headerShown: false,
-                  presentation: 'card',
-                }}
-              />
-              <Stack.Screen
-                name="(auth)/signup"
-                options={{
-                  headerShown: false,
-                  presentation: 'card',
-                }}
-              />
-              <Stack.Screen
-                name="onboarding"
-                options={{
-                  headerShown: false,
-                  presentation: 'card',
-                  gestureEnabled: false,
-                }}
-              />
-              <Stack.Screen
-                name="premium"
-                options={{
-                  headerShown: false,
-                  presentation: 'modal',
-                }}
-              />
-              <Stack.Screen
-                name="settings"
-                options={{
-                  headerShown: false,
-                  presentation: 'modal',
-                }}
-              />
-              <Stack.Screen
-                name="admin"
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="(tabs)"
-                options={{
-                  headerShown: false,
-                }}
-              />
+              <Stack.Screen name="(auth)/login" options={{ headerShown: false, presentation: 'card' }} />
+              <Stack.Screen name="(auth)/signup" options={{ headerShown: false, presentation: 'card' }} />
+              <Stack.Screen name="onboarding" options={{ headerShown: false, presentation: 'card', gestureEnabled: false }} />
+              <Stack.Screen name="premium" options={{ headerShown: false, presentation: 'modal' }} />
+              <Stack.Screen name="settings" options={{ headerShown: false, presentation: 'modal' }} />
+              <Stack.Screen name="admin" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="+not-found" options={{ headerShown: false }} />
             </Stack>
           </CelebrationProvider>
@@ -303,7 +273,9 @@ export default function RootLayout() {
         <SafeAreaProvider>
           <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
             <ConvexProviderWithClerk client={convex} useAuth={useConvexClerkAuth}>
-              <InitialLayout />
+              <AnalyticsProvider>
+                <InitialLayout />
+              </AnalyticsProvider>
             </ConvexProviderWithClerk>
           </ClerkProvider>
         </SafeAreaProvider>

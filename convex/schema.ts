@@ -942,4 +942,10 @@ export default defineSchema({
     unit: v.string(),
     timestamp: v.number(),
   }).index("by_user_type_time", ["userId", "type", "timestamp"]),
+  // --- Global System Configuration ---
+  systemStatus: defineTable({
+    aiMaintenanceMode: v.boolean(),
+    bannerMessage: v.optional(v.string()),
+    key: v.optional(v.string()), // For future multiple-config support
+  }),
 });

@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Dimensions, Linking } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useUser } from '@clerk/clerk-expo';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import Purchases from 'react-native-purchases';
 import {
   configureRevenueCat,
   getOfferingsSafe,
@@ -113,9 +114,13 @@ export default function PremiumScreen() {
       setLoading(true);
       // Ensure Purchases is configured before calling getOfferings (prevents "no singleton instance").
       await configureRevenueCat(clerkUser.id);
-      const o = await getOfferingsSafe();
-      if (!mounted) return;
-      setOfferings(o);
+      try {
+        const offerings = await Purchases.getOfferings();
+        if (!mounted) return;
+        setOfferings(offerings);
+      } catch (e) {
+        console.error('Error fetching offerings:', e);
+      }
       setLoading(false);
     })();
     return () => {
@@ -217,11 +222,21 @@ export default function PremiumScreen() {
   }
 
   async function purchase(kind: 'monthly' | 'annual') {
+    // 1. Re-validate offerings to ensure network didn't fail silently
+    if (!offerings) {
+      try {
+        const updated = await Purchases.getOfferings();
+        setOfferings(updated);
+      } catch (e) {
+        console.log('Failed to retry offerings', e);
+      }
+    }
+
     const pkg = kind === 'annual' ? pkgs.annual : pkgs.monthly;
     if (!pkg) {
       Alert.alert(
-        'RevenueCat not configured',
-        'Configure Monthly + Annual packages in RevenueCat, and add EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY.'
+        'Subscription Error',
+        'Subscription details are currently unavailable. Please check your internet connection and try again.'
       );
       return;
     }
@@ -352,14 +367,34 @@ export default function PremiumScreen() {
 
           {/* Social Proof */}
           <View style={styles.socialProof}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <Text style={styles.socialProofText}>🔥 Join 10,000+ humans optimizing their biology</Text>
-            </ScrollView>
+            <Text style={[styles.socialProofText, { textAlign: 'center' }]}>
+              🔥 Join 10,000+ humans optimizing their biology
+            </Text>
           </View>
 
           <TouchableOpacity onPress={handleDismiss} style={styles.notNow} activeOpacity={0.8}>
             <Text style={[styles.notNowText, { textDecorationLine: 'underline' }]}>Continue with basic version</Text>
           </TouchableOpacity>
+
+          {/* LEGAL FOOTER - REQUIRED BY APPLE GUIDELINE 3.1.2 */}
+          <View style={styles.legalFooter}>
+            <Text style={styles.legalText}>
+              Payment will be charged to your Apple ID account at the confirmation of purchase.
+              Subscription automatically renews unless it is canceled at least 24 hours before the end of the current period.
+              Your account will be charged for renewal within 24 hours prior to the end of the current period.
+              You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.
+            </Text>
+
+            <View style={styles.legalLinks}>
+              <TouchableOpacity onPress={() => Linking.openURL('https://www.bluom.app/legal/privacy')}>
+                <Text style={styles.legalLinkText}>Privacy Policy</Text>
+              </TouchableOpacity>
+              <Text style={styles.legalSeparator}> • </Text>
+              <TouchableOpacity onPress={() => Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')}>
+                <Text style={styles.legalLinkText}>Terms of Use (EULA)</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </ScrollView>
       )}
     </SafeAreaView>
@@ -534,6 +569,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   primaryText: { color: '#fff', fontWeight: '900' },
+
+  // Legal Footer
+  legalFooter: {
+    padding: 20,
+    marginTop: 10,
+    alignItems: 'center',
+    paddingBottom: 40,
+  },
+  legalText: {
+    fontSize: 10,
+    color: '#64748b',
+    textAlign: 'center',
+    lineHeight: 14,
+    marginBottom: 15,
+    fontWeight: '500',
+  },
+  legalLinks: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  legalLinkText: {
+    fontSize: 12,
+    color: '#2563eb',
+    fontWeight: '700',
+    textDecorationLine: 'underline',
+  },
+  legalSeparator: {
+    color: '#94a3b8',
+  },
 });
 
 

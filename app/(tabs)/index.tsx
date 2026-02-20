@@ -212,6 +212,22 @@ export default function IndexScreen() {
     );
   };
 
+  // --- Maintenance Mode ---
+  const systemStatus = useQuery(api.system.getSystemStatus);
+  const maintenanceMode = systemStatus?.aiMaintenanceMode ?? false;
+  const maintenanceBanner = systemStatus?.bannerMessage || "AI Services are undergoing maintenance.";
+
+  const handleRestrictedNav = (path: string) => {
+    if (maintenanceMode && (path === '/ai-coach' || path === '/sugar-scan-result')) {
+      Alert.alert(
+        "Maintenance Mode",
+        "Scanning and AI services are currently offline for maintenance. Please check back shortly."
+      );
+      return;
+    }
+    router.push(path as any);
+  };
+
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
@@ -223,28 +239,16 @@ export default function IndexScreen() {
     );
   }
 
+  // ... (hasCompletedOnboarding check) ...
   if (!hasCompletedOnboarding) {
+    // ... existing ...
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.loadingContainer}>
           <Text style={styles.errorText}>Please complete onboarding first.</Text>
 
           <TouchableOpacity
-            style={{
-              marginTop: 20,
-              backgroundColor: '#fff',
-              paddingHorizontal: 20,
-              paddingVertical: 12,
-              borderRadius: 12,
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-              elevation: 2,
-            }}
+            style={{ marginTop: 20, backgroundColor: '#fff', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12, flexDirection: 'row', alignItems: 'center', gap: 8, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }}
             activeOpacity={0.7}
             onPress={handleResetOnboarding}
           >
@@ -275,6 +279,17 @@ export default function IndexScreen() {
             style={{ width: 100, height: 32, marginBottom: 16 }}
             resizeMode="contain"
           />
+
+          {/* MAINTENANCE BANNER */}
+          {maintenanceMode && (
+            <View style={{ width: '100%', backgroundColor: '#fef2f2', borderColor: '#fecaca', borderWidth: 1, padding: 12, borderRadius: 12, marginBottom: 16, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#ef4444' }} />
+              <Text style={{ flex: 1, color: '#991b1b', fontSize: 13, fontWeight: '600' }}>
+                {maintenanceBanner}
+              </Text>
+            </View>
+          )}
+
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={styles.sectionTitle}>Vitality Score</Text>
             <CoachMark
@@ -423,21 +438,28 @@ export default function IndexScreen() {
           </View>
 
           <View style={styles.discoveryGrid}>
-            {displayedItems.map((item) => (
-              <TouchableOpacity
-                key={item.label}
-                style={styles.discoveryItem}
-                onPress={() => item.path && router.push(item.path as any)}
-                activeOpacity={0.7}
-              >
-                <View style={[styles.discoveryIconBox, { backgroundColor: item.bgColor }]}>
-                  <item.Icon size={24} color={item.color} />
-                </View>
-                <Text style={styles.discoveryLabel} numberOfLines={1}>
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {displayedItems.map((item) => {
+              const isRestricted = maintenanceMode && (item.path === '/ai-coach' || item.path === '/sugar-dashboard'); // Sugar dashboard might contain scan?
+              // The user said "Grey out the AI Photo/Scan entry points".
+              // Assuming 'Metabolic Hub' (sugar-dashboard) is scan entry, and 'AI Coach' is chat.
+              // Let's visual grey out if restricted.
+
+              return (
+                <TouchableOpacity
+                  key={item.label}
+                  style={[styles.discoveryItem, isRestricted && { opacity: 0.5 }]}
+                  onPress={() => item.path && handleRestrictedNav(item.path)}
+                  activeOpacity={0.7}
+                >
+                  <View style={[styles.discoveryIconBox, { backgroundColor: isRestricted ? '#f1f5f9' : item.bgColor }]}>
+                    <item.Icon size={24} color={isRestricted ? '#94a3b8' : item.color} />
+                  </View>
+                  <Text style={[styles.discoveryLabel, isRestricted && { color: '#94a3b8' }]} numberOfLines={1}>
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
 
 

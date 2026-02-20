@@ -322,6 +322,7 @@ export default function RecipesManager() {
                                 <TextInput
                                     style={styles.input}
                                     keyboardType="numeric"
+                                    selectTextOnFocus={true}
                                     placeholder="30"
                                     value={newRecipe.cookTimeMinutes}
                                     onChangeText={(t) => setNewRecipe((p) => ({ ...p, cookTimeMinutes: t }))}
@@ -332,6 +333,7 @@ export default function RecipesManager() {
                                 <TextInput
                                     style={styles.input}
                                     keyboardType="numeric"
+                                    selectTextOnFocus={true}
                                     placeholder="2"
                                     value={newRecipe.servings}
                                     onChangeText={(t) => setNewRecipe((p) => ({ ...p, servings: t }))}
@@ -379,6 +381,7 @@ export default function RecipesManager() {
                                 <TextInput
                                     style={styles.input}
                                     keyboardType="numeric"
+                                    selectTextOnFocus={true}
                                     placeholder="0"
                                     value={newRecipe.calories}
                                     onChangeText={(t) => setNewRecipe((p) => ({ ...p, calories: t }))}
@@ -389,6 +392,7 @@ export default function RecipesManager() {
                                 <TextInput
                                     style={styles.input}
                                     keyboardType="numeric"
+                                    selectTextOnFocus={true}
                                     placeholder="0"
                                     value={newRecipe.protein}
                                     onChangeText={(t) => setNewRecipe((p) => ({ ...p, protein: t }))}
@@ -401,6 +405,7 @@ export default function RecipesManager() {
                                 <TextInput
                                     style={styles.input}
                                     keyboardType="numeric"
+                                    selectTextOnFocus={true}
                                     placeholder="0"
                                     value={newRecipe.carbs}
                                     onChangeText={(t) => setNewRecipe((p) => ({ ...p, carbs: t }))}
@@ -411,6 +416,7 @@ export default function RecipesManager() {
                                 <TextInput
                                     style={styles.input}
                                     keyboardType="numeric"
+                                    selectTextOnFocus={true}
                                     placeholder="0"
                                     value={newRecipe.fat}
                                     onChangeText={(t) => setNewRecipe((p) => ({ ...p, fat: t }))}

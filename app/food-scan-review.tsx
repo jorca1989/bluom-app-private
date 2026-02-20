@@ -16,8 +16,11 @@ function toMealTypeLower(meal: string) {
   if (m.includes('lunch')) return 'lunch' as const;
   if (m.includes('dinner')) return 'dinner' as const;
   if (m.includes('snack')) return 'snack' as const;
+  if (m.includes('snack')) return 'snack' as const;
   return 'lunch' as const;
 }
+
+type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 
 export default function FoodScanReviewScreen() {
   const router = useRouter();
@@ -33,7 +36,7 @@ export default function FoodScanReviewScreen() {
   const logFoodEntry = useMutation(api.food.logFoodEntry);
   const celebration = useCelebration();
 
-  const meal = useMemo(() => String(params.meal ?? 'Lunch'), [params.meal]);
+  const [meal, setMeal] = useState<MealName>((params.meal as MealName) ?? 'Lunch');
   const date = useMemo(() => String(params.date ?? new Date().toISOString().slice(0, 10)), [params.date]);
 
   const [name, setName] = useState(String(params.name ?? ''));
@@ -113,6 +116,23 @@ export default function FoodScanReviewScreen() {
             returnKeyType="done"
           />
           <Text style={styles.hint}>You can overwrite anything the AI guessed.</Text>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Meal</Text>
+          <View style={styles.mealSelector}>
+            {(['Breakfast', 'Lunch', 'Dinner', 'Snack'] as MealName[]).map((m) => (
+              <TouchableOpacity
+                key={m}
+                style={[styles.mealOption, meal === m && styles.mealOptionActive]}
+                onPress={() => setMeal(m)}
+              >
+                <Text style={[styles.mealOptionText, meal === m && styles.mealOptionTextActive]}>
+                  {m}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
 
         <View style={styles.card}>
@@ -235,6 +255,31 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primaryText: { color: '#fff', fontWeight: '900', fontSize: 15 },
+  mealSelector: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  mealOption: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: '#f1f5f9',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  mealOptionActive: {
+    backgroundColor: '#3b82f6',
+    borderColor: '#3b82f6',
+  },
+  mealOptionText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#64748b',
+  },
+  mealOptionTextActive: {
+    color: '#ffffff',
+  },
 });
 
 

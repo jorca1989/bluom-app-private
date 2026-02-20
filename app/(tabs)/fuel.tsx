@@ -141,6 +141,10 @@ export default function FuelScreen() {
   const [showPlusMenu, setShowPlusMenu] = useState(false);
   const [showAddFoodModal, setShowAddFoodModal] = useState(false);
 
+  // Meal Selection for Global Search
+  const [showMealSelector, setShowMealSelector] = useState(false);
+  const [pendingFoodToAdd, setPendingFoodToAdd] = useState<any>(null);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [loadingSearch, setLoadingSearch] = useState(false);
@@ -289,6 +293,13 @@ export default function FuelScreen() {
   async function addFoodFromCatalog(food: any, meal: MealName) {
     if (!convexUser?._id) return;
 
+    // If no meal specified (global search), prompt user
+    if (!meal) {
+      setPendingFoodToAdd(food);
+      setShowMealSelector(true);
+      return;
+    }
+
     // Free users: keep the existing “4 unique meals per day” gating.
     if (!convexUser.isPremium) {
       const uniqueMeals = new Set((dateEntries ?? []).map((e) => titleFromMealType(e.mealType)));
@@ -359,6 +370,8 @@ export default function FuelScreen() {
     setShowFoodSearch(false);
     setSearchQuery('');
     setSelectedMeal(null);
+    setPendingFoodToAdd(null);
+    setShowMealSelector(false);
   }
 
   function getMealTotals(meal: MealName) {
@@ -963,7 +976,7 @@ export default function FuelScreen() {
                                 fat: perServing.fat ?? 0,
                                 servingSize: '1 serving',
                               },
-                              (selectedMeal ?? 'Snack') as MealName
+                              (selectedMeal ?? 'Breakfast') as MealName
                             )
                           }
                         >
@@ -1027,7 +1040,7 @@ export default function FuelScreen() {
                       <TouchableOpacity
                         key={food.kind === 'external' ? `${food.source}:${food.externalId}` : String(food._id)}
                         style={styles.foodItem}
-                        onPress={() => addFoodFromCatalog(food, (selectedMeal ?? 'Snack') as MealName)}
+                        onPress={() => addFoodFromCatalog(food, selectedMeal as MealName)}
                       >
                         <View style={styles.foodItemContent}>
                           <Text style={styles.foodItemName}>
@@ -1093,6 +1106,7 @@ export default function FuelScreen() {
                 value={waterAmount}
                 onChangeText={setWaterAmount}
                 keyboardType="numeric"
+                selectTextOnFocus={true}
               />
 
               <Text style={styles.waterModalLabel}>Unit</Text>
@@ -1244,6 +1258,47 @@ export default function FuelScreen() {
           setLogSuccess(false);
         }}
       />
+
+      {/* Meal Selector Modal */}
+      <Modal visible={showMealSelector} animationType="fade" transparent onRequestClose={() => setShowMealSelector(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.card, { margin: 24, padding: 0, overflow: 'hidden' }]}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Choose Meal</Text>
+              <TouchableOpacity onPress={() => setShowMealSelector(false)}>
+                <Ionicons name="close" size={24} color="#1e293b" />
+              </TouchableOpacity>
+            </View>
+            <View style={{ padding: 16, gap: 12 }}>
+              {defaultMeals.map((m) => {
+                const config = mealConfigs[m];
+                return (
+                  <TouchableOpacity
+                    key={m}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 12,
+                      padding: 12,
+                      borderRadius: 12,
+                      backgroundColor: '#f8fafc',
+                      borderWidth: 1,
+                      borderColor: '#e2e8f0'
+                    }}
+                    onPress={() => addFoodFromCatalog(pendingFoodToAdd, m)}
+                  >
+                    <View style={[styles.mealIconContainer, { backgroundColor: config.color, width: 40, height: 40 }]}>
+                      <Ionicons name={config.icon as any} size={20} color={config.iconColor} />
+                    </View>
+                    <Text style={{ fontSize: 16, fontWeight: '600', color: '#1e293b' }}>{m}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        </View>
+      </Modal>
+
     </SafeAreaView >
   );
 }
@@ -1350,10 +1405,10 @@ function AddFoodModal({
             <View style={styles.addFoodStep}>
               <Text style={styles.addFoodStepTitle}>Nutrition Information</Text>
               <View style={styles.addFoodGrid}>
-                <TextInput style={styles.addFoodGridInput} placeholder="Calories (kcal)*" value={form.calories} onChangeText={(v) => handleChange('calories', v)} keyboardType="numeric" />
-                <TextInput style={styles.addFoodGridInput} placeholder="Total Fat (g)*" value={form.totalFat} onChangeText={(v) => handleChange('totalFat', v)} keyboardType="numeric" />
-                <TextInput style={styles.addFoodGridInput} placeholder="Total Carbs (g)*" value={form.totalCarbs} onChangeText={(v) => handleChange('totalCarbs', v)} keyboardType="numeric" />
-                <TextInput style={styles.addFoodGridInput} placeholder="Protein (g)*" value={form.protein} onChangeText={(v) => handleChange('protein', v)} keyboardType="numeric" />
+                <TextInput style={styles.addFoodGridInput} placeholder="Calories (kcal)*" value={form.calories} onChangeText={(v) => handleChange('calories', v)} keyboardType="numeric" selectTextOnFocus={true} />
+                <TextInput style={styles.addFoodGridInput} placeholder="Total Fat (g)*" value={form.totalFat} onChangeText={(v) => handleChange('totalFat', v)} keyboardType="numeric" selectTextOnFocus={true} />
+                <TextInput style={styles.addFoodGridInput} placeholder="Total Carbs (g)*" value={form.totalCarbs} onChangeText={(v) => handleChange('totalCarbs', v)} keyboardType="numeric" selectTextOnFocus={true} />
+                <TextInput style={styles.addFoodGridInput} placeholder="Protein (g)*" value={form.protein} onChangeText={(v) => handleChange('protein', v)} keyboardType="numeric" selectTextOnFocus={true} />
               </View>
               <View style={styles.addFoodButtons}>
                 <TouchableOpacity style={styles.addFoodButtonSecondary} onPress={() => setStep(1)}>
@@ -1660,6 +1715,7 @@ function CreateRecipeModal({
                 value={String(recipeForm.servings)}
                 onChangeText={(v) => setRecipeForm({ ...recipeForm, servings: parseInt(v) || 1 })}
                 keyboardType="numeric"
+                selectTextOnFocus={true}
               />
 
               <View style={styles.createRecipeCheckboxContainer}>
@@ -1794,6 +1850,7 @@ function CreateRecipeModal({
                             value={String(ing.quantity ?? 1)}
                             onChangeText={(v) => updateMatchedIngredient(idx, { quantity: parseFloat(v) || 1 })}
                             keyboardType="numeric"
+                            selectTextOnFocus={true}
                           />
                           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.createRecipeIngredientUnit}>
                             {UNIT_OPTIONS.map((unit) => (

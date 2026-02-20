@@ -1,0 +1,154 @@
+const fs = require('fs');
+const path = require('path');
+
+const NEW_HEADER = `    <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/70 border-b border-blue-100">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="/"><img src="/logo.png" alt="Bluom Logo" class="h-10 w-auto" /></a>
+            <nav class="hidden md:flex items-center space-x-10 text-sm font-bold tracking-tight text-slate-600">
+                <a href="/#fuel" class="hover:text-[#2563eb] transition-colors">Fuel</a>
+                <a href="/#move" class="hover:text-[#5fc660] transition-colors">Move</a>
+                <a href="/#wellness" class="hover:text-[#ef8a34] transition-colors">Wellness</a>
+                <a href="/#shop" class="hover:text-[#2563eb] transition-colors">Shop</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                <a href="/#download" class="bg-[#2563eb] text-white px-6 py-2.5 rounded-full text-sm font-bold hover:shadow-lg hover:shadow-blue-200 transition-all transform hover:scale-105">
+                    Download App
+                </a>
+            </div>
+        </div>
+    </header>`;
+
+const NEW_FOOTER = `    <footer class="bg-white border-t border-blue-100 pt-24 pb-12 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center gap-3 mb-10">
+                <img src="/logo.png" alt="Bluom" class="h-10 w-auto" />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-14 pb-14 border-b border-slate-100">
+                <!-- About -->
+                <div>
+                    <p class="text-slate-600 font-inter font-medium leading-relaxed">
+                        Blüom is built on Wellness, Vigor, and Scientific Precision. We believe a ‘Blümie’ is more than just a user; they are a glow of satisfaction and the start of a transformative lifestyle. Focused on personal development and high achievement, Blüom empowers you to prove to yourself—and the world—what you are truly made of. By sustaining your Body, Mind, and Spirit, Blüom is the ultimate definition of Life.
+                    </p>
+                </div>
+
+                <!-- Company -->
+                <div>
+                    <h4 class="text-slate-900 font-black uppercase tracking-widest text-xs mb-4">Company</h4>
+                    <div class="space-y-3 text-slate-500 text-sm font-bold">
+                        <a href="/about" class="block hover:text-[#2563eb] transition-colors">About Us</a>
+                        <a href="/legal/privacy" class="block hover:text-[#2563eb] transition-colors">Privacy</a>
+                        <a href="/legal/terms" class="block hover:text-[#2563eb] transition-colors">Terms</a>
+                        <a href="/legal/ai-safety" class="block hover:text-[#2563eb] transition-colors">AI Safety</a>
+                        <a href="/legal/refund-policy" class="block hover:text-[#2563eb] transition-colors">Refund Policy</a>
+                        <a href="/legal/data-deletion" class="block hover:text-[#2563eb] transition-colors">Data Deletion</a>
+                    </div>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="text-slate-900 font-black uppercase tracking-widest text-xs mb-4">Support</h4>
+                    <div class="space-y-3 text-slate-500 text-sm font-bold">
+                        <a href="/support" class="block hover:text-[#2563eb] transition-colors">Help Center</a>
+                        <a href="/legal/subscription-faq" class="block hover:text-[#2563eb] transition-colors">Billing FAQ</a>
+                        <a href="/feedback" class="block hover:text-[#2563eb] transition-colors">Feedback</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-10 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-[0.25em]">
+                    © 2026 Bluom Precision Technology
+                </p>
+                <p class="text-slate-300 text-xs font-bold uppercase tracking-[0.25em]">Precision in Living. Power in Bloom.</p>
+            </div>
+        </div>
+    </footer>`;
+
+function processFile(filePath) {
+    let content = fs.readFileSync(filePath, 'utf8');
+
+    // Replace Header
+    const headerRegex = /<header[^>]*>[\s\S]*?<\/header>/i;
+    content = content.replace(headerRegex, NEW_HEADER);
+
+    // Replace Footer
+    const footerRegex = /<footer[^>]*>[\s\S]*?<\/footer>/i;
+    content = content.replace(footerRegex, NEW_FOOTER);
+
+    // Update main padding if header is fixed
+    content = content.replace(/<main class="([^"]*)py-12([^"]*)">/g, '<main class="$1pt-32 pb-12$2">');
+
+    fs.writeFileSync(filePath, content);
+    console.log('Updated:', filePath);
+}
+
+function processDirectory(dir) {
+    const files = fs.readdirSync(dir);
+    for (const file of files) {
+        const fullPath = path.join(dir, file);
+        if (fs.statSync(fullPath).isDirectory()) {
+            processDirectory(fullPath);
+        } else if (file.endsWith('.html')) {
+            processFile(fullPath);
+        }
+    }
+}
+
+// Generate about us HTML
+const aboutHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Bluom</title>
+    <meta name="description" content="About Bluom - Precision in Living" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet" />
+    <style>
+        body { margin: 0; background-color: #ebf1fe !important; }
+        .font-outfit { font-family: 'Outfit', sans-serif; }
+        .font-inter { font-family: 'Inter', sans-serif; }
+        html { scroll-behavior: smooth; background-color: #ebf1fe; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #ebf1fe; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-[#ebf1fe] text-[#1e293b] min-h-screen font-sans">
+\${NEW_HEADER}
+    <main class="max-w-4xl mx-auto px-6 pt-32 pb-12">
+        <div class="bg-white rounded-2xl p-8 md:p-12 shadow-lg text-center">
+            <img src="/logo.png" alt="Bluom Logo" class="h-16 w-auto mx-auto mb-8" />
+            <h1 class="text-4xl font-black font-outfit mb-8 text-slate-900">About Us</h1>
+            
+            <div class="prose prose-slate max-w-none text-left">
+                <p class="text-xl text-slate-700 leading-relaxed font-medium mb-6">
+                    Blüom is built on Wellness, Vigor, and Scientific Precision.
+                </p>
+                <p class="text-lg text-slate-600 leading-relaxed mb-6">
+                    We believe a ‘Blümie’ is more than just a user; they are a glow of satisfaction and the start of a transformative lifestyle. Focused on personal development and high achievement, Blüom empowers you to prove to yourself—and the world—what you are truly made of.
+                </p>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    By sustaining your Body, Mind, and Spirit, Blüom is the ultimate definition of Life.
+                </p>
+            </div>
+        </div>
+    </main>
+\${NEW_FOOTER}
+</body>
+</html>`;
+
+const aboutDir = path.join(__dirname, 'public', 'about');
+if (!fs.existsSync(aboutDir)) {
+    fs.mkdirSync(aboutDir, { recursive: true });
+}
+fs.writeFileSync(path.join(aboutDir, 'index.html'), aboutHtml);
+console.log('Created: public/about/index.html');
+
+processDirectory(path.join(__dirname, 'public', 'legal'));
+processDirectory(path.join(__dirname, 'public', 'support'));
+console.log('Done!');

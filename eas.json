@@ -27,7 +27,11 @@
       "env": {
         "EXPO_PUBLIC_CONVEX_URL": "https://cheerful-snake-681.convex.cloud",
         "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuYmx1b20uYXBwJA",
-        "EXPO_PUBLIC_CLERK_JWT_TEMPLATE_ID": "jtmp_37ixCZjxhFlM4THbZIBUlZYoFLr"
+        "EXPO_PUBLIC_CLERK_JWT_TEMPLATE_ID": "jtmp_37ixCZjxhFlM4THbZIBUlZYoFLr",
+        "EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY": "goog_cbCtfoKokhXOpxiRuTGRDvFNURD",
+        "EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY": "appl_xNLLTCKltfDiOqsFefIwcIkaHVR",
+        "EXPO_PUBLIC_POSTHOG_API_KEY": "phc_FxRJ7YGC7Ma8K1yzdT8C1pIOz98ahx8MqOCQceEoe6T",
+        "EXPO_PUBLIC_POSTHOG_HOST": "https://us.i.posthog.com"
       }
     }
   },
