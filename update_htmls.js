@@ -119,7 +119,7 @@ const aboutHtml = `<!DOCTYPE html>
     </style>
 </head>
 <body class="bg-[#ebf1fe] text-[#1e293b] min-h-screen font-sans">
-\${NEW_HEADER}
+${NEW_HEADER}
     <main class="max-w-4xl mx-auto px-6 pt-32 pb-12">
         <div class="bg-white rounded-2xl p-8 md:p-12 shadow-lg text-center">
             <img src="/logo.png" alt="Bluom Logo" class="h-16 w-auto mx-auto mb-8" />
@@ -138,7 +138,7 @@ const aboutHtml = `<!DOCTYPE html>
             </div>
         </div>
     </main>
-\${NEW_FOOTER}
+${NEW_FOOTER}
 </body>
 </html>`;
 
