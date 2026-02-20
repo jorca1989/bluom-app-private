@@ -44,7 +44,7 @@ export default function SubscriptionFAQ() {
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
                                         <h3 className="font-bold text-slate-900 mb-2">Monthly Pro</h3>
-                                        <p className="text-2xl font-black text-slate-900 mb-3">$9.95/month</p>
+                                        <p className="text-2xl font-black text-slate-900 mb-3">$12.99/month</p>
                                         <ul className="text-slate-700 space-y-1 text-sm">
                                             <li>• All Pro features</li>
                                             <li>• Cancel anytime</li>
@@ -53,8 +53,8 @@ export default function SubscriptionFAQ() {
                                     </div>
                                     <div className="bg-green-50 rounded-xl p-6 border border-green-200">
                                         <h3 className="font-bold text-slate-900 mb-2">Annual Pro</h3>
-                                        <p className="text-2xl font-black text-slate-900 mb-3">$59.40/year</p>
-                                        <p className="text-green-700 font-bold text-sm mb-2">Save 50% - Only $1.20/week</p>
+                                        <p className="text-2xl font-black text-slate-900 mb-3">$69.99/year</p>
+                                        <p className="text-green-700 font-bold text-sm mb-2">Save 55% - Only $1.34/week</p>
                                         <ul className="text-slate-700 space-y-1 text-sm">
                                             <li>• All Pro features</li>
                                             <li>• Best value</li>
@@ -71,14 +71,14 @@ export default function SubscriptionFAQ() {
                                     <div className="bg-white rounded-lg p-4">
                                         <h3 className="font-bold text-slate-900 mb-2">🔄 Auto-Renewal</h3>
                                         <p className="text-slate-700">
-                                            Subscriptions automatically renew unless cancelled 24 hours before the end of the current billing period. 
+                                            Subscriptions automatically renew unless cancelled 24 hours before the end of the current billing period.
                                             You'll receive a reminder email before renewal.
                                         </p>
                                     </div>
                                     <div className="bg-white rounded-lg p-4">
                                         <h3 className="font-bold text-slate-900 mb-2">💳 Payment Methods</h3>
                                         <p className="text-slate-700">
-                                            We accept payment through your app store (Google Play Store or Apple App Store). 
+                                            We accept payment through your app store (Google Play Store or Apple App Store).
                                             All payment processing is handled securely by your app store.
                                         </p>
                                     </div>
@@ -99,7 +99,7 @@ export default function SubscriptionFAQ() {
                                     <p className="text-slate-700 mb-4">
                                         Manage your Bluom Pro subscription directly through your device's app store:
                                     </p>
-                                    
+
                                     <div className="space-y-3">
                                         <div className="bg-white rounded-lg p-4">
                                             <h4 className="font-bold text-slate-900 mb-2">🤖 Google Play Store (Android)</h4>
@@ -110,7 +110,7 @@ export default function SubscriptionFAQ() {
                                                 <li>Cancel or modify as needed</li>
                                             </ol>
                                         </div>
-                                        
+
                                         <div className="bg-white rounded-lg p-4">
                                             <h4 className="font-bold text-slate-900 mb-2">🍎 Apple App Store (iOS)</h4>
                                             <ol className="list-decimal list-inside text-slate-700 space-y-1 text-sm">
@@ -132,11 +132,11 @@ export default function SubscriptionFAQ() {
                                         <div className="bg-white rounded-lg p-4">
                                             <h3 className="font-bold text-slate-900 mb-2">🏪 App Store Refunds</h3>
                                             <p className="text-slate-700">
-                                                All refunds are handled through your app store (Google Play or Apple App Store). 
+                                                All refunds are handled through your app store (Google Play or Apple App Store).
                                                 Bluom does not process refunds directly.
                                             </p>
                                         </div>
-                                        
+
                                         <div className="bg-white rounded-lg p-4">
                                             <h3 className="font-bold text-slate-900 mb-2">⏰ Refund Timeframes</h3>
                                             <ul className="list-disc list-inside text-slate-700 space-y-1 text-sm">
@@ -144,11 +144,11 @@ export default function SubscriptionFAQ() {
                                                 <li><strong>Apple App Store:</strong> Typically processed within 24-48 hours</li>
                                             </ul>
                                         </div>
-                                        
+
                                         <div className="bg-white rounded-lg p-4">
                                             <h3 className="font-bold text-slate-900 mb-2">📋 Refund Eligibility</h3>
                                             <p className="text-slate-700">
-                                                Refund eligibility depends on your app store's policy and purchase history. 
+                                                Refund eligibility depends on your app store's policy and purchase history.
                                                 Common eligible reasons include technical issues, accidental purchases, or unused subscriptions.
                                             </p>
                                         </div>
@@ -202,23 +202,23 @@ export default function SubscriptionFAQ() {
                                     <div className="bg-red-50 rounded-lg p-4">
                                         <h4 className="font-bold text-slate-900 mb-2">❌ Subscription Not Working</h4>
                                         <p className="text-slate-700 text-sm">
-                                            <strong>Solution:</strong> Restore your purchase in the app settings or restart the app. 
+                                            <strong>Solution:</strong> Restore your purchase in the app settings or restart the app.
                                             Make sure you're logged into the correct app store account.
                                         </p>
                                     </div>
-                                    
+
                                     <div className="bg-red-50 rounded-lg p-4">
                                         <h4 className="font-bold text-slate-900 mb-2">💳 Charged After Cancellation</h4>
                                         <p className="text-slate-700 text-sm">
-                                            <strong>Solution:</strong> Contact your app store support directly. 
+                                            <strong>Solution:</strong> Contact your app store support directly.
                                             Cancellations take effect at the end of the current billing period.
                                         </p>
                                     </div>
-                                    
+
                                     <div className="bg-red-50 rounded-lg p-4">
                                         <h4 className="font-bold text-slate-900 mb-2">🔄 Can't Find Subscription</h4>
                                         <p className="text-slate-700 text-sm">
-                                            <strong>Solution:</strong> Check if you're using the correct app store account. 
+                                            <strong>Solution:</strong> Check if you're using the correct app store account.
                                             Subscriptions are tied to the account used for purchase.
                                         </p>
                                     </div>
