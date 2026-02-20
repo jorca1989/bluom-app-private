@@ -40,8 +40,17 @@ export default function SubscriptionFAQ() {
                         <div className="space-y-8">
                             {/* Pricing Overview */}
                             <section>
-                                <h2 className="text-2xl font-black font-outfit mb-4 text-slate-900">💰 Pro Subscription Plans</h2>
-                                <div className="grid md:grid-cols-2 gap-6">
+                                <h2 className="text-2xl font-black font-outfit mb-4 text-slate-900">💰 Subscription Plans</h2>
+                                <div className="grid md:grid-cols-3 gap-6">
+                                    <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                                        <h3 className="font-bold text-slate-900 mb-2">Starter Plan</h3>
+                                        <p className="text-2xl font-black text-slate-900 mb-3">Free forever</p>
+                                        <ul className="text-slate-700 space-y-1 text-sm">
+                                            <li>• Basic Health Hubs</li>
+                                            <li>• Standard tracking</li>
+                                            <li>• Community access</li>
+                                        </ul>
+                                    </div>
                                     <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
                                         <h3 className="font-bold text-slate-900 mb-2">Monthly Pro</h3>
                                         <p className="text-2xl font-black text-slate-900 mb-3">$12.99/month</p>
@@ -55,6 +64,7 @@ export default function SubscriptionFAQ() {
                                         <h3 className="font-bold text-slate-900 mb-2">Annual Pro</h3>
                                         <p className="text-2xl font-black text-slate-900 mb-3">$69.99/year</p>
                                         <p className="text-green-700 font-bold text-sm mb-2">Save 55% - Only $1.34/week</p>
+                                        <p className="text-slate-600 italic text-xs mb-3">Loyalty Discount: Your subscription price automatically lowers each consecutive year you remain a Blümie.</p>
                                         <ul className="text-slate-700 space-y-1 text-sm">
                                             <li>• All Pro features</li>
                                             <li>• Best value</li>
