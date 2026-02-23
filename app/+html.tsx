@@ -22,6 +22,9 @@ export default function Root({ children }: PropsWithChildren) {
                 {/* Using style to handle the background color instead of tailwind to prevent flashing */}
                 <style dangerouslySetInnerHTML={{ __html: `body { background-color: #fff; }` }} />
 
+                {/* Ahrefs Site Verification */}
+                <meta name="ahrefs-site-verification" content="e76df0dd39df16dd80975e1c2aea8670ebc473e3282ef5e73990d7524d568d1b" />
+
                 {/* Google Tag Manager */}
                 <script
                     dangerouslySetInnerHTML={{
