@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Dimensions, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Dimensions, Linking, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useUser } from '@clerk/clerk-expo';
-import { useQuery } from 'convex/react';
+import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import Purchases from 'react-native-purchases';
 import {
@@ -104,7 +104,10 @@ export default function PremiumScreen() {
 
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState(false);
+  const [restoring, setRestoring] = useState(false);
   const [offerings, setOfferings] = useState<any>(null);
+
+  const updateUser = useMutation(api.users.updateUser);
 
   useEffect(() => {
     let mounted = true;
@@ -376,13 +379,46 @@ export default function PremiumScreen() {
             <Text style={[styles.notNowText, { textDecorationLine: 'underline' }]}>Continue with basic version</Text>
           </TouchableOpacity>
 
-          {/* LEGAL FOOTER - REQUIRED BY APPLE GUIDELINE 3.1.2 */}
+          {/* Restore Purchases */}
+          <TouchableOpacity
+            style={styles.notNow}
+            activeOpacity={0.8}
+            disabled={restoring}
+            onPress={async () => {
+              setRestoring(true);
+              try {
+                const customerInfo = await Purchases.restorePurchases();
+                const entitlements = customerInfo?.entitlements?.active;
+                const hasPro = entitlements && (entitlements['pro'] || entitlements['premium'] || Object.keys(entitlements).length > 0);
+                if (hasPro && convexUser?._id) {
+                  await updateUser({
+                    userId: convexUser._id,
+                    updates: { isPremium: true },
+                  });
+                  Alert.alert('Success', 'Purchases restored successfully!');
+                  handleDismiss();
+                } else {
+                  Alert.alert('No Purchases Found', 'No previous purchases were found for this account.');
+                }
+              } catch (e: any) {
+                console.warn('Restore purchases error:', e);
+                Alert.alert('Restore Failed', e?.message ?? 'Could not restore purchases. Please try again.');
+              } finally {
+                setRestoring(false);
+              }
+            }}
+          >
+            <Text style={[styles.notNowText, { color: '#2563eb', textDecorationLine: 'underline' }]}>
+              {restoring ? 'Restoring…' : 'Restore Purchases'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* LEGAL FOOTER - REQUIRED BY APPLE 3.1.2 & GOOGLE PLAY POLICY */}
           <View style={styles.legalFooter}>
             <Text style={styles.legalText}>
-              Payment will be charged to your Apple ID account at the confirmation of purchase.
-              Subscription automatically renews unless it is canceled at least 24 hours before the end of the current period.
-              Your account will be charged for renewal within 24 hours prior to the end of the current period.
-              You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.
+              {Platform.OS === 'ios'
+                ? 'Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.'
+                : 'Payment will be charged to your Google Play account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. You can manage and cancel your subscriptions in your Google Play Store settings.'}
             </Text>
 
             <View style={styles.legalLinks}>
@@ -390,8 +426,12 @@ export default function PremiumScreen() {
                 <Text style={styles.legalLinkText}>Privacy Policy</Text>
               </TouchableOpacity>
               <Text style={styles.legalSeparator}> • </Text>
-              <TouchableOpacity onPress={() => Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')}>
-                <Text style={styles.legalLinkText}>Terms of Use (EULA)</Text>
+              <TouchableOpacity onPress={() => Linking.openURL(
+                Platform.OS === 'ios'
+                  ? 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'
+                  : 'https://www.bluom.app/legal/terms'
+              )}>
+                <Text style={styles.legalLinkText}>Terms of Use{Platform.OS === 'ios' ? ' (EULA)' : ''}</Text>
               </TouchableOpacity>
             </View>
           </View>

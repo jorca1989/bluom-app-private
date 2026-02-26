@@ -13,6 +13,7 @@ import {
   Dimensions,
   ActivityIndicator,
   Alert,
+  Platform,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -618,27 +619,6 @@ export default function MoveScreen() {
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
               <TouchableOpacity
-                onPress={async () => {
-                  setIsSyncing(true);
-                  const granted = await requestHealthPermissions();
-                  if (granted) {
-                    const result = await syncHealthData();
-                    if (result) {
-                      Alert.alert("Synced!", `Added ${result.steps} steps & ${Math.round(result.calories)} kcal`);
-                    } else {
-                      Alert.alert("Sync Failed", "Could not fetch health data.");
-                    }
-                  } else {
-                    Alert.alert("Permission Denied", "Please enable health permissions in settings.");
-                  }
-                  setIsSyncing(false);
-                }}
-                disabled={isSyncing}
-                style={{ padding: 8, backgroundColor: '#fff', borderRadius: 20, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }}
-              >
-                {isSyncing ? <ActivityIndicator size="small" color="#6366f1" /> : <Ionicons name="sync" size={24} color="#6366f1" />}
-              </TouchableOpacity>
-              <TouchableOpacity
                 style={[styles.headerButton, styles.plusButton]}
                 onPress={() => setShowDropdown((v) => !v)}
                 activeOpacity={0.7}
@@ -868,9 +848,9 @@ export default function MoveScreen() {
               {todayActivities.map((activity) => (
                 <View key={activity.id} style={styles.activityItem}>
                   <View style={styles.activityLeft}>
-                    <View style={[styles.activityIconContainer, { backgroundColor: '#dbeafe' }]}>
+                    <View style={[styles.activityIconContainer, { backgroundColor: activity.activityType === 'steps' ? '#fce7f3' : '#dbeafe' }]}>
                       {activity.activityType === 'steps' ? (
-                        <Ionicons name="locate" size={16} color="#2563eb" />
+                        <Ionicons name="heart" size={16} color="#ec4899" />
                       ) : (
                         <Ionicons name="barbell" size={16} color="#2563eb" />
                       )}
@@ -1449,6 +1429,13 @@ export default function MoveScreen() {
             </TouchableOpacity>
           </View>
 
+          {/* Apple Guideline 2.5.1 Transparency: Footer Label */}
+          <View style={{ marginTop: 10, alignItems: 'center', paddingHorizontal: 20 }}>
+            <Text style={{ textAlign: 'center', color: '#94a3b8', fontSize: 13, lineHeight: 18 }}>
+              Steps and activity can be synced automatically from Apple Health or Health connect.
+            </Text>
+          </View>
+
           <View style={[styles.modalScroll, { paddingBottom: getBottomContentPadding(insets.bottom) }]}>
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Enter steps count</Text>
@@ -1485,6 +1472,77 @@ export default function MoveScreen() {
                 <Text style={styles.modalButtonText}>Add Steps</Text>
               </TouchableOpacity>
             </View>
+
+            {/* Import from Health Connect (Google) */}
+            <TouchableOpacity
+              style={{
+                marginTop: 16,
+                paddingVertical: 14,
+                paddingHorizontal: 16,
+                borderRadius: 16,
+                backgroundColor: '#f1f5f9',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+              }}
+              onPress={async () => {
+                setIsSyncing(true);
+                const granted = await requestHealthPermissions();
+                if (granted) {
+                  const result = await syncHealthData();
+                  if (result && result.steps > 0) {
+                    setStepsInput(result.steps.toString());
+                    Alert.alert("Steps Ready", "Auto-populated current steps. Tap Add Steps to save.");
+                  } else if (granted) {
+                    Alert.alert("No Steps Found", "Could not find any steps in Health connect for today.");
+                  }
+                }
+                // Permission denial is handled inside requestHealthPermissions() with a redirect
+                setIsSyncing(false);
+              }}
+            >
+              <Ionicons name="logo-google" size={18} color="#4285F4" />
+              <Text style={{ color: '#0f172a', fontWeight: '600', fontSize: 16 }}>
+                Health connect
+              </Text>
+            </TouchableOpacity>
+
+            {/* Import from Apple Health */}
+            <TouchableOpacity
+              style={{
+                marginTop: 12,
+                paddingVertical: 14,
+                paddingHorizontal: 16,
+                borderRadius: 16,
+                backgroundColor: '#f1f5f9',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+              }}
+              onPress={async () => {
+                setIsSyncing(true);
+                const granted = await requestHealthPermissions();
+                if (granted) {
+                  const result = await syncHealthData();
+                  if (result && result.steps > 0) {
+                    setStepsInput(result.steps.toString());
+                    Alert.alert("Steps Ready", "Auto-populated current steps. Tap Add Steps to save.");
+                  } else if (granted) {
+                    Alert.alert("No Steps Found", "Could not find any steps in Apple Health for today.");
+                  }
+                }
+                // Permission denial is handled inside requestHealthPermissions() with a redirect
+                setIsSyncing(false);
+              }}
+            >
+              <Ionicons name="heart" size={18} color="#ec4899" />
+              <Text style={{ color: '#0f172a', fontWeight: '600', fontSize: 16 }}>
+                Apple Health
+              </Text>
+            </TouchableOpacity>
+
           </View>
         </SafeAreaView>
       </Modal >

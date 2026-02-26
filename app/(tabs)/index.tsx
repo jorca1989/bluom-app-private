@@ -114,7 +114,12 @@ export default function IndexScreen() {
     return stepEntriesToday.reduce((acc, entry) => acc + entry.steps, 0);
   }, [stepEntriesToday]);
 
-  const burned = caloriesBurned ?? 0;
+  const stepCalories = useMemo(() => {
+    if (!stepEntriesToday) return 0;
+    return stepEntriesToday.reduce((acc, entry: any) => acc + (entry.caloriesBurned ?? 0), 0);
+  }, [stepEntriesToday]);
+
+  const burned = (caloriesBurned ?? 0) + stepCalories;
 
   // Goals & Totals
   const goalCalories = convexUser?.dailyCalories ?? 2000;

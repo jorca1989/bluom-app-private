@@ -18,7 +18,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialCommunityIcons, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { useUser, useAuth } from '@clerk/clerk-expo';
-import { useQuery, useMutation } from 'convex/react';
+import { useQuery, useMutation, useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { getSoundSettings, setSoundSettings, triggerSound, SoundEffect } from '@/utils/soundEffects';
@@ -33,6 +33,8 @@ export default function SettingsScreen() {
     const { signOut } = useAuth();
     const convexUser = useQuery(api.users.getUserByClerkId, clerkUser ? { clerkId: clerkUser.id } : "skip");
     const updateUser = useMutation(api.users.updateUser);
+    const deleteAccount = useMutation(api.users.deleteAccount);
+    const deleteClerkUserAction = useAction(api.deleteClerkUser.deleteClerkUser);
 
     // Local state for modals
     const [showUnitsModal, setShowUnitsModal] = useState(false);
@@ -135,6 +137,36 @@ export default function SettingsScreen() {
             { text: 'Cancel', style: 'cancel' },
             { text: 'Sign Out', style: 'destructive', onPress: () => signOut() },
         ]);
+    };
+
+    const handleDeleteAccount = () => {
+        Alert.alert(
+            'Delete Account',
+            'Are you sure you want to completely delete your account? This will permanently erase your data and cannot be undone.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete Permanently',
+                    style: 'destructive',
+                    onPress: async () => {
+                        if (convexUser && clerkUser?.id) {
+                            try {
+                                // 1. Delete user from Clerk (server-side action)
+                                await deleteClerkUserAction({ clerkId: clerkUser.id });
+                                // 2. Delete all user data from Convex
+                                await deleteAccount({ userId: convexUser._id });
+                                // 3. Sign out locally and redirect
+                                await signOut();
+                                router.replace('/login');
+                            } catch (e) {
+                                console.error('Delete account error:', e);
+                                Alert.alert("Error", "Could not delete account. Please try again.");
+                            }
+                        }
+                    }
+                },
+            ]
+        );
     };
 
     const openExternalUrl = async (url: string) => {
@@ -401,9 +433,18 @@ export default function SettingsScreen() {
 
                         <TouchableOpacity style={[styles.item, { paddingVertical: 16 }]} activeOpacity={0.7} onPress={handleSignOut}>
                             <View style={styles.itemLeft}>
-                                <Text style={[styles.itemLabel, { color: '#ef4444' }]}>Sign Out</Text>
+                                <Text style={[styles.itemLabel, { color: '#64748b' }]}>Sign Out</Text>
                             </View>
-                            <Ionicons name="log-out-outline" size={18} color="#ef4444" />
+                            <Ionicons name="log-out-outline" size={18} color="#64748b" />
+                        </TouchableOpacity>
+
+                        <View style={styles.divider} />
+
+                        <TouchableOpacity style={[styles.item, { paddingVertical: 16 }]} activeOpacity={0.7} onPress={handleDeleteAccount}>
+                            <View style={styles.itemLeft}>
+                                <Text style={[styles.itemLabel, { color: '#ef4444' }]}>Delete Account</Text>
+                            </View>
+                            <Ionicons name="trash-outline" size={18} color="#ef4444" />
                         </TouchableOpacity>
                     </View>
                 </View>

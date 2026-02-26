@@ -36,20 +36,20 @@ export default function IntegrationsScreen() {
             name: 'Apple Health',
             icon: 'heart',
             type: 'Health',
-            connected: true, // Placeholder logic for now, commonly implicitly connected on iOS if perms granted
+            connected: Platform.OS === 'ios', // Only implicitly connected on iOS 
             description: 'Sync steps, sleep, and workouts.',
             platform: 'ios',
-            action: () => Alert.alert('Apple Health', 'Managed via System Settings')
+            action: () => Alert.alert('Apple Health', 'Managed via System Settings on iOS')
         },
         {
             id: 'google_fit',
-            name: 'Google Fit',
-            icon: 'fitness',
+            name: 'Health Connect',
+            icon: 'logo-google',
             type: 'Health',
-            connected: false,
+            connected: Platform.OS === 'android', // Implicitly connected on Android via health connect
             description: 'Sync steps and activity.',
             platform: 'android',
-            action: () => Alert.alert('Google Fit', 'Coming soon')
+            action: () => Alert.alert('Health Connect', 'Managed via System Settings on Android')
         }
     ];
 
