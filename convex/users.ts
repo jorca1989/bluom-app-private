@@ -327,3 +327,113 @@ export const unlinkPartner = mutation({
     await ctx.db.patch(args.userId, { partnerId: undefined, updatedAt: Date.now() });
   },
 });
+
+/**
+ * Delete a user account and all associated personal data
+ * Required for App Store Guideline 5.1.1
+ */
+export const deleteAccount = mutation({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+    if (!user) return;
+
+    // Unlink partner if linked
+    if (user.partnerId) {
+      await ctx.db.patch(user.partnerId, { partnerId: undefined, updatedAt: Date.now() });
+    }
+
+    // Delete user's food entries
+    const foodEntries = await ctx.db
+      .query("foodEntries")
+      .withIndex("by_user_date", (q) => q.eq("userId", args.userId))
+      .collect();
+    for (const entry of foodEntries) {
+      await ctx.db.delete(entry._id);
+    }
+
+    // Delete user's manual steps entries
+    const stepsEntries = await ctx.db
+      .query("stepsEntries")
+      .withIndex("by_user_and_date", (q) => q.eq("userId", args.userId))
+      .collect();
+    for (const entry of stepsEntries) {
+      await ctx.db.delete(entry._id);
+    }
+
+    // Delete user's exercise logs
+    const exerciseEntries = await ctx.db
+      .query("exerciseEntries")
+      .withIndex("by_user_and_date", (q) => q.eq("userId", args.userId))
+      .collect();
+    for (const exercise of exerciseEntries) {
+      await ctx.db.delete(exercise._id);
+    }
+
+    // Delete daily stats (water logging)
+    const dailyStats = await ctx.db
+      .query("dailyStats")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+    for (const ds of dailyStats) {
+      await ctx.db.delete(ds._id);
+    }
+
+    // Delete shopping list items
+    const shoppingList = await ctx.db
+      .query("shoppingList")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+    for (const item of shoppingList) {
+      await ctx.db.delete(item._id);
+    }
+
+    // Delete user-created foods
+    const foods = await ctx.db
+      .query("foods")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+    for (const f of foods) {
+      await ctx.db.delete(f._id);
+    }
+
+    // Delete user-created recipes (Fuel)
+    const recipes = await ctx.db
+      .query("recipes")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+    for (const r of recipes) {
+      await ctx.db.delete(r._id);
+    }
+
+    // Delete user's sleep logs
+    const sleepLogs = await ctx.db
+      .query("sleepLogs")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+    for (const log of sleepLogs) {
+      await ctx.db.delete(log._id);
+    }
+
+    // Delete user's meditation logs
+    const meditationLogs = await ctx.db
+      .query("meditationLogs")
+      .withIndex("by_user_and_date", (q) => q.eq("userId", args.userId))
+      .collect();
+    for (const log of meditationLogs) {
+      await ctx.db.delete(log._id);
+    }
+
+    // Delete user's personal routines
+    const routines = await ctx.db
+      .query("routines")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+    for (const routine of routines) {
+      await ctx.db.delete(routine._id);
+    }
+
+    // Finally, delete the user record itself
+    await ctx.db.delete(args.userId);
+  },
+});

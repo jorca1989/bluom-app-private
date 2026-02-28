@@ -197,8 +197,8 @@ export const generateAllPlans = action({
       }
 
       if (!data || !data.nutrition || !data.fitness || !data.wellness) {
-        console.error("Gemini failed to generate valid plan JSON. Using basic fallback.");
-        throw new Error("Invalid AI Response");
+        console.warn("Gemini failed to generate valid plan JSON. Using basic fallback.");
+        data = createFallbackData(user);
       }
 
       // 4. Save to Database
@@ -212,13 +212,57 @@ export const generateAllPlans = action({
       return { success: true };
 
     } catch (err: any) {
-      console.error("AI Plan Generation Failed:", err);
-      // In a real app we might fallback to the deterministic logic here?
-      // For now, let's re-throw so the UI knows
-      throw new Error("AI Generation Failed: " + err.message);
+      console.error("AI Plan Generation Failed completely. Using basic fallback.", err);
+      // Fallback instead of throwing
+      const fallbackData = createFallbackData(user);
+      await ctx.runMutation(internal.plans.saveGeneratedPlans, {
+        userId: args.userId,
+        nutritionPlan: fallbackData.nutrition,
+        fitnessPlan: fallbackData.fitness,
+        wellnessPlan: fallbackData.wellness
+      });
+      return { success: true, usingFallback: true };
     }
   },
 });
+
+function createFallbackData(user: any) {
+  return {
+    nutrition: {
+      calories: user.dailyCalories || 2000,
+      protein: user.dailyProtein || 150,
+      carbs: user.dailyCarbs || 200,
+      fat: user.dailyFat || 70,
+      mealTemplates: [
+        { mealType: "Breakfast", calories: 500, protein: 30, carbs: 50, fat: 20, suggestions: ["Eggs and oatmeal"] },
+        { mealType: "Lunch", calories: 700, protein: 40, carbs: 70, fat: 25, suggestions: ["Chicken and rice"] },
+        { mealType: "Dinner", calories: 800, protein: 50, carbs: 80, fat: 25, suggestions: ["Salmon and sweet potato"] }
+      ]
+    },
+    fitness: {
+      workoutSplit: "Full Body Foundation",
+      daysPerWeek: 3,
+      workouts: [
+        {
+          day: "Day 1", focus: "Full Body", estimatedDuration: 45,
+          exercises: [
+            { name: "Squats", sets: 3, reps: "10-12", rest: 60 },
+            { name: "Push-ups", sets: 3, reps: "AMRAP", rest: 60 },
+            { name: "Dumbbell Rows", sets: 3, reps: "10-12", rest: 60 }
+          ]
+        }
+      ]
+    },
+    wellness: {
+      sleepRecommendation: { targetHours: 8, bedTimeWindow: "10:00 PM - 6:00 AM", tips: ["Avoid screens 1hr before bed", "Keep room cool"] },
+      meditationRecommendation: { frequencyPerWeek: 3, sessionDuration: 10, style: "Mindfulness" },
+      recommendedHabits: [
+        { name: "Hydrate", icon: "💧", category: "health", frequency: "Daily" },
+        { name: "Walk", icon: "🚶", category: "fitness", frequency: "Daily" }
+      ]
+    }
+  };
+}
 
 /**
  * Get active plans for a user

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Animated, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,26 +7,13 @@ import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { TAB_BAR_HEIGHT, getBottomContentPadding } from '@/utils/layout';
 import { SoundEffect, triggerSound } from '@/utils/soundEffects';
-import { useRouter } from 'expo-router';
 
 type Mode = 'breathing' | 'quote' | 'journal';
 
 export default function PanicButton({ userId }: { userId: Id<'users'> }) {
-  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const user = useQuery(api.users.getUserById, { userId });
   const quoteRes = useQuery(api.sugar.getMotivationalQuote, userId ? { userId } : 'skip');
   const saveJournal = useMutation(api.aimind.saveJournal);
-
-  const isPro = useMemo(() => {
-    return (
-      user?.subscriptionStatus === 'pro' ||
-      user?.isPremium === true ||
-      user?.isAdmin === true ||
-      user?.role === 'admin' ||
-      user?.role === 'super_admin'
-    );
-  }, [user?.subscriptionStatus, user?.isPremium, user?.isAdmin, user?.role]);
 
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<Mode>('breathing');
@@ -74,8 +61,6 @@ export default function PanicButton({ userId }: { userId: Id<'users'> }) {
     return () => timerRef.current && clearInterval(timerRef.current);
   }, []);
 
-  if (!isPro) return null;
-
   const bottom = getBottomContentPadding(insets.bottom, 16) + TAB_BAR_HEIGHT;
 
   function openRandom() {
@@ -109,6 +94,9 @@ export default function PanicButton({ userId }: { userId: Id<'users'> }) {
 
   const scale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1.15] });
   const phase = secondsLeft % 4 < 2 ? 'Inhale' : 'Exhale';
+  const quoteText =
+    quoteRes?.quote ??
+    (quoteRes?.locked ? 'Take one breath. You’re in control.' : 'Loading…');
 
   return (
     <>
@@ -157,17 +145,7 @@ export default function PanicButton({ userId }: { userId: Id<'users'> }) {
             {mode === 'quote' && (
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>One line. Right now.</Text>
-                <Text style={styles.quoteText}>{quoteRes?.quote ?? 'Loading…'}</Text>
-                {!!quoteRes?.locked && (
-                  <TouchableOpacity
-                    style={[styles.primaryBtn, { backgroundColor: '#f59e0b' }]}
-                    onPress={() => router.push('/premium')}
-                    activeOpacity={0.85}
-                  >
-                    <Ionicons name="sparkles" size={18} color="#fff" />
-                    <Text style={styles.primaryText}>Upgrade</Text>
-                  </TouchableOpacity>
-                )}
+                <Text style={styles.quoteText}>{quoteText}</Text>
               </View>
             )}
 

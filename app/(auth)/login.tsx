@@ -17,6 +17,7 @@ import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, LogIn, Eye, EyeOff } from 'lucide-react-native';
 import { MASTER_ADMINS } from '@/convex/permissions';
+import AppleSignInButton from '@/components/AppleSignInButton';
 
 function isAdminEmail(email: string) {
   const e = String(email ?? '').toLowerCase().trim();
@@ -314,6 +315,17 @@ export default function LoginScreen() {
                     )}
                   </LinearGradient>
                 </TouchableOpacity>
+
+                {Platform.OS === 'ios' && (
+                  <>
+                    <View style={styles.divider}>
+                      <View style={styles.dividerLine} />
+                      <Text style={styles.dividerText}>or</Text>
+                      <View style={styles.dividerLine} />
+                    </View>
+                    <AppleSignInButton disabled={loading} />
+                  </>
+                )}
               </>
             )}
           </View>

@@ -33,6 +33,12 @@
         "EXPO_PUBLIC_POSTHOG_API_KEY": "phc_FxRJ7YGC7Ma8K1yzdT8C1pIOz98ahx8MqOCQceEoe6T",
         "EXPO_PUBLIC_POSTHOG_HOST": "https://us.i.posthog.com"
       }
+    },
+    "simulator": {
+      "extends": "production",
+      "ios": {
+        "simulator": true
+      }
     }
   },
   "submit": {

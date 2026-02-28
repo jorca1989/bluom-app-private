@@ -16,6 +16,7 @@ import { useSignUp } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, UserPlus, Eye, EyeOff } from 'lucide-react-native';
+import AppleSignInButton from '@/components/AppleSignInButton';
 
 export default function SignupScreen() {
   const { signUp, setActive, isLoaded } = useSignUp();
@@ -189,6 +190,17 @@ export default function SignupScreen() {
                   </LinearGradient>
                 </TouchableOpacity>
 
+                {Platform.OS === 'ios' && (
+                  <>
+                    <View style={styles.divider}>
+                      <View style={styles.dividerLine} />
+                      <Text style={styles.dividerText}>or</Text>
+                      <View style={styles.dividerLine} />
+                    </View>
+                    <AppleSignInButton disabled={loading} />
+                  </>
+                )}
+
                 <View style={styles.footer}>
                   <Text style={styles.footerText}>Already have an account? </Text>
                   <TouchableOpacity onPress={() => router.push('/login')}>
@@ -221,6 +233,9 @@ const styles = StyleSheet.create({
   primaryButton: { borderRadius: 12, overflow: 'hidden' },
   gradientButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16, gap: 8 },
   primaryButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  divider: { flexDirection: 'row', alignItems: 'center', marginTop: 14, marginBottom: 14 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: '#e2e8f0' },
+  dividerText: { paddingHorizontal: 16, color: '#94a3b8', fontSize: 14, fontWeight: '600' },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',

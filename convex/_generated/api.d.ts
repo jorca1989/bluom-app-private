@@ -18,6 +18,7 @@ import type * as daily from "../daily.js";
 import type * as debug from "../debug.js";
 import type * as debug_exercises from "../debug_exercises.js";
 import type * as debug_users from "../debug_users.js";
+import type * as deleteClerkUser from "../deleteClerkUser.js";
 import type * as exercise from "../exercise.js";
 import type * as exercises from "../exercises.js";
 import type * as externalFoods from "../externalFoods.js";
@@ -83,6 +84,7 @@ declare const fullApi: ApiFromModules<{
   debug: typeof debug;
   debug_exercises: typeof debug_exercises;
   debug_users: typeof debug_users;
+  deleteClerkUser: typeof deleteClerkUser;
   exercise: typeof exercise;
   exercises: typeof exercises;
   externalFoods: typeof externalFoods;

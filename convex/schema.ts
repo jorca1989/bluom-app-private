@@ -31,53 +31,19 @@ export default defineSchema({
     targetWeight: v.optional(v.float64()), // in kg
 
     // Activity & Goals
-    fitnessGoal: v.optional(v.union(
-      v.literal("lose_weight"),
-      v.literal("build_muscle"),
-      v.literal("maintain"),
-      v.literal("improve_health"),
-      v.literal("improve_endurance"),
-      v.literal("general_health")
-    )),
-    activityLevel: v.optional(v.union(
-      v.literal("sedentary"),
-      v.literal("lightly_active"),
-      v.literal("moderately_active"),
-      v.literal("very_active"),
-      v.literal("extremely_active")
-    )),
-    fitnessExperience: v.optional(v.union(
-      v.literal("beginner"),
-      v.literal("intermediate"),
-      v.literal("advanced")
-    )),
-    workoutPreference: v.optional(v.union(
-      v.literal("strength"),
-      v.literal("cardio"),
-      v.literal("hiit"),
-      v.literal("yoga"),
-      v.literal("mixed")
-    )),
+    fitnessGoal: v.optional(v.string()),
+    activityLevel: v.optional(v.string()),
+    fitnessExperience: v.optional(v.string()),
+    workoutPreference: v.optional(v.string()),
     weeklyWorkoutTime: v.optional(v.float64()), // hours per week
 
     // Nutrition Preferences
-    nutritionApproach: v.optional(v.union(
-      v.literal("balanced"),
-      v.literal("high_protein"),
-      v.literal("low_carb"),
-      v.literal("plant_based"),
-      v.literal("flexible")
-    )),
+    nutritionApproach: v.optional(v.string()),
     mealsPerDay: v.optional(v.float64()),
 
     // Wellness Data
     sleepHours: v.optional(v.float64()),
-    stressLevel: v.optional(v.union(
-      v.literal("low"),
-      v.literal("moderate"),
-      v.literal("high"),
-      v.literal("very_high")
-    )),
+    stressLevel: v.optional(v.string()),
     motivations: v.optional(v.array(v.string())),
     challenges: v.optional(v.array(v.string())),
     threeMonthGoal: v.optional(v.string()),
@@ -627,16 +593,7 @@ export default defineSchema({
     fatTarget: v.float64(),
 
     // Meal Templates
-    mealTemplates: v.array(
-      v.object({
-        mealType: v.string(),
-        calories: v.float64(),
-        protein: v.float64(),
-        carbs: v.float64(),
-        fat: v.float64(),
-        suggestions: v.array(v.string()),
-      })
-    ),
+    mealTemplates: v.any(),
 
     // Metadata
     isActive: v.boolean(),
@@ -656,21 +613,7 @@ export default defineSchema({
     daysPerWeek: v.float64(),
 
     // Workout Templates
-    workouts: v.array(
-      v.object({
-        day: v.string(),
-        focus: v.string(),
-        exercises: v.array(
-          v.object({
-            name: v.string(),
-            sets: v.union(v.float64(), v.string()),
-            reps: v.union(v.float64(), v.string()),
-            rest: v.union(v.float64(), v.string()), // seconds
-          })
-        ),
-        estimatedDuration: v.optional(v.union(v.float64(), v.string())), // minutes
-      })
-    ),
+    workouts: v.any(),
 
     // Metadata
     isActive: v.boolean(),
@@ -688,26 +631,9 @@ export default defineSchema({
     name: v.string(),
 
     // Recommendations
-    sleepRecommendation: v.object({
-      targetHours: v.float64(),
-      bedTimeWindow: v.string(), // e.g., "10:00 PM - 11:00 PM"
-      tips: v.array(v.string()),
-    }),
-
-    meditationRecommendation: v.object({
-      frequencyPerWeek: v.float64(),
-      sessionDuration: v.float64(), // minutes
-      style: v.string(), // e.g., "mindfulness", "guided", "breathing"
-    }),
-
-    recommendedHabits: v.array(
-      v.object({
-        name: v.string(),
-        icon: v.string(),
-        category: v.string(),
-        frequency: v.string(), // e.g., "daily", "3x per week"
-      })
-    ),
+    sleepRecommendation: v.any(),
+    meditationRecommendation: v.any(),
+    recommendedHabits: v.any(),
 
     // Metadata
     isActive: v.boolean(),

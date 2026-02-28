@@ -614,16 +614,12 @@ export default function OnboardingScreen() {
 
       const result = await onboardUser({ clerkId: clerkUser!.id, ...dataToSave as any });
 
-      // 3. Trigger AI (Background)
+      // 3. Skip AI Generation for Free Tier Onboarding
+      // Instead of calling generateAllPlans (which uses the Gemini API), we rely on 
+      // the local math calculation and the deterministic targets saved in the onboardUser mutation.
+      // Premium explicitly triggers AI generation later via the paywall or settings.
       if (result && result.userId) {
-        try {
-          // Attempt to generate plans
-          await generateAllPlans({ userId: result.userId });
-          setAiStatus('success');
-        } catch (err) {
-          console.log("AI Generation Failed (Outage/Error):", err);
-          setAiStatus('failed'); // Fallback UI will show
-        }
+        setAiStatus('success');
       }
 
     } catch (e) {

@@ -1,0 +1,15 @@
+﻿app/(tabs)/move.tsx(1455,72): error TS2304: Cannot find name 'Platform'.
+app/(tabs)/move.tsx(1518,82): error TS2304: Cannot find name 'Platform'.
+app/(tabs)/move.tsx(1528,30): error TS2304: Cannot find name 'Platform'.
+convex/users.ts(348,14): error TS2345: Argument of type '"mealLogs"' is not assignable to parameter of type 'TableNamesInDataModel<{ challenges: { document: { _id: Id<"challenges">; _creationTime: number; type: string; createdAt: number; updatedAt: number; userId: Id<"users">; startDate: number; currentStreak: number; }; fieldPaths: ExtractFieldPaths<...> | "_id"; indexes: { ...; }; searchIndexes: {}; vectorIndexes: {}; };...'.
+convex/users.ts(349,18): error TS2345: Argument of type '"by_user"' is not assignable to parameter of type '"by_id" | "by_creation_time"'.
+convex/users.ts(349,41): error TS2345: Argument of type '"userId"' is not assignable to parameter of type '"_creationTime" | "_id"'.
+convex/users.ts(357,14): error TS2345: Argument of type '"workouts"' is not assignable to parameter of type 'TableNamesInDataModel<{ challenges: { document: { _id: Id<"challenges">; _creationTime: number; type: string; createdAt: number; updatedAt: number; userId: Id<"users">; startDate: number; currentStreak: number; }; fieldPaths: ExtractFieldPaths<...> | "_id"; indexes: { ...; }; searchIndexes: {}; vectorIndexes: {}; };...'.
+convex/users.ts(358,18): error TS2345: Argument of type '"by_user"' is not assignable to parameter of type '"by_id" | "by_creation_time"'.
+convex/users.ts(358,41): error TS2345: Argument of type '"userId"' is not assignable to parameter of type '"_creationTime" | "_id"'.
+convex/users.ts(366,14): error TS2345: Argument of type '"dailyProgress"' is not assignable to parameter of type 'TableNamesInDataModel<{ challenges: { document: { _id: Id<"challenges">; _creationTime: number; type: string; createdAt: number; updatedAt: number; userId: Id<"users">; startDate: number; currentStreak: number; }; fieldPaths: ExtractFieldPaths<...> | "_id"; indexes: { ...; }; searchIndexes: {}; vectorIndexes: {}; };...'.
+convex/users.ts(367,18): error TS2345: Argument of type '"by_user"' is not assignable to parameter of type '"by_id" | "by_creation_time"'.
+convex/users.ts(367,41): error TS2345: Argument of type '"userId"' is not assignable to parameter of type '"_creationTime" | "_id"'.
+convex/users.ts(375,14): error TS2345: Argument of type '"personalizedRoutines"' is not assignable to parameter of type 'TableNamesInDataModel<{ challenges: { document: { _id: Id<"challenges">; _creationTime: number; type: string; createdAt: number; updatedAt: number; userId: Id<"users">; startDate: number; currentStreak: number; }; fieldPaths: ExtractFieldPaths<...> | "_id"; indexes: { ...; }; searchIndexes: {}; vectorIndexes: {}; };...'.
+convex/users.ts(376,18): error TS2345: Argument of type '"by_user"' is not assignable to parameter of type '"by_id" | "by_creation_time"'.
+convex/users.ts(376,41): error TS2345: Argument of type '"userId"' is not assignable to parameter of type '"_creationTime" | "_id"'.

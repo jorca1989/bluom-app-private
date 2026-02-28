@@ -144,30 +144,14 @@ type OnboardingArgs = {
   weight: number;
   height: number;
   targetWeight?: number;
-  fitnessGoal:
-  | "lose_weight"
-  | "build_muscle"
-  | "maintain"
-  | "improve_health"
-  | "improve_endurance"
-  | "general_health";
-  fitnessExperience: "beginner" | "intermediate" | "advanced";
-  workoutPreference: "strength" | "cardio" | "hiit" | "yoga" | "mixed";
+  fitnessGoal: string;
+  fitnessExperience: string;
+  workoutPreference: string;
   weeklyWorkoutTime: number;
-  activityLevel:
-  | "sedentary"
-  | "lightly_active"
-  | "moderately_active"
-  | "very_active"
-  | "extremely_active";
-  nutritionApproach:
-  | "balanced"
-  | "high_protein"
-  | "low_carb"
-  | "plant_based"
-  | "flexible";
+  activityLevel: string;
+  nutritionApproach: string;
   sleepHours: number;
-  stressLevel: "low" | "moderate" | "high" | "very_high";
+  stressLevel: string;
   motivations: string[];
   challenges: string[];
   mealsPerDay: number;
@@ -204,48 +188,14 @@ export const onboardUser = mutation({
     weight: v.number(),
     height: v.number(),
     targetWeight: v.optional(v.number()),
-    fitnessGoal: v.union(
-      v.literal("lose_weight"),
-      v.literal("build_muscle"),
-      v.literal("maintain"),
-      v.literal("improve_health"),
-      v.literal("improve_endurance"),
-      v.literal("general_health")
-    ),
-    fitnessExperience: v.union(
-      v.literal("beginner"),
-      v.literal("intermediate"),
-      v.literal("advanced")
-    ),
-    workoutPreference: v.union(
-      v.literal("strength"),
-      v.literal("cardio"),
-      v.literal("hiit"),
-      v.literal("yoga"),
-      v.literal("mixed")
-    ),
+    fitnessGoal: v.string(),
+    fitnessExperience: v.string(),
+    workoutPreference: v.string(),
     weeklyWorkoutTime: v.number(),
-    activityLevel: v.union(
-      v.literal("sedentary"),
-      v.literal("lightly_active"),
-      v.literal("moderately_active"),
-      v.literal("very_active"),
-      v.literal("extremely_active")
-    ),
-    nutritionApproach: v.union(
-      v.literal("balanced"),
-      v.literal("high_protein"),
-      v.literal("low_carb"),
-      v.literal("plant_based"),
-      v.literal("flexible")
-    ),
+    activityLevel: v.string(),
+    nutritionApproach: v.string(),
     sleepHours: v.number(),
-    stressLevel: v.union(
-      v.literal("low"),
-      v.literal("moderate"),
-      v.literal("high"),
-      v.literal("very_high")
-    ),
+    stressLevel: v.string(),
     motivations: v.array(v.string()),
     challenges: v.array(v.string()),
     mealsPerDay: v.number(),
@@ -383,28 +333,9 @@ export const preCalculateTargets = mutation({
     age: v.string(),
     weight: v.string(),
     height: v.string(),
-    activityLevel: v.union(
-      v.literal("sedentary"),
-      v.literal("lightly_active"),
-      v.literal("moderately_active"),
-      v.literal("very_active"),
-      v.literal("extremely_active")
-    ),
-    fitnessGoal: v.union(
-      v.literal("lose_weight"),
-      v.literal("build_muscle"),
-      v.literal("maintain"),
-      v.literal("improve_health"),
-      v.literal("improve_endurance"),
-      v.literal("general_health")
-    ),
-    nutritionApproach: v.union(
-      v.literal("balanced"),
-      v.literal("high_protein"),
-      v.literal("low_carb"),
-      v.literal("plant_based"),
-      v.literal("flexible")
-    ),
+    activityLevel: v.string(),
+    fitnessGoal: v.string(),
+    nutritionApproach: v.string(),
   },
   handler: async (ctx, args) => {
     // Convert string inputs

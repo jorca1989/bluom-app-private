@@ -14,6 +14,7 @@ import {
   ActivityIndicator,
   Alert,
   Platform,
+  Linking,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -28,11 +29,9 @@ import { getBottomContentPadding } from '@/utils/layout';
 import { SoundEffect, triggerSound } from '@/utils/soundEffects';
 import { useCelebration } from '@/context/CelebrationContext';
 import { requestHealthPermissions, syncHealthData } from '@/utils/healthIntegration';
+import { useResponsive } from '@/utils/responsive';
 
 
-
-const { width } = Dimensions.get('window');
-const isSmallScreen = width < 380;
 
 const safeNumber = (val: string | number, fallback = 0) => {
   const parsed = typeof val === 'string' ? parseFloat(val) : val;
@@ -79,6 +78,7 @@ export default function MoveScreen() {
   const [showTooltip, setShowTooltip] = useState(false); // Disabled for production
   const params = useLocalSearchParams<{ openWorkouts?: string }>();
   const insets = useSafeAreaInsets();
+  const { width, isTablet, isSmallPhone: isSmallScreen, contentMaxWidth, kpiCardWidth } = useResponsive();
 
   const { user: clerkUser, isLoaded: isClerkLoaded } = useClerkUser();
 
@@ -100,6 +100,7 @@ export default function MoveScreen() {
   const addStepsEntry = useMutation(api.steps.addStepsEntry);
   const deleteExerciseEntry = useMutation(api.exercise.deleteExerciseEntry);
   const deleteStepsEntry = useMutation(api.steps.deleteStepsEntry);
+  const saveExternalData = useMutation(api.integrations.saveExternalData);
   const celebration = useCelebration();
 
   // Achievements system
@@ -311,6 +312,7 @@ export default function MoveScreen() {
   const [showExerciseSearch, setShowExerciseSearch] = useState(false);
   const [showStepsModal, setShowStepsModal] = useState(false);
   const [showCustomExercise, setShowCustomExercise] = useState(false);
+  const [showAllActivities, setShowAllActivities] = useState(false);
 
   // Search state (debounced)
   const [searchQuery, setSearchQuery] = useState('');
@@ -365,13 +367,19 @@ export default function MoveScreen() {
     );
     const steps = (stepsEntries ?? []).reduce((acc: number, e: any) => acc + e.steps, 0);
     const stepsCalories = (stepsEntries ?? []).reduce((acc: number, e: any) => acc + e.caloriesBurned, 0);
+    const syncedSteps = syncedMetrics?.steps ?? 0;
+    const syncedCalories = syncedMetrics?.calories ?? 0;
+    const manualCalories = Math.round(total.calories + stepsCalories);
+    // Calories KPI should represent "total burned today" without double-counting.
+    // If Health provides ActiveEnergyBurned totals, treat it as authoritative for the day.
+    const burnedToday = Math.round(Math.max(manualCalories, syncedCalories));
     return {
       workouts: total.workouts,
       minutes: Math.round(total.minutes),
-      calories: Math.round(total.calories + stepsCalories),
+      calories: burnedToday,
       steps: Math.round(steps),
-      syncedSteps: syncedMetrics?.steps ?? 0,
-      syncedCalories: syncedMetrics?.calories ?? 0,
+      syncedSteps,
+      syncedCalories,
     };
   }, [exerciseEntries, stepsEntries, syncedMetrics]);
 
@@ -383,6 +391,7 @@ export default function MoveScreen() {
       calories: entry.caloriesBurned,
       timestamp: entry.timestamp,
       activityType: 'exercise' as const,
+      origin: 'manual' as const,
       entry,
     }));
 
@@ -393,11 +402,32 @@ export default function MoveScreen() {
       calories: entry.caloriesBurned,
       timestamp: entry.timestamp,
       activityType: 'steps' as const,
+      synced: false as const,
+      origin: 'manual' as const,
       entry,
     }));
 
-    return [...ex, ...st].sort((a, b) => b.timestamp - a.timestamp);
-  }, [exerciseEntries, stepsEntries]);
+    const syncedSteps = syncedMetrics?.steps ?? 0;
+    const syncedCalories = syncedMetrics?.calories ?? 0;
+    const hasSynced = syncedSteps > 0 || syncedCalories > 0;
+    const syncedActivity = hasSynced
+      ? [
+          {
+            id: 'health-sync',
+            name: `${Math.round(syncedSteps).toLocaleString()} Steps (Health)`,
+            duration: 0,
+            calories: Math.round(syncedCalories),
+            timestamp: Date.now(),
+            activityType: 'steps' as const,
+            synced: true as const,
+            origin: (Platform.OS === 'ios' ? 'apple' : 'google') as 'apple' | 'google',
+            entry: null,
+          },
+        ]
+      : [];
+
+    return [...ex, ...syncedActivity, ...st].sort((a, b) => b.timestamp - a.timestamp);
+  }, [exerciseEntries, stepsEntries, syncedMetrics]);
 
   const weekDays = useMemo(() => {
     const now = today;
@@ -588,6 +618,9 @@ export default function MoveScreen() {
       }
       return;
     }
+    // Health-synced rows are informational and should not be deletable.
+    if ((activity as any).synced) return;
+    if (!activity.entry?._id) return;
     try {
       await deleteStepsEntry({ entryId: activity.entry._id });
     } catch (e: any) {
@@ -604,470 +637,507 @@ export default function MoveScreen() {
           styles.scrollContent,
           {
             paddingTop: 12,
-            paddingBottom: Math.max(insets.bottom, 24) + 12, // Larger bottom padding for Move tab due to many cards
+            paddingBottom: Math.max(insets.bottom, 24) + 12,
+            ...(isTablet ? { alignItems: 'center' as const } : {}),
           },
         ]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header */}
-        <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 12 }]}>
-          <View style={styles.headerContent}>
-            <View style={styles.headerTextContainer}>
-              <Text style={styles.title}>Move</Text>
-              <Text style={styles.subtitle}>Track your workouts and activity</Text>
+        <View style={isTablet ? { width: '100%', maxWidth: contentMaxWidth, alignSelf: 'center' } : undefined}>
+          {/* Header */}
+          <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 12 }]}>
+            <View style={styles.headerContent}>
+              <View style={styles.headerTextContainer}>
+                <Text style={styles.title}>Move</Text>
+                <Text style={styles.subtitle}>Track your workouts and activity</Text>
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <TouchableOpacity
+                  style={[styles.headerButton, styles.plusButton]}
+                  onPress={() => setShowDropdown((v) => !v)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="add" size={24} color="#ffffff" />
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          </View>
+
+          {/* Plus Menu */}
+          {showDropdown && (
+            <View style={styles.plusMenu}>
               <TouchableOpacity
-                style={[styles.headerButton, styles.plusButton]}
-                onPress={() => setShowDropdown((v) => !v)}
+                style={styles.plusMenuItem}
+                onPress={() => {
+                  closeAllOverlays();
+                  setShowExerciseSearch(true);
+                  setShowCustomExercise(false);
+                }}
                 activeOpacity={0.7}
               >
-                <Ionicons name="add" size={24} color="#ffffff" />
+                <Ionicons name="barbell" size={20} color="#1e293b" />
+                <Text style={styles.plusMenuText}>Log Workout</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.plusMenuItem}
+                onPress={() => {
+                  closeAllOverlays();
+                  setShowRoutineModal(true);
+                }}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="list" size={20} color="#1e293b" />
+                <Text style={styles.plusMenuText}>Browse Routines</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.plusMenuItem}
+                onPress={() => {
+                  closeAllOverlays();
+                  setShowStepsModal(true);
+                }}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="locate" size={20} color="#1e293b" />
+                <Text style={styles.plusMenuText}>Add Steps</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.plusMenuItem}
+                onPress={() => {
+                  closeAllOverlays();
+                  setShowWorkoutModal(true);
+                  setShowCustomExercise(true);
+                }}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="add-circle" size={20} color="#1e293b" />
+                <Text style={styles.plusMenuText}>Custom Exercise</Text>
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
+          )}
 
-        {/* Plus Menu */}
-        {showDropdown && (
-          <View style={styles.plusMenu}>
+          {/* Fat Burn Cardio Recommendation */}
+          {showFatBurnCardio && (
             <TouchableOpacity
-              style={styles.plusMenuItem}
               onPress={() => {
-                closeAllOverlays();
+                setSearchQuery('Zone 2');
                 setShowExerciseSearch(true);
-                setShowCustomExercise(false);
               }}
-              activeOpacity={0.7}
+              className="mx-4 mt-4 bg-orange-50 border border-orange-100 p-5 rounded-3xl flex-row items-center gap-4 shadow-sm"
             >
-              <Ionicons name="barbell" size={20} color="#1e293b" />
-              <Text style={styles.plusMenuText}>Log Workout</Text>
+              <View className="bg-orange-100 w-12 h-12 rounded-full items-center justify-center">
+                <Ionicons name="flame" size={24} color="#f97316" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-orange-900 font-black text-base">Fat Burn Zone</Text>
+                <Text className="text-orange-700 font-medium text-xs leading-4">
+                  Great time for Zone 2 cardio!
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#fb923c" />
             </TouchableOpacity>
+          )}
 
-            <TouchableOpacity
-              style={styles.plusMenuItem}
-              onPress={() => {
-                closeAllOverlays();
-                setShowRoutineModal(true);
-              }}
-              activeOpacity={0.7}
-            >
-              <Ionicons name="list" size={20} color="#1e293b" />
-              <Text style={styles.plusMenuText}>Browse Routines</Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.plusMenuItem}
-              onPress={() => {
-                closeAllOverlays();
-                setShowStepsModal(true);
-              }}
-              activeOpacity={0.7}
-            >
-              <Ionicons name="locate" size={20} color="#1e293b" />
-              <Text style={styles.plusMenuText}>Add Steps</Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.plusMenuItem}
-              onPress={() => {
-                closeAllOverlays();
-                setShowWorkoutModal(true);
-                setShowCustomExercise(true);
-              }}
-              activeOpacity={0.7}
-            >
-              <Ionicons name="add-circle" size={20} color="#1e293b" />
-              <Text style={styles.plusMenuText}>Custom Exercise</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {/* Fat Burn Cardio Recommendation */}
-        {showFatBurnCardio && (
-          <TouchableOpacity
-            onPress={() => {
-              setSearchQuery('Zone 2');
-              setShowExerciseSearch(true);
-            }}
-            className="mx-4 mt-4 bg-orange-50 border border-orange-100 p-5 rounded-3xl flex-row items-center gap-4 shadow-sm"
-          >
-            <View className="bg-orange-100 w-12 h-12 rounded-full items-center justify-center">
-              <Ionicons name="flame" size={24} color="#f97316" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-orange-900 font-black text-base">Fat Burn Zone</Text>
-              <Text className="text-orange-700 font-medium text-xs leading-4">
-                Great time for Zone 2 cardio!
+          {/* Activity Summary */}
+          <View style={[styles.activitySummary, isTablet && { justifyContent: 'space-between' }]}>
+            <View style={[styles.summaryCard, { width: kpiCardWidth(48, 16), padding: isSmallScreen ? 12 : 16 }]}>
+              <View style={[styles.summaryIconContainer, { backgroundColor: '#dbeafe' }]}>
+                <Ionicons name="barbell" size={24} color="#2563eb" />
+              </View>
+              <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
+                Workouts
+              </Text>
+              <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
+                {todayTotals.workouts}
+              </Text>
+              <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
+                Today
               </Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#fb923c" />
-          </TouchableOpacity>
-        )}
 
-
-
-        {/* Activity Summary */}
-        <View style={styles.activitySummary}>
-          <View style={styles.summaryCard}>
-            <View style={[styles.summaryIconContainer, { backgroundColor: '#dbeafe' }]}>
-              <Ionicons name="barbell" size={24} color="#2563eb" />
+            <View style={[styles.summaryCard, { width: kpiCardWidth(48, 16), padding: isSmallScreen ? 12 : 16 }]}>
+              <View style={[styles.summaryIconContainer, { backgroundColor: '#dbeafe' }]}>
+                <Ionicons name="time" size={24} color="#2563eb" />
+              </View>
+              <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
+                Minutes
+              </Text>
+              <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
+                {todayTotals.minutes}
+              </Text>
+              <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
+                Active Time
+              </Text>
             </View>
-            <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
-              Workouts
-            </Text>
-            <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
-              {todayTotals.workouts}
-            </Text>
-            <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
-              Today
-            </Text>
+
+            <View style={[styles.summaryCard, { width: kpiCardWidth(48, 16), padding: isSmallScreen ? 12 : 16 }]}>
+              <View style={[styles.summaryIconContainer, { backgroundColor: '#dbeafe' }]}>
+                <Ionicons name="flash" size={24} color="#2563eb" />
+              </View>
+              <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
+                Calories
+              </Text>
+              <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
+                {todayTotals.calories}
+              </Text>
+              <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
+                Burned Today
+              </Text>
+            </View>
+
+            <View style={[styles.summaryCard, { width: kpiCardWidth(48, 16), padding: isSmallScreen ? 12 : 16 }]}>
+              <View style={[styles.summaryIconContainer, { backgroundColor: '#ede9fe' }]}>
+                <Ionicons name="locate" size={24} color="#8b5cf6" />
+              </View>
+              <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
+                Steps
+              </Text>
+              <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
+                {todayTotals.syncedSteps > todayTotals.steps ? todayTotals.syncedSteps.toLocaleString() : todayTotals.steps.toLocaleString()}
+              </Text>
+              <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
+                {todayTotals.syncedSteps > 0 && todayTotals.syncedSteps > todayTotals.steps ? "Synced from Health" : "Today"}
+              </Text>
+              {todayTotals.syncedSteps > 0 && todayTotals.syncedSteps > todayTotals.steps && (
+                <View style={{ position: 'absolute', top: 12, right: 12 }}>
+                  <Ionicons name="link" size={14} color="#8b5cf6" />
+                </View>
+              )}
+            </View>
           </View>
 
-          <View style={styles.summaryCard}>
-            <View style={[styles.summaryIconContainer, { backgroundColor: '#dbeafe' }]}>
-              <Ionicons name="time" size={24} color="#2563eb" />
+          {/* Weekly Progress */}
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>Weekly Progress</Text>
+              <Ionicons name="trending-up" size={24} color="#2563eb" />
             </View>
-            <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
-              Minutes
-            </Text>
-            <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
-              {todayTotals.minutes}
-            </Text>
-            <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
-              Active Time
-            </Text>
+
+            <View style={styles.chartContainer}>
+              {weekData.map((workouts, idx) => (
+                <View key={`${idx}`} style={styles.chartBarWrapper}>
+                  <View
+                    style={[
+                      styles.chartBar,
+                      {
+                        height: Math.max(6, workouts * 15),
+                        opacity: workouts === 0 ? 0.25 : 1,
+                      },
+                    ]}
+                  />
+                  <Text style={styles.chartDay}>{weekDayLabels[idx]}</Text>
+                </View>
+              ))}
+            </View>
+
+            <View style={styles.weeklyStatsGrid}>
+              <View style={styles.weeklyStatItem}>
+                <Text style={styles.weeklyStatValue}>{weekData.reduce((a, b) => a + b, 0)}</Text>
+                <Text style={styles.weeklyStatLabel}>Workouts</Text>
+              </View>
+              <View style={styles.weeklyStatItem}>
+                <Text style={styles.weeklyStatValue}>
+                  {Math.round(
+                    (weekExerciseEntries ?? []).reduce(
+                      (acc: number, e: any) => acc + e.duration,
+                      0
+                    ) / 60
+                  )}
+                  h
+                </Text>
+                <Text style={styles.weeklyStatLabel}>Total Time</Text>
+              </View>
+              <View style={styles.weeklyStatItem}>
+                <Text style={styles.weeklyStatValue}>
+                  {Math.round(
+                    (weekExerciseEntries ?? []).reduce(
+                      (acc: number, e: any) => acc + e.caloriesBurned,
+                      0
+                    )
+                  )}
+                </Text>
+                <Text style={styles.weeklyStatLabel}>Calories</Text>
+              </View>
+            </View>
           </View>
 
-          <View style={styles.summaryCard}>
-            <View style={[styles.summaryIconContainer, { backgroundColor: '#dbeafe' }]}>
-              <Ionicons name="flash" size={24} color="#2563eb" />
+          {/* Today's Activities */}
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>Today's Activities</Text>
+              <Ionicons name="pulse" size={24} color="#2563eb" />
             </View>
-            <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
-              Calories
-            </Text>
-            <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
-              {todayTotals.calories}
-            </Text>
-            <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
-              Burned Today
-            </Text>
-          </View>
 
-          <View style={styles.summaryCard}>
-            <View style={[styles.summaryIconContainer, { backgroundColor: '#ede9fe' }]}>
-              <Ionicons name="locate" size={24} color="#8b5cf6" />
-            </View>
-            <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
-              Steps
-            </Text>
-            <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
-              {todayTotals.syncedSteps > todayTotals.steps ? todayTotals.syncedSteps.toLocaleString() : todayTotals.steps.toLocaleString()}
-            </Text>
-            <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
-              {todayTotals.syncedSteps > 0 ? "Synced from Health" : "Today"}
-            </Text>
-            {todayTotals.syncedSteps > 0 && (
-              <View style={{ position: 'absolute', top: 12, right: 12 }}>
-                <Ionicons name="link" size={14} color="#8b5cf6" />
+            {loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#2563eb" />
+                <Text style={styles.loadingText}>Loading...</Text>
+              </View>
+            ) : todayActivities.length > 0 ? (
+              <View style={styles.activitiesList}>
+                {(showAllActivities ? todayActivities : todayActivities.slice(0, 6)).map((activity) => (
+                  <View key={activity.id} style={styles.activityItem}>
+                    <View style={styles.activityLeft}>
+                      <View
+                        style={[
+                          styles.activityIconContainer,
+                          {
+                            backgroundColor:
+                              activity.activityType === 'steps'
+                                ? ((activity as any).origin === 'apple'
+                                    ? '#fee2e2'
+                                    : (activity as any).origin === 'google'
+                                      ? '#dbeafe'
+                                      : '#ede9fe')
+                                : '#dbeafe',
+                          },
+                        ]}
+                      >
+                        {activity.activityType === 'steps' ? (
+                          (activity as any).origin === 'apple' ? (
+                            <Ionicons name="heart" size={16} color="#ef4444" />
+                          ) : (activity as any).origin === 'google' ? (
+                            <Ionicons name="logo-google" size={16} color="#4285F4" />
+                          ) : (
+                            <Ionicons name="pencil" size={16} color="#a855f7" />
+                          )
+                        ) : (
+                          <Ionicons name="barbell" size={16} color="#2563eb" />
+                        )}
+                      </View>
+
+                      <View style={styles.activityInfo}>
+                        <Text style={styles.activityName}>
+                          {typeof activity.name === 'object' && activity.name !== null
+                            ? (activity.name as any).en
+                            : activity.name}
+                        </Text>
+                        <Text style={styles.activityDetails}>
+                          {activity.activityType === 'exercise' && activity.duration > 0
+                            ? `${Math.round(activity.duration)} min • `
+                            : ''}
+                          {Math.round(activity.calories)} cal
+                          {activity.activityType === 'exercise' && activity.entry.sets && activity.entry.reps
+                            ? ` • ${Math.round(activity.entry.sets)}x${Math.round(activity.entry.reps)}`
+                            : ''}
+                          {activity.activityType === 'exercise' && activity.entry.weight
+                            ? ` • ${Math.round(activity.entry.weight)}kg`
+                            : ''}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.activityRight}>
+                      <Text style={styles.activityTime}>
+                        {new Date(activity.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </Text>
+                      {(activity.activityType !== 'steps' ||
+                        !((activity as any).origin === 'apple' || (activity as any).origin === 'google')) ? (
+                        <TouchableOpacity
+                          onPress={() => {
+                            Alert.alert("Delete Activity", "Are you sure you want to delete this activity?", [
+                              { text: "Cancel", style: 'cancel' },
+                              {
+                                text: "Delete",
+                                style: 'destructive',
+                                onPress: () => handleDeleteActivity(activity),
+                              },
+                            ]);
+                          }}
+                          activeOpacity={0.7}
+                          style={styles.deleteButtonNaked}
+                        >
+                          <Ionicons name="trash" size={18} color="#dc2626" />
+                        </TouchableOpacity>
+                      ) : null}
+                    </View>
+                  </View>
+                ))}
+                {todayActivities.length > 6 && (
+                  <TouchableOpacity
+                    onPress={() => setShowAllActivities((s) => !s)}
+                    activeOpacity={0.8}
+                    style={{ paddingTop: 10, alignItems: 'center' }}
+                  >
+                    <Text style={{ color: '#2563eb', fontWeight: '700' }}>
+                      {showAllActivities ? 'Show less' : `View all (${todayActivities.length})`}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            ) : (
+              <View style={styles.emptyState}>
+                <View style={styles.emptyIconContainer}>
+                  <Ionicons name="barbell" size={32} color="#94a3b8" />
+                </View>
+                <Text style={styles.emptyStateText}>No activities yet</Text>
+                <Text style={styles.emptyStateSubtext}>Log a workout or sync steps to get started</Text>
               </View>
             )}
           </View>
-        </View>
 
-        {/* Weekly Progress */}
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Weekly Progress</Text>
-            <Ionicons name="trending-up" size={24} color="#2563eb" />
-          </View>
-
-          <View style={styles.chartContainer}>
-            {weekData.map((workouts, idx) => (
-              <View key={`${idx}`} style={styles.chartBarWrapper}>
-                <View
-                  style={[
-                    styles.chartBar,
-                    {
-                      height: Math.max(6, workouts * 15),
-                      opacity: workouts === 0 ? 0.25 : 1,
-                    },
-                  ]}
+          {/* My Routines Section (Relocated) */}
+          {myRoutines.length > 0 && (
+            <View style={[styles.sectionContainer, { zIndex: 100, marginBottom: 24 }]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, paddingHorizontal: 24 }}>
+                <Text style={[styles.sectionTitle, { marginBottom: 0, paddingHorizontal: 0 }]}>My Routines</Text>
+                <CoachMark
+                  visible={showRoutineCoach}
+                  message="Your custom AI routines appear here."
+                  onClose={() => {
+                    setShowRoutineCoach(false);
+                    SecureStore.deleteItemAsync('bluom_show_coach_marks');
+                  }}
+                  position="bottom"
                 />
-                <Text style={styles.chartDay}>{weekDayLabels[idx]}</Text>
               </View>
-            ))}
-          </View>
+              <View style={{ paddingHorizontal: 0, gap: 12 }}>
+                {myRoutines.map((routine: any) => (
+                  <View key={routine._id} style={{ borderRadius: 16, overflow: 'hidden', width: 'auto', marginBottom: 8, marginHorizontal: 24 }}>
+                    <TouchableOpacity
+                      activeOpacity={0.9}
+                      onPress={() => {
+                        Alert.alert("Routine", `${routine.name}\n${routine.description || ''}`);
+                      }}
+                    >
+                      <LinearGradient colors={['#4f46e5', '#4338ca']} style={{ padding: 20, borderRadius: 16, minHeight: 110 }}>
+                        <View style={{ flex: 1, marginRight: 12 }}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                            <Ionicons name="barbell" size={20} color="#fff" />
+                            <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}>{routine.name}</Text>
+                          </View>
+                          <Text style={{ fontSize: 13, color: '#e0e7ff', opacity: 0.9 }}>
+                            {routine.exercises.length} Exercises • {routine.exercises.reduce((acc: number, ex: any) => acc + (ex.sets || 0), 0)} Sets • {routine.estimatedDuration || '45'} min • {routine.estimatedCalories || '300'} kcal
+                          </Text>
+                          <Text style={{ fontSize: 12, color: '#c7d2fe', marginTop: 4, width: '85%' }} numberOfLines={1}>
+                            {routine.exercises.map((e: any) => e.name).join(', ')}
+                          </Text>
+                        </View>
 
-          <View style={styles.weeklyStatsGrid}>
-            <View style={styles.weeklyStatItem}>
-              <Text style={styles.weeklyStatValue}>{weekData.reduce((a, b) => a + b, 0)}</Text>
-              <Text style={styles.weeklyStatLabel}>Workouts</Text>
+                        {/* Delete Action - Bottom Right Absolute */}
+                        <TouchableOpacity
+                          style={{
+                            position: 'absolute',
+                            bottom: 16,
+                            right: 16,
+                            backgroundColor: 'rgba(255,255,255,0.1)',
+                            padding: 8,
+                            borderRadius: 20,
+                          }}
+                          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                          onPress={(e) => {
+                            e.stopPropagation();
+                            Alert.alert(
+                              "Delete Routine",
+                              "Are you sure you want to delete this routine?",
+                              [
+                                { text: "Cancel", style: "cancel" },
+                                {
+                                  text: "Delete",
+                                  style: "destructive",
+                                  onPress: () => deleteRoutine({ routineId: routine._id })
+                                }
+                              ]
+                            );
+                          }}
+                        >
+                          <Ionicons name="trash" size={16} color="#fca5a5" />
+                        </TouchableOpacity>
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
             </View>
-            <View style={styles.weeklyStatItem}>
-              <Text style={styles.weeklyStatValue}>
-                {Math.round(
-                  (weekExerciseEntries ?? []).reduce(
-                    (acc: number, e: any) => acc + e.duration,
-                    0
-                  ) / 60
-                )}
-                h
-              </Text>
-              <Text style={styles.weeklyStatLabel}>Total Time</Text>
-            </View>
-            <View style={styles.weeklyStatItem}>
-              <Text style={styles.weeklyStatValue}>
-                {Math.round(
-                  (weekExerciseEntries ?? []).reduce(
-                    (acc: number, e: any) => acc + e.caloriesBurned,
-                    0
-                  )
-                )}
-              </Text>
-              <Text style={styles.weeklyStatLabel}>Calories</Text>
-            </View>
-          </View>
-        </View>
+          )}
 
-        {/* Today's Activities */}
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Today's Activities</Text>
-            <Ionicons name="pulse" size={24} color="#2563eb" />
-          </View>
-
-          {loading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#2563eb" />
-              <Text style={styles.loadingText}>Loading...</Text>
+          {/* Achievements */}
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>Achievements</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Text style={{ fontSize: 12, color: '#64748b', fontWeight: '600' }}>
+                  {userAchievements?.length || 0}/{achievementDefinitions.length}
+                </Text>
+                <Ionicons name="trophy" size={24} color="#f59e0b" />
+              </View>
             </View>
-          ) : todayActivities.length > 0 ? (
-            <View style={styles.activitiesList}>
-              {todayActivities.map((activity) => (
-                <View key={activity.id} style={styles.activityItem}>
-                  <View style={styles.activityLeft}>
-                    <View style={[styles.activityIconContainer, { backgroundColor: activity.activityType === 'steps' ? '#fce7f3' : '#dbeafe' }]}>
-                      {activity.activityType === 'steps' ? (
-                        <Ionicons name="heart" size={16} color="#ec4899" />
-                      ) : (
-                        <Ionicons name="barbell" size={16} color="#2563eb" />
+
+            <View style={styles.achievementsGrid}>
+              {displayAchievements.map((achievement) => {
+                const isEarned = userAchievements?.some(a => a.badgeId === achievement.id);
+                const progress = isEarned ? 100 : getAchievementProgress(achievement);
+
+                return (
+                  <TouchableOpacity
+                    key={achievement.id}
+                    style={[
+                      styles.achievementCard,
+                      {
+                        backgroundColor: isEarned ? achievement.bgColor : '#f8fafc',
+                        borderColor: isEarned ? achievement.color : '#e2e8f0',
+                      }
+                    ]}
+                    activeOpacity={0.8}
+                  >
+                    <View style={styles.achievementHeader}>
+                      <View style={[
+                        styles.achievementIconContainer,
+                        {
+                          backgroundColor: isEarned ? achievement.color : '#e2e8f0',
+                          shadowColor: isEarned ? achievement.color : 'transparent',
+                          shadowOpacity: isEarned ? 0.3 : 0,
+                          shadowRadius: isEarned ? 8 : 0,
+                          elevation: isEarned ? 4 : 0
+                        }
+                      ]}>
+                        <Ionicons
+                          name={achievement.icon as any}
+                          size={18}
+                          color={isEarned ? "#ffffff" : "#94a3b8"}
+                        />
+                      </View>
+                      {isEarned && (
+                        <View style={styles.achievementBadge}>
+                          <Ionicons name="checkmark" size={10} color="#ffffff" />
+                        </View>
                       )}
                     </View>
 
-                    <View style={styles.activityInfo}>
-                      <Text style={styles.activityName}>
-                        {typeof activity.name === 'object' && activity.name !== null
-                          ? (activity.name as any).en
-                          : activity.name}
+                    <View style={styles.achievementContent}>
+                      <Text style={[
+                        styles.achievementCardTitle,
+                        { color: isEarned ? '#1e293b' : '#64748b' }
+                      ]}>
+                        {achievement.title}
                       </Text>
-                      <Text style={styles.activityDetails}>
-                        {activity.activityType === 'exercise' && activity.duration > 0
-                          ? `${Math.round(activity.duration)} min • `
-                          : ''}
-                        {Math.round(activity.calories)} cal
-                        {activity.activityType === 'exercise' && activity.entry.sets && activity.entry.reps
-                          ? ` • ${Math.round(activity.entry.sets)}x${Math.round(activity.entry.reps)}`
-                          : ''}
-                        {activity.activityType === 'exercise' && activity.entry.weight
-                          ? ` • ${Math.round(activity.entry.weight)}kg`
-                          : ''}
+                      <Text style={[
+                        styles.achievementCardDesc,
+                        { color: isEarned ? '#64748b' : '#94a3b8' }
+                      ]}>
+                        {achievement.description}
                       </Text>
-                    </View>
-                  </View>
 
-                  <View style={styles.activityRight}>
-                    <Text style={styles.activityTime}>
-                      {new Date(activity.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        Alert.alert("Delete Activity", "Are you sure you want to delete this activity?", [
-                          { text: "Cancel", style: 'cancel' },
-                          {
-                            text: "Delete",
-                            style: 'destructive',
-                            onPress: () => handleDeleteActivity(activity),
-                          },
-                        ]);
-                      }}
-                      activeOpacity={0.7}
-                      style={styles.deleteButtonNaked}
-                    >
-                      <Ionicons name="trash" size={18} color="#dc2626" />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              ))}
-            </View>
-          ) : (
-            <View style={styles.emptyState}>
-              <View style={styles.emptyIconContainer}>
-                <Ionicons name="barbell" size={32} color="#94a3b8" />
-              </View>
-              <Text style={styles.emptyStateText}>No activities yet</Text>
-              <Text style={styles.emptyStateSubtext}>Log a workout or sync steps to get started</Text>
-            </View>
-          )}
-        </View>
-
-        {/* My Routines Section (Relocated) */}
-        {myRoutines.length > 0 && (
-          <View style={[styles.sectionContainer, { zIndex: 100, marginBottom: 24 }]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, paddingHorizontal: 24 }}>
-              <Text style={[styles.sectionTitle, { marginBottom: 0, paddingHorizontal: 0 }]}>My Routines</Text>
-              <CoachMark
-                visible={showRoutineCoach}
-                message="Your custom AI routines appear here."
-                onClose={() => {
-                  setShowRoutineCoach(false);
-                  SecureStore.deleteItemAsync('bluom_show_coach_marks');
-                }}
-                position="bottom"
-              />
-            </View>
-            <View style={{ paddingHorizontal: 0, gap: 12 }}>
-              {myRoutines.map((routine: any) => (
-                <View key={routine._id} style={{ borderRadius: 16, overflow: 'hidden', width: 'auto', marginBottom: 8, marginHorizontal: 24 }}>
-                  <TouchableOpacity
-                    activeOpacity={0.9}
-                    onPress={() => {
-                      Alert.alert("Routine", `${routine.name}\n${routine.description || ''}`);
-                    }}
-                  >
-                    <LinearGradient colors={['#4f46e5', '#4338ca']} style={{ padding: 20, borderRadius: 16, minHeight: 110 }}>
-                      <View style={{ flex: 1, marginRight: 12 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                          <Ionicons name="barbell" size={20} color="#fff" />
-                          <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}>{routine.name}</Text>
+                      {!isEarned && progress > 0 && (
+                        <View style={styles.progressContainer}>
+                          <View style={[
+                            styles.progressBar,
+                            { width: `${Math.min(progress, 100)}%` }
+                          ]} />
                         </View>
-                        <Text style={{ fontSize: 13, color: '#e0e7ff', opacity: 0.9 }}>
-                          {routine.exercises.length} Exercises • {routine.exercises.reduce((acc: number, ex: any) => acc + (ex.sets || 0), 0)} Sets • {routine.estimatedDuration || '45'} min • {routine.estimatedCalories || '300'} kcal
-                        </Text>
-                        <Text style={{ fontSize: 12, color: '#c7d2fe', marginTop: 4, width: '85%' }} numberOfLines={1}>
-                          {routine.exercises.map((e: any) => e.name).join(', ')}
-                        </Text>
-                      </View>
-
-                      {/* Delete Action - Bottom Right Absolute */}
-                      <TouchableOpacity
-                        style={{
-                          position: 'absolute',
-                          bottom: 16,
-                          right: 16,
-                          backgroundColor: 'rgba(255,255,255,0.1)',
-                          padding: 8,
-                          borderRadius: 20,
-                        }}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        onPress={(e) => {
-                          e.stopPropagation();
-                          Alert.alert(
-                            "Delete Routine",
-                            "Are you sure you want to delete this routine?",
-                            [
-                              { text: "Cancel", style: "cancel" },
-                              {
-                                text: "Delete",
-                                style: "destructive",
-                                onPress: () => deleteRoutine({ routineId: routine._id })
-                              }
-                            ]
-                          );
-                        }}
-                      >
-                        <Ionicons name="trash" size={16} color="#fca5a5" />
-                      </TouchableOpacity>
-                    </LinearGradient>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {/* Achievements */}
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Achievements</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Text style={{ fontSize: 12, color: '#64748b', fontWeight: '600' }}>
-                {userAchievements?.length || 0}/{achievementDefinitions.length}
-              </Text>
-              <Ionicons name="trophy" size={24} color="#f59e0b" />
-            </View>
-          </View>
-
-          <View style={styles.achievementsGrid}>
-            {displayAchievements.map((achievement) => {
-              const isEarned = userAchievements?.some(a => a.badgeId === achievement.id);
-              const progress = isEarned ? 100 : getAchievementProgress(achievement);
-
-              return (
-                <TouchableOpacity
-                  key={achievement.id}
-                  style={[
-                    styles.achievementCard,
-                    {
-                      backgroundColor: isEarned ? achievement.bgColor : '#f8fafc',
-                      borderColor: isEarned ? achievement.color : '#e2e8f0',
-                    }
-                  ]}
-                  activeOpacity={0.8}
-                >
-                  <View style={styles.achievementHeader}>
-                    <View style={[
-                      styles.achievementIconContainer,
-                      {
-                        backgroundColor: isEarned ? achievement.color : '#e2e8f0',
-                        shadowColor: isEarned ? achievement.color : 'transparent',
-                        shadowOpacity: isEarned ? 0.3 : 0,
-                        shadowRadius: isEarned ? 8 : 0,
-                        elevation: isEarned ? 4 : 0
-                      }
-                    ]}>
-                      <Ionicons
-                        name={achievement.icon as any}
-                        size={18}
-                        color={isEarned ? "#ffffff" : "#94a3b8"}
-                      />
+                      )}
                     </View>
-                    {isEarned && (
-                      <View style={styles.achievementBadge}>
-                        <Ionicons name="checkmark" size={10} color="#ffffff" />
-                      </View>
-                    )}
-                  </View>
-
-                  <View style={styles.achievementContent}>
-                    <Text style={[
-                      styles.achievementCardTitle,
-                      { color: isEarned ? '#1e293b' : '#64748b' }
-                    ]}>
-                      {achievement.title}
-                    </Text>
-                    <Text style={[
-                      styles.achievementCardDesc,
-                      { color: isEarned ? '#64748b' : '#94a3b8' }
-                    ]}>
-                      {achievement.description}
-                    </Text>
-
-                    {!isEarned && progress > 0 && (
-                      <View style={styles.progressContainer}>
-                        <View style={[
-                          styles.progressBar,
-                          { width: `${Math.min(progress, 100)}%` }
-                        ]} />
-                      </View>
-                    )}
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
-        </View>
+        </View>{/* end tablet maxWidth wrapper */}
       </ScrollView>
 
       {/* Workout Modal */}
@@ -1488,18 +1558,29 @@ export default function MoveScreen() {
               }}
               onPress={async () => {
                 setIsSyncing(true);
-                const granted = await requestHealthPermissions();
-                if (granted) {
-                  const result = await syncHealthData();
-                  if (result && result.steps > 0) {
-                    setStepsInput(result.steps.toString());
-                    Alert.alert("Steps Ready", "Auto-populated current steps. Tap Add Steps to save.");
-                  } else if (granted) {
+                try {
+                  // Force a fresh permission check on every tap (prevents stale auth state)
+                  const granted = await requestHealthPermissions({ force: true, openSettingsOnFailure: true });
+                  if (!granted) return;
+
+                  const result = await syncHealthData(async (data: any) => {
+                    if (!convexUser?._id) return;
+                    await saveExternalData({
+                      userId: convexUser._id,
+                      steps: Math.max(0, Math.round(data.steps ?? 0)),
+                      calories: Math.max(0, Math.round(data.calories ?? 0)),
+                      source: Platform.OS === 'ios' ? 'apple_health' : 'google_health',
+                    });
+                  });
+                  if (result && (result.steps > 0 || result.calories > 0)) {
+                    if (result.steps > 0) setStepsInput(result.steps.toString());
+                    Alert.alert("Synced", "Imported today's steps and calories from Health.");
+                  } else {
                     Alert.alert("No Steps Found", "Could not find any steps in Health connect for today.");
                   }
+                } finally {
+                  setIsSyncing(false);
                 }
-                // Permission denial is handled inside requestHealthPermissions() with a redirect
-                setIsSyncing(false);
               }}
             >
               <Ionicons name="logo-google" size={18} color="#4285F4" />
@@ -1523,18 +1604,39 @@ export default function MoveScreen() {
               }}
               onPress={async () => {
                 setIsSyncing(true);
-                const granted = await requestHealthPermissions();
-                if (granted) {
-                  const result = await syncHealthData();
-                  if (result && result.steps > 0) {
-                    setStepsInput(result.steps.toString());
-                    Alert.alert("Steps Ready", "Auto-populated current steps. Tap Add Steps to save.");
-                  } else if (granted) {
+                try {
+                  // BUILD 18: Always run permission request on button press.
+                  // If iOS returns failure/undetermined, jumpstart Settings so Health toggles appear.
+                  const granted = await requestHealthPermissions({ force: true, openSettingsOnFailure: true });
+                  if (!granted) {
+                    if (Platform.OS === 'ios') {
+                      try {
+                        await Linking.openSettings();
+                      } catch {
+                        // ignore
+                      }
+                    }
+                    return;
+                  }
+
+                  const result = await syncHealthData(async (data: any) => {
+                    if (!convexUser?._id) return;
+                    await saveExternalData({
+                      userId: convexUser._id,
+                      steps: Math.max(0, Math.round(data.steps ?? 0)),
+                      calories: Math.max(0, Math.round(data.calories ?? 0)),
+                      source: Platform.OS === 'ios' ? 'apple_health' : 'google_health',
+                    });
+                  });
+                  if (result && (result.steps > 0 || result.calories > 0)) {
+                    if (result.steps > 0) setStepsInput(result.steps.toString());
+                    Alert.alert("Synced", "Imported today's steps and calories from Health.");
+                  } else {
                     Alert.alert("No Steps Found", "Could not find any steps in Apple Health for today.");
                   }
+                } finally {
+                  setIsSyncing(false);
                 }
-                // Permission denial is handled inside requestHealthPermissions() with a redirect
-                setIsSyncing(false);
               }}
             >
               <Ionicons name="heart" size={18} color="#ec4899" />
@@ -1634,9 +1736,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   summaryCard: {
-    width: (width - 48 - 16) / 2,
+    // width and padding are now set dynamically
     backgroundColor: '#ffffff',
-    padding: isSmallScreen ? 12 : 16,
     borderRadius: 16,
     marginBottom: 16,
     shadowColor: '#000',
@@ -1646,28 +1747,28 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   summaryIconContainer: {
-    width: isSmallScreen ? 40 : 48,
-    height: isSmallScreen ? 40 : 48,
+    width: 48,
+    height: 48,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: isSmallScreen ? 8 : 12,
+    marginBottom: 12,
   },
   summaryLabel: {
-    fontSize: isSmallScreen ? 12 : 14,
+    fontSize: 14,
     color: '#64748b',
     marginBottom: 4,
     minHeight: 16,
   },
   summaryValue: {
-    fontSize: isSmallScreen ? 18 : 24,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#1e293b',
     marginBottom: 2,
-    minHeight: isSmallScreen ? 22 : 28,
+    minHeight: 28,
   },
   summarySubtext: {
-    fontSize: isSmallScreen ? 10 : 12,
+    fontSize: 12,
     color: '#94a3b8',
     minHeight: 14,
   },

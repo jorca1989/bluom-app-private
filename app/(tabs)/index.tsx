@@ -50,15 +50,12 @@ import { CircularProgress } from '@/components/CircularProgress';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import CoachMark from '@/components/CoachMark';
 import NorthStarWidget from '@/components/NorthStarWidget';
-
-
-
-const { width } = Dimensions.get('window');
-const isSmallScreen = width < 380;
+import { useResponsive } from '@/utils/responsive';
 
 export default function IndexScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { width, isTablet, isSmallPhone: isSmallScreen, contentMaxWidth, kpiColumns, kpiCardWidth, discoveryColumns } = useResponsive();
   // removed usage of useTranslation
   const { user: clerkUser } = useUser();
   const { isLoading: isAccessLoading } = useAccessControl();
@@ -274,220 +271,222 @@ export default function IndexScreen() {
           {
             paddingTop: 12,
             paddingBottom: Math.max(insets.bottom, 12) + 12,
+            ...(isTablet ? { alignItems: 'center' as const } : {}),
           },
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) }]}>
-          <Image
-            source={require('../../assets/images/logo.png')}
-            style={{ width: 100, height: 32, marginBottom: 16 }}
-            resizeMode="contain"
-          />
-
-          {/* MAINTENANCE BANNER */}
-          {maintenanceMode && (
-            <View style={{ width: '100%', backgroundColor: '#fef2f2', borderColor: '#fecaca', borderWidth: 1, padding: 12, borderRadius: 12, marginBottom: 16, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#ef4444' }} />
-              <Text style={{ flex: 1, color: '#991b1b', fontSize: 13, fontWeight: '600' }}>
-                {maintenanceBanner}
-              </Text>
-            </View>
-          )}
-
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={styles.sectionTitle}>Vitality Score</Text>
-            <CoachMark
-              visible={showBlueprintCoach}
-              message="New! Your AI Blueprint starts here."
-              onClose={() => {
-                setShowBlueprintCoach(false);
-                SecureStore.deleteItemAsync('bluom_show_coach_marks');
-              }}
-              position="bottom"
+        <View style={isTablet ? { width: '100%', maxWidth: contentMaxWidth, alignSelf: 'center' } : undefined}>
+          <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) }]}>
+            <Image
+              source={require('../../assets/images/logo.png')}
+              style={{ width: 100, height: 32, marginBottom: 16 }}
+              resizeMode="contain"
             />
-          </View>
-          <View style={styles.vitalityContainer}>
-            <View style={styles.vitalityCircleWrap}>
-              <CircularProgress
-                progress={vitalityScore / 100}
-                size={140}
-                strokeWidth={14}
-                trackColor="#e2e8f0"
-                progressColor={vitalityScore > 70 ? '#10b981' : vitalityScore > 40 ? '#3b82f6' : '#f59e0b'}
-              />
-              <View style={styles.vitalityCenterText}>
-                <Text style={styles.vitalityScore}>{dataMissing ? '--' : vitalityScore}</Text>
-                <Text style={styles.vitalityLabel}>Score</Text>
+
+            {/* MAINTENANCE BANNER */}
+            {maintenanceMode && (
+              <View style={{ width: '100%', backgroundColor: '#fef2f2', borderColor: '#fecaca', borderWidth: 1, padding: 12, borderRadius: 12, marginBottom: 16, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#ef4444' }} />
+                <Text style={{ flex: 1, color: '#991b1b', fontSize: 13, fontWeight: '600' }}>
+                  {maintenanceBanner}
+                </Text>
               </View>
-            </View>
-            <Text style={styles.vitalityDescription}>
-              {dataMissing
-                ? 'Log your data to see your score.'
-                : 'Your daily snapshot based on meals, exercise and mood.'}
-            </Text>
-          </View>
-        </View>
+            )}
 
-
-
-        {/* -- 2. Today's Balance -- */}
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Daily Balance</Text>
-          </View>
-          <View style={styles.equationContainer}>
-            <View style={styles.equationItem}>
-              <Text style={styles.eqLabel}>Goal</Text>
-              <Text style={styles.eqValue}>{Math.round(goalCalories)}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.sectionTitle}>Vitality Score</Text>
+              <CoachMark
+                visible={showBlueprintCoach}
+                message="New! Your AI Blueprint starts here."
+                onClose={() => {
+                  setShowBlueprintCoach(false);
+                  SecureStore.deleteItemAsync('bluom_show_coach_marks');
+                }}
+                position="bottom"
+              />
             </View>
-            <Text style={styles.eqOperator}>-</Text>
-            <View style={styles.equationItem}>
-              <Text style={styles.eqLabel}>Food</Text>
-              <Text style={[styles.eqValue, { color: '#16a34a' }]}>{Math.round(todayFoodCalories)}</Text>
-            </View>
-            <Text style={styles.eqOperator}>+</Text>
-            <View style={styles.equationItem}>
-              <Text style={styles.eqLabel}>Active</Text>
-              <Text style={[styles.eqValue, { color: '#f97316' }]}>{Math.round(burned)}</Text>
-            </View>
-            <Text style={styles.eqOperator}>=</Text>
-            <View style={styles.equationItem}>
-              <Text style={styles.eqLabel}>Remaining</Text>
-              <Text style={[styles.eqValue, { color: remainingCalories >= 0 ? '#2563eb' : '#dc2626' }]}>
-                {Math.round(remainingCalories)}
+            <View style={styles.vitalityContainer}>
+              <View style={styles.vitalityCircleWrap}>
+                <CircularProgress
+                  progress={vitalityScore / 100}
+                  size={140}
+                  strokeWidth={14}
+                  trackColor="#e2e8f0"
+                  progressColor={vitalityScore > 70 ? '#10b981' : vitalityScore > 40 ? '#3b82f6' : '#f59e0b'}
+                />
+                <View style={styles.vitalityCenterText}>
+                  <Text style={styles.vitalityScore}>{dataMissing ? '--' : vitalityScore}</Text>
+                  <Text style={styles.vitalityLabel}>Score</Text>
+                </View>
+              </View>
+              <Text style={styles.vitalityDescription}>
+                {dataMissing
+                  ? 'Log your data to see your score.'
+                  : 'Your daily snapshot based on meals, exercise and mood.'}
               </Text>
             </View>
           </View>
-        </View>
 
-        {/* -- 3. KPI Grid (2x2) -- */}
-        <View style={styles.gridContainer}>
-          {/* Steps */}
-          <View style={[styles.gridCard, { backgroundColor: '#eff6ff' }]}>
-            <View style={styles.gridIconRow}>
-              <Footprints size={20} color="#2563eb" />
-              <Text style={[styles.gridLabel, { color: '#1e40af' }]}>Steps</Text>
+
+
+          {/* -- 2. Today's Balance -- */}
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>Daily Balance</Text>
             </View>
-            <Text style={styles.gridValue}>{steps.toLocaleString()}</Text>
-            <Text style={styles.gridSub}>/ 10,000</Text>
-          </View>
-
-          {/* Water */}
-          <View style={[styles.gridCard, { backgroundColor: '#ecfeff' }]}>
-            <View style={styles.gridIconRow}>
-              <Droplets size={20} color="#06b6d4" />
-              <Text style={[styles.gridLabel, { color: '#0e7490' }]}>Water</Text>
-            </View>
-            <Text style={styles.gridValue}>
-              {prefersMetricVolume ? Math.round(waterOz * 29.5735) : Math.round(waterOz)}
-              <Text style={{ fontSize: 16 }}>{prefersMetricVolume ? 'ml' : 'oz'}</Text>
-            </Text>
-            <Text style={styles.gridSub}>
-              / {waterGoalDisplay}
-              {prefersMetricVolume ? 'ml' : 'oz'}
-            </Text>
-          </View>
-
-          {/* Mood */}
-          <View style={[styles.gridCard, { backgroundColor: '#f5f3ff' }]}>
-            <View style={styles.gridIconRow}>
-              <Smile size={20} color="#8b5cf6" />
-              <Text style={[styles.gridLabel, { color: '#5b21b6' }]}>Mood</Text>
-            </View>
-            <Text style={styles.gridValue}>{moodLog?.moodEmoji ?? '--'}</Text>
-            <Text style={styles.gridSub}>{hasMood ? 'Logged' : 'No Entry'}</Text>
-          </View>
-
-          {/* Weight */}
-          <TouchableOpacity
-            style={[styles.gridCard, { backgroundColor: '#f8fafc' }]}
-            onPress={() => router.push('/weight-management')}
-            activeOpacity={0.7}
-          >
-            <View style={styles.gridIconRow}>
-              <Scale size={20} color="#475569" />
-              <Text style={[styles.gridLabel, { color: '#334155' }]}>Weight</Text>
-            </View>
-            <Text style={styles.gridValue}>
-              {Math.round(weightDisplay)}
-              <Text style={{ fontSize: 16 }}>{weightUnitLabel}</Text>
-            </Text>
-            <Text style={styles.gridSub}>Track Now</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* -- 4. Health Trend Chart -- */}
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Your Trends</Text>
-            <TrendingUp size={20} color="#16a34a" />
-          </View>
-          <View style={styles.chartContainer}>
-            {weekData.map((val, idx) => (
-              <View key={idx} style={styles.chartCol}>
-                <View style={[styles.chartBar, { height: val * 16 }]} />
-                <Text style={styles.chartDay}>{weekDays[idx]}</Text>
+            <View style={styles.equationContainer}>
+              <View style={styles.equationItem}>
+                <Text style={styles.eqLabel}>Goal</Text>
+                <Text style={styles.eqValue}>{Math.round(goalCalories)}</Text>
               </View>
-            ))}
-          </View>
-          <Text style={styles.chartCaption}>Activity vs Goal over the last 7 days</Text>
-        </View>
-
-        {/* -- 5. Discovery Grid -- */}
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <View>
-              <Text style={styles.cardTitle}>Discover</Text>
+              <Text style={styles.eqOperator}>-</Text>
+              <View style={styles.equationItem}>
+                <Text style={styles.eqLabel}>Food</Text>
+                <Text style={[styles.eqValue, { color: '#16a34a' }]}>{Math.round(todayFoodCalories)}</Text>
+              </View>
+              <Text style={styles.eqOperator}>+</Text>
+              <View style={styles.equationItem}>
+                <Text style={styles.eqLabel}>Active</Text>
+                <Text style={[styles.eqValue, { color: '#f97316' }]}>{Math.round(burned)}</Text>
+              </View>
+              <Text style={styles.eqOperator}>=</Text>
+              <View style={styles.equationItem}>
+                <Text style={styles.eqLabel}>Remaining</Text>
+                <Text style={[styles.eqValue, { color: remainingCalories >= 0 ? '#2563eb' : '#dc2626' }]}>
+                  {Math.round(remainingCalories)}
+                </Text>
+              </View>
             </View>
           </View>
 
-          <View style={styles.discoveryGrid}>
-            {displayedItems.map((item) => {
-              const isRestricted = maintenanceMode && (item.path === '/ai-coach' || item.path === '/sugar-dashboard'); // Sugar dashboard might contain scan?
-              // The user said "Grey out the AI Photo/Scan entry points".
-              // Assuming 'Metabolic Hub' (sugar-dashboard) is scan entry, and 'AI Coach' is chat.
-              // Let's visual grey out if restricted.
+          {/* -- 3. KPI Grid (2x2 phone, 4x1 tablet) -- */}
+          <View style={[styles.gridContainer, isTablet && { justifyContent: 'space-between' }]}>
+            {/* Steps */}
+            <View style={[styles.gridCard, { backgroundColor: '#eff6ff', width: kpiCardWidth() }]}>
+              <View style={styles.gridIconRow}>
+                <Footprints size={20} color="#2563eb" />
+                <Text style={[styles.gridLabel, { color: '#1e40af' }]}>Steps</Text>
+              </View>
+              <Text style={styles.gridValue}>{steps.toLocaleString()}</Text>
+              <Text style={styles.gridSub}>/ 10,000</Text>
+            </View>
 
-              return (
-                <TouchableOpacity
-                  key={item.label}
-                  style={[styles.discoveryItem, isRestricted && { opacity: 0.5 }]}
-                  onPress={() => item.path && handleRestrictedNav(item.path)}
-                  activeOpacity={0.7}
-                >
-                  <View style={[styles.discoveryIconBox, { backgroundColor: isRestricted ? '#f1f5f9' : item.bgColor }]}>
-                    <item.Icon size={24} color={isRestricted ? '#94a3b8' : item.color} />
-                  </View>
-                  <Text style={[styles.discoveryLabel, isRestricted && { color: '#94a3b8' }]} numberOfLines={1}>
-                    {item.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+            {/* Water */}
+            <View style={[styles.gridCard, { backgroundColor: '#ecfeff', width: kpiCardWidth() }]}>
+              <View style={styles.gridIconRow}>
+                <Droplets size={20} color="#06b6d4" />
+                <Text style={[styles.gridLabel, { color: '#0e7490' }]}>Water</Text>
+              </View>
+              <Text style={styles.gridValue}>
+                {prefersMetricVolume ? Math.round(waterOz * 29.5735) : Math.round(waterOz)}
+                <Text style={{ fontSize: 16 }}>{prefersMetricVolume ? 'ml' : 'oz'}</Text>
+              </Text>
+              <Text style={styles.gridSub}>
+                / {waterGoalDisplay}
+                {prefersMetricVolume ? 'ml' : 'oz'}
+              </Text>
+            </View>
+
+            {/* Mood */}
+            <View style={[styles.gridCard, { backgroundColor: '#f5f3ff', width: kpiCardWidth() }]}>
+              <View style={styles.gridIconRow}>
+                <Smile size={20} color="#8b5cf6" />
+                <Text style={[styles.gridLabel, { color: '#5b21b6' }]}>Mood</Text>
+              </View>
+              <Text style={styles.gridValue}>{moodLog?.moodEmoji ?? '--'}</Text>
+              <Text style={styles.gridSub}>{hasMood ? 'Logged' : 'No Entry'}</Text>
+            </View>
+
+            {/* Weight */}
+            <TouchableOpacity
+              style={[styles.gridCard, { backgroundColor: '#f8fafc', width: kpiCardWidth() }]}
+              onPress={() => router.push('/weight-management')}
+              activeOpacity={0.7}
+            >
+              <View style={styles.gridIconRow}>
+                <Scale size={20} color="#475569" />
+                <Text style={[styles.gridLabel, { color: '#334155' }]}>Weight</Text>
+              </View>
+              <Text style={styles.gridValue}>
+                {Math.round(weightDisplay)}
+                <Text style={{ fontSize: 16 }}>{weightUnitLabel}</Text>
+              </Text>
+              <Text style={styles.gridSub}>Track Now</Text>
+            </TouchableOpacity>
           </View>
 
+          {/* -- 4. Health Trend Chart -- */}
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>Your Trends</Text>
+              <TrendingUp size={20} color="#16a34a" />
+            </View>
+            <View style={styles.chartContainer}>
+              {weekData.map((val, idx) => (
+                <View key={idx} style={styles.chartCol}>
+                  <View style={[styles.chartBar, { height: val * 16 }]} />
+                  <Text style={styles.chartDay}>{weekDays[idx]}</Text>
+                </View>
+              ))}
+            </View>
+            <Text style={styles.chartCaption}>Activity vs Goal over the last 7 days</Text>
+          </View>
 
-          <TouchableOpacity
-            onPress={() => setShowAllDiscovery(!showAllDiscovery)}
-            style={styles.toggleBtn}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.toggleBtnText}>{showAllDiscovery ? 'Show Less' : 'View More'}</Text>
-            {showAllDiscovery ? (
-              <ChevronUp size={16} color="#2563eb" />
-            ) : (
-              <ChevronDown size={16} color="#2563eb" />
-            )}
-          </TouchableOpacity>
-        </View>
+          {/* -- 5. Discovery Grid -- */}
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <View>
+                <Text style={styles.cardTitle}>Discover</Text>
+              </View>
+            </View>
 
-        {/* -- North Star -- */}
-        <NorthStarWidget
-          goal={convexUser?.twelveMonthGoal}
-          onPress={() => router.push('/wellness?showLifeGoals=true')}
-        />
+            <View style={[styles.discoveryGrid, isTablet && { marginHorizontal: 0 }]}>
+              {displayedItems.map((item) => {
+                const isRestricted = maintenanceMode && (item.path === '/ai-coach' || item.path === '/sugar-dashboard'); // Sugar dashboard might contain scan?
+                // The user said "Grey out the AI Photo/Scan entry points".
+                // Assuming 'Metabolic Hub' (sugar-dashboard) is scan entry, and 'AI Coach' is chat.
+                // Let's visual grey out if restricted.
 
+                return (
+                  <TouchableOpacity
+                    key={item.label}
+                    style={[styles.discoveryItem, { width: `${(100 / discoveryColumns).toFixed(2)}%` as any }, isRestricted && { opacity: 0.5 }]}
+                    onPress={() => item.path && handleRestrictedNav(item.path)}
+                    activeOpacity={0.7}
+                  >
+                    <View style={[styles.discoveryIconBox, { backgroundColor: isRestricted ? '#f1f5f9' : item.bgColor }]}>
+                      <item.Icon size={24} color={isRestricted ? '#94a3b8' : item.color} />
+                    </View>
+                    <Text style={[styles.discoveryLabel, isRestricted && { color: '#94a3b8' }]} numberOfLines={1}>
+                      {item.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+
+            <TouchableOpacity
+              onPress={() => setShowAllDiscovery(!showAllDiscovery)}
+              style={styles.toggleBtn}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.toggleBtnText}>{showAllDiscovery ? 'Show Less' : 'View More'}</Text>
+              {showAllDiscovery ? (
+                <ChevronUp size={16} color="#2563eb" />
+              ) : (
+                <ChevronDown size={16} color="#2563eb" />
+              )}
+            </TouchableOpacity>
+          </View>
+
+          {/* -- North Star -- */}
+          <NorthStarWidget
+            goal={convexUser?.twelveMonthGoal}
+            onPress={() => router.push('/wellness?showLifeGoals=true')}
+          />
+        </View>{/* end tablet maxWidth wrapper */}
       </ScrollView>
     </SafeAreaView >
   );
@@ -630,7 +629,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   gridCard: {
-    width: (width - 40 - 12) / 2, // screen padding 20*2=40, gap 12
+    // width is now set dynamically via kpiCardWidth() in the component
     padding: 16,
     borderRadius: 20,
     justifyContent: 'space-between',
@@ -691,7 +690,7 @@ const styles = StyleSheet.create({
     marginHorizontal: -8, // compensate padding
   },
   discoveryItem: {
-    width: '33.33%',
+    // width is now set dynamically via discoveryColumns in the component
     alignItems: 'center',
     padding: 8,
     marginBottom: 12,
