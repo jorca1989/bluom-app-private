@@ -28,7 +28,7 @@ import { api } from '@/convex/_generated/api';
 import { getBottomContentPadding } from '@/utils/layout';
 import { SoundEffect, triggerSound } from '@/utils/soundEffects';
 import { useCelebration } from '@/context/CelebrationContext';
-import { requestHealthPermissions, syncHealthData } from '@/utils/healthIntegration';
+// Health integrations disabled for Build 18 submission.
 import { useResponsive } from '@/utils/responsive';
 
 
@@ -100,7 +100,7 @@ export default function MoveScreen() {
   const addStepsEntry = useMutation(api.steps.addStepsEntry);
   const deleteExerciseEntry = useMutation(api.exercise.deleteExerciseEntry);
   const deleteStepsEntry = useMutation(api.steps.deleteStepsEntry);
-  const saveExternalData = useMutation(api.integrations.saveExternalData);
+  // const saveExternalData = useMutation(api.integrations.saveExternalData);
   const celebration = useCelebration();
 
   // Achievements system
@@ -644,9 +644,9 @@ export default function MoveScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={isTablet ? { width: '100%', maxWidth: contentMaxWidth, alignSelf: 'center' } : undefined}>
+        <View style={isTablet ? { width: '100%', maxWidth: contentMaxWidth ?? 1000, alignSelf: 'center' } : undefined}>
           {/* Header */}
-          <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 12 }]}>
+          <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 22 }]}>
             <View style={styles.headerContent}>
               <View style={styles.headerTextContainer}>
                 <Text style={styles.title}>Move</Text>
@@ -745,7 +745,16 @@ export default function MoveScreen() {
 
           {/* Activity Summary */}
           <View style={[styles.activitySummary, isTablet && { justifyContent: 'space-between' }]}>
-            <View style={[styles.summaryCard, { width: kpiCardWidth(48, 16), padding: isSmallScreen ? 12 : 16 }]}>
+            <View
+              style={[
+                styles.summaryCard,
+                {
+                  width: kpiCardWidth(48, 16),
+                  padding: isSmallScreen ? 12 : 16,
+                  ...(isTablet ? { minHeight: 140 } : null),
+                },
+              ]}
+            >
               <View style={[styles.summaryIconContainer, { backgroundColor: '#dbeafe' }]}>
                 <Ionicons name="barbell" size={24} color="#2563eb" />
               </View>
@@ -760,7 +769,16 @@ export default function MoveScreen() {
               </Text>
             </View>
 
-            <View style={[styles.summaryCard, { width: kpiCardWidth(48, 16), padding: isSmallScreen ? 12 : 16 }]}>
+            <View
+              style={[
+                styles.summaryCard,
+                {
+                  width: kpiCardWidth(48, 16),
+                  padding: isSmallScreen ? 12 : 16,
+                  ...(isTablet ? { minHeight: 140 } : null),
+                },
+              ]}
+            >
               <View style={[styles.summaryIconContainer, { backgroundColor: '#dbeafe' }]}>
                 <Ionicons name="time" size={24} color="#2563eb" />
               </View>
@@ -775,7 +793,16 @@ export default function MoveScreen() {
               </Text>
             </View>
 
-            <View style={[styles.summaryCard, { width: kpiCardWidth(48, 16), padding: isSmallScreen ? 12 : 16 }]}>
+            <View
+              style={[
+                styles.summaryCard,
+                {
+                  width: kpiCardWidth(48, 16),
+                  padding: isSmallScreen ? 12 : 16,
+                  ...(isTablet ? { minHeight: 140 } : null),
+                },
+              ]}
+            >
               <View style={[styles.summaryIconContainer, { backgroundColor: '#dbeafe' }]}>
                 <Ionicons name="flash" size={24} color="#2563eb" />
               </View>
@@ -790,7 +817,16 @@ export default function MoveScreen() {
               </Text>
             </View>
 
-            <View style={[styles.summaryCard, { width: kpiCardWidth(48, 16), padding: isSmallScreen ? 12 : 16 }]}>
+            <View
+              style={[
+                styles.summaryCard,
+                {
+                  width: kpiCardWidth(48, 16),
+                  padding: isSmallScreen ? 12 : 16,
+                  ...(isTablet ? { minHeight: 140 } : null),
+                },
+              ]}
+            >
               <View style={[styles.summaryIconContainer, { backgroundColor: '#ede9fe' }]}>
                 <Ionicons name="locate" size={24} color="#8b5cf6" />
               </View>
@@ -1499,12 +1535,7 @@ export default function MoveScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Apple Guideline 2.5.1 Transparency: Footer Label */}
-          <View style={{ marginTop: 10, alignItems: 'center', paddingHorizontal: 20 }}>
-            <Text style={{ textAlign: 'center', color: '#94a3b8', fontSize: 13, lineHeight: 18 }}>
-              Steps and activity can be synced automatically from Apple Health or Health connect.
-            </Text>
-          </View>
+          {/* Integrations disabled: manual entry only */}
 
           <View style={[styles.modalScroll, { paddingBottom: getBottomContentPadding(insets.bottom) }]}>
             <View style={styles.inputGroup}>
@@ -1543,107 +1574,7 @@ export default function MoveScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Import from Health Connect (Google) */}
-            <TouchableOpacity
-              style={{
-                marginTop: 16,
-                paddingVertical: 14,
-                paddingHorizontal: 16,
-                borderRadius: 16,
-                backgroundColor: '#f1f5f9',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-              }}
-              onPress={async () => {
-                setIsSyncing(true);
-                try {
-                  // Force a fresh permission check on every tap (prevents stale auth state)
-                  const granted = await requestHealthPermissions({ force: true, openSettingsOnFailure: true });
-                  if (!granted) return;
-
-                  const result = await syncHealthData(async (data: any) => {
-                    if (!convexUser?._id) return;
-                    await saveExternalData({
-                      userId: convexUser._id,
-                      steps: Math.max(0, Math.round(data.steps ?? 0)),
-                      calories: Math.max(0, Math.round(data.calories ?? 0)),
-                      source: Platform.OS === 'ios' ? 'apple_health' : 'google_health',
-                    });
-                  });
-                  if (result && (result.steps > 0 || result.calories > 0)) {
-                    if (result.steps > 0) setStepsInput(result.steps.toString());
-                    Alert.alert("Synced", "Imported today's steps and calories from Health.");
-                  } else {
-                    Alert.alert("No Steps Found", "Could not find any steps in Health connect for today.");
-                  }
-                } finally {
-                  setIsSyncing(false);
-                }
-              }}
-            >
-              <Ionicons name="logo-google" size={18} color="#4285F4" />
-              <Text style={{ color: '#0f172a', fontWeight: '600', fontSize: 16 }}>
-                Health connect
-              </Text>
-            </TouchableOpacity>
-
-            {/* Import from Apple Health */}
-            <TouchableOpacity
-              style={{
-                marginTop: 12,
-                paddingVertical: 14,
-                paddingHorizontal: 16,
-                borderRadius: 16,
-                backgroundColor: '#f1f5f9',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-              }}
-              onPress={async () => {
-                setIsSyncing(true);
-                try {
-                  // BUILD 18: Always run permission request on button press.
-                  // If iOS returns failure/undetermined, jumpstart Settings so Health toggles appear.
-                  const granted = await requestHealthPermissions({ force: true, openSettingsOnFailure: true });
-                  if (!granted) {
-                    if (Platform.OS === 'ios') {
-                      try {
-                        await Linking.openSettings();
-                      } catch {
-                        // ignore
-                      }
-                    }
-                    return;
-                  }
-
-                  const result = await syncHealthData(async (data: any) => {
-                    if (!convexUser?._id) return;
-                    await saveExternalData({
-                      userId: convexUser._id,
-                      steps: Math.max(0, Math.round(data.steps ?? 0)),
-                      calories: Math.max(0, Math.round(data.calories ?? 0)),
-                      source: Platform.OS === 'ios' ? 'apple_health' : 'google_health',
-                    });
-                  });
-                  if (result && (result.steps > 0 || result.calories > 0)) {
-                    if (result.steps > 0) setStepsInput(result.steps.toString());
-                    Alert.alert("Synced", "Imported today's steps and calories from Health.");
-                  } else {
-                    Alert.alert("No Steps Found", "Could not find any steps in Apple Health for today.");
-                  }
-                } finally {
-                  setIsSyncing(false);
-                }
-              }}
-            >
-              <Ionicons name="heart" size={18} color="#ec4899" />
-              <Text style={{ color: '#0f172a', fontWeight: '600', fontSize: 16 }}>
-                Apple Health
-              </Text>
-            </TouchableOpacity>
+            {/* Health imports disabled for Build 18 submission (manual entry only). */}
 
           </View>
         </SafeAreaView>

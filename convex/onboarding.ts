@@ -120,6 +120,12 @@ function calculateHolisticScore(args: OnboardingArgs): number {
 
   const sleepHours = Number(args.sleepHours);
   const weeklyWorkoutTime = Number(args.weeklyWorkoutTime);
+  const stressorCount =
+    args.lifeStressor === undefined
+      ? 0
+      : Array.isArray(args.lifeStressor)
+        ? args.lifeStressor.length
+        : 1;
 
   // Positive factors
   if (sleepHours >= 7 && sleepHours <= 9) score += 10;
@@ -131,6 +137,9 @@ function calculateHolisticScore(args: OnboardingArgs): number {
   if (args.stressLevel === "very_high") score -= 10;
   if (sleepHours < 6) score -= 10;
   if (weeklyWorkoutTime < 1) score -= 5;
+  // Multi-select stressors: apply a small stacking penalty, capped.
+  const stressorPenalty = Math.min(stressorCount * 3, 15);
+  score -= stressorPenalty;
 
   // Keep score between 0-100
   return Math.max(0, Math.min(100, score));
@@ -157,7 +166,7 @@ type OnboardingArgs = {
   mealsPerDay: number;
   twelveMonthGoal?: string;
   peakEnergy?: string;
-  lifeStressor?: string;
+  lifeStressor?: string | string[];
   coachingStyle?: string;
   preferredLanguage?: string;
   preferredUnits?: {
@@ -201,7 +210,8 @@ export const onboardUser = mutation({
     mealsPerDay: v.number(),
     twelveMonthGoal: v.optional(v.string()), // Renamed from threeMonthGoal
     peakEnergy: v.optional(v.string()),
-    lifeStressor: v.optional(v.string()),
+    // Backwards-compatible: older clients send a string, new onboarding sends string[]
+    lifeStressor: v.optional(v.union(v.string(), v.array(v.string()))),
     coachingStyle: v.optional(v.string()), // Made optional per request
     preferredLanguage: v.optional(v.string()), // Added for localization support
     preferredUnits: v.optional(v.object({
@@ -266,6 +276,13 @@ export const onboardUser = mutation({
       throw new Error("User not found. Please sign up first.");
     }
 
+    const lifeStressors =
+      args.lifeStressor === undefined
+        ? undefined
+        : Array.isArray(args.lifeStressor)
+          ? args.lifeStressor
+          : [args.lifeStressor];
+
     // STEP 8: Update user with onboarding data and calculated targets
     await ctx.db.patch(existingUser._id, {
       name: args.name,
@@ -287,7 +304,8 @@ export const onboardUser = mutation({
       challenges: args.challenges,
       twelveMonthGoal: args.twelveMonthGoal,
       peakEnergy: args.peakEnergy,
-      lifeStressor: args.lifeStressor,
+      // DataModel types are generated from schema; during transition, cast to allow string[] storage.
+      lifeStressor: lifeStressors as any,
 
       coachingStyle: args.coachingStyle,
       ...(args.preferredLanguage && { preferredLanguage: args.preferredLanguage }),

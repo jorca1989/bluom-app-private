@@ -28,7 +28,9 @@ export function useResponsive() {
      * Maximum width for main content on tablets so it doesn't stretch
      * edge-to-edge. On phones this returns undefined (full width).
      */
-    const contentMaxWidth: number | undefined = isTablet ? 700 : undefined;
+    const contentMaxWidth: number | undefined = isTablet
+        ? Math.min(width >= 1024 ? 1000 : 860, Math.max(0, width - 32))
+        : undefined;
 
     /**
      * How many grid columns fit given a minimum column width and

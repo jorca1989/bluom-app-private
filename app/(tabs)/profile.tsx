@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUser, useAuth } from '@clerk/clerk-expo';
 import { User, Mail, LogOut, Settings, Sparkles, RefreshCcw, TrendingDown, MessageSquare, Clock, LayoutGrid, BookOpen, Calendar, Zap, Bug, Scale, Link } from 'lucide-react-native';
@@ -9,8 +9,6 @@ import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getBottomContentPadding } from '@/utils/layout';
 import { getCustomerInfoSafe } from '@/utils/revenuecat';
-import * as Linking from 'expo-linking';
-import * as WebBrowser from 'expo-web-browser';
 
 export default function ProfileScreen() {
   const { user: clerkUser } = useUser();
@@ -26,36 +24,6 @@ export default function ProfileScreen() {
   const resetOnboarding = useMutation(api.users.resetOnboarding);
   const [rcInfo, setRcInfo] = React.useState<any>(null);
   const [rcLoading, setRcLoading] = React.useState(false);
-  const [linkingApple, setLinkingApple] = React.useState(false);
-
-  const hasAppleLinked = React.useMemo(() => {
-    const accounts = (clerkUser as any)?.externalAccounts ?? [];
-    return accounts.some((a: any) => String(a?.provider ?? '').toLowerCase().includes('apple'));
-  }, [clerkUser]);
-
-  const linkAppleId = async () => {
-    if (!clerkUser) return;
-    if (Platform.OS !== 'ios') return;
-    try {
-      setLinkingApple(true);
-      const redirectUrl = Linking.createURL('/(tabs)/profile');
-      const externalAccount = await (clerkUser as any).createExternalAccount({
-        strategy: 'oauth_apple',
-        redirectUrl,
-      });
-      const verificationUrl = externalAccount?.verification?.externalVerificationRedirectURL;
-      if (!verificationUrl) {
-        throw new Error('Missing Apple verification URL.');
-      }
-      await WebBrowser.openAuthSessionAsync(String(verificationUrl), redirectUrl);
-      await (clerkUser as any).reload?.();
-      Alert.alert('Apple linked', 'Your Apple ID is now connected to this account.');
-    } catch (e: any) {
-      Alert.alert('Could not link Apple ID', e?.message ? String(e.message) : 'Please try again.');
-    } finally {
-      setLinkingApple(false);
-    }
-  };
 
   const handleResetOnboarding = () => {
     Alert.alert(
@@ -213,46 +181,7 @@ export default function ProfileScreen() {
 
           <View style={{ height: 12 }} />
 
-          <TouchableOpacity
-            style={styles.menuItem}
-            activeOpacity={0.7}
-            onPress={() => router.push('/integrations')}
-          >
-            <View style={styles.menuItemLeft}>
-              <View style={[styles.menuIconContainer, { backgroundColor: '#f0fdf4' }]}>
-                <Link size={20} color="#16a34a" />
-              </View>
-              <Text style={styles.menuItemText}>Integrations</Text>
-            </View>
-            <Text style={styles.menuItemChevron}>›</Text>
-          </TouchableOpacity>
-
-          {Platform.OS === 'ios' && !hasAppleLinked && (
-            <>
-              <View style={{ height: 12 }} />
-              <TouchableOpacity
-                style={[styles.menuItem, linkingApple && { opacity: 0.6 }]}
-                activeOpacity={0.7}
-                onPress={linkAppleId}
-                disabled={linkingApple}
-              >
-                <View style={styles.menuItemLeft}>
-                  <View style={[styles.menuIconContainer, { backgroundColor: '#0f172a' }]}>
-                    <Text style={{ color: '#fff', fontWeight: '900' }}></Text>
-                  </View>
-                  <View>
-                    <Text style={styles.menuItemText}>{linkingApple ? 'Linking Apple ID…' : 'Link Apple ID'}</Text>
-                    <Text style={{ fontSize: 12, color: '#64748b', fontWeight: '600' }}>
-                      Prevent duplicate accounts (Private Relay)
-                    </Text>
-                  </View>
-                </View>
-                <Text style={styles.menuItemChevron}>›</Text>
-              </TouchableOpacity>
-            </>
-          )}
-
-          <View style={{ height: 12 }} />
+          {/* Integrations disabled for Build 18 submission */}
 
           <TouchableOpacity
             style={styles.menuItem}

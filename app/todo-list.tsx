@@ -122,8 +122,8 @@ export default function TodoListScreen() {
           <Ionicons name="arrow-back" size={20} color="#0f172a" />
         </TouchableOpacity>
         <View className="flex-1">
-          <Text className="text-slate-900 font-black text-lg">Mum’s Assistant</Text>
-          <Text className="text-slate-500 font-bold text-xs">Life & Household Management</Text>
+          <Text className="text-slate-900 font-black text-lg">Productivity Hub</Text>
+          <Text className="text-slate-500 font-bold text-xs">Tasks • Routines • Shared Lists</Text>
         </View>
         <TouchableOpacity
           onPress={() => setShowPartnerModal(true)}

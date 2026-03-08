@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Modal, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, ActivityIndicator, Platform, Alert } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { requireOptionalNativeModule } from 'expo-modules-core';
 import { useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 
@@ -63,12 +64,55 @@ export function SugarScanModal(props: {
     }
   }
 
+  async function pickFromGallery() {
+    setError(null);
+    try {
+      // Avoid redbox/crash if the currently installed build doesn't include the native module yet.
+      const native = requireOptionalNativeModule('ExponentImagePicker');
+      if (!native) {
+        Alert.alert(
+          'Build Required',
+          'Gallery upload requires a new native build. Please use the camera for now (or rebuild the app).'
+        );
+        return;
+      }
+
+      const ImagePicker = await import('expo-image-picker');
+      if (typeof ImagePicker.launchImageLibraryAsync !== 'function') {
+        Alert.alert(
+          'Build Required',
+          'Gallery upload requires a new native build. Please rebuild and try again.'
+        );
+        return;
+      }
+      const res = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        base64: true,
+        quality: 0.85,
+      });
+      if (res.canceled) return;
+      const asset = res.assets?.[0];
+      if (!asset?.base64) {
+        setError('Could not read image. Please try a different photo.');
+        return;
+      }
+      setCapturedBase64(asset.base64);
+    } catch (e: any) {
+      const msg = e?.message ? String(e.message) : 'Failed to pick image.';
+      setError(msg.includes('ExponentImagePicker') ? 'Gallery upload requires a new native build.' : msg);
+    }
+  }
+
   async function runScan() {
     if (!capturedBase64) return;
     setLoading(true);
     setError(null);
     try {
-      const res = await scan({ imageBase64: capturedBase64, mimeType: 'image/jpeg' });
+      const res = await scan({ imageBase64: capturedBase64, mimeType: 'image/jpeg', platform: Platform.OS });
+      if (res?.status === 'maintenance') {
+        setError('Temporarily unavailable. Please try again later.');
+        return;
+      }
       onResult({
         productName: String(res.productName ?? 'Unknown'),
         estimatedSugarGrams: Number(res.estimatedSugarGrams ?? 0),
@@ -87,7 +131,9 @@ export function SugarScanModal(props: {
   }
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+    // NOTE (Android): the camera preview can render as a SurfaceView which may ignore stacking/clipping
+    // inside transparent modals. Using a full-screen modal avoids the "double layer" preview artifact.
+    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
       <SafeAreaView className="flex-1 bg-black/60 justify-center px-5" edges={['top', 'bottom']}>
         <View className="bg-white rounded-2xl border border-slate-200 p-5" style={{ marginBottom: Math.max(insets.bottom, 12) }}>
           <View className="flex-row items-center justify-between mb-3">
@@ -109,14 +155,18 @@ export function SugarScanModal(props: {
           {!canScan ? (
             <View className="rounded-2xl overflow-hidden border border-slate-200 mb-3">
               {(permission?.granted ?? false) ? (
-                <View className="h-64 bg-slate-900">
+                <View
+                  className="h-64 bg-slate-900 overflow-hidden"
+                  collapsable={false}
+                  style={{ borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
+                >
                   <CameraView
                     ref={(r) => {
                       cameraRef.current = r;
                     }}
-                    style={{ width: '100%', height: '100%' }}
+                    style={{ width: '100%', height: '100%', borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
                     facing="back"
-                    active={visible}
+                    active={visible && !canScan}
                   />
                 </View>
               ) : (
@@ -124,9 +174,14 @@ export function SugarScanModal(props: {
                   <Text className="text-white font-bold text-center">Enable camera permission to scan products.</Text>
                 </View>
               )}
-              <TouchableOpacity onPress={takePhoto} activeOpacity={0.9} className="bg-orange-500 py-3 items-center">
-                <Text className="text-white font-extrabold">Take Photo</Text>
-              </TouchableOpacity>
+              <View className="bg-white px-3 py-3 flex-row items-center justify-between gap-3">
+                <TouchableOpacity onPress={takePhoto} activeOpacity={0.9} className="flex-1 bg-orange-500 py-3 items-center rounded-xl">
+                  <Text className="text-white font-extrabold">Take Photo</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={pickFromGallery} activeOpacity={0.9} className="bg-slate-100 border border-slate-200 px-3 py-3 rounded-xl">
+                  <Text className="text-slate-900 font-extrabold text-xs">Upload from Gallery</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           ) : (
             <View className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-3 flex-row items-center justify-between">

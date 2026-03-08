@@ -198,14 +198,21 @@ const STEP_GROUPS: StepGroup[] = [
       },
       {
         id: 'lifeStressor',
-        question: "Main Stressor",
-        type: 'select',
+        question: "Main Stressors",
+        type: 'multiselect',
         options: [
-          { label: 'Work', value: 'Work/Career' },
-          { label: 'Family', value: 'Family/Parenting' },
+          { label: 'Work & Career', value: 'Work/Career' },
+          { label: 'Family & Parenting', value: 'Family/Parenting' },
           { label: 'Finances', value: 'Financial Planning' },
-          { label: 'Health', value: 'Health/Self-Care' },
-          { label: 'Social', value: 'Social/Relationships' }
+          { label: 'Health & Self‑Care', value: 'Health/Self-Care' },
+          { label: 'Social & Relationships', value: 'Social/Relationships' },
+          { label: 'Sleep Quality', value: 'Sleep' },
+          { label: 'Lack of Purpose', value: 'Purpose' },
+          { label: 'Time Management', value: 'Time' },
+          { label: 'Environment / Housing', value: 'Environment' },
+          { label: 'Burnout', value: 'Burnout' },
+          { label: 'Workload Overwhelm', value: 'Overwhelm' },
+          { label: 'Loneliness', value: 'Loneliness' },
         ]
       }
     ]

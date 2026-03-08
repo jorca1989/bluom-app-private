@@ -15,17 +15,20 @@ export default ({ config }) => {
             name: "Bluom",
             slug: "bolt-expo-nativewind",
             owner: "ggovsaas",
-            version: "1.0.15",
+            version: "1.0.18",
             scheme: "bluom",
             userInterfaceStyle: "automatic",
-            runtimeVersion: "1.0.15",
+            runtimeVersion: "1.0.18",
             ios: {
                 bundleIdentifier: "com.jwfca.bluom",
-                buildNumber: "18",
+                buildNumber: "25",
                 googleServicesFile: "./GoogleService-Info.plist",
-                usesAppleSignIn: true,
                 infoPlist: {
                     ITSAppUsesNonExemptEncryption: false,
+                    NSPhotoLibraryUsageDescription:
+                      "Bluom needs access to your photos so you can upload pictures of your meals and sugar labels for AI analysis.",
+                    NSCameraUsageDescription:
+                      "Bluom needs access to your camera to scan food items and nutritional labels.",
                     CFBundleURLTypes: [
                         {
                             CFBundleURLSchemes: [
@@ -33,19 +36,16 @@ export default ({ config }) => {
                             ],
                         },
                     ],
-                    NSHealthShareUsageDescription:
-                        "We use your step and activity data to calculate your daily Vitality Score and help you track your fitness goals.",
-                    NSHealthUpdateUsageDescription:
-                        "We securely write workouts to Apple Health to keep your fitness data in sync across your devices.",
                 },
                 // KEEP: Build 18 requirement
                 deploymentTarget: "13.0",
                 supportsTablet: true,
+                isTabletOnly: false,
                 requireFullScreen: true,
             },
             android: {
                 package: "com.jwfca.bluom",
-                versionCode: 18,
+                versionCode: 25,
                 googleServicesFile: "./google-services.json",
                 permissions: [
                     "android.permission.CAMERA",
@@ -54,9 +54,6 @@ export default ({ config }) => {
                     "android.permission.FOREGROUND_SERVICE",
                     "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
                     "android.permission.WAKE_LOCK",
-                    // BUILD 18: Health Connect (steps) — fixes OEM (e.g., Oppo) manifest/permission headings
-                    "android.permission.health.READ_STEPS",
-                    "android.permission.health.WRITE_STEPS",
                 ],
             },
             icon: "./assets/images/icon.png",
@@ -77,7 +74,6 @@ export default ({ config }) => {
                 "expo-audio",
                 "expo-asset",
                 "expo-splash-screen",
-                "@react-native-google-signin/google-signin",
                 "@react-native-community/datetimepicker",
                 [
                     "expo-camera",
@@ -85,8 +81,6 @@ export default ({ config }) => {
                         cameraPermission: "Allow camera access.",
                     },
                 ],
-                "react-native-health",
-                "react-native-health-connect",
             ],
             extra: {
                 router: {},
@@ -113,8 +107,9 @@ export default ({ config }) => {
         // buildProps.ios = { deploymentTarget: "13.0" };
     }
 
-    const platformPlugins = isIOS ? ["expo-apple-authentication"] : [];
-    const plugins = [...base.expo.plugins, ...platformPlugins, ["expo-build-properties", buildProps]];
+    // Social sign-in capabilities disabled for Build 18 submission.
+    // Keep plugins platform-safe and avoid adding Apple sign-in entitlement.
+    const plugins = [...base.expo.plugins, ["expo-build-properties", buildProps]];
 
     return {
         ...config,

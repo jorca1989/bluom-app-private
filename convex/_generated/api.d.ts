@@ -12,6 +12,7 @@ import type * as access from "../access.js";
 import type * as achievements from "../achievements.js";
 import type * as admin from "../admin.js";
 import type * as ai from "../ai.js";
+import type * as aiCoachMessages from "../aiCoachMessages.js";
 import type * as aimind from "../aimind.js";
 import type * as customFoods from "../customFoods.js";
 import type * as daily from "../daily.js";
@@ -78,6 +79,7 @@ declare const fullApi: ApiFromModules<{
   achievements: typeof achievements;
   admin: typeof admin;
   ai: typeof ai;
+  aiCoachMessages: typeof aiCoachMessages;
   aimind: typeof aimind;
   customFoods: typeof customFoods;
   daily: typeof daily;

@@ -80,13 +80,24 @@ export default function AIRoutineModal({ visible, onClose }: AIRoutineModalProps
 
     const handleSave = async (routineData: any) => {
         try {
+            const exercises = Array.isArray(routineData?.exercises)
+                ? routineData.exercises.map((ex: any) => ({
+                    name: String(ex?.name ?? ''),
+                    sets: Number(ex?.sets ?? 0),
+                    reps: String(ex?.reps ?? ''),
+                    weight: ex?.weight === undefined ? undefined : String(ex.weight),
+                    rest: ex?.rest === undefined || ex?.rest === null ? undefined : Number(ex.rest),
+                }))
+                : [];
+
             await createRoutine({
                 name: routineData.name,
                 description: routineData.description,
                 plannedVolume: routineData.plannedVolume,
                 estimatedDuration: routineData.estimatedDuration,
                 estimatedCalories: routineData.estimatedCalories,
-                exercises: routineData.exercises,
+                // IMPORTANT: Convex validator rejects extra fields like `_id`.
+                exercises,
             });
             Alert.alert("Success", "Routine saved successfully!");
             onClose();
@@ -196,7 +207,7 @@ export default function AIRoutineModal({ visible, onClose }: AIRoutineModalProps
                                             }}
                                             activeOpacity={0.7}
                                         >
-                                            <Text style={styles.buttonText}>Generate with Gemini (Coming Soon)</Text>
+                                            <Text style={styles.buttonText}>Generate (Coming Soon)</Text>
                                         </TouchableOpacity>
                                     </>
                                 ) : (

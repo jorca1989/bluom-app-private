@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingVi
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import Markdown from 'react-native-markdown-display';
 import { useAction, useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
@@ -35,6 +36,11 @@ export default function AiCoachScreen() {
 
   const incrementCount = useMutation(api.support.incrementAiMessageCount);
   const chatAction = useAction(api.ai.chatWithCoach);
+  const addAiCoachMessage = useMutation(api.aiCoachMessages.addAiCoachMessage);
+  const storedMessages = useQuery(
+    api.aiCoachMessages.listAiCoachMessages,
+    convexUser?._id ? { userId: convexUser._id, limit: 50 } : 'skip'
+  );
 
   const [messages, setMessages] = useState<Message[]>([
     { 
@@ -68,6 +74,7 @@ export default function AiCoachScreen() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const didInitFromStorageRef = useRef(false);
 
   const freeLimit = 3;
   const canChat = appUser.isPro || appUser.isAdmin || (messageCount ?? 0) < freeLimit;
@@ -75,6 +82,22 @@ export default function AiCoachScreen() {
   useEffect(() => {
     setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
   }, [messages]);
+
+  useEffect(() => {
+    if (didInitFromStorageRef.current) return;
+    if (!convexUser?._id) return;
+    if (storedMessages === undefined) return;
+
+    didInitFromStorageRef.current = true;
+    if (storedMessages.length === 0) return;
+
+    setMessages(
+      storedMessages.map(m => ({
+        role: m.role === 'user' ? 'user' : 'coach',
+        content: m.content,
+      }))
+    );
+  }, [storedMessages, convexUser?._id]);
 
   const emojiIceBreakers = [
     { id: 'fuel', label: 'Fuel', prompt: "Analyze my last meal for energy levels.", icon: 'nutrition-outline', color: 'bg-orange-50 text-orange-600 border-orange-100' },
@@ -116,13 +139,25 @@ export default function AiCoachScreen() {
         await incrementCount({ userId: convexUser?._id });
       }
 
+      await addAiCoachMessage({ userId: convexUser._id, role: 'user', content: userMsg });
+
       const response = await chatAction({
         message: userMsg,
-        history: messages.map(m => ({ role: m.role === 'coach' ? 'model' : 'user', content: m.content })),
-        context: `User Goal: ${convexUser?.fitnessGoal ?? 'General Wellness'}, Weight: ${convexUser?.weight ?? 'Not specified'}kg, Height: ${convexUser?.height ?? 'Not specified'}cm`
+        history: messages
+          .filter(m => !m.isQuickQuestion)
+          .map(m => ({ role: m.role === 'coach' ? 'model' : 'user', content: m.content })),
+        context: `User Goal: ${convexUser?.fitnessGoal ?? 'General Wellness'}, Weight: ${convexUser?.weight ?? 'Not specified'}kg, Height: ${convexUser?.height ?? 'Not specified'}cm`,
+        platform: Platform.OS,
       });
 
-      setMessages(prev => [...prev, { role: 'coach', content: response }]);
+      if (response?.status === 'maintenance') {
+        Alert.alert('Maintenance', 'AI Coach is temporarily unavailable. Please try again later.');
+        return;
+      }
+
+      const coachText = String(response?.text ?? '');
+      setMessages(prev => [...prev, { role: 'coach', content: coachText }]);
+      await addAiCoachMessage({ userId: convexUser._id, role: 'coach', content: coachText });
     } catch (e: any) {
       Alert.alert('Error', 'Coach is resting. Please try again later.');
       console.error(e);
@@ -167,9 +202,29 @@ export default function AiCoachScreen() {
                 disabled={!m.isQuickQuestion}
                 className={`max-w-[85%] rounded-2xl p-4 ${m.role === 'user' ? 'bg-blue-600 rounded-tr-none' : m.isQuickQuestion ? 'bg-blue-50 border-2 border-blue-200 rounded-tl-none' : 'bg-slate-100 rounded-tl-none'}`}
               >
-                <Text className={`font-semibold ${m.role === 'user' ? 'text-white' : m.isQuickQuestion ? 'text-blue-700' : 'text-slate-800'}`}>
-                  {m.content}
-                </Text>
+                {m.role === 'coach' && !m.isQuickQuestion ? (
+                  <Markdown
+                    style={{
+                      body: { color: '#1f2937', lineHeight: 22, fontSize: 14, fontWeight: '600' },
+                      paragraph: { marginTop: 0, marginBottom: 10 },
+                      list_item: { marginBottom: 6 },
+                      heading1: { fontSize: 18, fontWeight: '900', marginBottom: 8, color: '#0f172a' },
+                      heading2: { fontSize: 16, fontWeight: '900', marginBottom: 8, color: '#0f172a' },
+                      heading3: { fontSize: 15, fontWeight: '900', marginBottom: 6, color: '#0f172a' },
+                      strong: { fontWeight: '900' },
+                      bullet_list: { marginBottom: 8 },
+                      ordered_list: { marginBottom: 8 },
+                      code_inline: { backgroundColor: '#e2e8f0', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 6 },
+                      blockquote: { borderLeftColor: '#cbd5e1', borderLeftWidth: 3, paddingLeft: 10, marginLeft: 0, marginBottom: 10 },
+                    }}
+                  >
+                    {m.content}
+                  </Markdown>
+                ) : (
+                  <Text className={`font-semibold ${m.role === 'user' ? 'text-white' : m.isQuickQuestion ? 'text-blue-700' : 'text-slate-800'}`}>
+                    {m.content}
+                  </Text>
+                )}
                 {m.isQuickQuestion && (
                   <View className="flex-row items-center mt-1">
                     <Ionicons name="chevron-forward" size={12} color="#3b82f6" />

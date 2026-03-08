@@ -5,18 +5,47 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 function requireGeminiApiKey() {
   const apiKey =
     process.env.GEMINI_API_KEY ||
+    process.env.GEMINI_API_KEY_ANDROID ||
+    process.env.GEMINI_API_KEY_IOS ||
     process.env.GOOGLE_AI_API_KEY ||
     process.env.GOOGLE_API_KEY;
   if (!apiKey) {
     throw new Error(
-      "Missing Gemini API key. Set GEMINI_API_KEY (or GOOGLE_AI_API_KEY) in your Convex environment."
+      "Missing Gemini API key. Set GEMINI_API_KEY_IOS and GEMINI_API_KEY_ANDROID (or GEMINI_API_KEY) in your Convex environment."
     );
   }
   return apiKey;
 }
 
-function getModel() {
-  const genAI = new GoogleGenerativeAI(requireGeminiApiKey());
+function getGeminiApiKeyForPlatform(platform: string): { apiKey: string; source: string; normalizedPlatform: string } {
+  const p = String(platform ?? "").toLowerCase();
+  const normalizedPlatform = p === "ios" || p === "android" || p === "web" ? p : "unknown";
+
+  if (normalizedPlatform === "ios" && process.env.GEMINI_API_KEY_IOS) {
+    return { apiKey: process.env.GEMINI_API_KEY_IOS, source: "GEMINI_API_KEY_IOS", normalizedPlatform };
+  }
+  if (normalizedPlatform !== "ios" && process.env.GEMINI_API_KEY_ANDROID) {
+    return { apiKey: process.env.GEMINI_API_KEY_ANDROID, source: "GEMINI_API_KEY_ANDROID", normalizedPlatform };
+  }
+  if (process.env.GEMINI_API_KEY_ANDROID) {
+    return { apiKey: process.env.GEMINI_API_KEY_ANDROID, source: "GEMINI_API_KEY_ANDROID(fallback)", normalizedPlatform };
+  }
+  if (process.env.GEMINI_API_KEY_IOS) {
+    return { apiKey: process.env.GEMINI_API_KEY_IOS, source: "GEMINI_API_KEY_IOS(fallback)", normalizedPlatform };
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY || process.env.GOOGLE_API_KEY;
+  if (apiKey) {
+    return { apiKey, source: "legacy_fallback", normalizedPlatform };
+  }
+
+  throw new Error(
+    "Missing Gemini API key. Set GEMINI_API_KEY_IOS and GEMINI_API_KEY_ANDROID (or GEMINI_API_KEY) in your Convex environment."
+  );
+}
+
+function getModel(apiKeyOverride?: string) {
+  const genAI = new GoogleGenerativeAI(apiKeyOverride ?? requireGeminiApiKey());
   // NOTE: Model aliases change over time. We keep a short fallback list and retry on 404 / unsupported.
   // See: https://ai.google.dev/gemini-api/docs/models
   return {
@@ -48,8 +77,13 @@ function isModelNotFoundOrUnsupported(err: unknown) {
   );
 }
 
-export async function generateContentWithFallback(parts: any[]) {
-  const { genAI, models } = getModel();
+function isForbidden403(err: unknown) {
+  const msg = String((err as any)?.message ?? err ?? "");
+  return msg.includes("403") || msg.toLowerCase().includes("forbidden");
+}
+
+export async function generateContentWithFallback(parts: any[], apiKeyOverride?: string) {
+  const { genAI, models } = getModel(apiKeyOverride);
   let lastErr: unknown = null;
   for (const modelName of models) {
     try {
@@ -69,8 +103,16 @@ export const recognizeFoodFromImage = action({
     // Base64 without data: prefix
     imageBase64: v.string(),
     mimeType: v.string(), // e.g. "image/jpeg"
+    platform: v.string(),
   },
   handler: async (_ctx, args) => {
+    const { apiKey, source, normalizedPlatform } = getGeminiApiKeyForPlatform(args.platform);
+    console.log(`[ai] recognizeFoodFromImage platform=${normalizedPlatform} keySource=${source}`);
+    const platform = normalizedPlatform;
+    const fallbackKey =
+      platform === "ios"
+        ? process.env.GEMINI_API_KEY_ANDROID
+        : process.env.GEMINI_API_KEY_IOS;
     const prompt =
       'Analyze this food image. Provide the Food Name, estimated Calories, Protein, Carbs, and Fats. Return ONLY a JSON object.\n' +
       'Exact shape:\n' +
@@ -86,17 +128,60 @@ export const recognizeFoodFromImage = action({
       '- If unsure, return name="Unknown" and set numbers to 0.\n' +
       '- Output MUST be valid JSON with no extra text.';
 
-    const result = await generateContentWithFallback([
-      { text: prompt },
-      {
-        inlineData: {
-          mimeType: args.mimeType,
-          data: args.imageBase64,
-        },
-      },
-    ]);
+    let text = "";
+    try {
+      const result = await generateContentWithFallback(
+        [
+          { text: prompt },
+          {
+            inlineData: {
+              mimeType: args.mimeType,
+              data: args.imageBase64,
+            },
+          },
+        ],
+        apiKey
+      );
+      text = result.response.text();
+    } catch (err) {
+      if (isForbidden403(err)) {
+        // Some API keys are restricted per-platform; if a platform-restricted key is rejected,
+        // retry once with the opposite platform key so the feature doesn't go down completely.
+        if (fallbackKey) {
+          try {
+            const retry = await generateContentWithFallback(
+              [
+                { text: prompt },
+                {
+                  inlineData: {
+                    mimeType: args.mimeType,
+                    data: args.imageBase64,
+                  },
+                },
+              ],
+              fallbackKey
+            );
+            text = retry.response.text();
+          } catch {
+            // fall through to maintenance below
+          }
+        }
+        if (text) {
+          // continue parsing if retry succeeded
+        } else {
+        return {
+          status: "maintenance" as const,
+          name: "Unknown",
+          calories: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+        };
+        }
+      }
+      throw err;
+    }
 
-    const text = result.response.text();
     const parsed = safeJsonParse<{
       name: string;
       calories: number;
@@ -105,17 +190,18 @@ export const recognizeFoodFromImage = action({
       fat: number;
     }>(text);
 
-    if (parsed) return parsed;
+    if (parsed) return { status: "ok" as const, ...parsed };
 
     // Fallback: try to extract JSON block if model included commentary
     const start = text.indexOf("{");
     const end = text.lastIndexOf("}");
     if (start >= 0 && end > start) {
       const maybe = safeJsonParse<any>(text.slice(start, end + 1));
-      if (maybe) return maybe;
+      if (maybe) return { status: "ok" as const, ...maybe };
     }
 
     return {
+      status: "ok" as const,
       name: "Unknown",
       calories: 0,
       protein: 0,
@@ -132,8 +218,16 @@ export const scanSugarProductFromImage = action({
   args: {
     imageBase64: v.string(),
     mimeType: v.string(),
+    platform: v.string(),
   },
   handler: async (_ctx, args) => {
+    const { apiKey, source, normalizedPlatform } = getGeminiApiKeyForPlatform(args.platform);
+    console.log(`[ai] scanSugarProductFromImage platform=${normalizedPlatform} keySource=${source}`);
+    const platform = normalizedPlatform;
+    const fallbackKey =
+      platform === "ios"
+        ? process.env.GEMINI_API_KEY_ANDROID
+        : process.env.GEMINI_API_KEY_IOS;
     const prompt =
       'You are a nutrition expert and sugar-awareness coach.\n' +
       'Analyze this image of a packaged food/product (front label or nutrition label).\n' +
@@ -154,17 +248,59 @@ export const scanSugarProductFromImage = action({
       '- notes: short explanation (1 sentence max), no markdown.\n' +
       '- Output MUST be JSON only, no extra text.';
 
-    const result = await generateContentWithFallback([
-      { text: prompt },
-      {
-        inlineData: {
-          mimeType: args.mimeType,
-          data: args.imageBase64,
-        },
-      },
-    ]);
+    let text = "";
+    try {
+      const result = await generateContentWithFallback(
+        [
+          { text: prompt },
+          {
+            inlineData: {
+              mimeType: args.mimeType,
+              data: args.imageBase64,
+            },
+          },
+        ],
+        apiKey
+      );
+      text = result.response.text();
+    } catch (err) {
+      if (isForbidden403(err)) {
+        if (fallbackKey) {
+          try {
+            const retry = await generateContentWithFallback(
+              [
+                { text: prompt },
+                {
+                  inlineData: {
+                    mimeType: args.mimeType,
+                    data: args.imageBase64,
+                  },
+                },
+              ],
+              fallbackKey
+            );
+            text = retry.response.text();
+          } catch {
+            // fall through to maintenance below
+          }
+        }
+        if (text) {
+          // continue parsing if retry succeeded
+        } else {
+        return {
+          status: "maintenance" as const,
+          productName: "Unknown",
+          estimatedSugarGrams: 0,
+          estimatedCalories: 0,
+          hiddenSugarsFound: [],
+          smartAlternative: "",
+          notes: "Temporarily unavailable. Please try again later.",
+        };
+        }
+      }
+      throw err;
+    }
 
-    const text = result.response.text();
     const parsed = safeJsonParse<{
       productName: string;
       estimatedSugarGrams: number;
@@ -174,16 +310,17 @@ export const scanSugarProductFromImage = action({
       notes: string;
     }>(text);
 
-    if (parsed) return parsed;
+    if (parsed) return { status: "ok" as const, ...parsed };
 
     const start = text.indexOf("{");
     const end = text.lastIndexOf("}");
     if (start >= 0 && end > start) {
       const maybe = safeJsonParse<any>(text.slice(start, end + 1));
-      if (maybe) return maybe;
+      if (maybe) return { status: "ok" as const, ...maybe };
     }
 
     return {
+      status: "ok" as const,
       productName: "Unknown",
       estimatedSugarGrams: 0,
       estimatedCalories: 0,
@@ -259,8 +396,16 @@ export const chatWithCoach = action({
     message: v.string(),
     history: v.array(v.object({ role: v.string(), content: v.string() })),
     context: v.optional(v.string()), // User's fitness/nutrition data
+    platform: v.string(),
   },
   handler: async (_ctx, args) => {
+    const { apiKey, source, normalizedPlatform } = getGeminiApiKeyForPlatform(args.platform);
+    console.log(`[ai] chatWithCoach platform=${normalizedPlatform} keySource=${source}`);
+    const platform = normalizedPlatform;
+    const fallbackKey =
+      platform === "ios"
+        ? process.env.GEMINI_API_KEY_ANDROID
+        : process.env.GEMINI_API_KEY_IOS;
     const systemPrompt = `You are the Bluom AI Coach, a highly skilled expert in Fitness, Nutrition, and Wellness.
 Your goal is to provide precise, science-backed, and encouraging advice to help the user achieve their health goals.
 Context about the user: ${args.context ?? "No specific context provided."}
@@ -273,34 +418,49 @@ If the user asks for medical advice, always include a disclaimer that you are an
       parts: [{ text: h.content }]
     }));
 
-    const { genAI, models } = getModel();
     let responseText = "";
     let success = false;
+    let sawForbidden = false;
 
-    for (const modelName of models) {
-      try {
-        const model = genAI.getGenerativeModel({ model: modelName });
-        const chat = model.startChat({
-          history: [
-            { role: "user", parts: [{ text: systemPrompt }] },
-            { role: "model", parts: [{ text: "Understood. I am the Bluom AI Coach. How can I help you today?" }] },
-            ...chatHistory
-          ],
-        });
+    const apiKeysToTry = [apiKey, fallbackKey].filter(Boolean) as string[];
+    for (const key of apiKeysToTry) {
+      const { genAI, models } = getModel(key);
+      for (const modelName of models) {
+        try {
+          const model = genAI.getGenerativeModel({ model: modelName });
+          const chat = model.startChat({
+            history: [
+              { role: "user", parts: [{ text: systemPrompt }] },
+              { role: "model", parts: [{ text: "Understood. I am the Bluom AI Coach. How can I help you today?" }] },
+              ...chatHistory
+            ],
+          });
 
-        const result = await chat.sendMessage(args.message);
-        responseText = result.response.text();
-        success = true;
-        break;
-      } catch (err) {
-        if (isModelNotFoundOrUnsupported(err)) continue;
-        throw err;
+          const result = await chat.sendMessage(args.message);
+          responseText = result.response.text();
+          success = true;
+          break;
+        } catch (err) {
+          if (isForbidden403(err)) {
+            // Try next key (if any)
+            sawForbidden = true;
+            break;
+          }
+          if (isModelNotFoundOrUnsupported(err)) continue;
+          throw err;
+        }
       }
+      if (success) break;
     }
 
-    if (!success) throw new Error("Failed to get response from Gemini.");
+    if (!success) {
+      if (sawForbidden) {
+        return { status: "maintenance" as const, text: "Coach is resting. Please try again later." };
+      }
+      throw new Error("Failed to get response from Gemini.");
+    }
 
-    return responseText;
+    return { status: "ok" as const, text: responseText };
   },
 });
 

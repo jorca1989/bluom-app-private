@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   Dimensions,
   Alert,
   ActivityIndicator,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'react-native';
@@ -24,6 +25,7 @@ import { getBottomContentPadding, getWeekCalendarItemSize } from '@/utils/layout
 import { SoundEffect, triggerSound } from '@/utils/soundEffects';
 import { useCelebration } from '@/context/CelebrationContext';
 import { sendHydrationReminder, sendMealReminder } from '@/utils/notifications';
+import FoodSearchSection from '@/components/FoodSearchSection';
 
 
 
@@ -94,10 +96,14 @@ const PieChart = ({
   );
 };
 
+
 export default function FuelScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const insets = useSafeAreaInsets();
+  const { width: windowWidth } = useWindowDimensions();
+  const isTablet = windowWidth > 768;
+  const tabletMaxWidth = Math.min(1000, Math.max(0, windowWidth - 32));
 
 
   const { user: clerkUser, isLoaded: isClerkLoaded } = useClerkUser();
@@ -131,7 +137,6 @@ export default function FuelScreen() {
   const addWaterOz = useMutation(api.daily.addWaterOz);
   const deleteRecipe = useMutation(api.recipes.deleteRecipe);
   const upsertExternalFood = useMutation(api.foodCatalog.upsertExternalFood);
-  const searchExternalFoods = useAction(api.externalFoods.searchFoods);
 
   const [selectedMeal, setSelectedMeal] = useState<MealName | null>(null);
   const [showFoodSearch, setShowFoodSearch] = useState(false);
@@ -141,25 +146,10 @@ export default function FuelScreen() {
   const [showPlusMenu, setShowPlusMenu] = useState(false);
   const [showAddFoodModal, setShowAddFoodModal] = useState(false);
 
-  // Meal Selection for Global Search
-  const [showMealSelector, setShowMealSelector] = useState(false);
+  // Meal Selection for Global Search (inline inside food-search modal, no separate Modal)
   const [pendingFoodToAdd, setPendingFoodToAdd] = useState<any>(null);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [loadingSearch, setLoadingSearch] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false); // Disabled for production
-
-  useEffect(() => {
-    // Coach marks disabled for production
-    /*
-    SecureStore.getItemAsync('bluom_show_coach_marks').then(val => {
-      if (val === 'true') {
-        setShowTooltip(true);
-      }
-    });
-    */
-  }, []);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const [waterAmount, setWaterAmount] = useState('');
   const [waterUnit, setWaterUnit] = useState<string>(''); // Will set in effect based on preferences
@@ -250,31 +240,6 @@ export default function FuelScreen() {
   const todayTotals = useMemo(() => daily?.consumed ?? { calories: 0, protein: 0, carbs: 0, fat: 0 }, [daily]);
   const remaining = useMemo(() => daily?.remaining ?? { calories: 0, protein: 0, carbs: 0, fat: 0 }, [daily]);
 
-  // Debounced food search (Convex)
-  useEffect(() => {
-    let cancelled = false;
-    const t = setTimeout(async () => {
-      if (!convexUser?._id) return;
-      if (!searchQuery.trim() || foodSearchTab !== 'search') {
-        if (!cancelled) setSearchResults([]);
-        return;
-      }
-      setLoadingSearch(true);
-      try {
-        const results = await searchExternalFoods({ userId: convexUser._id, query: searchQuery, limit: 50 });
-        if (!cancelled) setSearchResults(results ?? []);
-      } catch {
-        if (!cancelled) setSearchResults([]);
-      } finally {
-        if (!cancelled) setLoadingSearch(false);
-      }
-    }, 300);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(t);
-    };
-  }, [convexUser?._id, foodSearchTab, searchQuery, searchExternalFoods]);
 
   // If a param requests opening recipes, open the modal on My Recipes tab
   useEffect(() => {
@@ -290,17 +255,16 @@ export default function FuelScreen() {
     }
   }, [params, router]);
 
-  async function addFoodFromCatalog(food: any, meal: MealName) {
+  const addFoodFromCatalog = useCallback(async (food: any, meal: MealName) => {
     if (!convexUser?._id) return;
 
-    // If no meal specified (global search), prompt user
+    // If no meal specified (global search), show inline meal picker
     if (!meal) {
       setPendingFoodToAdd(food);
-      setShowMealSelector(true);
       return;
     }
 
-    // Free users: keep the existing “4 unique meals per day” gating.
+    // Free users: keep the existing "4 unique meals per day" gating.
     if (!convexUser.isPremium) {
       const uniqueMeals = new Set((dateEntries ?? []).map((e) => titleFromMealType(e.mealType)));
       if (uniqueMeals.size >= 4 && !uniqueMeals.has(meal)) {
@@ -368,11 +332,9 @@ export default function FuelScreen() {
     }, 250);
 
     setShowFoodSearch(false);
-    setSearchQuery('');
     setSelectedMeal(null);
     setPendingFoodToAdd(null);
-    setShowMealSelector(false);
-  }
+  }, [convexUser, dateEntries, upsertExternalFood, logFoodEntry, selectedDate, router]);
 
   function getMealTotals(meal: MealName) {
     const mealType = toMealTypeLower(meal);
@@ -461,629 +423,625 @@ export default function FuelScreen() {
           {
             paddingTop: 12,
             paddingBottom: getBottomContentPadding(insets.bottom, 20),
+            ...(isTablet ? { alignItems: 'center' as const } : {}),
           },
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 12 }]}>
-          <View style={styles.headerContent}>
-            <View style={styles.headerTextContainer}>
-              <Text style={styles.title}>Fuel</Text>
-              <Text style={styles.subtitle}>Track your nutrition</Text>
+        <View style={isTablet ? { width: '100%', maxWidth: tabletMaxWidth, alignSelf: 'center' } : undefined}>
+          {/* Header */}
+          <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 22 }]}>
+            <View style={styles.headerContent}>
+              <View style={styles.headerTextContainer}>
+                <Text style={styles.title}>Fuel</Text>
+                <Text style={styles.subtitle}>Track your nutrition</Text>
+              </View>
+              <View style={styles.headerButtons}>
+                <CoachMark
+                  visible={showTooltip} // Re-using existing state for simplicity, or change to new state
+                  message="Snap a photo to track macros instantly."
+                  onClose={() => {
+                    setShowTooltip(false);
+                    SecureStore.deleteItemAsync('bluom_show_coach_marks');
+                  }}
+                  position="bottom"
+                />
+                {/* Removed diamond icon */}
+                <TouchableOpacity
+                  style={[styles.headerButton, styles.plusButton]}
+                  onPress={() => setShowPlusMenu(!showPlusMenu)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="add" size={24} color="#ffffff" />
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={styles.headerButtons}>
-              <CoachMark
-                visible={showTooltip} // Re-using existing state for simplicity, or change to new state
-                message="Snap a photo to track macros instantly."
-                onClose={() => {
-                  setShowTooltip(false);
-                  SecureStore.deleteItemAsync('bluom_show_coach_marks');
-                }}
-                position="bottom"
-              />
-              {/* Removed diamond icon */}
+          </View>
+
+          {/* Plus Menu */}
+          {showPlusMenu && (
+            <View style={styles.plusMenu}>
               <TouchableOpacity
-                style={[styles.headerButton, styles.plusButton]}
-                onPress={() => setShowPlusMenu(!showPlusMenu)}
-                activeOpacity={0.7}
+                style={styles.plusMenuItem}
+                onPress={() => {
+                  setShowPlusMenu(false);
+                  triggerSound(SoundEffect.UI_TAP);
+                  setShowFoodSearch(true);
+                  setFoodSearchTab('search');
+                }}
               >
-                <Ionicons name="add" size={24} color="#ffffff" />
+                <Ionicons name="search" size={20} color="#1e293b" />
+                <Text style={styles.plusMenuText}>Search Food</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.plusMenuItem}
+                onPress={() => {
+                  setShowPlusMenu(false);
+                  setShowAddFoodModal(true);
+                }}
+              >
+                <Ionicons name="add-circle" size={20} color="#1e293b" />
+                <Text style={styles.plusMenuText}>Add Custom Food</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.plusMenuItem}
+                onPress={() => {
+                  setShowPlusMenu(false);
+                  setShowRecipeModal(true);
+                }}
+              >
+                <Ionicons name="restaurant" size={20} color="#1e293b" />
+                <Text style={styles.plusMenuText}>Create Recipe</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.plusMenuItem}
+                onPress={() => {
+                  setShowPlusMenu(false);
+                  setShowPhotoCapture(true);
+                }}
+              >
+                <Ionicons name="camera" size={20} color="#1e293b" />
+                <Text style={styles.plusMenuText}>Photo Calorie Counter</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.plusMenuItem}
+                onPress={() => {
+                  setShowPlusMenu(false);
+                  router.push('/recipes');
+                }}
+              >
+                <Ionicons name="book" size={20} color="#1e293b" />
+                <Text style={styles.plusMenuText}>Browse Recipes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.plusMenuItem}
+                onPress={() => {
+                  setShowPlusMenu(false);
+                  triggerSound(SoundEffect.UI_TAP);
+                  router.push('/shopping-list');
+                }}
+              >
+                <Ionicons name="cart" size={20} color="#1e293b" />
+                <Text style={styles.plusMenuText}>Shopping List</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.plusMenuItem}
+                onPress={() => {
+                  setShowPlusMenu(false);
+                  setShowFoodSearch(true);
+                  setFoodSearchTab('myrecipes');
+                }}
+              >
+                <Ionicons name="restaurant-outline" size={20} color="#1e293b" />
+                <Text style={styles.plusMenuText}>My Recipes</Text>
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
+          )}
 
-        {/* Plus Menu */}
-        {showPlusMenu && (
-          <View style={styles.plusMenu}>
-            <TouchableOpacity
-              style={styles.plusMenuItem}
-              onPress={() => {
-                setShowPlusMenu(false);
-                triggerSound(SoundEffect.UI_TAP);
-                setShowFoodSearch(true);
-                setFoodSearchTab('search');
-              }}
-            >
-              <Ionicons name="search" size={20} color="#1e293b" />
-              <Text style={styles.plusMenuText}>Search Food</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.plusMenuItem}
-              onPress={() => {
-                setShowPlusMenu(false);
-                setShowAddFoodModal(true);
-              }}
-            >
-              <Ionicons name="add-circle" size={20} color="#1e293b" />
-              <Text style={styles.plusMenuText}>Add Custom Food</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.plusMenuItem}
-              onPress={() => {
-                setShowPlusMenu(false);
-                setShowRecipeModal(true);
-              }}
-            >
-              <Ionicons name="restaurant" size={20} color="#1e293b" />
-              <Text style={styles.plusMenuText}>Create Recipe</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.plusMenuItem}
-              onPress={() => {
-                setShowPlusMenu(false);
-                setShowPhotoCapture(true);
-              }}
-            >
-              <Ionicons name="camera" size={20} color="#1e293b" />
-              <Text style={styles.plusMenuText}>Photo Calorie Counter</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.plusMenuItem}
-              onPress={() => {
-                setShowPlusMenu(false);
-                router.push('/recipes');
-              }}
-            >
-              <Ionicons name="book" size={20} color="#1e293b" />
-              <Text style={styles.plusMenuText}>Browse Recipes</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.plusMenuItem}
-              onPress={() => {
-                setShowPlusMenu(false);
-                triggerSound(SoundEffect.UI_TAP);
-                router.push('/shopping-list');
-              }}
-            >
-              <Ionicons name="cart" size={20} color="#1e293b" />
-              <Text style={styles.plusMenuText}>Shopping List</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.plusMenuItem}
-              onPress={() => {
-                setShowPlusMenu(false);
-                setShowFoodSearch(true);
-                setFoodSearchTab('myrecipes');
-              }}
-            >
-              <Ionicons name="restaurant-outline" size={20} color="#1e293b" />
-              <Text style={styles.plusMenuText}>My Recipes</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {/* Weekly Calendar */}
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>This Week</Text>
-            <Ionicons name="calendar" size={24} color="#2563eb" />
-          </View>
-
-          <View style={styles.calendarContainer}>
-            {/* Day names */}
-            <View style={styles.calendarRow}>
-              {weekDates.map((day, index) => (
-                <View key={`day-${index}`} style={styles.calendarItem}>
-                  <Text style={styles.calendarDay}>{day.day}</Text>
-                </View>
-              ))}
+          {/* Weekly Calendar */}
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>This Week</Text>
+              <Ionicons name="calendar" size={24} color="#2563eb" />
             </View>
 
-            {/* Day numbers */}
-            <View style={styles.calendarRow}>
-              {weekDates.map((day, index) => (
-                <TouchableOpacity
-                  key={`date-${index}`}
-                  style={[
-                    styles.calendarDateButton,
-                    { width: calendarItemSize, height: calendarItemSize, borderRadius: calendarItemSize / 2 },
-                    day.fullDate === selectedDate && styles.calendarDateButtonSelected,
-                  ]}
-                  onPress={() => setSelectedDate(day.fullDate)}
-                >
-                  <Text
-                    style={[
-                      styles.calendarDateText,
-                      day.fullDate === selectedDate && styles.calendarDateTextSelected,
-                    ]}
-                  >
-                    {day.date}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Usage dots */}
-            <View style={styles.calendarRow}>
-              {weekDates.map((day, index) => (
-                <View key={`dot-${index}`} style={styles.calendarItem}>
-                  <View style={[styles.calendarDot, usedDays.includes(day.fullDate) && styles.calendarDotActive]} />
-                </View>
-              ))}
-            </View>
-          </View>
-        </View>
-
-        {/* Today's Nutrition */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Nutrition</Text>
-          <View style={styles.nutritionGrid}>
-            <View style={styles.nutritionItem}>
-              <PieChart value={todayTotals.calories} max={daily?.target?.calories ?? 2000} color="#3b82f6" size={64} />
-              <Text style={styles.nutritionLabel} numberOfLines={1} adjustsFontSizeToFit>
-                Calories
-              </Text>
-              <Text style={styles.nutritionRemaining} numberOfLines={1} adjustsFontSizeToFit>
-                {Math.round(remaining.calories)} left
-              </Text>
-            </View>
-            <View style={styles.nutritionItem}>
-              <PieChart value={todayTotals.protein} max={daily?.target?.protein ?? 150} color="#ef4444" size={64} />
-              <Text style={styles.nutritionLabel} numberOfLines={1} adjustsFontSizeToFit>
-                Protein
-              </Text>
-              <Text style={styles.nutritionRemaining} numberOfLines={1} adjustsFontSizeToFit>
-                {Math.round(remaining.protein)}g left
-              </Text>
-            </View>
-            <View style={styles.nutritionItem}>
-              <PieChart value={todayTotals.carbs} max={daily?.target?.carbs ?? 225} color="#3b82f6" size={64} />
-              <Text style={styles.nutritionLabel} numberOfLines={1} adjustsFontSizeToFit>
-                Carbs
-              </Text>
-              <Text style={styles.nutritionRemaining} numberOfLines={1} adjustsFontSizeToFit>
-                {Math.round(remaining.carbs)}g left
-              </Text>
-            </View>
-            <View style={styles.nutritionItem}>
-              <PieChart value={todayTotals.fat} max={daily?.target?.fat ?? 67} color="#eab308" size={64} />
-              <Text style={styles.nutritionLabel} numberOfLines={1} adjustsFontSizeToFit>
-                Fat
-              </Text>
-              <Text style={styles.nutritionRemaining} numberOfLines={1} adjustsFontSizeToFit>
-                {Math.round(remaining.fat)}g left
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Water Tracking */}
-        <View style={styles.card}>
-          <View style={styles.waterHeader}>
-            <View style={styles.waterHeaderLeft}>
-              <View style={styles.waterIconContainer}>
-                <Ionicons name="water" size={24} color="#2563eb" />
+            <View style={styles.calendarContainer}>
+              {/* Day names */}
+              <View style={styles.calendarRow}>
+                {weekDates.map((day, index) => (
+                  <View key={`day-${index}`} style={styles.calendarItem}>
+                    <Text style={styles.calendarDay}>{day.day}</Text>
+                  </View>
+                ))}
               </View>
-              <View>
-                <Text style={styles.waterTitle}>Water</Text>
-                <Text style={styles.waterSubtitle}>
-                  {isMetric ? (
-                    (() => {
-                      const ml = (daily?.waterOz ?? 0) * 29.5735;
-                      return ml >= 1000 ? `${(ml / 1000).toFixed(1)}L` : `${Math.round(ml)}ml`;
-                    })()
-                  ) : (
-                    `${Math.round(daily?.waterOz ?? 0)}oz`
-                  )}
+
+              {/* Day numbers */}
+              <View style={styles.calendarRow}>
+                {weekDates.map((day, index) => (
+                  <TouchableOpacity
+                    key={`date-${index}`}
+                    style={[
+                      styles.calendarDateButton,
+                      { width: calendarItemSize, height: calendarItemSize, borderRadius: calendarItemSize / 2 },
+                      day.fullDate === selectedDate && styles.calendarDateButtonSelected,
+                    ]}
+                    onPress={() => setSelectedDate(day.fullDate)}
+                  >
+                    <Text
+                      style={[
+                        styles.calendarDateText,
+                        day.fullDate === selectedDate && styles.calendarDateTextSelected,
+                      ]}
+                    >
+                      {day.date}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Usage dots */}
+              <View style={styles.calendarRow}>
+                {weekDates.map((day, index) => (
+                  <View key={`dot-${index}`} style={styles.calendarItem}>
+                    <View style={[styles.calendarDot, usedDays.includes(day.fullDate) && styles.calendarDotActive]} />
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
+
+          {/* Today's Nutrition */}
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Nutrition</Text>
+            <View style={styles.nutritionGrid}>
+              <View style={styles.nutritionItem}>
+                <PieChart value={todayTotals.calories} max={daily?.target?.calories ?? 2000} color="#3b82f6" size={64} />
+                <Text style={styles.nutritionLabel} numberOfLines={1} adjustsFontSizeToFit>
+                  Calories
+                </Text>
+                <Text style={styles.nutritionRemaining} numberOfLines={1} adjustsFontSizeToFit>
+                  {Math.round(remaining.calories)} left
+                </Text>
+              </View>
+              <View style={styles.nutritionItem}>
+                <PieChart value={todayTotals.protein} max={daily?.target?.protein ?? 150} color="#ef4444" size={64} />
+                <Text style={styles.nutritionLabel} numberOfLines={1} adjustsFontSizeToFit>
+                  Protein
+                </Text>
+                <Text style={styles.nutritionRemaining} numberOfLines={1} adjustsFontSizeToFit>
+                  {Math.round(remaining.protein)}g left
+                </Text>
+              </View>
+              <View style={styles.nutritionItem}>
+                <PieChart value={todayTotals.carbs} max={daily?.target?.carbs ?? 225} color="#3b82f6" size={64} />
+                <Text style={styles.nutritionLabel} numberOfLines={1} adjustsFontSizeToFit>
+                  Carbs
+                </Text>
+                <Text style={styles.nutritionRemaining} numberOfLines={1} adjustsFontSizeToFit>
+                  {Math.round(remaining.carbs)}g left
+                </Text>
+              </View>
+              <View style={styles.nutritionItem}>
+                <PieChart value={todayTotals.fat} max={daily?.target?.fat ?? 67} color="#eab308" size={64} />
+                <Text style={styles.nutritionLabel} numberOfLines={1} adjustsFontSizeToFit>
+                  Fat
+                </Text>
+                <Text style={styles.nutritionRemaining} numberOfLines={1} adjustsFontSizeToFit>
+                  {Math.round(remaining.fat)}g left
                 </Text>
               </View>
             </View>
-            <TouchableOpacity style={styles.addWaterButton} onPress={() => setShowWaterModal(true)} activeOpacity={0.7}>
-              <Text style={styles.addWaterButtonText}>Add</Text>
-            </TouchableOpacity>
           </View>
 
-          <View style={styles.waterProgress}>
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((glass) => (
-              <View
-                key={glass}
-                style={[
-                  styles.waterGlass,
-                  glass <= Math.floor((daily?.waterOz ?? 0) / 8) && styles.waterGlassFilled,
-                ]}
-              />
-            ))}
-          </View>
-        </View>
-
-        {/* Fasting Banner or Meals Section */}
-        {activeFastingLog ? (
-          <View style={{
-            marginHorizontal: 16,
-            marginTop: 24,
-            backgroundColor: '#0f172a',
-            borderRadius: 24,
-            padding: 24,
-            position: 'relative',
-            overflow: 'hidden',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 10,
-            elevation: 5
-          }}>
-            {/* Background decorative blob - simplified */}
-            <View style={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              width: 128,
-              height: 128,
-              backgroundColor: 'rgba(59, 130, 246, 0.2)',
-              borderRadius: 64,
-              marginRight: -40,
-              marginTop: -40,
-            }} />
-
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-              <Ionicons name="hourglass" size={20} color="#60a5fa" />
-              <Text style={{ color: '#60a5fa', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 1.5, fontSize: 12 }}>Fasting In Progress</Text>
-            </View>
-
-            <View>
-              <Text style={{ color: 'white', fontWeight: '900', fontSize: 30, marginBottom: 4 }}>
-                {(() => {
-                  const protocol = activeFastingLog.protocol || '16:8';
-                  const targetHours = parseInt(protocol.split(':')[0]);
-                  const startTime = activeFastingLog.startTime;
-                  const endTime = startTime + targetHours * 60 * 60 * 1000;
-                  const remainingMs = Math.max(0, endTime - Date.now());
-                  const hours = Math.floor(remainingMs / (1000 * 60 * 60));
-                  const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-                  return remainingMs > 0
-                    ? `${hours}h ${minutes}m until feeding`
-                    : "Window Open";
-                })()}
-              </Text>
-              <Text style={{ color: '#94a3b8', fontWeight: '500', fontSize: 14 }}>
-                Don't break your fast! Keep going!
-              </Text>
-            </View>
-
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 24, backgroundColor: 'rgba(255,255,255,0.1)', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 }}>
-              <Ionicons name="leaf" size={12} color="#4ade80" />
-              <Text style={{ color: '#4ade80', fontWeight: 'bold', fontSize: 12 }}>Metabolic Switch Active</Text>
-            </View>
-          </View>
-        ) : (
-          /* Meals Section */
-          <View style={styles.mealsSection}>
-            {defaultMeals.map((meal) => {
-              const mealTotals = getMealTotals(meal);
-              const mealConfig = mealConfigs[meal];
-              const mealEntries = (dateEntries ?? []).filter((e) => titleFromMealType(e.mealType) === meal);
-
-              return (
-                <View key={meal} style={styles.mealCard}>
-                  <View style={styles.mealCardHeader}>
-                    <View style={styles.mealCardHeaderLeft}>
-                      <View style={[styles.mealIconContainer, { backgroundColor: mealConfig.color }]}>
-                        <Ionicons name={mealConfig.icon as any} size={24} color={mealConfig.iconColor} />
-                      </View>
-                      <View style={{ flex: 1 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Text style={styles.mealName}>{meal}</Text>
-                          <TouchableOpacity
-                            style={styles.mealAddButton}
-                            onPress={() => {
-                              setSelectedMeal(meal);
-                              setShowFoodSearch(true);
-                              setFoodSearchTab('search');
-                            }}
-                            activeOpacity={0.7}
-                          >
-                            <Ionicons name="add" size={18} color="#94a3b8" />
-                          </TouchableOpacity>
-                        </View>
-                        <Text style={styles.mealTotals} numberOfLines={1} adjustsFontSizeToFit>
-                          {Math.round(mealTotals.calories)} cal • {Math.round(mealTotals.protein)}g P •{' '}
-                          {Math.round(mealTotals.carbs)}g C • {Math.round(mealTotals.fat)}g F
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-
-                  {mealEntries.length > 0 ? (
-                    <View style={styles.mealEntries}>
-                      {mealEntries.map((entry) => (
-                        <View key={entry._id} style={styles.mealEntry}>
-                          <View style={styles.mealEntryLeft}>
-                            <Text style={styles.mealEntryName}>{entry.foodName}</Text>
-                            <View style={styles.mealEntrySubline}>
-                              <Text style={styles.mealEntryQuantity}>{`1x • ${Math.round(entry.calories ?? 0)} cal`}</Text>
-                              <View style={styles.macroRowHorizontal}>
-                                <Text style={styles.mealEntryMacros}>{Math.round(entry.protein ?? 0)}g P</Text>
-                                <Text style={styles.mealEntryMacros}>{Math.round(entry.carbs ?? 0)}g C</Text>
-                                <Text style={styles.mealEntryMacros}>{Math.round(entry.fat ?? 0)}g F</Text>
-                              </View>
-                            </View>
-                          </View>
-                          <View style={styles.mealEntryRight}>
-                            <TouchableOpacity
-                              style={styles.deleteEntryButton}
-                              onPress={() => deleteFoodEntry({ entryId: entry._id })}
-                              activeOpacity={0.7}
-                            >
-                              <Ionicons name="trash" size={16} color="#dc2626" />
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      ))}
-                    </View>
-                  ) : (
-                    <View style={styles.emptyMeal}>
-                      <Text style={styles.emptyMealText}>No food logged today</Text>
-                    </View>
-                  )}
+          {/* Water Tracking */}
+          <View style={styles.card}>
+            <View style={styles.waterHeader}>
+              <View style={styles.waterHeaderLeft}>
+                <View style={styles.waterIconContainer}>
+                  <Ionicons name="water" size={24} color="#2563eb" />
                 </View>
-              );
-            })}
-
-            {/* Add Meal Slot Button (Premium) */}
-            <TouchableOpacity
-              style={[styles.mealCard, {
-                opacity: 0.95,
-                borderStyle: 'dashed',
-                borderWidth: 2,
-                borderColor: '#fbbf24',
-                backgroundColor: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-                shadowColor: '#fbbf24',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 4
-              }]}
-              onPress={() => router.push('/premium')}
-              activeOpacity={0.8}
-            >
-              <View style={[styles.mealCardHeader, { borderBottomWidth: 0 }]}>
-                <View style={styles.mealCardHeaderLeft}>
-                  <View style={[styles.mealIconContainer, {
-                    backgroundColor: '#fbbf24',
-                    shadowColor: '#f59e0b',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.4,
-                    shadowRadius: 6,
-                    elevation: 3
-                  }]}>
-                    <Ionicons name="lock-closed" size={22} color="#ffffff" />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Text style={[styles.mealName, {
-                        color: '#92400e',
-                        fontWeight: '800',
-                        fontSize: 16
-                      }]}>Add Meal</Text>
-                      <View style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: 6,
-                        backgroundColor: '#fbbf24',
-                        paddingHorizontal: 10,
-                        paddingVertical: 6,
-                        borderRadius: 16,
-                        shadowColor: '#f59e0b',
-                        shadowOffset: { width: 0, height: 1 },
-                        shadowOpacity: 0.5,
-                        shadowRadius: 4,
-                        elevation: 2
-                      }}>
-                        <Ionicons name="star" size={12} color="#ffffff" />
-                        <Text style={{
-                          fontSize: 11,
-                          fontWeight: '800',
-                          color: '#ffffff',
-                          textTransform: 'uppercase',
-                          letterSpacing: 0.5
-                        }}>PRO</Text>
-                        <Ionicons name="star" size={12} color="#ffffff" />
-                      </View>
-                    </View>
-                    <Text style={[styles.mealTotals, {
-                      color: '#92400e',
-                      fontWeight: '600',
-                      fontSize: 13
-                    }]}>
-                      Unlock unlimited meals
-                    </Text>
-                  </View>
+                <View>
+                  <Text style={styles.waterTitle}>Water</Text>
+                  <Text style={styles.waterSubtitle}>
+                    {isMetric ? (
+                      (() => {
+                        const ml = (daily?.waterOz ?? 0) * 29.5735;
+                        return ml >= 1000 ? `${(ml / 1000).toFixed(1)}L` : `${Math.round(ml)}ml`;
+                      })()
+                    ) : (
+                      `${Math.round(daily?.waterOz ?? 0)}oz`
+                    )}
+                  </Text>
                 </View>
               </View>
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.addWaterButton} onPress={() => setShowWaterModal(true)} activeOpacity={0.7}>
+                <Text style={styles.addWaterButtonText}>Add</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.waterProgress}>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((glass) => (
+                <View
+                  key={glass}
+                  style={[
+                    styles.waterGlass,
+                    glass <= Math.floor((daily?.waterOz ?? 0) / 8) && styles.waterGlassFilled,
+                  ]}
+                />
+              ))}
+            </View>
           </View>
-        )}
+
+          {/* Fasting Banner or Meals Section */}
+          {activeFastingLog ? (
+            <View style={{
+              marginHorizontal: 16,
+              marginTop: 24,
+              backgroundColor: '#0f172a',
+              borderRadius: 24,
+              padding: 24,
+              position: 'relative',
+              overflow: 'hidden',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 10,
+              elevation: 5
+            }}>
+              {/* Background decorative blob - simplified */}
+              <View style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                width: 128,
+                height: 128,
+                backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                borderRadius: 64,
+                marginRight: -40,
+                marginTop: -40,
+              }} />
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                <Ionicons name="hourglass" size={20} color="#60a5fa" />
+                <Text style={{ color: '#60a5fa', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 1.5, fontSize: 12 }}>Fasting In Progress</Text>
+              </View>
+
+              <View>
+                <Text style={{ color: 'white', fontWeight: '900', fontSize: 30, marginBottom: 4 }}>
+                  {(() => {
+                    const protocol = activeFastingLog.protocol || '16:8';
+                    const targetHours = parseInt(protocol.split(':')[0]);
+                    const startTime = activeFastingLog.startTime;
+                    const endTime = startTime + targetHours * 60 * 60 * 1000;
+                    const remainingMs = Math.max(0, endTime - Date.now());
+                    const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+                    const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+                    return remainingMs > 0
+                      ? `${hours}h ${minutes}m until feeding`
+                      : "Window Open";
+                  })()}
+                </Text>
+                <Text style={{ color: '#94a3b8', fontWeight: '500', fontSize: 14 }}>
+                  Don't break your fast! Keep going!
+                </Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 24, backgroundColor: 'rgba(255,255,255,0.1)', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 }}>
+                <Ionicons name="leaf" size={12} color="#4ade80" />
+                <Text style={{ color: '#4ade80', fontWeight: 'bold', fontSize: 12 }}>Metabolic Switch Active</Text>
+              </View>
+            </View>
+          ) : (
+            /* Meals Section */
+            <View style={styles.mealsSection}>
+              {defaultMeals.map((meal) => {
+                const mealTotals = getMealTotals(meal);
+                const mealConfig = mealConfigs[meal];
+                const mealEntries = (dateEntries ?? []).filter((e) => titleFromMealType(e.mealType) === meal);
+
+                return (
+                  <View key={meal} style={styles.mealCard}>
+                    <View style={styles.mealCardHeader}>
+                      <View style={styles.mealCardHeaderLeft}>
+                        <View style={[styles.mealIconContainer, { backgroundColor: mealConfig.color }]}>
+                          <Ionicons name={mealConfig.icon as any} size={24} color={mealConfig.iconColor} />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Text style={styles.mealName}>{meal}</Text>
+                            <TouchableOpacity
+                              style={styles.mealAddButton}
+                              onPress={() => {
+                                setSelectedMeal(meal);
+                                setShowFoodSearch(true);
+                                setFoodSearchTab('search');
+                              }}
+                              activeOpacity={0.7}
+                            >
+                              <Ionicons name="add" size={18} color="#94a3b8" />
+                            </TouchableOpacity>
+                          </View>
+                          <Text style={styles.mealTotals} numberOfLines={1} adjustsFontSizeToFit>
+                            {Math.round(mealTotals.calories)} cal • {Math.round(mealTotals.protein)}g P •{' '}
+                            {Math.round(mealTotals.carbs)}g C • {Math.round(mealTotals.fat)}g F
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+
+                    {mealEntries.length > 0 ? (
+                      <View style={styles.mealEntries}>
+                        {mealEntries.map((entry) => (
+                          <View key={entry._id} style={styles.mealEntry}>
+                            <View style={styles.mealEntryLeft}>
+                              <Text style={styles.mealEntryName}>{entry.foodName}</Text>
+                              <View style={styles.mealEntrySubline}>
+                                <Text style={styles.mealEntryQuantity}>{`1x • ${Math.round(entry.calories ?? 0)} cal`}</Text>
+                                <View style={styles.macroRowHorizontal}>
+                                  <Text style={styles.mealEntryMacros}>{Math.round(entry.protein ?? 0)}g P</Text>
+                                  <Text style={styles.mealEntryMacros}>{Math.round(entry.carbs ?? 0)}g C</Text>
+                                  <Text style={styles.mealEntryMacros}>{Math.round(entry.fat ?? 0)}g F</Text>
+                                </View>
+                              </View>
+                            </View>
+                            <View style={styles.mealEntryRight}>
+                              <TouchableOpacity
+                                style={styles.deleteEntryButton}
+                                onPress={() => deleteFoodEntry({ entryId: entry._id })}
+                                activeOpacity={0.7}
+                              >
+                                <Ionicons name="trash" size={16} color="#dc2626" />
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        ))}
+                      </View>
+                    ) : (
+                      <View style={styles.emptyMeal}>
+                        <Text style={styles.emptyMealText}>No food logged today</Text>
+                      </View>
+                    )}
+                  </View>
+                );
+              })}
+
+              {/* Add Meal Slot Button (Premium) */}
+              <TouchableOpacity
+                style={[styles.mealCard, {
+                  opacity: 0.95,
+                  borderStyle: 'dashed',
+                  borderWidth: 2,
+                  borderColor: '#fbbf24',
+                  backgroundColor: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                  shadowColor: '#fbbf24',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 4
+                }]}
+                onPress={() => router.push('/premium')}
+                activeOpacity={0.8}
+              >
+                <View style={[styles.mealCardHeader, { borderBottomWidth: 0 }]}>
+                  <View style={styles.mealCardHeaderLeft}>
+                    <View style={[styles.mealIconContainer, {
+                      backgroundColor: '#fbbf24',
+                      shadowColor: '#f59e0b',
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.4,
+                      shadowRadius: 6,
+                      elevation: 3
+                    }]}>
+                      <Ionicons name="lock-closed" size={22} color="#ffffff" />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text style={[styles.mealName, {
+                          color: '#92400e',
+                          fontWeight: '800',
+                          fontSize: 16
+                        }]}>Add Meal</Text>
+                        <View style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: 6,
+                          backgroundColor: '#fbbf24',
+                          paddingHorizontal: 10,
+                          paddingVertical: 6,
+                          borderRadius: 16,
+                          shadowColor: '#f59e0b',
+                          shadowOffset: { width: 0, height: 1 },
+                          shadowOpacity: 0.5,
+                          shadowRadius: 4,
+                          elevation: 2
+                        }}>
+                          <Ionicons name="star" size={12} color="#ffffff" />
+                          <Text style={{
+                            fontSize: 11,
+                            fontWeight: '800',
+                            color: '#ffffff',
+                            textTransform: 'uppercase',
+                            letterSpacing: 0.5
+                          }}>PRO</Text>
+                          <Ionicons name="star" size={12} color="#ffffff" />
+                        </View>
+                      </View>
+                      <Text style={[styles.mealTotals, {
+                        color: '#92400e',
+                        fontWeight: '600',
+                        fontSize: 13
+                      }]}>
+                        Unlock unlimited meals
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
       </ScrollView>
 
       {/* Food Search Modal */}
-      < Modal visible={showFoodSearch} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowFoodSearch(false)}>
+      < Modal visible={showFoodSearch} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => { setShowFoodSearch(false); setPendingFoodToAdd(null); }}>
         <SafeAreaView style={styles.modalContainer} edges={['top', 'bottom']}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Add Food</Text>
-            <TouchableOpacity onPress={() => setShowFoodSearch(false)}>
+            <Text style={styles.modalTitle}>{pendingFoodToAdd ? 'Choose Meal' : 'Add Food'}</Text>
+            <TouchableOpacity onPress={() => { setShowFoodSearch(false); setPendingFoodToAdd(null); }}>
               <Ionicons name="close" size={24} color="#1e293b" />
             </TouchableOpacity>
           </View>
 
-          {/* Tabs */}
-          <View style={styles.tabsContainer}>
-            <TouchableOpacity style={[styles.tab, foodSearchTab === 'myrecipes' && styles.tabActive]} onPress={() => setFoodSearchTab('myrecipes')}>
-              <Text style={[styles.tabText, foodSearchTab === 'myrecipes' && styles.tabTextActive]}>My Recipes</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.tab, foodSearchTab === 'search' && styles.tabActive]} onPress={() => setFoodSearchTab('search')}>
-              <Text style={[styles.tabText, foodSearchTab === 'search' && styles.tabTextActive]}>Search</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.tab, foodSearchTab === 'addrecipe' && styles.tabActive]} onPress={() => setFoodSearchTab('addrecipe')}>
-              <Text style={[styles.tabText, foodSearchTab === 'addrecipe' && styles.tabTextActive]}>Add Recipe</Text>
-            </TouchableOpacity>
-          </View>
+          {/* Inline Meal Picker — shown when a food is selected from global search */}
+          {pendingFoodToAdd ? (
+            <View style={{ padding: 16, gap: 12 }}>
+              <TouchableOpacity
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}
+                onPress={() => setPendingFoodToAdd(null)}
+              >
+                <Ionicons name="arrow-back" size={20} color="#64748b" />
+                <Text style={{ color: '#64748b', fontSize: 14 }}>Back to search</Text>
+              </TouchableOpacity>
+              {defaultMeals.map((m) => {
+                const config = mealConfigs[m];
+                return (
+                  <TouchableOpacity
+                    key={m}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 12,
+                      padding: 12,
+                      borderRadius: 12,
+                      backgroundColor: '#f8fafc',
+                      borderWidth: 1,
+                      borderColor: '#e2e8f0'
+                    }}
+                    onPress={() => addFoodFromCatalog(pendingFoodToAdd, m)}
+                  >
+                    <View style={[styles.mealIconContainer, { backgroundColor: config.color, width: 40, height: 40 }]}>
+                      <Ionicons name={config.icon as any} size={20} color={config.iconColor} />
+                    </View>
+                    <Text style={{ fontSize: 16, fontWeight: '600', color: '#1e293b' }}>{m}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ) : (
+            <>
+              {/* Tabs */}
+              <View style={styles.tabsContainer}>
+                <TouchableOpacity style={[styles.tab, foodSearchTab === 'myrecipes' && styles.tabActive]} onPress={() => setFoodSearchTab('myrecipes')}>
+                  <Text style={[styles.tabText, foodSearchTab === 'myrecipes' && styles.tabTextActive]}>My Recipes</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.tab, foodSearchTab === 'search' && styles.tabActive]} onPress={() => setFoodSearchTab('search')}>
+                  <Text style={[styles.tabText, foodSearchTab === 'search' && styles.tabTextActive]}>Search</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.tab, foodSearchTab === 'addrecipe' && styles.tabActive]} onPress={() => setFoodSearchTab('addrecipe')}>
+                  <Text style={[styles.tabText, foodSearchTab === 'addrecipe' && styles.tabTextActive]}>Add Recipe</Text>
+                </TouchableOpacity>
+              </View>
 
-          <ScrollView style={styles.modalContent} contentContainerStyle={{ paddingBottom: getBottomContentPadding(insets.bottom) }}>
-            {foodSearchTab === 'myrecipes' && (
-              <>
-                {!myRecipes ? (
-                  <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#3b82f6" />
-                    <Text style={styles.loadingText}>Loading...</Text>
-                  </View>
-                ) : myRecipes.length === 0 ? (
-                  <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>No recipes yet. Create one!</Text>
-                  </View>
-                ) : (
-                  <View style={styles.recipesList}>
-                    {myRecipes.map((recipe: any) => {
-                      let nutrition: any = null;
-                      try {
-                        nutrition = recipe.nutritionJson ? JSON.parse(recipe.nutritionJson) : null;
-                      } catch {
-                        nutrition = null;
-                      }
-                      const perServing = nutrition?.perServing ?? nutrition ?? { calories: 0, protein: 0, carbs: 0, fat: 0 };
-                      return (
-                        <TouchableOpacity
-                          key={recipe._id}
-                          style={styles.recipeItem}
-                          onPress={() =>
-                            addFoodFromCatalog(
-                              {
-                                name: recipe.name,
-                                calories: perServing.calories ?? 0,
-                                protein: perServing.protein ?? 0,
-                                carbs: perServing.carbs ?? 0,
-                                fat: perServing.fat ?? 0,
-                                servingSize: '1 serving',
-                              },
-                              (selectedMeal ?? 'Breakfast') as MealName
-                            )
-                          }
-                        >
-                          <View style={styles.recipeItemContent}>
-                            <Text style={styles.recipeItemName}>{recipe.name}</Text>
-                            <Text style={styles.recipeItemServings}>Servings: {recipe.servings}</Text>
-                            <View style={styles.recipeItemMacros}>
-                              <Text style={styles.recipeItemMacro}>Cal: {Math.round(perServing.calories ?? 0)}</Text>
-                              <Text style={styles.recipeItemMacro}>P: {Math.round(perServing.protein ?? 0)} g</Text>
-                              <Text style={styles.recipeItemMacro}>C: {Math.round(perServing.carbs ?? 0)} g</Text>
-                              <Text style={styles.recipeItemMacro}>F: {Math.round(perServing.fat ?? 0)} g</Text>
-                            </View>
-                          </View>
-                          <TouchableOpacity
-                            style={styles.deleteRecipeButton}
-                            onPress={(e) => {
-                              e.stopPropagation();
-                              Alert.alert('Delete Recipe', 'Are you sure?', [
-                                { text: 'Cancel', style: 'cancel' },
-                                {
-                                  text: 'Delete',
-                                  style: 'destructive',
-                                  onPress: async () => {
-                                    await deleteRecipe({ recipeId: recipe._id });
-                                  },
-                                },
-                              ]);
-                            }}
-                          >
-                            <Ionicons name="trash" size={20} color="#dc2626" />
-                          </TouchableOpacity>
-                        </TouchableOpacity>
-                      );
-                    })}
-                  </View>
-                )}
-              </>
-            )}
-
-            {foodSearchTab === 'search' && (
-              <>
-                <View style={styles.searchInputContainer}>
-                  <Ionicons name="search" size={20} color="#64748b" style={styles.searchIcon} />
-                  <TextInput
-                    style={styles.searchInput}
-                    placeholder="Search foods..."
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    autoFocus
-                  />
-                </View>
-
-                {loadingSearch ? (
-                  <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#3b82f6" />
-                    <Text style={styles.loadingText}>Searching foods...</Text>
-                  </View>
-                ) : (
-                  <View style={styles.searchResults}>
-                    {searchResults.map((food) => (
-                      <TouchableOpacity
-                        key={food.kind === 'external' ? `${food.source}:${food.externalId}` : String(food._id)}
-                        style={styles.foodItem}
-                        onPress={() => addFoodFromCatalog(food, selectedMeal as MealName)}
-                      >
-                        <View style={styles.foodItemContent}>
-                          <Text style={styles.foodItemName}>
-                            {typeof food.name === 'object'
-                              ? (food.name as any).en || 'Food'
-                              : food.name}
-                          </Text>
-                          <Text style={styles.foodItemBrand}>{food.brand ?? '—'} • {food.servingSize ?? '100g'}</Text>
-                          <Text style={styles.foodItemNutrition}>
-                            {Math.round(food.calories ?? 0)} cal • {Math.round(food.protein ?? 0)}g protein • {Math.round(food.carbs ?? 0)}g carbs • {Math.round(food.fat ?? 0)}g fat
-                          </Text>
-                        </View>
-                        <View style={styles.foodItemAdd}>
-                          <Ionicons name="add-circle" size={24} color="#3b82f6" />
-                        </View>
-                      </TouchableOpacity>
-                    ))}
-                    {!loadingSearch && searchQuery && searchResults.length === 0 && (
+              <ScrollView style={styles.modalContent} contentContainerStyle={{ paddingBottom: getBottomContentPadding(insets.bottom) }}>
+                {foodSearchTab === 'myrecipes' && (
+                  <>
+                    {!myRecipes ? (
+                      <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#3b82f6" />
+                        <Text style={styles.loadingText}>Loading...</Text>
+                      </View>
+                    ) : myRecipes.length === 0 ? (
                       <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>No foods found for "{searchQuery}"</Text>
-                        <Text style={styles.emptySubtext}>Try a different search term</Text>
+                        <Text style={styles.emptyText}>No recipes yet. Create one!</Text>
+                      </View>
+                    ) : (
+                      <View style={styles.recipesList}>
+                        {myRecipes.map((recipe: any) => {
+                          let nutrition: any = null;
+                          try {
+                            nutrition = recipe.nutritionJson ? JSON.parse(recipe.nutritionJson) : null;
+                          } catch {
+                            nutrition = null;
+                          }
+                          const perServing = nutrition?.perServing ?? nutrition ?? { calories: 0, protein: 0, carbs: 0, fat: 0 };
+                          return (
+                            <TouchableOpacity
+                              key={recipe._id}
+                              style={styles.recipeItem}
+                              onPress={() =>
+                                addFoodFromCatalog(
+                                  {
+                                    name: recipe.name,
+                                    calories: perServing.calories ?? 0,
+                                    protein: perServing.protein ?? 0,
+                                    carbs: perServing.carbs ?? 0,
+                                    fat: perServing.fat ?? 0,
+                                    servingSize: '1 serving',
+                                  },
+                                  (selectedMeal ?? 'Breakfast') as MealName
+                                )
+                              }
+                            >
+                              <View style={styles.recipeItemContent}>
+                                <Text style={styles.recipeItemName}>{recipe.name}</Text>
+                                <Text style={styles.recipeItemServings}>Servings: {recipe.servings}</Text>
+                                <View style={styles.recipeItemMacros}>
+                                  <Text style={styles.recipeItemMacro}>Cal: {Math.round(perServing.calories ?? 0)}</Text>
+                                  <Text style={styles.recipeItemMacro}>P: {Math.round(perServing.protein ?? 0)} g</Text>
+                                  <Text style={styles.recipeItemMacro}>C: {Math.round(perServing.carbs ?? 0)} g</Text>
+                                  <Text style={styles.recipeItemMacro}>F: {Math.round(perServing.fat ?? 0)} g</Text>
+                                </View>
+                              </View>
+                              <TouchableOpacity
+                                style={styles.deleteRecipeButton}
+                                onPress={(e) => {
+                                  e.stopPropagation();
+                                  Alert.alert('Delete Recipe', 'Are you sure?', [
+                                    { text: 'Cancel', style: 'cancel' },
+                                    {
+                                      text: 'Delete',
+                                      style: 'destructive',
+                                      onPress: async () => {
+                                        await deleteRecipe({ recipeId: recipe._id });
+                                      },
+                                    },
+                                  ]);
+                                }}
+                              >
+                                <Ionicons name="trash" size={20} color="#dc2626" />
+                              </TouchableOpacity>
+                            </TouchableOpacity>
+                          );
+                        })}
                       </View>
                     )}
+                  </>
+                )}
+
+                {foodSearchTab === 'search' && (
+                  <FoodSearchSection
+                    userId={String(convexUser._id)}
+                    onSelectFood={(food) => addFoodFromCatalog(food, selectedMeal as MealName)}
+                  />
+                )}
+
+                {foodSearchTab === 'addrecipe' && (
+                  <View style={styles.addRecipeContainer}>
+                    <TouchableOpacity
+                      style={styles.createRecipeButton}
+                      onPress={() => {
+                        setShowFoodSearch(false);
+                        setShowRecipeModal(true);
+                      }}
+                    >
+                      <Text style={styles.createRecipeButtonText}>Create a New Recipe</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.createRecipeSubtext}>Build your own recipe and log it to a meal.</Text>
                   </View>
                 )}
-              </>
-            )}
-
-            {foodSearchTab === 'addrecipe' && (
-              <View style={styles.addRecipeContainer}>
-                <TouchableOpacity
-                  style={styles.createRecipeButton}
-                  onPress={() => {
-                    setShowFoodSearch(false);
-                    setShowRecipeModal(true);
-                  }}
-                >
-                  <Text style={styles.createRecipeButtonText}>Create a New Recipe</Text>
-                </TouchableOpacity>
-                <Text style={styles.createRecipeSubtext}>Build your own recipe and log it to a meal.</Text>
-              </View>
-            )}
-          </ScrollView>
+              </ScrollView>
+            </>
+          )}
         </SafeAreaView>
       </Modal >
 
@@ -1259,45 +1217,7 @@ export default function FuelScreen() {
         }}
       />
 
-      {/* Meal Selector Modal */}
-      <Modal visible={showMealSelector} animationType="fade" transparent onRequestClose={() => setShowMealSelector(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={[styles.card, { margin: 24, padding: 0, overflow: 'hidden' }]}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Choose Meal</Text>
-              <TouchableOpacity onPress={() => setShowMealSelector(false)}>
-                <Ionicons name="close" size={24} color="#1e293b" />
-              </TouchableOpacity>
-            </View>
-            <View style={{ padding: 16, gap: 12 }}>
-              {defaultMeals.map((m) => {
-                const config = mealConfigs[m];
-                return (
-                  <TouchableOpacity
-                    key={m}
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: 12,
-                      borderRadius: 12,
-                      backgroundColor: '#f8fafc',
-                      borderWidth: 1,
-                      borderColor: '#e2e8f0'
-                    }}
-                    onPress={() => addFoodFromCatalog(pendingFoodToAdd, m)}
-                  >
-                    <View style={[styles.mealIconContainer, { backgroundColor: config.color, width: 40, height: 40 }]}>
-                      <Ionicons name={config.icon as any} size={20} color={config.iconColor} />
-                    </View>
-                    <Text style={{ fontSize: 16, fontWeight: '600', color: '#1e293b' }}>{m}</Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </View>
-        </View>
-      </Modal>
+
 
     </SafeAreaView >
   );

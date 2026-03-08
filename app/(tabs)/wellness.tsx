@@ -15,7 +15,7 @@ import MindWorldScreen from '../../components/mindworld/MindWorldScreen';
 import LifeGoalsHub from '../../components/LifeGoalsHub';
 import UniversityHub from '../../components/UniversityHub';
 import { triggerSound, SoundEffect } from '../../utils/soundEffects';
-import { getBottomContentPadding } from '../../utils/layout';
+import { getBottomContentPadding, TAB_BAR_HEIGHT } from '../../utils/layout';
 
 const { width } = Dimensions.get('window');
 const UNLOCK_ALL_INSIGHTS = true;
@@ -108,10 +108,15 @@ export default function WellnessScreen() {
 
   if (!user) return <View style={styles.center}><ActivityIndicator size="large" color="#3b82f6" /></View>;
 
+  // The SOS button is a floating element (see `components/PanicButton.tsx`).
+  // Give the scroll content enough bottom padding so the last row never sits under it,
+  // regardless of device safe-area or tab bar size.
+  const sosSafeBottomPadding = getBottomContentPadding(insets.bottom, 16) + TAB_BAR_HEIGHT + 96;
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView
-        contentContainerStyle={{ paddingBottom: getBottomContentPadding(insets.bottom) }}
+        contentContainerStyle={{ paddingBottom: sosSafeBottomPadding }}
         showsVerticalScrollIndicator={false}
       >
 
@@ -162,7 +167,7 @@ export default function WellnessScreen() {
 
       {/* INSIGHTS MODAL */}
       <Modal visible={showInsightsModal} animationType="slide">
-        <SafeAreaView style={styles.modalContent}>
+        <SafeAreaView style={[styles.modalContent, { paddingTop: Math.max(insets.top, 12) + 12 }]}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Wellness Analytics</Text>
             <TouchableOpacity onPress={() => setShowInsightsModal(false)}><Ionicons name="close" size={28} color="#1e293b" /></TouchableOpacity>
@@ -193,7 +198,7 @@ export default function WellnessScreen() {
 
       {/* Other Modals (Sleep, Mood, Hubs) */}
       <Modal visible={showSleepModal} animationType="slide">
-        <SafeAreaView style={styles.modalContent}>
+        <SafeAreaView style={[styles.modalContent, { paddingTop: Math.max(insets.top, 12) + 12 }]}>
           <View style={styles.modalHeader}><Text style={styles.modalTitle}>Sleep Log</Text><TouchableOpacity onPress={() => setShowSleepModal(false)}><Ionicons name="close" size={28} /></TouchableOpacity></View>
           <TextInput style={styles.input} placeholder="Hours slept (e.g. 8)" keyboardType="numeric" value={sleepInput} onChangeText={setSleepInput} />
           <TouchableOpacity style={styles.saveBtn} onPress={handleLogSleep}><Text style={styles.btnText}>Save Log</Text></TouchableOpacity>
@@ -201,7 +206,7 @@ export default function WellnessScreen() {
       </Modal>
 
       <Modal visible={showMoodModal} animationType="slide">
-        <SafeAreaView style={styles.modalContent}>
+        <SafeAreaView style={[styles.modalContent, { paddingTop: Math.max(insets.top, 12) + 12 }]}>
           <View style={styles.modalHeader}><Text style={styles.modalTitle}>Mood Log</Text><TouchableOpacity onPress={() => setShowMoodModal(false)}><Ionicons name="close" size={28} /></TouchableOpacity></View>
           <View style={{ gap: 10 }}>
             {moods.map((m) => (
@@ -245,7 +250,8 @@ const styles = StyleSheet.create({
   card: { backgroundColor: '#fff', margin: 24, padding: 20, borderRadius: 16 },
   cardTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 8 },
   cardText: { color: '#64748b', fontSize: 14 },
-  modalContent: { flex: 1, padding: 24 },
+  // NOTE: top padding is applied dynamically with safe-area insets
+  modalContent: { flex: 1, paddingHorizontal: 24, paddingBottom: 24 },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30, alignItems: 'center' },
   modalTitle: { fontSize: 22, fontWeight: 'bold' },
   metricItem: { backgroundColor: '#f8fafc', padding: 20, borderRadius: 16, marginBottom: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },

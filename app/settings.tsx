@@ -217,15 +217,7 @@ export default function SettingsScreen() {
                         <Text style={styles.sectionTitle}>Account</Text>
                     </View>
                     <View style={styles.itemsList}>
-                        <TouchableOpacity style={styles.item} activeOpacity={0.7} onPress={() => router.push('/integrations')}>
-                            <View style={styles.itemLeft}>
-                                <Text style={styles.itemLabel}>Integrations</Text>
-                                <Text style={styles.itemValue}>Strava, Health, Fit</Text>
-                            </View>
-                            <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
-                        </TouchableOpacity>
-
-                        <View style={styles.divider} />
+                        {/* Integrations disabled for Build 18 submission */}
 
                         <TouchableOpacity style={styles.item} activeOpacity={0.7} onPress={() => { }}>
                             <View style={styles.itemLeft}>

@@ -50,7 +50,8 @@ export default defineSchema({
 
     // Life Management
     peakEnergy: v.optional(v.string()), // Early Morning, Mid-Day, Evening, Late Night
-    lifeStressor: v.optional(v.string()), // Work, Family, etc.
+    // Backwards-compatible: older clients stored a string, new onboarding stores string[]
+    lifeStressor: v.optional(v.union(v.string(), v.array(v.string()))), // Work, Family, etc.
     coachingStyle: v.optional(v.string()), // Direct, Gentle, etc.
     twelveMonthGoal: v.optional(v.string()), // Replaces threeMonthGoal as "North Star"
 
@@ -776,6 +777,15 @@ export default defineSchema({
     message: v.string(),
     timestamp: v.number(),
   }).index("by_user", ["userId"]),
+
+  ai_coach_messages: defineTable({
+    userId: v.id("users"),
+    role: v.union(v.literal("user"), v.literal("coach")),
+    content: v.string(),
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_createdAt", ["userId", "createdAt"]),
 
   // Requested by spec: todo table (shared family lists supported via partnerId)
   todo: defineTable({

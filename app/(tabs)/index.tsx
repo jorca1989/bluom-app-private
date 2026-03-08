@@ -276,8 +276,8 @@ export default function IndexScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={isTablet ? { width: '100%', maxWidth: contentMaxWidth, alignSelf: 'center' } : undefined}>
-          <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) }]}>
+        <View style={isTablet ? { width: '100%', maxWidth: contentMaxWidth ?? 1000, alignSelf: 'center' } : undefined}>
+          <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 10 }]}>
             <Image
               source={require('../../assets/images/logo.png')}
               style={{ width: 100, height: 32, marginBottom: 16 }}
@@ -484,7 +484,7 @@ export default function IndexScreen() {
           {/* -- North Star -- */}
           <NorthStarWidget
             goal={convexUser?.twelveMonthGoal}
-            onPress={() => router.push('/wellness?showLifeGoals=true')}
+            onPress={() => router.push('/life-goals' as any)}
           />
         </View>{/* end tablet maxWidth wrapper */}
       </ScrollView>

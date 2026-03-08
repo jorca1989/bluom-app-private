@@ -1,7 +1,8 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
+import { Modal, View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform, Alert } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { requireOptionalNativeModule } from 'expo-modules-core';
 import { useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 
@@ -27,6 +28,7 @@ export default function PhotoRecognitionModal(props: {
 }) {
   const { visible, onClose, onRecognized, meal, imageBase64, mimeType } = props;
   const [loading, setLoading] = useState(false);
+  const [recognizeError, setRecognizeError] = useState<string | null>(null);
   const insets = useSafeAreaInsets();
   const cameraRef = useRef<CameraView | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
@@ -44,6 +46,7 @@ export default function PhotoRecognitionModal(props: {
     setCapturedBase64(null);
     setCapturedMimeType(null);
     setCaptureError(null);
+    setRecognizeError(null);
   }
 
   async function handleTakePhoto() {
@@ -72,11 +75,63 @@ export default function PhotoRecognitionModal(props: {
     }
   }
 
+  async function handlePickFromGallery() {
+    setCaptureError(null);
+    setRecognizeError(null);
+    try {
+      // Avoid redbox/crash if the currently installed build doesn't include the native module yet.
+      const native = requireOptionalNativeModule('ExponentImagePicker');
+      if (!native) {
+        Alert.alert(
+          'Build Required',
+          'Gallery upload requires a new native build. Please use the camera for now (or rebuild the app).'
+        );
+        return;
+      }
+
+      const ImagePicker = await import('expo-image-picker');
+      if (typeof ImagePicker.launchImageLibraryAsync !== 'function') {
+        Alert.alert(
+          'Build Required',
+          'Gallery upload requires a new native build. Please rebuild and try again.'
+        );
+        return;
+      }
+      const res = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        base64: true,
+        quality: 0.8,
+      });
+      if (res.canceled) return;
+      const asset = res.assets?.[0];
+      if (!asset?.base64) {
+        setCaptureError('Could not read image. Please try a different photo.');
+        return;
+      }
+      setCapturedBase64(asset.base64);
+      // Default to jpeg if unknown
+      setCapturedMimeType(asset.mimeType ?? 'image/jpeg');
+    } catch (e: any) {
+      const msg = e?.message ? String(e.message) : 'Failed to pick image.';
+      // Keep errors user-friendly; avoid showing internal native-module text.
+      setCaptureError(msg.includes('ExponentImagePicker') ? 'Gallery upload requires a new native build.' : msg);
+    }
+  }
+
   async function handleRecognize() {
     if (!canRecognize) return;
     setLoading(true);
+    setRecognizeError(null);
     try {
-      const result = await recognizeFood({ imageBase64: effectiveBase64!, mimeType: effectiveMimeType! });
+      const result = await recognizeFood({
+        imageBase64: effectiveBase64!,
+        mimeType: effectiveMimeType!,
+        platform: Platform.OS,
+      });
+      if (result?.status === 'maintenance') {
+        setRecognizeError('Temporarily unavailable. Please try again in a bit.');
+        return;
+      }
       onRecognized({
         name: result.name ?? 'Unknown',
         calories: Number(result.calories ?? 0),
@@ -117,11 +172,17 @@ export default function PhotoRecognitionModal(props: {
                 }}
                 style={styles.camera}
                 facing="back"
+                active={visible && !canRecognize}
               />
               {!!captureError && <Text style={styles.errorText}>{captureError}</Text>}
-              <TouchableOpacity style={styles.captureButton} onPress={handleTakePhoto} activeOpacity={0.85}>
-                <Text style={styles.captureButtonText}>Take Photo</Text>
-              </TouchableOpacity>
+              <View style={styles.captureActionsRow}>
+                <TouchableOpacity style={styles.captureButton} onPress={handleTakePhoto} activeOpacity={0.85}>
+                  <Text style={styles.captureButtonText}>Take Photo</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.galleryLink} onPress={handlePickFromGallery} activeOpacity={0.85}>
+                  <Text style={styles.galleryLinkText}>Upload from Gallery</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
 
@@ -136,6 +197,8 @@ export default function PhotoRecognitionModal(props: {
               )}
             </View>
           )}
+
+          {!!recognizeError && <Text style={styles.errorText}>{recognizeError}</Text>}
 
           {loading && (
             <View style={styles.loadingOverlay}>
@@ -212,11 +275,35 @@ const styles = StyleSheet.create({
     backgroundColor: '#f97316',
     paddingVertical: 12,
     alignItems: 'center',
+    borderRadius: 12,
+    flex: 1,
+  },
+  captureActionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: '#ffffff',
   },
   captureButtonText: {
     color: '#ffffff',
     fontWeight: '700',
     fontSize: 16,
+  },
+  galleryLink: {
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    backgroundColor: '#f1f5f9',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  galleryLinkText: {
+    color: '#0f172a',
+    fontWeight: '800',
+    fontSize: 13,
   },
   permissionCard: {
     backgroundColor: '#f8fafc',

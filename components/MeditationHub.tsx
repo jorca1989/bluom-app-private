@@ -153,6 +153,20 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
             <Text style={styles.quoteSubtext}>Start your meditation journey today</Text>
           </View>
 
+          {/* Beta banner */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#eff6ff', borderWidth: 1, borderColor: '#bfdbfe', borderRadius: 12, padding: 12, marginBottom: 14, gap: 10 }}>
+            <Text style={{ fontSize: 22 }}>🧘</Text>
+            <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                <View style={{ backgroundColor: '#6366f1', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 }}>
+                  <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800', letterSpacing: 1 }}>BETA</Text>
+                </View>
+                <Text style={{ fontSize: 13, fontWeight: '700', color: '#1e40af' }}>Meditation is being improved</Text>
+              </View>
+              <Text style={{ fontSize: 11, color: '#64748b' }}>We're actively enhancing sessions and adding new content!</Text>
+            </View>
+          </View>
+
           {/* Soundscape Quick Access */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Soundscapes</Text>
