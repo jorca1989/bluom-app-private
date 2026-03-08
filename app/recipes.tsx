@@ -22,16 +22,27 @@ import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { getBottomContentPadding } from '@/utils/layout';
 import { triggerSound, SoundEffect } from '@/utils/soundEffects';
-import { BlurView } from 'expo-blur';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useUser as useAppUser } from '@/context/UserContext';
+import { getTodayISO } from '@/utils/dates'; // ← ADD THIS IMPORT
 
 const { width } = Dimensions.get('window');
 const isSmallScreen = width < 380;
 
+// ─── Meal types (mirrors Fuel screen) ────────────────────────
+type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
+type MealTypeLower = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+
+const MEAL_CONFIGS: Record<MealName, { icon: string; color: string; iconColor: string }> = {
+  Breakfast: { icon: 'sunny', color: '#fed7aa', iconColor: '#ea580c' },
+  Lunch: { icon: 'sunny-outline', color: '#fef3c7', iconColor: '#d97706' },
+  Dinner: { icon: 'moon', color: '#e9d5ff', iconColor: '#9333ea' },
+  Snack: { icon: 'restaurant', color: '#fce7f3', iconColor: '#db2777' },
+};
+const MEAL_NAMES: MealName[] = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+
+// ─── Image helpers (unchanged) ────────────────────────────────
 const RECIPE_IMAGE_OVERRIDES: Record<string, string> = {
-  // Remote images so the app builds even if local assets aren't present.
-  // (These can be swapped to local requires later once files exist in /assets.)
   'Mediterranean Salmon':
     'https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=1200&q=80',
   'Green Power Smoothie':
@@ -47,17 +58,232 @@ function getRecipeImageSource(recipe: any): any | null {
 }
 
 const categories = [
-  'All',
-  'Breakfast',
-  'Lunch',
-  'Dinner',
-  'Snacks',
-  'Desserts',
-  'Vegetarian',
-  'High Protein',
-  'Low Carb',
+  'All', 'Breakfast', 'Lunch', 'Dinner', 'Snacks',
+  'Desserts', 'Vegetarian', 'High Protein', 'Low Carb',
 ] as const;
 
+// ─── Log as Meal picker modal ─────────────────────────────────
+function LogMealModal({
+  visible,
+  recipe,
+  onClose,
+  onLogged,
+}: {
+  visible: boolean;
+  recipe: any | null;
+  onClose: () => void;
+  onLogged: (meal: MealName) => void;
+}) {
+  const [selectedMeal, setSelectedMeal] = useState<MealName>('Lunch');
+  const [saving, setSaving] = useState(false);
+
+  if (!visible || !recipe) return null;
+
+  const n = (v: unknown, fb = 0) => {
+    const num = Number(v);
+    return Number.isFinite(num) ? num : fb;
+  };
+
+  return (
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      <View style={lmStyles.overlay}>
+        <View style={lmStyles.sheet}>
+          {/* Handle bar */}
+          <View style={lmStyles.handle} />
+
+          <Text style={lmStyles.title}>Log to Meal</Text>
+          <Text style={lmStyles.subtitle} numberOfLines={2}>{recipe.title}</Text>
+
+          {/* Macro summary */}
+          <View style={lmStyles.macroRow}>
+            <View style={lmStyles.macroItem}>
+              <Text style={[lmStyles.macroVal, { color: '#2563eb' }]}>{Math.round(n(recipe.calories))}</Text>
+              <Text style={lmStyles.macroLabel}>cal</Text>
+            </View>
+            <View style={lmStyles.macroDivider} />
+            <View style={lmStyles.macroItem}>
+              <Text style={[lmStyles.macroVal, { color: '#dc2626' }]}>{Math.round(n(recipe.protein))}g</Text>
+              <Text style={lmStyles.macroLabel}>protein</Text>
+            </View>
+            <View style={lmStyles.macroDivider} />
+            <View style={lmStyles.macroItem}>
+              <Text style={[lmStyles.macroVal, { color: '#16a34a' }]}>{Math.round(n(recipe.carbs))}g</Text>
+              <Text style={lmStyles.macroLabel}>carbs</Text>
+            </View>
+            <View style={lmStyles.macroDivider} />
+            <View style={lmStyles.macroItem}>
+              <Text style={[lmStyles.macroVal, { color: '#d97706' }]}>{Math.round(n(recipe.fat))}g</Text>
+              <Text style={lmStyles.macroLabel}>fat</Text>
+            </View>
+          </View>
+
+          {/* Meal picker */}
+          <Text style={lmStyles.pickerLabel}>Choose a meal</Text>
+          <View style={lmStyles.mealGrid}>
+            {MEAL_NAMES.map((meal) => {
+              const cfg = MEAL_CONFIGS[meal];
+              const active = selectedMeal === meal;
+              return (
+                <TouchableOpacity
+                  key={meal}
+                  style={[lmStyles.mealTile, active && lmStyles.mealTileActive]}
+                  onPress={() => setSelectedMeal(meal)}
+                  activeOpacity={0.75}
+                >
+                  <View style={[lmStyles.mealIcon, { backgroundColor: cfg.color }]}>
+                    <Ionicons name={cfg.icon as any} size={20} color={cfg.iconColor} />
+                  </View>
+                  <Text style={[lmStyles.mealName, active && lmStyles.mealNameActive]}>{meal}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {/* Actions */}
+          <View style={lmStyles.actions}>
+            <TouchableOpacity style={lmStyles.cancelBtn} onPress={onClose} activeOpacity={0.7}>
+              <Text style={lmStyles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[lmStyles.logBtn, saving && { opacity: 0.6 }]}
+              onPress={async () => {
+                if (saving) return;
+                setSaving(true);
+                try {
+                  await onLogged(selectedMeal);
+                } finally {
+                  setSaving(false);
+                }
+              }}
+              activeOpacity={0.85}
+              disabled={saving}
+            >
+              {saving
+                ? <ActivityIndicator size="small" color="#fff" />
+                : <Text style={lmStyles.logText}>Log to {selectedMeal}</Text>
+              }
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const lmStyles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'flex-end',
+  },
+  sheet: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
+    paddingBottom: 40,
+  },
+  handle: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#e2e8f0',
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#64748b',
+    marginBottom: 20,
+  },
+  macroRow: {
+    flexDirection: 'row',
+    backgroundColor: '#f8fafc',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  macroItem: { alignItems: 'center' },
+  macroVal: { fontSize: 18, fontWeight: '700' },
+  macroLabel: { fontSize: 11, color: '#94a3b8', marginTop: 2 },
+  macroDivider: { width: 1, height: 32, backgroundColor: '#e2e8f0' },
+  pickerLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#64748b',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 12,
+  },
+  mealGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginBottom: 28,
+  },
+  mealTile: {
+    width: (width - 76) / 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: '#e2e8f0',
+    backgroundColor: '#fafafa',
+  },
+  mealTileActive: {
+    borderColor: '#f97316',
+    backgroundColor: '#fff7ed',
+  },
+  mealIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  mealName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  mealNameActive: { color: '#c2410c' },
+  actions: { flexDirection: 'row', gap: 12 },
+  cancelBtn: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
+    alignItems: 'center',
+  },
+  cancelText: { fontSize: 15, fontWeight: '600', color: '#64748b' },
+  logBtn: {
+    flex: 2,
+    paddingVertical: 14,
+    borderRadius: 14,
+    backgroundColor: '#f97316',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#ea580c',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  logText: { fontSize: 15, fontWeight: '700', color: '#ffffff' },
+});
+
+// ─── Main Screen ──────────────────────────────────────────────
 export default function RecipesScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -74,6 +300,9 @@ export default function RecipesScreen() {
   const [selectedRecipe, setSelectedRecipe] = useState<any | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
 
+  // ── NEW: Log as Meal state ──────────────────────────────────
+  const [showLogModal, setShowLogModal] = useState(false);
+
   const recipes = useQuery(api.publicRecipes.list, {
     search: searchQuery || undefined,
     category: selectedCategory,
@@ -81,16 +310,59 @@ export default function RecipesScreen() {
   });
 
   const addRecipeIngredients = useMutation(api.shoppingList.addRecipeIngredients);
+  // ── NEW: food logging mutation ──────────────────────────────
+  const logFoodEntry = useMutation(api.food.logFoodEntry);
 
   const loading = !isClerkLoaded || (clerkUser && convexUser === undefined) || recipes === undefined;
-
   const isPro = appUser.isPro || appUser.isAdmin;
-
   const gridItemWidth = useMemo(() => (width - 64) / 2, []);
 
   const n = (value: unknown, fallback = 0) => {
     const num = typeof value === 'number' ? value : Number(value);
     return Number.isFinite(num) ? num : fallback;
+  };
+
+  // ── NEW: handle log confirmed ───────────────────────────────
+  const handleLogToMeal = async (meal: MealName) => {
+    if (!convexUser?._id || !selectedRecipe) return;
+
+    const mealType = meal.toLowerCase() as MealTypeLower;
+    const today = getTodayISO();
+
+    try {
+      await logFoodEntry({
+        userId: convexUser._id,
+        foodName: selectedRecipe.title ?? 'Recipe',
+        calories: n(selectedRecipe.calories),
+        protein: n(selectedRecipe.protein),
+        carbs: n(selectedRecipe.carbs),
+        fat: n(selectedRecipe.fat),
+        servingSize: `1 serving (${Math.round(n(selectedRecipe.servings, 1))} total)`,
+        mealType,
+        date: today,
+      });
+
+      triggerSound(SoundEffect.LOG_MEAL);
+      setShowLogModal(false);
+
+      Alert.alert(
+        '✅ Logged!',
+        `${selectedRecipe.title} added to ${meal} for today.`,
+        [
+          { text: 'Stay here', style: 'cancel' },
+          {
+            text: 'View Fuel',
+            onPress: () => {
+              setSelectedRecipe(null);
+              router.push('/(tabs)/fuel');
+            },
+          },
+        ]
+      );
+    } catch (e: any) {
+      const msg = e?.message ?? 'Could not log recipe. Please try again.';
+      Alert.alert('Error', msg);
+    }
   };
 
   return (
@@ -99,7 +371,9 @@ export default function RecipesScreen() {
         style={styles.scrollView}
         contentContainerStyle={{
           paddingBottom: getBottomContentPadding(insets.bottom),
-          paddingTop: Platform.OS === 'android' ? Math.max(insets.top, StatusBar.currentHeight || 24) + 24 : Math.max(insets.top, 12) + 8,
+          paddingTop: Platform.OS === 'android'
+            ? Math.max(insets.top, StatusBar.currentHeight || 24) + 24
+            : Math.max(insets.top, 12) + 8,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -158,42 +432,36 @@ export default function RecipesScreen() {
 
         {!loading && recipes && recipes.length > 0 && (
           <View style={styles.recipesGrid}>
-            {recipes.map((recipe) => {
-              return (
-                <TouchableOpacity
-                  key={recipe._id}
-                  style={[styles.recipeCard, { width: gridItemWidth }]}
-                  onPress={() => {
-                    setSelectedRecipe(recipe);
-                  }}
-                  activeOpacity={0.8}
-                >
-                  <View style={styles.recipeCardImageContainer}>
-                    {getRecipeImageSource(recipe) ? (
-                      <Image source={getRecipeImageSource(recipe)} style={styles.recipeCardImage} />
-                    ) : (
-                      <View style={styles.recipeCardImagePlaceholder}>
-                        <Ionicons name="restaurant" size={32} color="#94a3b8" />
-                      </View>
-                    )}
-                  </View>
-                  <View style={styles.recipeCardContent}>
-                    <Text style={styles.recipeCardTitle} numberOfLines={2}>
-                      {recipe.title}
-                    </Text>
-                    <View style={styles.recipeCardMacros}>
-                      <Text style={styles.macro}>{Math.round(n(recipe.calories))} cal</Text>
-                      <Text style={styles.macro}>{Math.round(n(recipe.protein))}g P</Text>
+            {recipes.map((recipe) => (
+              <TouchableOpacity
+                key={recipe._id}
+                style={[styles.recipeCard, { width: gridItemWidth }]}
+                onPress={() => setSelectedRecipe(recipe)}
+                activeOpacity={0.8}
+              >
+                <View style={styles.recipeCardImageContainer}>
+                  {getRecipeImageSource(recipe) ? (
+                    <Image source={getRecipeImageSource(recipe)} style={styles.recipeCardImage} />
+                  ) : (
+                    <View style={styles.recipeCardImagePlaceholder}>
+                      <Ionicons name="restaurant" size={32} color="#94a3b8" />
                     </View>
+                  )}
+                </View>
+                <View style={styles.recipeCardContent}>
+                  <Text style={styles.recipeCardTitle} numberOfLines={2}>{recipe.title}</Text>
+                  <View style={styles.recipeCardMacros}>
+                    <Text style={styles.macro}>{Math.round(n(recipe.calories))} cal</Text>
+                    <Text style={styles.macro}>{Math.round(n(recipe.protein))}g P</Text>
                   </View>
-                </TouchableOpacity>
-              );
-            })}
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
         )}
       </ScrollView>
 
-      {/* Detail modal */}
+      {/* ── Detail modal ───────────────────────────────────── */}
       {selectedRecipe ? (
         <Modal visible animationType="slide" onRequestClose={() => setSelectedRecipe(null)}>
           <SafeAreaView style={styles.detailContainer} edges={['top', 'bottom']}>
@@ -201,7 +469,9 @@ export default function RecipesScreen() {
               style={styles.scrollView}
               contentContainerStyle={{
                 paddingBottom: getBottomContentPadding(insets.bottom),
-                paddingTop: Platform.OS === 'android' ? Math.max(insets.top, StatusBar.currentHeight || 24) + 24 : Math.max(insets.top, 12) + 16,
+                paddingTop: Platform.OS === 'android'
+                  ? Math.max(insets.top, StatusBar.currentHeight || 24) + 24
+                  : Math.max(insets.top, 12) + 16,
               }}
               showsVerticalScrollIndicator={false}
             >
@@ -241,55 +511,67 @@ export default function RecipesScreen() {
                   </View>
                 </View>
 
-                <TouchableOpacity
-                  style={styles.addToListButton}
-                  onPress={async () => {
-                    if (!convexUser?._id) {
-                      Alert.alert('Not ready', 'Please complete onboarding to use Shopping List.');
-                      return;
-                    }
-                    // Pro-only: Shopping list action (even for non-premium recipes)
-                    if (!isPro) {
-                      setShowUpgrade(true);
-                      return;
-                    }
-                    const ingredients: string[] = Array.isArray(selectedRecipe.ingredients) ? selectedRecipe.ingredients : [];
-                    if (ingredients.length === 0) {
-                      Alert.alert('No ingredients', 'This recipe has no ingredients to add.');
-                      return;
-                    }
-                    try {
-                      triggerSound(SoundEffect.UI_TAP);
-                      const res = await addRecipeIngredients({
-                        userId: convexUser._id,
-                        recipeId: selectedRecipe._id,
-                        ingredients,
-                      });
-                      Alert.alert(
-                        'Added to Shopping List',
-                        `Added ${res?.created ?? 0} new item(s) and merged ${res?.merged ?? 0} item(s).`,
-                        [
-                          { text: 'Keep browsing', style: 'cancel' },
-                          {
-                            text: 'View list',
-                            onPress: () => {
-                              setSelectedRecipe(null);
-                              router.push('/shopping-list');
-                            },
-                          },
-                        ]
-                      );
-                    } catch {
-                      Alert.alert('Error', 'Could not add ingredients. Please try again.');
-                    }
-                  }}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="cart-outline" size={18} color="#ffffff" />
-                  <Text style={styles.addToListText}>Add to Shopping List</Text>
-                </TouchableOpacity>
+                {/* ── ACTION BUTTONS ROW ───────────────────── */}
+                <View style={styles.actionButtonsRow}>
+                  {/* Log as Meal – always available (no pro gate needed, it's just logging macros) */}
+                  <TouchableOpacity
+                    style={styles.logMealButton}
+                    onPress={() => {
+                      if (!convexUser?._id) {
+                        Alert.alert('Not ready', 'Please complete onboarding first.');
+                        return;
+                      }
+                      setShowLogModal(true);
+                    }}
+                    activeOpacity={0.85}
+                  >
+                    <Ionicons name="restaurant-outline" size={18} color="#ffffff" />
+                    <Text style={styles.logMealButtonText}>Log as Meal</Text>
+                  </TouchableOpacity>
+
+                  {/* Add to Shopping List – pro only */}
+                  <TouchableOpacity
+                    style={styles.addToListButton}
+                    onPress={async () => {
+                      if (!convexUser?._id) {
+                        Alert.alert('Not ready', 'Please complete onboarding to use Shopping List.');
+                        return;
+                      }
+                      if (!isPro) { setShowUpgrade(true); return; }
+                      const ingredients: string[] = Array.isArray(selectedRecipe.ingredients)
+                        ? selectedRecipe.ingredients : [];
+                      if (ingredients.length === 0) {
+                        Alert.alert('No ingredients', 'This recipe has no ingredients to add.');
+                        return;
+                      }
+                      try {
+                        triggerSound(SoundEffect.UI_TAP);
+                        const res = await addRecipeIngredients({
+                          userId: convexUser._id,
+                          recipeId: selectedRecipe._id,
+                          ingredients,
+                        });
+                        Alert.alert(
+                          'Added to Shopping List',
+                          `Added ${res?.created ?? 0} new item(s) and merged ${res?.merged ?? 0} item(s).`,
+                          [
+                            { text: 'Keep browsing', style: 'cancel' },
+                            { text: 'View list', onPress: () => { setSelectedRecipe(null); router.push('/shopping-list'); } },
+                          ]
+                        );
+                      } catch {
+                        Alert.alert('Error', 'Could not add ingredients. Please try again.');
+                      }
+                    }}
+                    activeOpacity={0.85}
+                  >
+                    <Ionicons name="cart-outline" size={18} color="#f97316" />
+                    <Text style={styles.addToListText}>Shopping List</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
 
+              {/* Nutrition facts */}
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>Nutrition Facts (per serving)</Text>
                 <View style={styles.nutritionGrid}>
@@ -312,6 +594,7 @@ export default function RecipesScreen() {
                 </View>
               </View>
 
+              {/* Ingredients – pro gated */}
               {!!selectedRecipe.ingredients?.length && (
                 <View style={styles.card}>
                   <Text style={styles.cardTitle}>Ingredients</Text>
@@ -340,6 +623,7 @@ export default function RecipesScreen() {
                 </View>
               )}
 
+              {/* Instructions – pro gated */}
               {!!selectedRecipe.instructions?.length && (
                 <View style={styles.card}>
                   <Text style={styles.cardTitle}>Instructions</Text>
@@ -371,6 +655,14 @@ export default function RecipesScreen() {
               )}
             </ScrollView>
           </SafeAreaView>
+
+          {/* ── Log as Meal modal (rendered inside detail Modal so z-order is correct) */}
+          <LogMealModal
+            visible={showLogModal}
+            recipe={selectedRecipe}
+            onClose={() => setShowLogModal(false)}
+            onLogged={handleLogToMeal}
+          />
         </Modal>
       ) : null}
 
@@ -390,6 +682,7 @@ export default function RecipesScreen() {
   );
 }
 
+// ─── Styles (original + new additions) ───────────────────────
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#ebf1fe' },
   detailContainer: { flex: 1, backgroundColor: '#ebf1fe' },
@@ -456,17 +749,29 @@ const styles = StyleSheet.create({
     elevation: 3,
     overflow: 'hidden',
   },
-  recipeCardImageContainer: { width: '100%', height: 160, position: 'relative' },
+  recipeCardImageContainer: { width: '100%', height: 160 },
   recipeCardImage: { width: '100%', height: '100%' },
-  recipeCardImagePlaceholder: { width: '100%', height: '100%', backgroundColor: '#e5e7eb', justifyContent: 'center', alignItems: 'center' },
-  lockOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'center', alignItems: 'center' },
+  recipeCardImagePlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#e5e7eb',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   recipeCardContent: { padding: 12 },
   recipeCardTitle: { fontSize: 16, fontWeight: '600', color: '#1e293b', marginBottom: 8 },
   recipeCardMacros: { flexDirection: 'row', justifyContent: 'space-between' },
   macro: { fontSize: isSmallScreen ? 11 : 12, color: '#64748b' },
   recipeImageContainer: { width: '100%', height: 240, marginBottom: 16, paddingHorizontal: 24 },
   recipeImage: { width: '100%', height: '100%', borderRadius: 16 },
-  recipeImagePlaceholder: { width: '100%', height: '100%', backgroundColor: '#e5e7eb', borderRadius: 16, justifyContent: 'center', alignItems: 'center' },
+  recipeImagePlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#e5e7eb',
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   recipeTitle: { fontSize: 24, fontWeight: 'bold', color: '#1e293b', marginBottom: 8 },
   recipeDescription: { fontSize: 14, color: '#64748b' },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 16, marginTop: 12 },
@@ -481,39 +786,62 @@ const styles = StyleSheet.create({
   ingredientDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#f97316' },
   ingredientText: { fontSize: 14, color: '#1e293b', flex: 1 },
   instructionItem: { flexDirection: 'row', marginBottom: 16, gap: 12 },
-  instructionNumber: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#f97316', justifyContent: 'center', alignItems: 'center', flexShrink: 0 },
+  instructionNumber: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f97316',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexShrink: 0,
+  },
   instructionNumberText: { fontSize: 14, fontWeight: 'bold', color: '#ffffff' },
   instructionText: { fontSize: 14, color: '#1e293b', flex: 1, paddingTop: 6 },
 
-  addToListButton: {
+  // ── NEW: Action buttons row ──────────────────────────────────
+  actionButtonsRow: {
+    flexDirection: 'row',
+    gap: 10,
     marginTop: 16,
+  },
+  // "Log as Meal" – primary, orange fill
+  logMealButton: {
+    flex: 1,
     backgroundColor: '#f97316',
     borderRadius: 14,
     paddingVertical: 12,
-    paddingHorizontal: 14,
+    paddingHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
+    gap: 8,
+    shadowColor: '#ea580c',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 3,
   },
-  addToListText: { color: '#ffffff', fontSize: 14, fontWeight: '800' },
+  logMealButtonText: { color: '#ffffff', fontSize: 14, fontWeight: '700' },
+  // "Shopping List" – secondary, outline style
+  addToListButton: {
+    flex: 1,
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderWidth: 1.5,
+    borderColor: '#f97316',
+    backgroundColor: '#fff7ed',
+  },
+  addToListText: { color: '#f97316', fontSize: 14, fontWeight: '800' },
 
-  lockedCard: {
-    backgroundColor: '#ffffff',
-    marginHorizontal: 24,
-    marginBottom: 16,
-    padding: 24,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    overflow: 'hidden',
-  },
+  // Lock overlays (unchanged)
   lockedAbsolute: {
     position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
+    left: 0, right: 0, top: 0, bottom: 0,
     borderRadius: 16,
     overflow: 'hidden',
     alignItems: 'center',
@@ -536,8 +864,3 @@ const styles = StyleSheet.create({
   },
   lockedBtnText: { color: '#ffffff', fontWeight: '900' },
 });
-
-
-
-
-
