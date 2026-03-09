@@ -15,20 +15,22 @@ export default ({ config }) => {
             name: "Bluom",
             slug: "bolt-expo-nativewind",
             owner: "ggovsaas",
-            version: "1.0.18",
+            version: "1.0.19",
             scheme: "bluom",
             userInterfaceStyle: "automatic",
-            runtimeVersion: "1.0.18",
+            runtimeVersion: "1.0.19",
+            privacyPolicyUrl: "https://www.bluom.app/legal/privacy",
             ios: {
                 bundleIdentifier: "com.jwfca.bluom",
-                buildNumber: "25",
+                buildNumber: "28",
                 googleServicesFile: "./GoogleService-Info.plist",
                 infoPlist: {
                     ITSAppUsesNonExemptEncryption: false,
+                    UIBackgroundModes: ["audio"],
                     NSPhotoLibraryUsageDescription:
-                      "Bluom needs access to your photos so you can upload pictures of your meals and sugar labels for AI analysis.",
+                        "Bluom uses your photo library to scan food labels and analyze meals for AI-powered nutrition insights.",
                     NSCameraUsageDescription:
-                      "Bluom needs access to your camera to scan food items and nutritional labels.",
+                        "Bluom uses the camera to scan food items and nutritional labels for AI-powered nutrition insights.",
                     CFBundleURLTypes: [
                         {
                             CFBundleURLSchemes: [
@@ -38,14 +40,26 @@ export default ({ config }) => {
                     ],
                 },
                 // KEEP: Build 18 requirement
-                deploymentTarget: "13.0",
+                deploymentTarget: "15.1",
                 supportsTablet: true,
                 isTabletOnly: false,
                 requireFullScreen: true,
+                privacyManifests: {
+                    NSPrivacyAccessedAPITypes: [
+                        {
+                            NSPrivacyAccessedAPIType: "NSPrivacyAccessedAPICategoryUserDefaults",
+                            NSPrivacyAccessedAPITypeReasons: ["CA92.1"],
+                        },
+                        {
+                            NSPrivacyAccessedAPIType: "NSPrivacyAccessedAPICategoryFileTimestamp",
+                            NSPrivacyAccessedAPITypeReasons: ["C617.1"],
+                        },
+                    ],
+                },
             },
             android: {
                 package: "com.jwfca.bluom",
-                versionCode: 25,
+                versionCode: 28,
                 googleServicesFile: "./google-services.json",
                 permissions: [
                     "android.permission.CAMERA",
@@ -78,9 +92,10 @@ export default ({ config }) => {
                 [
                     "expo-camera",
                     {
-                        cameraPermission: "Allow camera access.",
+                        cameraPermission: "Bluom uses the camera to scan food items and nutritional labels for AI-powered nutrition insights.",
                     },
                 ],
+                "expo-apple-authentication",
             ],
             extra: {
                 router: {},

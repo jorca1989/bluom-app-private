@@ -169,7 +169,7 @@ export default function IndexScreen() {
     // { Icon: Music, label: 'Radio', path: '/music-hub', color: '#8b5cf6', bgColor: '#f5f3ff' }, // hidden per request
     { Icon: Timer, label: 'Focus Mode', path: '/focus-mode', color: '#3b82f6', bgColor: '#eff6ff' },
     { Icon: Utensils, label: 'Recipes', path: '/recipes', color: '#f97316', bgColor: '#fff7ed' },
-    { Icon: ShoppingBag, label: 'Shop', path: '/shop', color: '#2563eb', bgColor: '#eff6ff' },
+    // { Icon: ShoppingBag, label: 'Shop', path: '/shop', color: '#2563eb', bgColor: '#eff6ff' }, // hidden per request
     { Icon: Play, label: 'Workouts', path: '/workouts', color: '#16a34a', bgColor: '#f0fdf4' },
     { Icon: TrendingDown, label: 'Metabolic Hub', path: '/sugar-dashboard', color: '#ef4444', bgColor: '#fee2e2' },
   ] as const, []);

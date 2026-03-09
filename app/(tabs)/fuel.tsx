@@ -24,6 +24,7 @@ import { getCurrentWeekRange, getTodayISO } from '@/utils/dates';
 import { getBottomContentPadding, getWeekCalendarItemSize } from '@/utils/layout';
 import { SoundEffect, triggerSound } from '@/utils/soundEffects';
 import { useCelebration } from '@/context/CelebrationContext';
+import { useUser as useAppUser } from '@/context/UserContext';
 import { sendHydrationReminder, sendMealReminder } from '@/utils/notifications';
 import FoodSearchSection from '@/components/FoodSearchSection';
 
@@ -112,6 +113,7 @@ export default function FuelScreen() {
     clerkUser?.id ? { clerkId: clerkUser.id } : 'skip'
   );
   const celebration = useCelebration();
+  const appUser = useAppUser();
 
   const todayISO = useMemo(() => getTodayISO(), []);
   const [selectedDate, setSelectedDate] = useState(todayISO);
@@ -811,28 +813,36 @@ export default function FuelScreen() {
                   opacity: 0.95,
                   borderStyle: 'dashed',
                   borderWidth: 2,
-                  borderColor: '#fbbf24',
-                  backgroundColor: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                  borderColor: (appUser.isPro || appUser.isAdmin) ? '#f97316' : '#fbbf24',
+                  backgroundColor: (appUser.isPro || appUser.isAdmin) ? '#fff7ed' : '#fef3c7',
                   shadowColor: '#fbbf24',
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.3,
                   shadowRadius: 8,
                   elevation: 4
                 }]}
-                onPress={() => router.push('/premium')}
+                onPress={() => {
+                  if (appUser.isPro || appUser.isAdmin) {
+                    setSelectedMeal(null);
+                    setShowFoodSearch(true);
+                    setFoodSearchTab('search');
+                  } else {
+                    router.push('/premium');
+                  }
+                }}
                 activeOpacity={0.8}
               >
                 <View style={[styles.mealCardHeader, { borderBottomWidth: 0 }]}>
                   <View style={styles.mealCardHeaderLeft}>
                     <View style={[styles.mealIconContainer, {
-                      backgroundColor: '#fbbf24',
+                      backgroundColor: (appUser.isPro || appUser.isAdmin) ? '#f97316' : '#fbbf24',
                       shadowColor: '#f59e0b',
                       shadowOffset: { width: 0, height: 2 },
                       shadowOpacity: 0.4,
                       shadowRadius: 6,
                       elevation: 3
                     }]}>
-                      <Ionicons name="lock-closed" size={22} color="#ffffff" />
+                      <Ionicons name={(appUser.isPro || appUser.isAdmin) ? 'add' : 'lock-closed'} size={22} color="#ffffff" />
                     </View>
                     <View style={{ flex: 1 }}>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -841,37 +851,39 @@ export default function FuelScreen() {
                           fontWeight: '800',
                           fontSize: 16
                         }]}>Add Meal</Text>
-                        <View style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          gap: 6,
-                          backgroundColor: '#fbbf24',
-                          paddingHorizontal: 10,
-                          paddingVertical: 6,
-                          borderRadius: 16,
-                          shadowColor: '#f59e0b',
-                          shadowOffset: { width: 0, height: 1 },
-                          shadowOpacity: 0.5,
-                          shadowRadius: 4,
-                          elevation: 2
-                        }}>
-                          <Ionicons name="star" size={12} color="#ffffff" />
-                          <Text style={{
-                            fontSize: 11,
-                            fontWeight: '800',
-                            color: '#ffffff',
-                            textTransform: 'uppercase',
-                            letterSpacing: 0.5
-                          }}>PRO</Text>
-                          <Ionicons name="star" size={12} color="#ffffff" />
-                        </View>
+                        {!(appUser.isPro || appUser.isAdmin) && (
+                          <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: 6,
+                            backgroundColor: '#fbbf24',
+                            paddingHorizontal: 10,
+                            paddingVertical: 6,
+                            borderRadius: 16,
+                            shadowColor: '#f59e0b',
+                            shadowOffset: { width: 0, height: 1 },
+                            shadowOpacity: 0.5,
+                            shadowRadius: 4,
+                            elevation: 2
+                          }}>
+                            <Ionicons name="star" size={12} color="#ffffff" />
+                            <Text style={{
+                              fontSize: 11,
+                              fontWeight: '800',
+                              color: '#ffffff',
+                              textTransform: 'uppercase',
+                              letterSpacing: 0.5
+                            }}>PRO</Text>
+                            <Ionicons name="star" size={12} color="#ffffff" />
+                          </View>
+                        )}
                       </View>
                       <Text style={[styles.mealTotals, {
                         color: '#92400e',
                         fontWeight: '600',
                         fontSize: 13
                       }]}>
-                        Unlock unlimited meals
+                        {(appUser.isPro || appUser.isAdmin) ? 'Add another meal slot' : 'Unlock unlimited meals'}
                       </Text>
                     </View>
                   </View>
