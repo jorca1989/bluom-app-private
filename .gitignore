@@ -41,3 +41,37 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+# Android specific sensitive/local files
+android/local.properties
+android/.gradle
+android/build
+android/app/build
+*.keystore
+!android/app/debug.keystore
+# --- ADD THESE ---
+
+# Local Android SDK path files (never commit)
+local.properties
+
+# Android
+android/local.properties
+android/.gradle
+android/build
+android/app/build
+android/app/src/main/assets
+
+# iOS
+ios/build
+ios/Pods
+ios/DerivedData
+*.ext.json
+
+# Fastlane
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
+# Temporary Files
+*.log
+.eslintcache

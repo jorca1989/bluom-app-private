@@ -7,10 +7,7 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "channel": "development",
-      "env": {
-        "ANDROID_SDK_ROOT": "C:\\Users\\jwfca\\AppData\\Local\\Android\\Sdk"
-      }
+      "channel": "development"
     },
     "development-simulator": {
       "extends": "development",
@@ -19,10 +16,7 @@
       }
     },
     "local": {
-      "extends": "development",
-      "env": {
-        "ANDROID_SDK_ROOT": "C:\\Users\\jwfca\\AppData\\Local\\Android\\Sdk"
-      }
+      "extends": "development"
     },
     "preview": {
       "distribution": "internal",
@@ -31,7 +25,6 @@
         "buildType": "apk"
       },
       "env": {
-        "ANDROID_SDK_ROOT": "C:\\Users\\jwfca\\AppData\\Local\\Android\\Sdk",
         "EXPO_PUBLIC_CONVEX_URL": "https://cheerful-snake-681.convex.cloud",
         "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuYmx1b20uYXBwJA",
         "EXPO_PUBLIC_CLERK_JWT_TEMPLATE_ID": "jtmp_37ixCZjxhFlM4THbZIBUlZYoFLr"
@@ -41,7 +34,6 @@
       "autoIncrement": true,
       "channel": "production",
       "env": {
-        "ANDROID_SDK_ROOT": "C:\\Users\\jwfca\\AppData\\Local\\Android\\Sdk",
         "EXPO_PUBLIC_CONVEX_URL": "https://cheerful-snake-681.convex.cloud",
         "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuYmx1b20uYXBwJA",
         "EXPO_PUBLIC_CLERK_JWT_TEMPLATE_ID": "jtmp_37ixCZjxhFlM4THbZIBUlZYoFLr",
