@@ -34,7 +34,7 @@ type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 type MealTypeLower = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
 const MEAL_CONFIGS: Record<MealName, { icon: string; color: string; iconColor: string }> = {
-  Breakfast: { icon: 'sunny', color: '#fed7aa', iconColor: '#ea580c' },
+  Breakfast: { icon: 'sunny', color: '#fed7aa', iconColor: '#2563eb' },
   Lunch: { icon: 'sunny-outline', color: '#fef3c7', iconColor: '#d97706' },
   Dinner: { icon: 'moon', color: '#e9d5ff', iconColor: '#9333ea' },
   Snack: { icon: 'restaurant', color: '#fce7f3', iconColor: '#db2777' },
@@ -241,8 +241,8 @@ const lmStyles = StyleSheet.create({
     backgroundColor: '#fafafa',
   },
   mealTileActive: {
-    borderColor: '#f97316',
-    backgroundColor: '#fff7ed',
+    borderColor: '#3b82f6',
+    backgroundColor: '#eff6ff',
   },
   mealIcon: {
     width: 36,
@@ -256,7 +256,7 @@ const lmStyles = StyleSheet.create({
     fontWeight: '600',
     color: '#475569',
   },
-  mealNameActive: { color: '#c2410c' },
+  mealNameActive: { color: '#1d4ed8' },
   actions: { flexDirection: 'row', gap: 12 },
   cancelBtn: {
     flex: 1,
@@ -271,10 +271,10 @@ const lmStyles = StyleSheet.create({
     flex: 2,
     paddingVertical: 14,
     borderRadius: 14,
-    backgroundColor: '#f97316',
+    backgroundColor: '#3b82f6',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#ea580c',
+    shadowColor: '#2563eb',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -415,7 +415,7 @@ export default function RecipesScreen() {
 
         {loading && (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#f97316" />
+            <ActivityIndicator size="large" color="#3b82f6" />
             <Text style={styles.loadingText}>Loading recipes...</Text>
           </View>
         )}
@@ -565,7 +565,7 @@ export default function RecipesScreen() {
                     }}
                     activeOpacity={0.85}
                   >
-                    <Ionicons name="cart-outline" size={18} color="#f97316" />
+                    <Ionicons name="cart-outline" size={18} color="#3b82f6" />
                     <Text style={styles.addToListText}>Shopping List</Text>
                   </TouchableOpacity>
                 </View>
@@ -729,7 +729,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f5f9',
     marginRight: 8,
   },
-  categoryChipActive: { backgroundColor: '#f97316' },
+  categoryChipActive: { backgroundColor: '#3b82f6' },
   categoryChipText: { fontSize: 14, color: '#64748b', fontWeight: '500' },
   categoryChipTextActive: { color: '#ffffff' },
   loadingContainer: { paddingVertical: 48, alignItems: 'center' },
@@ -783,14 +783,14 @@ const styles = StyleSheet.create({
   nutritionValue: { fontSize: 24, fontWeight: 'bold', marginBottom: 4 },
   nutritionLabel: { fontSize: 12, color: '#64748b' },
   ingredientItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 12 },
-  ingredientDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#f97316' },
+  ingredientDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#3b82f6' },
   ingredientText: { fontSize: 14, color: '#1e293b', flex: 1 },
   instructionItem: { flexDirection: 'row', marginBottom: 16, gap: 12 },
   instructionNumber: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#f97316',
+    backgroundColor: '#3b82f6',
     justifyContent: 'center',
     alignItems: 'center',
     flexShrink: 0,
@@ -807,7 +807,7 @@ const styles = StyleSheet.create({
   // "Log as Meal" – primary, orange fill
   logMealButton: {
     flex: 1,
-    backgroundColor: '#f97316',
+    backgroundColor: '#3b82f6',
     borderRadius: 14,
     paddingVertical: 12,
     paddingHorizontal: 10,
@@ -815,7 +815,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    shadowColor: '#ea580c',
+    shadowColor: '#2563eb',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 6,
@@ -833,10 +833,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     borderWidth: 1.5,
-    borderColor: '#f97316',
-    backgroundColor: '#fff7ed',
+    borderColor: '#3b82f6',
+    backgroundColor: '#eff6ff',
   },
-  addToListText: { color: '#f97316', fontSize: 14, fontWeight: '800' },
+  addToListText: { color: '#3b82f6', fontSize: 14, fontWeight: '800' },
 
   // Lock overlays (unchanged)
   lockedAbsolute: {
@@ -853,7 +853,7 @@ const styles = StyleSheet.create({
   lockedText: { color: '#475569', fontWeight: '700', textAlign: 'center', lineHeight: 18 },
   lockedBtn: {
     marginTop: 8,
-    backgroundColor: '#f97316',
+    backgroundColor: '#3b82f6',
     borderRadius: 14,
     paddingVertical: 12,
     paddingHorizontal: 14,

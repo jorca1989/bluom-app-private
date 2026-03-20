@@ -369,41 +369,31 @@ export const list = query({
         let exercises;
 
         if (args.search) {
-            // 1. Try Full-Text Search
-            exercises = await ctx.db
-                .query("exerciseLibrary")
-                .withSearchIndex("search_name", (q) => q.search("nameLower", args.search!))
-                .take(50);
-
-            // 2. Fallback: If no results, try simple substring match (broader)
-            if (exercises.length === 0) {
-                const searchLower = args.search.toLowerCase();
-                exercises = await ctx.db
-                    .query("exerciseLibrary")
-                    .withIndex("by_nameLower")
-                    .filter((q) => q.gte(q.field("nameLower"), searchLower)) // Simple optimization attempt
-                    .take(100);
-
-                // Precise filtering in memory since comparison operators on strings can be tricky for "contains"
-                // Actually, standard filter scan is safer for "contains" fallback
-                const allScan = await ctx.db.query("exerciseLibrary").take(200);
-                exercises = allScan.filter(e => e.nameLower.includes(searchLower));
-            }
+            const searchLower = args.search.toLowerCase();
+            const allScan = await ctx.db.query("exerciseLibrary").order("desc").take(500);
+            
+            exercises = allScan.filter(e => {
+                const nameMatch = e.nameLower.includes(searchLower);
+                const muscleMatch = e.muscleGroups && e.muscleGroups.some((m: string) => m.toLowerCase().includes(searchLower));
+                return nameMatch || muscleMatch;
+            });
+            exercises = exercises.slice(0, 50); // limit to useful UI results
         } else {
             // No search query: fetch recent
-            // Optimization: if category is present, use the index
             if (args.category && args.category !== 'All') {
                 exercises = await ctx.db
                     .query("exerciseLibrary")
                     .withIndex("by_category", (q) => q.eq("category", args.category!))
                     .order("desc")
                     .take(50);
-                return exercises;
+            } else {
+                exercises = await ctx.db.query("exerciseLibrary").order("desc").take(50);
             }
-            exercises = await ctx.db.query("exerciseLibrary").order("desc").take(50);
         }
 
-        if (args.category && args.category !== 'All') {
+        if (args.category && args.category !== 'All' && args.search) {
+             // If we already filtered by Category via Index, we don't need to do it again for the NO-SEARCH branch.
+             // But if we did an in-memory search across the whole DB, we MUST filter out wrong categories here.
             exercises = exercises.filter((e) => e.category === args.category);
         }
 

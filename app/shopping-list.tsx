@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
-  actionPrimary: { backgroundColor: '#f97316' },
+  actionPrimary: { backgroundColor: '#3b82f6' },
   actionPrimaryText: { color: '#ffffff', fontSize: 14, fontWeight: '900' },
   actionSecondary: { backgroundColor: '#f1f5f9', borderWidth: 1, borderColor: '#e2e8f0' },
   actionSecondaryText: { color: '#1e293b', fontSize: 14, fontWeight: '900' },
@@ -457,7 +457,7 @@ const styles = StyleSheet.create({
   saveBtn: {
     marginTop: 14,
     marginBottom: 10,
-    backgroundColor: '#f97316',
+    backgroundColor: '#3b82f6',
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',

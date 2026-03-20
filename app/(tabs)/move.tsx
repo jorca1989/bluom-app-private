@@ -19,6 +19,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
+
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
@@ -30,6 +31,16 @@ import { SoundEffect, triggerSound } from '@/utils/soundEffects';
 import { useCelebration } from '@/context/CelebrationContext';
 // Health integrations disabled for Build 18 submission.
 import { useResponsive } from '@/utils/responsive';
+import CurrentProgramCard from '@/components/move/CurrentProgramCard';
+import WorkoutDayCard from '@/components/move/WorkoutDayCard';
+import MoveQuickActions from '@/components/move/MoveQuickActions';
+import MoveInsights from '@/components/move/MoveInsights';
+import ActiveWorkoutModal, { ActiveExercise } from '@/components/move/modals/ActiveWorkoutModal';
+import WorkoutDetailModal from '@/components/move/modals/WorkoutDetailModal';
+import ExerciseSearchModal, { ExerciseLibraryItem as ESearchItem } from '@/components/move/modals/ExerciseSearchModal';
+import SingleExerciseLogModal from '@/components/move/modals/SingleExerciseLogModal';
+import ExerciseDetailModal from '@/components/move/modals/ExerciseDetailModal';
+import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 
 
 
@@ -64,16 +75,6 @@ function addDays(date: Date, days: number) {
 
 export default function MoveScreen() {
   const router = useRouter();
-  const [showRoutineCoach, setShowRoutineCoach] = useState(false);
-
-  // Coach marks disabled for production
-  /*
-  useEffect(() => {
-    SecureStore.getItemAsync('bluom_show_coach_marks').then(val => {
-      if (val === 'true') setShowRoutineCoach(true);
-    });
-  }, []);
-  */
   const [showRoutineModal, setShowRoutineModal] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false); // Disabled for production
   const params = useLocalSearchParams<{ openWorkouts?: string }>();
@@ -87,12 +88,28 @@ export default function MoveScreen() {
     clerkUser?.id ? { clerkId: clerkUser.id } : 'skip'
   );
 
+  const isPro = convexUser?.subscriptionStatus === 'active' || clerkUser?.emailAddresses?.some(e => e.emailAddress === 'ggovsaas@gmail.com');
+
   const activeFastingLog = useQuery(
     api.fasting.getActiveFastingLog,
     convexUser?._id ? { userId: convexUser._id } : 'skip'
   );
+
+  const activePlans = useQuery(
+    api.plans.getActivePlans,
+    convexUser?._id ? {} : 'skip'
+  );
+
   const fastingHours = activeFastingLog ? (new Date().getTime() - activeFastingLog.startTime) / (1000 * 60 * 60) : 0;
   const showFatBurnCardio = fastingHours >= 12 && fastingHours < 18;
+
+  const [showProModal, setShowProModal] = useState(false);
+  const [proModalConfig, setProModalConfig] = useState({ title: '', message: '' });
+
+  const handleProFeature = (title: string, message: string) => {
+    setProModalConfig({ title, message });
+    setShowProModal(true);
+  };
 
   const logExerciseEntry = useMutation(api.exercise.logExerciseEntry);
   const deleteRoutine = useMutation(api.routines.deleteRoutine);
@@ -308,16 +325,79 @@ export default function MoveScreen() {
 
   // UI state
   const [showDropdown, setShowDropdown] = useState(false);
-  const [showWorkoutModal, setShowWorkoutModal] = useState(false);
+  const [showActiveWorkout, setShowActiveWorkout] = useState(false);
+  const [showWorkoutDetail, setShowWorkoutDetail] = useState(false);
+  const [workoutDetailMode, setWorkoutDetailMode] = useState<'view'|'start'>('view');
+  const [selectedDayIndex, setSelectedDayIndex] = useState(0);
+
+  // MOCK ROUTINE DAYS For V5 
+  const MOCK_ROUTINE_DAYS = [
+    {
+      dayNum: 1,
+      dayTitle: "Leg Day",
+      muscleGroups: "Quads, Hamstrings, Glutes, Calves, Abs",
+      exercises: [
+        { id: '1', name: 'Squat', thumbnailUrl: 'https://images.unsplash.com/photo-1574681533083-bf41eb47b2c0?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Legs', sets: 3, reps: '10' },
+        { id: '2', name: 'Leg Press', thumbnailUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Legs', sets: 3, reps: '12' },
+        { id: '3', name: 'Calf Raise', thumbnailUrl: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Calves', sets: 4, reps: '15' },
+        { id: '4', name: 'Curl', thumbnailUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Hamstrings', sets: 3, reps: '12' },
+        { id: '5', name: 'Crunch', thumbnailUrl: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Abs', sets: 3, reps: '20' }
+      ]
+    },
+    {
+      dayNum: 2,
+      dayTitle: "Push Day",
+      muscleGroups: "Chest, Front Delts, Triceps",
+      exercises: [
+        { id: '6', name: 'Barbell Bench Press', thumbnailUrl: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Chest', equipment: 'Barbell', sets: 3, reps: '8-10' },
+        { id: '7', name: 'Incline Machine Chest Press', thumbnailUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Chest', equipment: 'Machine', sets: 3, reps: 10 },
+        { id: '8', name: 'Tricep Extension', thumbnailUrl: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Triceps', sets: 3, reps: 12 }
+      ]
+    }
+  ];
+
+  const [completedWorkoutsThisWeek, setCompletedWorkoutsThisWeek] = useState(1);
+
   const [showExerciseSearch, setShowExerciseSearch] = useState(false);
+  const [exerciseSearchTarget, setExerciseSearchTarget] = useState<'detail' | 'log'>('detail');
+  const [showExerciseDetail, setShowExerciseDetail] = useState(false);
+  const [showSingleExerciseLog, setShowSingleExerciseLog] = useState(false);
+  const [selectedExerciseForDetail, setSelectedExerciseForDetail] = useState<any>(null);
   const [showStepsModal, setShowStepsModal] = useState(false);
   const [showCustomExercise, setShowCustomExercise] = useState(false);
+  const [showWorkoutModal, setShowWorkoutModal] = useState(false);
   const [showAllActivities, setShowAllActivities] = useState(false);
+  const dummyExercises: ActiveExercise[] = [{ id: "1", name: "Barbell Bench Press", sets: [{id:"1a", weight:"", reps:"", completed:false}] }];
 
   // Search state (debounced)
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<(typeof workoutCategories)[number]>('All');
   const [selectedExercise, setSelectedExercise] = useState<ExerciseLibraryItem | null>(null);
+
+  const rawTargetWorkouts = activePlans?.fitnessPlan 
+    ? activePlans.fitnessPlan.daysPerWeek 
+    : (convexUser?.fitnessGoal === 'build_muscle' ? 4 : 3);
+  const totalWorkoutsPerWeek = Math.max(1, rawTargetWorkouts);
+
+  // Compute Display Routine
+  const defaultVideoUrl = "https://cdn.pixabay.com/video/2023/10/22/186115-877715053_tiny.mp4";
+  const displayWorkouts = activePlans?.fitnessPlan?.workouts 
+    ? activePlans.fitnessPlan.workouts.map((w: any, idx: number) => ({
+        dayNum: idx + 1,
+        dayTitle: w.day || w.focus,
+        muscleGroups: [w.focus],
+        exercises: w.exercises.map((e: any, i: number) => ({
+          id: `ai-${idx}-${i}`,
+          name: e.name,
+          sets: typeof e.sets === 'number' ? e.sets : 3,
+          reps: e.reps || '10',
+          equipment: e.equipment || 'Varies',
+          muscle: w.focus,
+          videoUrl: defaultVideoUrl
+        }))
+      }))
+    : MOCK_ROUTINE_DAYS;
+
   // Convex Exercise Library Query
   const exerciseLibrary = useQuery(api.exercises.list, {
     search: searchQuery || undefined,
@@ -645,6 +725,7 @@ export default function MoveScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={isTablet ? { width: '100%', maxWidth: contentMaxWidth ?? 1000, alignSelf: 'center' } : undefined}>
+
           {/* Header */}
           <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 22 }]}>
             <View style={styles.headerContent}>
@@ -652,96 +733,8 @@ export default function MoveScreen() {
                 <Text style={styles.title}>Move</Text>
                 <Text style={styles.subtitle}>Track your workouts and activity</Text>
               </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                <TouchableOpacity
-                  style={[styles.headerButton, styles.plusButton]}
-                  onPress={() => setShowDropdown((v) => !v)}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons name="add" size={24} color="#ffffff" />
-                </TouchableOpacity>
-              </View>
             </View>
           </View>
-
-          {/* Plus Menu */}
-          {showDropdown && (
-            <View style={styles.plusMenu}>
-              <TouchableOpacity
-                style={styles.plusMenuItem}
-                onPress={() => {
-                  closeAllOverlays();
-                  setShowExerciseSearch(true);
-                  setShowCustomExercise(false);
-                }}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="barbell" size={20} color="#1e293b" />
-                <Text style={styles.plusMenuText}>Log Workout</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.plusMenuItem}
-                onPress={() => {
-                  closeAllOverlays();
-                  setShowRoutineModal(true);
-                }}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="list" size={20} color="#1e293b" />
-                <Text style={styles.plusMenuText}>Browse Routines</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.plusMenuItem}
-                onPress={() => {
-                  closeAllOverlays();
-                  setShowStepsModal(true);
-                }}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="locate" size={20} color="#1e293b" />
-                <Text style={styles.plusMenuText}>Add Steps</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.plusMenuItem}
-                onPress={() => {
-                  closeAllOverlays();
-                  setShowWorkoutModal(true);
-                  setShowCustomExercise(true);
-                }}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="add-circle" size={20} color="#1e293b" />
-                <Text style={styles.plusMenuText}>Custom Exercise</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-
-          {/* Fat Burn Cardio Recommendation */}
-          {showFatBurnCardio && (
-            <TouchableOpacity
-              onPress={() => {
-                setSearchQuery('Zone 2');
-                setShowExerciseSearch(true);
-              }}
-              className="mx-4 mt-4 bg-orange-50 border border-orange-100 p-5 rounded-3xl flex-row items-center gap-4 shadow-sm"
-            >
-              <View className="bg-orange-100 w-12 h-12 rounded-full items-center justify-center">
-                <Ionicons name="flame" size={24} color="#f97316" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-orange-900 font-black text-base">Fat Burn Zone</Text>
-                <Text className="text-orange-700 font-medium text-xs leading-4">
-                  Great time for Zone 2 cardio!
-                </Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#fb923c" />
-            </TouchableOpacity>
-          )}
-
-
 
           {/* Activity Summary */}
           <View style={[styles.activitySummary, isTablet && { justifyContent: 'space-between' }]}>
@@ -847,6 +840,38 @@ export default function MoveScreen() {
             </View>
           </View>
 
+          {/* Current Program */}
+          <CurrentProgramCard
+            programName={activePlans?.fitnessPlan ? activePlans.fitnessPlan.workoutSplit : "Your 4-Week Plan"}
+            level="Beginner"
+            daysPerWeek={totalWorkoutsPerWeek}
+            currentWeek={Math.min(4, Math.floor(completedWorkoutsThisWeek / totalWorkoutsPerWeek) + 1)}
+            totalWeeks={4}
+            progressPercent={Math.floor((completedWorkoutsThisWeek / (totalWorkoutsPerWeek * 4)) * 100)}
+            onInfoPress={() => {}}
+            onWorkoutsPress={() => {}}
+          />
+
+          {/* Weekly Workouts in a Card Widget */}
+          <View style={[styles.card, { padding: 0, paddingBottom: 24, marginHorizontal: 24, marginTop: 24 }]}>
+            <View style={[styles.cardHeader, { paddingHorizontal: 20, paddingTop: 20, marginBottom: 16 }]}>
+              <Text style={styles.cardTitle}>This Week's Workouts (Swipe)</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}>
+               {displayWorkouts.map((day: any, idx: number) => (
+                 <WorkoutDayCard 
+                    key={day.dayNum}
+                    dayTitle={day.dayTitle} 
+                    muscleGroups={day.muscleGroups} 
+                    exercises={day.exercises as any}
+                    isUpNext={idx === 0}
+                    onStartWorkout={() => { setSelectedDayIndex(idx); setWorkoutDetailMode('start'); setShowWorkoutDetail(true); }}
+                    onViewWorkout={() => { setSelectedDayIndex(idx); setWorkoutDetailMode('view'); setShowWorkoutDetail(true); }}
+                 />
+               ))}
+            </ScrollView>
+          </View>
+
           {/* Weekly Progress */}
           <View style={styles.card}>
             <View style={styles.cardHeader}>
@@ -901,6 +926,22 @@ export default function MoveScreen() {
               </View>
             </View>
           </View>
+
+          {/* Move Quick Actions & Insights */}
+          <MoveQuickActions 
+             onAddWorkout={() => {
+                setExerciseSearchTarget('log');
+                setShowExerciseSearch(true);
+             }}
+             onAddSteps={() => setShowStepsModal(true)}
+             onCustomExercise={() => {
+                setShowWorkoutModal(true);
+                setShowCustomExercise(true);
+             }}
+             onViewPlan={() => {
+                router.push('/personalized-plan');
+             }}
+          />
 
           {/* Today's Activities */}
           <View style={styles.card}>
@@ -1017,166 +1058,163 @@ export default function MoveScreen() {
             )}
           </View>
 
-          {/* My Routines Section (Relocated) */}
-          {myRoutines.length > 0 && (
-            <View style={[styles.sectionContainer, { zIndex: 100, marginBottom: 24 }]}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, paddingHorizontal: 24 }}>
-                <Text style={[styles.sectionTitle, { marginBottom: 0, paddingHorizontal: 0 }]}>My Routines</Text>
-                <CoachMark
-                  visible={showRoutineCoach}
-                  message="Your custom AI routines appear here."
-                  onClose={() => {
-                    setShowRoutineCoach(false);
-                    SecureStore.deleteItemAsync('bluom_show_coach_marks');
-                  }}
-                  position="bottom"
-                />
-              </View>
-              <View style={{ paddingHorizontal: 0, gap: 12 }}>
-                {myRoutines.map((routine: any) => (
-                  <View key={routine._id} style={{ borderRadius: 16, overflow: 'hidden', width: 'auto', marginBottom: 8, marginHorizontal: 24 }}>
-                    <TouchableOpacity
-                      activeOpacity={0.9}
-                      onPress={() => {
-                        Alert.alert("Routine", `${routine.name}\n${routine.description || ''}`);
-                      }}
-                    >
-                      <LinearGradient colors={['#4f46e5', '#4338ca']} style={{ padding: 20, borderRadius: 16, minHeight: 110 }}>
-                        <View style={{ flex: 1, marginRight: 12 }}>
-                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                            <Ionicons name="barbell" size={20} color="#fff" />
-                            <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}>{routine.name}</Text>
-                          </View>
-                          <Text style={{ fontSize: 13, color: '#e0e7ff', opacity: 0.9 }}>
-                            {routine.exercises.length} Exercises • {routine.exercises.reduce((acc: number, ex: any) => acc + (ex.sets || 0), 0)} Sets • {routine.estimatedDuration || '45'} min • {routine.estimatedCalories || '300'} kcal
-                          </Text>
-                          <Text style={{ fontSize: 12, color: '#c7d2fe', marginTop: 4, width: '85%' }} numberOfLines={1}>
-                            {routine.exercises.map((e: any) => e.name).join(', ')}
-                          </Text>
-                        </View>
+          <MoveInsights isPro={!!isPro} onUpgradePress={() => {
+             handleProFeature('Pro Insights', 'Upgrade to Pro to unlock advanced AI insights for your workouts.');
+          }} />
 
-                        {/* Delete Action - Bottom Right Absolute */}
-                        <TouchableOpacity
-                          style={{
-                            position: 'absolute',
-                            bottom: 16,
-                            right: 16,
-                            backgroundColor: 'rgba(255,255,255,0.1)',
-                            padding: 8,
-                            borderRadius: 20,
-                          }}
-                          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                          onPress={(e) => {
-                            e.stopPropagation();
-                            Alert.alert(
-                              "Delete Routine",
-                              "Are you sure you want to delete this routine?",
-                              [
-                                { text: "Cancel", style: "cancel" },
-                                {
-                                  text: "Delete",
-                                  style: "destructive",
-                                  onPress: () => deleteRoutine({ routineId: routine._id })
-                                }
-                              ]
-                            );
-                          }}
-                        >
-                          <Ionicons name="trash" size={16} color="#fca5a5" />
-                        </TouchableOpacity>
-                      </LinearGradient>
-                    </TouchableOpacity>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {/* Achievements */}
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Achievements</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Text style={{ fontSize: 12, color: '#64748b', fontWeight: '600' }}>
-                  {userAchievements?.length || 0}/{achievementDefinitions.length}
-                </Text>
-                <Ionicons name="trophy" size={24} color="#f59e0b" />
-              </View>
-            </View>
-
-            <View style={styles.achievementsGrid}>
-              {displayAchievements.map((achievement) => {
-                const isEarned = userAchievements?.some(a => a.badgeId === achievement.id);
-                const progress = isEarned ? 100 : getAchievementProgress(achievement);
-
-                return (
-                  <TouchableOpacity
-                    key={achievement.id}
-                    style={[
-                      styles.achievementCard,
-                      {
-                        backgroundColor: isEarned ? achievement.bgColor : '#f8fafc',
-                        borderColor: isEarned ? achievement.color : '#e2e8f0',
-                      }
-                    ]}
-                    activeOpacity={0.8}
-                  >
-                    <View style={styles.achievementHeader}>
-                      <View style={[
-                        styles.achievementIconContainer,
-                        {
-                          backgroundColor: isEarned ? achievement.color : '#e2e8f0',
-                          shadowColor: isEarned ? achievement.color : 'transparent',
-                          shadowOpacity: isEarned ? 0.3 : 0,
-                          shadowRadius: isEarned ? 8 : 0,
-                          elevation: isEarned ? 4 : 0
-                        }
-                      ]}>
-                        <Ionicons
-                          name={achievement.icon as any}
-                          size={18}
-                          color={isEarned ? "#ffffff" : "#94a3b8"}
-                        />
-                      </View>
-                      {isEarned && (
-                        <View style={styles.achievementBadge}>
-                          <Ionicons name="checkmark" size={10} color="#ffffff" />
-                        </View>
-                      )}
-                    </View>
-
-                    <View style={styles.achievementContent}>
-                      <Text style={[
-                        styles.achievementCardTitle,
-                        { color: isEarned ? '#1e293b' : '#64748b' }
-                      ]}>
-                        {achievement.title}
-                      </Text>
-                      <Text style={[
-                        styles.achievementCardDesc,
-                        { color: isEarned ? '#64748b' : '#94a3b8' }
-                      ]}>
-                        {achievement.description}
-                      </Text>
-
-                      {!isEarned && progress > 0 && (
-                        <View style={styles.progressContainer}>
-                          <View style={[
-                            styles.progressBar,
-                            { width: `${Math.min(progress, 100)}%` }
-                          ]} />
-                        </View>
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </View>
         </View>{/* end tablet maxWidth wrapper */}
       </ScrollView>
 
-      {/* Workout Modal */}
+      <ActiveWorkoutModal 
+        visible={showActiveWorkout}
+        exercises={displayWorkouts[selectedDayIndex]?.exercises.map((ex: any) => ({
+          id: ex.id,
+          name: ex.name,
+          thumbnailUrl: ex.thumbnailUrl,
+          sets: Array.from({ length: typeof ex.sets === 'number' ? ex.sets : 3 }).map((_, i) => ({
+             id: `${ex.id}-set-${i}`,
+             weight: '',
+             reps: typeof ex.reps === 'string' ? ex.reps.split('-')[0] : String(ex.reps),
+             completed: false
+          }))
+        })) || []}
+        onClose={() => setShowActiveWorkout(false)}
+        onFinishWorkout={async (time, vol, sets, ex) => {
+           try {
+             if (convexUser) {
+               await logExerciseEntry({
+                 userId: convexUser._id,
+                 exerciseName: `Day ${selectedDayIndex + 1}: ${displayWorkouts[selectedDayIndex]?.dayTitle || 'Workout'}`,
+                 exerciseType: 'strength',
+                 duration: Math.max(1, Math.floor(time / 60)),
+                 met: 6.0,
+                 date: currentDate,
+               });
+             }
+           } catch (e) {
+             console.error("Failed to log entry", e);
+           }
+           setShowActiveWorkout(false);
+           setCompletedWorkoutsThisWeek(prev => Math.min(prev + 1, totalWorkoutsPerWeek * 4));
+           Alert.alert("Workout Completed!", `Great job! Your activity was saved.`);
+        }}
+        onAddExercise={() => {
+           if (!isPro) return handleProFeature('Add Exercise', 'Upgrade to Pro to add exercises mid-workout.');
+           Alert.alert('Customize Active Workout', 'Exercise picker opened for Pro users.');
+        }}
+        onDeleteExercise={() => {
+           if (!isPro) return handleProFeature('Remove Exercise', 'Upgrade to Pro to remove exercises mid-workout.');
+           Alert.alert('Exercise Skipped', 'Active run updated successfully.');
+        }}
+      />
+      
+      <WorkoutDetailModal 
+        visible={showWorkoutDetail}
+        initialTab={selectedDayIndex + 1}
+        routineDays={displayWorkouts as any}
+        isPreviewMode={workoutDetailMode === 'start'}
+        onStartActiveWorkout={(idx) => {
+          setSelectedDayIndex(idx);
+          setShowWorkoutDetail(false);
+          setShowActiveWorkout(true);
+        }}
+        onClose={() => setShowWorkoutDetail(false)}
+        onAddExercise={() => {
+           if (!isPro) return handleProFeature('Add Exercise', 'Upgrade to Pro to add exercises to your plan.');
+           Alert.alert('Customize Plan', 'Exercise builder opened for Pro users.');
+        }}
+        onDeleteExercise={(id) => {
+           if (!isPro) return handleProFeature('Remove Exercise', 'Upgrade to Pro to customize your routine.');
+           Alert.alert('Exercise Removed', 'Pro plan updated successfully.');
+        }}
+        onExercisePress={(ex) => {
+          setSelectedExerciseForDetail({
+            _id: ex.id,
+            name: ex.name,
+            category: ex.primaryMuscle,
+            type: 'strength',
+            muscleGroups: [ex.primaryMuscle],
+            thumbnailUrl: ex.thumbnailUrl,
+            fromRoutine: true
+          } as any);
+          setShowExerciseDetail(true);
+        }}
+      />
+
+      <ExerciseSearchModal 
+        visible={showExerciseSearch}
+        searchResults={searchResults as any}
+        loading={searchLoading}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onExerciseSelect={(ex) => {
+           setSelectedExerciseForDetail(ex);
+           if (exerciseSearchTarget === 'log') {
+             setShowSingleExerciseLog(true);
+           } else {
+             setShowExerciseDetail(true);
+           }
+        }}
+        onClose={() => setShowExerciseSearch(false)}
+      />
+
+      <SingleExerciseLogModal
+        visible={showSingleExerciseLog}
+        exercise={selectedExerciseForDetail ? {
+          id: selectedExerciseForDetail._id || selectedExerciseForDetail.id,
+          name: typeof selectedExerciseForDetail.name === 'object' ? selectedExerciseForDetail.name.en : selectedExerciseForDetail.name,
+          thumbnailUrl: selectedExerciseForDetail.thumbnailUrl,
+        } : null}
+        onClose={() => setShowSingleExerciseLog(false)}
+        onSave={async (exId, data) => {
+          setShowSingleExerciseLog(false);
+          try {
+             let totalWeight = 0;
+             let totalReps = 0;
+             if (data.sets) {
+                totalWeight = data.sets.reduce((acc, s) => acc + (parseFloat(s.weight)||0), 0);
+                totalReps = data.sets.reduce((acc, s) => acc + (parseInt(s.reps)||0), 0);
+             }
+             
+             // Assuming logExerciseEntry is defined elsewhere and handles Convex mutation
+             if (!convexUser?._id) {
+               Alert.alert("Error", "User profile not loaded. Cannot log workout.");
+               return;
+             }
+
+             const etype = exerciseSearchTarget === 'log' ? 'strength' 
+                          : ((selectedExercise?.type === 'yoga' ? 'yoga' : (selectedExercise?.type === 'cardio' ? 'cardio' : 'strength')) as 'strength'|'cardio'|'yoga'|'hiit');
+
+             const eName = typeof selectedExercise?.name === 'string' 
+                            ? selectedExercise.name 
+                            : (selectedExercise?.name as any)?.en || 'Manual Workout';
+
+             await logExerciseEntry({
+               userId: convexUser._id,
+               exerciseName: eName as string,
+               exerciseType: etype,
+               duration: data.duration ?? 30, // Default 30 min entry
+               met: selectedExercise?.caloriesPerMinute ? selectedExercise.caloriesPerMinute / 1.5 : 5,
+               sets: data.sets?.length || 0,
+               reps: totalReps,
+               weight: totalWeight,
+               date: new Date().toISOString().split('T')[0]
+             });
+             Alert.alert("Workout Logged", "Your exercise was successfully saved!");
+          } catch(e) {
+             console.error("Failed to log entry", e);
+             Alert.alert("Error", "Could not log exercise");
+          }
+        }}
+      />
+
+      <ExerciseDetailModal 
+        visible={showExerciseDetail}
+        exercise={selectedExerciseForDetail}
+        isPro={selectedExerciseForDetail?.fromRoutine || false}
+        onClose={() => setShowExerciseDetail(false)}
+        onUpgradePress={() => {}}
+      />
       <Modal
         visible={showWorkoutModal}
         animationType="slide"
@@ -1197,13 +1235,8 @@ export default function MoveScreen() {
             </TouchableOpacity>
           </View>
 
-          <ScrollView
-            style={styles.modalScroll}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: getBottomContentPadding(insets.bottom) }}
-            keyboardShouldPersistTaps="handled"
-          >
-            {showCustomExercise ? (
+          <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+            {showCustomExercise && (
               <>
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>Exercise Name</Text>
@@ -1215,22 +1248,17 @@ export default function MoveScreen() {
                     placeholderTextColor="#94a3b8"
                   />
                 </View>
-
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>Description (Optional)</Text>
                   <TextInput
                     style={[styles.input, styles.textArea]}
                     placeholder="Description (Optional)"
                     value={customExerciseForm.description}
-                    onChangeText={(text) =>
-                      setCustomExerciseForm({ ...customExerciseForm, description: text })
-                    }
+                    onChangeText={(text) => setCustomExerciseForm({ ...customExerciseForm, description: text })}
                     placeholderTextColor="#94a3b8"
                     multiline
-                    numberOfLines={3}
                   />
                 </View>
-
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>Duration (minutes)</Text>
                   <TextInput
@@ -1242,7 +1270,6 @@ export default function MoveScreen() {
                     keyboardType="numeric"
                   />
                 </View>
-
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>Calories Burned</Text>
                   <TextInput
@@ -1254,7 +1281,6 @@ export default function MoveScreen() {
                     keyboardType="numeric"
                   />
                 </View>
-
                 <View style={styles.modalButtons}>
                   <TouchableOpacity
                     style={styles.modalButtonSecondary}
@@ -1262,147 +1288,16 @@ export default function MoveScreen() {
                       setShowCustomExercise(false);
                       setShowWorkoutModal(false);
                     }}
-                    activeOpacity={0.7}
                   >
                     <Text style={styles.modalButtonSecondaryText}>Cancel</Text>
                   </TouchableOpacity>
-
                   <TouchableOpacity
                     style={[
                       styles.modalButton,
-                      (!customExerciseForm.name || !customExerciseForm.duration || !customExerciseForm.calories) &&
-                      styles.modalButtonDisabled,
+                      (!customExerciseForm.name || !customExerciseForm.duration || !customExerciseForm.calories) && styles.modalButtonDisabled,
                     ]}
                     onPress={logCustomExercise}
                     disabled={!customExerciseForm.name || !customExerciseForm.duration || !customExerciseForm.calories}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.modalButtonText}>Log Exercise</Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            ) : (
-              <>
-                <TouchableOpacity
-                  style={styles.searchExerciseButton}
-                  onPress={() => setShowExerciseSearch(true)}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons name="search" size={20} color="#64748b" />
-                  <Text style={styles.searchExerciseButtonText}>Search for an exercise...</Text>
-                </TouchableOpacity>
-
-                {selectedExercise ? (
-                  <View style={styles.selectedExerciseCard}>
-                    <Text style={styles.selectedExerciseName}>
-                      {typeof selectedExercise.name === 'object' ? selectedExercise.name.en : selectedExercise.name}
-                    </Text>
-                    <Text style={styles.selectedExerciseCategory}>
-                      {selectedExercise.category} • {selectedExercise.type}
-                    </Text>
-
-                    <View style={styles.inputGroup}>
-                      <Text style={styles.inputLabel}>Duration (minutes)</Text>
-                      <TextInput
-                        style={styles.input}
-                        placeholder="Duration (minutes)"
-                        value={workoutForm.duration}
-                        onChangeText={(text) => setWorkoutForm({ ...workoutForm, duration: text })}
-                        placeholderTextColor="#94a3b8"
-                        keyboardType="numeric"
-                      />
-                    </View>
-
-                    {selectedExercise.type === 'strength' ? (
-                      <>
-                        <View style={styles.inputRow}>
-                          <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
-                            <Text style={styles.inputLabel}>Sets</Text>
-                            <TextInput
-                              style={styles.input}
-                              placeholder="Sets"
-                              value={workoutForm.sets}
-                              onChangeText={(text) => setWorkoutForm({ ...workoutForm, sets: text })}
-                              placeholderTextColor="#94a3b8"
-                              keyboardType="numeric"
-                            />
-                          </View>
-                          <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-                            <Text style={styles.inputLabel}>Reps</Text>
-                            <TextInput
-                              style={styles.input}
-                              placeholder="Reps"
-                              value={workoutForm.reps}
-                              onChangeText={(text) => setWorkoutForm({ ...workoutForm, reps: text })}
-                              placeholderTextColor="#94a3b8"
-                              keyboardType="numeric"
-                            />
-                          </View>
-                        </View>
-
-                        <View style={styles.inputGroup}>
-                          <Text style={styles.inputLabel}>Weight (kg)</Text>
-                          <TextInput
-                            style={styles.input}
-                            placeholder="Weight (kg)"
-                            value={workoutForm.weight}
-                            onChangeText={(text) => setWorkoutForm({ ...workoutForm, weight: text })}
-                            placeholderTextColor="#94a3b8"
-                            keyboardType="numeric"
-                          />
-                        </View>
-                      </>
-                    ) : null}
-
-                    <View style={styles.inputGroup}>
-                      <Text style={styles.inputLabel}>Calories Burned (Optional)</Text>
-                      <TextInput
-                        style={styles.input}
-                        placeholder="Calories Burned (Optional)"
-                        value={workoutForm.calories}
-                        onChangeText={(text) => setWorkoutForm({ ...workoutForm, calories: text })}
-                        placeholderTextColor="#94a3b8"
-                        keyboardType="numeric"
-                      />
-                    </View>
-
-                    {workoutForm.duration ? (
-                      <Text style={styles.estimatedCalories}>
-                        Estimated: {' '}
-                        {calculateCalories(
-                          selectedExercise,
-                          Math.max(0, Math.floor(safeNumber(workoutForm.duration, 0))),
-                          workoutForm.sets ? Math.floor(safeNumber(workoutForm.sets, 0)) : undefined,
-                          workoutForm.reps ? Math.floor(safeNumber(workoutForm.reps, 0)) : undefined,
-                          workoutForm.weight ? safeNumber(workoutForm.weight, 0) : undefined
-                        )}
-                      </Text>
-                    ) : null}
-                  </View>
-                ) : (
-                  <View style={styles.emptyState}>
-                    <View style={styles.emptyIconContainer}>
-                      <Ionicons name="search" size={32} color="#94a3b8" />
-                    </View>
-                    <Text style={styles.emptyStateText}>Pick an exercise</Text>
-                    <Text style={styles.emptyStateSubtext}>Tap the search bar to find an exercise</Text>
-                  </View>
-                )}
-
-                <View style={styles.modalButtons}>
-                  <TouchableOpacity
-                    style={styles.modalButtonSecondary}
-                    onPress={() => setShowWorkoutModal(false)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.modalButtonSecondaryText}>Cancel</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[styles.modalButton, (!selectedExercise || !workoutForm.duration) && styles.modalButtonDisabled]}
-                    onPress={logExercise}
-                    disabled={!selectedExercise || !workoutForm.duration}
-                    activeOpacity={0.7}
                   >
                     <Text style={styles.modalButtonText}>Log Exercise</Text>
                   </TouchableOpacity>
@@ -1411,117 +1306,9 @@ export default function MoveScreen() {
             )}
           </ScrollView>
         </SafeAreaView>
-      </Modal >
+      </Modal>
 
-      {/* Exercise Search Modal */}
-      < Modal
-        visible={showExerciseSearch}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setShowExerciseSearch(false)
-        }
-      >
-        <SafeAreaView style={styles.modalContent} edges={['top', 'bottom']}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Search Exercise</Text>
-            <TouchableOpacity onPress={() => setShowExerciseSearch(false)} activeOpacity={0.7}>
-              <Ionicons name="close" size={24} color="#1e293b" />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.searchContainer}>
-            <View style={styles.searchInputContainer}>
-              <Ionicons name="search" size={20} color="#94a3b8" style={styles.searchIcon} />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Search..."
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholderTextColor="#94a3b8"
-                autoFocus
-              />
-            </View>
-
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
-              {workoutCategories.map((category) => (
-                <TouchableOpacity
-                  key={category}
-                  style={[styles.categoryChip, selectedCategory === category && styles.categoryChipActive]}
-                  onPress={() => setSelectedCategory(category)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[styles.categoryChipText, selectedCategory === category && styles.categoryChipTextActive]}>
-                    {category}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-
-            <ScrollView style={styles.searchResults} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-              {searchLoading ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color="#2563eb" />
-                  <Text style={styles.loadingText}>Searching...</Text>
-                </View>
-              ) : (
-                <>
-                  {/* Default list or Search Results */}
-                  {searchResults.slice(0, 50).map((exercise: ExerciseLibraryItem) => (
-                    <TouchableOpacity
-                      key={exercise._id}
-                      style={styles.exerciseResultItem}
-                      onPress={() => {
-                        handleExerciseSelect(exercise);
-                        setShowExerciseSearch(false);
-                        setShowWorkoutModal(true);
-                        setShowCustomExercise(false);
-                      }}
-                      activeOpacity={0.7}
-                    >
-                      <View style={styles.exerciseResultInfo}>
-                        <Text style={styles.exerciseResultName}>
-                          {typeof exercise.name === 'object'
-                            ? (exercise.name as any)['en'] || 'Exercise'
-                            : exercise.name}
-                        </Text>
-                        <Text style={styles.exerciseResultCategory}>
-                          {exercise.category} • {exercise.type} • {exercise.met || 6} MET
-                        </Text>
-                        <Text style={styles.exerciseResultMuscles}>
-                          {exercise.muscleGroups?.join(', ') || 'Full body'}
-                        </Text>
-                      </View>
-                      <View style={styles.exerciseResultAdd}>
-                        <Ionicons name="add" size={16} color="#2563eb" />
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-
-                  {!searchLoading && searchQuery.trim() && searchResults.length === 0 ? (
-                    <View style={styles.noResultsContainer}>
-                      <Text style={styles.noResultsText}>No results for "{searchQuery.trim()}"</Text>
-                      <TouchableOpacity
-                        style={[styles.modalButton, { marginTop: 12 }]}
-                        onPress={() => {
-                          setShowExerciseSearch(false);
-                          setShowWorkoutModal(true);
-                          setShowCustomExercise(true);
-                        }}
-                        activeOpacity={0.8}
-                      >
-                        <Text style={styles.modalButtonText}>Create Custom Exercise</Text>
-                      </TouchableOpacity>
-                    </View>
-                  ) : null}
-                </>
-              )}
-            </ScrollView>
-          </View>
-        </SafeAreaView>
-      </Modal >
-
-      {/* Steps Modal */}
-      < Modal
+      <Modal
         visible={showStepsModal}
         animationType="slide"
         presentationStyle="pageSheet"
@@ -1534,10 +1321,7 @@ export default function MoveScreen() {
               <Ionicons name="close" size={24} color="#1e293b" />
             </TouchableOpacity>
           </View>
-
-          {/* Integrations disabled: manual entry only */}
-
-          <View style={[styles.modalScroll, { paddingBottom: getBottomContentPadding(insets.bottom) }]}>
+          <View style={[styles.modalScroll]}>
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Enter steps count</Text>
               <TextInput
@@ -1549,41 +1333,23 @@ export default function MoveScreen() {
                 keyboardType="numeric"
               />
             </View>
-
-            {stepsInput ? (
-              <Text style={styles.estimatedCalories}>
-                Estimated: {Math.round(Math.max(0, safeNumber(stepsInput, 0)) * 0.04)}
-              </Text>
-            ) : null}
-
             <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={styles.modalButtonSecondary}
-                onPress={() => setShowStepsModal(false)}
-                activeOpacity={0.7}
-              >
+              <TouchableOpacity style={styles.modalButtonSecondary} onPress={() => setShowStepsModal(false)}>
                 <Text style={styles.modalButtonSecondaryText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, !stepsInput && styles.modalButtonDisabled]}
                 onPress={addSteps}
                 disabled={!stepsInput}
-                activeOpacity={0.7}
               >
                 <Text style={styles.modalButtonText}>Add Steps</Text>
               </TouchableOpacity>
             </View>
-
-            {/* Health imports disabled for Build 18 submission (manual entry only). */}
-
           </View>
         </SafeAreaView>
-      </Modal >
-      <AIRoutineModal
-        visible={showRoutineModal}
-        onClose={() => setShowRoutineModal(false)}
-      />
-    </SafeAreaView >
+      </Modal>
+
+    </SafeAreaView>
   );
 }
 

@@ -180,7 +180,9 @@ function InitialLayout() {
         <Text
           style={{ color: '#2563eb', fontWeight: '600', marginTop: 8 }}
           onPress={() => {
-            router.replace('/');
+            // Avoid replacing to the root `index` route name while we're still inside nested navigators.
+            // This ensures the action is always handled.
+            router.replace(isSignedIn ? '/(tabs)' : '/login');
             setIsTimedOut(false);
           }}
         >
@@ -191,8 +193,16 @@ function InitialLayout() {
   }
 
   if (!isLoaded || showAuthLoading || (isSignedIn && !convexAuthenticated && !convexUser) || showConvexUserLoading) {
-    // Instead of null, return a View that matches your splash background color perfectly
-    return <View style={{ flex: 1, backgroundColor: '#ffffff' }} />;
+    // Show an explicit loading state so "white screen" is never ambiguous.
+    const message =
+      !isLoaded
+        ? 'Loading…'
+        : showAuthLoading
+          ? 'Syncing account…'
+          : showConvexUserLoading
+            ? 'Syncing profile…'
+            : 'Syncing…';
+    return <LoadingScreen message={message} />;
   }
 
   return (

@@ -162,6 +162,7 @@ export default function WellnessScreen() {
           <TouchableOpacity style={[styles.hubCard, { backgroundColor: '#4CAF50' }]} onPress={() => setShowMindWorld(true)}><Ionicons name="planet" size={24} color="#fff" /><Text style={styles.hubText}>Mind World</Text></TouchableOpacity>
           <TouchableOpacity style={[styles.hubCard, { backgroundColor: '#f59e0b' }]} onPress={() => setShowLifeGoals(true)}><Ionicons name="flag" size={24} color="#fff" /><Text style={styles.hubText}>Life Goals</Text></TouchableOpacity>
           <TouchableOpacity style={[styles.hubCard, { backgroundColor: '#3b82f6' }]} onPress={() => setShowUniversity(true)}><Ionicons name="school" size={24} color="#fff" /><Text style={styles.hubText}>University</Text></TouchableOpacity>
+          <TouchableOpacity style={[styles.hubCard, { backgroundColor: '#f43f5e' }]} onPress={() => router.push('/personalized-plan')}><Ionicons name="calendar" size={24} color="#fff" /><Text style={styles.hubText}>AI Plan</Text></TouchableOpacity>
         </View>
       </ScrollView>
 

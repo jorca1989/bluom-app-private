@@ -15,7 +15,8 @@ export const saveGeneratedPlans = internalMutation({
       protein: v.number(),
       carbs: v.number(),
       fat: v.number(),
-      mealTemplates: v.array(v.any()), // flexible for now
+      weeklyMeals: v.optional(v.array(v.any())),
+      mealTemplates: v.optional(v.array(v.any())),
     }),
     fitnessPlan: v.object({
       workoutSplit: v.string(),
@@ -51,6 +52,19 @@ export const saveGeneratedPlans = internalMutation({
       .collect();
     for (const p of existingWellness) await ctx.db.patch(p._id, { isActive: false });
 
+    let expandedMealTemplates: any[] = [];
+    if (args.nutritionPlan.weeklyMeals && args.nutritionPlan.weeklyMeals.length > 0) {
+      for (let i = 1; i <= 30; i++) {
+        const weekDay = ((i - 1) % args.nutritionPlan.weeklyMeals.length) + 1;
+        const dayData = args.nutritionPlan.weeklyMeals.find((d: any) => d.day === weekDay) || args.nutritionPlan.weeklyMeals[0];
+        expandedMealTemplates.push({ day: i, meals: dayData.meals || [] });
+      }
+    } else if (args.nutritionPlan.mealTemplates) {
+      for (let i = 1; i <= 30; i++) {
+        expandedMealTemplates.push({ day: i, meals: args.nutritionPlan.mealTemplates });
+      }
+    }
+
     // Insert New Plans
     const nutritionPlanId = await ctx.db.insert("nutritionPlans", {
       userId: args.userId,
@@ -59,7 +73,7 @@ export const saveGeneratedPlans = internalMutation({
       proteinTarget: args.nutritionPlan.protein,
       carbsTarget: args.nutritionPlan.carbs,
       fatTarget: args.nutritionPlan.fat,
-      mealTemplates: args.nutritionPlan.mealTemplates,
+      mealTemplates: expandedMealTemplates,
       isActive: true,
       createdAt: Date.now(),
     });
@@ -139,12 +153,10 @@ export const generateAllPlans = action({
     
     1. NUTRITION PLAN:
        - Calculate approx calories/macros (TDEE + goal adjustment).
-       - Generate EXACTLY ${user.mealsPerDay || 4} meal templates.
-       - If 3 meals: Breakfast, Lunch, Dinner.
-       - If 4 meals: Breakfast, Lunch, Dinner, Snack.
-       - If 5 meals: Breakfast, Mid-Morning Snack, Lunch, Afternoon Snack, Dinner.
-       - If 6+: Breakfast, Mid-Morning Snack, Lunch, Afternoon Snack, Dinner, Evening Snack.
-       - Each template MUST include: mealType (string), calories (number), protein (number), carbs (number), fat (number), suggestions (array of 3-5 specific food items, not generic categories).
+       - Generate EXACTLY 7 days of meals (a weekly template).
+       - Return an array called 'weeklyMeals' containing EXACTLY 7 objects.
+       - Each object represents a day: { "day": number (1-7), "meals": array of EXACTLY ${user.mealsPerDay || 4} meals }.
+       - Each meal within 'meals' MUST include: mealType (string), calories (number), protein (number), carbs (number), fat (number), suggestions (array of 3-5 specific food items).
        - Suggestions should be real, specific foods like "3 scrambled eggs with spinach", "grilled chicken breast 200g with sweet potato".
     
     2. FITNESS PLAN:
@@ -166,7 +178,9 @@ export const generateAllPlans = action({
     {
       "nutrition": {
         "calories": 2500, "protein": 180, "carbs": 250, "fat": 80,
-        "mealTemplates": [ ... ]
+        "weeklyMeals": [ 
+           { "day": 1, "meals": [ ... ] }, ... 7 days ...
+        ]
       },
       "fitness": {
         "workoutSplit": "Full Body", "daysPerWeek": 3,
@@ -233,10 +247,15 @@ function createFallbackData(user: any) {
       protein: user.dailyProtein || 150,
       carbs: user.dailyCarbs || 200,
       fat: user.dailyFat || 70,
-      mealTemplates: [
-        { mealType: "Breakfast", calories: 500, protein: 30, carbs: 50, fat: 20, suggestions: ["Eggs and oatmeal"] },
-        { mealType: "Lunch", calories: 700, protein: 40, carbs: 70, fat: 25, suggestions: ["Chicken and rice"] },
-        { mealType: "Dinner", calories: 800, protein: 50, carbs: 80, fat: 25, suggestions: ["Salmon and sweet potato"] }
+      weeklyMeals: [
+        {
+          day: 1,
+          meals: [
+            { mealType: "Breakfast", calories: 500, protein: 30, carbs: 50, fat: 20, suggestions: ["Eggs and oatmeal"] },
+            { mealType: "Lunch", calories: 700, protein: 40, carbs: 70, fat: 25, suggestions: ["Chicken and rice"] },
+            { mealType: "Dinner", calories: 800, protein: 50, carbs: 80, fat: 25, suggestions: ["Salmon and sweet potato"] }
+          ]
+        }
       ]
     },
     fitness: {
@@ -311,4 +330,89 @@ export const getActivePlans = query({
       wellnessPlan: wellnessPlan ?? null,
     };
   },
+});
+
+/**
+ * REGENERATE SPECIFIC MEAL
+ * Generates a replacement for a specific meal in the 30-day template.
+ */
+export const regenerateSpecificMeal = action({
+  args: {
+    planId: v.id("nutritionPlans"),
+    userId: v.id("users"),
+    dayIndex: v.number(),
+    mealIndex: v.number(),
+    currentMealType: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.runQuery(internal.users.internalGetUserById, { userId: args.userId });
+    if (!user) throw new Error("User not found");
+
+    const systemPrompt = `
+    You are an expert AI Health Coach. 
+    Generate a SINGLE replacement meal for a ${args.currentMealType} for this user.
+    
+    USER PROFILE:
+    - Age: ${user.age}, Weight: ${user.weight}kg, Goal: ${user.fitnessGoal}
+    - Diet: ${user.nutritionApproach}
+    - Allergies/Avoid: ${JSON.stringify((user as any).healthConditions || [])}
+    
+    REQUIREMENTS:
+    - Provide exactly one meal object.
+    - MUST include: 'mealType' (should be "${args.currentMealType}"), 'calories', 'protein', 'carbs', 'fat', and 'suggestions' (array of 3-5 specific food items).
+    - Output ONLY valid JSON containing the meal object. Example:
+      { "mealType": "${args.currentMealType}", "calories": 450, "protein": 35, "carbs": 40, "fat": 15, "suggestions": ["1 cup Greek yogurt", "Handful of almonds"] }
+    `;
+
+    try {
+      const result = await generateContentWithFallback([{ text: systemPrompt }]);
+      const text = result.response.text();
+      let newMeal = safeJsonParse<any>(text);
+      
+      if (!newMeal) {
+        const start = text.indexOf("{");
+        const end = text.lastIndexOf("}");
+        if (start >= 0 && end > start) {
+          newMeal = safeJsonParse(text.slice(start, end + 1));
+        }
+      }
+
+      if (!newMeal || !newMeal.calories) {
+        throw new Error("Invalid format from AI");
+      }
+
+      // We need an internal mutation to update the specific meal
+      await ctx.runMutation(internal.plans.updateSpecificMeal, {
+        planId: args.planId,
+        dayIndex: args.dayIndex,
+        mealIndex: args.mealIndex,
+        newMeal,
+      });
+
+      return { success: true };
+
+    } catch (err: any) {
+      console.error("Meal regeneration failed", err);
+      throw new Error("Failed to regenerate meal");
+    }
+  }
+});
+
+export const updateSpecificMeal = internalMutation({
+  args: {
+    planId: v.id("nutritionPlans"),
+    dayIndex: v.number(),
+    mealIndex: v.number(),
+    newMeal: v.any(),
+  },
+  handler: async (ctx, args) => {
+    const plan = await ctx.db.get(args.planId);
+    if (!plan || !plan.mealTemplates) return;
+
+    let templates = [...plan.mealTemplates];
+    if (templates[args.dayIndex] && templates[args.dayIndex].meals) {
+      templates[args.dayIndex].meals[args.mealIndex] = args.newMeal;
+      await ctx.db.patch(args.planId, { mealTemplates: templates });
+    }
+  }
 });

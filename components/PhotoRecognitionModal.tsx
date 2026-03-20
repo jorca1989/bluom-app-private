@@ -1,7 +1,8 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, ActivityIndicator, Platform, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { requireOptionalNativeModule } from 'expo-modules-core';
 import { useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
@@ -14,33 +15,27 @@ type RecognizedFood = {
   fat: number;
 };
 
-export default function PhotoRecognitionModal(props: {
+interface PhotoRecognitionModalProps {
   visible: boolean;
   onClose: () => void;
   onRecognized: (item: RecognizedFood) => void;
   meal: string;
-  /**
-   * Optional: pass base64 + mimeType if the caller already captured a photo.
-   * This keeps the UI component compatible while enabling Gemini multimodal input.
-   */
-  imageBase64?: string;
-  mimeType?: string; // e.g. "image/jpeg"
-}) {
-  const { visible, onClose, onRecognized, meal, imageBase64, mimeType } = props;
+}
+
+export default function PhotoRecognitionModal({ visible, onClose, onRecognized, meal }: PhotoRecognitionModalProps) {
   const [loading, setLoading] = useState(false);
   const [recognizeError, setRecognizeError] = useState<string | null>(null);
-  const insets = useSafeAreaInsets();
-  const cameraRef = useRef<CameraView | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
+  const [cameraReady, setCameraReady] = useState(false);
+  
+  const cameraRef = React.useRef<CameraView | null>(null);
+  const recognizeFood = useAction(api.ai.recognizeFoodFromImage);
+
   const [capturedBase64, setCapturedBase64] = useState<string | null>(null);
   const [capturedMimeType, setCapturedMimeType] = useState<string | null>(null);
   const [captureError, setCaptureError] = useState<string | null>(null);
 
-  const recognizeFood = useAction(api.ai.recognizeFoodFromImage);
-
-  const effectiveBase64 = imageBase64 ?? capturedBase64 ?? undefined;
-  const effectiveMimeType = mimeType ?? capturedMimeType ?? undefined;
-  const canRecognize = useMemo(() => !!effectiveBase64 && !!effectiveMimeType, [effectiveBase64, effectiveMimeType]);
+  const canRecognize = !!capturedBase64 && !!capturedMimeType;
 
   function resetCapture() {
     setCapturedBase64(null);
@@ -48,6 +43,11 @@ export default function PhotoRecognitionModal(props: {
     setCaptureError(null);
     setRecognizeError(null);
   }
+
+  const handleClose = () => {
+    resetCapture();
+    onClose();
+  };
 
   async function handleTakePhoto() {
     setCaptureError(null);
@@ -68,7 +68,6 @@ export default function PhotoRecognitionModal(props: {
         return;
       }
       setCapturedBase64(photo.base64);
-      // Expo Camera returns JPEG by default on native
       setCapturedMimeType('image/jpeg');
     } catch (e: any) {
       setCaptureError(e?.message ? String(e.message) : 'Failed to take photo.');
@@ -79,7 +78,6 @@ export default function PhotoRecognitionModal(props: {
     setCaptureError(null);
     setRecognizeError(null);
     try {
-      // Avoid redbox/crash if the currently installed build doesn't include the native module yet.
       const native = requireOptionalNativeModule('ExponentImagePicker');
       if (!native) {
         Alert.alert(
@@ -90,13 +88,6 @@ export default function PhotoRecognitionModal(props: {
       }
 
       const ImagePicker = await import('expo-image-picker');
-      if (typeof ImagePicker.launchImageLibraryAsync !== 'function') {
-        Alert.alert(
-          'Build Required',
-          'Gallery upload requires a new native build. Please rebuild and try again.'
-        );
-        return;
-      }
       const res = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         base64: true,
@@ -109,11 +100,9 @@ export default function PhotoRecognitionModal(props: {
         return;
       }
       setCapturedBase64(asset.base64);
-      // Default to jpeg if unknown
       setCapturedMimeType(asset.mimeType ?? 'image/jpeg');
     } catch (e: any) {
       const msg = e?.message ? String(e.message) : 'Failed to pick image.';
-      // Keep errors user-friendly; avoid showing internal native-module text.
       setCaptureError(msg.includes('ExponentImagePicker') ? 'Gallery upload requires a new native build.' : msg);
     }
   }
@@ -124,8 +113,8 @@ export default function PhotoRecognitionModal(props: {
     setRecognizeError(null);
     try {
       const result = await recognizeFood({
-        imageBase64: effectiveBase64!,
-        mimeType: effectiveMimeType!,
+        imageBase64: capturedBase64!,
+        mimeType: capturedMimeType!,
         platform: Platform.OS,
       });
       if (result?.status === 'maintenance') {
@@ -139,97 +128,92 @@ export default function PhotoRecognitionModal(props: {
         carbs: Number(result.carbs ?? 0),
         fat: Number(result.fat ?? 0),
       });
-      resetCapture();
-      onClose();
+      handleClose();
+    } catch (e) {
+      setRecognizeError('Failed to analyze food. Try again.');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <SafeAreaView style={styles.overlay} edges={['top', 'bottom']}>
-        <View style={[styles.card, { marginBottom: Math.max(insets.bottom, 12) }]}>
-          <Text style={styles.title}>Photo Recognition</Text>
-          <Text style={styles.subtitle}>Take a photo of your food and we&apos;ll estimate calories and macros.</Text>
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={handleClose}>
+      <SafeAreaView style={styles.overlay} edges={['bottom', 'top']}>
+        <View style={styles.card}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Photo AI Log</Text>
+            <TouchableOpacity onPress={handleClose} style={styles.closeBtn}>
+              <Ionicons name="close" size={24} color="#64748b" />
+            </TouchableOpacity>
+          </View>
+          
+          <Text style={styles.subtitle}>Take a photo of your food, and we'll automatically extract the macros and calories.</Text>
 
-          {/* Permission gate */}
           {permission && !permission.granted && (
             <View style={styles.permissionCard}>
-              <Text style={styles.permissionText}>Camera permission is required.</Text>
-              <TouchableOpacity style={styles.secondaryButton} onPress={requestPermission} activeOpacity={0.8}>
-                <Text style={styles.secondaryButtonText}>Grant Permission</Text>
+              <Ionicons name="camera-outline" size={32} color="#64748b" style={styles.permIcon}/>
+              <Text style={styles.permissionText}>Camera access is required to take photos</Text>
+              <TouchableOpacity style={styles.permButton} onPress={requestPermission}>
+                <Text style={styles.permButtonText}>Allow Camera Access</Text>
               </TouchableOpacity>
             </View>
           )}
 
-          {/* Camera / Capture */}
           {!canRecognize && (permission?.granted ?? true) && (
-            <View style={styles.cameraWrap}>
-              <CameraView
-                ref={(r) => {
-                  cameraRef.current = r;
-                }}
-                style={styles.camera}
-                facing="back"
-                active={visible && !canRecognize}
-              />
-              {!!captureError && <Text style={styles.errorText}>{captureError}</Text>}
-              <View style={styles.captureActionsRow}>
-                <TouchableOpacity style={styles.captureButton} onPress={handleTakePhoto} activeOpacity={0.85}>
-                  <Text style={styles.captureButtonText}>Take Photo</Text>
+            <View style={styles.cameraWrapper}>
+              <View style={styles.cameraViewWrap}>
+                 <CameraView
+                  ref={(r) => { cameraRef.current = r; }}
+                  style={styles.camera}
+                  facing="back"
+                  active={visible && !canRecognize}
+                  onCameraReady={() => setCameraReady(true)}
+                />
+                {!cameraReady && (
+                   <View style={styles.cameraLoading}>
+                      <ActivityIndicator size="small" color="#ffffff" />
+                   </View>
+                )}
+              </View>
+              {captureError && <Text style={styles.errorText}>{captureError}</Text>}
+              
+              <View style={styles.actionButtonsRow}>
+                <TouchableOpacity style={styles.primaryActionButton} onPress={handleTakePhoto} activeOpacity={0.8}>
+                   <Ionicons name="camera" size={20} color="#ffffff" />
+                   <Text style={styles.primaryActionText}>Take Photo</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.galleryLink} onPress={handlePickFromGallery} activeOpacity={0.85}>
-                  <Text style={styles.galleryLinkText}>Upload from Gallery</Text>
+                <TouchableOpacity style={styles.secondaryActionButton} onPress={handlePickFromGallery} activeOpacity={0.8}>
+                   <Ionicons name="images" size={20} color="#475569" />
+                   <Text style={styles.secondaryActionText}>Upload from Gallery</Text>
                 </TouchableOpacity>
               </View>
             </View>
           )}
 
-          {/* Captured state */}
           {canRecognize && (
-            <View style={styles.capturedRow}>
-              <Text style={styles.capturedText}>Photo captured.</Text>
-              {!imageBase64 && (
-                <TouchableOpacity style={styles.linkButton} onPress={resetCapture} activeOpacity={0.8}>
-                  <Text style={styles.linkButtonText}>Retake</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
+            <View style={styles.capturedView}>
+              <View style={styles.successBadge}>
+                 <Ionicons name="checkmark-circle" size={28} color="#10b981" />
+                 <Text style={styles.successText}>Photo Captured</Text>
+              </View>
+              
+              {recognizeError && <Text style={styles.errorText}>{recognizeError}</Text>}
 
-          {!!recognizeError && <Text style={styles.errorText}>{recognizeError}</Text>}
-
-          {loading && (
-            <View style={styles.loadingOverlay}>
-              <View style={styles.loadingBox}>
-                <ActivityIndicator size="large" color="#ffffff" />
-                <Text style={styles.loadingText}>Analyzing Food...</Text>
-                <Text style={styles.loadingSubText}>Estimating calories & macros</Text>
+              <View style={styles.actionButtonsRow}>
+                 <TouchableOpacity style={styles.secondaryActionButton} onPress={resetCapture} disabled={loading}>
+                   <Text style={styles.secondaryActionText}>Retake Photo</Text>
+                 </TouchableOpacity>
+                 <TouchableOpacity style={[styles.primaryActionButton, loading && styles.disabledButton]} onPress={handleRecognize} disabled={loading}>
+                   {loading ? <ActivityIndicator size="small" color="#ffffff"/> : (
+                     <>
+                        <Text style={styles.primaryActionText}>Analyze Food</Text>
+                        <Ionicons name="sparkles" size={18} color="#ffffff" />
+                     </>
+                   )}
+                 </TouchableOpacity>
               </View>
             </View>
           )}
-
-          <TouchableOpacity
-            style={[styles.button, (!canRecognize || loading) && styles.buttonDisabled]}
-            onPress={handleRecognize}
-            activeOpacity={0.8}
-            disabled={!canRecognize || loading}
-          >
-            <Text style={styles.buttonText}>Recognize Food</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.closeButton]}
-            onPress={() => {
-              resetCapture();
-              onClose();
-            }}
-            activeOpacity={0.8}
-            disabled={loading}
-          >
-            <Text style={[styles.buttonText, { color: '#64748b' }]}>Cancel</Text>
-          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </Modal>
@@ -239,174 +223,147 @@ export default function PhotoRecognitionModal(props: {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(15, 23, 42, 0.6)',
     justifyContent: 'center',
-    padding: 20,
+    padding: 16,
   },
   card: {
     backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: 24,
+    padding: 24,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 22,
+    fontWeight: 'bold',
     color: '#0f172a',
-    marginBottom: 8,
+  },
+  closeBtn: {
+    padding: 4,
+    backgroundColor: '#f1f5f9',
+    borderRadius: 20,
   },
   subtitle: {
     fontSize: 14,
-    color: '#475569',
-    marginBottom: 16,
-  },
-  cameraWrap: {
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 14,
-    overflow: 'hidden',
-    marginBottom: 14,
-    backgroundColor: '#0b1220',
-  },
-  camera: {
-    width: '100%',
-    height: 260,
-  },
-  captureButton: {
-    backgroundColor: '#f97316',
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderRadius: 12,
-    flex: 1,
-  },
-  captureActionsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    backgroundColor: '#ffffff',
-  },
-  captureButtonText: {
-    color: '#ffffff',
-    fontWeight: '700',
-    fontSize: 16,
-  },
-  galleryLink: {
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-    backgroundColor: '#f1f5f9',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  galleryLinkText: {
-    color: '#0f172a',
-    fontWeight: '800',
-    fontSize: 13,
+    color: '#64748b',
+    lineHeight: 20,
+    marginBottom: 24,
   },
   permissionCard: {
     backgroundColor: '#f8fafc',
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#e2e8f0',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 14,
+  },
+  permIcon: {
+    marginBottom: 12,
   },
   permissionText: {
-    color: '#0f172a',
-    marginBottom: 10,
-    fontSize: 14,
+    fontSize: 15,
+    color: '#475569',
+    textAlign: 'center',
+    marginBottom: 20,
   },
-  secondaryButton: {
+  permButton: {
     backgroundColor: '#0f172a',
-    paddingVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
   },
-  secondaryButtonText: {
+  permButtonText: {
     color: '#ffffff',
-    fontWeight: '700',
+    fontWeight: 'bold',
   },
-  capturedRow: {
-    flexDirection: 'row',
+  cameraWrapper: {
+    gap: 16,
+  },
+  cameraViewWrap: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: '#0f172a',
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
+  },
+  camera: {
+    width: '100%',
+    height: '100%',
+  },
+  cameraLoading: {
+    position: 'absolute',
+  },
+  actionButtonsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  primaryActionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#3b82f6',
+    paddingVertical: 14,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+  },
+  primaryActionText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  secondaryActionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#f1f5f9',
+    paddingVertical: 14,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+  },
+  secondaryActionText: {
+    color: '#475569',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  disabledButton: {
+     opacity: 0.7,
+  },
+  capturedView: {
+    gap: 20,
+  },
+  successBadge: {
     backgroundColor: '#f0fdf4',
     borderWidth: 1,
     borderColor: '#bbf7d0',
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-  },
-  capturedText: {
-    color: '#166534',
-    fontWeight: '700',
-  },
-  linkButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-  },
-  linkButtonText: {
-    color: '#2563eb',
-    fontWeight: '700',
-  },
-  errorText: {
-    color: '#dc2626',
-    paddingHorizontal: 12,
-    paddingTop: 10,
-    paddingBottom: 6,
-    backgroundColor: '#fff1f2',
-  },
-  button: {
-    backgroundColor: '#3B82F6',
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  buttonDisabled: {
-    backgroundColor: '#94a3b8',
-  },
-  closeButton: {
-    backgroundColor: '#f1f5f9',
-    marginTop: 10,
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontWeight: '700',
-    fontSize: 16,
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 16,
+    padding: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 16,
-    zIndex: 50,
+    gap: 8,
   },
-  loadingBox: {
-    backgroundColor: '#1e293b',
-    padding: 24,
-    borderRadius: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 8,
-  },
-  loadingText: {
-    color: '#ffffff',
-    fontSize: 18,
+  successText: {
+    color: '#166534',
     fontWeight: 'bold',
-    marginTop: 16,
+    fontSize: 16,
   },
-  loadingSubText: {
-    color: '#cbd5e1',
+  errorText: {
+    color: '#ef4444',
+    textAlign: 'center',
     fontSize: 14,
-    marginTop: 4,
   },
 });
-
-

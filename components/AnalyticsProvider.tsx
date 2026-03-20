@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
 import { PostHogProvider, usePostHog } from 'posthog-react-native';
 import { useUser } from '@clerk/clerk-expo';
-import { AppState } from 'react-native';
+import { AppState, LogBox } from 'react-native';
+
+// Silence harmless telemetry network errors in dev so they don't break the user experience
+LogBox.ignoreLogs(['Error while flushing PostHog', 'PostHogFetchNetworkError', 'Network error while fetching PostHog']);
 
 const apiKey = process.env.EXPO_PUBLIC_POSTHOG_API_KEY;
 const host = process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com';

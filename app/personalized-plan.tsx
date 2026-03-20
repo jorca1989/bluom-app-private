@@ -30,7 +30,7 @@ function daysUntilRotation(createdAt?: number): number {
   if (!createdAt) return 0;
   const elapsed = Date.now() - createdAt;
   const daysPassed = Math.floor(elapsed / (1000 * 60 * 60 * 24));
-  return Math.max(0, 7 - daysPassed);
+  return Math.max(0, 30 - daysPassed);
 }
 
 function ProOverlay({ onPress }: { onPress: () => void }) {
@@ -89,6 +89,12 @@ export default function PersonalizedPlanScreen() {
   const hasPlans = nutritionPlan || fitnessPlan || wellnessPlan;
   const rotationDays = daysUntilRotation(nutritionPlan?.createdAt ?? fitnessPlan?.createdAt);
 
+  const currentDayIndex = Math.max(0, 30 - rotationDays); 
+  let todayMeals = nutritionPlan?.mealTemplates || [];
+  if (todayMeals.length > 0 && todayMeals[0]?.day !== undefined) {
+    todayMeals = todayMeals[currentDayIndex % todayMeals.length]?.meals || [];
+  }
+
   // --- Fallback Data Generation ---
   const getBaselineDescription = (type: 'nutrition' | 'fitness') => {
     const goal = convexUser?.fitnessGoal || 'general_health';
@@ -131,7 +137,7 @@ export default function PersonalizedPlanScreen() {
         <LinearGradient colors={['#0f172a', '#1e293b']} style={styles.aiBanner}>
           <Text style={styles.aiBannerTitle}>🧬 Peak Performance Blueprint</Text>
           <Text style={styles.aiBannerSub}>
-            Your personalized nutrition, fitness & wellness prescription — rotates every 7 days based on your metabolic feedback.
+            Your personalized nutrition, fitness & wellness prescription — rotates every 30 days based on your metabolic feedback.
           </Text>
           {(!isFallback && hasPlans) && (
             <View style={styles.countdownRow}>
@@ -146,7 +152,7 @@ export default function PersonalizedPlanScreen() {
         </LinearGradient>
 
         {/* --- SHAZAM STATUS CARD (Show if Fallback/Maintenance) --- */}
-        {isFallback && !isLoading && (
+        {isFallback && !isLoading && isPro && (
           <View style={{ backgroundColor: '#f0f9ff', borderColor: '#bae6fd', borderWidth: 1, borderRadius: 16, padding: 16, marginBottom: 20, flexDirection: 'row', gap: 12 }}>
             <ActivityIndicator size="small" color="#0284c7" />
             <View style={{ flex: 1 }}>
@@ -172,7 +178,7 @@ export default function PersonalizedPlanScreen() {
               <Text style={styles.cardSub}>
                 {isLoading ? 'Loading...' :
                   isFallback ? `${Math.round(fallbackCalories)} kcal · Baseline Protocol` :
-                    nutritionPlan ? `${Math.round(nutritionPlan.calorieTarget)} kcal · ${nutritionPlan.mealTemplates?.length || 0} meals` :
+                    nutritionPlan ? `${Math.round(nutritionPlan.calorieTarget)} kcal · ${todayMeals.length || 0} meals today` :
                       'Generating...'}
               </Text>
             </View>
@@ -225,7 +231,7 @@ export default function PersonalizedPlanScreen() {
                       <MacroPill label="Carbs" value={`${nutritionPlan.carbsTarget}g`} color="#3b82f6" />
                       <MacroPill label="Fat" value={`${nutritionPlan.fatTarget}g`} color="#10b981" />
                     </View>
-                    {nutritionPlan.mealTemplates?.map((meal: any, i: number) => (
+                    {todayMeals.map((meal: any, i: number) => (
                       <View key={i} style={styles.mealCard}>
                         <View style={styles.mealHeader}>
                           <Text style={styles.mealType}>{mealEmoji(meal.mealType)} {meal.mealType}</Text>

@@ -127,12 +127,8 @@ export default ({ config }) => {
     const plugins = [...base.expo.plugins, ["expo-build-properties", buildProps]];
 
     return {
+        ...base.expo,
         ...config,
-        ...base,
-        expo: {
-            ...config?.expo,
-            ...base.expo,
-            plugins,
-        },
+        plugins,
     };
 };

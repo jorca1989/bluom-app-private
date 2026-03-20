@@ -1,10 +1,9 @@
-import { Tabs, useRouter } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TAB_BAR_HEIGHT } from '@/utils/layout';
 import { Home, Utensils, Dumbbell, Heart, User } from 'lucide-react-native';
 import { SoundEffect, triggerSound } from '@/utils/soundEffects';
 import { useConvexAuth } from 'convex/react';
-import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
 
@@ -12,13 +11,6 @@ export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const bottom = Math.max(insets.bottom, 8);
   const { isLoading, isAuthenticated } = useConvexAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.replace('/login');
-    }
-  }, [isLoading, isAuthenticated]);
 
   if (isLoading || !isAuthenticated) {
     return (
