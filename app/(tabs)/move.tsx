@@ -359,7 +359,8 @@ export default function MoveScreen() {
   const [completedWorkoutsThisWeek, setCompletedWorkoutsThisWeek] = useState(1);
 
   const [showExerciseSearch, setShowExerciseSearch] = useState(false);
-  const [exerciseSearchTarget, setExerciseSearchTarget] = useState<'detail' | 'log'>('detail');
+  const [exerciseSearchTarget, setExerciseSearchTarget] = useState<'detail' | 'log' | 'plan_add' | 'active_add'>('detail');
+  const [planEditDayIndex, setPlanEditDayIndex] = useState(0);
   const [showExerciseDetail, setShowExerciseDetail] = useState(false);
   const [showSingleExerciseLog, setShowSingleExerciseLog] = useState(false);
   const [selectedExerciseForDetail, setSelectedExerciseForDetail] = useState<any>(null);
@@ -381,7 +382,9 @@ export default function MoveScreen() {
 
   // Compute Display Routine
   const defaultVideoUrl = "https://cdn.pixabay.com/video/2023/10/22/186115-877715053_tiny.mp4";
-  const displayWorkouts = activePlans?.fitnessPlan?.workouts 
+  const defaultThumbUrl = "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=400";
+  const initialWorkouts = useMemo(() => (
+    activePlans?.fitnessPlan?.workouts
     ? activePlans.fitnessPlan.workouts.map((w: any, idx: number) => ({
         dayNum: idx + 1,
         dayTitle: w.day || w.focus,
@@ -393,10 +396,19 @@ export default function MoveScreen() {
           reps: e.reps || '10',
           equipment: e.equipment || 'Varies',
           muscle: w.focus,
-          videoUrl: defaultVideoUrl
+          thumbnailUrl: e.thumbnailUrl ?? defaultThumbUrl,
+          videoUrl: e.videoUrl ?? defaultVideoUrl,
         }))
       }))
-    : MOCK_ROUTINE_DAYS;
+    : MOCK_ROUTINE_DAYS
+  ), [activePlans?.fitnessPlan?.workouts]);
+
+  const [workouts, setWorkouts] = useState<any[]>(initialWorkouts as any);
+  useEffect(() => {
+    setWorkouts(initialWorkouts as any);
+  }, [initialWorkouts]);
+
+  const [activeWorkoutExercises, setActiveWorkoutExercises] = useState<ActiveExercise[]>([]);
 
   // Convex Exercise Library Query
   const exerciseLibrary = useQuery(api.exercises.list, {
@@ -858,7 +870,7 @@ export default function MoveScreen() {
               <Text style={styles.cardTitle}>This Week's Workouts (Swipe)</Text>
             </View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}>
-               {displayWorkouts.map((day: any, idx: number) => (
+               {workouts.map((day: any, idx: number) => (
                  <WorkoutDayCard 
                     key={day.dayNum}
                     dayTitle={day.dayTitle} 
@@ -939,7 +951,7 @@ export default function MoveScreen() {
                 setShowCustomExercise(true);
              }}
              onViewPlan={() => {
-                router.push('/personalized-plan');
+                router.push('/four-week-plan');
              }}
           />
 
@@ -1067,24 +1079,14 @@ export default function MoveScreen() {
 
       <ActiveWorkoutModal 
         visible={showActiveWorkout}
-        exercises={displayWorkouts[selectedDayIndex]?.exercises.map((ex: any) => ({
-          id: ex.id,
-          name: ex.name,
-          thumbnailUrl: ex.thumbnailUrl,
-          sets: Array.from({ length: typeof ex.sets === 'number' ? ex.sets : 3 }).map((_, i) => ({
-             id: `${ex.id}-set-${i}`,
-             weight: '',
-             reps: typeof ex.reps === 'string' ? ex.reps.split('-')[0] : String(ex.reps),
-             completed: false
-          }))
-        })) || []}
+        exercises={activeWorkoutExercises}
         onClose={() => setShowActiveWorkout(false)}
         onFinishWorkout={async (time, vol, sets, ex) => {
            try {
              if (convexUser) {
                await logExerciseEntry({
                  userId: convexUser._id,
-                 exerciseName: `Day ${selectedDayIndex + 1}: ${displayWorkouts[selectedDayIndex]?.dayTitle || 'Workout'}`,
+                 exerciseName: `Day ${selectedDayIndex + 1}: ${workouts[selectedDayIndex]?.dayTitle || 'Workout'}`,
                  exerciseType: 'strength',
                  duration: Math.max(1, Math.floor(time / 60)),
                  met: 6.0,
@@ -1100,32 +1102,55 @@ export default function MoveScreen() {
         }}
         onAddExercise={() => {
            if (!isPro) return handleProFeature('Add Exercise', 'Upgrade to Pro to add exercises mid-workout.');
-           Alert.alert('Customize Active Workout', 'Exercise picker opened for Pro users.');
+           setExerciseSearchTarget('active_add');
+           setShowExerciseSearch(true);
         }}
-        onDeleteExercise={() => {
+        onDeleteExercise={(exIdx) => {
            if (!isPro) return handleProFeature('Remove Exercise', 'Upgrade to Pro to remove exercises mid-workout.');
-           Alert.alert('Exercise Skipped', 'Active run updated successfully.');
+           setActiveWorkoutExercises((prev) => prev.filter((_, i) => i !== exIdx));
         }}
       />
       
       <WorkoutDetailModal 
         visible={showWorkoutDetail}
         initialTab={selectedDayIndex + 1}
-        routineDays={displayWorkouts as any}
+        routineDays={workouts as any}
         isPreviewMode={workoutDetailMode === 'start'}
         onStartActiveWorkout={(idx) => {
           setSelectedDayIndex(idx);
           setShowWorkoutDetail(false);
+          const built: ActiveExercise[] = (workouts[idx]?.exercises ?? []).map((ex: any) => ({
+            id: ex.id,
+            name: ex.name,
+            thumbnailUrl: ex.thumbnailUrl,
+            videoUrl: ex.videoUrl,
+            sets: Array.from({ length: typeof ex.sets === 'number' ? ex.sets : 3 }).map((_, i: number) => ({
+              id: `${ex.id}-set-${i}`,
+              weight: '',
+              reps: typeof ex.reps === 'string' ? ex.reps.split('-')[0] : String(ex.reps),
+              completed: false
+            }))
+          }));
+          setActiveWorkoutExercises(built);
           setShowActiveWorkout(true);
         }}
         onClose={() => setShowWorkoutDetail(false)}
-        onAddExercise={() => {
+        onAddExercise={(dayIdx) => {
            if (!isPro) return handleProFeature('Add Exercise', 'Upgrade to Pro to add exercises to your plan.');
-           Alert.alert('Customize Plan', 'Exercise builder opened for Pro users.');
+           setPlanEditDayIndex(dayIdx);
+           setExerciseSearchTarget('plan_add');
+           setShowExerciseSearch(true);
         }}
-        onDeleteExercise={(id) => {
+        onDeleteExercise={(id, dayIdx) => {
            if (!isPro) return handleProFeature('Remove Exercise', 'Upgrade to Pro to customize your routine.');
-           Alert.alert('Exercise Removed', 'Pro plan updated successfully.');
+           setWorkouts((prev) => {
+             const next = [...prev];
+             const day = next[dayIdx];
+             if (!day) return prev;
+             day.exercises = (day.exercises ?? []).filter((e: any) => String(e.id) !== String(id));
+             next[dayIdx] = { ...day };
+             return next;
+           });
         }}
         onExercisePress={(ex) => {
           setSelectedExerciseForDetail({
@@ -1151,6 +1176,44 @@ export default function MoveScreen() {
            setSelectedExerciseForDetail(ex);
            if (exerciseSearchTarget === 'log') {
              setShowSingleExerciseLog(true);
+           } else if (exerciseSearchTarget === 'plan_add') {
+             setWorkouts((prev) => {
+               const next = [...prev];
+               const day = next[planEditDayIndex];
+               if (!day) return prev;
+               const muscle =
+                 Array.isArray((ex as any).muscleGroups) && (ex as any).muscleGroups.length
+                   ? (ex as any).muscleGroups[0]
+                   : ((ex as any).category ?? 'Full body');
+               const newEx = {
+                 id: (ex as any)._id ?? (ex as any).id ?? `add-${Date.now()}`,
+                 name: typeof (ex as any).name === 'object' ? (ex as any).name.en : (ex as any).name,
+                 thumbnailUrl: (ex as any).thumbnailUrl,
+                 primaryMuscle: muscle,
+                 equipment: (ex as any).equipment ?? 'Varies',
+                 sets: 3,
+                 reps: '10',
+               };
+               day.exercises = [...(day.exercises ?? []), newEx];
+               next[planEditDayIndex] = { ...day };
+               return next;
+             });
+             setShowExerciseSearch(false);
+           } else if (exerciseSearchTarget === 'active_add') {
+             const newActive: ActiveExercise = {
+               id: (ex as any)._id ?? (ex as any).id ?? `active-${Date.now()}`,
+               name: typeof (ex as any).name === 'object' ? (ex as any).name.en : (ex as any).name,
+               thumbnailUrl: (ex as any).thumbnailUrl,
+               videoUrl: (ex as any).videoUrl,
+               sets: Array.from({ length: 3 }).map((_, i: number) => ({
+                 id: `${String((ex as any)._id ?? (ex as any).id ?? 'x')}-set-${i}-${Date.now()}`,
+                 weight: '',
+                 reps: '10',
+                 completed: false,
+               })),
+             };
+             setActiveWorkoutExercises((prev) => [...prev, newActive]);
+             setShowExerciseSearch(false);
            } else {
              setShowExerciseDetail(true);
            }
@@ -1164,6 +1227,8 @@ export default function MoveScreen() {
           id: selectedExerciseForDetail._id || selectedExerciseForDetail.id,
           name: typeof selectedExerciseForDetail.name === 'object' ? selectedExerciseForDetail.name.en : selectedExerciseForDetail.name,
           thumbnailUrl: selectedExerciseForDetail.thumbnailUrl,
+          type: selectedExerciseForDetail.type,
+          caloriesPerMinute: selectedExerciseForDetail.caloriesPerMinute,
         } : null}
         onClose={() => setShowSingleExerciseLog(false)}
         onSave={async (exId, data) => {
@@ -1182,22 +1247,23 @@ export default function MoveScreen() {
                return;
              }
 
-             const etype = exerciseSearchTarget === 'log' ? 'strength' 
-                          : ((selectedExercise?.type === 'yoga' ? 'yoga' : (selectedExercise?.type === 'cardio' ? 'cardio' : 'strength')) as 'strength'|'cardio'|'yoga'|'hiit');
-
-             const eName = typeof selectedExercise?.name === 'string' 
-                            ? selectedExercise.name 
-                            : (selectedExercise?.name as any)?.en || 'Manual Workout';
+             const src = selectedExerciseForDetail ?? selectedExercise;
+             const etype = (src?.type ?? 'strength') as 'strength'|'cardio'|'yoga'|'hiit';
+             const eName = typeof src?.name === 'string'
+                            ? src.name
+                            : (src?.name as any)?.en || 'Manual Workout';
 
              await logExerciseEntry({
                userId: convexUser._id,
                exerciseName: eName as string,
                exerciseType: etype,
-               duration: data.duration ?? 30, // Default 30 min entry
-               met: selectedExercise?.caloriesPerMinute ? selectedExercise.caloriesPerMinute / 1.5 : 5,
+               duration: data.duration ?? (data.sets ? Math.max(12, data.sets.length * 6) : 30),
+               met: src?.caloriesPerMinute ? src.caloriesPerMinute / 1.5 : 5,
                sets: data.sets?.length || 0,
                reps: totalReps,
                weight: totalWeight,
+               distance: data.distanceKm,
+               pace: data.pace,
                date: new Date().toISOString().split('T')[0]
              });
              Alert.alert("Workout Logged", "Your exercise was successfully saved!");

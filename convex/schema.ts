@@ -582,6 +582,71 @@ export default defineSchema({
     timestamp: v.float64(),
   }).index("by_user_and_date", ["userId", "date"]),
 
+  // Weight & Body Metrics
+  weightLogs: defineTable({
+    userId: v.id("users"),
+    weightKg: v.float64(),
+    note: v.optional(v.string()),
+    date: v.string(), // YYYY-MM-DD
+    timestamp: v.float64(),
+    createdAt: v.float64(),
+  })
+    .index("by_user_date", ["userId", "date"])
+    .index("by_user", ["userId"]),
+
+  bodyMeasurements: defineTable({
+    userId: v.id("users"),
+    date: v.string(),
+    chest: v.optional(v.float64()), // cm
+    waist: v.optional(v.float64()),
+    hips: v.optional(v.float64()),
+    leftArm: v.optional(v.float64()),
+    rightArm: v.optional(v.float64()),
+    leftThigh: v.optional(v.float64()),
+    rightThigh: v.optional(v.float64()),
+    leftCalf: v.optional(v.float64()),
+    rightCalf: v.optional(v.float64()),
+    shoulders: v.optional(v.float64()),
+    neck: v.optional(v.float64()),
+    bodyFatPercent: v.optional(v.float64()),
+    note: v.optional(v.string()),
+    timestamp: v.float64(),
+    createdAt: v.float64(),
+  })
+    .index("by_user_date", ["userId", "date"])
+    .index("by_user", ["userId"]),
+
+  bodyScans: defineTable({
+    userId: v.id("users"),
+    date: v.string(),
+    bodyFatPercent: v.optional(v.float64()),
+    muscleMassKg: v.optional(v.float64()),
+    boneMassKg: v.optional(v.float64()),
+    waterPercent: v.optional(v.float64()),
+    visceralFatLevel: v.optional(v.float64()),
+    bmr: v.optional(v.float64()),
+    metabolicAge: v.optional(v.float64()),
+    source: v.optional(v.string()), // "manual" | "smart_scale" | "dexa" | "inbody"
+    note: v.optional(v.string()),
+    timestamp: v.float64(),
+    createdAt: v.float64(),
+  })
+    .index("by_user_date", ["userId", "date"])
+    .index("by_user", ["userId"]),
+
+  bodyPhotos: defineTable({
+    userId: v.id("users"),
+    storageId: v.id("_storage"),
+    url: v.string(),
+    type: v.union(v.literal("before"), v.literal("after"), v.literal("progress")),
+    date: v.string(),
+    note: v.optional(v.string()),
+    weightKgAtTime: v.optional(v.float64()),
+    createdAt: v.float64(),
+  })
+    .index("by_user_date", ["userId", "date"])
+    .index("by_user", ["userId"]),
+
   // Nutrition Plans - Generated from onboarding
   nutritionPlans: defineTable({
     userId: v.id("users"),
@@ -791,9 +856,26 @@ export default defineSchema({
   todo: defineTable({
     userId: v.id("users"),
     text: v.string(),
-    category: v.union(v.literal("Family"), v.literal("Work"), v.literal("Personal"), v.literal("Grocery")),
+    category: v.union(
+      v.literal("Family"),
+      v.literal("Work"),
+      v.literal("Personal"),
+      v.literal("Grocery"),
+      v.literal("Health"),
+      v.literal("Finance")
+    ),
     completed: v.boolean(),
+    completedAt: v.optional(v.number()),
     partnerId: v.optional(v.id("users")),
+    priority: v.optional(v.union(v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("urgent"))),
+    dueDate: v.optional(v.string()), // YYYY-MM-DD
+    notes: v.optional(v.string()),
+    estimatedMinutes: v.optional(v.number()),
+    projectTag: v.optional(v.string()),
+    aiGenerated: v.optional(v.boolean()),
+    linkedWorkout: v.optional(v.string()),
+    linkedHabit: v.optional(v.string()),
+    linkedMeal: v.optional(v.string()),
     createdAt: v.number(),
   }).index("by_user", ["userId"]).index("by_user_category", ["userId", "category"]),
 

@@ -7,6 +7,7 @@ interface PlannedExercise {
   id: string;
   name: string;
   thumbnailUrl?: string;
+  videoUrl?: string;
   primaryMuscle: string;
   equipment?: string;
   sets: number;
@@ -30,8 +31,8 @@ interface WorkoutDetailModalProps {
   onClose: () => void;
   onExercisePress?: (ex: PlannedExercise) => void;
   onStartActiveWorkout: (dayIndex: number) => void;
-  onAddExercise?: () => void;
-  onDeleteExercise?: (exId: string) => void;
+  onAddExercise?: (dayIndex: number) => void;
+  onDeleteExercise?: (exId: string, dayIndex: number) => void;
 }
 
 export default function WorkoutDetailModal({
@@ -134,7 +135,7 @@ export default function WorkoutDetailModal({
                 {onDeleteExercise && (
                   <TouchableOpacity 
                     style={styles.deleteExBtn} 
-                    onPress={(e) => { e.stopPropagation(); onDeleteExercise(ex.id); }}
+                    onPress={(e) => { e.stopPropagation(); onDeleteExercise(ex.id, activeTab - 1); }}
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                   >
                     <Ionicons name="trash-outline" size={20} color="#f43f5e" />
@@ -144,7 +145,7 @@ export default function WorkoutDetailModal({
             ))}
 
             {onAddExercise && (
-              <TouchableOpacity style={styles.addExWrapBtn} onPress={onAddExercise}>
+              <TouchableOpacity style={styles.addExWrapBtn} onPress={() => onAddExercise(activeTab - 1)}>
                 <Ionicons name="add" size={20} color="#3b82f6" />
                 <Text style={styles.addExWrapBtnText}>Add Exercise</Text>
               </TouchableOpacity>

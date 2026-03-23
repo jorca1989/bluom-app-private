@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
-
+import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,6 +9,9 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Animated,
+  Modal,
+  Switch,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -23,701 +25,723 @@ import {
   Dumbbell,
   Utensils,
   Play,
-  Moon,
   TrendingUp,
-  ChevronRight,
-  TrendingDown,
   Timer,
   Footprints,
-  Gem,
-  Zap,
-  Locate,
   MessageSquare,
-  Calendar,
   Clock,
   BookOpen,
   CheckCircle,
-  Music,
-  ShoppingBag,
   Droplets,
   Scale,
   Smile,
   ChevronDown,
   ChevronUp,
   RefreshCcw,
+  Settings2,
+  X,
+  Flame,
+  Sparkles,
+  TrendingDown,
+  Moon,
 } from 'lucide-react-native';
 import { CircularProgress } from '@/components/CircularProgress';
 import { useAccessControl } from '@/hooks/useAccessControl';
-import CoachMark from '@/components/CoachMark';
 import NorthStarWidget from '@/components/NorthStarWidget';
+import AchievementsCard from '@/components/achievementcard';
 import { useResponsive } from '@/utils/responsive';
 
-export default function IndexScreen() {
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+// ─────────────────────────────────────────────────────────────
+// WIDGET CONFIG
+// ─────────────────────────────────────────────────────────────
+type WidgetId =
+  | 'greeting'
+  | 'vitality'
+  | 'balance'
+  | 'kpis'
+  | 'achievements'
+  | 'quick_actions'
+  | 'trends'
+  | 'discover'
+  | 'north_star';
+
+interface WidgetMeta {
+  id: WidgetId;
+  label: string;
+  description: string;
+  emoji: string;
+  defaultEnabled: boolean;
+}
+
+const WIDGET_REGISTRY: WidgetMeta[] = [
+  { id: 'greeting',      label: 'Morning Briefing', description: 'Personalised greeting & daily tone-setter',  emoji: '☀️', defaultEnabled: true },
+  { id: 'vitality',      label: 'Vitality Score',   description: 'Steps · Mood · Fuel performance snapshot',   emoji: '⚡', defaultEnabled: true },
+  { id: 'balance',       label: 'Calorie Balance',  description: 'Goal − Food + Active = Remaining',           emoji: '🔥', defaultEnabled: true },
+  { id: 'kpis',          label: 'Health KPIs',      description: 'Steps · Water · Mood · Weight cards',        emoji: '📊', defaultEnabled: true },
+  { id: 'achievements',  label: 'Achievements',     description: 'Your XP, tokens & latest unlocks',           emoji: '🏆', defaultEnabled: true },
+  { id: 'quick_actions', label: 'Quick Log',        description: 'One-tap shortcuts to log anything fast',     emoji: '⚡', defaultEnabled: true },
+  { id: 'trends',        label: 'Weekly Trends',    description: '7-day activity overview',                    emoji: '📈', defaultEnabled: true },
+  { id: 'discover',      label: 'Discover Hub',     description: 'All features in one glance',                 emoji: '🧭', defaultEnabled: true },
+  { id: 'north_star',    label: 'North Star Goal',  description: 'Your 12-month milestone reminder',           emoji: '🌟', defaultEnabled: true },
+];
+
+const STORAGE_KEY = 'bluom_home_widgets_v2';
+
+// ─────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────
+function getGreeting(name: string, hour: number) {
+  if (hour < 5)  return { line1: `Still at it, ${name}?`,   line2: 'Make it count.',                  accent: '#6366f1' };
+  if (hour < 12) return { line1: `Good morning, ${name}.`,  line2: 'Set the tone for today.',          accent: '#f59e0b' };
+  if (hour < 17) return { line1: `Afternoon, ${name}.`,     line2: 'Stay sharp, stay focused.',        accent: '#2563eb' };
+  if (hour < 21) return { line1: `Evening, ${name}.`,       line2: 'Wind down with intention.',        accent: '#8b5cf6' };
+  return           { line1: `Night mode, ${name}.`,         line2: 'Recovery is part of the grind.',   accent: '#0ea5e9' };
+}
+
+// ─────────────────────────────────────────────────────────────
+// COMPONENT
+// ─────────────────────────────────────────────────────────────
+export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { width, isTablet, isSmallPhone: isSmallScreen, contentMaxWidth, kpiColumns, kpiCardWidth, discoveryColumns } = useResponsive();
-  // removed usage of useTranslation
   const { user: clerkUser } = useUser();
   const { isLoading: isAccessLoading } = useAccessControl();
-  const [showAllDiscovery, setShowAllDiscovery] = useState(false);
-  const [showBlueprintCoach, setShowBlueprintCoach] = useState(false);
+  const { isTablet, contentMaxWidth, discoveryColumns } = useResponsive();
 
-  useEffect(() => {
-    // Coach marks disabled
-    /*
-    SecureStore.getItemAsync('bluom_show_coach_marks').then(val => {
-      if (val === 'true') {
-        setShowBlueprintCoach(true);
-      }
-    });
-    */
-  }, []);
+  const [enabledWidgets, setEnabledWidgets] = useState<Set<WidgetId>>(
+    new Set(WIDGET_REGISTRY.filter(w => w.defaultEnabled).map(w => w.id))
+  );
+  const [showCustomize, setShowCustomize] = useState(false);
+  const [showAllDiscover, setShowAllDiscover] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
   const todayISO = useMemo(() => getTodayISO(), []);
+  const hour = new Date().getHours();
 
-  // -- Queries --
+  // ── Queries ──
   const convexUser = useQuery(
     api.users.getUserByClerkId,
     clerkUser?.id ? { clerkId: clerkUser.id } : 'skip'
   );
-
   const dailyMacros = useQuery(
     api.daily.getDailyMacros,
     convexUser?._id ? { userId: convexUser._id, date: todayISO } : 'skip'
   );
-
   const foodTotals = useQuery(
     api.food.getDailyTotals,
     convexUser?._id ? { userId: convexUser._id, date: todayISO } : 'skip'
   );
-
   const caloriesBurned = useQuery(
     api.exercise.getTotalCaloriesBurned,
     convexUser?._id ? { userId: convexUser._id, date: todayISO } : 'skip'
   );
-
   const moodLog = useQuery(
     api.wellness.getMoodForDate,
     convexUser?._id ? { userId: convexUser._id, date: todayISO } : 'skip'
   );
-
   const stepEntriesToday = useQuery(
     api.steps.getStepsEntriesByDate,
     convexUser?._id ? { userId: convexUser._id, date: todayISO } : 'skip'
   );
-
-  // -- Derived Data --
-  const steps = useMemo(() => {
-    if (!stepEntriesToday) return 0;
-    return stepEntriesToday.reduce((acc, entry) => acc + entry.steps, 0);
-  }, [stepEntriesToday]);
-
-  const stepCalories = useMemo(() => {
-    if (!stepEntriesToday) return 0;
-    return stepEntriesToday.reduce((acc, entry: any) => acc + (entry.caloriesBurned ?? 0), 0);
-  }, [stepEntriesToday]);
-
-  const burned = (caloriesBurned ?? 0) + stepCalories;
-
-  // Goals & Totals
-  const goalCalories = convexUser?.dailyCalories ?? 2000;
-  const todayFoodCalories = foodTotals?.calories ?? 0;
-  const remainingCalories = goalCalories - todayFoodCalories + burned;
-
-  const waterOz = dailyMacros?.waterOz ?? 0;
-  const prefersMetricVolume = (convexUser?.preferredUnits?.volume ?? 'ml') === 'ml';
-
-  // Water goal: ~30ml/kg
-  const weightKg = convexUser?.weight ?? 70;
-  const prefersLbs = (convexUser?.preferredUnits?.weight ?? 'kg') === 'lbs';
-  const weightDisplay = prefersLbs ? weightKg * 2.2046226218 : weightKg;
-  const weightUnitLabel = prefersLbs ? 'lb' : 'kg';
-  const waterGoalMl = weightKg > 0 ? Math.round(weightKg * 30) : 2000;
-  const waterGoalOz = Math.round(waterGoalMl * 0.033814);
-  const waterGoalDisplay = prefersMetricVolume ? waterGoalMl : waterGoalOz;
-
-  // -- Vitality Score Calculation --
-  // 40% Steps, 30% Mood, 30% Fuel
-  const stepsScore = Math.min(steps / 10000, 1) * 100;
-
-  const moodVal = moodLog?.mood ?? 0;
-  const moodScore = (moodVal / 5) * 100;
-
-  const calScore = Math.min(todayFoodCalories / goalCalories, 1);
-  const waterScore = Math.min(waterOz / Math.max(1, waterGoalOz), 1);
-  const fuelScore = ((calScore + waterScore) / 2) * 100;
-
-  // Only calculate if we have some data interaction, else 0? 
-  // Or just calculate raw. If missing mood, it's 0.
-  const vitalityScore = Math.round(
-    (stepsScore * 0.4) + (moodScore * 0.3) + (fuelScore * 0.3)
-  );
-
-  const hasMood = !!moodLog;
-  const hasFood = todayFoodCalories > 0;
-  const hasSteps = steps > 0;
-  const dataMissing = !hasMood && !hasFood && !hasSteps;
-
-
-  // -- Discovery Items --
-  const discoveryItems = useMemo(() => [
-    { Icon: MessageSquare, label: 'AI Coach', path: '/ai-coach', color: '#2563eb', bgColor: '#eff6ff' },
-    { Icon: ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: (size ?? 24) + 2, color: color ?? '#db2777' }}>♀</Text>, label: "Women", path: '/womens-health', color: '#db2777', bgColor: '#fdf2f8' },
-    { Icon: ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: (size ?? 24) + 2, color: color ?? '#3b82f6' }}>♂</Text>, label: "Men", path: '/mens-health', color: '#3b82f6', bgColor: '#eff6ff' },
-    { Icon: Clock, label: 'Fasting', path: '/fasting', color: '#f59e0b', bgColor: '#fffbeb' },
-    { Icon: BookOpen, label: 'Library', path: '/library', color: '#10b981', bgColor: '#ecfdf5' },
-    { Icon: CheckCircle, label: 'Productivity', path: '/todo-list', color: '#8b5cf6', bgColor: '#f5f3ff' },
-    // { Icon: Music, label: 'Radio', path: '/music-hub', color: '#8b5cf6', bgColor: '#f5f3ff' }, // hidden per request
-    { Icon: Timer, label: 'Focus Mode', path: '/focus-mode', color: '#3b82f6', bgColor: '#eff6ff' },
-    { Icon: Utensils, label: 'Recipes', path: '/recipes', color: '#f97316', bgColor: '#fff7ed' },
-    // { Icon: ShoppingBag, label: 'Shop', path: '/shop', color: '#2563eb', bgColor: '#eff6ff' }, // hidden per request
-    { Icon: Play, label: 'Workouts', path: '/workouts', color: '#16a34a', bgColor: '#f0fdf4' },
-    { Icon: TrendingDown, label: 'Metabolic Hub', path: '/sugar-dashboard', color: '#ef4444', bgColor: '#fee2e2' },
-  ] as const, []);
-
-  const displayedItems = showAllDiscovery ? discoveryItems : discoveryItems.slice(0, 6);
-
-  // Weekly chart data (mock data for now, consistent with previous version)
-  const weekData = [1, 3, 2, 4, 3, 5, 4];
-  const weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-
-  // Trigger notifications
-  useEffect(() => {
-    const stepGoal = 10000;
-    if (steps > 0 && steps < stepGoal) {
-      sendStepReminder(steps, stepGoal);
-    }
-  }, [steps]);
-
-  // -- Loading State --
-  const isLoading = isAccessLoading || !convexUser;
+  const systemStatus = useQuery(api.system.getSystemStatus);
   const resetOnboarding = useMutation(api.users.resetOnboarding);
 
-  const hasCompletedOnboarding = (convexUser?.age ?? 0) > 0 && (convexUser?.weight ?? 0) > 0 && (convexUser?.height ?? 0) > 0;
+  // ── Derived values ──
+  const steps = useMemo(() =>
+    (stepEntriesToday ?? []).reduce((a, e) => a + e.steps, 0), [stepEntriesToday]);
+  const stepCalories = useMemo(() =>
+    (stepEntriesToday ?? []).reduce((a: number, e: any) => a + (e.caloriesBurned ?? 0), 0), [stepEntriesToday]);
 
-  const handleResetOnboarding = () => {
-    Alert.alert(
-      'Reset Onboarding',
-      'Are you sure you want to reset your onboarding data? This cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Reset',
-          style: 'destructive',
-          onPress: async () => {
-            if (convexUser) {
-              await resetOnboarding({ userId: convexUser._id });
-              router.replace('/onboarding');
-            }
-          }
-        }
-      ]
-    );
-  };
+  const burned          = (caloriesBurned ?? 0) + stepCalories;
+  const goalCalories    = convexUser?.dailyCalories ?? 2000;
+  const todayFood       = foodTotals?.calories ?? 0;
+  const remaining       = goalCalories - todayFood + burned;
+  const overBudget      = remaining < 0;
 
-  // --- Maintenance Mode ---
-  const systemStatus = useQuery(api.system.getSystemStatus);
-  const maintenanceMode = systemStatus?.aiMaintenanceMode ?? false;
-  const maintenanceBanner = systemStatus?.bannerMessage || "AI Services are undergoing maintenance.";
+  const waterOz             = dailyMacros?.waterOz ?? 0;
+  const weightKg            = convexUser?.weight ?? 70;
+  const prefersLbs          = (convexUser?.preferredUnits?.weight ?? 'kg') === 'lbs';
+  const prefersMetric       = (convexUser?.preferredUnits?.volume  ?? 'ml') === 'ml';
+  const weightDisplay       = prefersLbs ? (weightKg * 2.2046).toFixed(1) : weightKg;
+  const weightUnit          = prefersLbs ? 'lb' : 'kg';
+  const waterGoalOz         = Math.round(weightKg * 30 * 0.033814);
+  const waterGoalDisplay    = prefersMetric ? Math.round(weightKg * 30) : waterGoalOz;
+  const waterDisplay        = prefersMetric ? Math.round(waterOz * 29.5735) : Math.round(waterOz);
+  const waterUnit           = prefersMetric ? 'ml' : 'oz';
 
-  const handleRestrictedNav = (path: string) => {
-    if (maintenanceMode && (path === '/ai-coach' || path === '/sugar-scan-result')) {
-      Alert.alert(
-        "Maintenance Mode",
-        "Scanning and AI services are currently offline for maintenance. Please check back shortly."
-      );
+  const stepsScore    = Math.min(steps / 10000, 1) * 100;
+  const moodScore     = ((moodLog?.mood ?? 0) / 5) * 100;
+  const fuelScore     = ((Math.min(todayFood / goalCalories, 1) + Math.min(waterOz / Math.max(1, waterGoalOz), 1)) / 2) * 100;
+  const vitalityScore = Math.round(stepsScore * 0.4 + moodScore * 0.3 + fuelScore * 0.3);
+  const dataMissing   = !moodLog && todayFood === 0 && steps === 0;
+
+  const vitalityColor = vitalityScore > 70 ? '#10b981' : vitalityScore > 40 ? '#2563eb' : '#f59e0b';
+  const vitalityLabel = vitalityScore > 70 ? 'Excellent' : vitalityScore > 40 ? 'On Track' : 'Needs Work';
+
+  const firstName = convexUser?.name?.split(' ')[0] ?? clerkUser?.firstName ?? 'there';
+  const greeting  = getGreeting(firstName, hour);
+
+  const maintenanceMode   = systemStatus?.aiMaintenanceMode ?? false;
+  const maintenanceBanner = systemStatus?.bannerMessage ?? 'AI services are under maintenance.';
+  const hasOnboarded      = (convexUser?.age ?? 0) > 0 && (convexUser?.weight ?? 0) > 0;
+
+  // ── Persist widget prefs ──
+  useEffect(() => {
+    SecureStore.getItemAsync(STORAGE_KEY).then(val => {
+      if (val) {
+        try { setEnabledWidgets(new Set(JSON.parse(val) as WidgetId[])); } catch {}
+      }
+    });
+  }, []);
+
+  const toggleWidget = useCallback((id: WidgetId) => {
+    setEnabledWidgets(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      SecureStore.setItemAsync(STORAGE_KEY, JSON.stringify([...next]));
+      return next;
+    });
+  }, []);
+
+  // ── Fade-in on mount ──
+  useEffect(() => {
+    Animated.timing(fadeAnim, { toValue: 1, duration: 450, useNativeDriver: true }).start();
+  }, []);
+
+  useEffect(() => {
+    if (steps > 0 && steps < 10000) sendStepReminder(steps, 10000);
+  }, [steps]);
+
+  const isW = (id: WidgetId) => enabledWidgets.has(id);
+
+  const handleNav = (path: string) => {
+    if (maintenanceMode && path === '/ai-coach') {
+      Alert.alert('Maintenance', 'AI Coach is temporarily offline. Check back shortly.');
       return;
     }
     router.push(path as any);
   };
 
-  if (isLoading) {
+  // ── Loading / gate ──
+  if (isAccessLoading || !convexUser) {
     return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#2563eb" />
-          <Text style={styles.loadingText}>Loading...</Text>
-        </View>
+      <SafeAreaView style={s.loadWrap} edges={['top']}>
+        <ActivityIndicator size="large" color="#2563eb" />
+        <Text style={s.loadText}>Loading your dashboard…</Text>
       </SafeAreaView>
     );
   }
 
-  // ... (hasCompletedOnboarding check) ...
-  if (!hasCompletedOnboarding) {
-    // ... existing ...
+  if (!hasOnboarded) {
     return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.errorText}>Please complete onboarding first.</Text>
+      <SafeAreaView style={s.loadWrap} edges={['top']}>
+        <Sparkles size={40} color="#cbd5e1" />
+        <Text style={s.errorText}>Complete onboarding to unlock your dashboard.</Text>
+        <TouchableOpacity style={s.resetBtn} onPress={async () => {
+          Alert.alert('Reset', 'This will restart onboarding.', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Reset', style: 'destructive', onPress: async () => {
+                await resetOnboarding({ userId: convexUser._id });
+                router.replace('/onboarding');
+              }
+            }
+          ]);
+        }}>
+          <RefreshCcw size={15} color="#f97316" />
+          <Text style={s.resetBtnTxt}>Restart Onboarding</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    );
+  }
 
-          <TouchableOpacity
-            style={{ marginTop: 20, backgroundColor: '#fff', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12, flexDirection: 'row', alignItems: 'center', gap: 8, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }}
-            activeOpacity={0.7}
-            onPress={handleResetOnboarding}
-          >
-            <RefreshCcw size={18} color="#f97316" />
-            <Text style={{ color: '#1e293b', fontWeight: '600', fontSize: 15 }}>Restart Onboarding</Text>
+  // ─────────────────────────────────────────────────────────
+  // WIDGET RENDERERS
+  // ─────────────────────────────────────────────────────────
+
+  const wGreeting = () => (
+    <View style={s.greetCard}>
+      <View style={{ flex: 1 }}>
+        <Text style={s.greetLine1}>{greeting.line1}</Text>
+        <Text style={[s.greetLine2, { color: greeting.accent }]}>{greeting.line2}</Text>
+      </View>
+      <Image source={require('../../assets/images/logo.png')} style={s.greetLogo} resizeMode="contain" />
+    </View>
+  );
+
+  const wVitality = () => (
+    <View style={s.card}>
+      <View style={s.cardHead}>
+        <View>
+          <Text style={s.cardTitle}>Vitality Score</Text>
+          <Text style={s.cardSub}>Steps · Mood · Fuel</Text>
+        </View>
+        <View style={[s.badge, { backgroundColor: vitalityColor + '18' }]}>
+          <Text style={[s.badgeTxt, { color: vitalityColor }]}>{vitalityLabel}</Text>
+        </View>
+      </View>
+
+      <View style={s.vRow}>
+        {/* Circle */}
+        <View style={s.circleWrap}>
+          <CircularProgress
+            progress={dataMissing ? 0 : vitalityScore / 100}
+            size={116}
+            strokeWidth={11}
+            trackColor="#f1f5f9"
+            progressColor={vitalityColor}
+          />
+          <View style={s.circleAbs}>
+            <Text style={[s.vNum, { color: vitalityColor }]}>{dataMissing ? '--' : vitalityScore}</Text>
+            <Text style={s.vSub}>/100</Text>
+          </View>
+        </View>
+
+        {/* Breakdown bars */}
+        <View style={{ flex: 1 }}>
+          <MiniBar label="Steps" pct={stepsScore} color="#2563eb" />
+          <MiniBar label="Mood"  pct={moodScore}  color="#8b5cf6" />
+          <MiniBar label="Fuel"  pct={fuelScore}  color="#10b981" />
+        </View>
+      </View>
+
+      {dataMissing && (
+        <Text style={s.vHint}>Log your meals, steps or mood to activate your score.</Text>
+      )}
+    </View>
+  );
+
+  const wBalance = () => (
+    <View style={s.card}>
+      <View style={s.cardHead}>
+        <Text style={s.cardTitle}>Calorie Balance</Text>
+        <Flame size={17} color="#f97316" />
+      </View>
+
+      <View style={s.balRow}>
+        <BalStat label="Goal"   val={Math.round(goalCalories)} color="#1e293b" />
+        <Text style={s.balOp}>−</Text>
+        <BalStat label="Food"   val={Math.round(todayFood)}    color="#16a34a" />
+        <Text style={s.balOp}>+</Text>
+        <BalStat label="Active" val={Math.round(burned)}       color="#f97316" />
+        <Text style={s.balOp}>=</Text>
+        <BalStat
+          label={overBudget ? 'Over' : 'Left'}
+          val={Math.round(Math.abs(remaining))}
+          color={overBudget ? '#dc2626' : '#2563eb'}
+        />
+      </View>
+
+      {/* Progress bar */}
+      <View style={s.progTrack}>
+        <View style={[s.progFill, {
+          width: `${Math.min((todayFood / goalCalories) * 100, 100)}%` as any,
+          backgroundColor: overBudget ? '#ef4444' : '#2563eb',
+        }]} />
+      </View>
+      <Text style={s.progLbl}>
+        {Math.round((todayFood / goalCalories) * 100)}% of daily goal consumed
+      </Text>
+    </View>
+  );
+
+  const wKPIs = () => (
+    <View style={s.kpiGrid}>
+      <KPICard
+        bg="#eff6ff" iconColor="#2563eb" labelColor="#1e40af"
+        icon={<Footprints size={17} color="#2563eb" />}
+        label="Steps" value={steps.toLocaleString()} sub="/ 10,000"
+        progress={steps / 100} barColor="#2563eb"
+      />
+      <KPICard
+        bg="#ecfeff" iconColor="#06b6d4" labelColor="#0e7490"
+        icon={<Droplets size={17} color="#06b6d4" />}
+        label="Water" value={`${waterDisplay}`} unit={waterUnit} sub={`/ ${waterGoalDisplay}${waterUnit}`}
+        progress={(waterOz / waterGoalOz) * 100} barColor="#06b6d4"
+      />
+      <TouchableOpacity
+        style={[s.kpiCard, { backgroundColor: '#f5f3ff' }]}
+        onPress={() => router.push('/wellness' as any)} activeOpacity={0.8}
+      >
+        <View style={s.kpiHead}>
+          <Smile size={17} color="#8b5cf6" />
+          <Text style={[s.kpiLbl, { color: '#5b21b6' }]}>Mood</Text>
+        </View>
+        <Text style={[s.kpiVal, { fontSize: 28, marginBottom: 6 }]}>{moodLog?.moodEmoji ?? '—'}</Text>
+        <Text style={s.kpiSub}>{moodLog ? 'Logged' : 'Tap to log'}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[s.kpiCard, { backgroundColor: '#f8fafc' }]}
+        onPress={() => router.push('/Weightmanagement' as any)} activeOpacity={0.8}
+      >
+        <View style={s.kpiHead}>
+          <Scale size={17} color="#475569" />
+          <Text style={[s.kpiLbl, { color: '#334155' }]}>Weight</Text>
+        </View>
+        <Text style={s.kpiVal}>{weightDisplay}<Text style={s.kpiUnit}> {weightUnit}</Text></Text>
+        <Text style={s.kpiSub}>Tap to update</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const wQuickActions = () => (
+    <View style={s.card}>
+      <Text style={s.cardTitle}>Quick Log</Text>
+      <View style={s.qaRow}>
+        {[
+          { icon: Utensils,   label: 'Meal',    path: '/fuel',     color: '#16a34a', bg: '#f0fdf4' },
+          { icon: Dumbbell,   label: 'Workout', path: '/move',     color: '#2563eb', bg: '#eff6ff' },
+          { icon: Droplets,   label: 'Water',   path: '/fuel',     color: '#06b6d4', bg: '#ecfeff' },
+          { icon: Moon,       label: 'Sleep',   path: '/wellness', color: '#8b5cf6', bg: '#f5f3ff' },
+          { icon: Smile,      label: 'Mood',    path: '/wellness', color: '#f59e0b', bg: '#fffbeb' },
+          { icon: Footprints, label: 'Steps',   path: '/move',     color: '#f97316', bg: '#fff7ed' },
+        ].map(a => (
+          <TouchableOpacity key={a.label} style={s.qaItem} onPress={() => router.push(a.path as any)} activeOpacity={0.75}>
+            <View style={[s.qaIcon, { backgroundColor: a.bg }]}>
+              <a.icon size={19} color={a.color} />
+            </View>
+            <Text style={s.qaLbl}>{a.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+
+  const wTrends = () => {
+    const data = [1, 3, 2, 4, 3, 5, 4];
+    const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    const max  = Math.max(...data);
+    return (
+      <View style={s.card}>
+        <View style={s.cardHead}>
+          <View>
+            <Text style={s.cardTitle}>Weekly Trends</Text>
+            <Text style={s.cardSub}>Activity overview</Text>
+          </View>
+          <TrendingUp size={17} color="#10b981" />
+        </View>
+        <View style={s.chartRow}>
+          {data.map((v, i) => (
+            <View key={i} style={s.chartCol}>
+              <View style={s.chartTrack}>
+                <View style={[s.chartFill, { height: `${(v / max) * 100}%` }]} />
+              </View>
+              <Text style={s.chartDay}>{days[i]}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+    );
+  };
+
+  const discoverItems = [
+    { icon: MessageSquare, label: 'AI Coach',  path: '/ai-coach',        color: '#2563eb', bg: '#eff6ff' },
+    { icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♀</Text>,
+                           label: 'Women',     path: '/womens-health',   color: '#db2777', bg: '#fdf2f8' },
+    { icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♂</Text>,
+                           label: 'Men',       path: '/mens-health',     color: '#3b82f6', bg: '#eff6ff' },
+    { icon: Clock,         label: 'Fasting',   path: '/fasting',         color: '#f59e0b', bg: '#fffbeb' },
+    { icon: BookOpen,      label: 'Library',   path: '/library',         color: '#10b981', bg: '#ecfdf5' },
+    { icon: CheckCircle,   label: 'Tasks',     path: '/todo',            color: '#8b5cf6', bg: '#f5f3ff' },
+    { icon: Timer,         label: 'Focus',     path: '/focus-mode',      color: '#3b82f6', bg: '#eff6ff' },
+    { icon: Utensils,      label: 'Recipes',   path: '/recipes',         color: '#f97316', bg: '#fff7ed' },
+    { icon: Play,          label: 'Workouts',  path: '/workouts',        color: '#16a34a', bg: '#f0fdf4' },
+    { icon: TrendingDown,  label: 'Metabolic', path: '/sugar-dashboard', color: '#ef4444', bg: '#fee2e2' },
+  ];
+
+  const wDiscover = () => {
+    const shown = showAllDiscover ? discoverItems : discoverItems.slice(0, 6);
+    const cols  = discoveryColumns ?? 4;
+    return (
+      <View style={s.card}>
+        <View style={s.cardHead}>
+          <Text style={s.cardTitle}>Discover</Text>
+          <Text style={s.cardSub}>Everything in one place</Text>
+        </View>
+        <View style={s.discGrid}>
+          {shown.map(item => {
+            const restricted = maintenanceMode && item.path === '/ai-coach';
+            return (
+              <TouchableOpacity
+                key={item.label}
+                style={[s.discItem, { width: `${(100 / cols).toFixed(1)}%` as any }]}
+                onPress={() => handleNav(item.path)}
+                activeOpacity={0.75}
+              >
+                <View style={[s.discIcon, { backgroundColor: restricted ? '#f1f5f9' : item.bg, opacity: restricted ? 0.5 : 1 }]}>
+                  <item.icon size={21} color={restricted ? '#94a3b8' : item.color} />
+                </View>
+                <Text style={[s.discLbl, restricted && { color: '#94a3b8' }]} numberOfLines={1}>
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        <TouchableOpacity style={s.showMore} onPress={() => setShowAllDiscover(p => !p)}>
+          <Text style={s.showMoreTxt}>{showAllDiscover ? 'Show Less' : 'View All'}</Text>
+          {showAllDiscover ? <ChevronUp size={13} color="#2563eb" /> : <ChevronDown size={13} color="#2563eb" />}
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  // ─────────────────────────────────────────────────────────
+  // CUSTOMIZE MODAL
+  // ─────────────────────────────────────────────────────────
+  const customizeModal = (
+    <Modal visible={showCustomize} animationType="slide" presentationStyle="pageSheet">
+      <SafeAreaView style={s.modWrap} edges={['top']}>
+        <View style={s.modHeader}>
+          <Text style={s.modTitle}>Customize Dashboard</Text>
+          <TouchableOpacity onPress={() => setShowCustomize(false)} style={s.modClose}>
+            <X size={19} color="#1e293b" />
           </TouchableOpacity>
         </View>
+        <Text style={s.modSub}>Toggle cards to personalize your home screen.</Text>
+        <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
+          {WIDGET_REGISTRY.map(w => (
+            <View key={w.id} style={s.wRow}>
+              <View style={s.wLeft}>
+                <Text style={s.wEmoji}>{w.emoji}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={s.wName}>{w.label}</Text>
+                  <Text style={s.wDesc}>{w.description}</Text>
+                </View>
+              </View>
+              <Switch
+                value={enabledWidgets.has(w.id)}
+                onValueChange={() => toggleWidget(w.id)}
+                trackColor={{ true: '#2563eb', false: '#e2e8f0' }}
+                thumbColor="#fff"
+              />
+            </View>
+          ))}
+        </ScrollView>
       </SafeAreaView>
-    );
-  }
+    </Modal>
+  );
 
+  // ─────────────────────────────────────────────────────────
+  // MAIN RENDER
+  // ─────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView
-        style={styles.scrollView}
+    <SafeAreaView style={s.screen} edges={['top']}>
+      {customizeModal}
+
+      {/* TOP BAR */}
+      <View style={s.topBar}>
+        <Image source={require('../../assets/images/logo.png')} style={s.topLogo} resizeMode="contain" />
+        <TouchableOpacity style={s.cBtn} onPress={() => setShowCustomize(true)} activeOpacity={0.75}>
+          <Settings2 size={17} color="#475569" />
+        </TouchableOpacity>
+      </View>
+
+      {/* MAINTENANCE BANNER */}
+      {maintenanceMode && (
+        <View style={s.banner}>
+          <View style={s.bannerDot} />
+          <Text style={s.bannerTxt}>{maintenanceBanner}</Text>
+        </View>
+      )}
+
+      <Animated.ScrollView
+        style={{ opacity: fadeAnim }}
         contentContainerStyle={[
-          styles.scrollContent,
-          {
-            paddingTop: 12,
-            paddingBottom: Math.max(insets.bottom, 12) + 12,
-            ...(isTablet ? { alignItems: 'center' as const } : {}),
-          },
+          s.scroll,
+          { paddingBottom: Math.max(insets.bottom, 12) + 90 },
+          isTablet && { alignItems: 'center' as const },
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={isTablet ? { width: '100%', maxWidth: contentMaxWidth ?? 1000, alignSelf: 'center' } : undefined}>
-          <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 10 }]}>
-            <Image
-              source={require('../../assets/images/logo.png')}
-              style={{ width: 100, height: 32, marginBottom: 16 }}
-              resizeMode="contain"
+        <View style={isTablet ? { width: '100%', maxWidth: contentMaxWidth ?? 900, alignSelf: 'center' } : undefined}>
+          {isW('greeting')      && wGreeting()}
+          {isW('vitality')      && wVitality()}
+          {isW('balance')       && wBalance()}
+          {isW('kpis')          && wKPIs()}
+          {isW('achievements')  && (convexUser?._id ? <AchievementsCard userId={convexUser._id} /> : null)}
+          {isW('quick_actions') && wQuickActions()}
+          {isW('trends')        && wTrends()}
+          {isW('discover')      && wDiscover()}
+          {isW('north_star')    && (
+            <NorthStarWidget
+              goal={convexUser?.twelveMonthGoal}
+              onPress={() => router.push('/life-goals' as any)}
             />
+          )}
 
-            {/* MAINTENANCE BANNER */}
-            {maintenanceMode && (
-              <View style={{ width: '100%', backgroundColor: '#fef2f2', borderColor: '#fecaca', borderWidth: 1, padding: 12, borderRadius: 12, marginBottom: 16, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#ef4444' }} />
-                <Text style={{ flex: 1, color: '#991b1b', fontSize: 13, fontWeight: '600' }}>
-                  {maintenanceBanner}
-                </Text>
-              </View>
-            )}
-
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.sectionTitle}>Vitality Score</Text>
-              <CoachMark
-                visible={showBlueprintCoach}
-                message="New! Your AI Blueprint starts here."
-                onClose={() => {
-                  setShowBlueprintCoach(false);
-                  SecureStore.deleteItemAsync('bluom_show_coach_marks');
-                }}
-                position="bottom"
-              />
+          {enabledWidgets.size === 0 && (
+            <View style={s.empty}>
+              <Sparkles size={44} color="#cbd5e1" />
+              <Text style={s.emptyTitle}>Your dashboard is empty</Text>
+              <Text style={s.emptySub}>Tap the ⚙ icon above to add widgets.</Text>
             </View>
-            <View style={styles.vitalityContainer}>
-              <View style={styles.vitalityCircleWrap}>
-                <CircularProgress
-                  progress={vitalityScore / 100}
-                  size={140}
-                  strokeWidth={14}
-                  trackColor="#e2e8f0"
-                  progressColor={vitalityScore > 70 ? '#10b981' : vitalityScore > 40 ? '#3b82f6' : '#f59e0b'}
-                />
-                <View style={styles.vitalityCenterText}>
-                  <Text style={styles.vitalityScore}>{dataMissing ? '--' : vitalityScore}</Text>
-                  <Text style={styles.vitalityLabel}>Score</Text>
-                </View>
-              </View>
-              <Text style={styles.vitalityDescription}>
-                {dataMissing
-                  ? 'Log your data to see your score.'
-                  : 'Your daily snapshot based on meals, exercise and mood.'}
-              </Text>
-            </View>
-          </View>
-
-
-
-          {/* -- 2. Today's Balance -- */}
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Daily Balance</Text>
-            </View>
-            <View style={styles.equationContainer}>
-              <View style={styles.equationItem}>
-                <Text style={styles.eqLabel}>Goal</Text>
-                <Text style={styles.eqValue}>{Math.round(goalCalories)}</Text>
-              </View>
-              <Text style={styles.eqOperator}>-</Text>
-              <View style={styles.equationItem}>
-                <Text style={styles.eqLabel}>Food</Text>
-                <Text style={[styles.eqValue, { color: '#16a34a' }]}>{Math.round(todayFoodCalories)}</Text>
-              </View>
-              <Text style={styles.eqOperator}>+</Text>
-              <View style={styles.equationItem}>
-                <Text style={styles.eqLabel}>Active</Text>
-                <Text style={[styles.eqValue, { color: '#f97316' }]}>{Math.round(burned)}</Text>
-              </View>
-              <Text style={styles.eqOperator}>=</Text>
-              <View style={styles.equationItem}>
-                <Text style={styles.eqLabel}>Remaining</Text>
-                <Text style={[styles.eqValue, { color: remainingCalories >= 0 ? '#2563eb' : '#dc2626' }]}>
-                  {Math.round(remainingCalories)}
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          {/* -- 3. KPI Grid (2x2 phone, 4x1 tablet) -- */}
-          <View style={[styles.gridContainer, isTablet && { justifyContent: 'space-between' }]}>
-            {/* Steps */}
-            <View style={[styles.gridCard, { backgroundColor: '#eff6ff', width: kpiCardWidth() }]}>
-              <View style={styles.gridIconRow}>
-                <Footprints size={20} color="#2563eb" />
-                <Text style={[styles.gridLabel, { color: '#1e40af' }]}>Steps</Text>
-              </View>
-              <Text style={styles.gridValue}>{steps.toLocaleString()}</Text>
-              <Text style={styles.gridSub}>/ 10,000</Text>
-            </View>
-
-            {/* Water */}
-            <View style={[styles.gridCard, { backgroundColor: '#ecfeff', width: kpiCardWidth() }]}>
-              <View style={styles.gridIconRow}>
-                <Droplets size={20} color="#06b6d4" />
-                <Text style={[styles.gridLabel, { color: '#0e7490' }]}>Water</Text>
-              </View>
-              <Text style={styles.gridValue}>
-                {prefersMetricVolume ? Math.round(waterOz * 29.5735) : Math.round(waterOz)}
-                <Text style={{ fontSize: 16 }}>{prefersMetricVolume ? 'ml' : 'oz'}</Text>
-              </Text>
-              <Text style={styles.gridSub}>
-                / {waterGoalDisplay}
-                {prefersMetricVolume ? 'ml' : 'oz'}
-              </Text>
-            </View>
-
-            {/* Mood */}
-            <View style={[styles.gridCard, { backgroundColor: '#f5f3ff', width: kpiCardWidth() }]}>
-              <View style={styles.gridIconRow}>
-                <Smile size={20} color="#8b5cf6" />
-                <Text style={[styles.gridLabel, { color: '#5b21b6' }]}>Mood</Text>
-              </View>
-              <Text style={styles.gridValue}>{moodLog?.moodEmoji ?? '--'}</Text>
-              <Text style={styles.gridSub}>{hasMood ? 'Logged' : 'No Entry'}</Text>
-            </View>
-
-            {/* Weight */}
-            <TouchableOpacity
-              style={[styles.gridCard, { backgroundColor: '#f8fafc', width: kpiCardWidth() }]}
-              onPress={() => router.push('/weight-management')}
-              activeOpacity={0.7}
-            >
-              <View style={styles.gridIconRow}>
-                <Scale size={20} color="#475569" />
-                <Text style={[styles.gridLabel, { color: '#334155' }]}>Weight</Text>
-              </View>
-              <Text style={styles.gridValue}>
-                {Math.round(weightDisplay)}
-                <Text style={{ fontSize: 16 }}>{weightUnitLabel}</Text>
-              </Text>
-              <Text style={styles.gridSub}>Track Now</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* -- 4. Health Trend Chart -- */}
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Your Trends</Text>
-              <TrendingUp size={20} color="#16a34a" />
-            </View>
-            <View style={styles.chartContainer}>
-              {weekData.map((val, idx) => (
-                <View key={idx} style={styles.chartCol}>
-                  <View style={[styles.chartBar, { height: val * 16 }]} />
-                  <Text style={styles.chartDay}>{weekDays[idx]}</Text>
-                </View>
-              ))}
-            </View>
-            <Text style={styles.chartCaption}>Activity vs Goal over the last 7 days</Text>
-          </View>
-
-          {/* -- 5. Discovery Grid -- */}
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <View>
-                <Text style={styles.cardTitle}>Discover</Text>
-              </View>
-            </View>
-
-            <View style={[styles.discoveryGrid, isTablet && { marginHorizontal: 0 }]}>
-              {displayedItems.map((item) => {
-                const isRestricted = maintenanceMode && (item.path === '/ai-coach' || item.path === '/sugar-dashboard'); // Sugar dashboard might contain scan?
-                // The user said "Grey out the AI Photo/Scan entry points".
-                // Assuming 'Metabolic Hub' (sugar-dashboard) is scan entry, and 'AI Coach' is chat.
-                // Let's visual grey out if restricted.
-
-                return (
-                  <TouchableOpacity
-                    key={item.label}
-                    style={[styles.discoveryItem, { width: `${(100 / discoveryColumns).toFixed(2)}%` as any }, isRestricted && { opacity: 0.5 }]}
-                    onPress={() => item.path && handleRestrictedNav(item.path)}
-                    activeOpacity={0.7}
-                  >
-                    <View style={[styles.discoveryIconBox, { backgroundColor: isRestricted ? '#f1f5f9' : item.bgColor }]}>
-                      <item.Icon size={24} color={isRestricted ? '#94a3b8' : item.color} />
-                    </View>
-                    <Text style={[styles.discoveryLabel, isRestricted && { color: '#94a3b8' }]} numberOfLines={1}>
-                      {item.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
-
-            <TouchableOpacity
-              onPress={() => setShowAllDiscovery(!showAllDiscovery)}
-              style={styles.toggleBtn}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.toggleBtnText}>{showAllDiscovery ? 'Show Less' : 'View More'}</Text>
-              {showAllDiscovery ? (
-                <ChevronUp size={16} color="#2563eb" />
-              ) : (
-                <ChevronDown size={16} color="#2563eb" />
-              )}
-            </TouchableOpacity>
-          </View>
-
-          {/* -- North Star -- */}
-          <NorthStarWidget
-            goal={convexUser?.twelveMonthGoal}
-            onPress={() => router.push('/life-goals' as any)}
-          />
-        </View>{/* end tablet maxWidth wrapper */}
-      </ScrollView>
-    </SafeAreaView >
+          )}
+        </View>
+      </Animated.ScrollView>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ebf2fe',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f8fafc',
-  },
-  loadingText: {
-    marginTop: 16,
-    color: '#64748b',
-    fontWeight: '600',
-  },
-  errorText: {
-    color: '#dc2626',
-    fontWeight: 'bold',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-  },
-  header: {
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '900',
-    color: '#1e293b',
-    marginBottom: 16,
-    alignSelf: 'flex-start',
-  },
-  vitalityContainer: {
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 24,
-    padding: 24,
-    width: '100%',
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  vitalityCircleWrap: {
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  vitalityCenterText: {
-    position: 'absolute',
-    alignItems: 'center',
-  },
-  vitalityScore: {
-    fontSize: 36,
-    fontWeight: '900',
-    color: '#0f172a',
-    lineHeight: 40,
-  },
-  vitalityLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#64748b',
-    textTransform: 'uppercase',
-  },
-  vitalityDescription: {
-    fontSize: 13,
-    color: '#64748b',
-    fontWeight: '600',
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.03,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 1,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#1e293b',
-    marginBottom: 2,
-  },
-  proPricing: {
-    fontSize: 12,
-    color: '#64748b',
-    fontWeight: '600',
-  },
-  equationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  equationItem: {
-    alignItems: 'center',
-  },
-  eqLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#94a3b8',
-    textTransform: 'uppercase',
-    marginBottom: 4,
-  },
-  eqValue: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#1e293b',
-  },
-  eqOperator: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#cbd5e1',
-    marginTop: 14, // visual alignment
-  },
-  gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    marginBottom: 16,
-  },
-  gridCard: {
-    // width is now set dynamically via kpiCardWidth() in the component
-    padding: 16,
-    borderRadius: 20,
-    justifyContent: 'space-between',
-    minHeight: 110,
-  },
-  gridIconRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 12,
-  },
-  gridLabel: {
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  gridValue: {
-    fontSize: 24,
-    fontWeight: '900',
-    color: '#0f172a',
-    marginBottom: 2,
-  },
-  gridSub: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#64748b',
-  },
-  chartContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    height: 100,
-    marginBottom: 12,
-  },
-  chartCol: {
-    alignItems: 'center',
-    gap: 6,
-    flex: 1,
-  },
-  chartBar: {
-    width: 20,
-    backgroundColor: '#3b82f6',
-    borderRadius: 6,
-  },
-  chartDay: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#94a3b8',
-  },
-  chartCaption: {
-    textAlign: 'center',
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#64748b',
-  },
-  discoveryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: -8, // compensate padding
-  },
-  discoveryItem: {
-    // width is now set dynamically via discoveryColumns in the component
-    alignItems: 'center',
-    padding: 8,
-    marginBottom: 12,
-  },
-  discoveryIconBox: {
-    width: 52,
-    height: 52,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  discoveryLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#475569',
-  },
-  toggleBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 8,
-    gap: 4,
-  },
-  toggleBtnText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#2563eb',
-  },
+// ─────────────────────────────────────────────────────────────
+// SHARED SUB-COMPONENTS
+// ─────────────────────────────────────────────────────────────
+
+function MiniBar({ label, pct, color }: { label: string; pct: number; color: string }) {
+  return (
+    <View style={mb.row}>
+      <Text style={mb.lbl}>{label}</Text>
+      <View style={mb.track}>
+        <View style={[mb.fill, { width: `${Math.min(pct, 100)}%`, backgroundColor: color }]} />
+      </View>
+      <Text style={[mb.pct, { color }]}>{Math.round(pct)}%</Text>
+    </View>
+  );
+}
+const mb = StyleSheet.create({
+  row:   { flexDirection: 'row', alignItems: 'center', marginBottom: 9, gap: 8 },
+  lbl:   { width: 38, fontSize: 11, fontWeight: '700', color: '#64748b' },
+  track: { flex: 1, height: 6, backgroundColor: '#f1f5f9', borderRadius: 3, overflow: 'hidden' },
+  fill:  { height: '100%', borderRadius: 3 },
+  pct:   { width: 34, fontSize: 11, fontWeight: '700', textAlign: 'right' },
+});
+
+function BalStat({ label, val, color }: { label: string; val: number; color: string }) {
+  return (
+    <View style={{ alignItems: 'center' }}>
+      <Text style={{ fontSize: 10, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', marginBottom: 3 }}>{label}</Text>
+      <Text style={{ fontSize: 17, fontWeight: '800', color }}>{val}</Text>
+    </View>
+  );
+}
+
+function KPICard({
+  bg, icon, label, labelColor, value, unit, sub, progress, barColor,
+}: {
+  bg: string; icon: React.ReactNode; label: string; labelColor: string;
+  value: string; unit?: string; sub: string; progress: number; barColor: string; iconColor?: string;
+}) {
+  return (
+    <View style={[kpi.card, { backgroundColor: bg }]}>
+      <View style={kpi.head}>
+        {icon}
+        <Text style={[kpi.lbl, { color: labelColor }]}>{label}</Text>
+      </View>
+      <Text style={kpi.val}>{value}{unit ? <Text style={kpi.unit}> {unit}</Text> : null}</Text>
+      <View style={kpi.bar}>
+        <View style={[kpi.fill, { width: `${Math.min(progress, 100)}%` as any, backgroundColor: barColor }]} />
+      </View>
+      <Text style={kpi.sub}>{sub}</Text>
+    </View>
+  );
+}
+const kpi = StyleSheet.create({
+  card: { flex: 1, minWidth: (SCREEN_WIDTH - 52) / 2, borderRadius: 18, padding: 14, minHeight: 100 },
+  head: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
+  lbl:  { fontSize: 13, fontWeight: '700' },
+  val:  { fontSize: 22, fontWeight: '900', color: '#0f172a', marginBottom: 6 },
+  unit: { fontSize: 12, fontWeight: '600', color: '#64748b' },
+  bar:  { height: 4, backgroundColor: 'rgba(0,0,0,0.07)', borderRadius: 2, overflow: 'hidden', marginBottom: 4 },
+  fill: { height: '100%', borderRadius: 2 },
+  sub:  { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
+});
+
+// ─────────────────────────────────────────────────────────────
+// STYLES
+// ─────────────────────────────────────────────────────────────
+const s = StyleSheet.create({
+  screen:   { flex: 1, backgroundColor: '#f0f4ff' },
+  loadWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8fafc', gap: 16 },
+  loadText: { color: '#64748b', fontWeight: '600', fontSize: 14 },
+  errorText:{ color: '#475569', fontWeight: '700', fontSize: 15, textAlign: 'center', paddingHorizontal: 32 },
+  resetBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12, shadowColor: '#000', shadowOpacity: 0.07, shadowRadius: 8, elevation: 2 },
+  resetBtnTxt: { color: '#1e293b', fontWeight: '600' },
+
+  topBar:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10 },
+  topLogo: { width: 80, height: 26 },
+  cBtn:    { width: 36, height: 36, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
+
+  banner:    { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fef2f2', borderColor: '#fecaca', borderWidth: 1, marginHorizontal: 16, marginBottom: 6, padding: 11, borderRadius: 12 },
+  bannerDot: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#ef4444' },
+  bannerTxt: { flex: 1, color: '#991b1b', fontSize: 12, fontWeight: '600' },
+
+  scroll: { paddingHorizontal: 16, paddingTop: 4 },
+
+  // Greeting
+  greetCard: { backgroundColor: '#fff', borderRadius: 20, padding: 18, marginBottom: 12, flexDirection: 'row', alignItems: 'center', shadowColor: '#2563eb', shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
+  greetLine1:{ fontSize: 19, fontWeight: '800', color: '#0f172a', marginBottom: 2 },
+  greetLine2:{ fontSize: 13, fontWeight: '600' },
+  greetLogo: { width: 52, height: 18 },
+
+  // Generic card
+  card:      { backgroundColor: '#fff', borderRadius: 20, padding: 17, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 10, elevation: 1 },
+  cardHead:  { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 },
+  cardTitle: { fontSize: 16, fontWeight: '800', color: '#1e293b' },
+  cardSub:   { fontSize: 11, color: '#94a3b8', fontWeight: '600', marginTop: 2 },
+
+  badge:    { paddingHorizontal: 9, paddingVertical: 4, borderRadius: 8 },
+  badgeTxt: { fontSize: 11, fontWeight: '700' },
+
+  // Vitality
+  vRow:      { flexDirection: 'row', alignItems: 'center', gap: 18 },
+  circleWrap:{ position: 'relative', alignItems: 'center', justifyContent: 'center' },
+  circleAbs: { position: 'absolute', alignItems: 'center' },
+  vNum:      { fontSize: 28, fontWeight: '900', lineHeight: 32 },
+  vSub:      { fontSize: 11, color: '#94a3b8', fontWeight: '700' },
+  vHint:     { marginTop: 10, fontSize: 12, color: '#94a3b8', fontWeight: '600', textAlign: 'center' },
+
+  // Balance
+  balRow:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
+  balOp:     { fontSize: 17, color: '#cbd5e1', fontWeight: '300', marginBottom: 10 },
+  progTrack: { height: 5, backgroundColor: '#f1f5f9', borderRadius: 3, overflow: 'hidden', marginBottom: 5 },
+  progFill:  { height: '100%', borderRadius: 3 },
+  progLbl:   { fontSize: 10, color: '#94a3b8', fontWeight: '600', textAlign: 'right' },
+
+  // KPIs
+  kpiGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 12 },
+  kpiCard: { flex: 1, minWidth: (SCREEN_WIDTH - 52) / 2, borderRadius: 18, padding: 14, minHeight: 100 },
+  kpiHead: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
+  kpiLbl:  { fontSize: 13, fontWeight: '700' },
+  kpiVal:  { fontSize: 22, fontWeight: '900', color: '#0f172a', marginBottom: 6 },
+  kpiUnit: { fontSize: 12, fontWeight: '600', color: '#64748b' },
+  kpiSub:  { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
+
+  // Quick actions
+  qaRow:  { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 },
+  qaItem: { alignItems: 'center', flex: 1 },
+  qaIcon: { width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginBottom: 5 },
+  qaLbl:  { fontSize: 10, fontWeight: '700', color: '#475569', textAlign: 'center' },
+
+  // Trends
+  chartRow:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 72 },
+  chartCol:   { flex: 1, alignItems: 'center', gap: 5 },
+  chartTrack: { width: 20, height: 56, backgroundColor: '#f1f5f9', borderRadius: 6, overflow: 'hidden', justifyContent: 'flex-end' },
+  chartFill:  { width: '100%', backgroundColor: '#3b82f6', borderRadius: 6 },
+  chartDay:   { fontSize: 10, fontWeight: '700', color: '#94a3b8' },
+
+  // Discover
+  discGrid: { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -4 },
+  discItem: { alignItems: 'center', padding: 6, marginBottom: 8 },
+  discIcon: { width: 48, height: 48, borderRadius: 15, alignItems: 'center', justifyContent: 'center', marginBottom: 5 },
+  discLbl:  { fontSize: 11, fontWeight: '700', color: '#475569', textAlign: 'center' },
+  showMore: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 6, gap: 4 },
+  showMoreTxt: { fontSize: 12, fontWeight: '700', color: '#2563eb' },
+
+  // Empty
+  empty:     { alignItems: 'center', paddingVertical: 80, gap: 10 },
+  emptyTitle:{ fontSize: 17, fontWeight: '800', color: '#94a3b8' },
+  emptySub:  { fontSize: 13, color: '#cbd5e1', textAlign: 'center' },
+
+  // Modal
+  modWrap:  { flex: 1, backgroundColor: '#f8fafc' },
+  modHeader:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, paddingBottom: 6 },
+  modTitle: { fontSize: 21, fontWeight: '900', color: '#1e293b' },
+  modClose: { width: 34, height: 34, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
+  modSub:   { fontSize: 13, color: '#64748b', paddingHorizontal: 20, marginBottom: 18, fontWeight: '500' },
+  wRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+  wLeft:    { flexDirection: 'row', alignItems: 'center', gap: 14, flex: 1, marginRight: 10 },
+  wEmoji:   { fontSize: 24 },
+  wName:    { fontSize: 15, fontWeight: '700', color: '#1e293b' },
+  wDesc:    { fontSize: 12, color: '#94a3b8', fontWeight: '500', marginTop: 1 },
 });

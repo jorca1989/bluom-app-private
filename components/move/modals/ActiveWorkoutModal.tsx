@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput, Image, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput, Image, KeyboardAvoidingView, Platform, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -16,6 +16,7 @@ export interface ActiveExercise {
   id: string;
   name: string;
   thumbnailUrl?: string;
+  videoUrl?: string;
   sets: SetData[];
   notes?: string;
 }
@@ -202,12 +203,18 @@ export default function ActiveWorkoutModal({
                   {isExpanded && (
                     <View style={styles.exExpandedContent}>
                       {ex.thumbnailUrl && (
-                        <View style={styles.videoPlaceholder}>
-                           <Image source={{ uri: ex.thumbnailUrl }} style={styles.videoImage} resizeMode="cover" />
-                           <View style={styles.playIconOverlay}>
-                             <Ionicons name="play-circle" size={48} color="rgba(255,255,255,0.8)" />
-                           </View>
-                        </View>
+                        <TouchableOpacity
+                          activeOpacity={ex.videoUrl ? 0.9 : 1}
+                          onPress={() => {
+                            if (ex.videoUrl) Linking.openURL(ex.videoUrl);
+                          }}
+                          style={styles.videoPlaceholder}
+                        >
+                          <Image source={{ uri: ex.thumbnailUrl }} style={styles.videoImage} resizeMode="cover" />
+                          <View style={styles.playIconOverlay}>
+                            <Ionicons name="play-circle" size={48} color="rgba(255,255,255,0.8)" />
+                          </View>
+                        </TouchableOpacity>
                       )}
 
                       {/* Sets Header */}

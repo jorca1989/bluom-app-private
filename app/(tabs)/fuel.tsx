@@ -8,7 +8,8 @@ import {
   ActivityIndicator,
   useWindowDimensions,
   Alert,
-  StatusBar
+  StatusBar,
+  Platform,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -42,7 +43,7 @@ import AddFoodModal from '@/components/fuel/modals/AddFoodModal';
 import CreateRecipeModal from '@/components/fuel/modals/CreateRecipeModal';
 import LogRecipeModal from '@/components/fuel/modals/LogRecipeModal';
 import FoodSearchModal from '@/components/fuel/modals/FoodSearchModal';
-import MonthlyMealsModal from '@/components/fuel/modals/MonthlyMealsModal';
+import VoiceLogModal from '@/components/fuel/modals/VoiceLogModel';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 
 type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
@@ -122,11 +123,13 @@ export default function FuelScreen() {
   // Modals & State
   const [selectedMeal, setSelectedMeal] = useState<MealName>('Lunch');
   const [showFoodSearch, setShowFoodSearch] = useState(false);
+  const [foodSearchInitialTab, setFoodSearchInitialTab] = useState<'search' | 'recipes' | 'create'>('search');
   const [showPhotoCapture, setShowPhotoCapture] = useState(false);
   const [showAddFoodModal, setShowAddFoodModal] = useState(false);
   const [showRecipeModal, setShowRecipeModal] = useState(false);
-  const [showMonthlyPlan, setShowMonthlyPlan] = useState(false);
+  const [showVoiceLog, setShowVoiceLog] = useState(false);
   const [showProUpgrade, setShowProUpgrade] = useState(false);
+  const [proGateMessage, setProGateMessage] = useState('This feature is available on Pro.');
   
   // Log Recipe Modal
   const [showLogRecipeModal, setShowLogRecipeModal] = useState(false);
@@ -401,8 +404,20 @@ export default function FuelScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Quick Actions</Text>
             <QuickActions 
-              onPhoto={() => setShowPhotoCapture(true)}
-              onVoice={() => Alert.alert('Coming Soon', 'Voice tracking is on its way!')}
+              onPhoto={() => {
+                if (!isPro) {
+                  setProGateMessage('Photo AI logging is a Pro feature.');
+                  return setShowProUpgrade(true);
+                }
+                setShowPhotoCapture(true);
+              }}
+              onVoice={() => {
+                if (!isPro) {
+                  setProGateMessage('Voice food logging is a Pro feature.');
+                  return setShowProUpgrade(true);
+                }
+                setShowVoiceLog(true);
+              }}
               onSearch={() => { setSelectedMeal('Lunch'); setShowFoodSearch(true); }}
               onManual={() => setShowAddFoodModal(true)}
             />
@@ -410,10 +425,20 @@ export default function FuelScreen() {
             <Text style={styles.sectionTitle}>Utilities</Text>
             <UtilityCards 
               onLibrary={() => router.push('/recipes')} 
-              onMyRecipes={() => router.push('/recipes?tab=my_recipes')}
+              onMyRecipes={() => {
+                setSelectedMeal('Lunch');
+                setFoodSearchInitialTab('recipes');
+                setShowFoodSearch(true);
+              }}
               onShoppingList={() => router.push('/shopping-list')}
-              onAiChef={() => router.push('/recipes?open=aichef')}
-              onMonthlyPlan={() => setShowMonthlyPlan(true)}
+              onAiChef={() => {
+                if (!isPro) {
+                  setProGateMessage('AI Chef is a Pro feature.');
+                  return setShowProUpgrade(true);
+                }
+                router.push('/ai-meal-maker');
+              }}
+              onMonthlyPlan={() => router.push('/meal-hub')}
             />
           </View>
 
@@ -421,18 +446,10 @@ export default function FuelScreen() {
       </ScrollView>
 
       {/* Modals placed here */}
-      <MonthlyMealsModal
-        visible={showMonthlyPlan}
-        onClose={() => setShowMonthlyPlan(false)}
-        userId={convexUser?._id}
-        nutritionPlan={activePlans?.nutritionPlan}
-        currentDate={selectedDate}
-        isPro={!!(isProAccess || appUser?.isPro || appUser?.isAdmin)}
-        onUpgradePress={() => router.push('/premium')}
-      />
       <FoodSearchModal
         visible={showFoodSearch}
         meal={selectedMeal}
+        initialTab={foodSearchInitialTab}
         onClose={() => setShowFoodSearch(false)}
         userId={convexUser._id}
         onLogFood={(food) => addFoodFromCatalog(food, selectedMeal)}
@@ -504,6 +521,26 @@ export default function FuelScreen() {
             setLogSuccess(false);
           }, 1500);
         }}
+      />
+
+      <ProUpgradeModal
+        visible={showProUpgrade}
+        title="Upgrade to Pro"
+        message={proGateMessage}
+        onClose={() => setShowProUpgrade(false)}
+        onUpgrade={() => {
+          setShowProUpgrade(false);
+          router.push('/premium');
+        }}
+      />
+
+      <VoiceLogModal
+        visible={showVoiceLog}
+        onClose={() => setShowVoiceLog(false)}
+        userId={convexUser._id}
+        selectedDate={selectedDate}
+        defaultMeal={selectedMeal}
+        platform={Platform.OS}
       />
 
       <PhotoRecognitionModal

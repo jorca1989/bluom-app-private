@@ -8,11 +8,15 @@
  * @module
  */
 
+import type * as Achievementsconfig from "../Achievementsconfig.js";
+import type * as Aimealmaker from "../Aimealmaker.js";
+import type * as Bodymetrics from "../Bodymetrics.js";
 import type * as access from "../access.js";
 import type * as achievements from "../achievements.js";
 import type * as admin from "../admin.js";
 import type * as ai from "../ai.js";
 import type * as aiCoachMessages from "../aiCoachMessages.js";
+import type * as aiVoice from "../aiVoice.js";
 import type * as aimind from "../aimind.js";
 import type * as customFoods from "../customFoods.js";
 import type * as daily from "../daily.js";
@@ -62,7 +66,7 @@ import type * as sugar from "../sugar.js";
 import type * as support from "../support.js";
 import type * as system from "../system.js";
 import type * as testUsers from "../testUsers.js";
-import type * as todos from "../todos.js";
+import type * as todo from "../todo.js";
 import type * as users from "../users.js";
 import type * as videoWorkouts from "../videoWorkouts.js";
 import type * as wellness from "../wellness.js";
@@ -75,11 +79,15 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  Achievementsconfig: typeof Achievementsconfig;
+  Aimealmaker: typeof Aimealmaker;
+  Bodymetrics: typeof Bodymetrics;
   access: typeof access;
   achievements: typeof achievements;
   admin: typeof admin;
   ai: typeof ai;
   aiCoachMessages: typeof aiCoachMessages;
+  aiVoice: typeof aiVoice;
   aimind: typeof aimind;
   customFoods: typeof customFoods;
   daily: typeof daily;
@@ -129,7 +137,7 @@ declare const fullApi: ApiFromModules<{
   support: typeof support;
   system: typeof system;
   testUsers: typeof testUsers;
-  todos: typeof todos;
+  todo: typeof todo;
   users: typeof users;
   videoWorkouts: typeof videoWorkouts;
   wellness: typeof wellness;

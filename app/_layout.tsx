@@ -222,6 +222,8 @@ function InitialLayout() {
               <Stack.Screen name="(auth)/signup" options={{ headerShown: false, presentation: 'card' }} />
               <Stack.Screen name="onboarding" options={{ headerShown: false, presentation: 'card', gestureEnabled: false }} />
               <Stack.Screen name="premium" options={{ headerShown: false, presentation: 'modal' }} />
+              <Stack.Screen name="meal-hub" options={{ headerShown: false, presentation: 'card' }} />
+              <Stack.Screen name="ai-meal-maker" options={{ headerShown: false, presentation: 'card' }} />
               <Stack.Screen name="settings" options={{ headerShown: false, presentation: 'modal' }} />
               <Stack.Screen name="admin" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

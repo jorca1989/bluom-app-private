@@ -50,9 +50,6 @@ android/app/build
 !android/app/debug.keystore
 # --- ADD THESE ---
 
-# Local Android SDK path files (never commit)
-local.properties
-
 # Android
 android/local.properties
 android/.gradle
@@ -75,3 +72,54 @@ ios/DerivedData
 # Temporary Files
 *.log
 .eslintcache
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Expo
+.expo/
+dist/
+web-build/
+dev-client-builds/
+
+# Android Local & Sensitive (CRITICAL)
+android/local.properties
+android/.gradle
+android/build
+android/app/build
+android/app/src/main/assets
+*.keystore
+!android/app/debug.keystore
+
+# iOS Local
+ios/build
+ios/Pods
+ios/DerivedData
+
+# Environment Secrets
+.env
+.env.local
+.env.production
+.env.test
+.env*.local
+convex-env.tmp
+
+# Logs & Temp Files
+*.log
+ts_errors.log
+ts_output.txt
+out.txt
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, FlatList, ActivityIndicator, Alert, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, FlatList, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useQuery } from 'convex/react';
+import { useAction, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 
@@ -11,6 +11,7 @@ type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 interface FoodSearchModalProps {
   visible: boolean;
   meal: MealName;
+  initialTab?: 'search' | 'recipes' | 'create';
   onClose: () => void;
   userId: Id<"users">;
   onLogFood: (foodInfo: any) => void;
@@ -22,6 +23,7 @@ interface FoodSearchModalProps {
 export default function FoodSearchModal({
   visible,
   meal,
+  initialTab = 'search',
   onClose,
   userId,
   onLogFood,
@@ -30,11 +32,60 @@ export default function FoodSearchModal({
   onOpenCreateRecipe,
 }: FoodSearchModalProps) {
   const insets = useSafeAreaInsets();
-  const [activeTab, setActiveTab] = useState<'search' | 'recipes' | 'create'>('search');
+  const [activeTab, setActiveTab] = useState<'search' | 'recipes' | 'create'>(initialTab);
   const [searchQuery, setSearchQuery] = useState('');
   
-  const searchResults = useQuery(api.foodCatalog.searchFoods, { userId, query: searchQuery });
+  const searchFoods = useAction(api.externalFoods.searchFoods);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const myRecipes = useQuery(api.recipes.getMyRecipes, { userId });
+
+  useEffect(() => {
+    if (visible) setActiveTab(initialTab);
+    // Reset search state when opened
+    if (visible && initialTab === 'search') {
+      setSearchQuery('');
+      setSearchResults([]);
+      setSearchError(null);
+      setSearchLoading(false);
+    }
+  }, [initialTab, visible]);
+
+  useEffect(() => {
+    if (!visible) return;
+    if (activeTab !== 'search') return;
+    const q = searchQuery.trim();
+    if (!q) {
+      setSearchResults([]);
+      setSearchError(null);
+      setSearchLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setSearchLoading(true);
+    setSearchError(null);
+
+    const handle = setTimeout(async () => {
+      try {
+        const results = await searchFoods({ userId, query: q, limit: 30 });
+        if (!cancelled) setSearchResults(Array.isArray(results) ? results : []);
+      } catch (e: any) {
+        if (!cancelled) {
+          setSearchResults([]);
+          setSearchError(e?.message ? String(e.message) : 'Search failed. Please try again.');
+        }
+      } finally {
+        if (!cancelled) setSearchLoading(false);
+      }
+    }, 350);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(handle);
+    };
+  }, [activeTab, searchFoods, searchQuery, userId, visible]);
 
   const handleSearchSubmit = () => {
     // Queries are reactive, so we don't strictly *need* to submit unless handling local state
@@ -115,9 +166,15 @@ export default function FoodSearchModal({
                 )}
               </View>
 
-              {!searchResults ? (
+              {searchLoading ? (
                 <View style={styles.loadingState}>
                   <ActivityIndicator size="large" color="#3b82f6" />
+                </View>
+              ) : searchError ? (
+                <View style={styles.emptyState}>
+                  <Ionicons name="alert-circle-outline" size={48} color="#e2e8f0" />
+                  <Text style={styles.emptyText}>Search failed</Text>
+                  <Text style={styles.emptySub}>{searchError}</Text>
                 </View>
               ) : searchResults.length === 0 ? (
                 <View style={styles.emptyState}>
@@ -131,7 +188,11 @@ export default function FoodSearchModal({
               ) : (
                 <FlatList
                   data={searchResults}
-                  keyExtractor={(item) => item._id}
+                  keyExtractor={(item) =>
+                    item?.kind === 'external'
+                      ? `${String(item.source)}:${String(item.externalId)}`
+                      : String(item._id)
+                  }
                   showsVerticalScrollIndicator={false}
                   contentContainerStyle={styles.listContent}
                   renderItem={({ item }) => (
@@ -148,6 +209,13 @@ export default function FoodSearchModal({
                       <View style={styles.listRight}>
                         <Text style={styles.listCal}>{Math.round(item.calories)}</Text>
                         <Text style={styles.listCalUnit}>kcal</Text>
+                        <View style={styles.sourcePill}>
+                          <Text style={styles.sourceText}>
+                            {item?.kind === 'external'
+                              ? String(item.source ?? '').toUpperCase()
+                              : 'SAVED'}
+                          </Text>
+                        </View>
                       </View>
                     </TouchableOpacity>
                   )}
@@ -397,6 +465,21 @@ const styles = StyleSheet.create({
   listCalUnit: {
     fontSize: 11,
     color: '#64748b',
+  },
+  sourcePill: {
+    marginTop: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+    backgroundColor: '#f1f5f9',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  sourceText: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#64748b',
+    letterSpacing: 0.4,
   },
   createScroll: {
     flex: 1,
