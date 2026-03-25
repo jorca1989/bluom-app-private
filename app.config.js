@@ -24,22 +24,51 @@ export default ({ config }) => {
                 bundleIdentifier: "com.jwfca.bluom",
                 buildNumber: "30",
                 googleServicesFile: "./GoogleService-Info.plist",
+                entitlements: {
+                    "com.apple.developer.healthkit": true,
+                },
                 infoPlist: {
                     ITSAppUsesNonExemptEncryption: false,
                     UIBackgroundModes: ["audio"],
+
+                    // ── Camera & Photos (existing — updated to be more specific) ──
                     NSPhotoLibraryUsageDescription:
                         "Bluom uses your photo library to scan food labels and analyze meals for AI-powered nutrition insights.",
                     NSCameraUsageDescription:
                         "Bluom uses the camera to scan food items and nutritional labels for AI-powered nutrition insights.",
+
+                    // ── Location (Weather) ─────────────────────────────────────────
+                    NSLocationWhenInUseUsageDescription:
+                        "Bluom uses your location to show local weather at the top of your dashboard. Your location is used only on-device to fetch weather for your area.",
+
+                    // ── HealthKit (NEW) ───────────────────────────────────────────
+                    // NSHealthShareUsageDescription: what we READ from HealthKit.
+                    // Apple requires this to be specific — generic text = instant rejection.
+                    NSHealthShareUsageDescription:
+                        "Bluom reads your daily step count, active calories burned, walking distance, body weight, sleep duration, heart rate, and (if you choose to grant access) cycle-related data like menstrual flow and ovulation test results from Apple Health. This data automatically updates your daily calorie burn goal, tracks your body composition progress over time, and generates personalised recovery, Wellness, and cycle insights — so you never have to log manually.",
+
+                    // NSHealthUpdateUsageDescription: what we WRITE to HealthKit.
+                    // Bluom is read-only, but the key must still be present.
+                    NSHealthUpdateUsageDescription:
+                        "Bluom does not write any data to Apple Health. This key is present to satisfy HealthKit requirements.",
+
+                    // ── Motion (NEW) ──────────────────────────────────────────────
+                    // Required if react-native-health uses CMPedometer.
+                    NSMotionUsageDescription:
+                        "Bluom uses motion data to count your steps in the background and update your daily activity goal in real time.",
+
+                    // ── URL Schemes ───────────────────────────────────────────────
                     CFBundleURLTypes: [
                         {
                             CFBundleURLSchemes: [
+                                // Google Sign-In callback
                                 "com.googleusercontent.apps.769417597120-b9g72gt78bjm10kes8u63q1rgqs41kem",
+                                // Strava OAuth callback (NEW) — must match redirectUri in IntegrationsScreen
+                                "bluom",
                             ],
                         },
                     ],
                 },
-                // KEEP: Build 18 requirement
                 deploymentTarget: "15.1",
                 supportsTablet: true,
                 isTabletOnly: false,
@@ -62,12 +91,31 @@ export default ({ config }) => {
                 versionCode: 30,
                 googleServicesFile: "./google-services.json",
                 permissions: [
+                    // ── Existing ──────────────────────────────────────────────────
                     "android.permission.CAMERA",
                     "android.permission.RECORD_AUDIO",
                     "android.permission.MODIFY_AUDIO_SETTINGS",
                     "android.permission.FOREGROUND_SERVICE",
                     "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
                     "android.permission.WAKE_LOCK",
+
+                    // ── Location (Weather) ────────────────────────────────────────
+                    "android.permission.ACCESS_COARSE_LOCATION",
+                    "android.permission.ACCESS_FINE_LOCATION",
+
+                    // ── Health Connect (NEW) ──────────────────────────────────────
+                    // These appear as individual toggles in Android Settings,
+                    // just like the Fitbit / Samsung Health permissions panel.
+                    // Requires Health Connect app installed (Android 14+ has it built-in).
+                    "android.permission.FOREGROUND_SERVICE_HEALTH",
+                    "android.permission.health.READ_STEPS",
+                    "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
+                    "android.permission.health.READ_DISTANCE",
+                    "android.permission.health.READ_WEIGHT",
+                    "android.permission.health.READ_SLEEP",
+                    "android.permission.health.READ_HEART_RATE",
+                    "android.permission.health.READ_EXERCISE",
+                    "android.permission.health.READ_BODY_FAT",
                 ],
             },
             icon: "./assets/images/icon.png",
@@ -89,10 +137,13 @@ export default ({ config }) => {
                 "expo-asset",
                 "expo-splash-screen",
                 "@react-native-community/datetimepicker",
+                "react-native-health",
+                "react-native-health-connect",
                 [
                     "expo-camera",
                     {
-                        cameraPermission: "Bluom uses the camera to scan food items and nutritional labels for AI-powered nutrition insights.",
+                        cameraPermission:
+                            "Bluom uses the camera to scan food items and nutritional labels for AI-powered nutrition insights.",
                     },
                 ],
                 "expo-apple-authentication",
@@ -109,21 +160,12 @@ export default ({ config }) => {
         },
     };
 
-    // Only apply build-properties keys for the relevant platform.
-    // IMPORTANT: expo-build-properties currently throws if you set iOS deploymentTarget < 15.1 in this SDK.
-    // We keep `expo.ios.deploymentTarget = "13.0"` for compliance, but we DO NOT pass it through this plugin
-    // unless/until we move SDKs or replace the plugin with a custom one.
     const buildProps = {};
     if (isAndroid) {
         buildProps.android = { minSdkVersion: 26 };
     }
-    if (isIOS) {
-        // Intentionally omitted to avoid Expo SDK validation crash during config evaluation.
-        // buildProps.ios = { deploymentTarget: "13.0" };
-    }
+    // isIOS: deploymentTarget intentionally omitted (see comment in original file)
 
-    // Social sign-in capabilities disabled for Build 18 submission.
-    // Keep plugins platform-safe and avoid adding Apple sign-in entitlement.
     const plugins = [...base.expo.plugins, ["expo-build-properties", buildProps]];
 
     return {

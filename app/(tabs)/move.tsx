@@ -35,6 +35,8 @@ import CurrentProgramCard from '@/components/move/CurrentProgramCard';
 import WorkoutDayCard from '@/components/move/WorkoutDayCard';
 import MoveQuickActions from '@/components/move/MoveQuickActions';
 import MoveInsights from '@/components/move/MoveInsights';
+import OutdoorActivityBanner from '@/components/move/OutdoorActivityBanner';
+import OutdoorActivityModal from '@/components/move/modals/OutdoorActivityModal';
 import ActiveWorkoutModal, { ActiveExercise } from '@/components/move/modals/ActiveWorkoutModal';
 import WorkoutDetailModal from '@/components/move/modals/WorkoutDetailModal';
 import ExerciseSearchModal, { ExerciseLibraryItem as ESearchItem } from '@/components/move/modals/ExerciseSearchModal';
@@ -368,6 +370,7 @@ export default function MoveScreen() {
   const [showCustomExercise, setShowCustomExercise] = useState(false);
   const [showWorkoutModal, setShowWorkoutModal] = useState(false);
   const [showAllActivities, setShowAllActivities] = useState(false);
+  const [showOutdoor, setShowOutdoor] = useState(false);
   const dummyExercises: ActiveExercise[] = [{ id: "1", name: "Barbell Bench Press", sets: [{id:"1a", weight:"", reps:"", completed:false}] }];
 
   // Search state (debounced)
@@ -955,10 +958,32 @@ export default function MoveScreen() {
              }}
           />
 
+          <OutdoorActivityBanner onStart={() => setShowOutdoor(true)} />
+
           {/* Today's Activities */}
           <View style={styles.card}>
             <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Today's Activities</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
+                <Text style={styles.cardTitle}>Today's Activities</Text>
+                {!!syncedMetrics?.lastSync && (
+                  <View style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 6,
+                    backgroundColor: Platform.OS === 'ios' ? '#fee2e2' : '#dbeafe',
+                    paddingHorizontal: 10,
+                    paddingVertical: 4,
+                    borderRadius: 999,
+                  }}>
+                    <Ionicons
+                      name={Platform.OS === 'ios' ? 'heart' : 'logo-google'}
+                      size={12}
+                      color={Platform.OS === 'ios' ? '#ef4444' : '#4285F4'}
+                    />
+                    <Text style={{ fontSize: 11, fontWeight: '800', color: '#0f172a' }}>Synced</Text>
+                  </View>
+                )}
+              </View>
               <Ionicons name="pulse" size={24} color="#2563eb" />
             </View>
 
@@ -1280,6 +1305,11 @@ export default function MoveScreen() {
         isPro={selectedExerciseForDetail?.fromRoutine || false}
         onClose={() => setShowExerciseDetail(false)}
         onUpgradePress={() => {}}
+      />
+
+      <OutdoorActivityModal
+        visible={showOutdoor}
+        onClose={() => setShowOutdoor(false)}
       />
       <Modal
         visible={showWorkoutModal}

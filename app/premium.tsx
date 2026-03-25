@@ -1,5 +1,18 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Dimensions, Linking, Platform } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+  Linking,
+  Platform,
+  Animated,
+  Dimensions,
+  Image,
+} from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -9,637 +22,630 @@ import { api } from '@/convex/_generated/api';
 import Purchases from 'react-native-purchases';
 import {
   configureRevenueCat,
-  getOfferingsSafe,
   pickProOffering,
   pickMonthlyAndAnnualPackages,
   purchasePackageSafe,
 } from '@/utils/revenuecat';
 import { BlurView } from 'expo-blur';
+import Svg, { Path } from 'react-native-svg';
 import * as SecureStore from 'expo-secure-store';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
-const POWER_FEATURES = [
-  {
-    icon: '🧠',
-    title: 'AI Biological Coach',
-    description: '24/7 personalized voice & chat guidance that knows your blood sugar & cycle data',
-    pro: true
-  },
-  {
-    icon: '👁️',
-    title: 'AI Vision',
-    description: 'Photo-based calorie & macro tracking with instant metabolic analysis',
-    pro: true
-  },
-  {
-    icon: '�',
-    title: 'Bluom University',
-    description: 'Exclusive high-performance protocols & science-backed guides',
-    pro: true
-  },
-  {
-    icon: '🎬',
-    title: 'Guided Video Workouts',
-    description: 'Pro-led sessions for every goal, from HIIT to Yoga',
-    pro: true
-  },
-  {
-    icon: '📊',
-    title: 'Advanced Bio-Analytics',
-    description: 'Deep insights into your recovery, metabolism, and trends',
-    pro: true
-  },
-  {
-    icon: '�🌸',
-    title: 'Hormonal Optimization',
-    description: 'Unlock full Women\'s/Men\'s Health Hubs with cycle-based recommendations',
-    pro: true
-  },
-  {
-    icon: '⚡',
-    title: 'Metabolic Fasting Intelligence',
-    description: 'See exactly when you hit Autophagy & maximize fat-burning phases',
-    pro: true
-  },
-  {
-    icon: '🏠',
-    title: 'Full Household Assistant',
-    description: 'Sync grocery lists, family schedules, and manage everyone\'s health in one spot',
-    pro: true
-  },
-  {
-    icon: '🛒',
-    title: 'Auto-Pilot Grocery Sync',
-    description: 'Instant shopping lists from your meal plans',
-    pro: true
-  },
-  {
-    icon: '🧪',
-    title: 'Cognitive Lab',
-    description: 'Unlimited brain training games & stress-reduction logs',
-    pro: true
-  }
+// ─── Cloudflare R2 hero image ───────────────────────────────────────────────
+// Replace this URL with your actual R2 public URL
+const HERO_IMAGE_URL = 'https://pub-YOUR_R2_ACCOUNT.r2.dev/premium-hero.jpg';
+
+// ─── Feature list ────────────────────────────────────────────────────────────
+const FEATURES = [
+  { icon: '🧠', title: 'AI Biological Coach', desc: '24/7 personalized guidance built around your metabolism, cycle & sleep data' },
+  { icon: '👁️', title: 'AI Vision Tracking', desc: 'Point your camera at any meal for instant macro analysis' },
+  { icon: '🎬', title: 'Guided Video Workouts', desc: 'Pro-led sessions from HIIT to Yoga, tailored to your goal' },
+  { icon: '📊', title: 'Advanced Bio-Analytics', desc: 'Deep recovery, metabolic trends & readiness scoring' },
+  { icon: '🌸', title: 'Hormonal Optimization', desc: 'Full Women\'s & Men\'s Health Hubs with cycle-based recommendations' },
+  { icon: '⚡', title: 'Fasting Intelligence', desc: 'Live autophagy tracking and fat-burning phase alerts' },
+  { icon: '🏠', title: 'Household Assistant', desc: 'Shared grocery lists, family schedules & everyone\'s health in one place' },
+  { icon: '🧪', title: 'Cognitive Lab', desc: 'Unlimited brain training & stress-reduction protocols' },
 ];
 
+// ─── Currency helpers ─────────────────────────────────────────────────────────
+function getTreatItems(code: string | null) {
+  if (code === 'USD') return { a: { icon: '🧋', label: 'Frappuccino', amount: 7.0 }, b: { icon: '🍨', label: 'McFlurry', amount: 5.25 } };
+  if (code === 'EUR') return { a: { icon: '🍺', label: 'Craft Beer', amount: 6.0 }, b: { icon: '🍨', label: 'Gelato', amount: 5.0 } };
+  if (code === 'GBP') return { a: { icon: '🍺', label: 'Pub Pint', amount: 6.5 }, b: { icon: '🥐', label: 'Pastry', amount: 3.0 } };
+  if (code === 'BRL') return { a: { icon: '🍕', label: 'Pizza', amount: 35.0 }, b: { icon: '🧋', label: 'Iced Coffee', amount: 15.0 } };
+  return { a: { icon: '🧋', label: 'Frappuccino', amount: 0 }, b: { icon: '🍨', label: 'McFlurry', amount: 0 } };
+}
+
+function fmt(amount: number, code: string | null) {
+  if (!code || amount === 0) return '—';
+  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: code }).format(amount); } catch { return String(amount); }
+}
+
+// ─── Wave mask component ──────────────────────────────────────────────────────
+function WaveMask() {
+  return (
+    <View style={styles.waveContainer} pointerEvents="none">
+      <Svg width={width} height={80} viewBox={`0 0 ${width} 80`} preserveAspectRatio="none">
+        <Path
+          d={`M0,0 L${width},0 L${width},28 Q${width * 0.75},80 ${width * 0.5},52 Q${width * 0.25},24 0,60 Z`}
+          fill="#0a0a0f"
+        />
+      </Svg>
+    </View>
+  );
+}
+
+// ─── Plan card ────────────────────────────────────────────────────────────────
+function PlanCard({ title, subtitle, price, priceNote, popular, disabled, onPress }: {
+  title: string; subtitle: string; price: string; priceNote: string | null;
+  popular: boolean; disabled: boolean; onPress: () => void;
+}) {
+  const scale = useRef(new Animated.Value(1)).current;
+  const press = () => { Animated.sequence([Animated.timing(scale, { toValue: 0.97, duration: 80, useNativeDriver: true }), Animated.timing(scale, { toValue: 1, duration: 120, useNativeDriver: true })]).start(); onPress(); };
+
+  return (
+    <Animated.View style={[styles.planCard, popular && styles.planCardPopular, disabled && { opacity: 0.5 }, { transform: [{ scale }] }]}>
+      <TouchableOpacity onPress={press} disabled={disabled} activeOpacity={1} style={styles.planInner}>
+        {popular && (
+          <View style={styles.bestBadge}>
+            <Text style={styles.bestBadgeText}>✦ BEST VALUE</Text>
+          </View>
+        )}
+        <View style={styles.planRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.planTitle}>{title}</Text>
+            <Text style={styles.planSub}>{subtitle}</Text>
+          </View>
+          <View style={{ alignItems: 'flex-end' }}>
+            <Text style={[styles.planPrice, popular && styles.planPriceGold]}>{price}</Text>
+            {priceNote ? <Text style={styles.planNote}>{priceNote}</Text> : null}
+          </View>
+        </View>
+        <View style={[styles.planCta, popular && styles.planCtaGold]}>
+          <Text style={[styles.planCtaText, popular && styles.planCtaTextDark]}>
+            {popular ? '✦ Start Annual Pro' : 'Start Monthly'}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
+
+// ─── Feature row ──────────────────────────────────────────────────────────────
+function FeatureRow({ icon, title, desc, index }: { icon: string; title: string; desc: string; index: number }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(16)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: 400, delay: index * 60, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 0, duration: 400, delay: index * 60, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  return (
+    <Animated.View style={[styles.featureRow, { opacity, transform: [{ translateY }] }]}>
+      <View style={styles.featureIconWrap}>
+        <Text style={styles.featureEmoji}>{icon}</Text>
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.featureTitle}>{title}</Text>
+        <Text style={styles.featureDesc}>{desc}</Text>
+      </View>
+      <View style={styles.featureCheck}>
+        <Ionicons name="checkmark" size={14} color="#d4af37" />
+      </View>
+    </Animated.View>
+  );
+}
+
+// ─── Main screen ──────────────────────────────────────────────────────────────
 export default function PremiumScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser, isLoaded: isClerkLoaded } = useUser();
+  const scrollY = useRef(new Animated.Value(0)).current;
 
-  const convexUser = useQuery(
-    api.users.getUserByClerkId,
-    clerkUser?.id ? { clerkId: clerkUser.id } : 'skip'
-  );
+  const convexUser = useQuery(api.users.getUserByClerkId, clerkUser?.id ? { clerkId: clerkUser.id } : 'skip');
+  const updateUser = useMutation(api.users.updateUser);
 
-  const isPro = useMemo(() => {
-    return (
-      convexUser?.subscriptionStatus === 'pro' ||
-      convexUser?.isPremium ||
-      convexUser?.isAdmin ||
-      convexUser?.role === 'admin' ||
-      convexUser?.role === 'super_admin'
-    );
-  }, [convexUser?.subscriptionStatus, convexUser?.isPremium, convexUser?.isAdmin, convexUser?.role]);
+  const isPro = useMemo(() => (
+    convexUser?.subscriptionStatus === 'pro' || convexUser?.isPremium ||
+    convexUser?.isAdmin || convexUser?.role === 'admin' || convexUser?.role === 'super_admin'
+  ), [convexUser]);
 
-  const [loading, setLoading] = useState(true);
+  const [offerings, setOfferings] = useState<any>(null);
   const [upgrading, setUpgrading] = useState(false);
   const [restoring, setRestoring] = useState(false);
-  const [offerings, setOfferings] = useState<any>(null);
-
-  const updateUser = useMutation(api.users.updateUser);
+  const [loadingOfferings, setLoadingOfferings] = useState(true);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
-      // Wait until we have a user id so we can configure Purchases first.
       if (!isClerkLoaded || !clerkUser?.id) return;
-      setLoading(true);
-      // Ensure Purchases is configured before calling getOfferings (prevents "no singleton instance").
       await configureRevenueCat(clerkUser.id);
       try {
-        const offerings = await Purchases.getOfferings();
-        if (!mounted) return;
-        setOfferings(offerings);
-      } catch (e) {
-        console.error('Error fetching offerings:', e);
-      }
-      setLoading(false);
+        const o = await Purchases.getOfferings();
+        if (mounted) setOfferings(o);
+      } catch (e) { console.error('Offerings error:', e); }
+      if (mounted) setLoadingOfferings(false);
     })();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, [isClerkLoaded, clerkUser?.id]);
 
   const offering = useMemo(() => pickProOffering(offerings), [offerings]);
   const pkgs = useMemo(() => pickMonthlyAndAnnualPackages(offering), [offering]);
-
-  function getComparisonItem() {
-    const code = pkgs?.monthly?.product?.currencyCode;
-    if (code === 'USD') return 'Large Frappuccino';
-    if (code === 'EUR') return '2 Craft Beers';
-    if (code === 'BRL') return 'Medium Pizza';
-    return 'Daily Treat';
-  }
-
-  const currencyCode =
-    pkgs?.monthly?.product?.currencyCode ?? pkgs?.annual?.product?.currencyCode ?? null;
-
-  function formatCurrency(amount: number) {
-    if (!currencyCode) return '—';
-    try {
-      return new Intl.NumberFormat(undefined, { style: 'currency', currency: currencyCode }).format(amount);
-    } catch {
-      // Fallback if Intl/currencyCode is unexpected on device
-      return String(amount);
-    }
-  }
-
-  function getTreatItems(): {
-    a: { icon: string; label: string; amount: number };
-    b: { icon: string; label: string; amount: number };
-  } {
-    if (currencyCode === 'USD') {
-      return {
-        a: { icon: '🧋', label: 'Frappuccino', amount: 7.0 },
-        b: { icon: '🍨', label: 'McFlurry', amount: 5.25 },
-      };
-    }
-    if (currencyCode === 'EUR') {
-      return {
-        a: { icon: '🍺', label: 'Craft Beer', amount: 6.0 },
-        b: { icon: '🍨', label: 'Gelato', amount: 5.0 },
-      };
-    }
-    if (currencyCode === 'GBP') {
-      return {
-        a: { icon: '🍺', label: 'Pub Pint', amount: 6.5 },
-        b: { icon: '🥐', label: 'Pastry', amount: 3.0 },
-      };
-    }
-    if (currencyCode === 'BRL') {
-      return {
-        a: { icon: '🍕', label: 'Medium Pizza', amount: 35.0 },
-        b: { icon: '🧋', label: 'Iced Coffee', amount: 15.0 },
-      };
-    }
-    if (!currencyCode) {
-      return {
-        a: { icon: '🧋', label: 'Frappuccino', amount: 0 },
-        b: { icon: '🍨', label: 'McFlurry', amount: 0 },
-      };
-    }
-    return {
-      a: { icon: '🍪', label: 'Daily Treat', amount: 5.0 },
-      b: { icon: '🧋', label: 'Coffee', amount: 4.0 },
-    };
-  }
-
-  async function handleDismiss() {
-    try {
-      await SecureStore.deleteItemAsync('bluom_show_premium');
-    } catch (e) {
-      console.log('Error clearing premium flag', e);
-    } finally {
-      router.replace('/(tabs)');
-    }
-  }
+  const currencyCode = pkgs?.monthly?.product?.currencyCode ?? pkgs?.annual?.product?.currencyCode ?? null;
+  const treats = getTreatItems(currencyCode);
 
   let annualMonthlyNote: string | null = null;
   let annualWeeklyNote: string | null = null;
-
   if (pkgs?.annual?.product) {
-    // monthly cost breakdown
-    const monthlyEquivalent = pkgs.annual.product.price / 12;
-    annualMonthlyNote = new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency: pkgs.annual.product.currencyCode,
-    }).format(monthlyEquivalent);
+    annualMonthlyNote = fmt(pkgs.annual.product.price / 12, pkgs.annual.product.currencyCode);
+    annualWeeklyNote = fmt(pkgs.annual.product.price / 52, pkgs.annual.product.currencyCode);
+  }
 
-    // weekly cost breakdown
-    const weeklyEquivalent = pkgs.annual.product.price / 52;
-    annualWeeklyNote = new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency: pkgs.annual.product.currencyCode,
-    }).format(weeklyEquivalent);
+  async function handleDismiss() {
+    try { await SecureStore.deleteItemAsync('bluom_show_premium'); } catch {}
+    router.replace('/(tabs)');
   }
 
   async function purchase(kind: 'monthly' | 'annual') {
-    // 1. Re-validate offerings to ensure network didn't fail silently
-    if (!offerings) {
-      try {
-        const updated = await Purchases.getOfferings();
-        setOfferings(updated);
-      } catch (e) {
-        console.log('Failed to retry offerings', e);
-      }
-    }
-
-    const pkg = kind === 'annual' ? pkgs.annual : pkgs.monthly;
-    if (!pkg) {
-      Alert.alert(
-        'Subscription Error',
-        'Subscription details are currently unavailable. Please check your internet connection and try again.'
-      );
-      return;
-    }
+    const pkg = kind === 'annual' ? pkgs?.annual : pkgs?.monthly;
+    if (!pkg) { Alert.alert('Unavailable', 'Please check your connection and try again.'); return; }
     setUpgrading(true);
     try {
-      const customerInfo = await purchasePackageSafe(pkg);
-      // purchasePackageSafe returns null if the user cancelled
-      if (!customerInfo) {
-        return;
-      }
-
-      Alert.alert('Success', 'Purchase complete. Pro access may take a moment to sync.');
+      const info = await purchasePackageSafe(pkg);
+      if (!info) return;
+      Alert.alert('Welcome to Pro ✦', 'Your journey just levelled up. Full access is now unlocked.');
       handleDismiss();
     } catch (e: any) {
-      if (!e?.userCancelled) {
-        Alert.alert('Purchase failed', e?.message ? String(e.message) : 'Please try again.');
-      }
-    } finally {
-      setUpgrading(false);
-    }
+      if (!e?.userCancelled) Alert.alert('Purchase failed', e?.message ?? 'Please try again.');
+    } finally { setUpgrading(false); }
   }
+
+  // Hero image parallax
+  const heroScale = scrollY.interpolate({ inputRange: [-100, 0], outputRange: [1.15, 1], extrapolate: 'clamp' });
+  const heroOpacity = scrollY.interpolate({ inputRange: [0, 200], outputRange: [1, 0.3], extrapolate: 'clamp' });
+  const heroTranslateY = scrollY.interpolate({ inputRange: [0, 300], outputRange: [0, -60], extrapolate: 'clamp' });
 
   if (!isClerkLoaded || convexUser === undefined) {
-    return (
-      <View style={[styles.container, styles.center]}>
-        <ActivityIndicator size="large" color="#2563eb" />
-      </View>
-    );
+    return <View style={[styles.root, styles.center]}><ActivityIndicator color="#d4af37" size="large" /></View>;
   }
 
-  const treatItems = getTreatItems();
-
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 8 }]}>
-        <TouchableOpacity style={styles.headerBtn} onPress={handleDismiss} activeOpacity={0.8}>
-          <Ionicons name="close" size={22} color="#1e293b" />
+    <View style={styles.root}>
+      {/* ── Hero image (fixed behind scroll) ── */}
+      <Animated.View style={[styles.heroContainer, { transform: [{ scale: heroScale }, { translateY: heroTranslateY }], opacity: heroOpacity }]}>
+        <Image source={{ uri: HERO_IMAGE_URL }} style={styles.heroImage} resizeMode="cover" />
+        {/* Dark gradient overlay on image */}
+        <View style={styles.heroOverlay} />
+      </Animated.View>
+
+      {/* Close button — always on top */}
+      <View style={[styles.closeBtn, { top: insets.top + 12 }]}>
+        <TouchableOpacity onPress={handleDismiss} style={styles.closeBtnInner} activeOpacity={0.8}>
+          <Ionicons name="close" size={20} color="#fff" />
         </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle}>Your Biology, Optimized</Text>
-          <Text style={styles.headerSub}>For less than your morning coffee</Text>
-        </View>
-        <View style={{ width: 40 }} />
       </View>
 
-      {isPro ? (
-        <View style={[styles.card, { margin: 16 }]}>
-          <Text style={styles.proTitle}>You’re already Pro</Text>
-          <Text style={styles.proSub}>No upgrade needed.</Text>
-          <TouchableOpacity style={styles.primaryBtn} onPress={handleDismiss} activeOpacity={0.85}>
-            <Text style={styles.primaryText}>Close</Text>
-          </TouchableOpacity>
+      {/* ── Scrollable content ── */}
+      <Animated.ScrollView
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+      >
+        {/* Spacer so content starts below hero */}
+        <View style={styles.heroSpacer}>
+          {/* Hero text overlay */}
+          <View style={styles.heroTextWrap}>
+            <Text style={styles.heroEyebrow}>✦ BLUOM PRO</Text>
+            <Text style={styles.heroHeadline}>Your Biology,{'\n'}Fully Unlocked.</Text>
+            <Text style={styles.heroSub}>The complete system for peak human performance.</Text>
+          </View>
         </View>
-      ) : (
-        <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>
-          {/* Value Comparison Section */}
-          <View style={styles.comparisonSection}>
-            <Text style={styles.comparisonTitle}>
-              Your best version for less than {getComparisonItem()}
-            </Text>
 
-            {/* 2-up treats */}
-            <View style={styles.comparisonRow2}>
-              <View style={styles.comparisonItem}>
-                <Text style={[styles.comparisonIcon, { fontSize: 32 }]}>{treatItems.a.icon}</Text>
-                <Text style={styles.comparisonPrice}>{formatCurrency(treatItems.a.amount)}</Text>
-                <Text style={styles.comparisonLabel}>{treatItems.a.label}</Text>
-              </View>
-              <View style={styles.comparisonItem}>
-                <Text style={[styles.comparisonIcon, { fontSize: 32 }]}>{treatItems.b.icon}</Text>
-                <Text style={styles.comparisonPrice}>{formatCurrency(treatItems.b.amount)}</Text>
-                <Text style={styles.comparisonLabel}>{treatItems.b.label}</Text>
-              </View>
+        {/* ── Wave transition into dark card ── */}
+        <WaveMask />
+
+        {/* ── Dark content card ── */}
+        <View style={styles.contentCard}>
+
+          {isPro ? (
+            <View style={styles.proAlready}>
+              <Text style={styles.proAlreadyTitle}>✦ You're already Pro</Text>
+              <Text style={styles.proAlreadySub}>Full access is active. Keep optimizing.</Text>
+              <TouchableOpacity style={styles.goldBtn} onPress={handleDismiss}>
+                <Text style={styles.goldBtnText}>Continue</Text>
+              </TouchableOpacity>
             </View>
-
-            {/* Peak Biology banner */}
-            <View style={styles.pricelessBanner}>
-              <View style={styles.pricelessBannerLeft}>
-                <Text style={styles.pricelessBannerIcon}>💎</Text>
-                <View>
-                  <Text style={styles.pricelessBannerTitle}>Peak Biology</Text>
-                  <Text style={styles.pricelessBannerSub}>The ultimate reward</Text>
+          ) : (
+            <>
+              {/* ── Value comparison ── */}
+              <View style={styles.section}>
+                <Text style={styles.sectionEyebrow}>THE MATH</Text>
+                <Text style={styles.sectionTitle}>Less than your daily treat</Text>
+                <View style={styles.compareRow}>
+                  <View style={styles.compareItem}>
+                    <Text style={styles.compareEmoji}>{treats.a.icon}</Text>
+                    <Text style={styles.compareAmount}>{fmt(treats.a.amount, currencyCode)}</Text>
+                    <Text style={styles.compareLabel}>{treats.a.label}</Text>
+                  </View>
+                  <View style={styles.comparePlus}>
+                    <Text style={styles.comparePlusText}>+</Text>
+                  </View>
+                  <View style={styles.compareItem}>
+                    <Text style={styles.compareEmoji}>{treats.b.icon}</Text>
+                    <Text style={styles.compareAmount}>{fmt(treats.b.amount, currencyCode)}</Text>
+                    <Text style={styles.compareLabel}>{treats.b.label}</Text>
+                  </View>
+                  <View style={styles.compareEquals}>
+                    <Text style={styles.compareEqualsText}>=</Text>
+                  </View>
+                  <View style={[styles.compareItem, styles.compareHighlight]}>
+                    <Text style={styles.compareEmoji}>💎</Text>
+                    <Text style={[styles.compareAmount, { color: '#d4af37' }]}>Pro</Text>
+                    <Text style={[styles.compareLabel, { color: '#d4af37' }]}>Forever</Text>
+                  </View>
                 </View>
               </View>
-              <View style={styles.pricelessPill}>
-                <Text style={styles.pricelessText}>Priceless</Text>
-              </View>
-            </View>
-          </View>
 
-          {/* Power Features Grid */}
-          <View style={styles.featuresSection}>
-            <Text style={styles.sectionTitle}>The Pro Edge</Text>
-            <View style={styles.featuresGrid}>
-              {POWER_FEATURES.map((feature, index) => (
-                <BlurView key={index} intensity={20} style={styles.featureCard}>
-                  <View style={styles.featureIcon}>
-                    <Text style={styles.iconText}>{feature.icon}</Text>
+              {/* ── Divider ── */}
+              <View style={styles.divider} />
+
+              {/* ── Pricing plans ── */}
+              <View style={styles.section}>
+                <Text style={styles.sectionEyebrow}>CHOOSE YOUR PLAN</Text>
+                <PlanCard
+                  title="Annual Pro"
+                  subtitle={annualWeeklyNote ? `Only ${annualWeeklyNote}/week — save 50%` : 'Best value, cancel anytime'}
+                  price={pkgs?.annual?.product?.priceString ?? '—'}
+                  priceNote={annualMonthlyNote ? `${annualMonthlyNote} / month` : null}
+                  popular={true}
+                  disabled={upgrading || !pkgs?.annual}
+                  onPress={() => purchase('annual')}
+                />
+                <PlanCard
+                  title="Monthly Pro"
+                  subtitle="Full access, billed monthly"
+                  price={pkgs?.monthly?.product?.priceString ?? '—'}
+                  priceNote={null}
+                  popular={false}
+                  disabled={upgrading || !pkgs?.monthly}
+                  onPress={() => purchase('monthly')}
+                />
+                {upgrading && (
+                  <View style={styles.upgradingRow}>
+                    <ActivityIndicator color="#d4af37" size="small" />
+                    <Text style={styles.upgradingText}>Processing…</Text>
                   </View>
-                  <Text style={styles.featureTitle}>{feature.title}</Text>
-                  <Text style={styles.featureDescription}>{feature.description}</Text>
-                </BlurView>
-              ))}
-            </View>
-          </View>
+                )}
+              </View>
 
-          {/* Pricing Section */}
-          <View style={styles.pricingSection}>
-            <PlanCard
-              title="Monthly Pro"
-              subtitle="Full access"
-              price={pkgs?.monthly?.product?.priceString ?? '—'}
-              priceNote={null}
-              popular={false}
-              disabled={upgrading || !pkgs.monthly}
-              onPress={() => purchase('monthly')}
-            />
-            <PlanCard
-              title="Annual Pro"
-              subtitle={`Save 50% — Only ${annualWeeklyNote || '$1.20'} per week`}
-              price={pkgs?.annual?.product?.priceString ?? '—'}
-              priceNote={annualMonthlyNote ? `(${annualMonthlyNote}/mo)` : null}
-              popular={true}
-              disabled={upgrading || !pkgs.annual}
-              onPress={() => purchase('annual')}
-            />
-          </View>
+              {/* ── Social proof ── */}
+              <View style={styles.socialProof}>
+                <Text style={styles.socialProofText}>🔥 10,000+ humans already optimizing their biology</Text>
+              </View>
 
-          {/* Social Proof */}
-          <View style={styles.socialProof}>
-            <Text style={[styles.socialProofText, { textAlign: 'center' }]}>
-              🔥 Join 10,000+ humans optimizing their biology
-            </Text>
-          </View>
+              {/* ── Divider ── */}
+              <View style={styles.divider} />
 
-          <TouchableOpacity onPress={handleDismiss} style={styles.notNow} activeOpacity={0.8}>
-            <Text style={[styles.notNowText, { textDecorationLine: 'underline' }]}>Continue with basic version</Text>
-          </TouchableOpacity>
+              {/* ── Features ── */}
+              <View style={styles.section}>
+                <Text style={styles.sectionEyebrow}>EVERYTHING INCLUDED</Text>
+                <Text style={styles.sectionTitle}>The Pro edge</Text>
+                {FEATURES.map((f, i) => <FeatureRow key={f.title} {...f} index={i} />)}
+              </View>
 
-          {/* Restore Purchases */}
-          <TouchableOpacity
-            style={styles.notNow}
-            activeOpacity={0.8}
-            disabled={restoring}
-            onPress={async () => {
-              setRestoring(true);
-              try {
-                const customerInfo = await Purchases.restorePurchases();
-                const entitlements = customerInfo?.entitlements?.active;
-                const hasPro = entitlements && (entitlements['pro'] || entitlements['premium'] || Object.keys(entitlements).length > 0);
-                if (hasPro && convexUser?._id) {
-                  await updateUser({
-                    userId: convexUser._id,
-                    updates: { isPremium: true },
-                  });
-                  Alert.alert('Success', 'Purchases restored successfully!');
-                  handleDismiss();
-                } else {
-                  Alert.alert('No Purchases Found', 'No previous purchases were found for this account.');
-                }
-              } catch (e: any) {
-                console.warn('Restore purchases error:', e);
-                Alert.alert('Restore Failed', e?.message ?? 'Could not restore purchases. Please try again.');
-              } finally {
-                setRestoring(false);
-              }
-            }}
-          >
-            <Text style={[styles.notNowText, { color: '#2563eb', textDecorationLine: 'underline' }]}>
-              {restoring ? 'Restoring…' : 'Restore Purchases'}
-            </Text>
-          </TouchableOpacity>
+              {/* ── Divider ── */}
+              <View style={styles.divider} />
 
-          {/* LEGAL FOOTER - REQUIRED BY APPLE 3.1.2 & GOOGLE PLAY POLICY */}
-          <View style={styles.legalFooter}>
-            <Text style={styles.legalText}>
-              {Platform.OS === 'ios'
-                ? 'Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.'
-                : 'Payment will be charged to your Google Play account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. You can manage and cancel your subscriptions in your Google Play Store settings.'}
-            </Text>
-
-            <View style={styles.legalLinks}>
-              <TouchableOpacity onPress={() => Linking.openURL('https://www.bluom.app/legal/privacy')}>
-                <Text style={styles.legalLinkText}>Privacy Policy</Text>
+              {/* ── Secondary actions ── */}
+              <TouchableOpacity style={styles.ghostBtn} onPress={handleDismiss} activeOpacity={0.7}>
+                <Text style={styles.ghostBtnText}>Continue with free version</Text>
               </TouchableOpacity>
-              <Text style={styles.legalSeparator}> • </Text>
-              <TouchableOpacity onPress={() => Linking.openURL(
-                Platform.OS === 'ios'
-                  ? 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'
-                  : 'https://www.bluom.app/legal/terms'
-              )}>
-                <Text style={styles.legalLinkText}>Terms of Use{Platform.OS === 'ios' ? ' (EULA)' : ''}</Text>
+
+              <TouchableOpacity
+                style={styles.ghostBtn}
+                disabled={restoring}
+                activeOpacity={0.7}
+                onPress={async () => {
+                  setRestoring(true);
+                  try {
+                    const info = await Purchases.restorePurchases();
+                    const active = info?.entitlements?.active;
+                    const hasPro = active && (active['pro'] || active['premium'] || Object.keys(active).length > 0);
+                    if (hasPro && convexUser?._id) {
+                      await updateUser({ userId: convexUser._id, updates: { isPremium: true } });
+                      Alert.alert('Restored ✦', 'Pro access has been restored.');
+                      handleDismiss();
+                    } else {
+                      Alert.alert('Nothing to restore', 'No previous Pro purchase found on this account.');
+                    }
+                  } catch (e: any) {
+                    Alert.alert('Restore failed', e?.message ?? 'Please try again.');
+                  } finally { setRestoring(false); }
+                }}
+              >
+                <Text style={[styles.ghostBtnText, { color: '#d4af37' }]}>
+                  {restoring ? 'Restoring…' : 'Restore purchases'}
+                </Text>
               </TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
-      )}
-    </SafeAreaView>
+
+              {/* ── Legal footer ── */}
+              <View style={styles.legal}>
+                <Text style={styles.legalText}>
+                  {Platform.OS === 'ios'
+                    ? 'Payment charged to Apple ID at purchase confirmation. Subscription auto-renews unless cancelled 24+ hours before period end. Manage in App Store settings.'
+                    : 'Payment charged to Google Play at purchase confirmation. Subscription auto-renews unless cancelled 24+ hours before period end. Manage in Google Play settings.'}
+                </Text>
+                <View style={styles.legalLinks}>
+                  <TouchableOpacity onPress={() => Linking.openURL('https://www.bluom.app/legal/privacy')}>
+                    <Text style={styles.legalLink}>Privacy Policy</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.legalDot}> · </Text>
+                  <TouchableOpacity onPress={() => Linking.openURL(Platform.OS === 'ios' ? 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/' : 'https://www.bluom.app/legal/terms')}>
+                    <Text style={styles.legalLink}>Terms{Platform.OS === 'ios' ? ' (EULA)' : ''}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </>
+          )}
+        </View>
+      </Animated.ScrollView>
+    </View>
   );
 }
 
-function PlanCard(props: {
-  title: string;
-  subtitle: string;
-  price: string;
-  priceNote: string | null;
-  popular: boolean;
-  disabled: boolean;
-  onPress: () => void;
-}) {
-  const { title, subtitle, price, priceNote, popular, disabled, onPress } = props;
-  return (
-    <TouchableOpacity
-      style={[styles.planCard, popular && styles.planCardPopular, disabled && { opacity: 0.6 }]}
-      onPress={onPress}
-      activeOpacity={0.85}
-      disabled={disabled}
-    >
-      {popular ? (
-        <View style={[styles.popularPill, styles.popularPillGold]}>
-          <Text style={styles.popularText}>BEST VALUE</Text>
-        </View>
-      ) : null}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <View>
-          <Text style={styles.planTitle}>{title}</Text>
-          <Text style={styles.planSub}>{subtitle}</Text>
-        </View>
-        <View style={{ alignItems: 'flex-end' }}>
-          <Text style={styles.planPrice}>{price}</Text>
-          {priceNote ? <Text style={styles.planPriceNote}>{priceNote}</Text> : null}
-        </View>
-      </View>
-      <View style={styles.ctaRow}>
-        <Ionicons name="sparkles" size={16} color="#16a34a" />
-        <Text style={styles.ctaText}>Upgrade your biology</Text>
-      </View>
-    </TouchableOpacity>
-  );
-}
+// ─── Styles ───────────────────────────────────────────────────────────────────
+const HERO_HEIGHT = height * 0.52;
+const GOLD = '#d4af37';
+const GOLD_LIGHT = '#f0d060';
+const BG = '#0a0a0f';
+const CARD = '#12121a';
+const BORDER = '#1e1e2e';
+const TEXT = '#f0ede8';
+const MUTED = '#6b6880';
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ebf2fe' },
+  root: { flex: 1, backgroundColor: BG },
   center: { alignItems: 'center', justifyContent: 'center' },
-  header: {
-    paddingHorizontal: 16,
-    paddingBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-  },
-  headerBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f1f5f9',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
-  headerSub: { marginTop: 2, fontSize: 12, fontWeight: '700', color: '#64748b' },
 
-  // Value Comparison
-  comparisonSection: { marginBottom: 24 },
-  comparisonTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a', textAlign: 'center', marginBottom: 16 },
-  comparisonRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
-  comparisonRow2: { flexDirection: 'row', justifyContent: 'space-between', gap: 12, marginBottom: 12 },
-  comparisonItem: { flex: 1, alignItems: 'center', padding: 16, backgroundColor: '#ffffff', borderRadius: 16, borderWidth: 1, borderColor: '#e2e8f0' },
-  comparisonHighlight: { backgroundColor: '#f0f9ff', borderColor: '#0ea5e9', borderWidth: 2 },
-  comparisonIcon: {
-    fontSize: 28,
-    marginBottom: 8,
-    textAlign: 'center',
+  // Hero
+  heroContainer: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0,
+    height: HERO_HEIGHT,
+    zIndex: 0,
   },
-  comparisonPrice: { fontSize: 16, fontWeight: '900', color: '#0f172a', marginBottom: 4 },
-  comparisonLabel: { fontSize: 12, fontWeight: '700', color: '#64748b', textAlign: 'center' },
-  pricelessBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 14,
-    borderRadius: 18,
-    backgroundColor: '#fff7ed',
-    borderWidth: 1,
-    borderColor: '#fed7aa',
+  heroImage: {
+    width: '100%',
+    height: '100%',
   },
-  pricelessBannerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  pricelessBannerIcon: { fontSize: 26 },
-  pricelessBannerTitle: { fontSize: 16, fontWeight: '900', color: '#0f172a' },
-  pricelessBannerSub: { marginTop: 2, fontSize: 12, fontWeight: '700', color: '#a16207' },
-  pricelessPill: {
-    backgroundColor: '#f59e0b',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: '#d97706',
+  heroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(10,10,15,0.45)',
   },
-  pricelessText: { color: '#0f172a', fontWeight: '900', fontSize: 14 },
-
-  // Features
-  featuresSection: { marginBottom: 24 },
-  sectionTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a', marginBottom: 16 },
-  featuresGrid: { gap: 12 },
-  featureCard: { backgroundColor: 'rgba(255, 255, 255, 0.8)', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.3)' },
-  featureIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-  iconText: { fontSize: 20 },
-  featureTitle: { fontSize: 16, fontWeight: '900', color: '#0f172a', marginBottom: 8 },
-  featureDescription: { fontSize: 13, fontWeight: '700', color: '#475569', lineHeight: 18 },
-
-  // Pricing
-  pricingSection: { marginBottom: 24 },
-
-  // Social Proof
-  socialProof: { marginBottom: 20 },
-  socialProofText: { fontSize: 14, fontWeight: '800', color: '#059669', paddingHorizontal: 20 },
-
-  // Cards
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    marginBottom: 12,
+  heroSpacer: {
+    height: HERO_HEIGHT - 40,
+    justifyContent: 'flex-end',
   },
-  cardTitle: { fontSize: 14, fontWeight: '900', color: '#0f172a' },
-  muted: { marginTop: 8, color: '#64748b', fontWeight: '700', textAlign: 'center' },
-  planCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 2,
-    borderColor: '#e2e8f0',
-    marginBottom: 12,
+  heroTextWrap: {
+    paddingHorizontal: 28,
+    paddingBottom: 48,
   },
-  planCardPopular: { borderColor: '#0ea5e9', backgroundColor: '#f0f9ff' },
-  popularPill: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#2563eb',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
+  heroEyebrow: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: GOLD,
+    letterSpacing: 3,
     marginBottom: 10,
   },
-  popularPillGold: {
-    backgroundColor: '#16a34a',
+  heroHeadline: {
+    fontSize: 38,
+    fontWeight: '900',
+    color: '#fff',
+    lineHeight: 44,
+    marginBottom: 10,
   },
-  popularText: { color: '#fff', fontWeight: '900', fontSize: 11 },
-  planTitle: { fontSize: 16, fontWeight: '900', color: '#0f172a' },
-  planSub: { marginTop: 4, color: '#64748b', fontWeight: '700' },
-  planPrice: { fontSize: 16, fontWeight: '900', color: '#0f172a' },
-  planPriceNote: { marginTop: 2, fontSize: 12, fontWeight: '900', color: '#10b981' },
-  ctaRow: { marginTop: 12, flexDirection: 'row', alignItems: 'center', gap: 8 },
-  ctaText: { color: '#334155', fontWeight: '800' },
-  notNow: { alignItems: 'center', paddingVertical: 12, marginTop: 20 },
-  notNowText: { color: '#94a3b8', fontWeight: '700' },
-  proTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
-  proSub: { marginTop: 6, color: '#64748b', fontWeight: '700', marginBottom: 12 },
-  primaryBtn: {
-    backgroundColor: '#2563eb',
-    borderRadius: 14,
-    paddingVertical: 12,
-    alignItems: 'center',
+  heroSub: {
+    fontSize: 15,
+    color: 'rgba(255,255,255,0.7)',
+    lineHeight: 22,
   },
-  primaryText: { color: '#fff', fontWeight: '900' },
 
-  // Legal Footer
-  legalFooter: {
-    padding: 20,
-    marginTop: 10,
-    alignItems: 'center',
-    paddingBottom: 40,
+  // Wave
+  waveContainer: {
+    marginTop: -1,
+    zIndex: 1,
   },
-  legalText: {
-    fontSize: 10,
-    color: '#64748b',
-    textAlign: 'center',
-    lineHeight: 14,
-    marginBottom: 15,
-    fontWeight: '500',
+
+  // Close button
+  closeBtn: {
+    position: 'absolute',
+    right: 20,
+    zIndex: 100,
   },
-  legalLinks: {
-    flexDirection: 'row',
+  closeBtnInner: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.15)',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+
+  // Content card
+  contentCard: {
+    backgroundColor: BG,
+    zIndex: 2,
+    paddingTop: 8,
+  },
+
+  section: {
+    paddingHorizontal: 24,
+    paddingVertical: 24,
+  },
+  sectionEyebrow: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: GOLD,
+    letterSpacing: 3,
+    marginBottom: 6,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: TEXT,
+    marginBottom: 20,
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: BORDER,
+    marginHorizontal: 24,
+  },
+
+  // Compare
+  compareRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
-  legalLinkText: {
-    fontSize: 12,
-    color: '#2563eb',
-    fontWeight: '700',
-    textDecorationLine: 'underline',
+  compareItem: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: CARD,
+    borderRadius: 14,
+    paddingVertical: 16,
+    borderWidth: 1,
+    borderColor: BORDER,
   },
-  legalSeparator: {
-    color: '#94a3b8',
+  compareHighlight: {
+    borderColor: GOLD,
+    backgroundColor: 'rgba(212,175,55,0.08)',
   },
+  compareEmoji: { fontSize: 24, marginBottom: 6 },
+  compareAmount: { fontSize: 13, fontWeight: '900', color: TEXT, marginBottom: 2 },
+  compareLabel: { fontSize: 10, fontWeight: '700', color: MUTED },
+  comparePlus: { alignItems: 'center' },
+  comparePlusText: { fontSize: 18, fontWeight: '300', color: MUTED },
+  compareEquals: { alignItems: 'center' },
+  compareEqualsText: { fontSize: 18, fontWeight: '300', color: MUTED },
+
+  // Plan cards
+  planCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: BORDER,
+    backgroundColor: CARD,
+    marginBottom: 12,
+    overflow: 'hidden',
+  },
+  planCardPopular: {
+    borderColor: GOLD,
+    backgroundColor: 'rgba(212,175,55,0.06)',
+  },
+  planInner: { padding: 20 },
+  bestBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: GOLD,
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginBottom: 14,
+  },
+  bestBadgeText: { fontSize: 10, fontWeight: '900', color: '#0a0a0f', letterSpacing: 1.5 },
+  planRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16 },
+  planTitle: { fontSize: 17, fontWeight: '900', color: TEXT, marginBottom: 4 },
+  planSub: { fontSize: 12, fontWeight: '600', color: MUTED, lineHeight: 16 },
+  planPrice: { fontSize: 20, fontWeight: '900', color: TEXT },
+  planPriceGold: { color: GOLD_LIGHT },
+  planNote: { fontSize: 11, fontWeight: '700', color: GOLD, marginTop: 2 },
+  planCta: {
+    backgroundColor: '#1e1e2e',
+    borderRadius: 10,
+    paddingVertical: 13,
+    alignItems: 'center',
+  },
+  planCtaGold: {
+    backgroundColor: GOLD,
+  },
+  planCtaText: { fontSize: 14, fontWeight: '800', color: TEXT },
+  planCtaTextDark: { color: '#0a0a0f' },
+
+  upgradingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 8 },
+  upgradingText: { fontSize: 13, color: MUTED },
+
+  // Social proof
+  socialProof: { alignItems: 'center', paddingVertical: 16 },
+  socialProofText: { fontSize: 13, fontWeight: '700', color: GOLD },
+
+  // Features
+  featureRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    paddingVertical: 13,
+    borderBottomWidth: 1,
+    borderBottomColor: BORDER,
+  },
+  featureIconWrap: {
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: CARD,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: BORDER,
+  },
+  featureEmoji: { fontSize: 20 },
+  featureTitle: { fontSize: 14, fontWeight: '800', color: TEXT, marginBottom: 2 },
+  featureDesc: { fontSize: 12, color: MUTED, lineHeight: 16 },
+  featureCheck: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(212,175,55,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(212,175,55,0.3)',
+  },
+
+  // Ghost buttons
+  ghostBtn: {
+    alignItems: 'center',
+    paddingVertical: 14,
+    marginHorizontal: 24,
+    marginTop: 8,
+  },
+  ghostBtnText: { fontSize: 13, fontWeight: '700', color: MUTED },
+
+  // Gold button
+  goldBtn: {
+    backgroundColor: GOLD,
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  goldBtnText: { fontSize: 15, fontWeight: '900', color: '#0a0a0f' },
+
+  // Pro already
+  proAlready: { padding: 32, alignItems: 'center' },
+  proAlreadyTitle: { fontSize: 22, fontWeight: '900', color: GOLD, marginBottom: 8 },
+  proAlreadySub: { fontSize: 15, color: MUTED, textAlign: 'center', marginBottom: 8 },
+
+  // Legal
+  legal: { paddingHorizontal: 24, paddingTop: 24, alignItems: 'center' },
+  legalText: { fontSize: 10, color: MUTED, textAlign: 'center', lineHeight: 15, marginBottom: 12 },
+  legalLinks: { flexDirection: 'row', alignItems: 'center' },
+  legalLink: { fontSize: 11, fontWeight: '700', color: '#3b82f6' },
+  legalDot: { color: MUTED, paddingHorizontal: 4 },
 });
-
-

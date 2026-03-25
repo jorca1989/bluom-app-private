@@ -534,6 +534,7 @@ export default function OnboardingScreen() {
   // --- New State for Success View ---
   const [successData, setSuccessData] = useState<any>(null); // Local Math Results
   const [aiStatus, setAiStatus] = useState<'idle' | 'loading' | 'success' | 'failed'>('idle');
+  const didRouteAfterSubmit = useRef(false);
 
   // Import the new utility (ensure this import exists at top of file, or I'll add it here for now if needed, but better to just use values)
   // actually I will just use the logic I wrote or the utility if I imported it. 
@@ -627,6 +628,16 @@ export default function OnboardingScreen() {
       // Premium explicitly triggers AI generation later via the paywall or settings.
       if (result && result.userId) {
         setAiStatus('success');
+        try {
+          await SecureStore.setItemAsync('bluom_show_premium', '1');
+        } catch {}
+        if (!didRouteAfterSubmit.current) {
+          didRouteAfterSubmit.current = true;
+          setTimeout(() => {
+            router.replace('/premium');
+          }, 500);
+        }
+        setIsSubmitting(false);
       }
 
     } catch (e) {
@@ -637,7 +648,10 @@ export default function OnboardingScreen() {
   };
 
   const handleFinish = () => {
-    router.replace('/(tabs)');
+    if (didRouteAfterSubmit.current) return;
+    didRouteAfterSubmit.current = true;
+    SecureStore.setItemAsync('bluom_show_premium', '1').catch(() => null);
+    router.replace('/premium');
   };
 
 

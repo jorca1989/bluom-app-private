@@ -6,7 +6,7 @@
  * teaser, stats row, and all existing menu items preserved.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Alert, Modal, Image, Pressable,
@@ -18,6 +18,8 @@ import { api } from '@/convex/_generated/api';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import * as SecureStore from 'expo-secure-store';
+import Avatar, { AvatarConfig } from '@/components/Avatar';
 import {
   Sparkles, RefreshCcw, TrendingDown, MessageSquare, Clock,
   LayoutGrid, BookOpen, Calendar, Zap, Bug, Scale,
@@ -28,25 +30,80 @@ import AchievementsCard from '@/components/achievementcard';
 import { getCustomerInfoSafe } from '@/utils/revenuecat';
 
 // ─────────────────────────────────────────────────────────────
-// AVATAR EMOJI OPTIONS
+// DICEBEAR AVATAR OPTIONS (Avataaars)
 // ─────────────────────────────────────────────────────────────
-const AVATARS = [
-  '🦁', '🐺', '🦊', '🐻', '🐼', '🦄',
-  '🐯', '🦅', '🐬', '🦋', '🌸', '⚡',
-  '🔥', '🌊', '🌿', '💎', '🏔️', '🎯',
+const TOP_STYLES: Array<{ id: AvatarConfig['top']; label: string }> = [
+  { id: 'shortFlat', label: 'Short Flat' },
+  { id: 'shortWaved', label: 'Short Waved' },
+  { id: 'shaggy', label: 'Shaggy' },
+  { id: 'curly', label: 'Curly' },
+  { id: 'longButNotTooLong', label: 'Long' },
+  { id: 'dreads01', label: 'Dreads' },
+  { id: 'bun', label: 'Bun' },
+  { id: 'hat', label: 'Hat' },
+  { id: 'theCaesar', label: 'Caesar' },
+  { id: 'theCaesarAndSidePart', label: 'Caesar Side Part' },
+  { id: 'shavedSides', label: 'Shaved Sides' },
+  { id: 'bigHair', label: 'Big Hair' },
+];
+
+const EYES: Array<{ id: AvatarConfig['eyes']; label: string }> = [
+  { id: 'happy', label: 'Happy' },
+  { id: 'default', label: 'Default' },
+  { id: 'wink', label: 'Wink' },
+  { id: 'surprised', label: 'Surprised' },
+  { id: 'side', label: 'Side' },
+  { id: 'closed', label: 'Closed' },
+];
+
+const BROWS: Array<{ id: AvatarConfig['eyebrows']; label: string }> = [
+  { id: 'defaultNatural', label: 'Natural' },
+  { id: 'raisedExcitedNatural', label: 'Raised' },
+  { id: 'sadConcernedNatural', label: 'Concerned' },
+  { id: 'angryNatural', label: 'Angry' },
+  { id: 'flatNatural', label: 'Flat' },
+];
+
+const HAIR_COLORS: Array<{ id: AvatarConfig['hairColor']; label: string; hex: string }> = [
+  { id: '111827', label: 'Black', hex: '#111827' },
+  { id: '0f172a', label: 'Blue Black', hex: '#0f172a' },
+  { id: '3f2d20', label: 'Dark Brown', hex: '#3f2d20' },
+  { id: '8b5a2b', label: 'Brown', hex: '#8b5a2b' },
+  { id: 'd6b15a', label: 'Blonde', hex: '#d6b15a' },
+  { id: 'b45309', label: 'Auburn', hex: '#b45309' },
+  { id: '9ca3af', label: 'Gray', hex: '#9ca3af' },
+  { id: 'ef4444', label: 'Red', hex: '#ef4444' },
+];
+
+const SKIN_TONES: Array<{ id: AvatarConfig['skinColor']; label: string; hex: string }> = [
+  { id: 'f5d0a0', label: 'Light', hex: '#f5d0a0' },
+  { id: 'f3d36b', label: 'Yellow', hex: '#f3d36b' },
+  { id: 'eab38a', label: 'Warm', hex: '#eab38a' },
+  { id: 'd19a74', label: 'Tan', hex: '#d19a74' },
+  { id: 'b87b5a', label: 'Deep', hex: '#b87b5a' },
+  { id: '8d5a3b', label: 'Rich', hex: '#8d5a3b' },
+  { id: '3b2217', label: 'Black', hex: '#3b2217' },
+];
+
+const MOUTHS: Array<{ id: NonNullable<AvatarConfig['mouth']>; label: string }> = [
+  { id: 'smile', label: 'Smile' },
+  { id: 'default', label: 'Soft' },
+  { id: 'twinkle', label: 'Twinkle' },
+];
+
+const FACIAL_HAIR: Array<{ id: NonNullable<AvatarConfig['facialHair']>; label: string }> = [
+  { id: 'none', label: 'None' },
+  { id: 'moustacheFancy', label: 'Mustache' },
+  { id: 'moustacheMagnum', label: 'Mustache (Bold)' },
+  { id: 'beardLight', label: 'Beard (Light)' },
+  { id: 'beardMedium', label: 'Beard (Medium)' },
+  { id: 'beardMajestic', label: 'Beard (Majestic)' },
 ];
 const AVATAR_BG_PAIRS: [string, string][] = [
   ['#2563eb', '#1e40af'],
-  ['#7c3aed', '#5b21b6'],
-  ['#059669', '#047857'],
-  ['#dc2626', '#b91c1c'],
-  ['#d97706', '#b45309'],
-  ['#0ea5e9', '#0284c7'],
-  ['#db2777', '#be185d'],
-  ['#0f172a', '#1e293b'],
 ];
 
-const AVATAR_KEY = 'bluom_avatar_v1';
+const AVATAR_CONFIG_KEY = 'bluom_avatar_config_v2';
 const AVATAR_BG_KEY = 'bluom_avatar_bg_v1';
 
 // ─────────────────────────────────────────────────────────────
@@ -104,12 +161,24 @@ export default function ProfileScreen() {
   const gardenState    = useQuery(api.mindworld.getGardenState, convexUser?._id ? { userId: convexUser._id } : 'skip');
   const resetOnboarding = useMutation(api.users.resetOnboarding);
 
-  // Avatar state — stored in SecureStore (import at top if needed; using useState default here)
-  const [avatarEmoji,    setAvatarEmoji]    = useState('🦁');
-  const [avatarBgIdx,    setAvatarBgIdx]    = useState(0);
+  // Avatar state — stored in SecureStore
+  const defaultAvatarConfig: AvatarConfig = useMemo(() => ({
+    seed: clerkUser?.id ?? 'bluom-user',
+    top: 'shortFlat',
+    hairColor: '111827',
+    eyes: 'happy',
+    eyebrows: 'defaultNatural',
+    mouth: 'smile',
+    facialHair: 'none',
+    facialHairColor: '111827',
+    skinColor: 'f5d0a0',
+  }), [clerkUser?.id]);
+
+  const [avatarConfig, setAvatarConfig] = useState<AvatarConfig>(defaultAvatarConfig);
+  const [avatarBgIdx, setAvatarBgIdx] = useState(0); // kept for backward compatibility (always 0 for now)
   const [showAvatarPick, setShowAvatarPick] = useState(false);
-  const [tempEmoji,      setTempEmoji]      = useState(avatarEmoji);
-  const [tempBgIdx,      setTempBgIdx]      = useState(avatarBgIdx);
+  const [tempConfig, setTempConfig] = useState<AvatarConfig>(defaultAvatarConfig);
+  const [tempBgIdx, setTempBgIdx] = useState(0);
 
   const [rcInfo,    setRcInfo]    = useState<any>(null);
   const [rcLoading, setRcLoading] = useState(false);
@@ -123,7 +192,7 @@ export default function ProfileScreen() {
   const xp             = gardenState?.xp ?? 0;
   const tokens         = gardenState?.tokens ?? 0;
   const unlockedCount  = dbAchievements.length;
-  const avatarGradient = AVATAR_BG_PAIRS[avatarBgIdx];
+  const avatarGradient = AVATAR_BG_PAIRS[0];
 
   // Stats
   const goal    = convexUser?.fitnessGoal?.replace(/_/g, ' ') ?? '—';
@@ -147,10 +216,51 @@ export default function ProfileScreen() {
     try { setRcInfo(await getCustomerInfoSafe()); } finally { setRcLoading(false); }
   };
 
-  const saveAvatar = () => {
-    setAvatarEmoji(tempEmoji);
-    setAvatarBgIdx(tempBgIdx);
+  useEffect(() => {
+    // load saved avatar config/bg
+    (async () => {
+      try {
+        const [cfgRaw, bgRaw] = await Promise.all([
+          SecureStore.getItemAsync(AVATAR_CONFIG_KEY),
+          SecureStore.getItemAsync(AVATAR_BG_KEY),
+        ]);
+        if (bgRaw) setAvatarBgIdx(0);
+        if (cfgRaw) {
+          const parsed = JSON.parse(cfgRaw);
+          if (parsed && typeof parsed === 'object') {
+            // migrate possible old values that included '#'
+            const fixHex = (v: any) => {
+              const s = String(v ?? '');
+              return s.startsWith('#') ? s.slice(1) : s;
+            };
+            setAvatarConfig((prev) => ({
+              ...prev,
+              ...parsed,
+              seed: parsed.seed ?? prev.seed,
+              hairColor: fixHex(parsed.hairColor ?? prev.hairColor),
+              skinColor: fixHex(parsed.skinColor ?? prev.skinColor),
+              facialHairColor: fixHex(parsed.facialHairColor ?? prev.facialHairColor),
+            }));
+          }
+        }
+      } catch {
+        // ignore
+      }
+    })();
+  }, [defaultAvatarConfig]);
+
+  const saveAvatar = async () => {
+    setAvatarConfig(tempConfig);
+    setAvatarBgIdx(0);
     setShowAvatarPick(false);
+    try {
+      await Promise.all([
+        SecureStore.setItemAsync(AVATAR_CONFIG_KEY, JSON.stringify(tempConfig)),
+        SecureStore.setItemAsync(AVATAR_BG_KEY, '0'),
+      ]);
+    } catch {
+      // ignore
+    }
   };
 
   return (
@@ -168,31 +278,96 @@ export default function ProfileScreen() {
             {/* Preview */}
             <View style={{ alignItems: 'center', marginBottom: 8 }}>
               <LinearGradient colors={AVATAR_BG_PAIRS[tempBgIdx]} style={s.avatarLarge}>
-                <Text style={s.avatarLargeEmoji}>{tempEmoji}</Text>
+                <Avatar config={tempConfig} size={92} />
               </LinearGradient>
             </View>
 
-            {/* Emoji grid */}
-            <Text style={s.pickerSectionLbl}>Pick an avatar</Text>
-            <View style={s.emojiGrid}>
-              {AVATARS.map(e => (
+            {/* Hair */}
+            <Text style={s.pickerSectionLbl}>Hair</Text>
+            <View style={s.chipRow}>
+              {TOP_STYLES.map(opt => (
                 <TouchableOpacity
-                  key={e}
-                  style={[s.emojiOption, tempEmoji === e && s.emojiOptionActive]}
-                  onPress={() => setTempEmoji(e)}
+                  key={opt.id}
+                  style={[s.chip, tempConfig.top === opt.id && s.chipActive]}
+                  onPress={() => setTempConfig(prev => ({ ...prev, top: opt.id }))}
                 >
-                  <Text style={s.emojiOptionTxt}>{e}</Text>
+                  <Text style={[s.chipTxt, tempConfig.top === opt.id && s.chipTxtActive]}>{opt.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            {/* BG picker */}
-            <Text style={s.pickerSectionLbl}>Pick a colour</Text>
-            <View style={s.bgRow}>
-              {AVATAR_BG_PAIRS.map((pair, i) => (
-                <TouchableOpacity key={i} onPress={() => setTempBgIdx(i)} style={[s.bgSwatch, tempBgIdx === i && s.bgSwatchActive]}>
-                  <LinearGradient colors={pair} style={s.bgSwatchGrad} />
+            <Text style={s.pickerSectionLbl}>Hair Colour</Text>
+            <View style={s.swatchRow}>
+              {HAIR_COLORS.map(c => (
+                <TouchableOpacity
+                  key={c.hex}
+                  onPress={() => setTempConfig(prev => ({ ...prev, hairColor: c.id }))}
+                  style={[s.swatch, { backgroundColor: c.hex }, tempConfig.hairColor === c.id && s.swatchActive]}
+                />
+              ))}
+            </View>
+
+            {/* Face */}
+            <Text style={s.pickerSectionLbl}>Eyes</Text>
+            <View style={s.chipRow}>
+              {EYES.map(opt => (
+                <TouchableOpacity
+                  key={opt.id}
+                  style={[s.chip, tempConfig.eyes === opt.id && s.chipActive]}
+                  onPress={() => setTempConfig(prev => ({ ...prev, eyes: opt.id }))}
+                >
+                  <Text style={[s.chipTxt, tempConfig.eyes === opt.id && s.chipTxtActive]}>{opt.label}</Text>
                 </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={s.pickerSectionLbl}>Mouth</Text>
+            <View style={s.chipRow}>
+              {MOUTHS.map(opt => (
+                <TouchableOpacity
+                  key={opt.id}
+                  style={[s.chip, tempConfig.mouth === opt.id && s.chipActive]}
+                  onPress={() => setTempConfig(prev => ({ ...prev, mouth: opt.id }))}
+                >
+                  <Text style={[s.chipTxt, tempConfig.mouth === opt.id && s.chipTxtActive]}>{opt.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={s.pickerSectionLbl}>Brows</Text>
+            <View style={s.chipRow}>
+              {BROWS.map(opt => (
+                <TouchableOpacity
+                  key={opt.id}
+                  style={[s.chip, tempConfig.eyebrows === opt.id && s.chipActive]}
+                  onPress={() => setTempConfig(prev => ({ ...prev, eyebrows: opt.id }))}
+                >
+                  <Text style={[s.chipTxt, tempConfig.eyebrows === opt.id && s.chipTxtActive]}>{opt.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={s.pickerSectionLbl}>Beard & Mustache</Text>
+            <View style={s.chipRow}>
+              {FACIAL_HAIR.map(opt => (
+                <TouchableOpacity
+                  key={opt.id}
+                  style={[s.chip, (tempConfig.facialHair ?? 'none') === opt.id && s.chipActive]}
+                  onPress={() => setTempConfig(prev => ({ ...prev, facialHair: opt.id }))}
+                >
+                  <Text style={[s.chipTxt, (tempConfig.facialHair ?? 'none') === opt.id && s.chipTxtActive]}>{opt.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={s.pickerSectionLbl}>Skin Tone</Text>
+            <View style={s.swatchRow}>
+              {SKIN_TONES.map(c => (
+                <TouchableOpacity
+                  key={c.hex}
+                  onPress={() => setTempConfig(prev => ({ ...prev, skinColor: c.id }))}
+                  style={[s.swatch, { backgroundColor: c.hex }, tempConfig.skinColor === c.id && s.swatchActive]}
+                />
               ))}
             </View>
 
@@ -210,9 +385,13 @@ export default function ProfileScreen() {
         {/* ── HERO CARD ── */}
         <LinearGradient colors={['#0f172a', '#1e293b']} style={s.heroCard}>
           {/* Avatar */}
-          <TouchableOpacity style={s.avatarWrap} onPress={() => { setTempEmoji(avatarEmoji); setTempBgIdx(avatarBgIdx); setShowAvatarPick(true); }} activeOpacity={0.85}>
+          <TouchableOpacity
+            style={s.avatarWrap}
+            onPress={() => { setTempConfig(avatarConfig); setTempBgIdx(0); setShowAvatarPick(true); }}
+            activeOpacity={0.85}
+          >
             <LinearGradient colors={avatarGradient} style={s.avatar}>
-              <Text style={s.avatarEmoji}>{avatarEmoji}</Text>
+              <Avatar config={avatarConfig} size={84} />
             </LinearGradient>
             <View style={s.editBadge}>
               <Ionicons name="pencil" size={11} color="#fff" />
@@ -341,6 +520,12 @@ export default function ProfileScreen() {
             icon={<MessageSquare size={18} color="#2563eb" />} iconBg="#eff6ff"
             label="AI Coach" sub="Your precision health expert"
             onPress={() => router.push('/ai-coach')}
+          />
+          <View style={s.divider} />
+          <MenuRow
+            icon={<Zap size={18} color="#0ea5e9" />} iconBg="#f0f9ff"
+            label="Integrations" sub="Apple Health, Strava & more"
+            onPress={() => router.push('/integrations')}
           />
           <View style={s.divider} />
           <MenuRow
@@ -508,11 +693,21 @@ const s = StyleSheet.create({
   pickerClose:  { width: 34, height: 34, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
   pickerSectionLbl: { fontSize: 12, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 },
   avatarLarge:      { width: 100, height: 100, borderRadius: 30, alignItems: 'center', justifyContent: 'center' },
-  avatarLargeEmoji: { fontSize: 52 },
-  emojiGrid:  { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  emojiOption:{ width: 56, height: 56, borderRadius: 16, backgroundColor: '#f8fafc', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'transparent' },
-  emojiOptionActive: { borderColor: '#2563eb', backgroundColor: '#eff6ff' },
-  emojiOptionTxt: { fontSize: 28 },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  chip: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  chipActive: { backgroundColor: '#eff6ff', borderColor: '#2563eb' },
+  chipTxt: { fontSize: 12, fontWeight: '700', color: '#334155' },
+  chipTxtActive: { color: '#1d4ed8' },
+  swatchRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  swatch: { width: 34, height: 34, borderRadius: 17, borderWidth: 2, borderColor: 'transparent' },
+  swatchActive: { borderColor: '#0f172a', transform: [{ scale: 1.08 }] },
   bgRow:      { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
   bgSwatch:   { width: 44, height: 44, borderRadius: 14, borderWidth: 2, borderColor: 'transparent', overflow: 'hidden' },
   bgSwatchActive: { borderColor: '#0f172a', transform: [{ scale: 1.1 }] },

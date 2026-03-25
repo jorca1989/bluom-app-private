@@ -1,5 +1,5 @@
 import '../global.css';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -107,6 +107,17 @@ function InitialLayout() {
 
   const [isTimedOut, setIsTimedOut] = useState(false);
   const [minSplashTimeElapsed, setMinSplashTimeElapsed] = useState(false);
+  const hasNavigatedRef = useRef(false);
+  const sessionKeyRef = useRef<string>('');
+
+  // Reset nav lock if auth session changes (sign-in/out, user switch).
+  useEffect(() => {
+    const k = isSignedIn ? (user?.id ?? 'signed_in') : 'signed_out';
+    if (sessionKeyRef.current !== k) {
+      sessionKeyRef.current = k;
+      hasNavigatedRef.current = false;
+    }
+  }, [isSignedIn, user?.id]);
 
   // Minimum Splash Screen Delay Timer
   useEffect(() => {
@@ -120,12 +131,16 @@ function InitialLayout() {
   useEffect(() => {
     if (Platform.OS === 'web') return;
     if (!isLoaded || convexLoading) return;
+    if (hasNavigatedRef.current) return;
 
     if (isSignedIn && convexAuthenticated) {
       if (convexUser === undefined) return;
 
       if (convexUser === null) {
-        if (segments[0] !== 'onboarding') router.replace('/onboarding');
+        if (segments[0] !== 'onboarding') {
+          hasNavigatedRef.current = true;
+          router.replace('/onboarding');
+        }
         return;
       }
 
@@ -133,13 +148,18 @@ function InitialLayout() {
         const inAuth = segments[0] === '(auth)';
         const isOnb = segments[0] === 'onboarding';
         if (inAuth || (segments.length as number) === 0 || isOnb) {
+          hasNavigatedRef.current = true;
           router.replace('/(tabs)');
         }
       } else {
-        if (segments[0] !== 'onboarding') router.replace('/onboarding');
+        if (segments[0] !== 'onboarding') {
+          hasNavigatedRef.current = true;
+          router.replace('/onboarding');
+        }
       }
     } else if (!isSignedIn) {
       if (segments[0] !== '(auth)') {
+        hasNavigatedRef.current = true;
         router.replace('/login');
       }
     }

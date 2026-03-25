@@ -132,6 +132,58 @@ export const getOptimizationStatus = query({
             .withIndex("by_user_date", (q) => q.eq("userId", args.userId).eq("date", args.date))
             .first();
 
+        // If no manual vitality log yet, try to pull synced heart rate + sleep for a preliminary score.
+        const now = new Date();
+        const start = new Date(now); start.setHours(0, 0, 0, 0);
+        const end = new Date(now); end.setHours(23, 59, 59, 999);
+        const startMs = start.getTime();
+        const endMs = end.getTime();
+
+        const latestSynced = async (type: string) =>
+            ctx.db
+                .query("integrationsData")
+                .withIndex("by_user_type_time", (q) =>
+                    q.eq("userId", args.userId).eq("type", type).gte("timestamp", startMs)
+                )
+                .filter((q) => q.lte(q.field("timestamp"), endMs))
+                .order("desc")
+                .first();
+
+        let preliminaryVitalityScore: number | null = null;
+        let preliminaryVitals: { sleepHours: number | null; heartRateAvg: number | null } | null = null;
+        if (!vitality) {
+            const [sleep, hr] = await Promise.all([
+                latestSynced("sleep_hours"),
+                latestSynced("heart_rate_avg"),
+            ]);
+            const sleepHours = (sleep?.value ?? null) as number | null;
+            const heartRateAvg = (hr?.value ?? null) as number | null;
+
+            // Simple, explainable heuristic (0–100). Only computed if we have at least one signal.
+            const hasAny = (sleepHours !== null && sleepHours > 0) || (heartRateAvg !== null && heartRateAvg > 0);
+            if (hasAny) {
+                let scoreParts: number[] = [];
+                if (sleepHours !== null && sleepHours > 0) {
+                    const s =
+                        sleepHours >= 8 ? 100 :
+                        sleepHours >= 7 ? 85 :
+                        sleepHours >= 6 ? 65 :
+                        sleepHours >= 5 ? 45 : 25;
+                    scoreParts.push(s);
+                }
+                if (heartRateAvg !== null && heartRateAvg > 0) {
+                    const h =
+                        heartRateAvg <= 55 ? 100 :
+                        heartRateAvg <= 65 ? 85 :
+                        heartRateAvg <= 75 ? 65 :
+                        heartRateAvg <= 90 ? 45 : 25;
+                    scoreParts.push(h);
+                }
+                preliminaryVitals = { sleepHours, heartRateAvg };
+                preliminaryVitalityScore = Math.round(scoreParts.reduce((a, b) => a + b, 0) / scoreParts.length);
+            }
+        }
+
         // 50% Vitality Stack, 25% Pelvic, 25% Vitality Check
         let score = 0;
         if (vitality) score += 25;
@@ -181,7 +233,9 @@ export const getOptimizationStatus = query({
             recommendedStack,
             kegelCompleted: !!vitality?.kegelCompleted,
             bioLogCompleted: !!vitality,
-            supplementsLogged: !!supplements
+            supplementsLogged: !!supplements,
+            preliminaryVitalityScore,
+            preliminaryVitals,
         };
     },
 });

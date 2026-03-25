@@ -16,6 +16,8 @@ import { useSignUp } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, UserPlus, Eye, EyeOff } from 'lucide-react-native';
+import GoogleSignInButton from '@/components/GoogleSignInButton';
+import AppleSignInButton from '@/components/AppleSignInButton';
 
 export default function SignupScreen() {
   const { signUp, setActive, isLoaded } = useSignUp();
@@ -189,7 +191,18 @@ export default function SignupScreen() {
                   </LinearGradient>
                 </TouchableOpacity>
 
-                {/* Social sign-in temporarily disabled (Build 18) */}
+                {Platform.OS !== 'web' && (
+                  <>
+                    <View style={styles.divider}>
+                      <View style={styles.dividerLine} />
+                      <Text style={styles.dividerText}>or</Text>
+                      <View style={styles.dividerLine} />
+                    </View>
+                    <GoogleSignInButton disabled={loading} />
+                    <View style={{ height: 12 }} />
+                    <AppleSignInButton disabled={loading} />
+                  </>
+                )}
 
                 <View style={styles.footer}>
                   <Text style={styles.footerText}>Already have an account? </Text>

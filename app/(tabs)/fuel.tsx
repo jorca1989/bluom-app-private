@@ -170,6 +170,18 @@ export default function FuelScreen() {
   }, []);
 
   const todayTotals = useMemo(() => daily?.consumed ?? { calories: 0, protein: 0, carbs: 0, fat: 0 }, [daily]);
+
+  const calorieGoal = daily?.target?.calories ?? 2000;
+  const fillFraction = calorieGoal > 0 ? todayTotals.calories / calorieGoal : 0;
+
+  const fillMap = useMemo(() => {
+    const map: Record<string, number> = {};
+    if (!weekEntries || calorieGoal === 0) return map;
+    weekEntries.forEach((entry: any) => {
+      map[entry.date] = (map[entry.date] ?? 0) + entry.calories / calorieGoal;
+    });
+    return map;
+  }, [weekEntries, calorieGoal]);
   
   const addFoodFromCatalog = useCallback(async (food: any, meal: MealName) => {
     if (!convexUser?._id) return;
@@ -323,10 +335,12 @@ export default function FuelScreen() {
             />
           </View>
 
-          <DayStrip 
-            days={weekDates} 
-            selectedDate={selectedDate} 
-            onSelectDate={setSelectedDate} 
+          <DayStrip
+            days={weekDates}
+            selectedDate={selectedDate}
+            onSelectDate={setSelectedDate}
+            fillFraction={fillFraction}
+            fillMap={fillMap}
           />
 
           <View style={styles.section}>

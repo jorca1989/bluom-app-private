@@ -12,6 +12,7 @@ import {
   Animated,
   Modal,
   Switch,
+  Platform,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -45,11 +46,16 @@ import {
   TrendingDown,
   Moon,
 } from 'lucide-react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { CircularProgress } from '@/components/CircularProgress';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import NorthStarWidget from '@/components/NorthStarWidget';
 import AchievementsCard from '@/components/achievementcard';
 import { useResponsive } from '@/utils/responsive';
+import Avatar, { AvatarConfig } from '@/components/Avatar';
+// IMPORTANT: don't import expo-location at module scope.
+// If the current binary wasn't rebuilt after installing expo-location,
+// a static import will crash the app with "Cannot find native module 'ExpoLocation'".
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -57,6 +63,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 // WIDGET CONFIG
 // ─────────────────────────────────────────────────────────────
 type WidgetId =
+  | 'weather'
   | 'greeting'
   | 'vitality'
   | 'balance'
@@ -76,6 +83,7 @@ interface WidgetMeta {
 }
 
 const WIDGET_REGISTRY: WidgetMeta[] = [
+  { id: 'weather',       label: 'Local Weather',     description: 'Real-time temperature & conditions',          emoji: '☁️', defaultEnabled: true },
   { id: 'greeting',      label: 'Morning Briefing', description: 'Personalised greeting & daily tone-setter',  emoji: '☀️', defaultEnabled: true },
   { id: 'vitality',      label: 'Vitality Score',   description: 'Steps · Mood · Fuel performance snapshot',   emoji: '⚡', defaultEnabled: true },
   { id: 'balance',       label: 'Calorie Balance',  description: 'Goal − Food + Active = Remaining',           emoji: '🔥', defaultEnabled: true },
@@ -147,6 +155,10 @@ export default function HomeScreen() {
   );
   const systemStatus = useQuery(api.system.getSystemStatus);
   const resetOnboarding = useMutation(api.users.resetOnboarding);
+  const syncedMetrics = useQuery(
+    api.integrations.getTodayMetrics,
+    convexUser?._id ? { userId: convexUser._id } : 'skip'
+  );
 
   // ── Derived values ──
   const steps = useMemo(() =>
@@ -182,6 +194,138 @@ export default function HomeScreen() {
 
   const firstName = convexUser?.name?.split(' ')[0] ?? clerkUser?.firstName ?? 'there';
   const greeting  = getGreeting(firstName, hour);
+
+  // Avatar (used in greeting card, replaces duplicate logo)
+  const AVATAR_CONFIG_KEY = 'bluom_avatar_config_v2';
+  const [homeAvatar, setHomeAvatar] = useState<AvatarConfig>({
+    seed: clerkUser?.id ?? 'bluom-user',
+    top: 'shortFlat',
+    hairColor: '111827',
+    eyes: 'happy',
+    eyebrows: 'defaultNatural',
+    mouth: 'smile',
+    facialHair: 'none',
+    facialHairColor: '111827',
+    skinColor: 'f5d0a0',
+  });
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const raw = await SecureStore.getItemAsync(AVATAR_CONFIG_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object') return;
+        const fixHex = (v: any) => {
+          const s = String(v ?? '');
+          return s.startsWith('#') ? s.slice(1) : s;
+        };
+        setHomeAvatar((prev) => ({
+          ...prev,
+          ...parsed,
+          seed: parsed.seed ?? prev.seed,
+          hairColor: fixHex(parsed.hairColor ?? prev.hairColor),
+          skinColor: fixHex(parsed.skinColor ?? prev.skinColor),
+          facialHairColor: fixHex(parsed.facialHairColor ?? prev.facialHairColor),
+        }));
+      } catch {
+        // ignore
+      }
+    })();
+  }, [clerkUser?.id]);
+
+  // ── Weather ──
+  const [weather, setWeather] = useState<{
+    tempC: number;
+    highC: number;
+    lowC: number;
+    condition: string;
+    location: string;
+    icon: keyof typeof Ionicons.glyphMap;
+    updatedAt: number;
+  } | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [weatherPerm, setWeatherPerm] = useState<'unknown' | 'granted' | 'denied'>('unknown');
+
+  const wmoToCondition = (code: number): { condition: string; icon: keyof typeof Ionicons.glyphMap } => {
+    if (code === 0) return { condition: 'Clear', icon: 'sunny' };
+    if ([1, 2].includes(code)) return { condition: 'Mostly Clear', icon: 'partly-sunny' };
+    if (code === 3) return { condition: 'Cloudy', icon: 'cloudy' };
+    if ([45, 48].includes(code)) return { condition: 'Fog', icon: 'cloud' };
+    if (code >= 51 && code <= 57) return { condition: 'Drizzle', icon: 'rainy' };
+    if (code >= 61 && code <= 67) return { condition: 'Rain', icon: 'rainy' };
+    if (code >= 71 && code <= 77) return { condition: 'Snow', icon: 'snow' };
+    if (code >= 80 && code <= 82) return { condition: 'Showers', icon: 'rainy' };
+    if (code >= 95) return { condition: 'Thunderstorm', icon: 'thunderstorm' };
+    return { condition: 'Weather', icon: 'partly-sunny' };
+  };
+
+  const refreshWeather = useCallback(async (requestPermission: boolean) => {
+    if (!enabledWidgets.has('weather')) return;
+    setWeatherLoading(true);
+    try {
+      const Location = await import('expo-location').then(m => m).catch(() => null as any);
+      if (!Location?.getForegroundPermissionsAsync) {
+        setWeatherPerm('denied');
+        setWeather(null);
+        return;
+      }
+
+      const currentPerm = requestPermission
+        ? await Location.requestForegroundPermissionsAsync()
+        : await Location.getForegroundPermissionsAsync();
+
+      if (currentPerm.status !== 'granted') {
+        setWeatherPerm('denied');
+        setWeather(null);
+        return;
+      }
+      setWeatherPerm('granted');
+
+      const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      const { latitude, longitude } = pos.coords;
+
+      const [place] = await Location.reverseGeocodeAsync({ latitude, longitude }).catch(() => [] as any[]);
+      const locationLabel =
+        (place?.city || place?.district || place?.subregion || place?.region || place?.country || 'Your Area') as string;
+
+      const url =
+        `https://api.open-meteo.com/v1/forecast` +
+        `?latitude=${latitude}&longitude=${longitude}` +
+        `&current=temperature_2m,weather_code` +
+        `&daily=temperature_2m_max,temperature_2m_min` +
+        `&timezone=auto&forecast_days=1`;
+
+      const resp = await fetch(url);
+      const data = await resp.json();
+
+      const tempC = Math.round(Number(data?.current?.temperature_2m ?? 0));
+      const code = Number(data?.current?.weather_code ?? 0);
+      const highC = Math.round(Number((data?.daily?.temperature_2m_max ?? [tempC])[0]));
+      const lowC = Math.round(Number((data?.daily?.temperature_2m_min ?? [tempC])[0]));
+      const mapped = wmoToCondition(code);
+
+      setWeather({
+        tempC,
+        highC,
+        lowC,
+        condition: mapped.condition,
+        location: locationLabel,
+        icon: mapped.icon,
+        updatedAt: Date.now(),
+      });
+    } catch {
+      // Keep whatever last value we have; show a subtle error in the card.
+      setWeatherPerm((p) => (p === 'unknown' ? 'denied' : p));
+    } finally {
+      setWeatherLoading(false);
+    }
+  }, [enabledWidgets]);
+
+  useEffect(() => {
+    if (!enabledWidgets.has('weather')) return;
+    refreshWeather(false);
+  }, [enabledWidgets, refreshWeather]);
 
   const maintenanceMode   = systemStatus?.aiMaintenanceMode ?? false;
   const maintenanceBanner = systemStatus?.bannerMessage ?? 'AI services are under maintenance.';
@@ -266,7 +410,74 @@ export default function HomeScreen() {
         <Text style={s.greetLine1}>{greeting.line1}</Text>
         <Text style={[s.greetLine2, { color: greeting.accent }]}>{greeting.line2}</Text>
       </View>
-      <Image source={require('../../assets/images/logo.png')} style={s.greetLogo} resizeMode="contain" />
+      <View style={{ width: 52, height: 52, borderRadius: 18, overflow: 'hidden' }}>
+        <Avatar config={homeAvatar} size={52} />
+      </View>
+    </View>
+  );
+
+  const wWeather = () => (
+    <View style={[s.card, { backgroundColor: '#2563eb', shadowColor: '#2563eb' }]}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <View style={{ flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+            <Ionicons name="location" size={13} color="rgba(255,255,255,0.85)" />
+            <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>
+              {(weather?.location ?? 'LOCAL WEATHER').toUpperCase()}
+            </Text>
+          </View>
+
+          {weatherPerm !== 'granted' ? (
+            <>
+              <Text style={{ color: '#ffffff', fontSize: 18, fontWeight: '900', marginBottom: 6 }}>
+                Enable location for weather
+              </Text>
+              <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 12, fontWeight: '600', lineHeight: 17 }}>
+                We use your approximate location to show today’s conditions.
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text style={{ color: '#fff', fontSize: 40, fontWeight: '900', marginTop: -4 }}>
+                {weatherLoading && !weather ? '—' : `${weather?.tempC ?? '—'}°`}
+              </Text>
+              <Text style={{ color: '#fff', fontSize: 14, fontWeight: '800' }}>
+                {weather?.condition ?? (weatherLoading ? 'Updating…' : '—')}
+              </Text>
+            </>
+          )}
+        </View>
+
+        <View style={{ alignItems: 'flex-end', gap: 8 }}>
+          <Ionicons name={(weather?.icon ?? 'partly-sunny') as any} size={46} color="#ffffff" />
+          <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 12, fontWeight: '700' }}>
+            H:{weather?.highC ?? '—'}°  L:{weather?.lowC ?? '—'}°
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => refreshWeather(weatherPerm !== 'granted')}
+            activeOpacity={0.85}
+            style={{
+              backgroundColor: 'rgba(255,255,255,0.16)',
+              borderRadius: 12,
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
+            {weatherLoading ? (
+              <ActivityIndicator size="small" color="#ffffff" />
+            ) : (
+              <Ionicons name={weatherPerm === 'granted' ? 'refresh' : 'navigate'} size={14} color="#ffffff" />
+            )}
+            <Text style={{ color: '#ffffff', fontSize: 12, fontWeight: '800' }}>
+              {weatherPerm === 'granted' ? 'Refresh' : 'Enable'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 
@@ -353,6 +564,25 @@ export default function HomeScreen() {
         icon={<Footprints size={17} color="#2563eb" />}
         label="Steps" value={steps.toLocaleString()} sub="/ 10,000"
         progress={steps / 100} barColor="#2563eb"
+        tag={syncedMetrics?.lastSync ? (
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+            alignSelf: 'flex-start',
+            backgroundColor: Platform.OS === 'ios' ? '#fee2e2' : '#dbeafe',
+            paddingHorizontal: 10,
+            paddingVertical: 4,
+            borderRadius: 999,
+          }}>
+            <Ionicons
+              name={Platform.OS === 'ios' ? 'heart' : 'logo-google'}
+              size={12}
+              color={Platform.OS === 'ios' ? '#ef4444' : '#4285F4'}
+            />
+            <Text style={{ fontSize: 11, fontWeight: '800', color: '#0f172a' }}>Synced</Text>
+          </View>
+        ) : null}
       />
       <KPICard
         bg="#ecfeff" iconColor="#06b6d4" labelColor="#0e7490"
@@ -556,6 +786,7 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={isTablet ? { width: '100%', maxWidth: contentMaxWidth ?? 900, alignSelf: 'center' } : undefined}>
+          {isW('weather')       && wWeather()}
           {isW('greeting')      && wGreeting()}
           {isW('vitality')      && wVitality()}
           {isW('balance')       && wBalance()}
@@ -617,10 +848,11 @@ function BalStat({ label, val, color }: { label: string; val: number; color: str
 }
 
 function KPICard({
-  bg, icon, label, labelColor, value, unit, sub, progress, barColor,
+  bg, icon, label, labelColor, value, unit, sub, progress, barColor, tag,
 }: {
   bg: string; icon: React.ReactNode; label: string; labelColor: string;
   value: string; unit?: string; sub: string; progress: number; barColor: string; iconColor?: string;
+  tag?: React.ReactNode;
 }) {
   return (
     <View style={[kpi.card, { backgroundColor: bg }]}>
@@ -633,6 +865,7 @@ function KPICard({
         <View style={[kpi.fill, { width: `${Math.min(progress, 100)}%` as any, backgroundColor: barColor }]} />
       </View>
       <Text style={kpi.sub}>{sub}</Text>
+      {tag ? <View style={{ marginTop: 6 }}>{tag}</View> : null}
     </View>
   );
 }
