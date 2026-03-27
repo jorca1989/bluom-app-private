@@ -83,16 +83,16 @@ interface WidgetMeta {
 }
 
 const WIDGET_REGISTRY: WidgetMeta[] = [
-  { id: 'weather',       label: 'Local Weather',     description: 'Real-time temperature & conditions',          emoji: '☁️', defaultEnabled: true },
-  { id: 'greeting',      label: 'Morning Briefing', description: 'Personalised greeting & daily tone-setter',  emoji: '☀️', defaultEnabled: true },
-  { id: 'vitality',      label: 'Vitality Score',   description: 'Steps · Mood · Fuel performance snapshot',   emoji: '⚡', defaultEnabled: true },
-  { id: 'balance',       label: 'Calorie Balance',  description: 'Goal − Food + Active = Remaining',           emoji: '🔥', defaultEnabled: true },
-  { id: 'kpis',          label: 'Health KPIs',      description: 'Steps · Water · Mood · Weight cards',        emoji: '📊', defaultEnabled: true },
-  { id: 'achievements',  label: 'Achievements',     description: 'Your XP, tokens & latest unlocks',           emoji: '🏆', defaultEnabled: true },
-  { id: 'quick_actions', label: 'Quick Log',        description: 'One-tap shortcuts to log anything fast',     emoji: '⚡', defaultEnabled: true },
-  { id: 'trends',        label: 'Weekly Trends',    description: '7-day activity overview',                    emoji: '📈', defaultEnabled: true },
-  { id: 'discover',      label: 'Discover Hub',     description: 'All features in one glance',                 emoji: '🧭', defaultEnabled: true },
-  { id: 'north_star',    label: 'North Star Goal',  description: 'Your 12-month milestone reminder',           emoji: '🌟', defaultEnabled: true },
+  { id: 'weather', label: 'Local Weather', description: 'Real-time temperature & conditions', emoji: '☁️', defaultEnabled: true },
+  { id: 'greeting', label: 'Morning Briefing', description: 'Personalised greeting & daily tone-setter', emoji: '☀️', defaultEnabled: true },
+  { id: 'vitality', label: 'Vitality Score', description: 'Steps · Mood · Fuel performance snapshot', emoji: '⚡', defaultEnabled: true },
+  { id: 'balance', label: 'Calorie Balance', description: 'Goal − Food + Active = Remaining', emoji: '🔥', defaultEnabled: true },
+  { id: 'kpis', label: 'Health KPIs', description: 'Steps · Water · Mood · Weight cards', emoji: '📊', defaultEnabled: true },
+  { id: 'achievements', label: 'Achievements', description: 'Your XP, tokens & latest unlocks', emoji: '🏆', defaultEnabled: true },
+  { id: 'quick_actions', label: 'Quick Log', description: 'One-tap shortcuts to log anything fast', emoji: '⚡', defaultEnabled: true },
+  { id: 'trends', label: 'Weekly Trends', description: '7-day activity overview', emoji: '📈', defaultEnabled: true },
+  { id: 'discover', label: 'Discover Hub', description: 'All features in one glance', emoji: '🧭', defaultEnabled: true },
+  { id: 'north_star', label: 'North Star Goal', description: 'Your 12-month milestone reminder', emoji: '🌟', defaultEnabled: true },
 ];
 
 const STORAGE_KEY = 'bluom_home_widgets_v2';
@@ -101,11 +101,11 @@ const STORAGE_KEY = 'bluom_home_widgets_v2';
 // HELPERS
 // ─────────────────────────────────────────────────────────────
 function getGreeting(name: string, hour: number) {
-  if (hour < 5)  return { line1: `Still at it, ${name}?`,   line2: 'Make it count.',                  accent: '#6366f1' };
-  if (hour < 12) return { line1: `Good morning, ${name}.`,  line2: 'Set the tone for today.',          accent: '#f59e0b' };
-  if (hour < 17) return { line1: `Afternoon, ${name}.`,     line2: 'Stay sharp, stay focused.',        accent: '#2563eb' };
-  if (hour < 21) return { line1: `Evening, ${name}.`,       line2: 'Wind down with intention.',        accent: '#8b5cf6' };
-  return           { line1: `Night mode, ${name}.`,         line2: 'Recovery is part of the grind.',   accent: '#0ea5e9' };
+  if (hour < 5) return { line1: `Still at it, ${name}?`, line2: 'Make it count.', accent: '#6366f1' };
+  if (hour < 12) return { line1: `Good morning, ${name}.`, line2: 'Set the tone for today.', accent: '#f59e0b' };
+  if (hour < 17) return { line1: `Afternoon, ${name}.`, line2: 'Stay sharp, stay focused.', accent: '#2563eb' };
+  if (hour < 21) return { line1: `Evening, ${name}.`, line2: 'Wind down with intention.', accent: '#8b5cf6' };
+  return { line1: `Night mode, ${name}.`, line2: 'Recovery is part of the grind.', accent: '#0ea5e9' };
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -166,34 +166,34 @@ export default function HomeScreen() {
   const stepCalories = useMemo(() =>
     (stepEntriesToday ?? []).reduce((a: number, e: any) => a + (e.caloriesBurned ?? 0), 0), [stepEntriesToday]);
 
-  const burned          = (caloriesBurned ?? 0) + stepCalories;
-  const goalCalories    = convexUser?.dailyCalories ?? 2000;
-  const todayFood       = foodTotals?.calories ?? 0;
-  const remaining       = goalCalories - todayFood + burned;
-  const overBudget      = remaining < 0;
+  const burned = (caloriesBurned ?? 0) + stepCalories;
+  const goalCalories = convexUser?.dailyCalories ?? 2000;
+  const todayFood = foodTotals?.calories ?? 0;
+  const remaining = goalCalories - todayFood + burned;
+  const overBudget = remaining < 0;
 
-  const waterOz             = dailyMacros?.waterOz ?? 0;
-  const weightKg            = convexUser?.weight ?? 70;
-  const prefersLbs          = (convexUser?.preferredUnits?.weight ?? 'kg') === 'lbs';
-  const prefersMetric       = (convexUser?.preferredUnits?.volume  ?? 'ml') === 'ml';
-  const weightDisplay       = prefersLbs ? (weightKg * 2.2046).toFixed(1) : weightKg;
-  const weightUnit          = prefersLbs ? 'lb' : 'kg';
-  const waterGoalOz         = Math.round(weightKg * 30 * 0.033814);
-  const waterGoalDisplay    = prefersMetric ? Math.round(weightKg * 30) : waterGoalOz;
-  const waterDisplay        = prefersMetric ? Math.round(waterOz * 29.5735) : Math.round(waterOz);
-  const waterUnit           = prefersMetric ? 'ml' : 'oz';
+  const waterOz = dailyMacros?.waterOz ?? 0;
+  const weightKg = convexUser?.weight ?? 70;
+  const prefersLbs = (convexUser?.preferredUnits?.weight ?? 'kg') === 'lbs';
+  const prefersMetric = (convexUser?.preferredUnits?.volume ?? 'ml') === 'ml';
+  const weightDisplay = prefersLbs ? (weightKg * 2.2046).toFixed(1) : weightKg;
+  const weightUnit = prefersLbs ? 'lb' : 'kg';
+  const waterGoalOz = Math.round(weightKg * 30 * 0.033814);
+  const waterGoalDisplay = prefersMetric ? Math.round(weightKg * 30) : waterGoalOz;
+  const waterDisplay = prefersMetric ? Math.round(waterOz * 29.5735) : Math.round(waterOz);
+  const waterUnit = prefersMetric ? 'ml' : 'oz';
 
-  const stepsScore    = Math.min(steps / 10000, 1) * 100;
-  const moodScore     = ((moodLog?.mood ?? 0) / 5) * 100;
-  const fuelScore     = ((Math.min(todayFood / goalCalories, 1) + Math.min(waterOz / Math.max(1, waterGoalOz), 1)) / 2) * 100;
+  const stepsScore = Math.min(steps / 10000, 1) * 100;
+  const moodScore = ((moodLog?.mood ?? 0) / 5) * 100;
+  const fuelScore = ((Math.min(todayFood / goalCalories, 1) + Math.min(waterOz / Math.max(1, waterGoalOz), 1)) / 2) * 100;
   const vitalityScore = Math.round(stepsScore * 0.4 + moodScore * 0.3 + fuelScore * 0.3);
-  const dataMissing   = !moodLog && todayFood === 0 && steps === 0;
+  const dataMissing = !moodLog && todayFood === 0 && steps === 0;
 
   const vitalityColor = vitalityScore > 70 ? '#10b981' : vitalityScore > 40 ? '#2563eb' : '#f59e0b';
   const vitalityLabel = vitalityScore > 70 ? 'Excellent' : vitalityScore > 40 ? 'On Track' : 'Needs Work';
 
   const firstName = convexUser?.name?.split(' ')[0] ?? clerkUser?.firstName ?? 'there';
-  const greeting  = getGreeting(firstName, hour);
+  const greeting = getGreeting(firstName, hour);
 
   // Avatar (used in greeting card, replaces duplicate logo)
   const AVATAR_CONFIG_KEY = 'bluom_avatar_config_v2';
@@ -327,15 +327,15 @@ export default function HomeScreen() {
     refreshWeather(false);
   }, [enabledWidgets, refreshWeather]);
 
-  const maintenanceMode   = systemStatus?.aiMaintenanceMode ?? false;
+  const maintenanceMode = systemStatus?.aiMaintenanceMode ?? false;
   const maintenanceBanner = systemStatus?.bannerMessage ?? 'AI services are under maintenance.';
-  const hasOnboarded      = (convexUser?.age ?? 0) > 0 && (convexUser?.weight ?? 0) > 0;
+  const hasOnboarded = (convexUser?.age ?? 0) > 0 && (convexUser?.weight ?? 0) > 0;
 
   // ── Persist widget prefs ──
   useEffect(() => {
     SecureStore.getItemAsync(STORAGE_KEY).then(val => {
       if (val) {
-        try { setEnabledWidgets(new Set(JSON.parse(val) as WidgetId[])); } catch {}
+        try { setEnabledWidgets(new Set(JSON.parse(val) as WidgetId[])); } catch { }
       }
     });
   }, []);
@@ -386,7 +386,8 @@ export default function HomeScreen() {
         <TouchableOpacity style={s.resetBtn} onPress={async () => {
           Alert.alert('Reset', 'This will restart onboarding.', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Reset', style: 'destructive', onPress: async () => {
+            {
+              text: 'Reset', style: 'destructive', onPress: async () => {
                 await resetOnboarding({ userId: convexUser._id });
                 router.replace('/onboarding');
               }
@@ -512,8 +513,8 @@ export default function HomeScreen() {
         {/* Breakdown bars */}
         <View style={{ flex: 1 }}>
           <MiniBar label="Steps" pct={stepsScore} color="#2563eb" />
-          <MiniBar label="Mood"  pct={moodScore}  color="#8b5cf6" />
-          <MiniBar label="Fuel"  pct={fuelScore}  color="#10b981" />
+          <MiniBar label="Mood" pct={moodScore} color="#8b5cf6" />
+          <MiniBar label="Fuel" pct={fuelScore} color="#10b981" />
         </View>
       </View>
 
@@ -531,11 +532,11 @@ export default function HomeScreen() {
       </View>
 
       <View style={s.balRow}>
-        <BalStat label="Goal"   val={Math.round(goalCalories)} color="#1e293b" />
+        <BalStat label="Goal" val={Math.round(goalCalories)} color="#1e293b" />
         <Text style={s.balOp}>−</Text>
-        <BalStat label="Food"   val={Math.round(todayFood)}    color="#16a34a" />
+        <BalStat label="Food" val={Math.round(todayFood)} color="#16a34a" />
         <Text style={s.balOp}>+</Text>
-        <BalStat label="Active" val={Math.round(burned)}       color="#f97316" />
+        <BalStat label="Active" val={Math.round(burned)} color="#f97316" />
         <Text style={s.balOp}>=</Text>
         <BalStat
           label={overBudget ? 'Over' : 'Left'}
@@ -620,12 +621,12 @@ export default function HomeScreen() {
       <Text style={s.cardTitle}>Quick Log</Text>
       <View style={s.qaRow}>
         {[
-          { icon: Utensils,   label: 'Meal',    path: '/fuel',     color: '#16a34a', bg: '#f0fdf4' },
-          { icon: Dumbbell,   label: 'Workout', path: '/move',     color: '#2563eb', bg: '#eff6ff' },
-          { icon: Droplets,   label: 'Water',   path: '/fuel',     color: '#06b6d4', bg: '#ecfeff' },
-          { icon: Moon,       label: 'Sleep',   path: '/wellness', color: '#8b5cf6', bg: '#f5f3ff' },
-          { icon: Smile,      label: 'Mood',    path: '/wellness', color: '#f59e0b', bg: '#fffbeb' },
-          { icon: Footprints, label: 'Steps',   path: '/move',     color: '#f97316', bg: '#fff7ed' },
+          { icon: Utensils, label: 'Meal', path: '/fuel', color: '#16a34a', bg: '#f0fdf4' },
+          { icon: Dumbbell, label: 'Workout', path: '/move', color: '#2563eb', bg: '#eff6ff' },
+          { icon: Droplets, label: 'Water', path: '/fuel', color: '#06b6d4', bg: '#ecfeff' },
+          { icon: Moon, label: 'Sleep', path: '/wellness', color: '#8b5cf6', bg: '#f5f3ff' },
+          { icon: Smile, label: 'Mood', path: '/wellness', color: '#f59e0b', bg: '#fffbeb' },
+          { icon: Footprints, label: 'Steps', path: '/move', color: '#f97316', bg: '#fff7ed' },
         ].map(a => (
           <TouchableOpacity key={a.label} style={s.qaItem} onPress={() => router.push(a.path as any)} activeOpacity={0.75}>
             <View style={[s.qaIcon, { backgroundColor: a.bg }]}>
@@ -641,7 +642,7 @@ export default function HomeScreen() {
   const wTrends = () => {
     const data = [1, 3, 2, 4, 3, 5, 4];
     const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-    const max  = Math.max(...data);
+    const max = Math.max(...data);
     return (
       <View style={s.card}>
         <View style={s.cardHead}>
@@ -666,23 +667,27 @@ export default function HomeScreen() {
   };
 
   const discoverItems = [
-    { icon: MessageSquare, label: 'AI Coach',  path: '/ai-coach',        color: '#2563eb', bg: '#eff6ff' },
-    { icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♀</Text>,
-                           label: 'Women',     path: '/womens-health',   color: '#db2777', bg: '#fdf2f8' },
-    { icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♂</Text>,
-                           label: 'Men',       path: '/mens-health',     color: '#3b82f6', bg: '#eff6ff' },
-    { icon: Clock,         label: 'Fasting',   path: '/fasting',         color: '#f59e0b', bg: '#fffbeb' },
-    { icon: BookOpen,      label: 'Library',   path: '/library',         color: '#10b981', bg: '#ecfdf5' },
-    { icon: CheckCircle,   label: 'Tasks',     path: '/todo',            color: '#8b5cf6', bg: '#f5f3ff' },
-    { icon: Timer,         label: 'Focus',     path: '/focus-mode',      color: '#3b82f6', bg: '#eff6ff' },
-    { icon: Utensils,      label: 'Recipes',   path: '/recipes',         color: '#f97316', bg: '#fff7ed' },
-    { icon: Play,          label: 'Workouts',  path: '/workouts',        color: '#16a34a', bg: '#f0fdf4' },
-    { icon: TrendingDown,  label: 'Metabolic', path: '/sugar-dashboard', color: '#ef4444', bg: '#fee2e2' },
+    { icon: MessageSquare, label: 'AI Coach', path: '/ai-coach', color: '#2563eb', bg: '#eff6ff' },
+    {
+      icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♀</Text>,
+      label: 'Women', path: '/womens-health', color: '#db2777', bg: '#fdf2f8'
+    },
+    {
+      icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♂</Text>,
+      label: 'Men', path: '/mens-health', color: '#3b82f6', bg: '#eff6ff'
+    },
+    { icon: Clock, label: 'Fasting', path: '/fasting', color: '#f59e0b', bg: '#fffbeb' },
+    { icon: BookOpen, label: 'Library', path: '/library', color: '#10b981', bg: '#ecfdf5' },
+    { icon: CheckCircle, label: 'Tasks', path: '/todo', color: '#8b5cf6', bg: '#f5f3ff' },
+    { icon: Timer, label: 'Focus', path: '/focus-mode', color: '#3b82f6', bg: '#eff6ff' },
+    { icon: Utensils, label: 'Recipes', path: '/recipes', color: '#f97316', bg: '#fff7ed' },
+    { icon: Play, label: 'Workouts', path: '/workouts', color: '#16a34a', bg: '#f0fdf4' },
+    { icon: TrendingDown, label: 'Metabolic', path: '/sugar-dashboard', color: '#ef4444', bg: '#fee2e2' },
   ];
 
   const wDiscover = () => {
     const shown = showAllDiscover ? discoverItems : discoverItems.slice(0, 6);
-    const cols  = discoveryColumns ?? 4;
+    const cols = discoveryColumns ?? 4;
     return (
       <View style={s.card}>
         <View style={s.cardHead}>
@@ -780,22 +785,22 @@ export default function HomeScreen() {
         style={{ opacity: fadeAnim }}
         contentContainerStyle={[
           s.scroll,
-          { paddingBottom: Math.max(insets.bottom, 12) + 90 },
+          { paddingBottom: Math.max(insets.bottom, 12) + 40 },
           isTablet && { alignItems: 'center' as const },
         ]}
         showsVerticalScrollIndicator={false}
       >
         <View style={isTablet ? { width: '100%', maxWidth: contentMaxWidth ?? 900, alignSelf: 'center' } : undefined}>
-          {isW('weather')       && wWeather()}
-          {isW('greeting')      && wGreeting()}
-          {isW('vitality')      && wVitality()}
-          {isW('balance')       && wBalance()}
-          {isW('kpis')          && wKPIs()}
-          {isW('achievements')  && (convexUser?._id ? <AchievementsCard userId={convexUser._id} /> : null)}
+          {isW('weather') && wWeather()}
+          {isW('greeting') && wGreeting()}
+          {isW('vitality') && wVitality()}
+          {isW('balance') && wBalance()}
+          {isW('kpis') && wKPIs()}
+          {isW('achievements') && (convexUser?._id ? <AchievementsCard userId={convexUser._id} /> : null)}
           {isW('quick_actions') && wQuickActions()}
-          {isW('trends')        && wTrends()}
-          {isW('discover')      && wDiscover()}
-          {isW('north_star')    && (
+          {isW('trends') && wTrends()}
+          {isW('discover') && wDiscover()}
+          {isW('north_star') && (
             <NorthStarWidget
               goal={convexUser?.twelveMonthGoal}
               onPress={() => router.push('/life-goals' as any)}
@@ -831,11 +836,11 @@ function MiniBar({ label, pct, color }: { label: string; pct: number; color: str
   );
 }
 const mb = StyleSheet.create({
-  row:   { flexDirection: 'row', alignItems: 'center', marginBottom: 9, gap: 8 },
-  lbl:   { width: 38, fontSize: 11, fontWeight: '700', color: '#64748b' },
+  row: { flexDirection: 'row', alignItems: 'center', marginBottom: 9, gap: 8 },
+  lbl: { width: 38, fontSize: 11, fontWeight: '700', color: '#64748b' },
   track: { flex: 1, height: 6, backgroundColor: '#f1f5f9', borderRadius: 3, overflow: 'hidden' },
-  fill:  { height: '100%', borderRadius: 3 },
-  pct:   { width: 34, fontSize: 11, fontWeight: '700', textAlign: 'right' },
+  fill: { height: '100%', borderRadius: 3 },
+  pct: { width: 34, fontSize: 11, fontWeight: '700', textAlign: 'right' },
 });
 
 function BalStat({ label, val, color }: { label: string; val: number; color: string }) {
@@ -872,109 +877,109 @@ function KPICard({
 const kpi = StyleSheet.create({
   card: { flex: 1, minWidth: (SCREEN_WIDTH - 52) / 2, borderRadius: 18, padding: 14, minHeight: 100 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
-  lbl:  { fontSize: 13, fontWeight: '700' },
-  val:  { fontSize: 22, fontWeight: '900', color: '#0f172a', marginBottom: 6 },
+  lbl: { fontSize: 13, fontWeight: '700' },
+  val: { fontSize: 22, fontWeight: '900', color: '#0f172a', marginBottom: 6 },
   unit: { fontSize: 12, fontWeight: '600', color: '#64748b' },
-  bar:  { height: 4, backgroundColor: 'rgba(0,0,0,0.07)', borderRadius: 2, overflow: 'hidden', marginBottom: 4 },
+  bar: { height: 4, backgroundColor: 'rgba(0,0,0,0.07)', borderRadius: 2, overflow: 'hidden', marginBottom: 4 },
   fill: { height: '100%', borderRadius: 2 },
-  sub:  { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
+  sub: { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
 });
 
 // ─────────────────────────────────────────────────────────────
 // STYLES
 // ─────────────────────────────────────────────────────────────
 const s = StyleSheet.create({
-  screen:   { flex: 1, backgroundColor: '#f0f4ff' },
+  screen: { flex: 1, backgroundColor: '#ffffff' },
   loadWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8fafc', gap: 16 },
   loadText: { color: '#64748b', fontWeight: '600', fontSize: 14 },
-  errorText:{ color: '#475569', fontWeight: '700', fontSize: 15, textAlign: 'center', paddingHorizontal: 32 },
+  errorText: { color: '#475569', fontWeight: '700', fontSize: 15, textAlign: 'center', paddingHorizontal: 32 },
   resetBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12, shadowColor: '#000', shadowOpacity: 0.07, shadowRadius: 8, elevation: 2 },
   resetBtnTxt: { color: '#1e293b', fontWeight: '600' },
 
-  topBar:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10 },
+  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10 },
   topLogo: { width: 80, height: 26 },
-  cBtn:    { width: 36, height: 36, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
+  cBtn: { width: 36, height: 36, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
 
-  banner:    { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fef2f2', borderColor: '#fecaca', borderWidth: 1, marginHorizontal: 16, marginBottom: 6, padding: 11, borderRadius: 12 },
+  banner: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fef2f2', borderColor: '#fecaca', borderWidth: 1, marginHorizontal: 16, marginBottom: 6, padding: 11, borderRadius: 12 },
   bannerDot: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#ef4444' },
   bannerTxt: { flex: 1, color: '#991b1b', fontSize: 12, fontWeight: '600' },
 
-  scroll: { paddingHorizontal: 16, paddingTop: 4 },
+  scroll: { paddingHorizontal: 16, paddingTop: 12 },
 
   // Greeting
   greetCard: { backgroundColor: '#fff', borderRadius: 20, padding: 18, marginBottom: 12, flexDirection: 'row', alignItems: 'center', shadowColor: '#2563eb', shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
-  greetLine1:{ fontSize: 19, fontWeight: '800', color: '#0f172a', marginBottom: 2 },
-  greetLine2:{ fontSize: 13, fontWeight: '600' },
+  greetLine1: { fontSize: 19, fontWeight: '800', color: '#0f172a', marginBottom: 2 },
+  greetLine2: { fontSize: 13, fontWeight: '600' },
   greetLogo: { width: 52, height: 18 },
 
   // Generic card
-  card:      { backgroundColor: '#fff', borderRadius: 20, padding: 17, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 10, elevation: 1 },
-  cardHead:  { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 },
+  card: { backgroundColor: '#fff', borderRadius: 20, padding: 17, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 10, elevation: 1 },
+  cardHead: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 },
   cardTitle: { fontSize: 16, fontWeight: '800', color: '#1e293b' },
-  cardSub:   { fontSize: 11, color: '#94a3b8', fontWeight: '600', marginTop: 2 },
+  cardSub: { fontSize: 11, color: '#94a3b8', fontWeight: '600', marginTop: 2 },
 
-  badge:    { paddingHorizontal: 9, paddingVertical: 4, borderRadius: 8 },
+  badge: { paddingHorizontal: 9, paddingVertical: 4, borderRadius: 8 },
   badgeTxt: { fontSize: 11, fontWeight: '700' },
 
   // Vitality
-  vRow:      { flexDirection: 'row', alignItems: 'center', gap: 18 },
-  circleWrap:{ position: 'relative', alignItems: 'center', justifyContent: 'center' },
+  vRow: { flexDirection: 'row', alignItems: 'center', gap: 18 },
+  circleWrap: { position: 'relative', alignItems: 'center', justifyContent: 'center' },
   circleAbs: { position: 'absolute', alignItems: 'center' },
-  vNum:      { fontSize: 28, fontWeight: '900', lineHeight: 32 },
-  vSub:      { fontSize: 11, color: '#94a3b8', fontWeight: '700' },
-  vHint:     { marginTop: 10, fontSize: 12, color: '#94a3b8', fontWeight: '600', textAlign: 'center' },
+  vNum: { fontSize: 28, fontWeight: '900', lineHeight: 32 },
+  vSub: { fontSize: 11, color: '#94a3b8', fontWeight: '700' },
+  vHint: { marginTop: 10, fontSize: 12, color: '#94a3b8', fontWeight: '600', textAlign: 'center' },
 
   // Balance
-  balRow:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
-  balOp:     { fontSize: 17, color: '#cbd5e1', fontWeight: '300', marginBottom: 10 },
+  balRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
+  balOp: { fontSize: 17, color: '#cbd5e1', fontWeight: '300', marginBottom: 10 },
   progTrack: { height: 5, backgroundColor: '#f1f5f9', borderRadius: 3, overflow: 'hidden', marginBottom: 5 },
-  progFill:  { height: '100%', borderRadius: 3 },
-  progLbl:   { fontSize: 10, color: '#94a3b8', fontWeight: '600', textAlign: 'right' },
+  progFill: { height: '100%', borderRadius: 3 },
+  progLbl: { fontSize: 10, color: '#94a3b8', fontWeight: '600', textAlign: 'right' },
 
   // KPIs
   kpiGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 12 },
   kpiCard: { flex: 1, minWidth: (SCREEN_WIDTH - 52) / 2, borderRadius: 18, padding: 14, minHeight: 100 },
   kpiHead: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
-  kpiLbl:  { fontSize: 13, fontWeight: '700' },
-  kpiVal:  { fontSize: 22, fontWeight: '900', color: '#0f172a', marginBottom: 6 },
+  kpiLbl: { fontSize: 13, fontWeight: '700' },
+  kpiVal: { fontSize: 22, fontWeight: '900', color: '#0f172a', marginBottom: 6 },
   kpiUnit: { fontSize: 12, fontWeight: '600', color: '#64748b' },
-  kpiSub:  { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
+  kpiSub: { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
 
   // Quick actions
-  qaRow:  { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 },
+  qaRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 },
   qaItem: { alignItems: 'center', flex: 1 },
   qaIcon: { width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginBottom: 5 },
-  qaLbl:  { fontSize: 10, fontWeight: '700', color: '#475569', textAlign: 'center' },
+  qaLbl: { fontSize: 10, fontWeight: '700', color: '#475569', textAlign: 'center' },
 
   // Trends
-  chartRow:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 72 },
-  chartCol:   { flex: 1, alignItems: 'center', gap: 5 },
+  chartRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 72 },
+  chartCol: { flex: 1, alignItems: 'center', gap: 5 },
   chartTrack: { width: 20, height: 56, backgroundColor: '#f1f5f9', borderRadius: 6, overflow: 'hidden', justifyContent: 'flex-end' },
-  chartFill:  { width: '100%', backgroundColor: '#3b82f6', borderRadius: 6 },
-  chartDay:   { fontSize: 10, fontWeight: '700', color: '#94a3b8' },
+  chartFill: { width: '100%', backgroundColor: '#3b82f6', borderRadius: 6 },
+  chartDay: { fontSize: 10, fontWeight: '700', color: '#94a3b8' },
 
   // Discover
   discGrid: { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -4 },
   discItem: { alignItems: 'center', padding: 6, marginBottom: 8 },
   discIcon: { width: 48, height: 48, borderRadius: 15, alignItems: 'center', justifyContent: 'center', marginBottom: 5 },
-  discLbl:  { fontSize: 11, fontWeight: '700', color: '#475569', textAlign: 'center' },
+  discLbl: { fontSize: 11, fontWeight: '700', color: '#475569', textAlign: 'center' },
   showMore: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 6, gap: 4 },
   showMoreTxt: { fontSize: 12, fontWeight: '700', color: '#2563eb' },
 
   // Empty
-  empty:     { alignItems: 'center', paddingVertical: 80, gap: 10 },
-  emptyTitle:{ fontSize: 17, fontWeight: '800', color: '#94a3b8' },
-  emptySub:  { fontSize: 13, color: '#cbd5e1', textAlign: 'center' },
+  empty: { alignItems: 'center', paddingVertical: 80, gap: 10 },
+  emptyTitle: { fontSize: 17, fontWeight: '800', color: '#94a3b8' },
+  emptySub: { fontSize: 13, color: '#cbd5e1', textAlign: 'center' },
 
   // Modal
-  modWrap:  { flex: 1, backgroundColor: '#f8fafc' },
-  modHeader:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, paddingBottom: 6 },
+  modWrap: { flex: 1, backgroundColor: '#f8fafc' },
+  modHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, paddingBottom: 6 },
   modTitle: { fontSize: 21, fontWeight: '900', color: '#1e293b' },
   modClose: { width: 34, height: 34, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
-  modSub:   { fontSize: 13, color: '#64748b', paddingHorizontal: 20, marginBottom: 18, fontWeight: '500' },
-  wRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
-  wLeft:    { flexDirection: 'row', alignItems: 'center', gap: 14, flex: 1, marginRight: 10 },
-  wEmoji:   { fontSize: 24 },
-  wName:    { fontSize: 15, fontWeight: '700', color: '#1e293b' },
-  wDesc:    { fontSize: 12, color: '#94a3b8', fontWeight: '500', marginTop: 1 },
+  modSub: { fontSize: 13, color: '#64748b', paddingHorizontal: 20, marginBottom: 18, fontWeight: '500' },
+  wRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+  wLeft: { flexDirection: 'row', alignItems: 'center', gap: 14, flex: 1, marginRight: 10 },
+  wEmoji: { fontSize: 24 },
+  wName: { fontSize: 15, fontWeight: '700', color: '#1e293b' },
+  wDesc: { fontSize: 12, color: '#94a3b8', fontWeight: '500', marginTop: 1 },
 });

@@ -43,9 +43,9 @@ export default function AiCoachScreen() {
   );
 
   const [messages, setMessages] = useState<Message[]>([
-    { 
-      role: 'coach', 
-      content: 'Hello! I am your Bluom AI Coach. How can I help you with your fitness, nutrition, or wellness today?' 
+    {
+      role: 'coach',
+      content: 'Hello! I am your Bluom AI Coach. How can I help you with your fitness, nutrition, or wellness today?'
     },
     {
       role: 'coach',
@@ -54,7 +54,7 @@ export default function AiCoachScreen() {
       prompt: "Help me build a consistent daily routine"
     },
     {
-      role: 'coach', 
+      role: 'coach',
       content: '😴 Improve my sleep quality naturally',
       isQuickQuestion: true,
       prompt: "Improve my sleep quality naturally"
@@ -167,7 +167,7 @@ export default function AiCoachScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#ebf1fe]" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-[#ffffff]" edges={['top', 'bottom']}>
       <View className="px-4 pb-3 flex-row items-center gap-3 border-b border-slate-100 bg-white" style={{ paddingTop: Math.max(insets.top, 12) + 8 }}>
         <TouchableOpacity onPress={() => router.back()} className="w-10 h-10 rounded-xl bg-slate-50 items-center justify-center">
           <Ionicons name="arrow-back" size={20} color="#0f172a" />
@@ -197,7 +197,7 @@ export default function AiCoachScreen() {
         >
           {messages.map((m, i) => (
             <View key={i} className={`mb-4 flex-row ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => m.isQuickQuestion && handleSend(m.prompt)}
                 disabled={!m.isQuickQuestion}
                 className={`max-w-[85%] rounded-2xl p-4 ${m.role === 'user' ? 'bg-blue-600 rounded-tr-none' : m.isQuickQuestion ? 'bg-blue-50 border-2 border-blue-200 rounded-tl-none' : 'bg-slate-100 rounded-tl-none'}`}

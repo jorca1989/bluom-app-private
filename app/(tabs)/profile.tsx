@@ -152,13 +152,13 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 // ─────────────────────────────────────────────────────────────
 export default function ProfileScreen() {
   const { user: clerkUser } = useUser();
-  const { signOut }          = useAuth();
-  const router               = useRouter();
-  const insets               = useSafeAreaInsets();
+  const { signOut } = useAuth();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
 
-  const convexUser     = useQuery(api.users.getUserByClerkId, clerkUser?.id ? { clerkId: clerkUser.id } : 'skip');
+  const convexUser = useQuery(api.users.getUserByClerkId, clerkUser?.id ? { clerkId: clerkUser.id } : 'skip');
   const dbAchievements = (useQuery(api.achievements.getUserAchievements, convexUser?._id ? { userId: convexUser._id } : 'skip') ?? []) as any[];
-  const gardenState    = useQuery(api.mindworld.getGardenState, convexUser?._id ? { userId: convexUser._id } : 'skip');
+  const gardenState = useQuery(api.mindworld.getGardenState, convexUser?._id ? { userId: convexUser._id } : 'skip');
   const resetOnboarding = useMutation(api.users.resetOnboarding);
 
   // Avatar state — stored in SecureStore
@@ -180,35 +180,37 @@ export default function ProfileScreen() {
   const [tempConfig, setTempConfig] = useState<AvatarConfig>(defaultAvatarConfig);
   const [tempBgIdx, setTempBgIdx] = useState(0);
 
-  const [rcInfo,    setRcInfo]    = useState<any>(null);
+  const [rcInfo, setRcInfo] = useState<any>(null);
   const [rcLoading, setRcLoading] = useState(false);
 
   // Derived
-  const name           = convexUser?.name ?? clerkUser?.fullName ?? 'Athlete';
-  const firstName      = name.split(' ')[0];
-  const email          = convexUser?.email ?? clerkUser?.primaryEmailAddress?.emailAddress ?? '';
-  const isPro          = !!convexUser?.isPremium;
-  const level          = gardenState?.level ?? 1;
-  const xp             = gardenState?.xp ?? 0;
-  const tokens         = gardenState?.tokens ?? 0;
-  const unlockedCount  = dbAchievements.length;
+  const name = convexUser?.name ?? clerkUser?.fullName ?? 'Athlete';
+  const firstName = name.split(' ')[0];
+  const email = convexUser?.email ?? clerkUser?.primaryEmailAddress?.emailAddress ?? '';
+  const isPro = !!convexUser?.isPremium;
+  const level = gardenState?.level ?? 1;
+  const xp = gardenState?.xp ?? 0;
+  const tokens = gardenState?.tokens ?? 0;
+  const unlockedCount = dbAchievements.length;
   const avatarGradient = AVATAR_BG_PAIRS[0];
 
   // Stats
-  const goal    = convexUser?.fitnessGoal?.replace(/_/g, ' ') ?? '—';
-  const weight  = convexUser?.weight ? `${convexUser.weight} kg` : '—';
-  const streak  = gardenState?.meditationStreak ?? 0;
+  const goal = convexUser?.fitnessGoal?.replace(/_/g, ' ') ?? '—';
+  const weight = convexUser?.weight ? `${convexUser.weight} kg` : '—';
+  const streak = gardenState?.meditationStreak ?? 0;
 
   const handleSignOut = () => Alert.alert('Sign Out', 'Are you sure?', [
     { text: 'Cancel', style: 'cancel' },
-    { text: 'Sign Out', style: 'destructive', onPress: async () => { try { await signOut(); router.replace('/login'); } catch {} } },
+    { text: 'Sign Out', style: 'destructive', onPress: async () => { try { await signOut(); router.replace('/login'); } catch { } } },
   ]);
 
   const handleReset = () => Alert.alert('Reset Goal', 'This will restart your onboarding.', [
     { text: 'Cancel', style: 'cancel' },
-    { text: 'Reset', style: 'destructive', onPress: async () => {
-      if (convexUser) { await resetOnboarding({ userId: convexUser._id }); router.replace('/onboarding'); }
-    }},
+    {
+      text: 'Reset', style: 'destructive', onPress: async () => {
+        if (convexUser) { await resetOnboarding({ userId: convexUser._id }); router.replace('/onboarding'); }
+      }
+    },
   ]);
 
   const refreshRC = async () => {
@@ -619,60 +621,60 @@ export default function ProfileScreen() {
 // STYLES
 // ─────────────────────────────────────────────────────────────
 const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#f0f4ff' },
+  screen: { flex: 1, backgroundColor: '#ffffff' },
   scroll: { paddingHorizontal: 16, paddingTop: 12 },
 
   // Hero
-  heroCard:  { borderRadius: 24, padding: 24, alignItems: 'center', marginBottom: 14, overflow: 'hidden' },
-  avatarWrap:{ position: 'relative', marginBottom: 14 },
-  avatar:    { width: 84, height: 84, borderRadius: 26, alignItems: 'center', justifyContent: 'center' },
-  avatarEmoji:{ fontSize: 40 },
+  heroCard: { borderRadius: 24, padding: 24, alignItems: 'center', marginBottom: 14, overflow: 'hidden' },
+  avatarWrap: { position: 'relative', marginBottom: 14 },
+  avatar: { width: 84, height: 84, borderRadius: 26, alignItems: 'center', justifyContent: 'center' },
+  avatarEmoji: { fontSize: 40 },
   editBadge: { position: 'absolute', bottom: -4, right: -4, width: 24, height: 24, borderRadius: 12, backgroundColor: '#2563eb', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#1e293b' },
-  heroName:  { fontSize: 22, fontWeight: '900', color: '#fff', marginBottom: 4 },
+  heroName: { fontSize: 22, fontWeight: '900', color: '#fff', marginBottom: 4 },
   heroEmail: { fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: '600', marginBottom: 12 },
-  proBadge:  { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: '#fef3c7', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 5, marginBottom: 16 },
-  proBadgeTxt:{ fontSize: 12, fontWeight: '800', color: '#92400e' },
-  upgradeChip:{ backgroundColor: 'rgba(251,191,36,0.15)', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 6, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(251,191,36,0.3)' },
-  upgradeChipTxt:{ fontSize: 12, fontWeight: '800', color: '#fcd34d' },
-  statsRow:  { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 16, paddingVertical: 12, paddingHorizontal: 8, width: '100%' },
-  stat:      { flex: 1, alignItems: 'center' },
-  statVal:   { fontSize: 18, fontWeight: '900', color: '#fff' },
-  statLbl:   { fontSize: 9, color: 'rgba(255,255,255,0.5)', fontWeight: '700', marginTop: 2 },
-  statDivider:{ width: 1, height: 28, backgroundColor: 'rgba(255,255,255,0.1)' },
+  proBadge: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: '#fef3c7', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 5, marginBottom: 16 },
+  proBadgeTxt: { fontSize: 12, fontWeight: '800', color: '#92400e' },
+  upgradeChip: { backgroundColor: 'rgba(251,191,36,0.15)', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 6, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(251,191,36,0.3)' },
+  upgradeChipTxt: { fontSize: 12, fontWeight: '800', color: '#fcd34d' },
+  statsRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 16, paddingVertical: 12, paddingHorizontal: 8, width: '100%' },
+  stat: { flex: 1, alignItems: 'center' },
+  statVal: { fontSize: 18, fontWeight: '900', color: '#fff' },
+  statLbl: { fontSize: 9, color: 'rgba(255,255,255,0.5)', fontWeight: '700', marginTop: 2 },
+  statDivider: { width: 1, height: 28, backgroundColor: 'rgba(255,255,255,0.1)' },
 
   // Achievements teaser
   achievCard: { backgroundColor: '#fff', borderRadius: 20, padding: 16, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 8, elevation: 1, gap: 10 },
   achievLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  achievTitle:{ fontSize: 16, fontWeight: '800', color: '#0f172a' },
-  achievSub:  { fontSize: 11, color: '#94a3b8', fontWeight: '600', marginTop: 1 },
-  achievBadges:{ flexDirection: 'row', gap: 6 },
-  miniBadge:  { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  miniBadgeEmoji:{ fontSize: 18 },
+  achievTitle: { fontSize: 16, fontWeight: '800', color: '#0f172a' },
+  achievSub: { fontSize: 11, color: '#94a3b8', fontWeight: '600', marginTop: 1 },
+  achievBadges: { flexDirection: 'row', gap: 6 },
+  miniBadge: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  miniBadgeEmoji: { fontSize: 18 },
   achievNone: { fontSize: 12, color: '#94a3b8', fontStyle: 'italic' },
-  achievBar:  { height: 4, backgroundColor: '#f1f5f9', borderRadius: 2, overflow: 'hidden' },
-  achievBarFill:{ height: '100%', backgroundColor: '#d97706', borderRadius: 2 },
+  achievBar: { height: 4, backgroundColor: '#f1f5f9', borderRadius: 2, overflow: 'hidden' },
+  achievBarFill: { height: '100%', backgroundColor: '#d97706', borderRadius: 2 },
 
   // Quick stats
   quickStats: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 18, padding: 14, marginBottom: 14, gap: 0 },
-  quickStatItem:{ flex: 1, alignItems: 'center', gap: 3 },
-  quickStatEmoji:{ fontSize: 18 },
-  quickStatVal:  { fontSize: 13, fontWeight: '800', color: '#0f172a' },
-  quickStatLbl:  { fontSize: 9, color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase' },
+  quickStatItem: { flex: 1, alignItems: 'center', gap: 3 },
+  quickStatEmoji: { fontSize: 18 },
+  quickStatVal: { fontSize: 13, fontWeight: '800', color: '#0f172a' },
+  quickStatLbl: { fontSize: 9, color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase' },
 
   // Sections
-  section:     { marginBottom: 14 },
-  sectionTitle:{ fontSize: 11, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, paddingHorizontal: 2 },
+  section: { marginBottom: 14 },
+  sectionTitle: { fontSize: 11, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, paddingHorizontal: 2 },
   sectionCard: { backgroundColor: '#fff', borderRadius: 18, overflow: 'hidden', shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 8, elevation: 1 },
-  divider:     { height: 1, backgroundColor: '#f8fafc', marginHorizontal: 16 },
+  divider: { height: 1, backgroundColor: '#f8fafc', marginHorizontal: 16 },
 
   // Menu rows
-  menuRow:   { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
-  menuIcon:  { width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
-  menuText:  { flex: 1 },
+  menuRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
+  menuIcon: { width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+  menuText: { flex: 1 },
   menuLabel: { fontSize: 15, fontWeight: '600', color: '#0f172a' },
-  menuSub:   { fontSize: 11, color: '#94a3b8', marginTop: 1, fontWeight: '500' },
+  menuSub: { fontSize: 11, color: '#94a3b8', marginTop: 1, fontWeight: '500' },
   menuBadge: { backgroundColor: '#fef9c3', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 },
-  menuBadgeTxt:{ fontSize: 10, fontWeight: '800', color: '#d97706' },
+  menuBadgeTxt: { fontSize: 10, fontWeight: '800', color: '#d97706' },
 
   // Sign out
   signOutBtn: { backgroundColor: '#fff', borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, borderWidth: 1, borderColor: '#fecaca' },
@@ -683,16 +685,16 @@ const s = StyleSheet.create({
   debugTxt: { fontSize: 10, color: '#475569', fontFamily: 'monospace' },
 
   // Footer
-  footer:    { alignItems: 'center', paddingVertical: 32, gap: 6 },
-  footerLogo:{ width: 72, height: 22 },
+  footer: { alignItems: 'center', paddingVertical: 32, gap: 6 },
+  footerLogo: { width: 72, height: 22 },
   footerTxt: { fontSize: 11, color: '#cbd5e1', fontWeight: '600' },
 
   // Avatar picker modal
   pickerHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
-  pickerTitle:  { fontSize: 20, fontWeight: '900', color: '#0f172a' },
-  pickerClose:  { width: 34, height: 34, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
+  pickerTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a' },
+  pickerClose: { width: 34, height: 34, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
   pickerSectionLbl: { fontSize: 12, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 },
-  avatarLarge:      { width: 100, height: 100, borderRadius: 30, alignItems: 'center', justifyContent: 'center' },
+  avatarLarge: { width: 100, height: 100, borderRadius: 30, alignItems: 'center', justifyContent: 'center' },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   chip: {
     backgroundColor: '#f8fafc',
@@ -708,8 +710,8 @@ const s = StyleSheet.create({
   swatchRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   swatch: { width: 34, height: 34, borderRadius: 17, borderWidth: 2, borderColor: 'transparent' },
   swatchActive: { borderColor: '#0f172a', transform: [{ scale: 1.08 }] },
-  bgRow:      { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
-  bgSwatch:   { width: 44, height: 44, borderRadius: 14, borderWidth: 2, borderColor: 'transparent', overflow: 'hidden' },
+  bgRow: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
+  bgSwatch: { width: 44, height: 44, borderRadius: 14, borderWidth: 2, borderColor: 'transparent', overflow: 'hidden' },
   bgSwatchActive: { borderColor: '#0f172a', transform: [{ scale: 1.1 }] },
   bgSwatchGrad: { flex: 1 },
   saveAvatarBtn: { backgroundColor: '#2563eb', borderRadius: 16, paddingVertical: 16, alignItems: 'center', marginTop: 8 },

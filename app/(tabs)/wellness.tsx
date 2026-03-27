@@ -52,7 +52,7 @@ const kpiStyles = StyleSheet.create({
   },
   label: { fontSize: 12, color: '#64748b', marginBottom: 2 },
   value: { fontSize: 22, fontWeight: '800', color: '#0f172a', marginBottom: 2 },
-  sub:   { fontSize: 11, color: '#94a3b8' },
+  sub: { fontSize: 11, color: '#94a3b8' },
 });
 
 // ─── Quick Action Button ───────────────────────────────────────────────────────
@@ -111,7 +111,7 @@ const hubStyles = StyleSheet.create({
     justifyContent: 'center', alignItems: 'center', marginBottom: 10,
   },
   label: { fontSize: 13, fontWeight: '800', color: '#fff', letterSpacing: 0.1 },
-  sub:   { fontSize: 10, color: 'rgba(255,255,255,0.65)', marginTop: 2 },
+  sub: { fontSize: 10, color: 'rgba(255,255,255,0.65)', marginTop: 2 },
   arrow: { position: 'absolute', top: 14, right: 14 },
 });
 
@@ -129,9 +129,9 @@ function SectionHeader({ title, sub }: { title: string; sub?: string }) {
 
 // ─── Main Screen ───────────────────────────────────────────────────────────────
 export default function WellnessScreen() {
-  const router  = useRouter();
-  const params  = useLocalSearchParams();
-  const insets  = useSafeAreaInsets();
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
 
   const user = useQuery(
@@ -145,38 +145,38 @@ export default function WellnessScreen() {
     return d.toISOString().split('T')[0];
   }), []);
 
-  const habits         = useQuery(api.habits.getUserHabitsForDate,  user ? { userId: user._id, date: today } : 'skip');
-  const sleepLogs      = useQuery(api.wellness.getSleepLogs,        user ? { userId: user._id, startDate: last7Days[0], endDate: today } : 'skip');
-  const moodLogs       = useQuery(api.wellness.getMoodLogs,         user ? { userId: user._id, startDate: last7Days[0], endDate: today } : 'skip');
-  const meditationLogs = useQuery(api.wellness.getMeditationLogs,  user ? { userId: user._id, limit: 50 } : 'skip');
+  const habits = useQuery(api.habits.getUserHabitsForDate, user ? { userId: user._id, date: today } : 'skip');
+  const sleepLogs = useQuery(api.wellness.getSleepLogs, user ? { userId: user._id, startDate: last7Days[0], endDate: today } : 'skip');
+  const moodLogs = useQuery(api.wellness.getMoodLogs, user ? { userId: user._id, startDate: last7Days[0], endDate: today } : 'skip');
+  const meditationLogs = useQuery(api.wellness.getMeditationLogs, user ? { userId: user._id, limit: 50 } : 'skip');
 
   const logSleep = useMutation(api.wellness.logSleep);
-  const logMood  = useMutation(api.wellness.logMood);
+  const logMood = useMutation(api.wellness.logMood);
 
   // Modal state
-  const [showSleepModal,    setShowSleepModal]    = useState(false);
-  const [showMoodModal,     setShowMoodModal]      = useState(false);
-  const [showInsightsModal, setShowInsightsModal]  = useState(false);
-  const [showMeditationHub, setShowMeditationHub]  = useState(false);
-  const [showGamesHub,      setShowGamesHub]        = useState(false);
-  const [showMindWorld,     setShowMindWorld]       = useState(false);
-  const [showLifeGoals,     setShowLifeGoals]       = useState(params.showLifeGoals === 'true');
-  const [sleepInput,        setSleepInput]          = useState('');
+  const [showSleepModal, setShowSleepModal] = useState(false);
+  const [showMoodModal, setShowMoodModal] = useState(false);
+  const [showInsightsModal, setShowInsightsModal] = useState(false);
+  const [showMeditationHub, setShowMeditationHub] = useState(false);
+  const [showGamesHub, setShowGamesHub] = useState(false);
+  const [showMindWorld, setShowMindWorld] = useState(false);
+  const [showLifeGoals, setShowLifeGoals] = useState(params.showLifeGoals === 'true');
+  const [sleepInput, setSleepInput] = useState('');
 
   const MOODS = [
     { label: 'Excellent', value: 5, color: '#22c55e', emoji: '😄' },
-    { label: 'Good',      value: 4, color: '#3b82f6', emoji: '🙂' },
-    { label: 'Okay',      value: 3, color: '#eab308', emoji: '😐' },
-    { label: 'Low',       value: 2, color: '#f97316', emoji: '😟' },
-    { label: 'Poor',      value: 1, color: '#ef4444', emoji: '😢' },
+    { label: 'Good', value: 4, color: '#3b82f6', emoji: '🙂' },
+    { label: 'Okay', value: 3, color: '#eab308', emoji: '😐' },
+    { label: 'Low', value: 2, color: '#f97316', emoji: '😟' },
+    { label: 'Poor', value: 1, color: '#ef4444', emoji: '😢' },
   ];
 
-  const todaySleep      = useMemo(() => sleepLogs?.find(l => l.date === today), [sleepLogs, today]);
-  const todayMood       = useMemo(() => moodLogs?.find(l => l.date === today), [moodLogs, today]);
-  const moodConfig      = useMemo(() => todayMood ? MOODS.find(m => m.value === todayMood.mood) : null, [todayMood]);
+  const todaySleep = useMemo(() => sleepLogs?.find(l => l.date === today), [sleepLogs, today]);
+  const todayMood = useMemo(() => moodLogs?.find(l => l.date === today), [moodLogs, today]);
+  const moodConfig = useMemo(() => todayMood ? MOODS.find(m => m.value === todayMood.mood) : null, [todayMood]);
   const completedHabits = useMemo(() => habits?.filter(h => h.completedToday).length ?? 0, [habits]);
-  const totalHabits     = habits?.length ?? 0;
-  const isPro           = !!user?.isPremium;
+  const totalHabits = habits?.length ?? 0;
+  const isPro = !!user?.isPremium;
 
   const sleepAvg = useMemo(() => {
     const valid = sleepLogs?.filter(l => l.hours > 0) ?? [];
@@ -219,7 +219,7 @@ export default function WellnessScreen() {
 
   return (
     <SafeAreaView style={s.container} edges={['top']}>
-      <ScrollView contentContainerStyle={{ paddingBottom: bottomPad }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ paddingTop: 12, paddingBottom: bottomPad }} showsVerticalScrollIndicator={false}>
 
         {/* ── Header ── */}
         <View style={s.header}>
@@ -373,8 +373,8 @@ export default function WellnessScreen() {
                 const log = moodLogs.find(l => l.date === date);
                 const mood = log?.mood ?? 0;
                 const cfg = MOODS.find(m => m.value === mood);
-                const dow  = new Date(date + 'T12:00:00').getDay();
-                const dayLabel = ['Su','M','T','W','Th','F','Sa'][dow];
+                const dow = new Date(date + 'T12:00:00').getDay();
+                const dayLabel = ['Su', 'M', 'T', 'W', 'Th', 'F', 'Sa'][dow];
                 return (
                   <View key={date} style={s.moodBar}>
                     <View style={s.moodBarTrack}>
@@ -406,9 +406,9 @@ export default function WellnessScreen() {
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 24 }}>
             {[
               { label: 'Habit Completion', value: totalHabits > 0 ? `${Math.round((completedHabits / totalHabits) * 100)}%` : '0%', locked: false },
-              { label: '7-Day Sleep Avg',  value: `${sleepAvg}h`, locked: false },
+              { label: '7-Day Sleep Avg', value: `${sleepAvg}h`, locked: false },
               { label: 'Meditation (Week)', value: `${meditationMins7d}m`, locked: false },
-              { label: 'Mood Stability',   value: isPro ? 'Stable' : '🔒 Pro', locked: !isPro },
+              { label: 'Mood Stability', value: isPro ? 'Stable' : '🔒 Pro', locked: !isPro },
             ].map(item => (
               <View key={item.label} style={[s.metricRow, item.locked && { opacity: 0.5 }]}>
                 <Text style={s.metricLabel}>{item.label}</Text>
@@ -466,10 +466,10 @@ export default function WellnessScreen() {
         </SafeAreaView>
       </Modal>
 
-      {showMeditationHub && <MeditationHub   userId={user._id} onClose={() => setShowMeditationHub(false)} />}
-      {showGamesHub      && <GamesHub        userId={user._id} onClose={() => setShowGamesHub(false)} />}
-      {showMindWorld     && <MindWorldScreen  visible={true}    onClose={() => setShowMindWorld(false)} />}
-      {showLifeGoals     && <LifeGoalsHub    userId={user._id} onClose={() => setShowLifeGoals(false)} />}
+      {showMeditationHub && <MeditationHub userId={user._id} onClose={() => setShowMeditationHub(false)} />}
+      {showGamesHub && <GamesHub userId={user._id} onClose={() => setShowGamesHub(false)} />}
+      {showMindWorld && <MindWorldScreen visible={true} onClose={() => setShowMindWorld(false)} />}
+      {showLifeGoals && <LifeGoalsHub userId={user._id} onClose={() => setShowLifeGoals(false)} />}
       <PanicButton userId={user._id} />
     </SafeAreaView>
   );
@@ -477,13 +477,13 @@ export default function WellnessScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
-  center:    { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
   header: {
     paddingHorizontal: 24, paddingTop: 12, paddingBottom: 8,
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
   },
-  title:    { fontSize: 28, fontWeight: '900', color: '#0f172a', letterSpacing: -0.5 },
+  title: { fontSize: 28, fontWeight: '900', color: '#0f172a', letterSpacing: -0.5 },
   subtitle: { fontSize: 13, color: '#64748b', marginTop: 2 },
 
   kpiGrid: {
@@ -505,7 +505,7 @@ const s = StyleSheet.create({
     shadowOpacity: 0.35, shadowRadius: 20, elevation: 10,
   },
   blob: { position: 'absolute', borderRadius: 999 },
-  planBannerLeft:  { flex: 1, paddingRight: 16 },
+  planBannerLeft: { flex: 1, paddingRight: 16 },
   planBannerRight: { alignItems: 'center', justifyContent: 'center' },
   planBannerBadge: {
     alignSelf: 'flex-start',
@@ -541,14 +541,14 @@ const s = StyleSheet.create({
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
   },
-  moodBar:      { alignItems: 'center', flex: 1, gap: 4 },
+  moodBar: { alignItems: 'center', flex: 1, gap: 4 },
   moodBarTrack: {
     width: 8, height: 60, backgroundColor: '#f1f5f9',
     borderRadius: 4, justifyContent: 'flex-end', overflow: 'hidden',
   },
-  moodBarFill:  { width: '100%', borderRadius: 4 },
+  moodBarFill: { width: '100%', borderRadius: 4 },
   moodDayLabel: { fontSize: 10, color: '#94a3b8', fontWeight: '600' },
-  moodEmoji:    { fontSize: 11 },
+  moodEmoji: { fontSize: 11 },
 
   // ── Modals ───────────────────────────────────────────────────────
   modalWrap: { flex: 1, backgroundColor: '#fff' },

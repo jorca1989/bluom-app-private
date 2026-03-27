@@ -36,6 +36,7 @@ export default defineSchema({
     fitnessExperience: v.optional(v.string()),
     workoutPreference: v.optional(v.string()),
     weeklyWorkoutTime: v.optional(v.float64()), // hours per week
+    commitmentLevel: v.optional(v.string()), // 'easy', 'balanced', 'maximum'
 
     // Nutrition Preferences
     nutritionApproach: v.optional(v.string()),

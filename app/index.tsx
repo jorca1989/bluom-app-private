@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ActivityIndicator, Platform } from "react-native";
+import { View, Platform } from "react-native";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import LandingPage from "./landing";
 
@@ -7,34 +7,10 @@ export default function IndexScreen() {
     return <LandingPage />;
   }
 
-  const { isSignedIn, isLoaded: isAuthLoaded } = useAuth();
-  const { user: clerkUser, isLoaded: isClerkLoaded } = useUser();
-  // Root screen should never present extra choices; routing is owned by app/_layout.tsx.
+  // Render a blank white screen — _layout.tsx owns all routing decisions.
+  // This screen is only briefly mounted during the routing handoff.
+  // No spinner or text means no visible "flash" during transitions.
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color="#2563eb" />
-      <Text style={styles.text}>
-        {!isAuthLoaded || !isClerkLoaded
-          ? 'Initializing...'
-          : isSignedIn || clerkUser
-            ? 'Setting up your account...'
-            : 'Preparing onboarding...'}
-      </Text>
-    </View>
+    <View style={{ flex: 1, backgroundColor: '#ffffff' }} />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: '#ffffff',
-    gap: 16,
-    paddingHorizontal: 24,
-  },
-  text: {
-    fontSize: 16,
-    color: '#64748b',
-  },
-});

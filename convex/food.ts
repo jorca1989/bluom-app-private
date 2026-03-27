@@ -1,6 +1,13 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { isProOrAdmin } from "./access";
+import {
+  checkMealAchievements,
+  checkProteinGoal,
+  checkCalorieGoal,
+  checkXPMilestones,
+  checkAchievementMilestones,
+} from "./achievementChecker";
 
 /**
  * Log a food entry
@@ -60,6 +67,27 @@ export const logFoodEntry = mutation({
       timestamp: Date.now(),
       createdAt: Date.now(),
     });
+
+    // Check meal logging achievements
+    await checkMealAchievements(ctx.db, args.userId, args.date);
+
+    // Calculate daily totals and check protein/calorie goals
+    const todayEntries = await ctx.db
+      .query("foodEntries")
+      .withIndex("by_user_date", (q) =>
+        q.eq("userId", args.userId).eq("date", args.date)
+      )
+      .collect();
+
+    const totalProtein = todayEntries.reduce((sum, e) => sum + e.protein, 0);
+    const totalCalories = todayEntries.reduce((sum, e) => sum + e.calories, 0);
+
+    await checkProteinGoal(ctx.db, args.userId, args.date, totalProtein);
+    await checkCalorieGoal(ctx.db, args.userId, args.date, totalCalories);
+
+    // Check XP and achievement milestones
+    await checkXPMilestones(ctx.db, args.userId);
+    await checkAchievementMilestones(ctx.db, args.userId);
 
     return entryId;
   },

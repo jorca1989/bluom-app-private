@@ -41,14 +41,14 @@ function calculateTDEE(bmr: number, activityLevel: string): number {
 }
 
 /**
- * Adjust TDEE based on fitness goal
- * - Lose Weight: -500 cal (1 lb per week)
- * - Build Muscle: +300 cal
+ * Adjust TDEE based on fitness goal and commitment level
+ * - Lose Weight: -250 (easy), -500 (balanced), -750 (maximum)
+ * - Build Muscle: +150 (easy), +300 (balanced), +500 (maximum)
  * - Maintain: TDEE
  * - Improve Health: TDEE
  */
-function adjustCaloriesForGoal(tdee: number, goal: string): number {
-  const adjustments: Record<string, number> = {
+function adjustCaloriesForGoal(tdee: number, goal: string, commitmentLevel?: string): number {
+  const baseAdjustments: Record<string, number> = {
     lose_weight: -500,
     build_muscle: 300,
     maintain: 0,
@@ -56,7 +56,18 @@ function adjustCaloriesForGoal(tdee: number, goal: string): number {
     improve_endurance: 0,
     general_health: 0,
   };
-  return tdee + (adjustments[goal] || 0);
+  
+  let baseAdjustment = baseAdjustments[goal] || 0;
+  
+  // Apply commitment level multiplier
+  if (commitmentLevel === 'easy') {
+    baseAdjustment = baseAdjustment * 0.5; // 50% intensity
+  } else if (commitmentLevel === 'maximum') {
+    baseAdjustment = baseAdjustment * 1.5; // 150% intensity
+  }
+  // 'balanced' or undefined uses base value (100%)
+  
+  return tdee + baseAdjustment;
 }
 
 /**
@@ -168,6 +179,7 @@ type OnboardingArgs = {
   peakEnergy?: string;
   lifeStressor?: string | string[];
   coachingStyle?: string;
+  commitmentLevel?: string;
   preferredLanguage?: string;
   preferredUnits?: {
     weight: string;
@@ -213,6 +225,7 @@ export const onboardUser = mutation({
     // Backwards-compatible: older clients send a string, new onboarding sends string[]
     lifeStressor: v.optional(v.union(v.string(), v.array(v.string()))),
     coachingStyle: v.optional(v.string()), // Made optional per request
+    commitmentLevel: v.optional(v.string()), // 'easy', 'balanced', 'maximum'
     preferredLanguage: v.optional(v.string()), // Added for localization support
     preferredUnits: v.optional(v.object({
       weight: v.string(),
@@ -244,8 +257,8 @@ export const onboardUser = mutation({
     // STEP 3: Calculate TDEE (Total Daily Energy Expenditure)
     const tdee = calculateTDEE(bmr, args.activityLevel);
 
-    // STEP 4: Adjust calories for fitness goal
-    const dailyCalories = adjustCaloriesForGoal(tdee, args.fitnessGoal);
+    // STEP 4: Adjust calories for fitness goal and commitment level
+    const dailyCalories = adjustCaloriesForGoal(tdee, args.fitnessGoal, args.commitmentLevel);
 
     // STEP 5: Calculate macro split
     const macros = calculateMacros(
@@ -266,14 +279,36 @@ export const onboardUser = mutation({
       mealsPerDay: args.mealsPerDay,
     });
 
-    // STEP 7: Find existing user
-    const existingUser = await ctx.db
+    // STEP 7: Find existing user or create if webhook hasn't fired yet
+    let existingUser = await ctx.db
       .query("users")
       .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
       .first();
 
     if (!existingUser) {
-      throw new Error("User not found. Please sign up first.");
+      // Clerk webhook may not have fired yet — create the user record now
+      // so onboarding can proceed without waiting for the webhook.
+      const userId = await ctx.db.insert("users", {
+        clerkId: args.clerkId,
+        email: "",
+        name: args.name || "User",
+        preferredLanguage: "en",
+        preferredUnits: { height: "cm", weight: "kg", volume: "ml" },
+        isPremium: false,
+        subscriptionStatus: "free",
+        role: "user",
+        isAdmin: false,
+        dailyGamePlays: 0,
+        dailyMeditationPlays: 0,
+        dailyMealLogs: 0,
+        lastResetDate: new Date().toISOString().slice(0, 10),
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+      existingUser = await ctx.db.get(userId);
+      if (!existingUser) {
+        throw new Error("Failed to create user record.");
+      }
     }
 
     const lifeStressors =
@@ -308,6 +343,7 @@ export const onboardUser = mutation({
       lifeStressor: lifeStressors as any,
 
       coachingStyle: args.coachingStyle,
+      commitmentLevel: args.commitmentLevel,
       ...(args.preferredLanguage && { preferredLanguage: args.preferredLanguage }),
       ...(args.preferredUnits && {
         preferredUnits: {

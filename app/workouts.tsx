@@ -146,7 +146,7 @@ export default function WorkoutsScreen() {
                             <View style={styles.infoGrid}>
                                 <View style={styles.infoItem}>
                                     <Text style={styles.infoLabel}>Instructor</Text>
-                                    <Text style={styles.infoValue}>{selectedWorkout.instructor}</Text>
+                                    <Text style={styles.infoValue}>{selectedWorkout.instructor || 'Bluom Coach'}</Text>
                                 </View>
                                 <View style={styles.infoItem}>
                                     <Text style={styles.infoLabel}>Difficulty</Text>

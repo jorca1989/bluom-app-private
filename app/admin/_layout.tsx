@@ -17,7 +17,8 @@ import {
     X,
     LogOut,
     Play,
-    Layers
+    Layers,
+    FolderOpen
 } from 'lucide-react-native';
 import { MASTER_ADMINS } from '../../convex/permissions';
 import { getBottomContentPadding } from '@/utils/layout';
@@ -32,6 +33,7 @@ const NAV_ITEMS = [
     { label: 'Financial', icon: CreditCard, href: '/admin/financial' },
     { label: 'Marketing', icon: Megaphone, href: '/admin/marketing' },
     { label: 'Analytics', icon: BarChart3, href: '/admin/analytics' },
+    { label: 'Media Library', icon: FolderOpen, href: '/admin/media' },
     { label: 'Recipes Manager', icon: Utensils, href: '/admin/recipes' },
     { label: 'Video Workouts', icon: Play, href: '/admin/workouts' },
     { label: 'Exercises Lib', icon: Dumbbell, href: '/admin/exercises' },

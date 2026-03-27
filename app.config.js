@@ -15,14 +15,14 @@ export default ({ config }) => {
             name: "Bluom",
             slug: "bolt-expo-nativewind",
             owner: "ggovsaas",
-            version: "1.0.20",
+            version: "1.0.21",
             scheme: "bluom",
             userInterfaceStyle: "automatic",
-            runtimeVersion: "1.0.20",
+            runtimeVersion: "1.0.21",
             privacyPolicyUrl: "https://www.bluom.app/legal/privacy",
             ios: {
                 bundleIdentifier: "com.jwfca.bluom",
-                buildNumber: "30",
+                buildNumber: "31",
                 googleServicesFile: "./GoogleService-Info.plist",
                 entitlements: {
                     "com.apple.developer.healthkit": true,
@@ -31,15 +31,15 @@ export default ({ config }) => {
                     ITSAppUsesNonExemptEncryption: false,
                     UIBackgroundModes: ["audio"],
 
-                    // ── Camera & Photos (existing — updated to be more specific) ──
+                    // ── Camera & Photos (updated for Body Scan feature) ──
                     NSPhotoLibraryUsageDescription:
-                        "Bluom uses your photo library to scan food labels and analyze meals for AI-powered nutrition insights.",
+                        "Bluom uses your photo library to scan food labels for nutrition insights and to save or upload body progress photos for the Body Scan feature.",
                     NSCameraUsageDescription:
-                        "Bluom uses the camera to scan food items and nutritional labels for AI-powered nutrition insights.",
+                        "Bluom uses the camera to scan food items for nutrition insights and to take body progress photos for AI-powered body composition analysis.",
 
                     // ── Location (Weather) ─────────────────────────────────────────
                     NSLocationWhenInUseUsageDescription:
-                        "Bluom uses your location to show local weather at the top of your dashboard. Your location is used only on-device to fetch weather for your area.",
+                        "Bluom uses your approximate location solely to provide real-time local weather data on your dashboard.",
 
                     // ── HealthKit (NEW) ───────────────────────────────────────────
                     // NSHealthShareUsageDescription: what we READ from HealthKit.
@@ -88,7 +88,7 @@ export default ({ config }) => {
             },
             android: {
                 package: "com.jwfca.bluom",
-                versionCode: 30,
+                versionCode: 31,
                 googleServicesFile: "./google-services.json",
                 permissions: [
                     // ── Existing ──────────────────────────────────────────────────
@@ -116,6 +116,7 @@ export default ({ config }) => {
                     "android.permission.health.READ_HEART_RATE",
                     "android.permission.health.READ_EXERCISE",
                     "android.permission.health.READ_BODY_FAT",
+                    "android.permission.health.READ_MENSTRUATION",
                 ],
             },
             icon: "./assets/images/icon.png",
@@ -143,7 +144,7 @@ export default ({ config }) => {
                     "expo-camera",
                     {
                         cameraPermission:
-                            "Bluom uses the camera to scan food items and nutritional labels for AI-powered nutrition insights.",
+                            "Bluom uses the camera to scan food items for nutrition insights and to take body progress photos for AI-powered body composition analysis.",
                     },
                 ],
                 "expo-apple-authentication",
@@ -171,6 +172,8 @@ export default ({ config }) => {
     return {
         ...base.expo,
         ...config,
+        // scheme MUST come after ...config to prevent it being overwritten
+        scheme: "bluom",
         plugins,
     };
 };

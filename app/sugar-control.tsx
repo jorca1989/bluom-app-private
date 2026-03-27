@@ -287,7 +287,7 @@ function Choice({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ebf1fe' },
+  container: { flex: 1, backgroundColor: '#ffffff' },
   header: {
     paddingHorizontal: 16,
     paddingBottom: 12,

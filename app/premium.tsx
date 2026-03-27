@@ -187,7 +187,7 @@ export default function PremiumScreen() {
   }
 
   async function handleDismiss() {
-    try { await SecureStore.deleteItemAsync('bluom_show_premium'); } catch {}
+    try { await SecureStore.deleteItemAsync('bluom_show_premium'); } catch { }
     router.replace('/(tabs)');
   }
 
@@ -248,7 +248,9 @@ export default function PremiumScreen() {
         </View>
 
         {/* ── Wave transition into dark card ── */}
-        <WaveMask />
+        <View style={{ marginTop: -20 }}>
+          <WaveMask />
+        </View>
 
         {/* ── Dark content card ── */}
         <View style={styles.contentCard}>
@@ -429,12 +431,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(10,10,15,0.45)',
   },
   heroSpacer: {
-    height: HERO_HEIGHT - 40,
+    height: HERO_HEIGHT - 180,
     justifyContent: 'flex-end',
   },
   heroTextWrap: {
     paddingHorizontal: 28,
-    paddingBottom: 48,
+    paddingBottom: 32,
   },
   heroEyebrow: {
     fontSize: 11,

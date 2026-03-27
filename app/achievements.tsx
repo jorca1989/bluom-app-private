@@ -225,14 +225,14 @@ export default function AchievementsScreen() {
 }
 
 const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#ebf1fe' },
+  screen: { flex: 1, backgroundColor: '#ffffff' },
   header: {
     paddingHorizontal: 16,
     paddingBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: '#ebf1fe',
+    backgroundColor: '#ffffff',
   },
   backBtn: {
     width: 40,

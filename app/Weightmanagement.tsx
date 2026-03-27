@@ -37,34 +37,34 @@ const { width } = Dimensions.get('window');
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const BMI_RANGES = [
-  { label: 'Underweight', max: 18.5,  color: '#60a5fa' },
-  { label: 'Normal',      max: 24.9,  color: '#34d399' },
-  { label: 'Overweight',  max: 29.9,  color: '#fbbf24' },
-  { label: 'Obese',       max: Infinity, color: '#f87171' },
+  { label: 'Underweight', max: 18.5, color: '#60a5fa' },
+  { label: 'Normal', max: 24.9, color: '#34d399' },
+  { label: 'Overweight', max: 29.9, color: '#fbbf24' },
+  { label: 'Obese', max: Infinity, color: '#f87171' },
 ];
 
 const MEASUREMENT_FIELDS: Array<{ key: string; label: string; icon: string }> = [
-  { key: 'chest',      label: 'Chest',       icon: 'expand-outline' },
-  { key: 'waist',      label: 'Waist',       icon: 'resize-outline' },
-  { key: 'hips',       label: 'Hips',        icon: 'ellipse-outline' },
-  { key: 'shoulders',  label: 'Shoulders',   icon: 'arrow-back-outline' },
-  { key: 'neck',       label: 'Neck',        icon: 'bandage-outline' },
-  { key: 'leftArm',    label: 'Left Arm',    icon: 'fitness-outline' },
-  { key: 'rightArm',   label: 'Right Arm',   icon: 'fitness-outline' },
-  { key: 'leftThigh',  label: 'Left Thigh',  icon: 'walk-outline' },
+  { key: 'chest', label: 'Chest', icon: 'expand-outline' },
+  { key: 'waist', label: 'Waist', icon: 'resize-outline' },
+  { key: 'hips', label: 'Hips', icon: 'ellipse-outline' },
+  { key: 'shoulders', label: 'Shoulders', icon: 'arrow-back-outline' },
+  { key: 'neck', label: 'Neck', icon: 'bandage-outline' },
+  { key: 'leftArm', label: 'Left Arm', icon: 'fitness-outline' },
+  { key: 'rightArm', label: 'Right Arm', icon: 'fitness-outline' },
+  { key: 'leftThigh', label: 'Left Thigh', icon: 'walk-outline' },
   { key: 'rightThigh', label: 'Right Thigh', icon: 'walk-outline' },
-  { key: 'leftCalf',   label: 'Left Calf',   icon: 'footsteps-outline' },
-  { key: 'rightCalf',  label: 'Right Calf',  icon: 'footsteps-outline' },
+  { key: 'leftCalf', label: 'Left Calf', icon: 'footsteps-outline' },
+  { key: 'rightCalf', label: 'Right Calf', icon: 'footsteps-outline' },
 ];
 
 const SCAN_FIELDS: Array<{ key: string; label: string; unit: string; icon: string }> = [
-  { key: 'bodyFatPercent',   label: 'Body Fat',        unit: '%',  icon: 'water-outline' },
-  { key: 'muscleMassKg',     label: 'Muscle Mass',     unit: 'kg', icon: 'barbell-outline' },
-  { key: 'boneMassKg',       label: 'Bone Mass',       unit: 'kg', icon: 'cube-outline' },
-  { key: 'waterPercent',     label: 'Water',           unit: '%',  icon: 'rainy-outline' },
-  { key: 'visceralFatLevel', label: 'Visceral Fat',    unit: 'lvl',icon: 'alert-circle-outline' },
-  { key: 'bmr',              label: 'BMR',             unit: 'kcal',icon: 'flame-outline' },
-  { key: 'metabolicAge',     label: 'Metabolic Age',   unit: 'yrs',icon: 'hourglass-outline' },
+  { key: 'bodyFatPercent', label: 'Body Fat', unit: '%', icon: 'water-outline' },
+  { key: 'muscleMassKg', label: 'Muscle Mass', unit: 'kg', icon: 'barbell-outline' },
+  { key: 'boneMassKg', label: 'Bone Mass', unit: 'kg', icon: 'cube-outline' },
+  { key: 'waterPercent', label: 'Water', unit: '%', icon: 'rainy-outline' },
+  { key: 'visceralFatLevel', label: 'Visceral Fat', unit: 'lvl', icon: 'alert-circle-outline' },
+  { key: 'bmr', label: 'BMR', unit: 'kcal', icon: 'flame-outline' },
+  { key: 'metabolicAge', label: 'Metabolic Age', unit: 'yrs', icon: 'hourglass-outline' },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -161,7 +161,7 @@ const sh = StyleSheet.create({
     width: 32, height: 32, borderRadius: 8,
     backgroundColor: '#1e3a5f', justifyContent: 'center', alignItems: 'center',
   },
-  title: { fontSize: 16, fontWeight: '800', color: '#f1f5f9', letterSpacing: -0.3 },
+  title: { fontSize: 16, fontWeight: '800', color: '#0f172a', letterSpacing: -0.3 },
   sub: { fontSize: 11, color: '#64748b', marginTop: 1 },
   proBadge: {
     backgroundColor: '#fef9c3', borderRadius: 8,
@@ -235,35 +235,35 @@ const pl = StyleSheet.create({
 type ActiveModal = 'weight' | 'measurements' | 'scan' | null;
 
 export default function WeightManagementScreen() {
-  const router  = useRouter();
-  const insets  = useSafeAreaInsets();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { convexUser, isPro, promptUpgrade } = useAccessControl();
 
   // Convex mutations
-  const updateUser        = useMutation(api.users.updateUser);
-  const logWeight         = useMutation(api.Bodymetrics.logWeight);
-  const logMeasurements   = useMutation(api.Bodymetrics.logMeasurements);
-  const logBodyScan       = useMutation(api.Bodymetrics.logBodyScan);
-  const saveBodyPhoto     = useMutation(api.Bodymetrics.saveBodyPhoto);
+  const updateUser = useMutation(api.users.updateUser);
+  const logWeight = useMutation(api.Bodymetrics.logWeight);
+  const logMeasurements = useMutation(api.Bodymetrics.logMeasurements);
+  const logBodyScan = useMutation(api.Bodymetrics.logBodyScan);
+  const saveBodyPhoto = useMutation(api.Bodymetrics.saveBodyPhoto);
   const generateUploadUrl = useMutation(api.Bodymetrics.generatePhotoUploadUrl);
 
   // Convex queries
-  const weightHistory      = useQuery(api.Bodymetrics.getWeightHistory,      convexUser?._id ? { userId: convexUser._id, limit: 90 } : 'skip');
-  const measurementsHistory= useQuery(api.Bodymetrics.getMeasurementsHistory, convexUser?._id ? { userId: convexUser._id, limit: 10 } : 'skip');
-  const scanHistory        = useQuery(api.Bodymetrics.getBodyScanHistory,     convexUser?._id ? { userId: convexUser._id, limit: 10 } : 'skip');
-  const photoHistory       = useQuery(api.Bodymetrics.getBodyPhotos,          convexUser?._id ? { userId: convexUser._id } : 'skip');
+  const weightHistory = useQuery(api.Bodymetrics.getWeightHistory, convexUser?._id ? { userId: convexUser._id, limit: 90 } : 'skip');
+  const measurementsHistory = useQuery(api.Bodymetrics.getMeasurementsHistory, convexUser?._id ? { userId: convexUser._id, limit: 10 } : 'skip');
+  const scanHistory = useQuery(api.Bodymetrics.getBodyScanHistory, convexUser?._id ? { userId: convexUser._id, limit: 10 } : 'skip');
+  const photoHistory = useQuery(api.Bodymetrics.getBodyPhotos, convexUser?._id ? { userId: convexUser._id } : 'skip');
 
   // Unit preference
   const useLbs = (convexUser?.preferredUnits?.weight ?? 'kg') === 'lbs';
   const unitLabel = useLbs ? 'lb' : 'kg';
 
   // User weights
-  const startWeightKg   = (weightHistory ?? []).length > 0
+  const startWeightKg = (weightHistory ?? []).length > 0
     ? [...(weightHistory ?? [])].sort((a, b) => a.date.localeCompare(b.date))[0]?.weightKg
     : convexUser?.weight ?? 0;
   const currentWeightKg = (weightHistory ?? [])[0]?.weightKg ?? convexUser?.weight ?? 0;
-  const goalWeightKg    = convexUser?.targetWeight ?? 0;
-  const heightCm        = convexUser?.height ?? 170;
+  const goalWeightKg = convexUser?.targetWeight ?? 0;
+  const heightCm = convexUser?.height ?? 170;
 
   const toDisplay = (kg: number) => useLbs ? kgToLbs(kg) : kg;
 
@@ -275,7 +275,7 @@ export default function WeightManagementScreen() {
   const progressToGoal = useMemo(() => {
     if (!startWeightKg || !goalWeightKg || !currentWeightKg) return 0;
     const total = Math.abs(startWeightKg - goalWeightKg);
-    const done  = Math.abs(startWeightKg - currentWeightKg);
+    const done = Math.abs(startWeightKg - currentWeightKg);
     return Math.min(100, Math.max(0, Math.round((done / total) * 100)));
   }, [startWeightKg, goalWeightKg, currentWeightKg]);
 
@@ -294,7 +294,7 @@ export default function WeightManagementScreen() {
     const recent = (weightHistory ?? []).slice(0, 7);
     if (recent.length < 2) return null;
     const first = recent[recent.length - 1].weightKg;
-    const last  = recent[0].weightKg;
+    const last = recent[0].weightKg;
     return Math.round((last - first) * 100) / 100;
   }, [weightHistory]);
 
@@ -304,7 +304,7 @@ export default function WeightManagementScreen() {
 
   // Weight form
   const [weightInput, setWeightInput] = useState('');
-  const [weightNote,  setWeightNote]  = useState('');
+  const [weightNote, setWeightNote] = useState('');
 
   // Measurements form
   const [measureForm, setMeasureForm] = useState<Record<string, string>>({});
@@ -495,7 +495,7 @@ export default function WeightManagementScreen() {
 
   // ── Latest measurement/scan for display ──────────────────────────────────
   const latestMeasurement = (measurementsHistory ?? [])[0];
-  const latestScan        = (scanHistory ?? [])[0];
+  const latestScan = (scanHistory ?? [])[0];
 
   return (
     <SafeAreaView style={s.container} edges={['top']}>
@@ -632,8 +632,8 @@ export default function WeightManagementScreen() {
         <View style={s.kpiStrip}>
           {[
             { label: 'Lost / Gained', value: `${useLbs ? kgToLbs(totalLost) : totalLost}`, unit: unitLabel, icon: 'scale-outline', color: currentWeightKg <= startWeightKg ? '#4ade80' : '#f87171' },
-            { label: 'Remaining',     value: `${useLbs ? kgToLbs(remaining) : remaining}`,  unit: unitLabel, icon: 'flag-outline',  color: '#60a5fa' },
-            { label: 'Logs',          value: `${(weightHistory ?? []).length}`,              unit: 'entries', icon: 'list-outline',  color: '#a78bfa' },
+            { label: 'Remaining', value: `${useLbs ? kgToLbs(remaining) : remaining}`, unit: unitLabel, icon: 'flag-outline', color: '#60a5fa' },
+            { label: 'Logs', value: `${(weightHistory ?? []).length}`, unit: 'entries', icon: 'list-outline', color: '#a78bfa' },
           ].map(k => (
             <View key={k.label} style={s.kpiCard}>
               <Ionicons name={k.icon as any} size={16} color={k.color} />
@@ -958,8 +958,8 @@ export default function WeightManagementScreen() {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0a0f1a' },
-  scroll:    { flex: 1 },
+  container: { flex: 1, backgroundColor: '#ffffff' },
+  scroll: { flex: 1 },
 
   // Header
   headerGrad: {
@@ -971,8 +971,8 @@ const s = StyleSheet.create({
     width: 34, height: 34, borderRadius: 17,
     backgroundColor: '#1e293b', justifyContent: 'center', alignItems: 'center',
   },
-  headerTitle: { fontSize: 20, fontWeight: '900', color: '#f1f5f9', flex: 1, letterSpacing: -0.5 },
-  headerSub:   { fontSize: 11, color: '#475569' },
+  headerTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a', flex: 1, letterSpacing: -0.5 },
+  headerSub: { fontSize: 11, color: '#475569' },
   proChip: {
     backgroundColor: '#fef9c3', borderRadius: 10,
     paddingHorizontal: 8, paddingVertical: 3,
@@ -997,7 +997,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  aiTitle: { fontSize: 20, fontWeight: '900', color: '#f1f5f9', marginBottom: 8 },
+  aiTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a', marginBottom: 8 },
   aiSub: { fontSize: 13, color: '#94a3b8', textAlign: 'center', lineHeight: 20, marginBottom: 24 },
   aiStartBtn: {
     backgroundColor: '#60a5fa',
@@ -1020,7 +1020,7 @@ const s = StyleSheet.create({
   heroCol: { alignItems: 'flex-start' },
   heroColLabel: { fontSize: 9, fontWeight: '800', color: '#475569', letterSpacing: 1.2 },
   heroColValue: { fontSize: 22, fontWeight: '900', color: '#f1f5f9', marginTop: 2 },
-  heroColUnit:  { fontSize: 11, color: '#64748b', fontWeight: '600' },
+  heroColUnit: { fontSize: 11, color: '#64748b', fontWeight: '600' },
   editGoalBtn: { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 4 },
   editGoalText: { fontSize: 10, color: '#60a5fa', fontWeight: '700' },
 
@@ -1042,7 +1042,7 @@ const s = StyleSheet.create({
   currentRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   currentLabel: { fontSize: 9, fontWeight: '800', color: '#475569', letterSpacing: 1.2 },
   currentValue: { fontSize: 36, fontWeight: '900', color: '#f1f5f9', letterSpacing: -1 },
-  currentUnit:  { fontSize: 16, fontWeight: '600', color: '#64748b' },
+  currentUnit: { fontSize: 16, fontWeight: '600', color: '#64748b' },
   trendBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     borderRadius: 20, paddingHorizontal: 10, paddingVertical: 6,
@@ -1092,8 +1092,8 @@ const s = StyleSheet.create({
     flex: 1, backgroundColor: '#111827', borderRadius: 16, padding: 14,
     alignItems: 'center', gap: 2, borderWidth: 1, borderColor: '#1e293b',
   },
-  kpiVal:   { fontSize: 20, fontWeight: '900', color: '#f1f5f9' },
-  kpiUnit:  { fontSize: 9, color: '#475569', fontWeight: '600' },
+  kpiVal: { fontSize: 20, fontWeight: '900', color: '#f1f5f9' },
+  kpiUnit: { fontSize: 9, color: '#475569', fontWeight: '600' },
   kpiLabel: { fontSize: 9, color: '#64748b', textAlign: 'center' },
 
   // Measurements
@@ -1114,9 +1114,9 @@ const s = StyleSheet.create({
     borderRadius: 12, padding: 12, alignItems: 'center',
     borderWidth: 1, borderColor: '#1e293b',
   },
-  scanVal:  { fontSize: 16, fontWeight: '900', color: '#f1f5f9' },
+  scanVal: { fontSize: 16, fontWeight: '900', color: '#f1f5f9' },
   scanUnit: { fontSize: 9, color: '#60a5fa', fontWeight: '700' },
-  scanLbl:  { fontSize: 9, color: '#64748b', textAlign: 'center', marginTop: 2 },
+  scanLbl: { fontSize: 9, color: '#64748b', textAlign: 'center', marginTop: 2 },
 
   // Photos
   photoThumb: { alignItems: 'center', gap: 4, position: 'relative' },
@@ -1137,7 +1137,7 @@ const s = StyleSheet.create({
 
   // Misc
   emptyChart: { alignItems: 'center', paddingVertical: 24, gap: 8 },
-  emptyText:  { fontSize: 12, color: '#334155', textAlign: 'center' },
+  emptyText: { fontSize: 12, color: '#334155', textAlign: 'center' },
 
   secondaryBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
@@ -1169,7 +1169,7 @@ const m = StyleSheet.create({
   body: { padding: 20, paddingBottom: 60 },
 
   label: { fontSize: 13, fontWeight: '700', color: '#94a3b8', marginBottom: 8 },
-  hint:  { fontSize: 11, color: '#475569', marginBottom: 16, fontStyle: 'italic' },
+  hint: { fontSize: 11, color: '#475569', marginBottom: 16, fontStyle: 'italic' },
   input: {
     backgroundColor: '#0f172a', borderWidth: 1, borderColor: '#1e293b',
     borderRadius: 14, padding: 14, fontSize: 16, color: '#f1f5f9',

@@ -126,7 +126,7 @@ export default function FastingScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#ebf1fe]" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-[#ffffff]" edges={['top', 'bottom']}>
       <View className="px-4 pb-3 flex-row items-center gap-3 bg-white border-b border-slate-200" style={{ paddingTop: Math.max(insets.top, 12) + 8 }}>
         <TouchableOpacity onPress={() => router.back()} className="w-10 h-10 rounded-xl bg-slate-100 items-center justify-center">
           <Ionicons name="arrow-back" size={20} color="#0f172a" />

@@ -684,12 +684,12 @@ export default function RecipesScreen() {
 
 // ─── Styles (original + new additions) ───────────────────────
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ebf1fe' },
-  detailContainer: { flex: 1, backgroundColor: '#ebf1fe' },
+  container: { flex: 1, backgroundColor: '#ffffff' }, // WHITE BACKGROUND
+  detailContainer: { flex: 1, backgroundColor: '#ffffff' }, // WHITE BACKGROUND
   scrollView: { flex: 1 },
   header: {
     paddingHorizontal: 24,
-    paddingBottom: 14,
+    paddingBottom: 10, // Reduced from 14 (moved up 3-4mm)
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -703,65 +703,110 @@ const styles = StyleSheet.create({
     marginHorizontal: 24,
     marginBottom: 16,
     padding: 24,
-    borderRadius: 16,
+    borderRadius: 20, // Increased border radius
+    borderWidth: 1, // Added border for definition on white
+    borderColor: '#e2e8f0',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowOpacity: 0.05, // Lighter shadow on white
+    shadowRadius: 12,
+    elevation: 2,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f8fafc',
-    borderRadius: 12,
+    borderRadius: 14, // Slightly increased
     paddingHorizontal: 16,
     marginBottom: 16,
     height: 50,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   searchIcon: { marginRight: 12 },
   searchInput: { flex: 1, fontSize: 16, color: '#1e293b' },
   categoriesScroll: { marginHorizontal: -4 },
   categoryChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#f8fafc',
     marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
-  categoryChipActive: { backgroundColor: '#3b82f6' },
-  categoryChipText: { fontSize: 14, color: '#64748b', fontWeight: '500' },
-  categoryChipTextActive: { color: '#ffffff' },
+  categoryChipActive: {
+    backgroundColor: '#2563eb',
+    borderColor: '#2563eb',
+  },
+  categoryChipText: { fontSize: 14, color: '#64748b', fontWeight: '600' },
+  categoryChipTextActive: { color: '#ffffff', fontWeight: '700' },
   loadingContainer: { paddingVertical: 48, alignItems: 'center' },
   loadingText: { marginTop: 16, fontSize: 16, color: '#64748b' },
   emptyContainer: { paddingVertical: 48, alignItems: 'center' },
   emptyText: { fontSize: 18, fontWeight: '600', color: '#64748b', marginTop: 16 },
   emptySubtext: { fontSize: 14, color: '#94a3b8', marginTop: 8, textAlign: 'center', paddingHorizontal: 24 },
-  recipesGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 24, justifyContent: 'space-between' },
+
+  // ── REFACTORED GALLERY ──────────────────────────────────────
+  recipesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: 24,
+    gap: 16, // Better spacing
+  },
   recipeCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 16,
-    marginBottom: 16,
+    borderRadius: 20, // More rounded
+    marginBottom: 0, // Using gap instead
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.14, // Stronger for visibility
+    shadowRadius: 16,
+    elevation: 6,
     overflow: 'hidden',
+    borderWidth: 2, // Thicker border
+    borderColor: '#cbd5e1', // Darker border for better visibility
   },
-  recipeCardImageContainer: { width: '100%', height: 160 },
-  recipeCardImage: { width: '100%', height: '100%' },
+  recipeCardImageContainer: {
+    width: '100%',
+    height: 180, // Increased from 160 for better visuals
+    position: 'relative',
+  },
+  recipeCardImage: {
+    width: '100%',
+    height: '100%',
+  },
   recipeCardImagePlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#f1f5f9', // Lighter placeholder
     justifyContent: 'center',
     alignItems: 'center',
   },
-  recipeCardContent: { padding: 12 },
-  recipeCardTitle: { fontSize: 16, fontWeight: '600', color: '#1e293b', marginBottom: 8 },
-  recipeCardMacros: { flexDirection: 'row', justifyContent: 'space-between' },
-  macro: { fontSize: isSmallScreen ? 11 : 12, color: '#64748b' },
+  recipeCardContent: {
+    padding: 14, // Increased padding
+    backgroundColor: '#ffffff',
+  },
+  recipeCardTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#0f172a',
+    marginBottom: 10,
+    lineHeight: 20,
+  },
+  recipeCardMacros: {
+    flexDirection: 'row',
+    gap: 12, // Better spacing
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#f1f5f9',
+  },
+  macro: {
+    fontSize: 12,
+    color: '#64748b',
+    fontWeight: '600',
+  },
+
   recipeImageContainer: { width: '100%', height: 240, marginBottom: 16, paddingHorizontal: 24 },
   recipeImage: { width: '100%', height: '100%', borderRadius: 16 },
   recipeImagePlaceholder: {

@@ -40,13 +40,14 @@ export default function WorkoutsManager() {
     const [form, setForm] = useState({
         title: '',
         description: '',
-        thumbnail: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800',
+        thumbnail: '',
         videoUrl: '',
         duration: '30',
         calories: '300',
         difficulty: 'Beginner',
         category: 'Strength',
-        instructor: 'Coach Sarah',
+        equipment: '',
+        instructor: '',
         isPremium: true
     });
 
@@ -60,6 +61,11 @@ export default function WorkoutsManager() {
         }
 
         try {
+            const equipmentArray = form.equipment
+                .split(',')
+                .map(e => e.trim())
+                .filter(e => e.length > 0);
+
             const payload = {
                 title: form.title,
                 description: form.description,
@@ -69,8 +75,8 @@ export default function WorkoutsManager() {
                 calories: parseFloat(form.calories),
                 difficulty: form.difficulty as any,
                 category: form.category,
-                equipment: [], // Add tags or list later
-                instructor: form.instructor,
+                equipment: equipmentArray,
+                instructor: form.instructor || 'Bluom Coach',
                 isPremium: form.isPremium,
                 exercises: [] // Manage exercises sub-list later
             };
@@ -100,13 +106,14 @@ export default function WorkoutsManager() {
         setForm({
             title: '',
             description: '',
-            thumbnail: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800',
+            thumbnail: '',
             videoUrl: '',
             duration: '30',
             calories: '300',
             difficulty: 'Beginner',
             category: 'Strength',
-            instructor: 'Coach Sarah',
+            equipment: '',
+            instructor: '',
             isPremium: true
         });
     };
@@ -122,7 +129,8 @@ export default function WorkoutsManager() {
             calories: w.calories.toString(),
             difficulty: w.difficulty,
             category: w.category,
-            instructor: w.instructor,
+            equipment: (w.equipment || []).join(', '),
+            instructor: w.instructor || '',
             isPremium: w.isPremium
         });
         setIsModalOpen(true);
@@ -144,7 +152,7 @@ export default function WorkoutsManager() {
                 </View>
 
                 <View style={styles.instructorRow}>
-                    <Text style={styles.instructorName}>{item.instructor} • {item.category}</Text>
+                    <Text style={styles.instructorName}>{item.instructor || 'Bluom Coach'} • {item.category}</Text>
                 </View>
 
                 <View style={styles.statsRow}>
@@ -223,10 +231,16 @@ export default function WorkoutsManager() {
 
                     <ScrollView style={styles.form}>
                         <Text style={styles.label}>Workout Title</Text>
-                        <TextInput style={styles.input} value={form.title} onChangeText={t => setForm(f => ({ ...f, title: t }))} />
+                        <TextInput style={styles.input} value={form.title} onChangeText={t => setForm(f => ({ ...f, title: t }))} placeholder="e.g. Full Body HIIT Blast" />
 
                         <Text style={styles.label}>Description</Text>
-                        <TextInput style={[styles.input, { height: 80 }]} multiline value={form.description} onChangeText={t => setForm(f => ({ ...f, description: t }))} />
+                        <TextInput style={[styles.input, { height: 80 }]} multiline value={form.description} onChangeText={t => setForm(f => ({ ...f, description: t }))} placeholder="What this workout helps with..." />
+
+                        <Text style={styles.label}>Thumbnail URL (R2)</Text>
+                        <TextInput style={styles.input} value={form.thumbnail} onChangeText={t => setForm(f => ({ ...f, thumbnail: t }))} placeholder="https://pub-....r2.dev/workouts/thumbnail.jpg" />
+
+                        <Text style={styles.label}>Video URL (R2, optional)</Text>
+                        <TextInput style={styles.input} value={form.videoUrl} onChangeText={t => setForm(f => ({ ...f, videoUrl: t }))} placeholder="https://pub-....r2.dev/workouts/video.mp4" />
 
                         <View style={styles.row}>
                             <View style={styles.col}>
@@ -238,6 +252,12 @@ export default function WorkoutsManager() {
                                 <TextInput style={styles.input} keyboardType="numeric" value={form.calories} onChangeText={t => setForm(f => ({ ...f, calories: t }))} />
                             </View>
                         </View>
+
+                        <Text style={styles.label}>Equipment (comma-separated)</Text>
+                        <TextInput style={styles.input} value={form.equipment} onChangeText={t => setForm(f => ({ ...f, equipment: t }))} placeholder="e.g. Dumbbells, Yoga mat, Resistance bands" />
+
+                        <Text style={styles.label}>Instructor (optional)</Text>
+                        <TextInput style={styles.input} value={form.instructor} onChangeText={t => setForm(f => ({ ...f, instructor: t }))} placeholder="Leave empty for 'Bluom Coach'" />
 
                         <Text style={styles.label}>Difficulty</Text>
                         <View style={styles.picker}>
@@ -256,9 +276,6 @@ export default function WorkoutsManager() {
                                 </TouchableOpacity>
                             ))}
                         </ScrollView>
-
-                        <Text style={styles.label}>Instructor</Text>
-                        <TextInput style={styles.input} value={form.instructor} onChangeText={t => setForm(f => ({ ...f, instructor: t }))} />
 
                         <View style={styles.premiumSwitch}>
                             <Text style={styles.label}>Premium Only</Text>

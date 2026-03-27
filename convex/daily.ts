@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { incrementQuestProgress } from "./questProgress";
+import { checkWaterAchievements, checkXPMilestones, checkAchievementMilestones } from "./achievementChecker";
 
 export const getDailyStats = query({
   args: { userId: v.id("users"), date: v.string() }, // YYYY-MM-DD
@@ -68,6 +69,12 @@ export const setWaterOz = mutation({
     if (delta !== 0) {
       await incrementQuestProgress(ctx, args.userId, args.date, "water", delta);
     }
+
+    // Check water achievements
+    await checkWaterAchievements(ctx.db, args.userId, args.date, next);
+    await checkXPMilestones(ctx.db, args.userId);
+    await checkAchievementMilestones(ctx.db, args.userId);
+
     return existing._id;
   },
 });
@@ -105,6 +112,12 @@ export const addWaterOz = mutation({
     if (args.deltaOz !== 0) {
       await incrementQuestProgress(ctx, args.userId, args.date, "water", args.deltaOz);
     }
+
+    // Check water achievements
+    await checkWaterAchievements(ctx.db, args.userId, args.date, next);
+    await checkXPMilestones(ctx.db, args.userId);
+    await checkAchievementMilestones(ctx.db, args.userId);
+
     return next;
   },
 });
@@ -161,10 +174,3 @@ export const getDailyMacros = query({
     };
   },
 });
-
-
-
-
-
-
-

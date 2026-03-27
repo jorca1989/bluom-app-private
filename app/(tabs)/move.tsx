@@ -329,7 +329,7 @@ export default function MoveScreen() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showActiveWorkout, setShowActiveWorkout] = useState(false);
   const [showWorkoutDetail, setShowWorkoutDetail] = useState(false);
-  const [workoutDetailMode, setWorkoutDetailMode] = useState<'view'|'start'>('view');
+  const [workoutDetailMode, setWorkoutDetailMode] = useState<'view' | 'start'>('view');
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
 
   // MOCK ROUTINE DAYS For V5 
@@ -371,15 +371,15 @@ export default function MoveScreen() {
   const [showWorkoutModal, setShowWorkoutModal] = useState(false);
   const [showAllActivities, setShowAllActivities] = useState(false);
   const [showOutdoor, setShowOutdoor] = useState(false);
-  const dummyExercises: ActiveExercise[] = [{ id: "1", name: "Barbell Bench Press", sets: [{id:"1a", weight:"", reps:"", completed:false}] }];
+  const dummyExercises: ActiveExercise[] = [{ id: "1", name: "Barbell Bench Press", sets: [{ id: "1a", weight: "", reps: "", completed: false }] }];
 
   // Search state (debounced)
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<(typeof workoutCategories)[number]>('All');
   const [selectedExercise, setSelectedExercise] = useState<ExerciseLibraryItem | null>(null);
 
-  const rawTargetWorkouts = activePlans?.fitnessPlan 
-    ? activePlans.fitnessPlan.daysPerWeek 
+  const rawTargetWorkouts = activePlans?.fitnessPlan
+    ? activePlans.fitnessPlan.daysPerWeek
     : (convexUser?.fitnessGoal === 'build_muscle' ? 4 : 3);
   const totalWorkoutsPerWeek = Math.max(1, rawTargetWorkouts);
 
@@ -388,7 +388,7 @@ export default function MoveScreen() {
   const defaultThumbUrl = "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=400";
   const initialWorkouts = useMemo(() => (
     activePlans?.fitnessPlan?.workouts
-    ? activePlans.fitnessPlan.workouts.map((w: any, idx: number) => ({
+      ? activePlans.fitnessPlan.workouts.map((w: any, idx: number) => ({
         dayNum: idx + 1,
         dayTitle: w.day || w.focus,
         muscleGroups: [w.focus],
@@ -403,7 +403,7 @@ export default function MoveScreen() {
           videoUrl: e.videoUrl ?? defaultVideoUrl,
         }))
       }))
-    : MOCK_ROUTINE_DAYS
+      : MOCK_ROUTINE_DAYS
   ), [activePlans?.fitnessPlan?.workouts]);
 
   const [workouts, setWorkouts] = useState<any[]>(initialWorkouts as any);
@@ -507,18 +507,18 @@ export default function MoveScreen() {
     const hasSynced = syncedSteps > 0 || syncedCalories > 0;
     const syncedActivity = hasSynced
       ? [
-          {
-            id: 'health-sync',
-            name: `${Math.round(syncedSteps).toLocaleString()} Steps (Health)`,
-            duration: 0,
-            calories: Math.round(syncedCalories),
-            timestamp: Date.now(),
-            activityType: 'steps' as const,
-            synced: true as const,
-            origin: (Platform.OS === 'ios' ? 'apple' : 'google') as 'apple' | 'google',
-            entry: null,
-          },
-        ]
+        {
+          id: 'health-sync',
+          name: `${Math.round(syncedSteps).toLocaleString()} Steps (Health)`,
+          duration: 0,
+          calories: Math.round(syncedCalories),
+          timestamp: Date.now(),
+          activityType: 'steps' as const,
+          synced: true as const,
+          origin: (Platform.OS === 'ios' ? 'apple' : 'google') as 'apple' | 'google',
+          entry: null,
+        },
+      ]
       : [];
 
     return [...ex, ...syncedActivity, ...st].sort((a, b) => b.timestamp - a.timestamp);
@@ -863,8 +863,8 @@ export default function MoveScreen() {
             currentWeek={Math.min(4, Math.floor(completedWorkoutsThisWeek / totalWorkoutsPerWeek) + 1)}
             totalWeeks={4}
             progressPercent={Math.floor((completedWorkoutsThisWeek / (totalWorkoutsPerWeek * 4)) * 100)}
-            onInfoPress={() => {}}
-            onWorkoutsPress={() => {}}
+            onInfoPress={() => { }}
+            onWorkoutsPress={() => { }}
           />
 
           {/* Weekly Workouts in a Card Widget */}
@@ -873,17 +873,17 @@ export default function MoveScreen() {
               <Text style={styles.cardTitle}>This Week's Workouts (Swipe)</Text>
             </View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}>
-               {workouts.map((day: any, idx: number) => (
-                 <WorkoutDayCard 
-                    key={day.dayNum}
-                    dayTitle={day.dayTitle} 
-                    muscleGroups={day.muscleGroups} 
-                    exercises={day.exercises as any}
-                    isUpNext={idx === 0}
-                    onStartWorkout={() => { setSelectedDayIndex(idx); setWorkoutDetailMode('start'); setShowWorkoutDetail(true); }}
-                    onViewWorkout={() => { setSelectedDayIndex(idx); setWorkoutDetailMode('view'); setShowWorkoutDetail(true); }}
-                 />
-               ))}
+              {workouts.map((day: any, idx: number) => (
+                <WorkoutDayCard
+                  key={day.dayNum}
+                  dayTitle={day.dayTitle}
+                  muscleGroups={day.muscleGroups}
+                  exercises={day.exercises as any}
+                  isUpNext={idx === 0}
+                  onStartWorkout={() => { setSelectedDayIndex(idx); setWorkoutDetailMode('start'); setShowWorkoutDetail(true); }}
+                  onViewWorkout={() => { setSelectedDayIndex(idx); setWorkoutDetailMode('view'); setShowWorkoutDetail(true); }}
+                />
+              ))}
             </ScrollView>
           </View>
 
@@ -943,19 +943,19 @@ export default function MoveScreen() {
           </View>
 
           {/* Move Quick Actions & Insights */}
-          <MoveQuickActions 
-             onAddWorkout={() => {
-                setExerciseSearchTarget('log');
-                setShowExerciseSearch(true);
-             }}
-             onAddSteps={() => setShowStepsModal(true)}
-             onCustomExercise={() => {
-                setShowWorkoutModal(true);
-                setShowCustomExercise(true);
-             }}
-             onViewPlan={() => {
-                router.push('/four-week-plan');
-             }}
+          <MoveQuickActions
+            onAddWorkout={() => {
+              setExerciseSearchTarget('log');
+              setShowExerciseSearch(true);
+            }}
+            onAddSteps={() => setShowStepsModal(true)}
+            onCustomExercise={() => {
+              setShowWorkoutModal(true);
+              setShowCustomExercise(true);
+            }}
+            onViewPlan={() => {
+              router.push('/four-week-plan');
+            }}
           />
 
           <OutdoorActivityBanner onStart={() => setShowOutdoor(true)} />
@@ -1004,10 +1004,10 @@ export default function MoveScreen() {
                             backgroundColor:
                               activity.activityType === 'steps'
                                 ? ((activity as any).origin === 'apple'
-                                    ? '#fee2e2'
-                                    : (activity as any).origin === 'google'
-                                      ? '#dbeafe'
-                                      : '#ede9fe')
+                                  ? '#fee2e2'
+                                  : (activity as any).origin === 'google'
+                                    ? '#dbeafe'
+                                    : '#ede9fe')
                                 : '#dbeafe',
                           },
                         ]}
@@ -1096,47 +1096,47 @@ export default function MoveScreen() {
           </View>
 
           <MoveInsights isPro={!!isPro} onUpgradePress={() => {
-             handleProFeature('Pro Insights', 'Upgrade to Pro to unlock advanced AI insights for your workouts.');
+            handleProFeature('Pro Insights', 'Upgrade to Pro to unlock advanced AI insights for your workouts.');
           }} />
 
         </View>{/* end tablet maxWidth wrapper */}
       </ScrollView>
 
-      <ActiveWorkoutModal 
+      <ActiveWorkoutModal
         visible={showActiveWorkout}
         exercises={activeWorkoutExercises}
         onClose={() => setShowActiveWorkout(false)}
         onFinishWorkout={async (time, vol, sets, ex) => {
-           try {
-             if (convexUser) {
-               await logExerciseEntry({
-                 userId: convexUser._id,
-                 exerciseName: `Day ${selectedDayIndex + 1}: ${workouts[selectedDayIndex]?.dayTitle || 'Workout'}`,
-                 exerciseType: 'strength',
-                 duration: Math.max(1, Math.floor(time / 60)),
-                 met: 6.0,
-                 date: currentDate,
-               });
-             }
-           } catch (e) {
-             console.error("Failed to log entry", e);
-           }
-           setShowActiveWorkout(false);
-           setCompletedWorkoutsThisWeek(prev => Math.min(prev + 1, totalWorkoutsPerWeek * 4));
-           Alert.alert("Workout Completed!", `Great job! Your activity was saved.`);
+          try {
+            if (convexUser) {
+              await logExerciseEntry({
+                userId: convexUser._id,
+                exerciseName: `Day ${selectedDayIndex + 1}: ${workouts[selectedDayIndex]?.dayTitle || 'Workout'}`,
+                exerciseType: 'strength',
+                duration: Math.max(1, Math.floor(time / 60)),
+                met: 6.0,
+                date: currentDate,
+              });
+            }
+          } catch (e) {
+            console.error("Failed to log entry", e);
+          }
+          setShowActiveWorkout(false);
+          setCompletedWorkoutsThisWeek(prev => Math.min(prev + 1, totalWorkoutsPerWeek * 4));
+          Alert.alert("Workout Completed!", `Great job! Your activity was saved.`);
         }}
         onAddExercise={() => {
-           if (!isPro) return handleProFeature('Add Exercise', 'Upgrade to Pro to add exercises mid-workout.');
-           setExerciseSearchTarget('active_add');
-           setShowExerciseSearch(true);
+          if (!isPro) return handleProFeature('Add Exercise', 'Upgrade to Pro to add exercises mid-workout.');
+          setExerciseSearchTarget('active_add');
+          setShowExerciseSearch(true);
         }}
         onDeleteExercise={(exIdx) => {
-           if (!isPro) return handleProFeature('Remove Exercise', 'Upgrade to Pro to remove exercises mid-workout.');
-           setActiveWorkoutExercises((prev) => prev.filter((_, i) => i !== exIdx));
+          if (!isPro) return handleProFeature('Remove Exercise', 'Upgrade to Pro to remove exercises mid-workout.');
+          setActiveWorkoutExercises((prev) => prev.filter((_, i) => i !== exIdx));
         }}
       />
-      
-      <WorkoutDetailModal 
+
+      <WorkoutDetailModal
         visible={showWorkoutDetail}
         initialTab={selectedDayIndex + 1}
         routineDays={workouts as any}
@@ -1161,21 +1161,21 @@ export default function MoveScreen() {
         }}
         onClose={() => setShowWorkoutDetail(false)}
         onAddExercise={(dayIdx) => {
-           if (!isPro) return handleProFeature('Add Exercise', 'Upgrade to Pro to add exercises to your plan.');
-           setPlanEditDayIndex(dayIdx);
-           setExerciseSearchTarget('plan_add');
-           setShowExerciseSearch(true);
+          if (!isPro) return handleProFeature('Add Exercise', 'Upgrade to Pro to add exercises to your plan.');
+          setPlanEditDayIndex(dayIdx);
+          setExerciseSearchTarget('plan_add');
+          setShowExerciseSearch(true);
         }}
         onDeleteExercise={(id, dayIdx) => {
-           if (!isPro) return handleProFeature('Remove Exercise', 'Upgrade to Pro to customize your routine.');
-           setWorkouts((prev) => {
-             const next = [...prev];
-             const day = next[dayIdx];
-             if (!day) return prev;
-             day.exercises = (day.exercises ?? []).filter((e: any) => String(e.id) !== String(id));
-             next[dayIdx] = { ...day };
-             return next;
-           });
+          if (!isPro) return handleProFeature('Remove Exercise', 'Upgrade to Pro to customize your routine.');
+          setWorkouts((prev) => {
+            const next = [...prev];
+            const day = next[dayIdx];
+            if (!day) return prev;
+            day.exercises = (day.exercises ?? []).filter((e: any) => String(e.id) !== String(id));
+            next[dayIdx] = { ...day };
+            return next;
+          });
         }}
         onExercisePress={(ex) => {
           setSelectedExerciseForDetail({
@@ -1191,57 +1191,57 @@ export default function MoveScreen() {
         }}
       />
 
-      <ExerciseSearchModal 
+      <ExerciseSearchModal
         visible={showExerciseSearch}
         searchResults={searchResults as any}
         loading={searchLoading}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onExerciseSelect={(ex) => {
-           setSelectedExerciseForDetail(ex);
-           if (exerciseSearchTarget === 'log') {
-             setShowSingleExerciseLog(true);
-           } else if (exerciseSearchTarget === 'plan_add') {
-             setWorkouts((prev) => {
-               const next = [...prev];
-               const day = next[planEditDayIndex];
-               if (!day) return prev;
-               const muscle =
-                 Array.isArray((ex as any).muscleGroups) && (ex as any).muscleGroups.length
-                   ? (ex as any).muscleGroups[0]
-                   : ((ex as any).category ?? 'Full body');
-               const newEx = {
-                 id: (ex as any)._id ?? (ex as any).id ?? `add-${Date.now()}`,
-                 name: typeof (ex as any).name === 'object' ? (ex as any).name.en : (ex as any).name,
-                 thumbnailUrl: (ex as any).thumbnailUrl,
-                 primaryMuscle: muscle,
-                 equipment: (ex as any).equipment ?? 'Varies',
-                 sets: 3,
-                 reps: '10',
-               };
-               day.exercises = [...(day.exercises ?? []), newEx];
-               next[planEditDayIndex] = { ...day };
-               return next;
-             });
-             setShowExerciseSearch(false);
-           } else if (exerciseSearchTarget === 'active_add') {
-             const newActive: ActiveExercise = {
-               id: (ex as any)._id ?? (ex as any).id ?? `active-${Date.now()}`,
-               name: typeof (ex as any).name === 'object' ? (ex as any).name.en : (ex as any).name,
-               thumbnailUrl: (ex as any).thumbnailUrl,
-               videoUrl: (ex as any).videoUrl,
-               sets: Array.from({ length: 3 }).map((_, i: number) => ({
-                 id: `${String((ex as any)._id ?? (ex as any).id ?? 'x')}-set-${i}-${Date.now()}`,
-                 weight: '',
-                 reps: '10',
-                 completed: false,
-               })),
-             };
-             setActiveWorkoutExercises((prev) => [...prev, newActive]);
-             setShowExerciseSearch(false);
-           } else {
-             setShowExerciseDetail(true);
-           }
+          setSelectedExerciseForDetail(ex);
+          if (exerciseSearchTarget === 'log') {
+            setShowSingleExerciseLog(true);
+          } else if (exerciseSearchTarget === 'plan_add') {
+            setWorkouts((prev) => {
+              const next = [...prev];
+              const day = next[planEditDayIndex];
+              if (!day) return prev;
+              const muscle =
+                Array.isArray((ex as any).muscleGroups) && (ex as any).muscleGroups.length
+                  ? (ex as any).muscleGroups[0]
+                  : ((ex as any).category ?? 'Full body');
+              const newEx = {
+                id: (ex as any)._id ?? (ex as any).id ?? `add-${Date.now()}`,
+                name: typeof (ex as any).name === 'object' ? (ex as any).name.en : (ex as any).name,
+                thumbnailUrl: (ex as any).thumbnailUrl,
+                primaryMuscle: muscle,
+                equipment: (ex as any).equipment ?? 'Varies',
+                sets: 3,
+                reps: '10',
+              };
+              day.exercises = [...(day.exercises ?? []), newEx];
+              next[planEditDayIndex] = { ...day };
+              return next;
+            });
+            setShowExerciseSearch(false);
+          } else if (exerciseSearchTarget === 'active_add') {
+            const newActive: ActiveExercise = {
+              id: (ex as any)._id ?? (ex as any).id ?? `active-${Date.now()}`,
+              name: typeof (ex as any).name === 'object' ? (ex as any).name.en : (ex as any).name,
+              thumbnailUrl: (ex as any).thumbnailUrl,
+              videoUrl: (ex as any).videoUrl,
+              sets: Array.from({ length: 3 }).map((_, i: number) => ({
+                id: `${String((ex as any)._id ?? (ex as any).id ?? 'x')}-set-${i}-${Date.now()}`,
+                weight: '',
+                reps: '10',
+                completed: false,
+              })),
+            };
+            setActiveWorkoutExercises((prev) => [...prev, newActive]);
+            setShowExerciseSearch(false);
+          } else {
+            setShowExerciseDetail(true);
+          }
         }}
         onClose={() => setShowExerciseSearch(false)}
       />
@@ -1259,52 +1259,52 @@ export default function MoveScreen() {
         onSave={async (exId, data) => {
           setShowSingleExerciseLog(false);
           try {
-             let totalWeight = 0;
-             let totalReps = 0;
-             if (data.sets) {
-                totalWeight = data.sets.reduce((acc, s) => acc + (parseFloat(s.weight)||0), 0);
-                totalReps = data.sets.reduce((acc, s) => acc + (parseInt(s.reps)||0), 0);
-             }
-             
-             // Assuming logExerciseEntry is defined elsewhere and handles Convex mutation
-             if (!convexUser?._id) {
-               Alert.alert("Error", "User profile not loaded. Cannot log workout.");
-               return;
-             }
+            let totalWeight = 0;
+            let totalReps = 0;
+            if (data.sets) {
+              totalWeight = data.sets.reduce((acc, s) => acc + (parseFloat(s.weight) || 0), 0);
+              totalReps = data.sets.reduce((acc, s) => acc + (parseInt(s.reps) || 0), 0);
+            }
 
-             const src = selectedExerciseForDetail ?? selectedExercise;
-             const etype = (src?.type ?? 'strength') as 'strength'|'cardio'|'yoga'|'hiit';
-             const eName = typeof src?.name === 'string'
-                            ? src.name
-                            : (src?.name as any)?.en || 'Manual Workout';
+            // Assuming logExerciseEntry is defined elsewhere and handles Convex mutation
+            if (!convexUser?._id) {
+              Alert.alert("Error", "User profile not loaded. Cannot log workout.");
+              return;
+            }
 
-             await logExerciseEntry({
-               userId: convexUser._id,
-               exerciseName: eName as string,
-               exerciseType: etype,
-               duration: data.duration ?? (data.sets ? Math.max(12, data.sets.length * 6) : 30),
-               met: src?.caloriesPerMinute ? src.caloriesPerMinute / 1.5 : 5,
-               sets: data.sets?.length || 0,
-               reps: totalReps,
-               weight: totalWeight,
-               distance: data.distanceKm,
-               pace: data.pace,
-               date: new Date().toISOString().split('T')[0]
-             });
-             Alert.alert("Workout Logged", "Your exercise was successfully saved!");
-          } catch(e) {
-             console.error("Failed to log entry", e);
-             Alert.alert("Error", "Could not log exercise");
+            const src = selectedExerciseForDetail ?? selectedExercise;
+            const etype = (src?.type ?? 'strength') as 'strength' | 'cardio' | 'yoga' | 'hiit';
+            const eName = typeof src?.name === 'string'
+              ? src.name
+              : (src?.name as any)?.en || 'Manual Workout';
+
+            await logExerciseEntry({
+              userId: convexUser._id,
+              exerciseName: eName as string,
+              exerciseType: etype,
+              duration: data.duration ?? (data.sets ? Math.max(12, data.sets.length * 6) : 30),
+              met: src?.caloriesPerMinute ? src.caloriesPerMinute / 1.5 : 5,
+              sets: data.sets?.length || 0,
+              reps: totalReps,
+              weight: totalWeight,
+              distance: data.distanceKm,
+              pace: data.pace,
+              date: new Date().toISOString().split('T')[0]
+            });
+            Alert.alert("Workout Logged", "Your exercise was successfully saved!");
+          } catch (e) {
+            console.error("Failed to log entry", e);
+            Alert.alert("Error", "Could not log exercise");
           }
         }}
       />
 
-      <ExerciseDetailModal 
+      <ExerciseDetailModal
         visible={showExerciseDetail}
         exercise={selectedExerciseForDetail}
         isPro={selectedExerciseForDetail?.fromRoutine || false}
         onClose={() => setShowExerciseDetail(false)}
-        onUpgradePress={() => {}}
+        onUpgradePress={() => { }}
       />
 
       <OutdoorActivityModal
@@ -1452,7 +1452,7 @@ export default function MoveScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ebf2fe',
+    backgroundColor: '#ffffff',
   },
   scrollView: {
     flex: 1,
