@@ -1,7 +1,20 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, FlatList, ActivityIndicator, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+  TextInput,
+  FlatList,
+  ActivityIndicator,
+  Image
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { useUser as useClerkUser } from '@clerk/clerk-expo';
 
 export interface ExerciseLibraryItem {
   _id: string;
@@ -22,6 +35,19 @@ interface ExerciseSearchModalProps {
   onExerciseSelect: (ex: ExerciseLibraryItem) => void;
 }
 
+const MUSCLE_GROUPS = [
+  { title: 'Chest' },
+  { title: 'Back' },
+  { title: 'Biceps' },
+  { title: 'Triceps' },
+  { title: 'Shoulders' },
+  { title: 'Legs' },
+  { title: 'Core' },
+  { title: 'Glutes' },
+];
+
+type Tab = 'search' | 'saved' | 'muscleGroups';
+
 export default function ExerciseSearchModal({
   visible,
   onClose,
@@ -31,18 +57,35 @@ export default function ExerciseSearchModal({
   onSearchChange,
   onExerciseSelect
 }: ExerciseSearchModalProps) {
-  const [activeTab, setActiveTab] = useState<'search' | 'muscleGroups'>('search');
+  const [activeTab, setActiveTab] = useState<Tab>('search');
+  const { user: clerkUser } = useClerkUser();
 
-  // Hardcoded muscle groups for visual UI mapping to image 6 (Horizontal scroll usually)
-  const MUSCLE_GROUPS = [
-    { title: 'Chest', icon: 'M' },
-    { title: 'Back', icon: 'M' },
-    { title: 'Biceps', icon: 'M' },
-    { title: 'Triceps', icon: 'M' },
-    { title: 'Shoulders', icon: 'M' },
-    { title: 'Legs', icon: 'M' },
-    { title: 'Core', icon: 'M' },
-  ];
+  // Look up the Convex user so we can query saved workouts
+  const convexUser = useQuery(
+    api.users.getUserByClerkId,
+    clerkUser?.id ? { clerkId: clerkUser.id } : 'skip'
+  );
+
+  const savedWorkouts = useQuery(
+    api.savedWorkouts.getSavedWorkouts,
+    convexUser?._id ? { userId: convexUser._id } : 'skip'
+  );
+
+  // Convert a saved videoWorkout into an ExerciseLibraryItem-compatible shape
+  // so the parent's onExerciseSelect handler can use it
+  const handleSavedWorkoutSelect = (workout: any) => {
+    // Use first exercise name if available, else workout title
+    const firstEx = workout.exercises?.[0];
+    const syntheticItem: ExerciseLibraryItem = {
+      _id: workout._id,
+      name: firstEx?.name ?? workout.title,
+      category: workout.category ?? 'Strength',
+      type: (firstEx?.exerciseType ?? 'strength').toLowerCase(),
+      muscleGroups: firstEx?.primaryMuscles ?? [],
+      thumbnailUrl: workout.thumbnail,
+    };
+    onExerciseSelect(syntheticItem);
+  };
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
@@ -62,7 +105,7 @@ export default function ExerciseSearchModal({
             <Ionicons name="search" size={20} color="#0f172a" />
             <TextInput
               style={styles.searchInput}
-              placeholder="Search(ex. Push Up)"
+              placeholder="Search (e.g. Push Up)"
               placeholderTextColor="#94a3b8"
               value={searchQuery}
               onChangeText={onSearchChange}
@@ -82,92 +125,179 @@ export default function ExerciseSearchModal({
             style={[styles.tab, activeTab === 'search' && styles.tabActive]}
             onPress={() => setActiveTab('search')}
           >
-            <Ionicons name="search" size={16} color={activeTab === 'search' ? '#06b6d4' : '#94a3b8'} />
+            <Ionicons name="search" size={15} color={activeTab === 'search' ? '#06b6d4' : '#94a3b8'} />
             <Text style={[styles.tabText, activeTab === 'search' && styles.tabTextActive]}>Search</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'saved' && styles.tabActive]}
+            onPress={() => setActiveTab('saved')}
+          >
+            <Ionicons name="bookmark" size={15} color={activeTab === 'saved' ? '#06b6d4' : '#94a3b8'} />
+            <Text style={[styles.tabText, activeTab === 'saved' && styles.tabTextActive]}>
+              Saved{savedWorkouts && savedWorkouts.length > 0 ? ` (${savedWorkouts.length})` : ''}
+            </Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={[styles.tab, activeTab === 'muscleGroups' && styles.tabActive]}
             onPress={() => setActiveTab('muscleGroups')}
           >
-            <Ionicons name="barbell" size={16} color={activeTab === 'muscleGroups' ? '#06b6d4' : '#94a3b8'} />
-            <Text style={[styles.tabText, activeTab === 'muscleGroups' && styles.tabTextActive]}>Muscle Groups</Text>
+            <Ionicons name="barbell" size={15} color={activeTab === 'muscleGroups' ? '#06b6d4' : '#94a3b8'} />
+            <Text style={[styles.tabText, activeTab === 'muscleGroups' && styles.tabTextActive]}>Muscles</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Content */}
-        <View style={styles.content}>
-          {activeTab === 'muscleGroups' && (
-            <View style={styles.muscleScroller}>
+        {/* ── SAVED WORKOUTS TAB ── */}
+        {activeTab === 'saved' && (
+          <View style={styles.content}>
+            <Text style={styles.sectionHeader}>Saved Workouts</Text>
+            {savedWorkouts === undefined ? (
+              <View style={styles.centerBox}>
+                <ActivityIndicator size="large" color="#06b6d4" />
+              </View>
+            ) : savedWorkouts.length === 0 ? (
+              <View style={styles.centerBox}>
+                <Ionicons name="bookmark-outline" size={48} color="#e2e8f0" />
+                <Text style={styles.emptyText}>No saved workouts yet</Text>
+                <Text style={styles.emptySubText}>
+                  Tap the bookmark icon on any workout to save it here
+                </Text>
+              </View>
+            ) : (
               <FlatList
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                data={MUSCLE_GROUPS}
-                keyExtractor={(item) => item.title}
-                contentContainerStyle={{ paddingHorizontal: 16, gap: 12, paddingBottom: 16 }}
-                renderItem={({ item }) => (
+                data={savedWorkouts}
+                keyExtractor={(item: any) => item._id}
+                contentContainerStyle={styles.listContent}
+                renderItem={({ item }: { item: any }) => (
                   <TouchableOpacity
-                    style={styles.muscleCard}
-                    onPress={() => {
-                      onSearchChange(item.title);
-                      setActiveTab('search');
-                    }}
+                    style={styles.savedWorkoutItem}
+                    onPress={() => handleSavedWorkoutSelect(item)}
                   >
-                    <View style={styles.muscleIconBox}>
-                      <Ionicons name="body-outline" size={32} color="#0ea5e9" />
+                    {/* Thumbnail */}
+                    <View style={styles.savedThumb}>
+                      {item.thumbnail ? (
+                        <Image
+                          source={{ uri: item.thumbnail }}
+                          style={styles.savedThumbImage}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <Ionicons name="fitness" size={24} color="#94a3b8" />
+                      )}
                     </View>
-                    <Text style={styles.muscleCardTitle}>{item.title}</Text>
+
+                    {/* Info */}
+                    <View style={styles.savedWorkoutBody}>
+                      <View style={styles.savedWorkoutTitleRow}>
+                        <Text style={styles.savedWorkoutTitle} numberOfLines={1}>
+                          {item.title}
+                        </Text>
+                        <Ionicons name="bookmark" size={16} color="#06b6d4" />
+                      </View>
+                      <Text style={styles.savedWorkoutSub}>
+                        {item.category} • {item.difficulty}
+                      </Text>
+                      {item.exercises?.[0]?.name && (
+                        <Text style={styles.savedWorkoutExercise} numberOfLines={1}>
+                          Main: {item.exercises[0].name}
+                        </Text>
+                      )}
+                    </View>
                   </TouchableOpacity>
                 )}
               />
-            </View>
-          )}
+            )}
+          </View>
+        )}
 
-          <Text style={styles.sectionHeader}>Search Results</Text>
-
-          {loading ? (
-            <View style={styles.centerBox}>
-              <ActivityIndicator size="large" color="#06b6d4" />
-            </View>
-          ) : searchResults.length === 0 ? (
-            <View style={styles.centerBox}>
-              <Ionicons name="barbell-outline" size={48} color="#e2e8f0" />
-              <Text style={styles.emptyText}>No exercises found</Text>
-            </View>
-          ) : (
+        {/* ── MUSCLE GROUPS TAB ── */}
+        {activeTab === 'muscleGroups' && (
+          <View style={styles.content}>
+            <Text style={styles.sectionHeader}>Browse by Muscle</Text>
             <FlatList
-              data={searchResults}
-              keyExtractor={(item) => item._id}
-              contentContainerStyle={styles.listContent}
+              horizontal={false}
+              numColumns={3}
+              data={MUSCLE_GROUPS}
+              keyExtractor={item => item.title}
+              contentContainerStyle={styles.muscleGrid}
               renderItem={({ item }) => (
-                <TouchableOpacity style={styles.listItem} onPress={() => onExerciseSelect(item)}>
-                  <View style={styles.listThumb}>
-                    {item.thumbnailUrl ? (
-                      <Image source={{ uri: item.thumbnailUrl }} style={styles.thumbImage} resizeMode="contain" />
-                    ) : (
-                      <Ionicons name="image-outline" size={24} color="#94a3b8" />
-                    )}
+                <TouchableOpacity
+                  style={styles.muscleCard}
+                  onPress={() => {
+                    onSearchChange(item.title);
+                    setActiveTab('search');
+                  }}
+                >
+                  <View style={styles.muscleIconBox}>
+                    <Ionicons name="body-outline" size={28} color="#0ea5e9" />
                   </View>
-                  <View style={styles.listBody}>
-                    <Text style={styles.listTitle}>
-                      {typeof item.name === 'object' ? (item.name as any).en || (item.name as any).name || 'Exercise' : item.name}
-                    </Text>
-                    <Text style={styles.listSub}>{item.muscleGroups?.[0] || item.category || 'Various'}</Text>
-                  </View>
+                  <Text style={styles.muscleCardTitle}>{item.title}</Text>
                 </TouchableOpacity>
               )}
             />
-          )}
-        </View>
+          </View>
+        )}
+
+        {/* ── SEARCH RESULTS TAB ── */}
+        {activeTab === 'search' && (
+          <View style={styles.content}>
+            <Text style={styles.sectionHeader}>
+              {searchQuery ? `Results for "${searchQuery}"` : 'All Exercises'}
+            </Text>
+
+            {loading ? (
+              <View style={styles.centerBox}>
+                <ActivityIndicator size="large" color="#06b6d4" />
+              </View>
+            ) : searchResults.length === 0 ? (
+              <View style={styles.centerBox}>
+                <Ionicons name="barbell-outline" size={48} color="#e2e8f0" />
+                <Text style={styles.emptyText}>No exercises found</Text>
+                <Text style={styles.emptySubText}>Try a different search term or browse by muscle group</Text>
+              </View>
+            ) : (
+              <FlatList
+                data={searchResults}
+                keyExtractor={item => item._id}
+                contentContainerStyle={styles.listContent}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.listItem} onPress={() => onExerciseSelect(item)}>
+                    <View style={styles.listThumb}>
+                      {item.thumbnailUrl ? (
+                        <Image
+                          source={{ uri: item.thumbnailUrl }}
+                          style={styles.thumbImage}
+                          resizeMode="contain"
+                        />
+                      ) : (
+                        <Ionicons name="image-outline" size={24} color="#94a3b8" />
+                      )}
+                    </View>
+                    <View style={styles.listBody}>
+                      <Text style={styles.listTitle}>
+                        {typeof item.name === 'object'
+                          ? (item.name as any).en ?? (item.name as any).name ?? 'Exercise'
+                          : item.name}
+                      </Text>
+                      <Text style={styles.listSub}>
+                        {item.muscleGroups?.[0] ?? item.category ?? 'Various'}
+                      </Text>
+                    </View>
+                    <Ionicons name="add-circle-outline" size={22} color="#06b6d4" />
+                  </TouchableOpacity>
+                )}
+              />
+            )}
+          </View>
+        )}
       </SafeAreaView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
+  container: { flex: 1, backgroundColor: '#ffffff' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -175,19 +305,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
-  iconBtn: {
-    padding: 8,
-    marginLeft: -8,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#0f172a',
-  },
-  searchContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 16,
-  },
+  iconBtn: { padding: 8, marginLeft: -8 },
+  headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#0f172a' },
+  searchContainer: { paddingHorizontal: 20, marginBottom: 12 },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -203,120 +323,125 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
-  searchInput: {
-    flex: 1,
-    marginLeft: 12,
-    fontSize: 16,
-    color: '#0f172a',
-  },
+  searchInput: { flex: 1, marginLeft: 12, fontSize: 16, color: '#0f172a' },
+  // Tabs — 3 across
   tabsRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#f1f5f9',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
   },
   tab: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderBottomWidth: 3,
     borderBottomColor: 'transparent',
-    gap: 8,
+    gap: 6,
   },
-  tabActive: {
-    borderBottomColor: '#06b6d4',
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#94a3b8',
-  },
-  tabTextActive: {
-    color: '#06b6d4',
-  },
-  content: {
-    flex: 1,
-  },
+  tabActive: { borderBottomColor: '#06b6d4' },
+  tabText: { fontSize: 13, fontWeight: '600', color: '#94a3b8' },
+  tabTextActive: { color: '#06b6d4' },
+  content: { flex: 1 },
   sectionHeader: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#0f172a',
     paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  muscleScroller: {
-    paddingTop: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-  },
-  muscleCard: {
-    alignItems: 'center',
-    width: 72,
-  },
-  muscleIconBox: {
-    width: 64,
-    height: 64,
-    borderRadius: 16,
-    backgroundColor: '#f8fafc',
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  muscleCardTitle: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#475569',
+    paddingVertical: 14,
   },
   centerBox: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 40,
+    paddingTop: 60,
   },
-  emptyText: {
-    marginTop: 16,
-    fontSize: 15,
-    color: '#94a3b8',
-    fontWeight: '500',
-  },
-  listContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-  },
+  emptyText: { marginTop: 16, fontSize: 15, color: '#64748b', fontWeight: '600' },
+  emptySubText: { marginTop: 8, fontSize: 13, color: '#94a3b8', textAlign: 'center', lineHeight: 18 },
+  listContent: { paddingHorizontal: 20, paddingBottom: 60 },
+
+  // Search results list items
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderBottomWidth: 1,
     borderBottomColor: '#f1f5f9',
+    gap: 12,
   },
   listThumb: {
-    width: 56,
-    height: 56,
+    width: 52,
+    height: 52,
     borderRadius: 12,
     backgroundColor: '#f8fafc',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    overflow: 'hidden',
   },
-  thumbImage: {
-    width: '100%',
-    height: '100%',
+  thumbImage: { width: '100%', height: '100%' },
+  listBody: { flex: 1 },
+  listTitle: { fontSize: 15, fontWeight: '600', color: '#0f172a', marginBottom: 3 },
+  listSub: { fontSize: 12, color: '#94a3b8' },
+
+  // Saved workouts items
+  savedWorkoutItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+    gap: 12,
   },
-  listBody: {
-    flex: 1,
+  savedThumb: {
+    width: 64,
+    height: 64,
+    borderRadius: 14,
+    backgroundColor: '#f8fafc',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
-  listTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#0f172a',
+  savedThumbImage: { width: '100%', height: '100%' },
+  savedWorkoutBody: { flex: 1 },
+  savedWorkoutTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 4,
   },
-  listSub: {
-    fontSize: 13,
-    color: '#94a3b8',
+  savedWorkoutTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#0f172a',
+    flex: 1,
+    marginRight: 8,
   },
+  savedWorkoutSub: { fontSize: 12, color: '#64748b', marginBottom: 3 },
+  savedWorkoutExercise: { fontSize: 11, color: '#94a3b8' },
+
+  // Muscle groups grid
+  muscleGrid: { paddingHorizontal: 16, paddingBottom: 60 },
+  muscleCard: {
+    flex: 1,
+    alignItems: 'center',
+    margin: 6,
+    paddingVertical: 16,
+    backgroundColor: '#f8fafc',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  muscleIconBox: {
+    width: 54,
+    height: 54,
+    borderRadius: 14,
+    backgroundColor: '#e0f2fe',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  muscleCardTitle: { fontSize: 12, fontWeight: '600', color: '#475569' },
 });
