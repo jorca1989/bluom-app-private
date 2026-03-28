@@ -551,7 +551,7 @@ export default function ProfileScreen() {
           <MenuRow
             icon={<LayoutGrid size={18} color="#0ea5e9" />} iconBg="#f0f9ff"
             label="Productivity Hub" sub="Tasks, focus & goals"
-            onPress={() => router.push('/todo-list')}
+            onPress={() => router.push('/todo')}
           />
           <View style={s.divider} />
           <MenuRow

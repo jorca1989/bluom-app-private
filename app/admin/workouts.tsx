@@ -48,7 +48,14 @@ export default function WorkoutsManager() {
         category: 'Strength',
         equipment: '',
         instructor: '',
-        isPremium: true
+        isPremium: true,
+        // Exercise-level fields (for first/main exercise)
+        exerciseName: '',
+        exerciseDescription: '',
+        exerciseType: 'Strength',
+        instructions: '',
+        primaryMuscles: '',
+        secondaryMuscles: '',
     });
 
     const categories = ['Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core'];
@@ -66,6 +73,29 @@ export default function WorkoutsManager() {
                 .map(e => e.trim())
                 .filter(e => e.length > 0);
 
+            // Build exercise object if details provided
+            const exercises = [];
+            if (form.exerciseName) {
+                exercises.push({
+                    name: form.exerciseName,
+                    duration: parseFloat(form.duration) * 60, // convert minutes to seconds
+                    description: form.exerciseDescription,
+                    instructions: form.instructions
+                        .split('\n')
+                        .map(i => i.trim())
+                        .filter(i => i.length > 0),
+                    primaryMuscles: form.primaryMuscles
+                        .split(',')
+                        .map(m => m.trim())
+                        .filter(m => m.length > 0),
+                    secondaryMuscles: form.secondaryMuscles
+                        .split(',')
+                        .map(m => m.trim())
+                        .filter(m => m.length > 0),
+                    exerciseType: form.exerciseType,
+                });
+            }
+
             const payload = {
                 title: form.title,
                 description: form.description,
@@ -78,7 +108,7 @@ export default function WorkoutsManager() {
                 equipment: equipmentArray,
                 instructor: form.instructor || 'Bluom Coach',
                 isPremium: form.isPremium,
-                exercises: [] // Manage exercises sub-list later
+                exercises: exercises
             };
 
             if (editingWorkout) {
@@ -114,12 +144,19 @@ export default function WorkoutsManager() {
             category: 'Strength',
             equipment: '',
             instructor: '',
-            isPremium: true
+            isPremium: true,
+            exerciseName: '',
+            exerciseDescription: '',
+            exerciseType: 'Strength',
+            instructions: '',
+            primaryMuscles: '',
+            secondaryMuscles: '',
         });
     };
 
     const openEdit = (w: any) => {
         setEditingWorkout(w);
+        const firstExercise = w.exercises?.[0] || {};
         setForm({
             title: w.title,
             description: w.description,
@@ -131,7 +168,13 @@ export default function WorkoutsManager() {
             category: w.category,
             equipment: (w.equipment || []).join(', '),
             instructor: w.instructor || '',
-            isPremium: w.isPremium
+            isPremium: w.isPremium,
+            exerciseName: firstExercise.name || '',
+            exerciseDescription: firstExercise.description || '',
+            exerciseType: firstExercise.exerciseType || 'Strength',
+            instructions: (firstExercise.instructions || []).join('\n'),
+            primaryMuscles: (firstExercise.primaryMuscles || []).join(', '),
+            secondaryMuscles: (firstExercise.secondaryMuscles || []).join(', '),
         });
         setIsModalOpen(true);
     };
@@ -259,6 +302,40 @@ export default function WorkoutsManager() {
                         <Text style={styles.label}>Instructor (optional)</Text>
                         <TextInput style={styles.input} value={form.instructor} onChangeText={t => setForm(f => ({ ...f, instructor: t }))} placeholder="Leave empty for 'Bluom Coach'" />
 
+                        {/* Exercise Details Section */}
+                        <View style={styles.sectionDivider} />
+                        <Text style={styles.sectionTitle}>📝 Exercise Details (Main Exercise)</Text>
+
+                        <Text style={styles.label}>Exercise Name</Text>
+                        <TextInput style={styles.input} value={form.exerciseName} onChangeText={t => setForm(f => ({ ...f, exerciseName: t }))} placeholder="e.g. Ab Wheel Rollout" />
+
+                        <Text style={styles.label}>Exercise Description</Text>
+                        <TextInput style={[styles.input, { height: 60 }]} multiline value={form.exerciseDescription} onChangeText={t => setForm(f => ({ ...f, exerciseDescription: t }))} placeholder="Brief description of the exercise" />
+
+                        <Text style={styles.label}>Exercise Type</Text>
+                        <View style={styles.picker}>
+                            {['Strength', 'Cardio', 'HIIT', 'Yoga', 'Stretching'].map(t => (
+                                <TouchableOpacity key={t} onPress={() => setForm(f => ({ ...f, exerciseType: t }))} style={[styles.pill, form.exerciseType === t && styles.pillActiveActive]}>
+                                    <Text style={[styles.pillText, form.exerciseType === t && styles.pillTextActiveActive]}>{t}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+
+                        <Text style={styles.label}>Instructions (one per line)</Text>
+                        <TextInput
+                            style={[styles.input, { height: 120 }]}
+                            multiline
+                            value={form.instructions}
+                            onChangeText={t => setForm(f => ({ ...f, instructions: t }))}
+                            placeholder={"Kneel, grip the wheel\nBrace core and roll forward\nPull back to start"}
+                        />
+
+                        <Text style={styles.label}>Primary Muscles (comma-separated)</Text>
+                        <TextInput style={styles.input} value={form.primaryMuscles} onChangeText={t => setForm(f => ({ ...f, primaryMuscles: t }))} placeholder="e.g. Abs, Core, Obliques" />
+
+                        <Text style={styles.label}>Secondary Muscles (comma-separated)</Text>
+                        <TextInput style={styles.input} value={form.secondaryMuscles} onChangeText={t => setForm(f => ({ ...f, secondaryMuscles: t }))} placeholder="e.g. Lower Back, Hip Flexors" />
+
                         <Text style={styles.label}>Difficulty</Text>
                         <View style={styles.picker}>
                             {levels.map(l => (
@@ -324,6 +401,8 @@ const styles = StyleSheet.create({
     saveBtn: { color: '#2563eb', fontWeight: '800', fontSize: 16 },
     form: { padding: 24 },
     label: { fontSize: 12, fontWeight: '800', color: '#64748b', marginBottom: 8, marginTop: 16, textTransform: 'uppercase' },
+    sectionDivider: { height: 1, backgroundColor: '#e2e8f0', marginVertical: 24 },
+    sectionTitle: { fontSize: 16, fontWeight: '900', color: '#1e293b', marginBottom: 12 },
     input: { backgroundColor: '#f8fafc', borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 12, padding: 12, fontSize: 15, color: '#1e293b', fontWeight: '600' },
     row: { flexDirection: 'row', gap: 16 },
     col: { flex: 1 },
