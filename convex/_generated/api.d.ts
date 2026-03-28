@@ -55,6 +55,7 @@ import type * as recipes from "../recipes.js";
 import type * as revenuecat from "../revenuecat.js";
 import type * as routine_agent from "../routine_agent.js";
 import type * as routines from "../routines.js";
+import type * as savedWorkouts from "../savedWorkouts.js";
 import type * as seed from "../seed.js";
 import type * as seedExercises from "../seedExercises.js";
 import type * as seedFoods from "../seedFoods.js";
@@ -71,6 +72,7 @@ import type * as users from "../users.js";
 import type * as videoWorkouts from "../videoWorkouts.js";
 import type * as wellness from "../wellness.js";
 import type * as womensHealth from "../womensHealth.js";
+import type * as workoutExerciseLogs from "../workoutExerciseLogs.js";
 
 import type {
   ApiFromModules,
@@ -126,6 +128,7 @@ declare const fullApi: ApiFromModules<{
   revenuecat: typeof revenuecat;
   routine_agent: typeof routine_agent;
   routines: typeof routines;
+  savedWorkouts: typeof savedWorkouts;
   seed: typeof seed;
   seedExercises: typeof seedExercises;
   seedFoods: typeof seedFoods;
@@ -142,6 +145,7 @@ declare const fullApi: ApiFromModules<{
   videoWorkouts: typeof videoWorkouts;
   wellness: typeof wellness;
   womensHealth: typeof womensHealth;
+  workoutExerciseLogs: typeof workoutExerciseLogs;
 }>;
 
 /**

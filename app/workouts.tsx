@@ -10,7 +10,8 @@ import {
     ActivityIndicator,
     Modal,
     Dimensions,
-    Platform
+    Platform,
+    Alert
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,15 +28,18 @@ import {
     X,
     ChevronRight,
     MapPin,
-    AlertCircle
+    AlertCircle,
+    ChevronDown,
+    ChevronUp
 } from 'lucide-react-native';
-import { useQuery } from 'convex/react';
+import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useUser as useClerkUser } from '@clerk/clerk-expo';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { BlurView } from 'expo-blur';
 import { useUser as useAppUser } from '@/context/UserContext';
+import SingleExerciseLogModal from '@/components/move/modals/SingleExerciseLogModal';
 
 const { width } = Dimensions.get('window');
 
@@ -48,6 +52,9 @@ export default function WorkoutsScreen() {
     const [selectedWorkout, setSelectedWorkout] = useState<any>(null);
     const [showVideoModal, setShowVideoModal] = useState(false);
     const [showUpgrade, setShowUpgrade] = useState(false);
+    const [showLogModal, setShowLogModal] = useState(false);
+    const [selectedExerciseForLog, setSelectedExerciseForLog] = useState<any>(null);
+    const [showHistory, setShowHistory] = useState(false);
 
     const convexUser = useQuery(
         api.users.getUserByClerkId,
@@ -62,6 +69,79 @@ export default function WorkoutsScreen() {
     });
 
     const categories = ['All', 'Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core'];
+
+    // Save/favorite mutations and queries
+    const toggleSave = useMutation(api.savedWorkouts.toggleSaveWorkout);
+    const isSaved = useQuery(
+        api.savedWorkouts.isWorkoutSaved,
+        convexUser?._id && selectedWorkout?._id
+            ? { userId: convexUser._id, workoutId: selectedWorkout._id }
+            : 'skip'
+    );
+
+    // Exercise history and progress (for first exercise in workout)
+    const firstExerciseName = selectedWorkout?.exercises?.[0]?.name;
+    const exerciseProgress = useQuery(
+        api.workoutExerciseLogs.getExerciseProgress,
+        convexUser?._id && firstExerciseName
+            ? { userId: convexUser._id, exerciseName: firstExerciseName }
+            : 'skip'
+    );
+
+    const exerciseHistory = useQuery(
+        api.workoutExerciseLogs.getExerciseHistory,
+        convexUser?._id && firstExerciseName
+            ? { userId: convexUser._id, exerciseName: firstExerciseName }
+            : 'skip'
+    );
+
+    const logExercise = useMutation(api.workoutExerciseLogs.logExercise);
+
+    const handleToggleSave = async () => {
+        if (!convexUser?._id || !selectedWorkout?._id) return;
+        try {
+            await toggleSave({
+                userId: convexUser._id,
+                workoutId: selectedWorkout._id,
+            });
+        } catch (error) {
+            Alert.alert('Error', 'Failed to save workout');
+        }
+    };
+
+    const handleLogExercise = (exercise: any) => {
+        setSelectedExerciseForLog(exercise);
+        setShowLogModal(true);
+    };
+
+    const handleSaveLog = async (
+        exerciseId: string,
+        data: { sets?: any[]; duration?: number; calories?: number; distanceKm?: number; pace?: number }
+    ) => {
+        if (!convexUser?._id || !selectedWorkout?._id || !selectedExerciseForLog) return;
+
+        const today = new Date().toISOString().split('T')[0];
+
+        try {
+            await logExercise({
+                userId: convexUser._id,
+                workoutId: selectedWorkout._id,
+                exerciseName: selectedExerciseForLog.name,
+                date: today,
+                sets: data.sets?.map(s => ({
+                    weight: parseFloat(s.weight) || 0,
+                    reps: parseFloat(s.reps) || 0,
+                })),
+                duration: data.duration,
+                notes: undefined,
+            });
+            setShowLogModal(false);
+            setSelectedExerciseForLog(null);
+            Alert.alert('Success', 'Exercise logged!');
+        } catch (error) {
+            Alert.alert('Error', 'Failed to log exercise');
+        }
+    };
 
     if (selectedWorkout) {
         const locked = !!selectedWorkout.isPremium && !isPro;
@@ -116,8 +196,12 @@ export default function WorkoutsScreen() {
                         )}
                         <View style={styles.titleRow}>
                             <Text style={styles.detailTitle}>{selectedWorkout.title}</Text>
-                            <TouchableOpacity>
-                                <Bookmark size={24} color="#64748b" />
+                            <TouchableOpacity onPress={handleToggleSave}>
+                                {isSaved ? (
+                                    <Bookmark size={24} color="#2563eb" fill="#2563eb" />
+                                ) : (
+                                    <Bookmark size={24} color="#64748b" />
+                                )}
                             </TouchableOpacity>
                         </View>
 
@@ -130,14 +214,13 @@ export default function WorkoutsScreen() {
                                 <Text style={styles.statLab}>Rating</Text>
                             </View>
                             <View style={styles.statBox}>
-                                <Clock size={16} color="#2563eb" />
-                                <Text style={styles.statVal}>{selectedWorkout.duration}m</Text>
-                                <Text style={styles.statLab}>Duration</Text>
+                                <Dumbbell size={16} color="#2563eb" />
+                                <Text style={styles.statVal}>{selectedWorkout.difficulty}</Text>
+                                <Text style={styles.statLab}>Level</Text>
                             </View>
                             <View style={styles.statBox}>
-                                <Zap size={16} color="#ef4444" />
-                                <Text style={styles.statVal}>{selectedWorkout.calories}</Text>
-                                <Text style={styles.statLab}>Calories</Text>
+                                <Text style={styles.statVal}>{selectedWorkout.equipment.length > 0 ? selectedWorkout.equipment.length : '0'}</Text>
+                                <Text style={styles.statLab}>Equipment</Text>
                             </View>
                         </View>
 
@@ -161,19 +244,116 @@ export default function WorkoutsScreen() {
 
                         {selectedWorkout.exercises.length > 0 && (
                             <View style={styles.infoSection}>
-                                <Text style={styles.sectionTitle}>Workout Breakdown</Text>
+                                <Text style={styles.sectionTitle}>Exercise Details</Text>
                                 {selectedWorkout.exercises.map((ex: any, idx: number) => (
-                                    <View key={idx} style={styles.exerciseRow}>
-                                        <View style={styles.exerciseIndex}>
-                                            <Text style={styles.exerciseIndexText}>{idx + 1}</Text>
+                                    <View key={idx} style={styles.exerciseDetailCard}>
+                                        <View style={styles.exerciseHeader}>
+                                            <View style={styles.exerciseIndex}>
+                                                <Text style={styles.exerciseIndexText}>{idx + 1}</Text>
+                                            </View>
+                                            <View style={{ flex: 1 }}>
+                                                <Text style={styles.exerciseName}>{ex.name}</Text>
+                                                {ex.exerciseType && (
+                                                    <Text style={styles.exerciseType}>{ex.exerciseType}</Text>
+                                                )}
+                                            </View>
+                                            <TouchableOpacity
+                                                style={styles.logButton}
+                                                onPress={() => handleLogExercise(ex)}
+                                            >
+                                                <Text style={styles.logButtonText}>Log</Text>
+                                            </TouchableOpacity>
                                         </View>
-                                        <View style={styles.exerciseInfo}>
-                                            <Text style={styles.exerciseName}>{ex.name}</Text>
-                                            <Text style={styles.exerciseDesc}>{ex.description}</Text>
+
+                                        <Text style={styles.exerciseDesc}>{ex.description}</Text>
+
+                                        {/* Instructions */}
+                                        {ex.instructions && ex.instructions.length > 0 && (
+                                            <View style={styles.instructionsBox}>
+                                                <Text style={styles.instructionsTitle}>Instructions:</Text>
+                                                {ex.instructions.map((instruction: string, i: number) => (
+                                                    <Text key={i} style={styles.instructionItem}>
+                                                        {i + 1}. {instruction}
+                                                    </Text>
+                                                ))}
+                                            </View>
+                                        )}
+
+                                        {/* Target Muscles */}
+                                        {(ex.primaryMuscles || ex.secondaryMuscles) && (
+                                            <View style={styles.musclesBox}>
+                                                {ex.primaryMuscles && ex.primaryMuscles.length > 0 && (
+                                                    <View style={styles.muscleGroup}>
+                                                        <Text style={styles.muscleGroupTitle}>Primary Muscles:</Text>
+                                                        {ex.primaryMuscles.map((muscle: string, i: number) => (
+                                                            <Text key={i} style={styles.muscleItem}>• {muscle}</Text>
+                                                        ))}
+                                                    </View>
+                                                )}
+                                                {ex.secondaryMuscles && ex.secondaryMuscles.length > 0 && (
+                                                    <View style={styles.muscleGroup}>
+                                                        <Text style={styles.muscleGroupTitle}>Secondary Muscles:</Text>
+                                                        {ex.secondaryMuscles.map((muscle: string, i: number) => (
+                                                            <Text key={i} style={styles.muscleItem}>• {muscle}</Text>
+                                                        ))}
+                                                    </View>
+                                                )}
+                                            </View>
+                                        )}
+                                    </View>
+                                ))}
+                            </View>
+                        )}
+
+                        {/* Workout Progress - Only show if user has logged this exercise */}
+                        {exerciseProgress && (
+                            <View style={styles.infoSection}>
+                                <Text style={styles.sectionTitle}>Workout Progress</Text>
+                                <View style={styles.progressGrid}>
+                                    <View style={styles.progressCard}>
+                                        <Text style={styles.progressValue}>{exerciseProgress.maxWeight} kg</Text>
+                                        <Text style={styles.progressLabel}>Max Weight</Text>
+                                    </View>
+                                    <View style={styles.progressCard}>
+                                        <Text style={styles.progressValue}>{exerciseProgress.maxVolume} kg</Text>
+                                        <Text style={styles.progressLabel}>Max Volume</Text>
+                                    </View>
+                                    <View style={styles.progressCard}>
+                                        <Text style={styles.progressValue}>{exerciseProgress.totalSessions}</Text>
+                                        <Text style={styles.progressLabel}>Sessions</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        )}
+
+                        {/* Workout History - Collapsible */}
+                        {exerciseHistory && exerciseHistory.length > 0 && (
+                            <View style={styles.infoSection}>
+                                <TouchableOpacity
+                                    style={styles.historySectionHeader}
+                                    onPress={() => setShowHistory(!showHistory)}
+                                >
+                                    <Text style={styles.sectionTitle}>Workout History ({exerciseHistory.length})</Text>
+                                    {showHistory ? (
+                                        <ChevronUp size={20} color="#64748b" />
+                                    ) : (
+                                        <ChevronDown size={20} color="#64748b" />
+                                    )}
+                                </TouchableOpacity>
+
+                                {showHistory && exerciseHistory.slice(0, 10).map((log: any, idx: number) => (
+                                    <View key={idx} style={styles.historyRow}>
+                                        <Text style={styles.historyDate}>{log.date}</Text>
+                                        <View style={styles.historyDetails}>
+                                            {log.sets && (
+                                                <Text style={styles.historyText}>
+                                                    {log.sets.length} sets • {log.sets.reduce((sum: number, s: any) => sum + s.reps, 0)} reps
+                                                </Text>
+                                            )}
+                                            {log.duration && (
+                                                <Text style={styles.historyText}>{log.duration} min</Text>
+                                            )}
                                         </View>
-                                        <Text style={styles.exerciseDuration}>
-                                            {ex.duration >= 60 ? `${Math.floor(ex.duration / 60)}m` : `${ex.duration}s`}
-                                        </Text>
                                     </View>
                                 ))}
                             </View>
@@ -234,6 +414,21 @@ export default function WorkoutsScreen() {
                     title="Upgrade to Pro"
                     message="This workout is locked. Upgrade to Pro to access premium workout videos and full breakdowns."
                     upgradeLabel="View Pro Plans"
+                />
+
+                {/* Exercise Log Modal */}
+                <SingleExerciseLogModal
+                    visible={showLogModal}
+                    exercise={selectedExerciseForLog ? {
+                        id: selectedExerciseForLog.name,
+                        name: selectedExerciseForLog.name,
+                        type: selectedExerciseForLog.exerciseType || 'strength',
+                    } : null}
+                    onClose={() => {
+                        setShowLogModal(false);
+                        setSelectedExerciseForLog(null);
+                    }}
+                    onSave={handleSaveLog}
                 />
             </SafeAreaView>
         );
@@ -319,12 +514,12 @@ export default function WorkoutsScreen() {
                                     <Text style={styles.cardTitle}>{item.title}</Text>
                                     <View style={styles.cardStats}>
                                         <View style={styles.cardStat}>
-                                            <Clock size={12} color="#ffffff" />
-                                            <Text style={styles.cardStatText}>{item.duration}m</Text>
+                                            <Dumbbell size={12} color="#ffffff" />
+                                            <Text style={styles.cardStatText}>{item.category}</Text>
                                         </View>
                                         <View style={styles.cardStat}>
-                                            <Zap size={12} color="#ffffff" />
-                                            <Text style={styles.cardStatText}>{item.calories} kcal</Text>
+                                            <Star size={12} color="#ffffff" fill="#ffffff" />
+                                            <Text style={styles.cardStatText}>{item.rating}</Text>
                                         </View>
                                     </View>
                                 </View>
@@ -413,12 +608,33 @@ const styles = StyleSheet.create({
     infoLabel: { fontSize: 15, color: '#64748b', fontWeight: '600' },
     infoValue: { fontSize: 15, color: '#1e293b', fontWeight: '700' },
     exerciseRow: { flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 16, backgroundColor: '#f8fafc', padding: 16, borderRadius: 16 },
+    exerciseDetailCard: { backgroundColor: '#f8fafc', padding: 16, borderRadius: 16, marginBottom: 16 },
+    exerciseHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
     exerciseIndex: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#2563eb', justifyContent: 'center', alignItems: 'center' },
     exerciseIndexText: { color: '#ffffff', fontWeight: '900', fontSize: 14 },
     exerciseInfo: { flex: 1 },
-    exerciseName: { fontSize: 16, fontWeight: '700', color: '#1e293b' },
-    exerciseDesc: { fontSize: 13, color: '#64748b', marginTop: 2 },
+    exerciseName: { fontSize: 16, fontWeight: '700', color: '#1e293b', marginBottom: 2 },
+    exerciseType: { fontSize: 12, color: '#2563eb', fontWeight: '600' },
+    exerciseDesc: { fontSize: 13, color: '#64748b', marginTop: 2, marginBottom: 12 },
     exerciseDuration: { fontSize: 14, fontWeight: '800', color: '#2563eb' },
+    logButton: { backgroundColor: '#2563eb', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 12 },
+    logButtonText: { color: '#ffffff', fontSize: 14, fontWeight: '700' },
+    instructionsBox: { backgroundColor: '#ffffff', padding: 12, borderRadius: 12, marginTop: 8 },
+    instructionsTitle: { fontSize: 14, fontWeight: '800', color: '#1e293b', marginBottom: 8 },
+    instructionItem: { fontSize: 13, color: '#475569', lineHeight: 20, marginBottom: 4 },
+    musclesBox: { flexDirection: 'row', gap: 12, marginTop: 8 },
+    muscleGroup: { flex: 1, backgroundColor: '#eff6ff', padding: 12, borderRadius: 12 },
+    muscleGroupTitle: { fontSize: 13, fontWeight: '800', color: '#2563eb', marginBottom: 6 },
+    muscleItem: { fontSize: 12, color: '#1e40af', marginBottom: 2 },
+    progressGrid: { flexDirection: 'row', gap: 12 },
+    progressCard: { flex: 1, backgroundColor: '#f0fdf4', padding: 16, borderRadius: 12, alignItems: 'center' },
+    progressValue: { fontSize: 24, fontWeight: '900', color: '#15803d' },
+    progressLabel: { fontSize: 12, color: '#16a34a', fontWeight: '600', marginTop: 4 },
+    historySectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+    historyRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+    historyDate: { fontSize: 14, fontWeight: '700', color: '#1e293b', width: 100 },
+    historyDetails: { flex: 1 },
+    historyText: { fontSize: 13, color: '#64748b', fontWeight: '600' },
 
     blurBlock: {
         marginTop: 12,

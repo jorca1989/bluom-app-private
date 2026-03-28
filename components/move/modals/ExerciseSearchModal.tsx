@@ -78,14 +78,14 @@ export default function ExerciseSearchModal({
 
         {/* Tabs */}
         <View style={styles.tabsRow}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.tab, activeTab === 'search' && styles.tabActive]}
             onPress={() => setActiveTab('search')}
           >
             <Ionicons name="search" size={16} color={activeTab === 'search' ? '#06b6d4' : '#94a3b8'} />
             <Text style={[styles.tabText, activeTab === 'search' && styles.tabTextActive]}>Search</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.tab, activeTab === 'muscleGroups' && styles.tabActive]}
             onPress={() => setActiveTab('muscleGroups')}
           >
@@ -105,8 +105,8 @@ export default function ExerciseSearchModal({
                 keyExtractor={(item) => item.title}
                 contentContainerStyle={{ paddingHorizontal: 16, gap: 12, paddingBottom: 16 }}
                 renderItem={({ item }) => (
-                  <TouchableOpacity 
-                    style={styles.muscleCard} 
+                  <TouchableOpacity
+                    style={styles.muscleCard}
                     onPress={() => {
                       onSearchChange(item.title);
                       setActiveTab('search');

@@ -807,6 +807,10 @@ export default defineSchema({
         reps: v.optional(v.float64()),
         sets: v.optional(v.float64()),
         description: v.string(),
+        instructions: v.optional(v.array(v.string())), // Numbered step-by-step instructions
+        primaryMuscles: v.optional(v.array(v.string())), // e.g. ["Chest", "Shoulders"]
+        secondaryMuscles: v.optional(v.array(v.string())), // e.g. ["Triceps", "Core"]
+        exerciseType: v.optional(v.string()), // e.g. "Strength", "Cardio", "HIIT"
       })
     ),
     updatedAt: v.float64(),
@@ -967,4 +971,33 @@ export default defineSchema({
     bannerMessage: v.optional(v.string()),
     key: v.optional(v.string()), // For future multiple-config support
   }),
+  // Saved/Favorite Workouts
+  savedWorkouts: defineTable({
+    userId: v.id("users"),
+    workoutId: v.id("videoWorkouts"),
+    savedAt: v.float64(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_workout", ["userId", "workoutId"]),
+
+  // Workout Exercise Logs (exercise-level tracking)
+  workoutExerciseLogs: defineTable({
+    userId: v.id("users"),
+    workoutId: v.id("videoWorkouts"),
+    exerciseName: v.string(), // Name of the exercise within the workout
+    date: v.string(), // "YYYY-MM-DD"
+    sets: v.optional(v.array(
+      v.object({
+        weight: v.float64(), // kg
+        reps: v.float64(),
+      })
+    )),
+    duration: v.optional(v.float64()), // minutes (for cardio/time-based)
+    notes: v.optional(v.string()),
+    createdAt: v.float64(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_exercise", ["userId", "exerciseName"])
+    .index("by_user_workout", ["userId", "workoutId"]),
+
 });
