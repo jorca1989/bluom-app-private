@@ -21,57 +21,40 @@ import {
     Edit3,
     X,
     Play,
-    Info
 } from 'lucide-react-native';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 
 // ─── FIELD GUIDE ──────────────────────────────────────────────────────────────
-// This form manages ONE video workout entry that contains ONE main exercise.
+// Unified form — each entry is ONE exercise that doubles as its own workout card.
 //
-// WORKOUT-LEVEL (top section):  metadata shown on the browse/list card
-//   • Workout Title       → displayed as the card title in the app
-//   • Workout Description → shown under the title on the detail screen
-//   • Thumbnail URL       → card image (R2 public URL)
-//   • Video URL           → played when user taps the play button
-//   • Duration            → shown in stats strip (minutes)
-//   • Calories            → shown in stats strip
-//   • Difficulty / Category / Equipment / Instructor / Premium toggle
-//
-// EXERCISE-LEVEL (bottom section): what the user sees inside the workout detail
-//   • Exercise Name        → the actual move being performed
-//   • Exercise Description → short cue shown under the exercise name
-//   • Exercise Type        → Strength / Cardio / HIIT / Yoga / Stretching
-//   • Instructions         → numbered steps (one per line)
-//   • Primary Muscles      → comma-separated, e.g. "Abs, Core"
-//   • Secondary Muscles    → comma-separated, e.g. "Lower Back"
+//   Exercise Name        → displayed as card title + exercise name
+//   Exercise Description → shown on the detail screen
+//   Exercise Type        → Strength / Cardio / HIIT / Yoga / Stretching
+//   Instructions         → numbered steps (one per line)
+//   Primary Muscles      → comma-separated
+//   Secondary Muscles    → comma-separated
+//   Equipment            → comma-separated
+//   Difficulty           → Beginner / Intermediate / Advanced
+//   Thumbnail URL (R2)   → card image
+//   Video URL (R2)       → optional, played on the detail screen
 // ─────────────────────────────────────────────────────────────────────────────
 
 const EMPTY_FORM = {
-    // Workout-level
-    title: '',
-    description: '',
-    thumbnail: '',
-    videoUrl: '',
-    duration: '30',
-    calories: '300',
-    difficulty: 'Beginner',
-    category: 'Strength',
-    equipment: '',
-    instructor: '',
-    isPremium: true,
-    // Exercise-level
     exerciseName: '',
     exerciseDescription: '',
     exerciseType: 'Strength',
     instructions: '',
     primaryMuscles: '',
     secondaryMuscles: '',
+    equipment: '',
+    difficulty: 'Beginner',
+    thumbnail: '',
+    videoUrl: '',
 };
 
-const CATEGORIES = ['Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core'];
-const LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 const EXERCISE_TYPES = ['Strength', 'Cardio', 'HIIT', 'Yoga', 'Stretching'];
+const LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 
 export default function WorkoutsManager() {
     const [search, setSearch] = useState('');
@@ -87,6 +70,8 @@ export default function WorkoutsManager() {
     const setField = (key: string, val: any) => setForm(f => ({ ...f, [key]: val }));
 
     // ── Build payload ────────────────────────────────────────────────────────
+    // Maps the unified form into the backend schema which keeps workout + exercise
+    // as separate levels.
     const buildPayload = () => {
         const equipmentArray = form.equipment
             .split(',')
@@ -97,7 +82,7 @@ export default function WorkoutsManager() {
             ? [{
                 name: form.exerciseName.trim(),
                 description: form.exerciseDescription.trim(),
-                duration: parseFloat(form.duration) * 60, // convert minutes → seconds
+                duration: 0,
                 instructions: form.instructions
                     .split('\n')
                     .map(i => i.trim())
@@ -117,24 +102,24 @@ export default function WorkoutsManager() {
             : [];
 
         return {
-            title: form.title.trim(),
-            description: form.description.trim(),
+            title: form.exerciseName.trim(),          // exercise name = workout title
+            description: form.exerciseDescription.trim(),
             thumbnail: form.thumbnail.trim(),
             videoUrl: form.videoUrl.trim() || undefined,
-            duration: parseFloat(form.duration) || 30,
-            calories: parseFloat(form.calories) || 300,
+            duration: 0,
+            calories: 0,
             difficulty: form.difficulty as 'Beginner' | 'Intermediate' | 'Advanced',
-            category: form.category,
+            category: form.exerciseType,              // exercise type = category
             equipment: equipmentArray,
-            instructor: form.instructor.trim() || 'Bluom Coach',
-            isPremium: form.isPremium,
+            instructor: 'Bluom Coach',
+            isPremium: true,
             exercises,
         };
     };
 
     const handleSave = async () => {
-        if (!form.title.trim()) {
-            Alert.alert('Error', 'Workout Title is required');
+        if (!form.exerciseName.trim()) {
+            Alert.alert('Error', 'Exercise Name is required');
             return;
         }
         try {
@@ -147,13 +132,14 @@ export default function WorkoutsManager() {
             setIsModalOpen(false);
             setEditingWorkout(null);
             setForm({ ...EMPTY_FORM });
-        } catch (error) {
-            Alert.alert('Error', 'Failed to save workout');
+        } catch (error: any) {
+            Alert.alert('Error', error?.message ?? 'Failed to save exercise');
+            console.error('Save error:', error);
         }
     };
 
     const handleDelete = (id: any) => {
-        Alert.alert('Delete Workout', 'Remove this video workout from the library?', [
+        Alert.alert('Delete Exercise', 'Remove this exercise from the library?', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => deleteWorkout({ id }) }
         ]);
@@ -163,23 +149,16 @@ export default function WorkoutsManager() {
         const ex = w.exercises?.[0] ?? {};
         setEditingWorkout(w);
         setForm({
-            title: w.title ?? '',
-            description: w.description ?? '',
-            thumbnail: w.thumbnail ?? '',
-            videoUrl: w.videoUrl ?? '',
-            duration: String(w.duration ?? 30),
-            calories: String(w.calories ?? 300),
-            difficulty: w.difficulty ?? 'Beginner',
-            category: w.category ?? 'Strength',
-            equipment: (w.equipment ?? []).join(', '),
-            instructor: w.instructor ?? '',
-            isPremium: w.isPremium ?? true,
-            exerciseName: ex.name ?? '',
-            exerciseDescription: ex.description ?? '',
-            exerciseType: ex.exerciseType ?? 'Strength',
+            exerciseName: ex.name ?? w.title ?? '',
+            exerciseDescription: ex.description ?? w.description ?? '',
+            exerciseType: ex.exerciseType ?? w.category ?? 'Strength',
             instructions: (ex.instructions ?? []).join('\n'),
             primaryMuscles: (ex.primaryMuscles ?? []).join(', '),
             secondaryMuscles: (ex.secondaryMuscles ?? []).join(', '),
+            equipment: (w.equipment ?? []).join(', '),
+            difficulty: w.difficulty ?? 'Beginner',
+            thumbnail: w.thumbnail ?? '',
+            videoUrl: w.videoUrl ?? '',
         });
         setIsModalOpen(true);
     };
@@ -206,24 +185,18 @@ export default function WorkoutsManager() {
                         <Text style={[styles.levelText, {
                             color: item.difficulty === 'Advanced' ? '#ef4444'
                                 : item.difficulty === 'Intermediate' ? '#f59e0b' : '#10b981'
-                        }]}>{item.difficulty.toUpperCase()}</Text>
+                        }]}>{item.difficulty?.toUpperCase()}</Text>
                     </View>
                 </View>
-                <Text style={styles.instructorName}>
-                    {item.instructor || 'Bluom Coach'} • {item.category}
+                <Text style={styles.instructorName} numberOfLines={1}>
+                    {item.category} • {(item.equipment ?? []).join(', ') || 'Bodyweight'}
                 </Text>
                 <View style={styles.statsRow}>
                     <View style={styles.stat}>
-                        <Timer size={13} color="#64748b" />
-                        <Text style={styles.statText}>{item.duration}m</Text>
-                    </View>
-                    <View style={styles.stat}>
-                        <Flame size={13} color="#f59e0b" />
-                        <Text style={styles.statText}>{item.calories} kcal</Text>
-                    </View>
-                    <View style={styles.stat}>
                         <Dumbbell size={13} color="#6366f1" />
-                        <Text style={styles.statText}>{item.exercises?.length ?? 0} exercise(s)</Text>
+                        <Text style={styles.statText}>
+                            {item.exercises?.[0]?.primaryMuscles?.join(', ') || '—'}
+                        </Text>
                     </View>
                 </View>
             </View>
@@ -261,12 +234,12 @@ export default function WorkoutsManager() {
             {/* Header */}
             <View style={styles.header}>
                 <View>
-                    <Text style={styles.title}>Video Workouts</Text>
-                    <Text style={styles.subtitle}>Manage workout library</Text>
+                    <Text style={styles.title}>Exercise Library</Text>
+                    <Text style={styles.subtitle}>Manage exercises for workout plans</Text>
                 </View>
                 <TouchableOpacity style={styles.addButton} onPress={openNew}>
                     <Plus color="#ffffff" size={20} />
-                    <Text style={styles.addButtonText}>New Workout</Text>
+                    <Text style={styles.addButtonText}>New Exercise</Text>
                 </TouchableOpacity>
             </View>
 
@@ -292,13 +265,13 @@ export default function WorkoutsManager() {
                     contentContainerStyle={styles.listContent}
                     ListEmptyComponent={
                         <View style={{ padding: 40, alignItems: 'center' }}>
-                            <Text style={{ color: '#94a3b8', fontSize: 15 }}>No workouts yet</Text>
+                            <Text style={{ color: '#94a3b8', fontSize: 15 }}>No exercises yet</Text>
                         </View>
                     }
                 />
             )}
 
-            {/* Modal */}
+            {/* ── Modal ──────────────────────────────────────────────────────── */}
             <Modal visible={isModalOpen} animationType="slide">
                 <View style={styles.modal}>
                     {/* Modal header */}
@@ -307,7 +280,7 @@ export default function WorkoutsManager() {
                             <X size={24} color="#64748b" />
                         </TouchableOpacity>
                         <Text style={styles.modalTitle}>
-                            {editingWorkout ? 'Edit Workout' : 'New Video Workout'}
+                            {editingWorkout ? 'Edit Exercise' : 'New Exercise'}
                         </Text>
                         <TouchableOpacity onPress={handleSave}>
                             <Text style={styles.saveBtn}>Save</Text>
@@ -316,32 +289,72 @@ export default function WorkoutsManager() {
 
                     <ScrollView style={styles.form} keyboardShouldPersistTaps="handled">
 
-                        {/* ── SECTION 1: WORKOUT METADATA ─────────────────── */}
-                        <View style={styles.sectionHeader}>
-                            <Text style={styles.sectionEmoji}>📋</Text>
-                            <View>
-                                <Text style={styles.sectionTitle}>Workout Metadata</Text>
-                                <Text style={styles.sectionHint}>Displayed on browse cards and detail screens</Text>
-                            </View>
-                        </View>
-
-                        <Text style={styles.label}>Workout Title *</Text>
+                        {/* Exercise Name */}
+                        <Text style={styles.label}>Exercise Name *</Text>
                         <TextInput
                             style={styles.input}
-                            value={form.title}
-                            onChangeText={t => setField('title', t)}
-                            placeholder="e.g. Ab Wheel Blast, Full Body HIIT"
+                            value={form.exerciseName}
+                            onChangeText={t => setField('exerciseName', t)}
+                            placeholder="e.g. Ab Wheel Rollout, Barbell Squat"
                         />
 
-                        <Text style={styles.label}>Workout Description</Text>
+                        {/* Exercise Description */}
+                        <Text style={styles.label}>Exercise Description</Text>
                         <TextInput
                             style={[styles.input, { height: 80 }]}
                             multiline
-                            value={form.description}
-                            onChangeText={t => setField('description', t)}
-                            placeholder="What does this workout help with? What makes it special?"
+                            value={form.exerciseDescription}
+                            onChangeText={t => setField('exerciseDescription', t)}
+                            placeholder="What does this exercise target? Brief description."
                         />
 
+                        {/* Exercise Type */}
+                        <Text style={styles.label}>Exercise Type</Text>
+                        <PillRow field="exerciseType" options={EXERCISE_TYPES} />
+
+                        {/* Instructions */}
+                        <Text style={styles.label}>Instructions — one step per line</Text>
+                        <Text style={styles.fieldHint}>These appear as a numbered list in the app</Text>
+                        <TextInput
+                            style={[styles.input, { height: 130, marginTop: 6 }]}
+                            multiline
+                            value={form.instructions}
+                            onChangeText={t => setField('instructions', t)}
+                            placeholder={"Kneel and grip the wheel shoulder-width\nBrace core and exhale\nRoll forward until hips extend\nPull back slowly to start"}
+                        />
+
+                        {/* Primary Muscles */}
+                        <Text style={styles.label}>Primary Muscles (comma-separated)</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={form.primaryMuscles}
+                            onChangeText={t => setField('primaryMuscles', t)}
+                            placeholder="e.g. Abs, Core, Obliques"
+                        />
+
+                        {/* Secondary Muscles */}
+                        <Text style={styles.label}>Secondary Muscles (comma-separated)</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={form.secondaryMuscles}
+                            onChangeText={t => setField('secondaryMuscles', t)}
+                            placeholder="e.g. Lower Back, Hip Flexors"
+                        />
+
+                        {/* Equipment */}
+                        <Text style={styles.label}>Equipment (comma-separated)</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={form.equipment}
+                            onChangeText={t => setField('equipment', t)}
+                            placeholder="e.g. Dumbbells, Yoga mat  (leave empty for bodyweight)"
+                        />
+
+                        {/* Difficulty */}
+                        <Text style={styles.label}>Difficulty</Text>
+                        <PillRow field="difficulty" options={LEVELS} />
+
+                        {/* Thumbnail URL */}
                         <Text style={styles.label}>Thumbnail URL (R2)</Text>
                         <TextInput
                             style={styles.input}
@@ -351,144 +364,14 @@ export default function WorkoutsManager() {
                             autoCapitalize="none"
                         />
 
+                        {/* Video URL */}
                         <Text style={styles.label}>Video URL (R2) — optional</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { marginBottom: 60 }]}
                             value={form.videoUrl}
                             onChangeText={t => setField('videoUrl', t)}
                             placeholder="https://pub-xxx.r2.dev/workouts/video.mp4"
                             autoCapitalize="none"
-                        />
-
-                        <View style={styles.row}>
-                            <View style={styles.col}>
-                                <Text style={styles.label}>Duration (min)</Text>
-                                <TextInput
-                                    style={styles.input}
-                                    keyboardType="numeric"
-                                    value={form.duration}
-                                    onChangeText={t => setField('duration', t)}
-                                />
-                            </View>
-                            <View style={styles.col}>
-                                <Text style={styles.label}>Calories (est.)</Text>
-                                <TextInput
-                                    style={styles.input}
-                                    keyboardType="numeric"
-                                    value={form.calories}
-                                    onChangeText={t => setField('calories', t)}
-                                />
-                            </View>
-                        </View>
-
-                        <Text style={styles.label}>Difficulty</Text>
-                        <PillRow field="difficulty" options={LEVELS} />
-
-                        <Text style={styles.label}>Category</Text>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                            <View style={styles.pillRow}>
-                                {CATEGORIES.map(c => (
-                                    <TouchableOpacity
-                                        key={c}
-                                        onPress={() => setField('category', c)}
-                                        style={[styles.pill, form.category === c && styles.pillActive]}
-                                    >
-                                        <Text style={[styles.pillText, form.category === c && styles.pillTextActive]}>{c}</Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        </ScrollView>
-
-                        <Text style={styles.label}>Equipment (comma-separated)</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={form.equipment}
-                            onChangeText={t => setField('equipment', t)}
-                            placeholder="e.g. Dumbbells, Yoga mat  (leave empty for bodyweight)"
-                        />
-
-                        <Text style={styles.label}>Instructor (optional)</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={form.instructor}
-                            onChangeText={t => setField('instructor', t)}
-                            placeholder="Leave empty → defaults to 'Bluom Coach'"
-                        />
-
-                        <View style={styles.premiumRow}>
-                            <View>
-                                <Text style={styles.label}>Premium Only</Text>
-                                <Text style={styles.fieldHint}>Locks content behind Pro subscription</Text>
-                            </View>
-                            <TouchableOpacity onPress={() => setField('isPremium', !form.isPremium)}>
-                                <View style={[styles.toggle, form.isPremium && styles.toggleOn]}>
-                                    <View style={[styles.toggleCircle, form.isPremium && styles.toggleCircleOn]} />
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-
-                        {/* ── SECTION 2: EXERCISE DETAILS ──────────────────── */}
-                        <View style={[styles.sectionHeader, { marginTop: 8 }]}>
-                            <Text style={styles.sectionEmoji}>💪</Text>
-                            <View>
-                                <Text style={styles.sectionTitle}>Exercise Details</Text>
-                                <Text style={styles.sectionHint}>Shown inside the workout — enables the Log button and muscle info</Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.infoBox}>
-                            <Info size={14} color="#2563eb" />
-                            <Text style={styles.infoText}>
-                                Fill in Exercise Name at minimum. Without it, the app shows no exercise card or Log button.
-                            </Text>
-                        </View>
-
-                        <Text style={styles.label}>Exercise Name</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={form.exerciseName}
-                            onChangeText={t => setField('exerciseName', t)}
-                            placeholder="e.g. Ab Wheel Rollout, Barbell Squat"
-                        />
-
-                        <Text style={styles.label}>Exercise Description</Text>
-                        <TextInput
-                            style={[styles.input, { height: 64 }]}
-                            multiline
-                            value={form.exerciseDescription}
-                            onChangeText={t => setField('exerciseDescription', t)}
-                            placeholder="Short cue shown beneath the exercise name"
-                        />
-
-                        <Text style={styles.label}>Exercise Type</Text>
-                        <PillRow field="exerciseType" options={EXERCISE_TYPES} />
-
-                        <Text style={styles.label}>Instructions — one step per line</Text>
-                        <Text style={styles.fieldHint}>These appear as a numbered list inside the workout</Text>
-                        <TextInput
-                            style={[styles.input, { height: 130, marginTop: 6 }]}
-                            multiline
-                            value={form.instructions}
-                            onChangeText={t => setField('instructions', t)}
-                            placeholder={"Kneel and grip the wheel shoulder-width\nBrace core and exhale\nRoll forward until hips extend\nPull back slowly to start"}
-                        />
-
-                        <Text style={styles.label}>Primary Muscles (comma-separated)</Text>
-                        <Text style={styles.fieldHint}>Main muscles targeted — shown highlighted in blue</Text>
-                        <TextInput
-                            style={[styles.input, { marginTop: 6 }]}
-                            value={form.primaryMuscles}
-                            onChangeText={t => setField('primaryMuscles', t)}
-                            placeholder="e.g. Abs, Core, Obliques"
-                        />
-
-                        <Text style={styles.label}>Secondary Muscles (comma-separated)</Text>
-                        <Text style={styles.fieldHint}>Supporting muscles — shown in lighter box</Text>
-                        <TextInput
-                            style={[styles.input, { marginTop: 6, marginBottom: 40 }]}
-                            value={form.secondaryMuscles}
-                            onChangeText={t => setField('secondaryMuscles', t)}
-                            placeholder="e.g. Lower Back, Hip Flexors"
                         />
 
                     </ScrollView>
@@ -499,7 +382,7 @@ export default function WorkoutsManager() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f8fafc' },
+    container: { flex: 1, backgroundColor: '#F5F4F0' },
     header: {
         padding: 24,
         flexDirection: 'row',
@@ -577,38 +460,6 @@ const styles = StyleSheet.create({
     saveBtn: { color: '#2563eb', fontWeight: '800', fontSize: 16 },
     form: { flex: 1, paddingHorizontal: 20 },
 
-    // Section headers
-    sectionHeader: {
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        gap: 10,
-        backgroundColor: '#f8fafc',
-        borderRadius: 12,
-        padding: 14,
-        marginTop: 24,
-        marginBottom: 4,
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-    },
-    sectionEmoji: { fontSize: 22, marginTop: 1 },
-    sectionTitle: { fontSize: 15, fontWeight: '900', color: '#1e293b' },
-    sectionHint: { fontSize: 12, color: '#64748b', marginTop: 2 },
-
-    // Info box
-    infoBox: {
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        gap: 8,
-        backgroundColor: '#eff6ff',
-        borderRadius: 10,
-        padding: 12,
-        marginTop: 8,
-        marginBottom: 4,
-        borderWidth: 1,
-        borderColor: '#dbeafe',
-    },
-    infoText: { flex: 1, fontSize: 12, color: '#1e40af', lineHeight: 18 },
-
     // Fields
     label: {
         fontSize: 12,
@@ -630,26 +481,9 @@ const styles = StyleSheet.create({
         color: '#1e293b',
         fontWeight: '600',
     },
-    row: { flexDirection: 'row', gap: 14 },
-    col: { flex: 1 },
     pillRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
     pill: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, backgroundColor: '#f1f5f9' },
     pillActive: { backgroundColor: '#2563eb' },
     pillText: { fontSize: 13, fontWeight: '700', color: '#64748b' },
     pillTextActive: { color: '#ffffff' },
-    premiumRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 16,
-        padding: 14,
-        backgroundColor: '#f8fafc',
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-    },
-    toggle: { width: 48, height: 26, borderRadius: 13, backgroundColor: '#e2e8f0', padding: 3 },
-    toggleOn: { backgroundColor: '#2563eb' },
-    toggleCircle: { width: 20, height: 20, borderRadius: 10, backgroundColor: '#ffffff' },
-    toggleCircleOn: { marginLeft: 22 },
 });

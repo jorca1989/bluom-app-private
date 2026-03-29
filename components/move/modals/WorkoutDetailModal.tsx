@@ -1,5 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -13,6 +21,7 @@ interface PlannedExercise {
   sets: number;
   reps: number | string;
 }
+
 export interface RoutineDay {
   dayNum: number;
   dayTitle: string;
@@ -24,9 +33,6 @@ interface WorkoutDetailModalProps {
   visible: boolean;
   routineDays?: RoutineDay[];
   initialTab?: number;
-  dayTitle?: string;
-  muscleGroups?: string;
-  exercises?: PlannedExercise[];
   isPreviewMode?: boolean;
   onClose: () => void;
   onExercisePress?: (ex: PlannedExercise) => void;
@@ -37,17 +43,14 @@ interface WorkoutDetailModalProps {
 
 export default function WorkoutDetailModal({
   visible,
-  routineDays,
+  routineDays = [],
   initialTab = 1,
-  dayTitle: fallbackDayTitle = "",
-  muscleGroups: fallbackMuscleGroups = "",
-  exercises: fallbackExercises = [],
   isPreviewMode = false,
   onClose,
   onExercisePress,
   onStartActiveWorkout,
   onAddExercise,
-  onDeleteExercise
+  onDeleteExercise,
 }: WorkoutDetailModalProps) {
   const [activeTab, setActiveTab] = React.useState(initialTab);
 
@@ -55,11 +58,12 @@ export default function WorkoutDetailModal({
     if (visible) setActiveTab(initialTab);
   }, [visible, initialTab]);
 
-  const currentDay = routineDays ? routineDays[activeTab - 1] : null;
-  const displayTitle = currentDay?.dayTitle || fallbackDayTitle;
-  const displayMuscleGroup = currentDay?.muscleGroups || fallbackMuscleGroups;
-  const displayExercises = currentDay?.exercises || fallbackExercises;
-  const totalTabs = routineDays?.length || 4;
+  const totalTabs = routineDays.length || 4;
+  const dayIndex = activeTab - 1;
+  const currentDay = routineDays[dayIndex] ?? null;
+  const displayTitle = currentDay?.dayTitle ?? `Day ${activeTab}`;
+  const displayMuscleGroup = currentDay?.muscleGroups ?? '';
+  const displayExercises = currentDay?.exercises ?? [];
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
@@ -69,73 +73,87 @@ export default function WorkoutDetailModal({
           <TouchableOpacity onPress={onClose} style={styles.iconBtn}>
             <Ionicons name="chevron-back" size={28} color="#0f172a" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Workouts</Text>
+          <Text style={styles.headerTitle}>Week Overview</Text>
           <View style={{ width: 28 }} />
         </View>
 
-        <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-          {/* Dynamic Scrollable Tabs (Hidden in Preview Mode) */}
-          {!isPreviewMode && (
-            <ScrollView 
-              horizontal 
-              showsHorizontalScrollIndicator={false} 
-              style={styles.tabsContainer}
-              contentContainerStyle={styles.tabsRow}
-            >
-              {Array.from({ length: totalTabs }).map((_, i) => {
-                const dayNum = i + 1;
-                const isActive = activeTab === dayNum;
-                return (
-                  <TouchableOpacity 
-                    key={dayNum} 
-                    style={isActive ? styles.tabActive : styles.tabInactive}
-                    onPress={() => setActiveTab(dayNum)}
-                  >
-                     <Text style={isActive ? styles.tabTextActive : styles.tabTextInactive}>
-                       Day {dayNum}
-                     </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-          )}
+        {/* Day tabs — always scrollable, shows all days in the week */}
+        <View style={styles.tabsWrap}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.tabsRow}
+          >
+            {routineDays.map((day, i) => {
+              const isActive = activeTab === i + 1;
+              return (
+                <TouchableOpacity
+                  key={day.dayNum}
+                  style={[styles.tab, isActive && styles.tabActive]}
+                  onPress={() => setActiveTab(i + 1)}
+                >
+                  <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
+                    Day {day.dayNum}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
 
-          {/* Title Area */}
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+          {/* Day title */}
           <View style={styles.titleArea}>
             <Text style={styles.mainTitle}>{displayTitle}</Text>
             <Text style={styles.subTitle}>{displayMuscleGroup}</Text>
           </View>
 
-          {/* Exercises List */}
+          {/* Info banner */}
+          <View style={styles.infoBanner}>
+            <Ionicons name="information-circle-outline" size={16} color="#2563eb" />
+            <Text style={styles.infoText}>
+              Use this as a simple guide. Pro gets a personalised plan that adapts and swaps exercises.
+            </Text>
+          </View>
+
+          {/* Exercise list */}
           <View style={styles.list}>
             {displayExercises.map((ex, index) => (
-              <TouchableOpacity key={ex.id} style={styles.card} activeOpacity={0.7} onPress={() => onExercisePress?.(ex)}>
+              <TouchableOpacity
+                key={ex.id}
+                style={styles.exCard}
+                activeOpacity={0.7}
+                onPress={() => onExercisePress?.(ex)}
+              >
                 <View style={styles.thumbBox}>
                   {ex.thumbnailUrl ? (
-                    <Image source={{ uri: ex.thumbnailUrl }} style={styles.thumbImage} resizeMode="contain" />
+                    <Image
+                      source={{ uri: ex.thumbnailUrl }}
+                      style={styles.thumbImage}
+                      resizeMode="cover"
+                    />
                   ) : (
-                    <Ionicons name="barbell-outline" size={24} color="#94a3b8" />
+                    <Ionicons name="barbell-outline" size={22} color="#94a3b8" />
                   )}
                 </View>
-                
+
                 <View style={styles.cardBody}>
                   <Text style={styles.exName}>{index + 1}.  {ex.name}</Text>
-                  
                   <View style={styles.chipRow}>
                     <View style={styles.muscleChip}>
                       <Text style={styles.muscleChipText}>{ex.primaryMuscle}</Text>
                     </View>
                   </View>
-
                   <Text style={styles.exDetails}>
-                    <Text style={styles.equipment}>{ex.equipment || 'Bodyweight'}</Text>   {ex.sets} x {ex.reps}
+                    <Text style={styles.equipment}>{ex.equipment ?? 'Bodyweight'}</Text>
+                    {'   '}{ex.sets} × {ex.reps}
                   </Text>
                 </View>
 
                 {onDeleteExercise && (
-                  <TouchableOpacity 
-                    style={styles.deleteExBtn} 
-                    onPress={(e) => { e.stopPropagation(); onDeleteExercise(ex.id, activeTab - 1); }}
+                  <TouchableOpacity
+                    style={styles.deleteBtn}
+                    onPress={e => { e.stopPropagation(); onDeleteExercise(ex.id, dayIndex); }}
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                   >
                     <Ionicons name="trash-outline" size={20} color="#f43f5e" />
@@ -145,188 +163,152 @@ export default function WorkoutDetailModal({
             ))}
 
             {onAddExercise && (
-              <TouchableOpacity style={styles.addExWrapBtn} onPress={() => onAddExercise(activeTab - 1)}>
+              <TouchableOpacity style={styles.addExBtn} onPress={() => onAddExercise(dayIndex)}>
                 <Ionicons name="add" size={20} color="#3b82f6" />
-                <Text style={styles.addExWrapBtnText}>Add Exercise</Text>
+                <Text style={styles.addExBtnText}>Add Exercise</Text>
               </TouchableOpacity>
             )}
-
           </View>
         </ScrollView>
 
-        {/* Start Button & Edit in Preview Mode */}
-        {isPreviewMode && (
-           <View style={styles.previewFooter}>
-
-             <TouchableOpacity style={styles.startBtn} onPress={() => onStartActiveWorkout(activeTab - 1)}>
-               <Text style={styles.startBtnText}>Start Workout</Text>
-               <Ionicons name="arrow-forward" size={20} color="#ffffff" />
-             </TouchableOpacity>
-           </View>
-        )}
+        {/* Footer — Start Workout button for this day */}
+        <View style={styles.footer}>
+          <TouchableOpacity
+            style={styles.startBtn}
+            onPress={() => onStartActiveWorkout(dayIndex)}
+          >
+            <Ionicons name="play" size={18} color="#ffffff" />
+            <Text style={styles.startBtnText}>Start Day {activeTab} Workout</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  deleteExBtn: {
-    padding: 8,
-    marginLeft: 8,
-  },
+  container: { flex: 1, backgroundColor: '#ffffff' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#ffffff',
-  },
-  iconBtn: {
-    padding: 8,
-    marginLeft: -8,
-  },
-  iconBtnRight: {
-    padding: 8,
-    marginRight: -8,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#0f172a',
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 40,
-  },
-  tabsContainer: {
-    backgroundColor: '#ffffff',
     borderBottomWidth: 1,
     borderBottomColor: '#f1f5f9',
-    marginBottom: 24,
+  },
+  iconBtn: { padding: 8, marginLeft: -8 },
+  headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#0f172a' },
+
+  tabsWrap: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+    backgroundColor: '#ffffff',
   },
   tabsRow: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
-    gap: 16,
+    paddingHorizontal: 16,
+    gap: 4,
   },
-  tabActive: {
-    paddingHorizontal: 12,
-    alignItems: 'center',
-    paddingVertical: 16,
+  tab: {
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     borderBottomWidth: 3,
-    borderBottomColor: '#06b6d4',
+    borderBottomColor: 'transparent',
   },
-  tabInactive: {
-    paddingHorizontal: 12,
-    alignItems: 'center',
-    paddingVertical: 16,
-  },
-  tabTextActive: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#06b6d4',
-  },
-  tabTextInactive: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#94a3b8',
-  },
+  tabActive: { borderBottomColor: '#06b6d4' },
+  tabText: { fontSize: 14, fontWeight: '600', color: '#94a3b8' },
+  tabTextActive: { color: '#06b6d4', fontWeight: 'bold' },
+
+  scroll: { flex: 1 },
+  scrollContent: { paddingBottom: 20 },
+
   titleArea: {
     alignItems: 'center',
-    marginBottom: 24,
     paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 16,
   },
-  mainTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#0f172a',
-    marginBottom: 8,
+  mainTitle: { fontSize: 24, fontWeight: 'bold', color: '#0f172a', marginBottom: 6, textAlign: 'center' },
+  subTitle: { fontSize: 14, color: '#475569', textAlign: 'center' },
+
+  infoBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    backgroundColor: '#eff6ff',
+    marginHorizontal: 16,
+    marginBottom: 20,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#dbeafe',
   },
-  subTitle: {
-    fontSize: 14,
-    color: '#475569',
-  },
-  list: {
-    paddingHorizontal: 16,
-    gap: 12,
-  },
-  card: {
+  infoText: { flex: 1, fontSize: 12, color: '#1e40af', lineHeight: 17 },
+
+  list: { paddingHorizontal: 16, gap: 12 },
+  exCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 20,
-    padding: 16,
+    borderRadius: 16,
+    padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#f1f5f9',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
   },
   thumbBox: {
-    width: 64,
-    height: 64,
+    width: 60,
+    height: 60,
     backgroundColor: '#f8fafc',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#f1f5f9',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    marginRight: 14,
     overflow: 'hidden',
   },
-  thumbImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 12,
-  },
-  cardBody: {
-    flex: 1,
-  },
-  exName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#0f172a',
-    marginBottom: 8,
-  },
-  chipRow: {
-    flexDirection: 'row',
-    marginBottom: 12,
-  },
+  thumbImage: { width: '100%', height: '100%' },
+  cardBody: { flex: 1 },
+  exName: { fontSize: 15, fontWeight: '600', color: '#0f172a', marginBottom: 6 },
+  chipRow: { flexDirection: 'row', marginBottom: 8 },
   muscleChip: {
     backgroundColor: '#ecfdf5',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
   },
-  muscleChipText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#10b981',
+  muscleChipText: { fontSize: 11, fontWeight: '600', color: '#10b981' },
+  exDetails: { fontSize: 13, color: '#0f172a', fontWeight: '500' },
+  equipment: { color: '#06b6d4' },
+  deleteBtn: { padding: 8, marginLeft: 6 },
+
+  addExBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderStyle: 'dashed',
+    backgroundColor: '#f8fafc',
+    gap: 6,
   },
-  exDetails: {
-    fontSize: 14,
-    color: '#0f172a',
-    fontWeight: '500',
-  },
-  equipment: {
-    color: '#06b6d4',
-  },
-  moreBtn: {
-    padding: 8,
-    marginRight: -8,
-  },
-  previewFooter: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
+  addExBtnText: { color: '#3b82f6', fontSize: 14, fontWeight: 'bold' },
+
+  footer: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
     paddingBottom: 32,
     borderTopWidth: 1,
     borderTopColor: '#f1f5f9',
     backgroundColor: '#ffffff',
-    gap: 12,
   },
   startBtn: {
     backgroundColor: '#3b82f6',
@@ -335,33 +317,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 16,
     borderRadius: 16,
+    gap: 8,
     shadowColor: '#3b82f6',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
   },
-  startBtnText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginRight: 8,
-  },
-  addExWrapBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    borderStyle: 'dashed',
-    backgroundColor: '#f8fafc',
-  },
-  addExWrapBtnText: {
-    color: '#3b82f6',
-    fontSize: 15,
-    fontWeight: 'bold',
-    marginLeft: 6,
-  },
+  startBtnText: { color: '#ffffff', fontSize: 16, fontWeight: 'bold' },
 });

@@ -476,7 +476,7 @@ export default function WellnessScreen() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+  container: { flex: 1, backgroundColor: '#F5F4F0' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
   header: {

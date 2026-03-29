@@ -17,7 +17,7 @@ export default function LifeGoalsRoute() {
 
   if (!clerkUser || !convexUser?._id) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F4F0' }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator />
         </View>

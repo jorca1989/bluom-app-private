@@ -2,7 +2,20 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { checkAdminPower } from "./functions";
 
-// --- Admin Mutations ---
+// ─── Exercise validator (full schema) ─────────────────────────────────────────
+const exerciseValidator = v.object({
+    name: v.string(),
+    duration: v.float64(),           // seconds
+    reps: v.optional(v.float64()),
+    sets: v.optional(v.float64()),
+    description: v.string(),
+    instructions: v.optional(v.array(v.string())),
+    primaryMuscles: v.optional(v.array(v.string())),
+    secondaryMuscles: v.optional(v.array(v.string())),
+    exerciseType: v.optional(v.string()),
+});
+
+// ─── Admin Mutations ──────────────────────────────────────────────────────────
 
 export const createWorkout = mutation({
     args: {
@@ -17,15 +30,7 @@ export const createWorkout = mutation({
         equipment: v.array(v.string()),
         instructor: v.string(),
         isPremium: v.boolean(),
-        exercises: v.array(
-            v.object({
-                name: v.string(),
-                duration: v.float64(),
-                reps: v.optional(v.float64()),
-                sets: v.optional(v.float64()),
-                description: v.string(),
-            })
-        ),
+        exercises: v.array(exerciseValidator),
     },
     handler: async (ctx, args) => {
         await checkAdminPower(ctx);
@@ -56,17 +61,16 @@ export const updateWorkout = mutation({
             equipment: v.optional(v.array(v.string())),
             instructor: v.optional(v.string()),
             isPremium: v.optional(v.boolean()),
+            exercises: v.optional(v.array(exerciseValidator)),
         }),
     },
     handler: async (ctx, args) => {
         await checkAdminPower(ctx);
+        const patch: any = { ...args.updates, updatedAt: Date.now() };
         if (args.updates.title) {
-            (args.updates as any).titleLower = args.updates.title.toLowerCase();
+            patch.titleLower = args.updates.title.toLowerCase();
         }
-        await ctx.db.patch(args.id, {
-            ...args.updates,
-            updatedAt: Date.now(),
-        });
+        await ctx.db.patch(args.id, patch);
     },
 });
 
@@ -78,7 +82,7 @@ export const deleteWorkout = mutation({
     },
 });
 
-// --- Public Queries ---
+// ─── Public Queries ───────────────────────────────────────────────────────────
 
 export const list = query({
     args: {
@@ -89,13 +93,13 @@ export const list = query({
         let workouts = await ctx.db.query("videoWorkouts").order("desc").collect();
 
         if (args.category && args.category !== "All") {
-            workouts = workouts.filter((w) => w.category === args.category);
+            workouts = workouts.filter(w => w.category === args.category);
         }
 
         if (args.search) {
             const s = args.search.toLowerCase();
             workouts = workouts.filter(
-                (w) => w.titleLower.includes(s) || w.description.toLowerCase().includes(s)
+                w => w.titleLower.includes(s) || w.description.toLowerCase().includes(s)
             );
         }
 

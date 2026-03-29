@@ -372,16 +372,18 @@ export default function WorkoutsScreen() {
                     </View>
                 </ScrollView>
 
-                {/* Bottom action */}
-                <View style={[styles.bottomAction, { paddingBottom: insets.bottom + 16 }]}>
-                    <TouchableOpacity
-                        style={styles.startButton}
-                        onPress={() => router.push('/(tabs)/move')}
-                    >
-                        <Play size={22} color="#ffffff" fill="#ffffff" />
-                        <Text style={styles.startButtonText}>Go to Move Tab</Text>
-                    </TouchableOpacity>
-                </View>
+                {/* Bottom action — log the first/only exercise */}
+                {hasExercises && (
+                    <View style={[styles.bottomAction, { paddingBottom: insets.bottom + 16 }]}>
+                        <TouchableOpacity
+                            style={styles.startButton}
+                            onPress={() => handleLogExercise(selectedWorkout.exercises[0])}
+                        >
+                            <Dumbbell size={22} color="#ffffff" />
+                            <Text style={styles.startButtonText}>Log Exercise</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
 
                 {/* ── VIDEO MODAL with expo-av ── */}
                 <Modal visible={showVideoModal} animationType="fade" transparent>
@@ -560,7 +562,7 @@ export default function WorkoutsScreen() {
 
 const styles = StyleSheet.create({
     // List screen
-    container: { flex: 1, backgroundColor: '#ebf1fe' },
+    container: { flex: 1, backgroundColor: '#F5F4F0' },
     header: { padding: 24, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     headerCircle: {
         width: 40, height: 40, borderRadius: 20, backgroundColor: '#ffffff',
@@ -602,7 +604,7 @@ const styles = StyleSheet.create({
     emptyText: { color: '#94a3b8', fontSize: 16, fontWeight: '600' },
 
     // Detail screen
-    detailContainer: { flex: 1, backgroundColor: '#ebf1fe' },
+    detailContainer: { flex: 1, backgroundColor: '#F5F4F0' },
     detailContent: { paddingBottom: 100 },
     detailHero: { height: 350, width: '100%' },
     heroImage: { width: '100%', height: '100%' },

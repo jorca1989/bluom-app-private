@@ -621,7 +621,7 @@ export default function ProfileScreen() {
 // STYLES
 // ─────────────────────────────────────────────────────────────
 const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#ffffff' },
+  screen: { flex: 1, backgroundColor: '#F5F4F0' },
   scroll: { paddingHorizontal: 16, paddingTop: 12 },
 
   // Hero

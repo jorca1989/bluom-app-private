@@ -585,7 +585,7 @@ export default function FuelScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff', // Requested new elegant white backdrop
+    backgroundColor: '#F5F4F0',
   },
   scrollView: {
     flex: 1,

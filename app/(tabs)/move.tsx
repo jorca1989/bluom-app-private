@@ -20,7 +20,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 
-import { LinearGradient } from 'expo-linear-gradient';
+
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { useUser as useClerkUser } from '@clerk/clerk-expo';
@@ -43,6 +43,7 @@ import ExerciseSearchModal, { ExerciseLibraryItem as ESearchItem } from '@/compo
 import SingleExerciseLogModal from '@/components/move/modals/SingleExerciseLogModal';
 import ExerciseDetailModal from '@/components/move/modals/ExerciseDetailModal';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
+import { FREE_4_WEEK_PLAN, getWeekRoutineDays } from '@/utils/fourWeekPlanData';
 
 
 
@@ -332,31 +333,12 @@ export default function MoveScreen() {
   const [workoutDetailMode, setWorkoutDetailMode] = useState<'view' | 'start'>('view');
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
 
-  // MOCK ROUTINE DAYS For V5 
-  const MOCK_ROUTINE_DAYS = [
-    {
-      dayNum: 1,
-      dayTitle: "Leg Day",
-      muscleGroups: "Quads, Hamstrings, Glutes, Calves, Abs",
-      exercises: [
-        { id: '1', name: 'Squat', thumbnailUrl: 'https://images.unsplash.com/photo-1574681533083-bf41eb47b2c0?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Legs', sets: 3, reps: '10' },
-        { id: '2', name: 'Leg Press', thumbnailUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Legs', sets: 3, reps: '12' },
-        { id: '3', name: 'Calf Raise', thumbnailUrl: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Calves', sets: 4, reps: '15' },
-        { id: '4', name: 'Curl', thumbnailUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Hamstrings', sets: 3, reps: '12' },
-        { id: '5', name: 'Crunch', thumbnailUrl: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Abs', sets: 3, reps: '20' }
-      ]
-    },
-    {
-      dayNum: 2,
-      dayTitle: "Push Day",
-      muscleGroups: "Chest, Front Delts, Triceps",
-      exercises: [
-        { id: '6', name: 'Barbell Bench Press', thumbnailUrl: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Chest', equipment: 'Barbell', sets: 3, reps: '8-10' },
-        { id: '7', name: 'Incline Machine Chest Press', thumbnailUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Chest', equipment: 'Machine', sets: 3, reps: 10 },
-        { id: '8', name: 'Tricep Extension', thumbnailUrl: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=200', primaryMuscle: 'Triceps', sets: 3, reps: 12 }
-      ]
-    }
-  ];
+  // ── Free plan: week progression & expiry (28 days from signup) ──────────────
+  const PLAN_DURATION_MS = 28 * 24 * 60 * 60 * 1000; // 28 days
+  const accountAgeMs = convexUser?.createdAt ? Date.now() - convexUser.createdAt : 0;
+  const currentWeekIndex = Math.min(3, Math.floor(accountAgeMs / (7 * 24 * 60 * 60 * 1000)));
+  const freePlanExpired = !isPro && accountAgeMs > PLAN_DURATION_MS;
+  const freePlanCurrentWeek = FREE_4_WEEK_PLAN[currentWeekIndex];
 
   const [completedWorkoutsThisWeek, setCompletedWorkoutsThisWeek] = useState(1);
 
@@ -378,33 +360,17 @@ export default function MoveScreen() {
   const [selectedCategory, setSelectedCategory] = useState<(typeof workoutCategories)[number]>('All');
   const [selectedExercise, setSelectedExercise] = useState<ExerciseLibraryItem | null>(null);
 
-  const rawTargetWorkouts = activePlans?.fitnessPlan
-    ? activePlans.fitnessPlan.daysPerWeek
-    : (convexUser?.fitnessGoal === 'build_muscle' ? 4 : 3);
-  const totalWorkoutsPerWeek = Math.max(1, rawTargetWorkouts);
+  // Days per week — always matches fourWeekPlanData.ts (4 days/week)
+  const totalWorkoutsPerWeek = freePlanCurrentWeek?.days?.length ?? 4;
 
-  // Compute Display Routine
-  const defaultVideoUrl = "https://cdn.pixabay.com/video/2023/10/22/186115-877715053_tiny.mp4";
-  const defaultThumbUrl = "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=400";
-  const initialWorkouts = useMemo(() => (
-    activePlans?.fitnessPlan?.workouts
-      ? activePlans.fitnessPlan.workouts.map((w: any, idx: number) => ({
-        dayNum: idx + 1,
-        dayTitle: w.day || w.focus,
-        muscleGroups: [w.focus],
-        exercises: w.exercises.map((e: any, i: number) => ({
-          id: `ai-${idx}-${i}`,
-          name: e.name,
-          sets: typeof e.sets === 'number' ? e.sets : 3,
-          reps: e.reps || '10',
-          equipment: e.equipment || 'Varies',
-          muscle: w.focus,
-          thumbnailUrl: e.thumbnailUrl ?? defaultThumbUrl,
-          videoUrl: e.videoUrl ?? defaultVideoUrl,
-        }))
-      }))
-      : MOCK_ROUTINE_DAYS
-  ), [activePlans?.fitnessPlan?.workouts]);
+  // ── Workout display routine: SINGLE SOURCE = fourWeekPlanData.ts ───────────
+  // The old AI plan from Convex (activePlans.fitnessPlan.workouts) was a separate
+  // 3-day ABC split that diverged from the plan overview screen. Until we build
+  // the proper adaptive plan system, all users see fourWeekPlanData.ts.
+  const initialWorkouts = useMemo(
+    () => getWeekRoutineDays(currentWeekIndex),
+    [currentWeekIndex]
+  );
 
   const [workouts, setWorkouts] = useState<any[]>(initialWorkouts as any);
   useEffect(() => {
@@ -542,7 +508,7 @@ export default function MoveScreen() {
     return weekDays.map((d) => counts.get(toIsoDateString(d)) ?? 0);
   }, [weekDays, weekExerciseEntries]);
 
-  const weekDayLabels = useMemo(() => ['M', 'T', 'W', 'T', 'F', 'S', 'S'], []);
+
 
   const closeAllOverlays = () => setShowDropdown(false);
 
@@ -857,90 +823,53 @@ export default function MoveScreen() {
 
           {/* Current Program */}
           <CurrentProgramCard
-            programName={activePlans?.fitnessPlan ? activePlans.fitnessPlan.workoutSplit : "Your 4-Week Plan"}
-            level="Beginner"
+            programName={`Week ${currentWeekIndex + 1}: ${freePlanCurrentWeek?.theme ?? 'Foundation'}`}
+            level={isPro ? 'Pro' : 'Beginner'}
             daysPerWeek={totalWorkoutsPerWeek}
-            currentWeek={Math.min(4, Math.floor(completedWorkoutsThisWeek / totalWorkoutsPerWeek) + 1)}
+            currentWeek={currentWeekIndex + 1}
             totalWeeks={4}
-            progressPercent={Math.floor((completedWorkoutsThisWeek / (totalWorkoutsPerWeek * 4)) * 100)}
+            progressPercent={Math.min(100, Math.floor((accountAgeMs / PLAN_DURATION_MS) * 100))}
             onInfoPress={() => { }}
             onWorkoutsPress={() => { }}
           />
 
-          {/* Weekly Workouts in a Card Widget */}
-          <View style={[styles.card, { padding: 0, paddingBottom: 24, marginHorizontal: 24, marginTop: 24 }]}>
-            <View style={[styles.cardHeader, { paddingHorizontal: 20, paddingTop: 20, marginBottom: 16 }]}>
-              <Text style={styles.cardTitle}>This Week's Workouts (Swipe)</Text>
-            </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}>
-              {workouts.map((day: any, idx: number) => (
-                <WorkoutDayCard
-                  key={day.dayNum}
-                  dayTitle={day.dayTitle}
-                  muscleGroups={day.muscleGroups}
-                  exercises={day.exercises as any}
-                  isUpNext={idx === 0}
-                  onStartWorkout={() => { setSelectedDayIndex(idx); setWorkoutDetailMode('start'); setShowWorkoutDetail(true); }}
-                  onViewWorkout={() => { setSelectedDayIndex(idx); setWorkoutDetailMode('view'); setShowWorkoutDetail(true); }}
-                />
-              ))}
-            </ScrollView>
-          </View>
-
-          {/* Weekly Progress */}
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Weekly Progress</Text>
-              <Ionicons name="trending-up" size={24} color="#2563eb" />
-            </View>
-
-            <View style={styles.chartContainer}>
-              {weekData.map((workouts, idx) => (
-                <View key={`${idx}`} style={styles.chartBarWrapper}>
-                  <View
-                    style={[
-                      styles.chartBar,
-                      {
-                        height: Math.max(6, workouts * 15),
-                        opacity: workouts === 0 ? 0.25 : 1,
-                      },
-                    ]}
+          {/* Weekly Workouts — or Upgrade banner if free plan expired */}
+          {freePlanExpired ? (
+            <TouchableOpacity
+              style={[styles.card, { marginHorizontal: 24, marginTop: 24, backgroundColor: '#1e293b', borderWidth: 0, alignItems: 'center', padding: 32 }]}
+              onPress={() => handleProFeature('Continue Your Transformation', 'Your free 4-week plan has ended! Upgrade to Pro for a personalised, rotating plan that never stops.')}
+              activeOpacity={0.85}
+            >
+              <Ionicons name="lock-closed" size={32} color="#f59e0b" style={{ marginBottom: 12 }} />
+              <Text style={{ fontSize: 18, fontWeight: '900', color: '#ffffff', marginBottom: 8, textAlign: 'center' }}>Your 4-Week Plan is Complete!</Text>
+              <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', textAlign: 'center', lineHeight: 20, marginBottom: 16 }}>Upgrade to Pro to continue your transformation with a personalised, AI-driven plan that adapts every cycle.</Text>
+              <View style={{ backgroundColor: '#3b82f6', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 14 }}>
+                <Text style={{ color: '#ffffff', fontWeight: '800', fontSize: 15 }}>Upgrade to Pro →</Text>
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <View style={[styles.card, { padding: 0, paddingBottom: 24, marginHorizontal: 24, marginTop: 24 }]}>
+              <View style={[styles.cardHeader, { paddingHorizontal: 20, paddingTop: 20, marginBottom: 16 }]}>
+                <Text style={styles.cardTitle}>
+                  {`Week ${currentWeekIndex + 1} — ${freePlanCurrentWeek?.theme ?? 'Workouts'} (Swipe)`}
+                </Text>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}>
+                {workouts.map((day: any, idx: number) => (
+                  <WorkoutDayCard
+                    key={day.dayNum}
+                    dayTitle={day.dayTitle}
+                    muscleGroups={day.muscleGroups}
+                    exercises={day.exercises as any}
+                    isUpNext={idx === 0}
+                    onStartWorkout={() => { setSelectedDayIndex(idx); setWorkoutDetailMode('start'); setShowWorkoutDetail(true); }}
+                    onViewWorkout={() => { setSelectedDayIndex(idx); setWorkoutDetailMode('view'); setShowWorkoutDetail(true); }}
                   />
-                  <Text style={styles.chartDay}>{weekDayLabels[idx]}</Text>
-                </View>
-              ))}
+                ))}
+              </ScrollView>
             </View>
+          )}
 
-            <View style={styles.weeklyStatsGrid}>
-              <View style={styles.weeklyStatItem}>
-                <Text style={styles.weeklyStatValue}>{weekData.reduce((a, b) => a + b, 0)}</Text>
-                <Text style={styles.weeklyStatLabel}>Workouts</Text>
-              </View>
-              <View style={styles.weeklyStatItem}>
-                <Text style={styles.weeklyStatValue}>
-                  {Math.round(
-                    (weekExerciseEntries ?? []).reduce(
-                      (acc: number, e: any) => acc + e.duration,
-                      0
-                    ) / 60
-                  )}
-                  h
-                </Text>
-                <Text style={styles.weeklyStatLabel}>Total Time</Text>
-              </View>
-              <View style={styles.weeklyStatItem}>
-                <Text style={styles.weeklyStatValue}>
-                  {Math.round(
-                    (weekExerciseEntries ?? []).reduce(
-                      (acc: number, e: any) => acc + e.caloriesBurned,
-                      0
-                    )
-                  )}
-                </Text>
-                <Text style={styles.weeklyStatLabel}>Calories</Text>
-              </View>
-            </View>
-          </View>
 
           {/* Move Quick Actions & Insights */}
           <MoveQuickActions
@@ -1452,7 +1381,7 @@ export default function MoveScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#F5F4F0',
   },
   scrollView: {
     flex: 1,
@@ -1602,49 +1531,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#1e293b',
   },
-  chartContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    height: 120,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-  },
-  chartBarWrapper: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  chartBar: {
-    width: 24,
-    backgroundColor: '#2563eb',
-    borderRadius: 4,
-  },
-  chartDay: {
-    fontSize: 12,
-    color: '#64748b',
-    marginTop: 8,
-  },
-  weeklyStatsGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-  },
-  weeklyStatItem: {
-    alignItems: 'center',
-  },
-  weeklyStatValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1e293b',
-    marginBottom: 4,
-  },
-  weeklyStatLabel: {
-    fontSize: 14,
-    color: '#64748b',
-  },
+
   activitiesList: {
     gap: 12,
   },

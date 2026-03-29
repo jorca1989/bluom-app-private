@@ -85,7 +85,7 @@ interface WidgetMeta {
 const WIDGET_REGISTRY: WidgetMeta[] = [
   { id: 'weather', label: 'Local Weather', description: 'Real-time temperature & conditions', emoji: '☁️', defaultEnabled: true },
   { id: 'greeting', label: 'Morning Briefing', description: 'Personalised greeting & daily tone-setter', emoji: '☀️', defaultEnabled: true },
-  { id: 'vitality', label: 'Vitality Score', description: 'Steps · Mood · Fuel performance snapshot', emoji: '⚡', defaultEnabled: true },
+  { id: 'vitality', label: 'Vitality Score', description: 'Sleep · Fuel · Active performance snapshot', emoji: '⚡', defaultEnabled: true },
   { id: 'balance', label: 'Calorie Balance', description: 'Goal − Food + Active = Remaining', emoji: '🔥', defaultEnabled: true },
   { id: 'kpis', label: 'Health KPIs', description: 'Steps · Water · Mood · Weight cards', emoji: '📊', defaultEnabled: true },
   { id: 'achievements', label: 'Achievements', description: 'Your XP, tokens & latest unlocks', emoji: '🏆', defaultEnabled: true },
@@ -487,7 +487,7 @@ export default function HomeScreen() {
       <View style={s.cardHead}>
         <View>
           <Text style={s.cardTitle}>Vitality Score</Text>
-          <Text style={s.cardSub}>Steps · Mood · Fuel</Text>
+          <Text style={s.cardSub}>Sleep · Fuel · Active</Text>
         </View>
         <View style={[s.badge, { backgroundColor: vitalityColor + '18' }]}>
           <Text style={[s.badgeTxt, { color: vitalityColor }]}>{vitalityLabel}</Text>
@@ -512,9 +512,9 @@ export default function HomeScreen() {
 
         {/* Breakdown bars */}
         <View style={{ flex: 1 }}>
-          <MiniBar label="Steps" pct={stepsScore} color="#2563eb" />
-          <MiniBar label="Mood" pct={moodScore} color="#8b5cf6" />
+          <MiniBar label="Sleep" pct={stepsScore} color="#6366f1" />
           <MiniBar label="Fuel" pct={fuelScore} color="#10b981" />
+          <MiniBar label="Active" pct={moodScore} color="#f97316" />
         </View>
       </View>
 
@@ -561,7 +561,7 @@ export default function HomeScreen() {
   const wKPIs = () => (
     <View style={s.kpiGrid}>
       <KPICard
-        bg="#eff6ff" iconColor="#2563eb" labelColor="#1e40af"
+        bg="#ffffff" iconColor="#2563eb" labelColor="#1e40af"
         icon={<Footprints size={17} color="#2563eb" />}
         label="Steps" value={steps.toLocaleString()} sub="/ 10,000"
         progress={steps / 100} barColor="#2563eb"
@@ -586,13 +586,13 @@ export default function HomeScreen() {
         ) : null}
       />
       <KPICard
-        bg="#ecfeff" iconColor="#06b6d4" labelColor="#0e7490"
+        bg="#ffffff" iconColor="#06b6d4" labelColor="#0e7490"
         icon={<Droplets size={17} color="#06b6d4" />}
         label="Water" value={`${waterDisplay}`} unit={waterUnit} sub={`/ ${waterGoalDisplay}${waterUnit}`}
         progress={(waterOz / waterGoalOz) * 100} barColor="#06b6d4"
       />
       <TouchableOpacity
-        style={[s.kpiCard, { backgroundColor: '#f5f3ff' }]}
+        style={[s.kpiCard, { backgroundColor: '#ffffff' }]}
         onPress={() => router.push('/wellness' as any)} activeOpacity={0.8}
       >
         <View style={s.kpiHead}>
@@ -603,7 +603,7 @@ export default function HomeScreen() {
         <Text style={s.kpiSub}>{moodLog ? 'Logged' : 'Tap to log'}</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[s.kpiCard, { backgroundColor: '#f8fafc' }]}
+        style={[s.kpiCard, { backgroundColor: '#ffffff' }]}
         onPress={() => router.push('/Weightmanagement' as any)} activeOpacity={0.8}
       >
         <View style={s.kpiHead}>
@@ -785,7 +785,7 @@ export default function HomeScreen() {
         style={{ opacity: fadeAnim }}
         contentContainerStyle={[
           s.scroll,
-          { paddingBottom: Math.max(insets.bottom, 12) + 40 },
+          { paddingBottom: Math.max(insets.bottom, 12) + 28 },
           isTablet && { alignItems: 'center' as const },
         ]}
         showsVerticalScrollIndicator={false}
@@ -875,7 +875,7 @@ function KPICard({
   );
 }
 const kpi = StyleSheet.create({
-  card: { flex: 1, minWidth: (SCREEN_WIDTH - 52) / 2, borderRadius: 18, padding: 14, minHeight: 100 },
+  card: { flex: 1, minWidth: (SCREEN_WIDTH - 52) / 2, borderRadius: 18, padding: 14, minHeight: 100, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 8, elevation: 1 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
   lbl: { fontSize: 13, fontWeight: '700' },
   val: { fontSize: 22, fontWeight: '900', color: '#0f172a', marginBottom: 6 },
@@ -889,14 +889,14 @@ const kpi = StyleSheet.create({
 // STYLES
 // ─────────────────────────────────────────────────────────────
 const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#ffffff' },
+  screen: { flex: 1, backgroundColor: '#F5F4F0' },
   loadWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8fafc', gap: 16 },
   loadText: { color: '#64748b', fontWeight: '600', fontSize: 14 },
   errorText: { color: '#475569', fontWeight: '700', fontSize: 15, textAlign: 'center', paddingHorizontal: 32 },
   resetBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12, shadowColor: '#000', shadowOpacity: 0.07, shadowRadius: 8, elevation: 2 },
   resetBtnTxt: { color: '#1e293b', fontWeight: '600' },
 
-  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10 },
+  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10, backgroundColor: '#F5F4F0' },
   topLogo: { width: 80, height: 26 },
   cBtn: { width: 36, height: 36, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
 
@@ -938,7 +938,7 @@ const s = StyleSheet.create({
 
   // KPIs
   kpiGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 12 },
-  kpiCard: { flex: 1, minWidth: (SCREEN_WIDTH - 52) / 2, borderRadius: 18, padding: 14, minHeight: 100 },
+  kpiCard: { flex: 1, minWidth: (SCREEN_WIDTH - 52) / 2, borderRadius: 18, padding: 14, minHeight: 100, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 8, elevation: 1 },
   kpiHead: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
   kpiLbl: { fontSize: 13, fontWeight: '700' },
   kpiVal: { fontSize: 22, fontWeight: '900', color: '#0f172a', marginBottom: 6 },

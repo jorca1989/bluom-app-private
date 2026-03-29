@@ -905,7 +905,7 @@ import React, {
   // STYLES
   // ─────────────────────────────────────────────────────────────
   const s = StyleSheet.create({
-    screen: { flex: 1, backgroundColor: '#f0f4ff' },
+    screen: { flex: 1, backgroundColor: '#F5F4F0' },
   
     // ── Quiz ──
     quizScreen:     { flex: 1, backgroundColor: '#fff' },

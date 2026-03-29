@@ -606,7 +606,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#ebf2fe',
+        backgroundColor: '#F5F4F0',
     },
     center: {
         justifyContent: 'center',

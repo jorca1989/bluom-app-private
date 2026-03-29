@@ -70,7 +70,7 @@ export default function FocusModeScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#ebf1fe]">
+    <SafeAreaView className="flex-1 bg-[#F5F4F0]">
       <View className="px-6 py-4 flex-row items-center justify-between">
         <TouchableOpacity onPress={handleBack} className="w-10 h-10 rounded-full bg-white border border-slate-200 items-center justify-center">
           <Ionicons name="close" size={22} color="#0f172a" />

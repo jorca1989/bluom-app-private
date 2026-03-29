@@ -684,8 +684,8 @@ export default function RecipesScreen() {
 
 // ─── Styles (original + new additions) ───────────────────────
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' }, // WHITE BACKGROUND
-  detailContainer: { flex: 1, backgroundColor: '#ffffff' }, // WHITE BACKGROUND
+  container: { flex: 1, backgroundColor: '#F5F4F0' },
+  detailContainer: { flex: 1, backgroundColor: '#F5F4F0' },
   scrollView: { flex: 1 },
   header: {
     paddingHorizontal: 24,

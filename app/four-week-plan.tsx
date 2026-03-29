@@ -1,166 +1,269 @@
-import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { getBottomContentPadding } from '@/utils/layout';
+import { useRouter } from 'expo-router';
+import { useUser as useClerkUser } from '@clerk/clerk-expo';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { ProUpgradeModal } from '@/components/ProUpgradeModal';
+import WorkoutDetailModal from '@/components/move/modals/WorkoutDetailModal';
+import ActiveWorkoutModal, { ActiveExercise } from '@/components/move/modals/ActiveWorkoutModal';
+import { FREE_4_WEEK_PLAN, getWeekRoutineDays, PlanWeek } from '@/utils/fourWeekPlanData';
 
-type WeekCard = {
-  title: string;
-  subtitle: string;
-  focus: string[];
-  colors: [string, string];
-};
-
-const WEEKS: WeekCard[] = [
-  { title: 'Week 1', subtitle: 'Foundation', focus: ['Full body', 'Form-first', 'Habit building'], colors: ['#0f172a', '#1e293b'] },
-  { title: 'Week 2', subtitle: 'Strength', focus: ['Progressive overload', 'Core stability', 'Consistency'], colors: ['#1e1b4b', '#4c1d95'] },
-  { title: 'Week 3', subtitle: 'Conditioning', focus: ['Cardio intervals', 'Endurance', 'Recovery'], colors: ['#064e3b', '#065f46'] },
-  { title: 'Week 4', subtitle: 'Performance', focus: ['Intensity', 'Mobility', 'Deload option'], colors: ['#7c2d12', '#92400e'] },
-];
+// ─── Week colours ─────────────────────────────────────────────────────────────
+const WEEK_COLORS = ['#1e293b', '#4c1d95', '#065f46', '#92400e'];
 
 export default function FourWeekPlanScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const bottomPad = useMemo(() => getBottomContentPadding(insets.bottom, 18), [insets.bottom]);
+  const { user: clerkUser } = useClerkUser();
+
+  const convexUser = useQuery(
+    api.users.getUserByClerkId,
+    clerkUser?.id ? { clerkId: clerkUser.id } : 'skip'
+  );
+  const isPro = convexUser?.subscriptionStatus === 'active' ||
+    clerkUser?.emailAddresses?.some(e => e.emailAddress === 'ggovsaas@gmail.com');
+
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [selectedWeek, setSelectedWeek] = useState<number | null>(null);  // week index 0-3
+  const [showWorkoutDetail, setShowWorkoutDetail] = useState(false);
+  const [showActiveWorkout, setShowActiveWorkout] = useState(false);
+  const [activeWorkoutExercises, setActiveWorkoutExercises] = useState<ActiveExercise[]>([]);
+  const [activeDayIndex, setActiveDayIndex] = useState(0);
+
+  const handleViewWeek = (weekIndex: number) => {
+    setSelectedWeek(weekIndex);
+    setShowWorkoutDetail(true);
+  };
+
+  const handleStartActiveWorkout = (dayIndex: number) => {
+    if (selectedWeek === null) return;
+    const week = FREE_4_WEEK_PLAN[selectedWeek];
+    const day = week.days[dayIndex];
+    const built: ActiveExercise[] = day.exercises.map(ex => ({
+      id: ex.id,
+      name: ex.name,
+      thumbnailUrl: ex.thumbnailUrl,
+      sets: Array.from({ length: ex.sets }).map((_, i) => ({
+        id: `${ex.id}-set-${i}`,
+        weight: '',
+        reps: String(ex.reps).split('-')[0],
+        completed: false,
+      })),
+    }));
+    setActiveDayIndex(dayIndex);
+    setActiveWorkoutExercises(built);
+    setShowWorkoutDetail(false);
+    setShowActiveWorkout(true);
+  };
 
   return (
-    <SafeAreaView style={s.container} edges={['top', 'bottom']}>
-      <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.85}>
-          <Ionicons name="chevron-back" size={22} color="#0f172a" />
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+          <Ionicons name="chevron-back" size={26} color="#0f172a" />
         </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={s.hTitle}>4-Week Plan</Text>
-          <Text style={s.hSub}>A free template to get you moving.</Text>
+        <View>
+          <Text style={styles.headerTitle}>4-Week Plan</Text>
+          <Text style={styles.headerSub}>A free template to get you moving.</Text>
         </View>
+        <View style={{ width: 44 }} />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomPad }}>
-        <View style={s.body}>
-          <LinearGradient colors={['#0f172a', '#1e1b4b']} style={s.hero}>
-            <View style={s.heroRow}>
-              <View style={s.heroIcon}>
-                <Ionicons name="calendar-outline" size={18} color="#c4b5fd" />
-              </View>
-              <Text style={s.heroBadge}>FREE TEMPLATE</Text>
-            </View>
-            <Text style={s.heroTitle}>Start with structure.</Text>
-            <Text style={s.heroSub}>
-              Follow this 4-week routine to build momentum. Upgrade to Pro for a personalised plan that adapts over time.
-            </Text>
-          </LinearGradient>
-
-          <View style={s.grid}>
-            {WEEKS.map((w, idx) => (
-              <TouchableOpacity
-                key={w.title}
-                activeOpacity={0.9}
-                style={s.weekCardTap}
-                onPress={() => router.push(`/four-week-plan/${idx + 1}` as any)}
-              >
-                <LinearGradient colors={w.colors} style={s.weekCard}>
-                  <Text style={s.weekTitle}>{w.title}</Text>
-                  <Text style={s.weekSub}>{w.subtitle}</Text>
-                  <View style={s.weekBullets}>
-                    {w.focus.map((f) => (
-                      <Text key={f} style={s.weekBullet}>• {f}</Text>
-                    ))}
-                  </View>
-                  <View style={s.weekCtaRow}>
-                    <Text style={s.weekCtaText}>View week</Text>
-                    <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.85)" />
-                  </View>
-                </LinearGradient>
-              </TouchableOpacity>
-            ))}
+      <ScrollView
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 32 }]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Hero card */}
+        <View style={styles.heroCard}>
+          <View style={styles.heroBadge}>
+            <Ionicons name="calendar-outline" size={14} color="#a5b4fc" />
+            <Text style={styles.heroBadgeText}>FREE TEMPLATE</Text>
           </View>
-
-          <TouchableOpacity
-            activeOpacity={0.92}
-            onPress={() => router.push('/premium')}
-            style={s.upgradeWrap}
-          >
-            <LinearGradient colors={['#2563eb', '#7c3aed']} style={s.upgradeCard}>
-              <View style={{ flex: 1 }}>
-                <Text style={s.upgradeTitle}>Unlock Pro Plan</Text>
-                <Text style={s.upgradeSub}>Get a personalised routine, exercise swaps, and progressive guidance.</Text>
-              </View>
-              <View style={s.upgradeCta}>
-                <Text style={s.upgradeCtaText}>Go Pro</Text>
-                <Ionicons name="chevron-forward" size={16} color="#ffffff" />
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
+          <Text style={styles.heroTitle}>Start with structure.</Text>
+          <Text style={styles.heroSub}>
+            Follow this 4-week routine to build momentum.{' '}
+            {isPro
+              ? 'Your personalised plan adapts as you progress.'
+              : 'Upgrade to Pro for a personalised plan that adapts over time.'}
+          </Text>
         </View>
+
+        {/* Week cards */}
+        <View style={styles.weekGrid}>
+          {FREE_4_WEEK_PLAN.map((week, idx) => (
+            <TouchableOpacity
+              key={week.weekNum}
+              style={[styles.weekCard, { backgroundColor: WEEK_COLORS[idx] }]}
+              onPress={() => handleViewWeek(idx)}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.weekLabel}>Week {week.weekNum}</Text>
+              <Text style={styles.weekTheme}>{week.theme}</Text>
+              {week.focus.map(f => (
+                <Text key={f} style={styles.weekFocus}>• {f}</Text>
+              ))}
+              <TouchableOpacity style={styles.viewWeekBtn} onPress={() => handleViewWeek(idx)}>
+                <Text style={styles.viewWeekBtnText}>View week</Text>
+                <Ionicons name="chevron-forward" size={14} color="#ffffff" />
+              </TouchableOpacity>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Pro upgrade banner (free users) / Pro rotating plan (pro users) */}
+        {isPro ? (
+          <View style={styles.proCard}>
+            <View style={styles.proCardHeader}>
+              <Ionicons name="star" size={18} color="#f59e0b" />
+              <Text style={styles.proCardTitle}>Your Pro Rotating Plan</Text>
+            </View>
+            <Text style={styles.proCardSub}>
+              Your AI plan in Move adapts each week based on your progress. Use the 4-week template above as a baseline, or let your plan guide you automatically.
+            </Text>
+            <TouchableOpacity
+              style={styles.proCardBtn}
+              onPress={() => router.push('/(tabs)/move' as any)}
+            >
+              <Text style={styles.proCardBtnText}>Go to Move tab →</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity style={styles.unlockBanner} onPress={() => setShowUpgrade(true)} activeOpacity={0.9}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.unlockTitle}>Unlock Pro Plan</Text>
+              <Text style={styles.unlockSub}>
+                Get a personalised routine, exercise swaps, and progressive guidance.
+              </Text>
+            </View>
+            <View style={styles.goProBtn}>
+              <Text style={styles.goProText}>Go Pro</Text>
+              <Ionicons name="arrow-forward" size={16} color="#ffffff" />
+            </View>
+          </TouchableOpacity>
+        )}
       </ScrollView>
+
+      {/* Week detail modal */}
+      {selectedWeek !== null && (
+        <WorkoutDetailModal
+          visible={showWorkoutDetail}
+          routineDays={getWeekRoutineDays(selectedWeek)}
+          initialTab={1}
+          isPreviewMode={true}
+          onClose={() => setShowWorkoutDetail(false)}
+          onStartActiveWorkout={handleStartActiveWorkout}
+        />
+      )}
+
+      {/* Active workout modal */}
+      <ActiveWorkoutModal
+        visible={showActiveWorkout}
+        exercises={activeWorkoutExercises}
+        onClose={() => setShowActiveWorkout(false)}
+        onFinishWorkout={(time, vol, sets, ex) => {
+          setShowActiveWorkout(false);
+        }}
+      />
+
+      <ProUpgradeModal
+        visible={showUpgrade}
+        onClose={() => setShowUpgrade(false)}
+        onUpgrade={() => { setShowUpgrade(false); router.push('/premium'); }}
+        title="Unlock Pro Plan"
+        message="Get a personalised routine, exercise swaps, and progressive guidance."
+        upgradeLabel="Go Pro"
+      />
     </SafeAreaView>
   );
 }
 
-const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#f8fafc' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#ffffff',
     borderBottomWidth: 1,
     borderBottomColor: '#f1f5f9',
-    backgroundColor: '#ffffff',
   },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#f1f5f9',
-    alignItems: 'center',
-    justifyContent: 'center',
+  backBtn: { padding: 8, marginLeft: -8 },
+  headerTitle: { fontSize: 18, fontWeight: '800', color: '#0f172a' },
+  headerSub: { fontSize: 12, color: '#64748b', marginTop: 2 },
+  content: { padding: 16, gap: 16 },
+
+  heroCard: {
+    backgroundColor: '#0f172a',
+    borderRadius: 20,
+    padding: 24,
   },
-  hTitle: { fontSize: 17, fontWeight: '900', color: '#0f172a' },
-  hSub: { marginTop: 2, fontSize: 11, fontWeight: '700', color: '#94a3b8' },
-  body: { paddingHorizontal: 20, paddingTop: 18, gap: 14 },
-  hero: { borderRadius: 22, padding: 18, overflow: 'hidden' },
-  heroRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
-  heroIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 12,
-    backgroundColor: 'rgba(196,181,253,0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.25)',
-    alignItems: 'center',
-    justifyContent: 'center',
+  heroBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    marginBottom: 12,
   },
-  heroBadge: { fontSize: 10, fontWeight: '900', color: '#c4b5fd', letterSpacing: 0.8 },
-  heroTitle: { fontSize: 20, fontWeight: '900', color: '#ffffff' },
-  heroSub: { marginTop: 6, fontSize: 12, fontWeight: '700', color: 'rgba(255,255,255,0.65)', lineHeight: 18 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  weekCardTap: { width: '48%' },
-  weekCard: { width: '100%', borderRadius: 18, padding: 14, minHeight: 140 },
-  weekTitle: { fontSize: 12, fontWeight: '900', color: 'rgba(255,255,255,0.8)' },
-  weekSub: { marginTop: 6, fontSize: 16, fontWeight: '900', color: '#ffffff' },
-  weekBullets: { marginTop: 10, gap: 3 },
-  weekBullet: { fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.75)' },
-  weekCtaRow: { marginTop: 12, flexDirection: 'row', alignItems: 'center', gap: 6 },
-  weekCtaText: { fontSize: 12, fontWeight: '900', color: 'rgba(255,255,255,0.85)' },
-  upgradeWrap: { marginTop: 6 },
-  upgradeCard: { borderRadius: 22, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  upgradeTitle: { fontSize: 14, fontWeight: '900', color: '#ffffff' },
-  upgradeSub: { marginTop: 4, fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.75)', lineHeight: 16 },
-  upgradeCta: {
+  heroBadgeText: { fontSize: 11, fontWeight: '900', color: '#a5b4fc', letterSpacing: 1 },
+  heroTitle: { fontSize: 26, fontWeight: '900', color: '#ffffff', marginBottom: 10 },
+  heroSub: { fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 20 },
+
+  weekGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  weekCard: {
+    width: '47%',
+    borderRadius: 16,
+    padding: 16,
+    minHeight: 160,
+  },
+  weekLabel: { fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.6)', marginBottom: 4 },
+  weekTheme: { fontSize: 20, fontWeight: '900', color: '#ffffff', marginBottom: 8 },
+  weekFocus: { fontSize: 12, color: 'rgba(255,255,255,0.8)', marginBottom: 2 },
+  viewWeekBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    marginTop: 12,
+  },
+  viewWeekBtnText: { fontSize: 13, fontWeight: '700', color: '#ffffff' },
+
+  unlockBanner: {
+    backgroundColor: '#2563eb',
+    borderRadius: 16,
+    padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.16)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.22)',
+    gap: 12,
   },
-  upgradeCtaText: { fontSize: 12, fontWeight: '900', color: '#ffffff' },
-});
+  unlockTitle: { fontSize: 16, fontWeight: '900', color: '#ffffff', marginBottom: 4 },
+  unlockSub: { fontSize: 12, color: 'rgba(255,255,255,0.8)', lineHeight: 18 },
+  goProBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12,
+  },
+  goProText: { color: '#ffffff', fontWeight: '800', fontSize: 14 },
 
+  proCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#fde68a',
+  },
+  proCardHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  proCardTitle: { fontSize: 16, fontWeight: '800', color: '#0f172a' },
+  proCardSub: { fontSize: 13, color: '#64748b', lineHeight: 19, marginBottom: 16 },
+  proCardBtn: {
+    backgroundColor: '#f8fafc', borderRadius: 12,
+    paddingVertical: 12, alignItems: 'center',
+    borderWidth: 1, borderColor: '#e2e8f0',
+  },
+  proCardBtnText: { fontSize: 14, fontWeight: '700', color: '#2563eb' },
+});
