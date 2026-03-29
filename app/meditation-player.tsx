@@ -41,6 +41,7 @@ import {
 } from 'expo-av';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 import { Image } from 'expo-image';
+import { WebView } from 'react-native-webview';
 import { useMutation } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
@@ -235,7 +236,16 @@ export default function MeditationPlayerScreen({
   const isPlayingRef = useRef(false);
   const watchdogRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const isVideoSession = !!(videoUrl && (videoUrl.endsWith('.mp4') || videoUrl.includes('.mp4')));
+  // Detect video: R2/CDN .mp4, YouTube watch?v=, youtu.be short links, YouTube embed
+  const isYouTubeUrl = (url: string) =>
+    url.includes('youtube.com/watch') ||
+    url.includes('youtu.be/') ||
+    url.includes('youtube.com/embed/');
+  const isVideoSession = !!(videoUrl && (
+    videoUrl.includes('.mp4') ||
+    videoUrl.includes('.webm') ||
+    isYouTubeUrl(videoUrl)
+  ));
   const isSoundscape = !!soundscape;
 
   useEffect(() => { durationMsRef.current = durationMs; }, [durationMs]);
@@ -466,6 +476,30 @@ export default function MeditationPlayerScreen({
   // ── Visual area ──────────────────────────────────────────────
   const VisualArea = () => {
     if (isVideoSession && videoUrl) {
+      // YouTube → render in a WebView with autoplay embed
+      if (isYouTubeUrl(videoUrl)) {
+        // Extract video ID from any YouTube URL format
+        let videoId = '';
+        const watchMatch = videoUrl.match(/[?&]v=([^&]+)/);
+        const shortMatch = videoUrl.match(/youtu\.be\/([^?&]+)/);
+        const embedMatch = videoUrl.match(/embed\/([^?&]+)/);
+        videoId = (watchMatch?.[1] ?? shortMatch?.[1] ?? embedMatch?.[1] ?? '');
+        const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=0&playsinline=1&rel=0&modestbranding=1`;
+        return (
+          <View style={[playerStyles.coverContainer, { width: coverSize, height: coverSize * 0.6 }]}>
+            <WebView
+              source={{ uri: embedUrl }}
+              style={{ width: coverSize, height: coverSize * 0.6, borderRadius: 18 }}
+              allowsInlineMediaPlayback
+              mediaPlaybackRequiresUserAction={false}
+              javaScriptEnabled
+              onLoadStart={() => setLoadState('loading')}
+              onLoad={() => setLoadState('ready')}
+            />
+          </View>
+        );
+      }
+      // R2 / CDN MP4 → expo-av Video with full controls
       return (
         <View style={[playerStyles.coverContainer, { width: coverSize, height: coverSize }]}>
           <Video

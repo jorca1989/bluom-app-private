@@ -311,12 +311,12 @@ export default function MeditationsManager() {
                                 style={styles.input}
                                 value={form.videoUrl}
                                 onChangeText={t => setForm(p => ({ ...p, videoUrl: t }))}
-                                placeholder="https://cdn.example.com/session.mp4"
+                                placeholder="https://pub-xxx.r2.dev/video.mp4  or  https://youtu.be/xxxxx"
                                 autoCapitalize="none"
                                 keyboardType="url"
                             />
                             <Text style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>
-                                When a video URL is set, it takes priority over the cover image and plays inline in the player.
+                                Supports Cloudflare R2 (.mp4/.webm) and YouTube links (watch, youtu.be, embed). Video takes priority over cover image in the player.
                             </Text>
                         </View>
 
