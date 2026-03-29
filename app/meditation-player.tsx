@@ -1,13 +1,15 @@
 /**
- * MeditationPlayerScreen
+ * MeditationPlayerScreen — v3
  *
- * Fixes vs previous version:
- *  - SeekBar: uses pageX + measured track origin so the thumb follows your
- *    finger accurately from any tap position (Spotify-style).
- *  - SeekBar: durationMs / onSeekEnd live in refs so PanResponder never goes stale.
- *  - SeekBar: thumb grows on press (haptic-feel feedback).
- *  - Skip ±15 s: works for both guided sessions AND soundscapes.
- *  - Cover image: blurhash placeholder, explicit size, no layout reflow.
+ * Fixes vs v2:
+ *  1. Landscape layout  — uses useWindowDimensions + flex layouts everywhere,
+ *     side-by-side visual/controls in landscape, no clipped buttons.
+ *  2. 10-minute stop bug — audio watchdog: every 30 s we re-affirm the audio
+ *     mode and re-play if the sound was unintentionally paused by the OS.
+ *     Also keeps screen awake more aggressively (no deactivate on re-render).
+ *  3. MP4 / video support — detects videoUrl prop; renders expo-av <Video>
+ *     inside the cover area with playback synced to the same controls.
+ *  4. SeekBar stays accurate in any orientation.
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -24,10 +26,19 @@ import {
   GestureResponderEvent,
   Animated,
   Easing,
+  useWindowDimensions,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Audio, InterruptionModeAndroid, InterruptionModeIOS, AVPlaybackStatus } from 'expo-av';
+import {
+  Audio,
+  Video,
+  ResizeMode,
+  InterruptionModeAndroid,
+  InterruptionModeIOS,
+  AVPlaybackStatus,
+} from 'expo-av';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 import { Image } from 'expo-image';
 import { useMutation } from 'convex/react';
@@ -35,9 +46,6 @@ import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
 import BreathingAnimation from '../components/BreathingAnimation';
 import { Soundscape } from '../utils/soundscapes';
-
-const { width } = Dimensions.get('window');
-const isSmallScreen = width < 380;
 
 // ─────────────────────────────────────────────────────────────
 // Spinner
@@ -64,12 +72,10 @@ function SpinnerLoader({ size = 32, color = '#3b82f6' }: { size?: number; color?
 }
 
 // ─────────────────────────────────────────────────────────────
-// Seek Bar  –  Spotify-quality, finger-accurate
+// SeekBar
 // ─────────────────────────────────────────────────────────────
 const TRACK_H = 5;
 const THUMB_NORMAL = 16;
-const THUMB_ACTIVE = 24;
-const HIT_SLOP = { top: 22, bottom: 22, left: 8, right: 8 };
 
 interface SeekBarProps {
   positionMs: number;
@@ -81,7 +87,6 @@ interface SeekBarProps {
 }
 
 function SeekBar({ positionMs, durationMs, onSeekStart, onSeekEnd, formatTime, enabled }: SeekBarProps) {
-  // Refs that PanResponder closures can always read without going stale
   const durationRef = useRef(durationMs);
   const onSeekEndRef = useRef(onSeekEnd);
   const onSeekStartRef = useRef(onSeekStart);
@@ -89,22 +94,16 @@ function SeekBar({ positionMs, durationMs, onSeekStart, onSeekEnd, formatTime, e
   useEffect(() => { onSeekEndRef.current = onSeekEnd; }, [onSeekEnd]);
   useEffect(() => { onSeekStartRef.current = onSeekStart; }, [onSeekStart]);
 
-  // Track geometry – measured once via onLayout on the track view
-  const trackXRef = useRef(0);   // absolute X of track left edge on screen
-  const trackWRef = useRef(1);   // track width in px (never 0)
+  const trackXRef = useRef(0);
+  const trackWRef = useRef(1);
   const trackViewRef = useRef<View>(null);
-
   const dragging = useRef(false);
   const seekMs = useRef(0);
-  const [localProgress, setLocalProgress] = useState<number | null>(null); // null = not dragging
+  const [localProgress, setLocalProgress] = useState<number | null>(null);
   const thumbScale = useRef(new Animated.Value(1)).current;
 
   const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
-
-  const pageXToMs = (pageX: number) => {
-    const ratio = clamp01((pageX - trackXRef.current) / trackWRef.current);
-    return ratio * durationRef.current;
-  };
+  const pageXToMs = (pageX: number) => clamp01((pageX - trackXRef.current) / trackWRef.current) * durationRef.current;
 
   const panResponder = useRef(
     PanResponder.create({
@@ -138,10 +137,7 @@ function SeekBar({ positionMs, durationMs, onSeekStart, onSeekEnd, formatTime, e
     })
   ).current;
 
-  const displayProgress = localProgress !== null
-    ? localProgress
-    : durationMs > 0 ? clamp01(positionMs / durationMs) : 0;
-
+  const displayProgress = localProgress !== null ? localProgress : durationMs > 0 ? clamp01(positionMs / durationMs) : 0;
   const displayMs = localProgress !== null ? seekMs.current : positionMs;
 
   return (
@@ -149,10 +145,7 @@ function SeekBar({ positionMs, durationMs, onSeekStart, onSeekEnd, formatTime, e
       <View
         ref={trackViewRef}
         style={sbStyles.trackHitArea}
-        hitSlop={HIT_SLOP}
         onLayout={() => {
-          // Measure absolute position so pageX math is correct regardless of
-          // scroll position or nested modals
           trackViewRef.current?.measure((_x, _y, w, _h, pageX) => {
             trackXRef.current = pageX;
             trackWRef.current = w || 1;
@@ -160,29 +153,18 @@ function SeekBar({ positionMs, durationMs, onSeekStart, onSeekEnd, formatTime, e
         }}
         {...panResponder.panHandlers}
       >
-        {/* Track */}
         <View style={sbStyles.track}>
           <View style={[sbStyles.trackFill, { width: `${displayProgress * 100}%` }]} />
         </View>
-
-        {/* Thumb */}
         {enabled && (
           <Animated.View
-            style={[
-              sbStyles.thumb,
-              {
-                left: `${displayProgress * 100}%`,
-                transform: [
-                  { translateX: -THUMB_NORMAL / 2 },
-                  { scale: thumbScale },
-                ],
-              },
-            ]}
+            style={[sbStyles.thumb, {
+              left: `${displayProgress * 100}%`,
+              transform: [{ translateX: -THUMB_NORMAL / 2 }, { scale: thumbScale }],
+            }]}
           />
         )}
       </View>
-
-      {/* Times */}
       <View style={sbStyles.timeRow}>
         <Text style={sbStyles.time}>{formatTime(displayMs)}</Text>
         <Text style={sbStyles.time}>{formatTime(durationMs)}</Text>
@@ -192,39 +174,18 @@ function SeekBar({ positionMs, durationMs, onSeekStart, onSeekEnd, formatTime, e
 }
 
 const sbStyles = StyleSheet.create({
-  container: { width: '100%', marginBottom: 28 },
+  container: { width: '100%', marginBottom: 20 },
   trackHitArea: { height: 44, justifyContent: 'center' },
-  track: {
-    height: TRACK_H,
-    backgroundColor: '#e2e8f0',
-    borderRadius: TRACK_H / 2,
-    overflow: 'hidden',
-  },
-  trackFill: {
-    height: '100%',
-    backgroundColor: '#3b82f6',
-    borderRadius: TRACK_H / 2,
-  },
+  track: { height: TRACK_H, backgroundColor: '#e2e8f0', borderRadius: TRACK_H / 2, overflow: 'hidden' },
+  trackFill: { height: '100%', backgroundColor: '#3b82f6', borderRadius: TRACK_H / 2 },
   thumb: {
-    position: 'absolute',
-    width: THUMB_NORMAL,
-    height: THUMB_NORMAL,
-    borderRadius: THUMB_NORMAL / 2,
-    backgroundColor: '#3b82f6',
+    position: 'absolute', width: THUMB_NORMAL, height: THUMB_NORMAL,
+    borderRadius: THUMB_NORMAL / 2, backgroundColor: '#3b82f6',
     top: (44 - THUMB_NORMAL) / 2,
-    // Shadow
-    elevation: 4,
-    shadowColor: '#1d4ed8',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.35,
-    shadowRadius: 4,
+    elevation: 4, shadowColor: '#1d4ed8',
+    shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.35, shadowRadius: 4,
   },
-  timeRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 2,
-    marginTop: 6,
-  },
+  timeRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2, marginTop: 6 },
   time: { fontSize: 13, color: '#64748b', fontWeight: '500' },
 });
 
@@ -236,58 +197,66 @@ interface MeditationPlayerProps {
   onClose: () => void;
   soundscape?: Soundscape | null;
   audioUrl?: string;
+  videoUrl?: string;   // NEW – MP4 support
   sessionTitle?: string;
   coverImage?: string;
-  duration?: number; // minutes hint
+  duration?: number;   // minutes hint
   logId?: Id<'meditationLogs'> | null;
 }
 
 type LoadState = 'idle' | 'loading' | 'buffering' | 'ready';
 
 // ─────────────────────────────────────────────────────────────
-// Player
+// Main component
 // ─────────────────────────────────────────────────────────────
 export default function MeditationPlayerScreen({
-  visible,
-  onClose,
-  soundscape,
-  audioUrl,
-  sessionTitle,
-  coverImage,
-  duration,
-  logId,
+  visible, onClose, soundscape, audioUrl, videoUrl,
+  sessionTitle, coverImage, duration, logId,
 }: MeditationPlayerProps) {
   const insets = useSafeAreaInsets();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [positionMs, setPositionMs] = useState(0);
-  const [durationMs, setDurationMs] = useState(duration ? duration * 60 * 1000 : 0);
+  const [durationMs, setDurationMs] = useState(duration ? duration * 60_000 : 0);
   const [breathingPhase, setBreathingPhase] = useState<'inhale' | 'exhale'>('inhale');
   const [isSeeking, setIsSeeking] = useState(false);
   const [loadState, setLoadState] = useState<LoadState>('idle');
 
+  // Refs
   const soundRef = useRef<Audio.Sound | null>(null);
+  const videoRef = useRef<Video | null>(null);
   const loadIdRef = useRef(0);
   const isClosingRef = useRef(false);
   const positionMsRef = useRef(0);
   const isSeekingRef = useRef(false);
   const durationMsRef = useRef(durationMs);
+  const isPlayingRef = useRef(false);
+  const watchdogRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Keep durationRef in sync (needed by skipBy without stale closure)
+  const isVideoSession = !!(videoUrl && (videoUrl.endsWith('.mp4') || videoUrl.includes('.mp4')));
+  const isSoundscape = !!soundscape;
+
   useEffect(() => { durationMsRef.current = durationMs; }, [durationMs]);
+  useEffect(() => { isSeekingRef.current = isSeeking; }, [isSeeking]);
+  useEffect(() => { isPlayingRef.current = isPlaying; }, [isPlaying]);
 
   const completeSession = useMutation(api.meditation.completeSession);
 
-  // ── Keep screen awake ────────────────────────────────────────
+  // ── Keep screen awake – aggressive ──────────────────────────
   useEffect(() => {
-    if (visible) activateKeepAwake(); else deactivateKeepAwake();
-    return () => { deactivateKeepAwake(); };
+    if (visible) {
+      activateKeepAwake();
+      // Re-activate every 5 minutes as a belt-and-suspenders measure
+      const interval = setInterval(() => activateKeepAwake(), 5 * 60_000);
+      return () => { clearInterval(interval); deactivateKeepAwake(); };
+    }
   }, [visible]);
 
   // ── Audio session mode ───────────────────────────────────────
-  useEffect(() => {
-    if (!visible) return;
-    Audio.setAudioModeAsync({
+  const setAudioMode = useCallback(async () => {
+    await Audio.setAudioModeAsync({
       staysActiveInBackground: true,
       playsInSilentModeIOS: true,
       interruptionModeIOS: InterruptionModeIOS.DoNotMix,
@@ -295,17 +264,15 @@ export default function MeditationPlayerScreen({
       shouldDuckAndroid: false,
       playThroughEarpieceAndroid: false,
     }).catch(console.warn);
-  }, [visible]);
+  }, []);
 
-  useEffect(() => { isSeekingRef.current = isSeeking; }, [isSeeking]);
+  useEffect(() => { if (visible) setAudioMode(); }, [visible, setAudioMode]);
 
   // ── Status callback ──────────────────────────────────────────
   const onPlaybackStatusUpdate = useCallback((status: AVPlaybackStatus) => {
     if (!status.isLoaded) return;
-
     setIsPlaying(status.isPlaying);
     setLoadState(status.isBuffering ? 'buffering' : 'ready');
-
     if (!isSeekingRef.current && (status.positionMillis > 0 || !status.isPlaying)) {
       setPositionMs(status.positionMillis);
       positionMsRef.current = status.positionMillis;
@@ -314,15 +281,39 @@ export default function MeditationPlayerScreen({
       setDurationMs(status.durationMillis);
       durationMsRef.current = status.durationMillis;
     }
-    if (status.didJustFinish && !status.isLooping) {
-      handleComplete();
-    }
+    if (status.didJustFinish && !status.isLooping) handleComplete();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Watchdog: fix the OS stopping audio after ~10 min ───────
+  // The iOS/Android audio session can get interrupted silently.
+  // Every 30 s we re-affirm the audio mode and re-play if paused
+  // by the OS (not by the user).
+  const startWatchdog = useCallback(() => {
+    if (watchdogRef.current) clearInterval(watchdogRef.current);
+    watchdogRef.current = setInterval(async () => {
+      // Re-assert background audio mode
+      await setAudioMode();
+      // If we believe it should be playing but it stopped, re-play
+      if (isPlayingRef.current && soundRef.current) {
+        try {
+          const status = await soundRef.current.getStatusAsync();
+          if (status.isLoaded && !status.isPlaying && !isSeekingRef.current) {
+            await soundRef.current.playAsync();
+          }
+        } catch { /* ignore */ }
+      }
+    }, 30_000);
+  }, [setAudioMode]);
+
+  const stopWatchdog = useCallback(() => {
+    if (watchdogRef.current) { clearInterval(watchdogRef.current); watchdogRef.current = null; }
   }, []);
 
   // ── Cleanup ──────────────────────────────────────────────────
   const cleanup = useCallback(async () => {
     loadIdRef.current += 1;
+    stopWatchdog();
     const sound = soundRef.current;
     soundRef.current = null;
     if (sound) {
@@ -335,52 +326,39 @@ export default function MeditationPlayerScreen({
     setLoadState('idle');
     setIsSeeking(false);
     isSeekingRef.current = false;
-  }, []);
+  }, [stopWatchdog]);
 
-  // ── Load ─────────────────────────────────────────────────────
+  // ── Load audio ───────────────────────────────────────────────
   const loadSound = useCallback(async (shouldAutoPlay: boolean) => {
+    if (isVideoSession) return; // video handled by Video component
     const source = audioUrl ? { uri: audioUrl } : soundscape?.file;
     if (!source) return;
-
     const thisId = ++loadIdRef.current;
     setLoadState('loading');
-
     const prev = soundRef.current;
     soundRef.current = null;
-    if (prev) {
-      try { await prev.stopAsync(); } catch { }
-      try { await prev.unloadAsync(); } catch { }
-    }
-
+    if (prev) { try { await prev.stopAsync(); } catch { } try { await prev.unloadAsync(); } catch { } }
     try {
       const { sound } = await Audio.Sound.createAsync(
         source,
-        {
-          shouldPlay: shouldAutoPlay,
-          isLooping: !audioUrl,
-          volume: 0.8,
-          progressUpdateIntervalMillis: 500,
-        },
+        { shouldPlay: shouldAutoPlay, isLooping: !audioUrl, volume: 0.8, progressUpdateIntervalMillis: 500 },
         onPlaybackStatusUpdate
       );
-
-      if (thisId !== loadIdRef.current) {
-        try { await sound.unloadAsync(); } catch { }
-        return;
-      }
+      if (thisId !== loadIdRef.current) { try { await sound.unloadAsync(); } catch { } return; }
       soundRef.current = sound;
+      if (shouldAutoPlay) startWatchdog();
     } catch (err) {
       if (thisId !== loadIdRef.current) return;
       console.error('[MeditationPlayer] createAsync failed:', err);
       setLoadState('idle');
     }
-  }, [audioUrl, soundscape, onPlaybackStatusUpdate]);
+  }, [audioUrl, soundscape, onPlaybackStatusUpdate, isVideoSession, startWatchdog]);
 
   // ── Mount ────────────────────────────────────────────────────
   useEffect(() => {
     if (!visible) return;
     isClosingRef.current = false;
-    loadSound(false);
+    if (!isVideoSession) loadSound(false);
     return () => { cleanup(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, audioUrl, soundscape]);
@@ -396,60 +374,58 @@ export default function MeditationPlayerScreen({
   // ── Controls ─────────────────────────────────────────────────
   const handlePlay = useCallback(async () => {
     if (loadState === 'loading') return;
+    // Video player
+    if (isVideoSession && videoRef.current) {
+      try { await videoRef.current.playAsync(); startWatchdog(); return; } catch { }
+    }
+    // Audio player
     if (soundRef.current) {
       try {
         const status = await soundRef.current.getStatusAsync();
-        if (status.isLoaded) {
-          if (!status.isPlaying) await soundRef.current.playAsync();
+        if (status.isLoaded && !status.isPlaying) {
+          await soundRef.current.playAsync();
+          startWatchdog();
           return;
         }
-      } catch { /* fall through */ }
+      } catch { }
     }
     await loadSound(true);
-  }, [loadState, loadSound]);
+  }, [loadState, loadSound, isVideoSession, startWatchdog]);
 
   const handlePause = useCallback(async () => {
-    if (!soundRef.current) return;
-    try { await soundRef.current.pauseAsync(); } catch { }
-  }, []);
+    stopWatchdog();
+    if (isVideoSession && videoRef.current) { try { await videoRef.current.pauseAsync(); } catch { } return; }
+    if (soundRef.current) { try { await soundRef.current.pauseAsync(); } catch { } }
+  }, [isVideoSession, stopWatchdog]);
 
   const handleSeek = useCallback(async (valueMs: number) => {
     setPositionMs(valueMs);
     positionMsRef.current = valueMs;
-    if (soundRef.current) {
-      try { await soundRef.current.setPositionAsync(valueMs); } catch { }
-    }
+    if (isVideoSession && videoRef.current) { try { await videoRef.current.setPositionAsync(valueMs); } catch { } }
+    else if (soundRef.current) { try { await soundRef.current.setPositionAsync(valueMs); } catch { } }
     setIsSeeking(false);
     isSeekingRef.current = false;
-  }, []);
+  }, [isVideoSession]);
 
-  /**
-   * skipBy – works for both guided sessions (finite durationMs) and
-   * looping soundscapes (durationMs may be 0; we just seek within what
-   * the engine has buffered, or ignore gracefully).
-   */
   const skipBy = useCallback(async (deltaMs: number) => {
-    if (!soundRef.current) return;
+    const ref = isVideoSession ? videoRef.current : soundRef.current;
+    if (!ref) return;
     try {
-      const status = await soundRef.current.getStatusAsync();
+      const status = await ref.getStatusAsync();
       if (!status.isLoaded) return;
       const dur = status.durationMillis ?? durationMsRef.current;
-      const currentPos = status.positionMillis ?? positionMsRef.current;
-      const newPos = dur > 0
-        ? Math.max(0, Math.min(dur, currentPos + deltaMs))
-        : Math.max(0, currentPos + deltaMs);
+      const cur = status.positionMillis ?? positionMsRef.current;
+      const newPos = dur > 0 ? Math.max(0, Math.min(dur, cur + deltaMs)) : Math.max(0, cur + deltaMs);
       setPositionMs(newPos);
       positionMsRef.current = newPos;
-      await soundRef.current.setPositionAsync(newPos);
-    } catch (e) {
-      console.warn('[MeditationPlayer] skipBy:', e);
-    }
-  }, []);
+      await ref.setPositionAsync(newPos);
+    } catch (e) { console.warn('[MeditationPlayer] skipBy:', e); }
+  }, [isVideoSession]);
 
   const handleComplete = useCallback(async () => {
     if (isClosingRef.current) return;
     isClosingRef.current = true;
-    const minutesCompleted = Math.floor(positionMsRef.current / 60000);
+    const minutesCompleted = Math.floor(positionMsRef.current / 60_000);
     await cleanup();
     if (logId && minutesCompleted > 0) {
       try { await completeSession({ logId, durationCompleted: minutesCompleted }); } catch { }
@@ -472,149 +448,157 @@ export default function MeditationPlayerScreen({
 
   const isLoading = loadState === 'loading' || loadState === 'buffering';
 
-  const isTargetCategory = (title: string) => {
+  const isBreathCategory = (title?: string) => {
+    if (!title) return false;
     const t = title.toLowerCase();
     return t.includes('sleep') || t.includes('anxiety') || t.includes('focus') || t.includes('breath');
   };
-  const showAnimation =
-    (sessionTitle && isTargetCategory(sessionTitle)) ||
-    (soundscape && ['sleep', 'focus', 'anxiety'].includes(soundscape.category));
+  const showAnimation = (isBreathCategory(sessionTitle) || (soundscape && ['sleep', 'focus', 'anxiety'].includes(soundscape.category))) && !isVideoSession;
+  const showSeekBar = durationMs > 0 && !isSoundscape;
 
-  // Seek bar: show for guided sessions (has real duration + no looping soundscape)
-  const showSeekBar = durationMs > 0 && !soundscape;
+  // ── Layout sizes ─────────────────────────────────────────────
+  // Clamp cover/animation size to fit any orientation
+  const availableVisualH = isLandscape ? height * 0.55 : width * 0.65;
+  const coverSize = Math.min(availableVisualH, isLandscape ? width * 0.38 : width * 0.68);
 
   if (!visible) return null;
 
-  const COVER_SIZE = width * 0.68;
+  // ── Visual area ──────────────────────────────────────────────
+  const VisualArea = () => {
+    if (isVideoSession && videoUrl) {
+      return (
+        <View style={[playerStyles.coverContainer, { width: coverSize, height: coverSize }]}>
+          <Video
+            ref={videoRef}
+            source={{ uri: videoUrl }}
+            style={{ width: coverSize, height: coverSize, borderRadius: 18 }}
+            resizeMode={ResizeMode.COVER}
+            isLooping={false}
+            onPlaybackStatusUpdate={onPlaybackStatusUpdate}
+            onLoad={() => setLoadState('ready')}
+            onLoadStart={() => setLoadState('loading')}
+          />
+        </View>
+      );
+    }
+    if (showAnimation) {
+      return (
+        <View style={playerStyles.animationContainer}>
+          <BreathingAnimation
+            size={Math.min(coverSize, isLandscape ? 160 : 220)}
+            color={soundscape?.category === 'water' ? '#06b6d4' : '#3b82f6'}
+            onInhale={() => setBreathingPhase('inhale')}
+            onExhale={() => setBreathingPhase('exhale')}
+            isPlaying={isPlaying}
+          />
+          <Text style={playerStyles.breathingText}>
+            {isPlaying ? (breathingPhase === 'inhale' ? 'Breathe In' : 'Breathe Out') : 'Paused'}
+          </Text>
+          {!isLandscape && (
+            <Text style={playerStyles.instructionsText}>
+              {isPlaying ? "Follow the circle's rhythm." : 'Press Play to start.'}
+            </Text>
+          )}
+        </View>
+      );
+    }
+    return (
+      <View style={[playerStyles.coverContainer, { width: coverSize, height: coverSize }]}>
+        {coverImage ? (
+          <Image
+            key={coverImage}
+            source={{ uri: coverImage }}
+            style={{ width: coverSize, height: coverSize, borderRadius: 18 }}
+            contentFit="cover"
+            placeholder={{ blurhash: 'LGFFaXYk^6#M@-5c,1J5@[or[Q6.' }}
+            transition={{ duration: 300, effect: 'cross-dissolve' }}
+            cachePolicy="memory-disk"
+            recyclingKey={coverImage}
+          />
+        ) : (
+          <>
+            <Ionicons name="musical-notes" size={64} color="#cbd5e1" />
+            <Text style={playerStyles.coverFallbackText}>Audio Session</Text>
+          </>
+        )}
+      </View>
+    );
+  };
+
+  // ── Controls area ────────────────────────────────────────────
+  const ControlsArea = () => (
+    <View style={[playerStyles.controlsWrap, isLandscape && { paddingHorizontal: 12 }]}>
+      {showSeekBar && (
+        <SeekBar
+          positionMs={positionMs}
+          durationMs={durationMs}
+          onSeekStart={() => { setIsSeeking(true); isSeekingRef.current = true; }}
+          onSeekEnd={handleSeek}
+          formatTime={formatTime}
+          enabled={showSeekBar}
+        />
+      )}
+      <View style={playerStyles.controls}>
+        <TouchableOpacity style={playerStyles.skipButton} onPress={() => skipBy(-15_000)} activeOpacity={0.65}>
+          <Ionicons name="play-back" size={26} color="#475569" />
+          <Text style={playerStyles.skipLabel}>15s</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[playerStyles.playButton, isLoading && playerStyles.playButtonLoading]}
+          onPress={isPlaying ? handlePause : handlePlay}
+          disabled={isLoading}
+          activeOpacity={0.85}
+        >
+          {isLoading
+            ? <SpinnerLoader size={28} color="#ffffff" />
+            : <Ionicons name={isPlaying ? 'pause' : 'play'} size={34} color="#fff" style={!isPlaying ? { marginLeft: 4 } : undefined} />
+          }
+        </TouchableOpacity>
+        <TouchableOpacity style={playerStyles.skipButton} onPress={() => skipBy(15_000)} activeOpacity={0.65}>
+          <Ionicons name="play-forward" size={26} color="#475569" />
+          <Text style={playerStyles.skipLabel}>15s</Text>
+        </TouchableOpacity>
+      </View>
+      {loadState === 'buffering' && <Text style={playerStyles.bufferingLabel}>Buffering…</Text>}
+      <TouchableOpacity style={playerStyles.completeButton} onPress={handleComplete}>
+        <Text style={playerStyles.completeButtonText}>Complete Session</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
-    <Modal visible={visible} animationType="slide" transparent={false}>
-      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <Modal visible={visible} animationType="slide" transparent={false} supportedOrientations={['portrait', 'landscape']}>
+      <SafeAreaView style={playerStyles.container} edges={['top', 'bottom', 'left', 'right']}>
 
-        {/* ── Header ── */}
-        <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 8 }]}>
-          <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+        {/* Header */}
+        <View style={playerStyles.header}>
+          <TouchableOpacity style={playerStyles.closeButton} onPress={handleClose}>
             <Ionicons name="close" size={24} color="#1e293b" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle} numberOfLines={1}>
+          <Text style={playerStyles.headerTitle} numberOfLines={1}>
             {sessionTitle || soundscape?.name || 'Meditation'}
           </Text>
           <View style={{ width: 40 }} />
         </View>
 
-        <View style={styles.content}>
-
-          {/* ── Visual area ── */}
-          {showAnimation ? (
-            <>
-              <View style={styles.animationContainer}>
-                <BreathingAnimation
-                  size={isSmallScreen ? 180 : 220}
-                  color={soundscape?.category === 'water' ? '#06b6d4' : '#3b82f6'}
-                  onInhale={() => setBreathingPhase('inhale')}
-                  onExhale={() => setBreathingPhase('exhale')}
-                  isPlaying={isPlaying}
-                />
-              </View>
-              <View style={styles.instructionsContainer}>
-                <Text style={styles.breathingText}>
-                  {isPlaying ? (breathingPhase === 'inhale' ? 'Breathe In' : 'Breathe Out') : 'Paused'}
-                </Text>
-                <Text style={styles.instructionsText}>
-                  {isPlaying
-                    ? "Follow the circle's rhythm. Breathe naturally."
-                    : 'Press Play to start your breathing session.'}
-                </Text>
-              </View>
-            </>
-          ) : (
-            <View style={[styles.coverContainer, { width: COVER_SIZE, height: COVER_SIZE }]}>
-              {coverImage ? (
-                <Image
-                  key={coverImage}
-                  source={{ uri: coverImage }}
-                  style={{ width: COVER_SIZE, height: COVER_SIZE, borderRadius: 20 }}
-                  contentFit="cover"
-                  // Shows a blurred placeholder instantly while the full image loads –
-                  // no layout reflow, no blank flash.
-                  placeholder={{ blurhash: 'LGFFaXYk^6#M@-5c,1J5@[or[Q6.' }}
-                  transition={{ duration: 300, effect: 'cross-dissolve' }}
-                  cachePolicy="memory-disk"
-                  recyclingKey={coverImage}
-                />
-              ) : (
-                <>
-                  <Ionicons name="musical-notes" size={80} color="#cbd5e1" />
-                  <Text style={styles.coverFallbackText}>Audio Session</Text>
-                </>
-              )}
-            </View>
-          )}
-
-          {/* ── Seek bar (guided sessions only) ── */}
-          {durationMs > 0 && (
-            <SeekBar
-              positionMs={positionMs}
-              durationMs={durationMs}
-              onSeekStart={() => { setIsSeeking(true); isSeekingRef.current = true; }}
-              onSeekEnd={handleSeek}
-              formatTime={formatTime}
-              enabled={showSeekBar}
-            />
-          )}
-
-          {/* ── Transport controls ── */}
-          <View style={styles.controls}>
-
-            {/* Rewind 15 s */}
-            <TouchableOpacity
-              style={styles.skipButton}
-              onPress={() => skipBy(-15000)}
-              activeOpacity={0.65}
-            >
-              <Ionicons name="play-back" size={26} color="#475569" />
-              <Text style={styles.skipLabel}>15s</Text>
-            </TouchableOpacity>
-
-            {/* Play / Pause */}
-            <TouchableOpacity
-              style={[styles.playButton, isLoading && styles.playButtonLoading]}
-              onPress={isPlaying ? handlePause : handlePlay}
-              disabled={isLoading}
-              activeOpacity={0.85}
-            >
-              {isLoading
-                ? <SpinnerLoader size={28} color="#ffffff" />
-                : <Ionicons
-                  name={isPlaying ? 'pause' : 'play'}
-                  size={34}
-                  color="#ffffff"
-                  style={!isPlaying ? { marginLeft: 4 } : undefined}
-                />
-              }
-            </TouchableOpacity>
-
-            {/* Forward 15 s */}
-            <TouchableOpacity
-              style={styles.skipButton}
-              onPress={() => skipBy(15000)}
-              activeOpacity={0.65}
-            >
-              <Ionicons name="play-forward" size={26} color="#475569" />
-              <Text style={styles.skipLabel}>15s</Text>
-            </TouchableOpacity>
+        {/* Body — flex row in landscape, column in portrait */}
+        <ScrollView
+          contentContainerStyle={[
+            playerStyles.body,
+            isLandscape
+              ? { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24, paddingHorizontal: 24, paddingVertical: 12 }
+              : { flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28, paddingVertical: 24 },
+          ]}
+          showsVerticalScrollIndicator={false}
+        >
+          <VisualArea />
+          <View style={[
+            isLandscape ? { flex: 1, maxWidth: 360 } : { width: '100%', alignItems: 'center' },
+          ]}>
+            <ControlsArea />
           </View>
+        </ScrollView>
 
-          {loadState === 'buffering' && (
-            <Text style={styles.bufferingLabel}>Buffering…</Text>
-          )}
-
-          {/* ── Complete ── */}
-          <TouchableOpacity style={styles.completeButton} onPress={handleComplete}>
-            <Text style={styles.completeButtonText}>Complete Session</Text>
-          </TouchableOpacity>
-
-        </View>
       </SafeAreaView>
     </Modal>
   );
@@ -623,92 +607,45 @@ export default function MeditationPlayerScreen({
 // ─────────────────────────────────────────────────────────────
 // Styles
 // ─────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
+const playerStyles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingBottom: 16,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 20, paddingVertical: 14,
+    backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#e5e7eb',
   },
   closeButton: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
-  headerTitle: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#1e293b',
-    textAlign: 'center',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 28,
-  },
-  animationContainer: { marginBottom: 36 },
+  headerTitle: { flex: 1, fontSize: 18, fontWeight: '700', color: '#1e293b', textAlign: 'center' },
+  body: { flexGrow: 1 },
+
+  // Visual
+  animationContainer: { alignItems: 'center', marginBottom: 8 },
+  breathingText: { fontSize: 24, fontWeight: '600', color: '#1e293b', marginTop: 16, marginBottom: 4 },
+  instructionsText: { fontSize: 14, color: '#64748b', textAlign: 'center', paddingHorizontal: 24, lineHeight: 20 },
   coverContainer: {
-    marginBottom: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
+    alignItems: 'center', justifyContent: 'center', borderRadius: 20,
     backgroundColor: '#f1f5f9',
-    // Permanent shadow so there's no layout jump when image loads
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
-    elevation: 6,
-    overflow: Platform.OS === 'android' ? 'hidden' : 'visible',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.12, shadowRadius: 24,
+    elevation: 6, overflow: Platform.OS === 'android' ? 'hidden' : 'visible',
   },
-  coverFallbackText: { marginTop: 16, color: '#94a3b8', fontSize: 15 },
-  instructionsContainer: { alignItems: 'center', marginBottom: 36 },
-  breathingText: { fontSize: 28, fontWeight: '600', color: '#1e293b', marginBottom: 10 },
-  instructionsText: {
-    fontSize: 15,
-    color: '#64748b',
-    textAlign: 'center',
-    paddingHorizontal: 24,
-    lineHeight: 22,
-  },
-  controls: { flexDirection: 'row', alignItems: 'center', gap: 32, marginBottom: 20 },
+  coverFallbackText: { marginTop: 12, color: '#94a3b8', fontSize: 14 },
+
+  // Controls
+  controlsWrap: { width: '100%', alignItems: 'center' },
+  controls: { flexDirection: 'row', alignItems: 'center', gap: 32, marginBottom: 16 },
   skipButton: { alignItems: 'center', gap: 3, paddingHorizontal: 4, paddingVertical: 8 },
   skipLabel: { fontSize: 11, color: '#94a3b8', fontWeight: '700', letterSpacing: 0.3 },
   playButton: {
-    width: 74,
-    height: 74,
-    borderRadius: 37,
-    backgroundColor: '#3b82f6',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 8,
-    shadowColor: '#2563eb',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
+    width: 72, height: 72, borderRadius: 36, backgroundColor: '#3b82f6',
+    justifyContent: 'center', alignItems: 'center',
+    elevation: 8, shadowColor: '#2563eb', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 10,
   },
   playButtonLoading: { backgroundColor: '#93c5fd' },
-  bufferingLabel: {
-    fontSize: 12,
-    color: '#94a3b8',
-    marginBottom: 8,
-    marginTop: -12,
-    letterSpacing: 0.2,
-  },
+  bufferingLabel: { fontSize: 12, color: '#94a3b8', marginBottom: 8, marginTop: -4, letterSpacing: 0.2 },
   completeButton: {
-    marginTop: 8,
-    paddingHorizontal: 36,
-    paddingVertical: 15,
-    borderRadius: 30,
-    backgroundColor: '#10b981',
-    elevation: 4,
-    shadowColor: '#059669',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.28,
-    shadowRadius: 8,
+    marginTop: 4, paddingHorizontal: 36, paddingVertical: 14, borderRadius: 30,
+    backgroundColor: '#10b981', elevation: 4,
+    shadowColor: '#059669', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.28, shadowRadius: 8,
   },
-  completeButtonText: { color: '#ffffff', fontWeight: '700', fontSize: 16, letterSpacing: 0.2 },
+  completeButtonText: { color: '#fff', fontWeight: '700', fontSize: 16, letterSpacing: 0.2 },
 });
