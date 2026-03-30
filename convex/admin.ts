@@ -216,10 +216,14 @@ export const createMeditationSession = mutation({
         duration: v.float64(),
         description: v.string(),
         audioUrl: v.optional(v.string()),
+        videoUrl: v.optional(v.string()),
         coverImage: v.optional(v.string()),
+        coverImageLandscape: v.optional(v.string()),
         tags: v.optional(v.array(v.string())),
         status: v.optional(v.string()),
         isPremium: v.boolean(),
+        isFeatured: v.optional(v.boolean()),
+        type: v.optional(v.union(v.literal("meditation"), v.literal("soundscape"))),
     },
     handler: async (ctx, args) => {
         await checkAdminPower(ctx);
@@ -229,10 +233,14 @@ export const createMeditationSession = mutation({
             duration: args.duration,
             description: args.description.trim(),
             audioUrl: args.audioUrl?.trim(),
+            videoUrl: args.videoUrl?.trim(),
             coverImage: args.coverImage?.trim(),
+            coverImageLandscape: args.coverImageLandscape?.trim(),
             tags: args.tags ?? [],
             status: args.status ?? 'draft',
             isPremium: args.isPremium,
+            isFeatured: args.isFeatured,
+            type: args.type ?? 'meditation',
         });
         return id;
     },
@@ -255,10 +263,14 @@ export const updateMeditationSession = mutation({
         duration: v.optional(v.float64()),
         description: v.optional(v.string()),
         audioUrl: v.optional(v.string()),
+        videoUrl: v.optional(v.string()),
         coverImage: v.optional(v.string()),
+        coverImageLandscape: v.optional(v.string()),
         tags: v.optional(v.array(v.string())),
         status: v.optional(v.string()),
         isPremium: v.optional(v.boolean()),
+        isFeatured: v.optional(v.boolean()),
+        type: v.optional(v.union(v.literal("meditation"), v.literal("soundscape"))),
     },
     handler: async (ctx, args) => {
         await checkAdminPower(ctx);
@@ -268,11 +280,15 @@ export const updateMeditationSession = mutation({
             ...(args.category && { category: args.category.trim() }),
             ...(args.duration !== undefined && { duration: args.duration }),
             ...(args.description && { description: args.description.trim() }),
-            ...(args.audioUrl && { audioUrl: args.audioUrl.trim() }),
-            ...(args.coverImage && { coverImage: args.coverImage.trim() }),
+            ...(args.audioUrl !== undefined && { audioUrl: args.audioUrl ? args.audioUrl.trim() : undefined }),
+            ...(args.videoUrl !== undefined && { videoUrl: args.videoUrl ? args.videoUrl.trim() : undefined }),
+            ...(args.coverImage !== undefined && { coverImage: args.coverImage ? args.coverImage.trim() : undefined }),
+            ...(args.coverImageLandscape !== undefined && { coverImageLandscape: args.coverImageLandscape ? args.coverImageLandscape.trim() : undefined }),
             ...(args.tags && { tags: args.tags }),
             ...(args.status && { status: args.status }),
             ...(args.isPremium !== undefined && { isPremium: args.isPremium }),
+            ...(args.isFeatured !== undefined && { isFeatured: args.isFeatured }),
+            ...(args.type && { type: args.type }),
         });
 
         return { success: true };

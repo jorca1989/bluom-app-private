@@ -567,10 +567,14 @@ export default defineSchema({
     duration: v.float64(), // minutes
     description: v.string(),
     audioUrl: v.optional(v.string()),
+    videoUrl: v.optional(v.string()),
     coverImage: v.optional(v.string()),
+    coverImageLandscape: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
     status: v.optional(v.string()), // 'published' | 'draft'
     isPremium: v.boolean(),
+    isFeatured: v.optional(v.boolean()),
+    type: v.optional(v.union(v.literal("meditation"), v.literal("soundscape"))),
   }).index("by_category", ["category"]),
 
   // Meditation Logs - User history

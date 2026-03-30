@@ -29,7 +29,7 @@ export default ({ config }) => {
                 },
                 infoPlist: {
                     ITSAppUsesNonExemptEncryption: false,
-                    UIBackgroundModes: ["audio"],
+                    UIBackgroundModes: ["audio", "location"],
 
                     // ── Camera & Photos (updated for Body Scan feature) ──
                     NSPhotoLibraryUsageDescription:
@@ -37,9 +37,13 @@ export default ({ config }) => {
                     NSCameraUsageDescription:
                         "Bluom uses the camera to scan food items for nutrition insights and to take body progress photos for AI-powered body composition analysis.",
 
-                    // ── Location (Weather) ─────────────────────────────────────────
+                    // ── Location (Weather & Workouts) ──────────────────────────────
                     NSLocationWhenInUseUsageDescription:
-                        "Bluom uses your approximate location solely to provide real-time local weather data on your dashboard.",
+                        "Bluom uses your location to provide real-time local weather data on your dashboard and to track your outdoor running or cycling workout routes.",
+                    NSLocationAlwaysAndWhenInUseUsageDescription:
+                        "Bluom uses your location in the background to accurately record your outdoor workout distance, pace, and routes, even when your phone is in your pocket or the app is closed.",
+                    NSLocationAlwaysUsageDescription:
+                        "Bluom securely uses your location in the background to maintain accurate live tracking for your outdoor workouts.",
 
                     // ── HealthKit (NEW) ───────────────────────────────────────────
                     // NSHealthShareUsageDescription: what we READ from HealthKit.
@@ -90,6 +94,11 @@ export default ({ config }) => {
                 package: "com.jwfca.bluom",
                 versionCode: 31,
                 googleServicesFile: "./google-services.json",
+                splash: {
+                    image: "./assets/images/splash.png",
+                    imageWidth: 288,
+                    resizeMode: "contain"
+                },
                 permissions: [
                     // ── Existing ──────────────────────────────────────────────────
                     "android.permission.CAMERA",
@@ -99,9 +108,10 @@ export default ({ config }) => {
                     "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
                     "android.permission.WAKE_LOCK",
 
-                    // ── Location (Weather) ────────────────────────────────────────
+                    // ── Location (Weather & Workouts) ─────────────────────────────
                     "android.permission.ACCESS_COARSE_LOCATION",
                     "android.permission.ACCESS_FINE_LOCATION",
+                    "android.permission.ACCESS_BACKGROUND_LOCATION",
 
                     // ── Health Connect (NEW) ──────────────────────────────────────
                     // These appear as individual toggles in Android Settings,
@@ -138,7 +148,13 @@ export default ({ config }) => {
                 "expo-asset",
                 "expo-splash-screen",
                 "@react-native-community/datetimepicker",
-                "react-native-health",
+                "expo-apple-authentication",
+                [
+                    "react-native-health",
+                    {
+                        "isClinicalDataEnabled": false
+                    }
+                ],
                 "react-native-health-connect",
                 [
                     "expo-camera",
@@ -147,7 +163,6 @@ export default ({ config }) => {
                             "Bluom uses the camera to scan food items for nutrition insights and to take body progress photos for AI-powered body composition analysis.",
                     },
                 ],
-                "expo-apple-authentication",
             ],
             extra: {
                 router: {},
@@ -172,8 +187,6 @@ export default ({ config }) => {
     return {
         ...base.expo,
         ...config,
-        // scheme MUST come after ...config to prevent it being overwritten
-        scheme: "bluom",
         plugins,
     };
 };

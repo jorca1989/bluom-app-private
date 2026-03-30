@@ -474,7 +474,7 @@ export default function MeditationPlayerScreen({
   if (!visible) return null;
 
   // ── Visual area ──────────────────────────────────────────────
-  const VisualArea = () => {
+  const renderVisualArea = () => {
     if (isVideoSession && videoUrl) {
       // YouTube → render in a WebView with autoplay embed
       if (isYouTubeUrl(videoUrl)) {
@@ -560,7 +560,7 @@ export default function MeditationPlayerScreen({
   };
 
   // ── Controls area ────────────────────────────────────────────
-  const ControlsArea = () => (
+  const renderControlsArea = () => (
     <View style={[playerStyles.controlsWrap, isLandscape && { paddingHorizontal: 12 }]}>
       {showSeekBar && (
         <SeekBar
@@ -625,11 +625,11 @@ export default function MeditationPlayerScreen({
           ]}
           showsVerticalScrollIndicator={false}
         >
-          <VisualArea />
+          {renderVisualArea()}
           <View style={[
             isLandscape ? { flex: 1, maxWidth: 360 } : { width: '100%', alignItems: 'center' },
           ]}>
-            <ControlsArea />
+            {renderControlsArea()}
           </View>
         </ScrollView>
 

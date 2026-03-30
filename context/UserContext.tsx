@@ -19,9 +19,21 @@ const ADMIN_EMAILS = new Set(
 );
 
 function isAdminFromClerk(user: any): boolean {
-  const role = (user?.publicMetadata as any)?.role;
+  if (!user) return false;
+  const role = (user.publicMetadata as any)?.role;
   if (role === 'admin') return true;
-  const email = user?.primaryEmailAddress?.emailAddress?.toLowerCase?.() ?? '';
+  
+  // Safe extraction of email
+  let email = '';
+  if (user.primaryEmailAddress?.emailAddress) {
+    email = user.primaryEmailAddress.emailAddress;
+  } else if (user.emailAddresses && user.emailAddresses.length > 0) {
+    email = user.emailAddresses[0].emailAddress;
+  }
+  
+  if (!email) return false;
+  
+  email = email.trim().toLowerCase();
   return ADMIN_EMAILS.has(email);
 }
 

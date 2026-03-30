@@ -8,22 +8,20 @@ import {
   Modal,
   Dimensions,
   ActivityIndicator,
-  Alert,
+  Platform,
 } from 'react-native';
-import { useQuery, useMutation } from 'convex/react';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
 import MeditationPlayerScreen from '../app/meditation-player';
-import { SOUNDSCAPES } from '../utils/soundscapes'; // Assuming this exists or was used previously
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { SOUNDSCAPES } from '../utils/soundscapes';
 import { SoundEffect, triggerSound } from '../utils/soundEffects';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getBottomContentPadding } from '@/utils/layout';
-import { Image } from 'expo-image';
-import {
-  Moon, Sun, Target, Heart, Shield, Play, Crown, Brain, Wind
-} from 'lucide-react-native';
+import { MEDITATION_FILTERS } from '../constants/meditationFilters';
 
 const { width } = Dimensions.get('window');
 
@@ -32,109 +30,74 @@ interface MeditationHubProps {
   onClose: () => void;
 }
 
-const categories = [
-  { id: 'sleep', name: 'Better Sleep', icon: Moon, color: '#6366f1' },
-  { id: 'morning', name: 'Morning Boost', icon: Sun, color: '#f59e0b' },
-  { id: 'focus', name: 'Focus', icon: Target, color: '#3b82f6' },
-  { id: 'self-love', name: 'Self-Love', icon: Heart, color: '#ec4899' },
-  { id: 'anxiety', name: 'Anxiety Relief', icon: Shield, color: '#10b981' },
-  { id: 'sovereignty', name: 'Sovereignty & Power', icon: Crown, color: '#b45309' },
-  { id: 'strategic-mindset', name: 'Strategic Mindset', icon: Brain, color: '#7c3aed' },
-  { id: 'breathwork', name: 'Breathwork', icon: Wind, color: '#0d9488' },
-];
-
 export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
-  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const sessions = useQuery(api.meditation.getSessions, { category: selectedCategory ?? undefined });
-  // const user = useQuery(api.users.getUserById, { userId }); // define if needed
-
+  
   useEffect(() => {
     triggerSound(SoundEffect.ENTER_MEDITATION_HUB);
   }, []);
 
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showMeditationPlayer, setShowMeditationPlayer] = useState(false);
   const [selectedSoundscape, setSelectedSoundscape] = useState<any>(null);
   const [activeSession, setActiveSession] = useState<any>(null);
-  const [logId, setLogId] = useState<Id<"meditationLogs"> | null>(null);
 
-  const fallbackSessions = useMemo(
-    () => [
-      {
-        _id: '1',
-        title: 'Deep Sleep Journey',
-        category: 'sleep',
-        duration: 10,
-        description: 'A calming guided session to help you drift into deep sleep.',
-        tags: ['Sleep', 'Rest'],
-      },
-      {
-        _id: '2',
-        title: 'Morning Clarity',
-        category: 'morning',
-        duration: 5,
-        description: 'Start your day with a clear mind and focused energy.',
-        tags: ['Morning', 'Focus'],
-      },
-      {
-        _id: '3',
-        title: 'Quick Reset',
-        category: 'focus',
-        duration: 3,
-        description: 'A short reset to recenter during a busy day.',
-        tags: ['Focus', 'Quick'],
-      },
-      {
-        _id: '4',
-        title: 'Self-Love Pause',
-        category: 'self-love',
-        duration: 7,
-        description: 'A gentle session to practice compassion and gratitude.',
-        tags: ['Love', 'Compassion'],
-      },
-      {
-        _id: '5',
-        title: 'Anxiety Release',
-        category: 'anxiety',
-        duration: 12,
-        description: 'Let go of tension and find your inner calm.',
-        tags: ['Anxiety', 'Calm'],
-      },
-      // Fallback: If category filtered, show all for robust demo if fetch fails
-    ].filter(s => !selectedCategory || s.category === selectedCategory),
-    [selectedCategory]
-  );
+  // Data fetching - Fetch all to filter locally and instantly
+  const allSessions = useQuery(api.meditation.getSessions, {});
+  
+  const rawSessions = useMemo(() => {
+    if (!allSessions) return undefined;
+    if (!selectedCategory) return allSessions;
+    return allSessions.filter(s => 
+      s.category === selectedCategory || 
+      (s.tags && s.tags.includes(selectedCategory))
+    );
+  }, [allSessions, selectedCategory]);
 
-  const displaySessions = sessions || fallbackSessions;
+  // Fallback data
+  const fallbackSessions = useMemo(() => [
+    { _id: '1', title: 'Deep Sleep Journey', category: 'sleep', duration: 15, description: 'A calming guided session to drift into deep sleep.', tags: ['sleep', 'Rest'], coverImage: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
+    { _id: '2', title: 'Morning Clarity', category: 'morning', duration: 5, description: 'Start your day with a clear mind and focused energy.', tags: ['morning', 'Focus'], coverImage: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
+    { _id: '3', title: 'Quick Reset', category: 'focus', duration: 3, description: 'A short reset to recenter during a busy day.', tags: ['focus', 'Quick'], coverImage: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
+    { _id: '4', title: 'Anxiety Release', category: 'anxiety', duration: 12, description: 'Let go of tension and find your inner calm.', tags: ['anxiety', 'Calm'], coverImage: 'https://images.unsplash.com/photo-1593811167562-9cef47bfc4d7?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
+    { _id: '5', title: 'Self-Love Pause', category: 'self-love', duration: 8, description: 'Practice compassion and gratitude.', tags: ['self-love', 'Compassion'], coverImage: 'https://images.unsplash.com/photo-1499209974431-9dddcece097a?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
+  ].filter(s => !selectedCategory || s.category === selectedCategory || s.tags.includes(selectedCategory)), [selectedCategory]);
+
+  const displaySessions = rawSessions ?? fallbackSessions;
+  
+  // Groupings for the UI
+  const featuredSession = displaySessions[0];
+  const trendingSessions = displaySessions.slice(1, 5); // Just taking nearest for mockup logic
+  const quickSessions = displaySessions.filter(s => (s.duration ?? 0) <= 5);
+  const deepDiveSessions = displaySessions.filter(s => (s.duration ?? 0) > 10);
 
   const handleStartSession = (session: any) => {
-    if (session.coverImage) {
-      Image.prefetch(session.coverImage);
-    }
-    setActiveSession({
-      ...session,
-    });
+    if (session.coverImage) Image.prefetch(session.coverImage);
+    setActiveSession(session);
     setShowMeditationPlayer(true);
   };
 
   const handleStartSoundscape = (soundscape: any) => {
     setSelectedSoundscape(soundscape);
-    setActiveSession({
-      title: soundscape.name,
-      duration: 0, // infinite
-    });
+    setActiveSession({ title: soundscape.name, duration: 0 });
     setShowMeditationPlayer(true);
+  };
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
   };
 
   return (
     <Modal visible={true} animationType="slide" transparent={false}>
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         {/* Header */}
-        <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 12 }]}>
+        <View style={styles.header}>
           <View>
-            <Text style={styles.headerTitle}>Meditation Hub</Text>
-            <Text style={styles.headerSubtitle}>Choose your path to inner calm</Text>
+            <Text style={styles.headerGreeting}>{getGreeting()}</Text>
+            <Text style={styles.headerTitle}>Ready to unwind?</Text>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Ionicons name="close" size={24} color="#64748b" />
@@ -142,153 +105,111 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
         </View>
 
         <ScrollView
-          style={styles.content}
-          contentContainerStyle={{ paddingBottom: getBottomContentPadding(insets.bottom) }}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: getBottomContentPadding(insets.bottom) + 20 }}
         >
-          {/* Daily Quote */}
-          <View style={styles.quoteCard}>
-            <Text style={styles.quoteEmoji}>✨</Text>
-            <Text style={styles.quoteText}>Take a deep breath, you deserve calm.</Text>
-            <Text style={styles.quoteSubtext}>Start your meditation journey today</Text>
-          </View>
-
-          {/* Beta banner */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#eff6ff', borderWidth: 1, borderColor: '#bfdbfe', borderRadius: 12, padding: 12, marginBottom: 14, gap: 10 }}>
-            <Text style={{ fontSize: 22 }}>🧘</Text>
-            <View style={{ flex: 1 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                <View style={{ backgroundColor: '#6366f1', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 }}>
-                  <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800', letterSpacing: 1 }}>BETA</Text>
-                </View>
-                <Text style={{ fontSize: 13, fontWeight: '700', color: '#1e40af' }}>Meditation is being improved</Text>
-              </View>
-              <Text style={{ fontSize: 11, color: '#64748b' }}>We're actively enhancing sessions and adding new content!</Text>
-            </View>
-          </View>
-
-          {/* Soundscape Quick Access */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Soundscapes</Text>
+          {/* Categories Horizontal */}
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            contentContainerStyle={styles.categoryScroll}
+          >
             <TouchableOpacity
-              style={styles.soundscapeCard}
-              onPress={() => handleStartSoundscape(SOUNDSCAPES.rain)}
+              style={[styles.categoryPill, selectedCategory === null && styles.categoryPillActive]}
+              onPress={() => setSelectedCategory(null)}
             >
-              <Text style={styles.soundscapeEmoji}>🎵</Text>
-              <View style={styles.soundscapeInfo}>
-                <Text style={styles.soundscapeTitle}>Ambient Soundscapes</Text>
-                <Text style={styles.soundscapeDesc}>Rain, ocean, forest, and more</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#64748b" />
+              <Text style={[styles.categoryPillText, selectedCategory === null && styles.categoryPillTextActive]}>All Filters</Text>
             </TouchableOpacity>
-          </View>
-
-          {/* Categories */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Browse by Category</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.categoryScrollContent}
-            >
+            {MEDITATION_FILTERS.map(cat => (
               <TouchableOpacity
-                style={[
-                  styles.categoryCardHorizontal,
-                  selectedCategory === null && styles.categoryCardActive
-                ]}
-                onPress={() => setSelectedCategory(null)}
+                key={cat.id}
+                style={[styles.categoryPill, selectedCategory === cat.id && styles.categoryPillActive]}
+                onPress={() => setSelectedCategory(cat.id)}
               >
-                <View style={[styles.iconCircle, { backgroundColor: '#e2e8f0' }]}>
-                  <Ionicons name="infinite" size={24} color="#64748b" />
-                </View>
-                <Text
-                  style={styles.categoryName}
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                  minimumFontScale={0.6}
-                >
-                  All
-                </Text>
+                <Text style={{ fontSize: 13, marginRight: 4 }}>{cat.emoji}</Text>
+                <Text style={[styles.categoryPillText, selectedCategory === cat.id && styles.categoryPillTextActive]}>{cat.name}</Text>
               </TouchableOpacity>
-              {categories.map((cat) => (
-                <TouchableOpacity
-                  key={cat.id}
-                  style={[
-                    styles.categoryCardHorizontal,
-                    selectedCategory === cat.id && styles.categoryCardActive
-                  ]}
-                  onPress={() => setSelectedCategory(cat.id)}
-                >
-                  <View style={[styles.iconCircle, { backgroundColor: cat.color + '20' }]}>
-                    <cat.icon size={24} color={cat.color} />
-                  </View>
-                  <Text
-                    style={styles.categoryName}
-                    numberOfLines={1}
-                    adjustsFontSizeToFit
-                    minimumFontScale={0.7}
-                  >
-                    {cat.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
+            ))}
+          </ScrollView>
 
-          {/* Sessions List */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>
-              {selectedCategory
-                ? categories.find(c => c.id === selectedCategory)?.name || 'Sessions'
-                : 'All Sessions'}
-            </Text>
-            {!displaySessions ? (
-              <ActivityIndicator size="small" color="#6366f1" />
+          {/* Featured Hero (Only if All is selected, else just show list) */}
+          {!selectedCategory && featuredSession && (
+            <TouchableOpacity style={styles.heroCard} onPress={() => handleStartSession(featuredSession)} activeOpacity={0.9}>
+              <Image source={{ uri: featuredSession.coverImageLandscape || featuredSession.coverImage }} style={StyleSheet.absoluteFillObject} contentFit="cover" />
+              <LinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={StyleSheet.absoluteFillObject} />
+              
+              <View style={styles.heroContent}>
+                <View style={styles.heroBadge}>
+                  <Text style={styles.heroBadgeText}>RECOMMENDED</Text>
+                </View>
+                <Text style={styles.heroTitle}>{featuredSession.title}</Text>
+                <Text style={styles.heroDuration}>{featuredSession.duration} min · {MEDITATION_FILTERS.find(c=>c.id === featuredSession.category)?.name || 'Session'}</Text>
+              </View>
+              <View style={styles.heroPlay}>
+                <Ionicons name="play" size={24} color="#1e293b" />
+              </View>
+            </TouchableOpacity>
+          )}
+
+          {/* Section: Trending Right Now */}
+          {trendingSessions.length > 0 && !selectedCategory && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Trending Right Now</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScroll}>
+                {trendingSessions.map(session => (
+                   <TouchableOpacity key={session._id} style={styles.squareCard} onPress={() => handleStartSession(session)}>
+                     <Image source={{ uri: session.coverImage }} style={styles.squareCardImg} />
+                     <View style={styles.squarePlay}><Ionicons name="play" size={16} color="#fff" /></View>
+                     <Text style={styles.squareCardTitle} numberOfLines={2}>{session.title}</Text>
+                     <Text style={styles.squareCardSub}>{session.duration} min</Text>
+                   </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+
+          {/* Soundscapes */}
+          {!selectedCategory && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Soundscapes</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScroll}>
+                {[SOUNDSCAPES.rain, SOUNDSCAPES.forest, SOUNDSCAPES.ocean, SOUNDSCAPES.brownNoise].map((ss, idx) => (
+                   <TouchableOpacity key={idx} style={styles.soundscapeCard} onPress={() => handleStartSoundscape(ss)}>
+                     <View style={styles.soundscapeIconBox}><Text style={{fontSize: 28}}>{idx===0?'🌧':idx===1?'🌲':idx===2?'🌊':'🎧'}</Text></View>
+                     <Text style={styles.soundscapeTitle}>{ss.name}</Text>
+                   </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+
+          {/* Standard List (Rendered below if filtered, or as "Recently Added" if not) */}
+          <View style={[styles.section, { paddingHorizontal: 20 }]}>
+            <Text style={styles.sectionTitle}>{selectedCategory ? 'All Sessions' : 'Recently Added'}</Text>
+            
+            {!rawSessions && !fallbackSessions ? (
+              <ActivityIndicator size="small" color="#2563eb" style={{marginTop: 20}} />
             ) : (
-              displaySessions.map((session: any) => {
-                const CategoryIcon = categories.find(c => c.id === session.category)?.icon || Target;
-                const categoryColor = categories.find(c => c.id === session.category)?.color || '#6366f1';
-
-                return (
-                  <TouchableOpacity
-                    key={session._id ?? session.title}
-                    onPress={() => handleStartSession(session)}
-                    style={styles.sessionCard}
-                    activeOpacity={0.85}
-                  >
-                    <View style={styles.sessionLeft}>
-                      <View style={[styles.sessionIconContainer, { backgroundColor: categoryColor + '20' }]}>
-                        <CategoryIcon size={24} color={categoryColor} />
-                      </View>
-                      <View style={styles.sessionInfo}>
-                        <Text style={styles.sessionTitle}>{session.title}</Text>
-
-                        {(session.tags || []).length > 0 && (
-                          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
-                            {(session.tags || []).map((t: string) => (
-                              <View key={t} style={styles.tagContainer}>
-                                <Text style={styles.tagText}>{t}</Text>
-                              </View>
-                            ))}
-                          </View>
-                        )}
-
-                        <Text style={styles.sessionDescription} numberOfLines={2}>{session.description}</Text>
-                        <Text style={styles.sessionDuration}>{`${session.duration} min`}</Text>
-                      </View>
-                    </View>
-                    <View style={styles.playButtonSmall}>
-                      <Ionicons name="play" size={20} color="#fff" />
-                    </View>
-                  </TouchableOpacity>
-                );
-              })
+              displaySessions.map((session: any) => (
+                <TouchableOpacity key={session._id} style={styles.listCard} onPress={() => handleStartSession(session)}>
+                  <Image source={{ uri: session.coverImage }} style={styles.listCardImg} />
+                  <View style={styles.listCardInfo}>
+                    <Text style={styles.listCardTitle}>{session.title}</Text>
+                    <Text style={styles.listCardSub} numberOfLines={1}>{session.description}</Text>
+                    <Text style={styles.listCardDuration}>{session.duration} min</Text>
+                  </View>
+                  <View style={styles.listCardPlay}>
+                    <Ionicons name="play" size={18} color="#2563eb" />
+                  </View>
+                </TouchableOpacity>
+              ))
             )}
           </View>
+
         </ScrollView>
       </SafeAreaView>
 
-      {/* Meditation Player Modal */}
+      {/* Player Modal */}
       {showMeditationPlayer && (
         <MeditationPlayerScreen
           visible={showMeditationPlayer}
@@ -302,7 +223,6 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
           sessionTitle={activeSession?.title}
           coverImage={activeSession?.coverImage}
           duration={activeSession?.duration}
-          logId={logId}
         />
       )}
     </Modal>
@@ -310,197 +230,73 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8fafc',
-  },
+  container: { flex: 1, backgroundColor: '#f8fafc' },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: 20, paddingBottom: 16, paddingTop: 10,
+    backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9',
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1e293b',
+  headerGreeting: { fontSize: 13, fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5 },
+  headerTitle: { fontSize: 24, fontWeight: '800', color: '#0f172a', marginTop: 2 },
+  closeButton: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#f1f5f9', justifyContent: 'center', alignItems: 'center' },
+  
+  categoryScroll: { paddingHorizontal: 20, gap: 10, paddingVertical: 16 },
+  categoryPill: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20,
+    backgroundColor: '#fff', borderWidth: 1, borderColor: '#e2e8f0',
   },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#64748b',
-    marginTop: 4,
+  categoryPillActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
+  categoryPillText: { fontSize: 14, fontWeight: '600', color: '#475569' },
+  categoryPillTextActive: { color: '#fff' },
+
+  heroCard: {
+    marginHorizontal: 20, height: 220, borderRadius: 24, overflow: 'hidden',
+    justifyContent: 'flex-end', padding: 20, marginBottom: 28,
   },
-  closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f1f5f9',
-    justifyContent: 'center',
-    alignItems: 'center',
+  heroContent: { flex: 1, justifyContent: 'flex-end' },
+  heroBadge: { alignSelf: 'flex-start', backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginBottom: 8 },
+  heroBadgeText: { color: '#fff', fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
+  heroTitle: { color: '#fff', fontSize: 24, fontWeight: '800', marginBottom: 4 },
+  heroDuration: { color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: '600' },
+  heroPlay: {
+    position: 'absolute', right: 20, bottom: 20,
+    width: 48, height: 48, borderRadius: 24, backgroundColor: '#fff',
+    justifyContent: 'center', alignItems: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8,
   },
-  content: {
-    flex: 1,
-    padding: 20,
+
+  section: { marginBottom: 28 },
+  sectionTitle: { fontSize: 18, fontWeight: '800', color: '#0f172a', marginHorizontal: 20, marginBottom: 14 },
+  horizontalScroll: { paddingHorizontal: 20, gap: 14 },
+
+  squareCard: { width: 140 },
+  squareCardImg: { width: 140, height: 140, borderRadius: 20, backgroundColor: '#e2e8f0' },
+  squarePlay: {
+    position: 'absolute', right: 10, top: 104,
+    width: 28, height: 28, borderRadius: 14, backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)',
   },
-  quoteCard: {
-    backgroundColor: '#6366f1',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
+  squareCardTitle: { fontSize: 14, fontWeight: '700', color: '#0f172a', marginTop: 10, lineHeight: 18 },
+  squareCardSub: { fontSize: 12, color: '#64748b', marginTop: 4 },
+
+  soundscapeCard: { width: 110, alignItems: 'center' },
+  soundscapeIconBox: {
+    width: 80, height: 80, borderRadius: 40, backgroundColor: '#fff',
+    justifyContent: 'center', alignItems: 'center', marginBottom: 10,
+    borderWidth: 1, borderColor: '#e2e8f0',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 6,
   },
-  quoteEmoji: {
-    fontSize: 24,
-    marginBottom: 8,
+  soundscapeTitle: { fontSize: 13, fontWeight: '600', color: '#475569', textAlign: 'center' },
+
+  listCard: {
+    flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff',
+    borderRadius: 16, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0',
   },
-  quoteText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#ffffff',
-    marginBottom: 4,
-  },
-  quoteSubtext: {
-    fontSize: 14,
-    color: '#ffffff',
-    opacity: 0.9,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1e293b',
-    marginBottom: 16,
-  },
-  categoryScrollContent: {
-    gap: 12,
-    paddingRight: 20, // Add some padding at the end of the scroll
-  },
-  categoryCardHorizontal: {
-    width: 140,
-    height: 110,
-    padding: 12,
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: '#e5e7eb',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ffffff',
-    gap: 8,
-  },
-  categoryCardActive: {
-    borderColor: '#6366f1',
-    backgroundColor: '#eef2ff',
-  },
-  categoryName: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#1e293b',
-  },
-  soundscapeCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  soundscapeEmoji: {
-    fontSize: 32,
-    marginRight: 12,
-  },
-  soundscapeInfo: {
-    flex: 1,
-  },
-  soundscapeTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1e293b',
-    marginBottom: 4,
-  },
-  soundscapeDesc: {
-    fontSize: 13,
-    color: '#64748b',
-  },
-  sessionCard: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  sessionLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  sessionInfo: {
-    flex: 1,
-  },
-  sessionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1e293b',
-    marginBottom: 4,
-  },
-  sessionDescription: {
-    fontSize: 14,
-    color: '#64748b',
-    marginBottom: 4,
-  },
-  sessionDuration: {
-    fontSize: 12,
-    color: '#94a3b8',
-  },
-  iconCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  sessionIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  tagContainer: {
-    backgroundColor: '#f1f5f9',
-    borderRadius: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  tagText: {
-    fontSize: 10,
-    color: '#64748b',
-    fontWeight: '600',
-  },
-  playButtonSmall: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#6366f1',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 12,
-  },
+  listCardImg: { width: 64, height: 64, borderRadius: 12, backgroundColor: '#e2e8f0' },
+  listCardInfo: { flex: 1, marginLeft: 14, justifyContent: 'center' },
+  listCardTitle: { fontSize: 15, fontWeight: '700', color: '#0f172a', marginBottom: 4 },
+  listCardSub: { fontSize: 12, color: '#64748b', marginBottom: 6 },
+  listCardDuration: { fontSize: 11, fontWeight: '600', color: '#94a3b8' },
+  listCardPlay: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#eff6ff', justifyContent: 'center', alignItems: 'center', marginLeft: 10 },
 });

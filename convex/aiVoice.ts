@@ -40,7 +40,11 @@ export const parseVoiceFoodLog = action({
     platform: v.string(),
   },
   handler: async (_ctx, args) => {
-    const { apiKey } = getGeminiApiKeyForPlatform(args.platform);
+    let { apiKey, normalizedPlatform } = getGeminiApiKeyForPlatform(args.platform);
+    const fallbackKey =
+      normalizedPlatform === "ios"
+        ? process.env.GEMINI_API_KEY_ANDROID
+        : process.env.GEMINI_API_KEY_IOS;
 
     const prompt =
       `You are a nutrition assistant. The user has recorded themselves describing what they just ate.
@@ -68,6 +72,9 @@ Rules:
 - If no food is mentioned, return items as an empty array.
 - Output MUST be valid JSON only.`;
 
+    // Gemini requires audio/mp4 for m4a files
+    const finalMimeType = args.mimeType === 'audio/m4a' ? 'audio/mp4' : args.mimeType;
+
     let text = "";
     try {
       const result = await generateContentWithFallback(
@@ -75,7 +82,7 @@ Rules:
           { text: prompt },
           {
             inlineData: {
-              mimeType: args.mimeType,
+              mimeType: finalMimeType,
               data: args.audioBase64,
             },
           },
@@ -86,9 +93,35 @@ Rules:
     } catch (err: any) {
       const msg = String(err?.message ?? "");
       if (msg.includes("403") || msg.toLowerCase().includes("forbidden")) {
-        return { status: "maintenance" as const, transcript: "", items: [] };
+        // Retry with fallback key if available
+        if (fallbackKey) {
+           try {
+             const retry = await generateContentWithFallback(
+                [
+                  { text: prompt },
+                  {
+                    inlineData: {
+                      mimeType: finalMimeType,
+                      data: args.audioBase64,
+                    },
+                  },
+                ],
+                fallbackKey
+              );
+              text = retry.response.text();
+           } catch {
+             return { status: "maintenance" as const, transcript: "", items: [] };
+           }
+        } else {
+          return { status: "maintenance" as const, transcript: "", items: [] };
+        }
+      } else {
+        throw err;
       }
-      throw err;
+    }
+
+    if (!text) {
+        return { status: "maintenance" as const, transcript: "", items: [] };
     }
 
     // Parse JSON

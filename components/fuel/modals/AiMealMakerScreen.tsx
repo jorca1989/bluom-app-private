@@ -28,6 +28,7 @@ import { api } from '@/convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
 import { Platform } from 'react-native';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
+import { useAccessControl } from '@/hooks/useAccessControl';
 
 const { width } = Dimensions.get('window');
 
@@ -98,12 +99,7 @@ export default function AiMealMakerScreen() {
   const insets   = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
 
-  const convexUser = useQuery(
-    api.users.getUserByClerkId,
-    clerkUser?.id ? { clerkId: clerkUser.id } : 'skip'
-  );
-
-  const isPro = !!convexUser?.isPremium;
+  const { isPro, promptUpgrade, convexUser } = useAccessControl();
   const platform = Platform.OS === 'ios' ? 'ios' : 'android';
 
   const [showUpgrade, setShowUpgrade] = useState(false);

@@ -24,6 +24,7 @@ import {
 import { useUser } from '@clerk/clerk-expo';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import { MEDITATION_FILTERS } from '@/constants/meditationFilters';
 
 export default function MeditationsManager() {
     const { user } = useUser();
@@ -36,35 +37,19 @@ export default function MeditationsManager() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSession, setSelectedSession] = useState<any>(null);
 
-    const CATEGORIES = [
-        { id: 'sleep', name: 'Better Sleep', emoji: '🌙', color: '#6366f1' },
-        { id: 'morning', name: 'Morning Boost', emoji: '☀️', color: '#f59e0b' },
-        { id: 'focus', name: 'Focus', emoji: '🎯', color: '#3b82f6' },
-        { id: 'self-love', name: 'Self-Love', emoji: '💗', color: '#ec4899' },
-        { id: 'anxiety', name: 'Anxiety Relief', emoji: '🛡️', color: '#10b981' },
-        { id: 'sovereignty', name: 'Sovereignty & Power', emoji: '👑', color: '#b45309' },
-        { id: 'strategic-mindset', name: 'Strategic Mindset', emoji: '🧠', color: '#7c3aed' },
-        { id: 'breathwork', name: 'Breathwork', emoji: '💨', color: '#0d9488' },
-    ];
-
-    const TAGS = [
-        'Biohacking', 'Stoicism', 'Psychology', 'Charisma', 'Modern Man',
-        'Modern Woman', 'Shadow Work', 'Frame Control', 'Sleep', 'Anxiety',
-        'Focus', 'Morning', 'Evening', 'Weight Loss', 'Muscle',
-        'Machiavelli', 'Dark Psychology',
-    ];
-
     const emptyForm = {
         title: '',
-        category: CATEGORIES[0].id,
+        filters: [MEDITATION_FILTERS[0].id] as string[],
         duration: '10',
         description: '',
         audioUrl: '',
-        videoUrl: '',   // ← NEW
+        videoUrl: '',
         coverImage: '',
-        tags: [] as string[],
+        coverImageLandscape: '',
         status: 'published',
         isPremium: false,
+        isFeatured: false,
+        type: 'meditation' as 'meditation' | 'soundscape',
     };
 
     const [form, setForm] = useState(emptyForm);
@@ -77,15 +62,17 @@ export default function MeditationsManager() {
         setSelectedSession(session);
         setForm({
             title: session.title,
-            category: session.category,
+            filters: [session.category, ...(session.tags || [])].filter(Boolean),
             duration: String(session.duration || 10),
             description: session.description || '',
             audioUrl: session.audioUrl || '',
-            videoUrl: session.videoUrl || '',   // ← NEW
+            videoUrl: session.videoUrl || '',
             coverImage: session.coverImage || '',
-            tags: session.tags || [],
+            coverImageLandscape: session.coverImageLandscape || '',
             status: session.status || 'published',
             isPremium: session.isPremium || false,
+            isFeatured: session.isFeatured || false,
+            type: session.type || 'meditation',
         });
         setIsModalOpen(true);
     };
@@ -93,21 +80,38 @@ export default function MeditationsManager() {
     const handleSave = async () => {
         try {
             const title = form.title.trim();
-            const category = form.category.trim();
+            const primaryCategory = form.filters[0] || 'uncategorized';
+            const secondaryTags = form.filters.slice(1);
             const duration = Number(form.duration || 0);
             const description = form.description.trim();
-            if (!title || !category || !description || !duration) {
-                Alert.alert('Missing fields', 'Title, category, duration, and description are required.');
+            
+            if (!title) {
+                Alert.alert('Missing field', 'Title is required.');
                 return;
             }
+            if (form.type === 'meditation' && form.filters.length === 0) {
+                Alert.alert('Missing fields', 'At least one Category/Tag is required for meditations.');
+                return;
+            }
+            if (form.type === 'meditation' && !duration) {
+                Alert.alert('Missing duration', 'Duration is required for meditations.');
+                return;
+            }
+            
             const commonArgs = {
-                title, category, duration, description,
+                title, 
+                category: form.type === 'soundscape' ? 'soundscape' : primaryCategory, 
+                duration: form.type === 'soundscape' ? 0 : duration, 
+                description,
                 audioUrl: form.audioUrl.trim() || undefined,
-                videoUrl: form.videoUrl.trim() || undefined,   // ← NEW
+                videoUrl: form.videoUrl.trim() || undefined,
                 coverImage: form.coverImage.trim() || undefined,
-                tags: form.tags,
+                coverImageLandscape: form.coverImageLandscape.trim() || undefined,
+                tags: form.type === 'soundscape' ? [] : secondaryTags,
                 status: form.status,
                 isPremium: !!form.isPremium,
+                isFeatured: !!form.isFeatured,
+                type: form.type,
             };
             if (selectedSession) {
                 await updateSession({ sessionId: selectedSession._id, ...commonArgs });
@@ -140,13 +144,13 @@ export default function MeditationsManager() {
     const renderMeditation = ({ item }: { item: any }) => (
         <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => handleEdit(item)}>
             <View style={styles.iconBox}>
-                <Text style={{ fontSize: 24 }}>{CATEGORIES.find(c => c.id === item.category)?.emoji || '🧘'}</Text>
+                <Text style={{ fontSize: 24 }}>{MEDITATION_FILTERS.find(c => c.id === item.category)?.emoji || '🧘'}</Text>
             </View>
             <View style={styles.content}>
                 <View style={styles.headerRow}>
                     <Text style={styles.medTitle} numberOfLines={1}>{item.title}</Text>
-                    <Text style={[styles.catBadge, { color: CATEGORIES.find(c => c.id === item.category)?.color ?? '#8b5cf6' }]}>
-                        {(CATEGORIES.find(c => c.id === item.category)?.name ?? item.category).toUpperCase()}
+                    <Text style={[styles.catBadge, { color: MEDITATION_FILTERS.find(c => c.id === item.category)?.color ?? '#8b5cf6' }]}>
+                        {(MEDITATION_FILTERS.find(c => c.id === item.category)?.name ?? item.category).toUpperCase()}
                     </Text>
                 </View>
                 {item.tags && item.tags.length > 0 && (
@@ -250,43 +254,53 @@ export default function MeditationsManager() {
                     </View>
                     <ScrollView style={styles.modalForm} keyboardShouldPersistTaps="handled">
 
-                        <Text style={styles.label}>Title</Text>
-                        <TextInput style={styles.input} value={form.title} onChangeText={t => setForm(p => ({ ...p, title: t }))} placeholder="e.g. Deep Sleep Journey" />
-
-                        <Text style={styles.label}>Category</Text>
-                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                            {CATEGORIES.map(cat => (
+                        <Text style={styles.label}>Type</Text>
+                        <View style={{ flexDirection: 'row', gap: 12, marginBottom: 10 }}>
+                            {['meditation', 'soundscape'].map(t => (
                                 <TouchableOpacity
-                                    key={cat.id}
-                                    onPress={() => setForm(p => ({ ...p, category: cat.id }))}
-                                    style={{ borderWidth: 1, borderColor: form.category === cat.id ? cat.color : '#e2e8f0', backgroundColor: form.category === cat.id ? `${cat.color}15` : '#fff', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 6 }}
+                                    key={t}
+                                    style={[styles.typeOption, form.type === t && styles.typeOptionActive]}
+                                    onPress={() => setForm(p => ({ ...p, type: t as any }))}
                                 >
-                                    <Text>{cat.emoji}</Text>
-                                    <Text style={{ fontSize: 13, fontWeight: '600', color: form.category === cat.id ? cat.color : '#64748b' }}>{cat.name}</Text>
+                                    <Text style={[styles.typeText, form.type === t && styles.typeTextActive]}>
+                                        {t.charAt(0).toUpperCase() + t.slice(1)}
+                                    </Text>
                                 </TouchableOpacity>
                             ))}
                         </View>
 
-                        <Text style={styles.label}>Tags</Text>
-                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                            {TAGS.map(tag => {
-                                const sel = form.tags.includes(tag);
-                                return (
-                                    <TouchableOpacity
-                                        key={tag}
-                                        onPress={() => setForm(p => ({ ...p, tags: sel ? p.tags.filter(t => t !== tag) : [...p.tags, tag] }))}
-                                        style={{ borderWidth: 1, borderColor: sel ? '#8b5cf6' : '#e2e8f0', backgroundColor: sel ? '#f5f3ff' : '#fff', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16 }}
-                                    >
-                                        <Text style={{ fontSize: 12, fontWeight: '600', color: sel ? '#8b5cf6' : '#64748b' }}>{tag}</Text>
-                                    </TouchableOpacity>
-                                );
-                            })}
-                        </View>
+                        <Text style={styles.label}>Title</Text>
+                        <TextInput style={styles.input} value={form.title} onChangeText={t => setForm(p => ({ ...p, title: t }))} placeholder="e.g. Deep Sleep Journey" />
 
-                        <Text style={styles.label}>Duration (minutes)</Text>
-                        <TextInput style={styles.input} value={form.duration} onChangeText={t => setForm(p => ({ ...p, duration: t }))} keyboardType="numeric" placeholder="10" />
+                        {form.type === 'meditation' && (
+                            <>
+                                <Text style={styles.label}>Categories & Tags</Text>
+                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                                    {MEDITATION_FILTERS.map(filter => {
+                                        const sel = form.filters.includes(filter.id);
+                                        return (
+                                            <TouchableOpacity
+                                                key={filter.id}
+                                                onPress={() => setForm(p => ({ ...p, filters: sel ? p.filters.filter(t => t !== filter.id) : [...p.filters, filter.id] }))}
+                                                style={{ borderWidth: 1, borderColor: sel ? filter.color : '#e2e8f0', backgroundColor: sel ? `${filter.color}15` : '#fff', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 6 }}
+                                            >
+                                                <Text>{filter.emoji}</Text>
+                                                <Text style={{ fontSize: 13, fontWeight: '600', color: sel ? filter.color : '#64748b' }}>{filter.name}</Text>
+                                            </TouchableOpacity>
+                                        );
+                                    })}
+                                </View>
+                            </>
+                        )}
 
-                        <Text style={styles.label}>Description</Text>
+                        {form.type === 'meditation' && (
+                            <>
+                                <Text style={styles.label}>Duration (minutes)</Text>
+                                <TextInput style={styles.input} value={form.duration} onChangeText={t => setForm(p => ({ ...p, duration: t }))} keyboardType="numeric" placeholder="10" />
+                            </>
+                        )}
+
+                        <Text style={styles.label}>Description {form.type === 'soundscape' && '(Optional)'}</Text>
                         <TextInput style={[styles.input, { height: 100, textAlignVertical: 'top' }]} multiline value={form.description} onChangeText={t => setForm(p => ({ ...p, description: t }))} placeholder="What this session helps with..." />
 
                         {/* Audio URL */}
@@ -320,8 +334,14 @@ export default function MeditationsManager() {
                             </Text>
                         </View>
 
-                        <Text style={styles.label}>Cover Image URL</Text>
-                        <TextInput style={styles.input} value={form.coverImage} onChangeText={t => setForm(p => ({ ...p, coverImage: t }))} placeholder="https://..." autoCapitalize="none" keyboardType="url" />
+                        <Text style={styles.label}>Cover Image Square URL</Text>
+                        <TextInput style={styles.input} value={form.coverImage} onChangeText={t => setForm(p => ({ ...p, coverImage: t }))} placeholder="https://pub-xxx.r2.dev/square.png" autoCapitalize="none" keyboardType="url" />
+
+                        <View style={{ marginTop: 16 }}>
+                            <Text style={[styles.label, { marginTop: 0 }]}>Cover Image Landscape URL</Text>
+                            <TextInput style={styles.input} value={form.coverImageLandscape} onChangeText={t => setForm(p => ({ ...p, coverImageLandscape: t }))} placeholder="https://pub-xxx.r2.dev/landscape.png" autoCapitalize="none" keyboardType="url" />
+                            <Text style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>Used exclusively for the massive Recommended/Featured hero card in the Hub.</Text>
+                        </View>
 
                         <Text style={styles.label}>Visibility</Text>
                         <View style={{ flexDirection: 'row', gap: 12 }}>
@@ -338,9 +358,17 @@ export default function MeditationsManager() {
                             ))}
                         </View>
 
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20, marginBottom: 40 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20 }}>
                             <Text style={{ fontWeight: '800', color: '#64748b', textTransform: 'uppercase', fontSize: 13 }}>Pro only</Text>
-                            <Switch value={form.isPremium} onValueChange={v => setForm(p => ({ ...p, isPremium: v }))} />
+                            <Switch value={form.isPremium} onValueChange={v => setForm(p => ({ ...p, isPremium: v }))} trackColor={{ true: '#2563eb' }} />
+                        </View>
+                        
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20, marginBottom: 40 }}>
+                            <View>
+                                <Text style={{ fontWeight: '800', color: '#64748b', textTransform: 'uppercase', fontSize: 13 }}>Featured ✨</Text>
+                                <Text style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>Show in 'Trending' row in the Hub</Text>
+                            </View>
+                            <Switch value={form.isFeatured} onValueChange={v => setForm(p => ({ ...p, isFeatured: v }))} trackColor={{ true: '#f59e0b' }} />
                         </View>
 
                     </ScrollView>

@@ -139,7 +139,7 @@ function SectionHeader({ icon, title, sub, proLocked }: { icon: string; title: s
   return (
     <View style={sh.row}>
       <View style={sh.iconWrap}>
-        <Ionicons name={icon as any} size={16} color="#60a5fa" />
+        <Ionicons name={icon as any} size={16} color="#2563eb" />
       </View>
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -159,7 +159,7 @@ const sh = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 },
   iconWrap: {
     width: 32, height: 32, borderRadius: 8,
-    backgroundColor: '#1e3a5f', justifyContent: 'center', alignItems: 'center',
+    backgroundColor: '#eff6ff', justifyContent: 'center', alignItems: 'center',
   },
   title: { fontSize: 16, fontWeight: '800', color: '#0f172a', letterSpacing: -0.3 },
   sub: { fontSize: 11, color: '#64748b', marginTop: 1 },
@@ -180,17 +180,17 @@ function GlassCard({ children, style }: { children: React.ReactNode; style?: any
 }
 const gc = StyleSheet.create({
   card: {
-    backgroundColor: '#111827',
+    backgroundColor: '#ffffff',
     borderRadius: 20,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#1e293b',
+    borderColor: '#e2e8f0',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.05,
     shadowRadius: 12,
-    elevation: 5,
+    elevation: 2,
   },
 });
 
@@ -199,11 +199,11 @@ function ProLock({ onUpgrade }: { onUpgrade: () => void }) {
   return (
     <TouchableOpacity style={pl.overlay} onPress={onUpgrade} activeOpacity={0.9}>
       <View style={pl.inner}>
-        <Ionicons name="lock-closed" size={24} color="#fbbf24" />
+        <Ionicons name="lock-closed" size={24} color="#f59e0b" />
         <Text style={pl.title}>Pro Feature</Text>
         <Text style={pl.sub}>Unlock full history, body scans & before/after photos</Text>
         <View style={pl.btn}>
-          <Ionicons name="sparkles" size={14} color="#1e293b" />
+          <Ionicons name="sparkles" size={14} color="#ffffff" />
           <Text style={pl.btnText}>Upgrade to Pro</Text>
         </View>
       </View>
@@ -213,21 +213,21 @@ function ProLock({ onUpgrade }: { onUpgrade: () => void }) {
 const pl = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.82)',
+    backgroundColor: 'rgba(255,255,255,0.85)',
     borderRadius: 20,
     justifyContent: 'center', alignItems: 'center',
     zIndex: 10,
     padding: 24,
   },
   inner: { alignItems: 'center', gap: 8 },
-  title: { fontSize: 16, fontWeight: '900', color: '#f1f5f9' },
-  sub: { fontSize: 12, color: '#94a3b8', textAlign: 'center', lineHeight: 17 },
+  title: { fontSize: 16, fontWeight: '900', color: '#0f172a' },
+  sub: { fontSize: 12, color: '#475569', textAlign: 'center', lineHeight: 17 },
   btn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
-    backgroundColor: '#fbbf24', borderRadius: 20,
+    backgroundColor: '#2563eb', borderRadius: 20,
     paddingHorizontal: 16, paddingVertical: 9, marginTop: 4,
   },
-  btnText: { fontSize: 13, fontWeight: '900', color: '#1e293b' },
+  btnText: { fontSize: 13, fontWeight: '900', color: '#ffffff' },
 });
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
@@ -501,9 +501,9 @@ export default function WeightManagementScreen() {
     <SafeAreaView style={s.container} edges={['top']}>
 
       {/* ── Header ── */}
-      <LinearGradient colors={['#0c1220', '#111827']} style={s.headerGrad}>
+      <LinearGradient colors={['#F5F4F0', '#F5F4F0']} style={s.headerGrad}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
-          <Ionicons name="chevron-back" size={22} color="#94a3b8" />
+          <Ionicons name="chevron-back" size={22} color="#0f172a" />
         </TouchableOpacity>
         <View>
           <Text style={s.headerTitle}>Body Metrics</Text>
@@ -652,7 +652,7 @@ export default function WeightManagementScreen() {
               <WeightSparkline data={weightHistory ?? []} />
             ) : (
               <View style={s.emptyChart}>
-                <Ionicons name="analytics-outline" size={28} color="#1e3a5f" />
+                <Ionicons name="analytics-outline" size={28} color="#94a3b8" />
                 <Text style={s.emptyText}>Log more weights to see your trend</Text>
               </View>
             )
@@ -684,7 +684,7 @@ export default function WeightManagementScreen() {
           )}
 
           <TouchableOpacity style={s.secondaryBtn} onPress={() => setActiveModal('measurements')} activeOpacity={0.88}>
-            <Ionicons name="add" size={16} color="#60a5fa" />
+            <Ionicons name="add" size={16} color="#2563eb" />
             <Text style={s.secondaryBtnText}>Log Measurements</Text>
           </TouchableOpacity>
 
@@ -704,7 +704,7 @@ export default function WeightManagementScreen() {
                 <View style={s.scanGrid}>
                   {SCAN_FIELDS.filter(f => (latestScan as any)[f.key] !== undefined).map(f => (
                     <View key={f.key} style={s.scanItem}>
-                      <Ionicons name={f.icon as any} size={14} color="#60a5fa" style={{ marginBottom: 4 }} />
+                      <Ionicons name={f.icon as any} size={14} color="#2563eb" style={{ marginBottom: 4 }} />
                       <Text style={s.scanVal}>{(latestScan as any)[f.key]}</Text>
                       <Text style={s.scanUnit}>{f.unit}</Text>
                       <Text style={s.scanLbl}>{f.label}</Text>
@@ -717,7 +717,7 @@ export default function WeightManagementScreen() {
                 </View>
               )}
               <TouchableOpacity style={s.secondaryBtn} onPress={() => setActiveModal('scan')} activeOpacity={0.88}>
-                <Ionicons name="add" size={16} color="#60a5fa" />
+                <Ionicons name="add" size={16} color="#2563eb" />
                 <Text style={s.secondaryBtnText}>Log Body Scan</Text>
               </TouchableOpacity>
             </>
@@ -896,8 +896,8 @@ export default function WeightManagementScreen() {
           <ScrollView contentContainerStyle={m.body}>
             {scanStage === 'prompt' && !isScanning ? (
               <View style={s.aiPromptBox}>
-                <LinearGradient colors={['#1e3a5f', '#111827']} style={s.aiIconCircle}>
-                  <Ionicons name="scan-outline" size={40} color="#60a5fa" />
+                <LinearGradient colors={['#eff6ff', '#ffffff']} style={s.aiIconCircle}>
+                  <Ionicons name="scan-outline" size={40} color="#2563eb" />
                 </LinearGradient>
                 <Text style={s.aiTitle}>Visual Composition Scan</Text>
                 <Text style={s.aiSub}>
@@ -958,18 +958,19 @@ export default function WeightManagementScreen() {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+  container: { flex: 1, backgroundColor: '#F5F4F0' },
   scroll: { flex: 1 },
 
   // Header
   headerGrad: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     paddingHorizontal: 20, paddingVertical: 16,
-    borderBottomWidth: 1, borderBottomColor: '#1e293b',
+    borderBottomWidth: 1, borderBottomColor: '#e2e8f0',
   },
   backBtn: {
     width: 34, height: 34, borderRadius: 17,
-    backgroundColor: '#1e293b', justifyContent: 'center', alignItems: 'center',
+    backgroundColor: '#ffffff', justifyContent: 'center', alignItems: 'center',
+    borderWidth: 1, borderColor: '#e2e8f0'
   },
   headerTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a', flex: 1, letterSpacing: -0.5 },
   headerSub: { fontSize: 11, color: '#475569' },
@@ -983,10 +984,10 @@ const s = StyleSheet.create({
   aiPromptBox: {
     alignItems: 'center',
     padding: 30,
-    backgroundColor: '#0f172a',
+    backgroundColor: '#f8fafc',
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: '#1e3a5f',
+    borderColor: '#e2e8f0',
     marginTop: 20,
   },
   aiIconCircle: {
@@ -998,51 +999,51 @@ const s = StyleSheet.create({
     marginBottom: 20,
   },
   aiTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a', marginBottom: 8 },
-  aiSub: { fontSize: 13, color: '#94a3b8', textAlign: 'center', lineHeight: 20, marginBottom: 24 },
+  aiSub: { fontSize: 13, color: '#475569', textAlign: 'center', lineHeight: 20, marginBottom: 24 },
   aiStartBtn: {
-    backgroundColor: '#60a5fa',
+    backgroundColor: '#2563eb',
     paddingHorizontal: 32,
     paddingVertical: 14,
     borderRadius: 12,
   },
-  aiStartBtnText: { color: '#0f172a', fontWeight: '900', fontSize: 16 },
+  aiStartBtnText: { color: '#ffffff', fontWeight: '900', fontSize: 16 },
 
   scanningState: {
     height: 300,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  scanningText: { color: '#60a5fa', fontSize: 18, fontWeight: '800', marginTop: 20 },
+  scanningText: { color: '#2563eb', fontSize: 18, fontWeight: '800', marginTop: 20 },
   scanningSub: { color: '#475569', fontSize: 12, marginTop: 4 },
 
   // Hero card
   heroRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
   heroCol: { alignItems: 'flex-start' },
-  heroColLabel: { fontSize: 9, fontWeight: '800', color: '#475569', letterSpacing: 1.2 },
-  heroColValue: { fontSize: 22, fontWeight: '900', color: '#f1f5f9', marginTop: 2 },
-  heroColUnit: { fontSize: 11, color: '#64748b', fontWeight: '600' },
+  heroColLabel: { fontSize: 9, fontWeight: '800', color: '#64748b', letterSpacing: 1.2 },
+  heroColValue: { fontSize: 22, fontWeight: '900', color: '#0f172a', marginTop: 2 },
+  heroColUnit: { fontSize: 11, color: '#475569', fontWeight: '600' },
   editGoalBtn: { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 4 },
-  editGoalText: { fontSize: 10, color: '#60a5fa', fontWeight: '700' },
+  editGoalText: { fontSize: 10, color: '#2563eb', fontWeight: '700' },
 
   arcWrap: { alignItems: 'center' },
   arcOuter: {
     width: 80, height: 40, borderRadius: 40,
-    backgroundColor: '#1e293b', overflow: 'hidden',
+    backgroundColor: '#f1f5f9', overflow: 'hidden',
     justifyContent: 'center', alignItems: 'center',
-    borderWidth: 1, borderColor: '#334155',
+    borderWidth: 1, borderColor: '#e2e8f0',
     position: 'relative',
   },
   arcFill: {
     position: 'absolute', left: 0, top: 0, bottom: 0,
-    backgroundColor: '#1d4ed8', opacity: 0.7,
+    backgroundColor: '#2563eb', opacity: 0.7,
   },
-  arcPct: { fontSize: 14, fontWeight: '900', color: '#60a5fa', zIndex: 1 },
+  arcPct: { fontSize: 14, fontWeight: '900', color: '#2563eb', zIndex: 1 },
   arcLabel: { fontSize: 8, color: '#475569', zIndex: 1 },
 
   currentRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  currentLabel: { fontSize: 9, fontWeight: '800', color: '#475569', letterSpacing: 1.2 },
-  currentValue: { fontSize: 36, fontWeight: '900', color: '#f1f5f9', letterSpacing: -1 },
-  currentUnit: { fontSize: 16, fontWeight: '600', color: '#64748b' },
+  currentLabel: { fontSize: 9, fontWeight: '800', color: '#64748b', letterSpacing: 1.2 },
+  currentValue: { fontSize: 36, fontWeight: '900', color: '#0f172a', letterSpacing: -1 },
+  currentUnit: { fontSize: 16, fontWeight: '600', color: '#475569' },
   trendBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     borderRadius: 20, paddingHorizontal: 10, paddingVertical: 6,
@@ -1051,16 +1052,16 @@ const s = StyleSheet.create({
 
   logWeightBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 8, backgroundColor: '#1d4ed8', borderRadius: 14,
+    gap: 8, backgroundColor: '#2563eb', borderRadius: 14,
     paddingVertical: 14, marginTop: 16,
-    shadowColor: '#1d4ed8', shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4, shadowRadius: 10, elevation: 5,
+    shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2, shadowRadius: 6, elevation: 2,
   },
   logWeightBtnText: { fontSize: 15, fontWeight: '800', color: '#fff' },
 
   // BMI
   bmiRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 20, marginBottom: 16 },
-  bmiNum: { fontSize: 40, fontWeight: '900', color: '#f1f5f9', lineHeight: 44 },
+  bmiNum: { fontSize: 40, fontWeight: '900', color: '#0f172a', lineHeight: 44 },
   bmiCat: { fontSize: 13, fontWeight: '700', marginTop: 2 },
   bmiChart: { flex: 1 },
   bmiBar: {
@@ -1070,53 +1071,53 @@ const s = StyleSheet.create({
   bmiSegment: { flex: 1, height: '100%' },
   bmiPointer: {
     position: 'absolute', top: -3, width: 4, height: 16,
-    backgroundColor: '#f1f5f9', borderRadius: 2,
+    backgroundColor: '#0f172a', borderRadius: 2,
     transform: [{ translateX: -2 }],
   },
   bmiBarLabels: { flexDirection: 'row', justifyContent: 'space-between' },
-  bmiBarLabel: { fontSize: 9, color: '#475569', fontWeight: '600' },
+  bmiBarLabel: { fontSize: 9, color: '#64748b', fontWeight: '600' },
   bmiLegend: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 12 },
   bmiLegendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   bmiLegendDot: { width: 8, height: 8, borderRadius: 4 },
-  bmiLegendText: { fontSize: 10, color: '#94a3b8', fontWeight: '600' },
+  bmiLegendText: { fontSize: 10, color: '#475569', fontWeight: '600' },
   idealBox: {
-    backgroundColor: '#0f172a', borderRadius: 10, padding: 12,
-    borderWidth: 1, borderColor: '#1e3a5f',
+    backgroundColor: '#f8fafc', borderRadius: 10, padding: 12,
+    borderWidth: 1, borderColor: '#e2e8f0',
   },
-  idealLabel: { fontSize: 10, color: '#64748b', fontWeight: '600', marginBottom: 2 },
-  idealValue: { fontSize: 13, color: '#60a5fa', fontWeight: '800' },
+  idealLabel: { fontSize: 10, color: '#475569', fontWeight: '600', marginBottom: 2 },
+  idealValue: { fontSize: 13, color: '#2563eb', fontWeight: '800' },
 
   // KPI strip
   kpiStrip: { flexDirection: 'row', gap: 10, marginBottom: 16 },
   kpiCard: {
-    flex: 1, backgroundColor: '#111827', borderRadius: 16, padding: 14,
-    alignItems: 'center', gap: 2, borderWidth: 1, borderColor: '#1e293b',
+    flex: 1, backgroundColor: '#ffffff', borderRadius: 16, padding: 14,
+    alignItems: 'center', gap: 2, borderWidth: 1, borderColor: '#e2e8f0',
   },
-  kpiVal: { fontSize: 20, fontWeight: '900', color: '#f1f5f9' },
-  kpiUnit: { fontSize: 9, color: '#475569', fontWeight: '600' },
-  kpiLabel: { fontSize: 9, color: '#64748b', textAlign: 'center' },
+  kpiVal: { fontSize: 20, fontWeight: '900', color: '#0f172a' },
+  kpiUnit: { fontSize: 9, color: '#64748b', fontWeight: '600' },
+  kpiLabel: { fontSize: 9, color: '#475569', textAlign: 'center' },
 
   // Measurements
   measureGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 14 },
   measureItem: {
-    width: (width - 80) / 4, backgroundColor: '#0f172a',
+    width: (width - 80) / 4, backgroundColor: '#f8fafc',
     borderRadius: 10, padding: 10, alignItems: 'center',
-    borderWidth: 1, borderColor: '#1e293b',
+    borderWidth: 1, borderColor: '#e2e8f0',
   },
-  measureVal: { fontSize: 14, fontWeight: '900', color: '#f1f5f9' },
-  measureLbl: { fontSize: 9, color: '#64748b', textAlign: 'center', marginTop: 2 },
+  measureVal: { fontSize: 14, fontWeight: '900', color: '#0f172a' },
+  measureLbl: { fontSize: 9, color: '#475569', textAlign: 'center', marginTop: 2 },
   measureFormGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
 
   // Scan grid
   scanGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 14 },
   scanItem: {
-    width: (width - 80) / 3, backgroundColor: '#0f172a',
+    width: (width - 80) / 3, backgroundColor: '#f8fafc',
     borderRadius: 12, padding: 12, alignItems: 'center',
-    borderWidth: 1, borderColor: '#1e293b',
+    borderWidth: 1, borderColor: '#e2e8f0',
   },
-  scanVal: { fontSize: 16, fontWeight: '900', color: '#f1f5f9' },
-  scanUnit: { fontSize: 9, color: '#60a5fa', fontWeight: '700' },
-  scanLbl: { fontSize: 9, color: '#64748b', textAlign: 'center', marginTop: 2 },
+  scanVal: { fontSize: 16, fontWeight: '900', color: '#0f172a' },
+  scanUnit: { fontSize: 9, color: '#2563eb', fontWeight: '700' },
+  scanLbl: { fontSize: 9, color: '#475569', textAlign: 'center', marginTop: 2 },
 
   // Photos
   photoThumb: { alignItems: 'center', gap: 4, position: 'relative' },
@@ -1126,85 +1127,85 @@ const s = StyleSheet.create({
     borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2,
   },
   photoTypeText: { fontSize: 8, fontWeight: '900', color: '#fff', textTransform: 'uppercase' },
-  photoDate: { fontSize: 9, color: '#64748b' },
+  photoDate: { fontSize: 9, color: '#475569' },
   photoActions: { flexDirection: 'row', gap: 8 },
   photoBtn: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5,
-    borderRadius: 12, paddingVertical: 11, borderWidth: 1, borderColor: '#1e293b',
-    backgroundColor: '#0f172a',
+    borderRadius: 12, paddingVertical: 11, borderWidth: 1, borderColor: '#e2e8f0',
+    backgroundColor: '#ffffff',
   },
-  photoBtnText: { fontSize: 12, fontWeight: '700', color: '#94a3b8' },
+  photoBtnText: { fontSize: 12, fontWeight: '700', color: '#475569' },
 
   // Misc
   emptyChart: { alignItems: 'center', paddingVertical: 24, gap: 8 },
-  emptyText: { fontSize: 12, color: '#334155', textAlign: 'center' },
+  emptyText: { fontSize: 12, color: '#64748b', textAlign: 'center' },
 
   secondaryBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
     borderRadius: 12, paddingVertical: 12,
-    borderWidth: 1.5, borderColor: '#1e3a5f', backgroundColor: '#0c1e35',
+    borderWidth: 1.5, borderColor: '#bfdbfe', backgroundColor: '#eff6ff',
   },
-  secondaryBtnText: { fontSize: 13, fontWeight: '800', color: '#60a5fa' },
+  secondaryBtnText: { fontSize: 13, fontWeight: '800', color: '#2563eb' },
 });
 
 const m = StyleSheet.create({
   backdrop: {
-    flex: 1, backgroundColor: 'rgba(0,0,0,0.7)',
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: '#111827', borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    backgroundColor: '#ffffff', borderTopLeftRadius: 24, borderTopRightRadius: 24,
     padding: 24, paddingBottom: 40,
-    borderTopWidth: 1, borderColor: '#1e293b',
+    borderTopWidth: 1, borderColor: '#e2e8f0',
   },
-  sheetTitle: { fontSize: 18, fontWeight: '900', color: '#f1f5f9', marginBottom: 16 },
+  sheetTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a', marginBottom: 16 },
 
-  container: { flex: 1, backgroundColor: '#111827' },
+  container: { flex: 1, backgroundColor: '#ffffff' },
   modalHeader: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingVertical: 16,
-    borderBottomWidth: 1, borderBottomColor: '#1e293b',
+    borderBottomWidth: 1, borderBottomColor: '#e2e8f0',
   },
-  modalTitle: { fontSize: 18, fontWeight: '900', color: '#f1f5f9' },
+  modalTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
   body: { padding: 20, paddingBottom: 60 },
 
-  label: { fontSize: 13, fontWeight: '700', color: '#94a3b8', marginBottom: 8 },
-  hint: { fontSize: 11, color: '#475569', marginBottom: 16, fontStyle: 'italic' },
+  label: { fontSize: 13, fontWeight: '700', color: '#475569', marginBottom: 8 },
+  hint: { fontSize: 11, color: '#64748b', marginBottom: 16, fontStyle: 'italic' },
   input: {
-    backgroundColor: '#0f172a', borderWidth: 1, borderColor: '#1e293b',
-    borderRadius: 14, padding: 14, fontSize: 16, color: '#f1f5f9',
+    backgroundColor: '#f8fafc', borderWidth: 1, borderColor: '#e2e8f0',
+    borderRadius: 14, padding: 14, fontSize: 16, color: '#0f172a',
     marginBottom: 16,
   },
   saveBtn: {
-    backgroundColor: '#1d4ed8', borderRadius: 14, paddingVertical: 16,
+    backgroundColor: '#2563eb', borderRadius: 14, paddingVertical: 16,
     alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#1d4ed8', shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4, shadowRadius: 10, elevation: 5,
+    shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3, shadowRadius: 8, elevation: 3,
   },
   saveBtnText: { fontSize: 16, fontWeight: '800', color: '#fff' },
 
   btnRow: { flexDirection: 'row', gap: 12 },
   cancel: {
     flex: 1, borderRadius: 14, paddingVertical: 14, alignItems: 'center',
-    borderWidth: 1, borderColor: '#1e293b',
+    borderWidth: 1, borderColor: '#e2e8f0', backgroundColor: '#ffffff',
   },
   cancelText: { fontSize: 15, fontWeight: '700', color: '#64748b' },
-  confirm: { flex: 1, backgroundColor: '#1d4ed8', borderRadius: 14, paddingVertical: 14, alignItems: 'center' },
+  confirm: { flex: 1, backgroundColor: '#2563eb', borderRadius: 14, paddingVertical: 14, alignItems: 'center' },
   confirmText: { fontSize: 15, fontWeight: '800', color: '#fff' },
 
   measureFieldWrap: { width: (width - 60) / 2 },
-  measureFieldLabel: { fontSize: 11, fontWeight: '700', color: '#64748b', marginBottom: 5 },
+  measureFieldLabel: { fontSize: 11, fontWeight: '700', color: '#475569', marginBottom: 5 },
   measureInput: {
-    backgroundColor: '#0f172a', borderWidth: 1, borderColor: '#1e293b',
-    borderRadius: 10, padding: 10, fontSize: 15, color: '#f1f5f9',
+    backgroundColor: '#f8fafc', borderWidth: 1, borderColor: '#e2e8f0',
+    borderRadius: 10, padding: 10, fontSize: 15, color: '#0f172a',
   },
 
   sourceRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
   sourceChip: {
     paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20,
-    borderWidth: 1, borderColor: '#1e293b', backgroundColor: '#0f172a',
+    borderWidth: 1, borderColor: '#e2e8f0', backgroundColor: '#f8fafc',
   },
-  sourceChipActive: { borderColor: '#1d4ed8', backgroundColor: '#1e3a5f' },
-  sourceChipText: { fontSize: 12, fontWeight: '700', color: '#475569', textTransform: 'capitalize' },
-  sourceChipTextActive: { color: '#60a5fa' },
+  sourceChipActive: { borderColor: '#2563eb', backgroundColor: '#eff6ff' },
+  sourceChipText: { fontSize: 12, fontWeight: '700', color: '#64748b', textTransform: 'capitalize' },
+  sourceChipTextActive: { color: '#2563eb' },
 });
