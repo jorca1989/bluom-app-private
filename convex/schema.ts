@@ -795,10 +795,16 @@ export default defineSchema({
     description: v.string(),
     thumbnail: v.string(),
     videoUrl: v.optional(v.string()),
+    // Gender-specific video variants — shown based on user's biologicalSex
+    videoUrlMale: v.optional(v.string()),
+    videoUrlFemale: v.optional(v.string()),
     duration: v.float64(), // minutes
     calories: v.float64(),
     difficulty: v.union(v.literal("Beginner"), v.literal("Intermediate"), v.literal("Advanced")),
-    category: v.string(),
+    category: v.string(),           // primary category (backward-compat)
+    categories: v.optional(v.array(v.string())), // multi-category tags
+    // Muscle group filter tags — maps to the Browse by Muscle Group cards in workouts.tsx
+    muscleGroupTags: v.optional(v.array(v.string())),
     equipment: v.array(v.string()),
     rating: v.float64(),
     reviews: v.float64(),
@@ -815,6 +821,7 @@ export default defineSchema({
         primaryMuscles: v.optional(v.array(v.string())), // e.g. ["Chest", "Shoulders"]
         secondaryMuscles: v.optional(v.array(v.string())), // e.g. ["Triceps", "Core"]
         exerciseType: v.optional(v.string()), // e.g. "Strength", "Cardio", "HIIT"
+        exerciseTypes: v.optional(v.array(v.string())), // multi-type for calorie calc
       })
     ),
     updatedAt: v.float64(),
@@ -822,6 +829,13 @@ export default defineSchema({
   })
     .index("by_titleLower", ["titleLower"])
     .index("by_category", ["category"]),
+
+  // Muscle group image config — powers the Browse by Muscle Group grid in workouts.tsx
+  muscleGroupImages: defineTable({
+    name: v.string(),       // e.g. "Chest", "Back", "Glutes"
+    imageUrl: v.string(),   // R2 URL
+    sortOrder: v.optional(v.float64()),
+  }).index("by_name", ["name"]),
 
   // --- Reset Modules (STOPPR / Sugarcut style) ---
   sugarLogs: defineTable({

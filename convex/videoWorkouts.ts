@@ -13,6 +13,7 @@ const exerciseValidator = v.object({
     primaryMuscles: v.optional(v.array(v.string())),
     secondaryMuscles: v.optional(v.array(v.string())),
     exerciseType: v.optional(v.string()),
+    exerciseTypes: v.optional(v.array(v.string())), // multi-type support
 });
 
 // ─── Admin Mutations ──────────────────────────────────────────────────────────
@@ -23,10 +24,14 @@ export const createWorkout = mutation({
         description: v.string(),
         thumbnail: v.string(),
         videoUrl: v.optional(v.string()),
+        videoUrlMale: v.optional(v.string()),
+        videoUrlFemale: v.optional(v.string()),
         duration: v.float64(),
         calories: v.float64(),
         difficulty: v.union(v.literal("Beginner"), v.literal("Intermediate"), v.literal("Advanced")),
         category: v.string(),
+        categories: v.optional(v.array(v.string())),
+        muscleGroupTags: v.optional(v.array(v.string())),
         equipment: v.array(v.string()),
         instructor: v.string(),
         isPremium: v.boolean(),
@@ -54,10 +59,14 @@ export const updateWorkout = mutation({
             description: v.optional(v.string()),
             thumbnail: v.optional(v.string()),
             videoUrl: v.optional(v.string()),
+            videoUrlMale: v.optional(v.string()),
+            videoUrlFemale: v.optional(v.string()),
             duration: v.optional(v.float64()),
             calories: v.optional(v.float64()),
             difficulty: v.optional(v.union(v.literal("Beginner"), v.literal("Intermediate"), v.literal("Advanced"))),
             category: v.optional(v.string()),
+            categories: v.optional(v.array(v.string())),
+            muscleGroupTags: v.optional(v.array(v.string())),
             equipment: v.optional(v.array(v.string())),
             instructor: v.optional(v.string()),
             isPremium: v.optional(v.boolean()),

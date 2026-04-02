@@ -37,8 +37,8 @@ const PAGE_SIZE = 50;
 
 const EMPTY_FORM = {
     name: '',
-    category: 'Strength' as string,
-    type: 'strength' as string,
+    categories: ['Strength'] as string[],  // multi-select
+    types: ['strength'] as string[],         // multi-select (primary = types[0] for MET calc)
     met: '6.0',
     caloriesPerMinute: '0',
     muscleGroups: [] as string[],
@@ -163,10 +163,14 @@ export default function ExerciseLibraryManager() {
             return;
         }
         try {
+            const cats = form.categories.length ? form.categories : ['Strength'];
+            const typs = form.types.length ? form.types : ['strength'];
             const payload: any = {
                 name: { en: form.name.trim() },
-                category: form.category,
-                type: form.type as any,
+                category: cats[0],            // primary category (backward-compat)
+                categories: cats,             // full list
+                type: typs[0] as any,         // primary type for MET calc
+                types: typs,                  // full list
                 met: parseFloat(form.met),
                 caloriesPerMinute: parseFloat(form.caloriesPerMinute) || undefined,
                 muscleGroups: form.muscleGroups,
@@ -221,8 +225,8 @@ export default function ExerciseLibraryManager() {
         const existingMuscles: string[] = Array.isArray(ex.muscleGroups) ? ex.muscleGroups : [];
         setForm({
             name: typeof ex.name === 'object' ? ex.name.en : (ex.name ?? ''),
-            category: ex.category ?? 'Strength',
-            type: ex.type ?? 'strength',
+            categories: ex.categories ?? (ex.category ? [ex.category] : ['Strength']),
+            types: ex.types ?? (ex.type ? [ex.type] : ['strength']),
             met: String(ex.met ?? '6.0'),
             caloriesPerMinute: String(ex.caloriesPerMinute ?? '0'),
             muscleGroups: existingMuscles,
@@ -377,25 +381,57 @@ export default function ExerciseLibraryManager() {
                             keyboardType="url"
                         />
 
-                        <Text style={styles.label}>Category</Text>
-                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
-                            {EXERCISE_CATEGORIES.map(c => (
-                                <TouchableOpacity key={c} onPress={() => setForm(f => ({ ...f, category: c }))}
-                                    style={[styles.pill, form.category === c && styles.pillActive]}>
-                                    <Text style={[styles.pillTxt, form.category === c && styles.pillTxtActive]}>{c}</Text>
-                                </TouchableOpacity>
-                            ))}
+                        <Text style={styles.label}>Category (select all that apply)</Text>
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
+                            {EXERCISE_CATEGORIES.map(c => {
+                                const active = form.categories.includes(c);
+                                return (
+                                    <TouchableOpacity
+                                        key={c}
+                                        onPress={() => {
+                                            const next = active
+                                                ? form.categories.filter(x => x !== c)
+                                                : [...form.categories, c];
+                                            setForm(f => ({ ...f, categories: next }));
+                                        }}
+                                        style={[styles.pill, active && styles.pillActive]}
+                                    >
+                                        <Text style={[styles.pillTxt, active && styles.pillTxtActive]}>{c}</Text>
+                                    </TouchableOpacity>
+                                );
+                            })}
                         </View>
+                        {form.categories.length > 0 && (
+                            <Text style={{ fontSize: 10, color: '#94a3b8', fontWeight: '600', marginBottom: 8 }}>
+                                Primary: {form.categories[0]}
+                            </Text>
+                        )}
 
-                        <Text style={styles.label}>Type (for calorie calc)</Text>
-                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
-                            {EXERCISE_TYPES.map(t => (
-                                <TouchableOpacity key={t} onPress={() => setForm(f => ({ ...f, type: t }))}
-                                    style={[styles.pill, form.type === t && styles.pillActive]}>
-                                    <Text style={[styles.pillTxt, form.type === t && styles.pillTxtActive]}>{t}</Text>
-                                </TouchableOpacity>
-                            ))}
+                        <Text style={styles.label}>Type — calorie calc (select all that apply)</Text>
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
+                            {EXERCISE_TYPES.map(t => {
+                                const active = form.types.includes(t);
+                                return (
+                                    <TouchableOpacity
+                                        key={t}
+                                        onPress={() => {
+                                            const next = active
+                                                ? form.types.filter(x => x !== t)
+                                                : [...form.types, t];
+                                            setForm(f => ({ ...f, types: next }));
+                                        }}
+                                        style={[styles.pill, active && { backgroundColor: '#f59e0b', borderColor: '#f59e0b' }]}
+                                    >
+                                        <Text style={[styles.pillTxt, active && styles.pillTxtActive]}>{t}</Text>
+                                    </TouchableOpacity>
+                                );
+                            })}
                         </View>
+                        {form.types.length > 0 && (
+                            <Text style={{ fontSize: 10, color: '#94a3b8', fontWeight: '600', marginBottom: 8 }}>
+                                Primary MET type: {form.types[0]}
+                            </Text>
+                        )}
 
                         <View style={{ flexDirection: 'row', gap: 14 }}>
                             <View style={{ flex: 1 }}>

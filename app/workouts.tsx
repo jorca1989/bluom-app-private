@@ -65,25 +65,49 @@ export default function WorkoutsScreen() {
     const appUser = useAppUser();
     const isPro = appUser.isPro || appUser.isAdmin;
 
+    // User's biological sex — used for gender-aware video selection
+    const userSex = (convexUser as any)?.biologicalSex as 'male' | 'female' | undefined;
+
     const workouts = useQuery(api.videoWorkouts.list, {
         search: search || undefined,
         category: selectedCategory === 'All' ? undefined : selectedCategory
     });
 
+    // Muscle group images from DB (admin-managed via admin/media.tsx)
+    const muscleGroupImagesDb = useQuery(api.muscleGroupImages.listAll);
+
+    const FALLBACK_MUSCLE_CARDS = [
+        { title: 'Chest', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Back', image: 'https://images.unsplash.com/photo-1603287681836-b174ce5074c2?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Shoulders', image: 'https://images.unsplash.com/photo-1530822847156-5df684ec5ee1?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Biceps', image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Triceps', image: 'https://images.unsplash.com/photo-1550345332-09e3ac987658?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Legs', image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Glutes', image: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Core', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Abs', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Cardio', image: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&q=80&w=400' },
+    ];
+
     const categories = ['All', 'Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women'];
     const muscleGroups = ['All', 'Chest', 'Back', 'Biceps', 'Triceps', 'Shoulders', 'Legs', 'Core', 'Glutes', 'Abs'];
 
-    // Client-side muscle group filter
+    // Client-side muscle group filter — uses muscleGroupTags when set, falls back to exercises[].primaryMuscles
     const filteredWorkouts = useMemo(() => {
         if (!workouts) return [];
         if (selectedMuscle === 'All') return workouts;
         const m = selectedMuscle.toLowerCase();
-        return workouts.filter(w =>
-            w.exercises?.some((ex: any) =>
+        return workouts.filter((w: any) => {
+            // Prefer the explicit tag array set in admin
+            if (w.muscleGroupTags?.length > 0) {
+                return w.muscleGroupTags.some((t: string) => t.toLowerCase() === m);
+            }
+            // Fallback: scan exercise muscles
+            return w.exercises?.some((ex: any) =>
                 ex.primaryMuscles?.some((pm: string) => pm.toLowerCase().includes(m)) ||
                 ex.secondaryMuscles?.some((sm: string) => sm.toLowerCase().includes(m))
-            )
-        );
+            );
+        });
     }, [workouts, selectedMuscle]);
 
     const toggleSave = useMutation(api.savedWorkouts.toggleSaveWorkout);
@@ -408,22 +432,33 @@ export default function WorkoutsScreen() {
                                 </TouchableOpacity>
                             </View>
 
-                            {selectedWorkout.videoUrl ? (
-                                <Video
-                                    source={{ uri: selectedWorkout.videoUrl }}
-                                    style={styles.videoPlayer}
-                                    useNativeControls
-                                    resizeMode={ResizeMode.CONTAIN}
-                                    isLooping
-                                    shouldPlay
-                                />
-                            ) : (
-                                <View style={styles.videoPlayerPlaceholder}>
-                                    <Play size={48} color="rgba(255,255,255,0.5)" />
-                                    <Text style={styles.videoPlaceholderText}>No video URL configured</Text>
-                                    <Text style={styles.videoPlaceholderSub}>Add a Video URL in the admin panel</Text>
-                                </View>
-                            )}
+                            {(() => {
+                                // Gender-aware video selection:
+                                // 1. Prefer gender-specific variant based on user's biologicalSex
+                                // 2. Fall back to the universal videoUrl
+                                const genderUrl = userSex === 'male'
+                                    ? selectedWorkout.videoUrlMale
+                                    : userSex === 'female'
+                                        ? selectedWorkout.videoUrlFemale
+                                        : undefined;
+                                const resolvedUrl = genderUrl || selectedWorkout.videoUrl;
+                                return resolvedUrl ? (
+                                    <Video
+                                        source={{ uri: resolvedUrl }}
+                                        style={styles.videoPlayer}
+                                        useNativeControls
+                                        resizeMode={ResizeMode.CONTAIN}
+                                        isLooping
+                                        shouldPlay
+                                    />
+                                ) : (
+                                    <View style={styles.videoPlayerPlaceholder}>
+                                        <Play size={48} color="rgba(255,255,255,0.5)" />
+                                        <Text style={styles.videoPlaceholderText}>No video URL configured</Text>
+                                        <Text style={styles.videoPlaceholderSub}>Add a Video URL in the admin panel</Text>
+                                    </View>
+                                );
+                            })()}
                         </View>
                     </View>
                 </Modal>
@@ -457,18 +492,14 @@ export default function WorkoutsScreen() {
 
     // ─── LIST VIEW ────────────────────────────────────────────────────────────
 
-    const MUSCLE_CARDS = [
-        { title: 'Chest', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=400' },
-        { title: 'Back', image: 'https://images.unsplash.com/photo-1603287681836-b174ce5074c2?auto=format&fit=crop&q=80&w=400' },
-        { title: 'Shoulders', image: 'https://images.unsplash.com/photo-1530822847156-5df684ec5ee1?auto=format&fit=crop&q=80&w=400' },
-        { title: 'Biceps', image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=400' },
-        { title: 'Triceps', image: 'https://images.unsplash.com/photo-1550345332-09e3ac987658?auto=format&fit=crop&q=80&w=400' },
-        { title: 'Legs', image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&q=80&w=400' },
-        { title: 'Glutes', image: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?auto=format&fit=crop&q=80&w=400' },
-        { title: 'Core', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=400' },
-        { title: 'Abs', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=400' },
-        { title: 'Cardio', image: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&q=80&w=400' },
-    ];
+    // Merge DB images with fallbacks
+    const MUSCLE_CARDS = useMemo(() => {
+        return FALLBACK_MUSCLE_CARDS.map(fc => {
+            const dbEntry = muscleGroupImagesDb?.find(r => r.name === fc.title);
+            return { title: fc.title, image: dbEntry?.imageUrl || fc.image };
+        });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [muscleGroupImagesDb]);
 
     return (
         <SafeAreaView style={styles.container} edges={['top']}>

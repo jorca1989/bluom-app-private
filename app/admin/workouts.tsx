@@ -9,56 +9,133 @@ import {
     TextInput,
     ActivityIndicator,
     Modal,
-    Alert
+    Alert,
+    Switch,
 } from 'react-native';
 import { Image } from 'expo-image';
 import {
     Dumbbell,
     Plus,
-    Timer,
     Flame,
     Search,
     Trash2,
     Edit3,
     X,
-    Play,
     Image as ImageIcon,
+    Users,
+    Tag,
 } from 'lucide-react-native';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { R2_CONFIG } from '@/utils/r2Config';
 
-// ─── FIELD GUIDE ──────────────────────────────────────────────────────────────
-// Unified form — each entry is ONE exercise that doubles as its own workout card.
-//
-//   Exercise Name        → displayed as card title + exercise name
-//   Exercise Description → shown on the detail screen
-//   Exercise Type        → Strength / Cardio / HIIT / Yoga / Stretching
-//   Instructions         → numbered steps (one per line)
-//   Primary Muscles      → comma-separated
-//   Secondary Muscles    → comma-separated
-//   Equipment            → comma-separated
-//   Difficulty           → Beginner / Intermediate / Advanced
-//   Thumbnail URL (R2)   → card image
-//   Video URL (R2)       → optional, played on the detail screen
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Constants ────────────────────────────────────────────────────────────────
+const EXERCISE_TYPES = ['Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women'];
+const LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
+const ALL_MUSCLE_GROUPS = [
+    'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps',
+    'Legs', 'Quads', 'Hamstrings', 'Glutes', 'Calves',
+    'Core', 'Abs', 'Obliques', 'Lats', 'Traps',
+    'Forearms', 'Hip Flexors', 'Lower Back', 'Full Body',
+];
 
 const EMPTY_FORM = {
     exerciseName: '',
     exerciseDescription: '',
-    exerciseType: 'Strength',
+    // Multi-select types — stored as array
+    exerciseTypes: ['Strength'] as string[],
     instructions: '',
     primaryMuscles: '',
     secondaryMuscles: '',
+    // Muscle group filter tags for workouts.tsx Browse by Muscle Group
+    muscleGroupTags: [] as string[],
     equipment: '',
     difficulty: 'Beginner',
     thumbnail: '',
+    // Universal fallback video
     videoUrl: '',
+    // Gender-specific variants
+    videoUrlMale: '',
+    videoUrlFemale: '',
+    hasGenderVariants: false,
 };
 
-const EXERCISE_TYPES = ['Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women'];
-const LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
+// ─── Multi-select pill component ──────────────────────────────────────────────
+function MultiPillPicker({
+    label,
+    options,
+    selected,
+    onChange,
+    activeColor = '#2563eb',
+}: {
+    label: string;
+    options: string[];
+    selected: string[];
+    onChange: (v: string[]) => void;
+    activeColor?: string;
+}) {
+    const toggle = (opt: string) => {
+        if (selected.includes(opt)) {
+            onChange(selected.filter(s => s !== opt));
+        } else {
+            onChange([...selected, opt]);
+        }
+    };
+    return (
+        <View>
+            <Text style={styles.label}>{label}</Text>
+            <View style={styles.pillRow}>
+                {options.map(opt => {
+                    const active = selected.includes(opt);
+                    return (
+                        <TouchableOpacity
+                            key={opt}
+                            onPress={() => toggle(opt)}
+                            style={[styles.pill, active && { backgroundColor: activeColor, borderColor: activeColor, borderWidth: 1 }]}
+                        >
+                            <Text style={[styles.pillText, active && styles.pillTextActive]}>{opt}</Text>
+                        </TouchableOpacity>
+                    );
+                })}
+            </View>
+        </View>
+    );
+}
 
+// ─── Single-select pill row ───────────────────────────────────────────────────
+function SinglePillRow({
+    label,
+    options,
+    value,
+    onChange,
+    activeColor = '#7c3aed',
+}: {
+    label: string;
+    options: string[];
+    value: string;
+    onChange: (v: string) => void;
+    activeColor?: string;
+}) {
+    return (
+        <View>
+            <Text style={styles.label}>{label}</Text>
+            <View style={styles.pillRow}>
+                {options.map(opt => {
+                    const active = value === opt;
+                    return (
+                        <TouchableOpacity
+                            key={opt}
+                            onPress={() => onChange(opt)}
+                            style={[styles.pill, active && { backgroundColor: activeColor, borderColor: activeColor, borderWidth: 1 }]}
+                        >
+                            <Text style={[styles.pillText, active && styles.pillTextActive]}>{opt}</Text>
+                        </TouchableOpacity>
+                    );
+                })}
+            </View>
+        </View>
+    );
+}
 
 export default function WorkoutsManager() {
     const [search, setSearch] = useState('');
@@ -69,16 +146,16 @@ export default function WorkoutsManager() {
     const [form, setForm] = useState({ ...EMPTY_FORM });
 
     const allWorkouts = useQuery(api.videoWorkouts.list, { search });
-
-    // Client-side filter
     const workouts = useMemo(() => {
         if (!allWorkouts) return allWorkouts;
         return allWorkouts.filter((w: any) => {
-            const typeOk = filterType === 'All' || w.category === filterType;
+            const typeOk = filterType === 'All' || w.category === filterType ||
+                (w.categories ?? []).includes(filterType);
             const levelOk = filterLevel === 'All' || w.difficulty === filterLevel;
             return typeOk && levelOk;
         });
     }, [allWorkouts, filterType, filterLevel]);
+
     const createWorkout = useMutation(api.videoWorkouts.createWorkout);
     const updateWorkout = useMutation(api.videoWorkouts.updateWorkout);
     const deleteWorkout = useMutation(api.videoWorkouts.deleteWorkout);
@@ -86,13 +163,12 @@ export default function WorkoutsManager() {
     const setField = (key: string, val: any) => setForm(f => ({ ...f, [key]: val }));
 
     // ── Build payload ────────────────────────────────────────────────────────
-    // Maps the unified form into the backend schema which keeps workout + exercise
-    // as separate levels.
     const buildPayload = () => {
+        const types = form.exerciseTypes.length ? form.exerciseTypes : ['Strength'];
+        const primaryCategory = types[0]; // backward-compat primary
+
         const equipmentArray = form.equipment
-            .split(',')
-            .map(e => e.trim())
-            .filter(e => e.length > 0);
+            .split(',').map(e => e.trim()).filter(e => e.length > 0);
 
         const exercises = form.exerciseName.trim()
             ? [{
@@ -100,32 +176,31 @@ export default function WorkoutsManager() {
                 description: form.exerciseDescription.trim(),
                 duration: 0,
                 instructions: form.instructions
-                    .split('\n')
-                    .map(i => i.trim())
-                    .filter(i => i.length > 0),
+                    .split('\n').map(i => i.trim()).filter(i => i.length > 0),
                 primaryMuscles: form.primaryMuscles
-                    .split(',')
-                    .map(m => m.trim())
-                    .filter(m => m.length > 0),
+                    .split(',').map(m => m.trim()).filter(m => m.length > 0),
                 secondaryMuscles: form.secondaryMuscles
-                    .split(',')
-                    .map(m => m.trim())
-                    .filter(m => m.length > 0),
-                exerciseType: form.exerciseType,
+                    .split(',').map(m => m.trim()).filter(m => m.length > 0),
+                exerciseType: primaryCategory,
+                exerciseTypes: types,
                 reps: undefined,
                 sets: undefined,
             }]
             : [];
 
         return {
-            title: form.exerciseName.trim(),          // exercise name = workout title
+            title: form.exerciseName.trim(),
             description: form.exerciseDescription.trim(),
             thumbnail: form.thumbnail.trim(),
             videoUrl: form.videoUrl.trim() || undefined,
+            videoUrlMale: form.hasGenderVariants ? (form.videoUrlMale.trim() || undefined) : undefined,
+            videoUrlFemale: form.hasGenderVariants ? (form.videoUrlFemale.trim() || undefined) : undefined,
             duration: 0,
             calories: 0,
             difficulty: form.difficulty as 'Beginner' | 'Intermediate' | 'Advanced',
-            category: form.exerciseType,              // exercise type = category
+            category: primaryCategory,
+            categories: types,
+            muscleGroupTags: form.muscleGroupTags,
             equipment: equipmentArray,
             instructor: 'Bluom Coach',
             isPremium: true,
@@ -150,7 +225,6 @@ export default function WorkoutsManager() {
             setForm({ ...EMPTY_FORM });
         } catch (error: any) {
             Alert.alert('Error', error?.message ?? 'Failed to save exercise');
-            console.error('Save error:', error);
         }
     };
 
@@ -167,14 +241,18 @@ export default function WorkoutsManager() {
         setForm({
             exerciseName: ex.name ?? w.title ?? '',
             exerciseDescription: ex.description ?? w.description ?? '',
-            exerciseType: ex.exerciseType ?? w.category ?? 'Strength',
+            exerciseTypes: w.categories ?? (ex.exerciseTypes ?? (ex.exerciseType ? [ex.exerciseType] : ['Strength'])),
             instructions: (ex.instructions ?? []).join('\n'),
             primaryMuscles: (ex.primaryMuscles ?? []).join(', '),
             secondaryMuscles: (ex.secondaryMuscles ?? []).join(', '),
+            muscleGroupTags: w.muscleGroupTags ?? [],
             equipment: (w.equipment ?? []).join(', '),
             difficulty: w.difficulty ?? 'Beginner',
             thumbnail: w.thumbnail ?? '',
             videoUrl: w.videoUrl ?? '',
+            videoUrlMale: w.videoUrlMale ?? '',
+            videoUrlFemale: w.videoUrlFemale ?? '',
+            hasGenderVariants: !!(w.videoUrlMale || w.videoUrlFemale),
         });
         setIsModalOpen(true);
     };
@@ -189,12 +267,7 @@ export default function WorkoutsManager() {
     const renderItem = ({ item }: { item: any }) => (
         <View style={styles.workoutCard}>
             {item.thumbnail ? (
-                <Image
-                    source={{ uri: item.thumbnail }}
-                    style={styles.workoutThumb}
-                    contentFit="cover"
-                    transition={300}
-                />
+                <Image source={{ uri: item.thumbnail }} style={styles.workoutThumb} contentFit="cover" transition={300} />
             ) : (
                 <View style={[styles.workoutThumb, styles.thumbnailPlaceholder]}>
                     <ImageIcon size={22} color="#94a3b8" />
@@ -203,27 +276,41 @@ export default function WorkoutsManager() {
             <View style={styles.workoutInfo}>
                 <View style={styles.workoutHeader}>
                     <Text style={styles.workoutTitle} numberOfLines={1}>{item.title}</Text>
-                    <View style={[styles.levelBadge, {
-                        backgroundColor: item.difficulty === 'Advanced' ? '#fef2f2'
-                            : item.difficulty === 'Intermediate' ? '#fffbeb' : '#f0fdf4'
-                    }]}>
-                        <Text style={[styles.levelText, {
-                            color: item.difficulty === 'Advanced' ? '#ef4444'
-                                : item.difficulty === 'Intermediate' ? '#f59e0b' : '#10b981'
-                        }]}>{item.difficulty?.toUpperCase()}</Text>
+                    <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
+                        {(item.videoUrlMale || item.videoUrlFemale) && (
+                            <View style={styles.genderBadge}>
+                                <Users size={10} color="#8b5cf6" />
+                                <Text style={styles.genderBadgeText}>♂♀</Text>
+                            </View>
+                        )}
+                        <View style={[styles.levelBadge, {
+                            backgroundColor: item.difficulty === 'Advanced' ? '#fef2f2'
+                                : item.difficulty === 'Intermediate' ? '#fffbeb' : '#f0fdf4'
+                        }]}>
+                            <Text style={[styles.levelText, {
+                                color: item.difficulty === 'Advanced' ? '#ef4444'
+                                    : item.difficulty === 'Intermediate' ? '#f59e0b' : '#10b981'
+                            }]}>{item.difficulty?.toUpperCase()}</Text>
+                        </View>
                     </View>
                 </View>
                 <Text style={styles.instructorName} numberOfLines={1}>
-                    {item.category} • {(item.equipment ?? []).join(', ') || 'Bodyweight'}
+                    {(item.categories ?? [item.category]).join(' · ')} {item.equipment?.length ? `• ${item.equipment.join(', ')}` : '• Bodyweight'}
                 </Text>
-                <View style={styles.statsRow}>
-                    <View style={styles.stat}>
-                        <Dumbbell size={13} color="#6366f1" />
-                        <Text style={styles.statText}>
-                            {item.exercises?.[0]?.primaryMuscles?.join(', ') || '—'}
-                        </Text>
+                {(item.muscleGroupTags?.length > 0) && (
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 2 }}>
+                        {item.muscleGroupTags.slice(0, 4).map((t: string) => (
+                            <View key={t} style={styles.tagChip}>
+                                <Text style={styles.tagChipText}>{t}</Text>
+                            </View>
+                        ))}
+                        {item.muscleGroupTags.length > 4 && (
+                            <View style={styles.tagChip}>
+                                <Text style={styles.tagChipText}>+{item.muscleGroupTags.length - 4}</Text>
+                            </View>
+                        )}
                     </View>
-                </View>
+                )}
             </View>
             <View style={styles.actions}>
                 <TouchableOpacity onPress={() => openEdit(item)} style={styles.actionBtn}>
@@ -233,23 +320,6 @@ export default function WorkoutsManager() {
                     <Trash2 size={18} color="#ef4444" />
                 </TouchableOpacity>
             </View>
-        </View>
-    );
-
-    // ── Pill selector helper ─────────────────────────────────────────────────
-    const PillRow = ({ field, options }: { field: string; options: string[] }) => (
-        <View style={styles.pillRow}>
-            {options.map(opt => (
-                <TouchableOpacity
-                    key={opt}
-                    onPress={() => setField(field, opt)}
-                    style={[styles.pill, (form as any)[field] === opt && styles.pillActive]}
-                >
-                    <Text style={[styles.pillText, (form as any)[field] === opt && styles.pillTextActive]}>
-                        {opt}
-                    </Text>
-                </TouchableOpacity>
-            ))}
         </View>
     );
 
@@ -316,7 +386,6 @@ export default function WorkoutsManager() {
                 </View>
             </View>
 
-            {/* Count */}
             <Text style={{ paddingHorizontal: 24, paddingBottom: 8, fontSize: 12, color: '#94a3b8', fontWeight: '600' }}>
                 {workouts ? `${workouts.length} results` : ''}
             </Text>
@@ -341,7 +410,6 @@ export default function WorkoutsManager() {
             {/* ── Modal ──────────────────────────────────────────────────────── */}
             <Modal visible={isModalOpen} animationType="slide">
                 <View style={styles.modal}>
-                    {/* Modal header */}
                     <View style={styles.modalHeader}>
                         <TouchableOpacity onPress={() => setIsModalOpen(false)}>
                             <X size={24} color="#64748b" />
@@ -375,9 +443,19 @@ export default function WorkoutsManager() {
                             placeholder="What does this exercise target? Brief description."
                         />
 
-                        {/* Exercise Type */}
-                        <Text style={styles.label}>Exercise Type</Text>
-                        <PillRow field="exerciseType" options={EXERCISE_TYPES} />
+                        {/* Exercise Type — multi-select */}
+                        <MultiPillPicker
+                            label="Exercise Type (select all that apply)"
+                            options={EXERCISE_TYPES}
+                            selected={form.exerciseTypes}
+                            onChange={v => setField('exerciseTypes', v)}
+                            activeColor="#2563eb"
+                        />
+                        {form.exerciseTypes.length > 1 && (
+                            <Text style={styles.fieldHint}>
+                                Primary: {form.exerciseTypes[0]} — tap to reorder (first selected = primary category)
+                            </Text>
+                        )}
 
                         {/* Instructions */}
                         <Text style={styles.label}>Instructions — one step per line</Text>
@@ -408,6 +486,22 @@ export default function WorkoutsManager() {
                             placeholder="e.g. Lower Back, Hip Flexors"
                         />
 
+                        {/* Muscle Group Tags — for the Browse by Muscle Group filter cards */}
+                        <View style={styles.sectionSeparator}>
+                            <Tag size={14} color="#64748b" />
+                            <Text style={styles.sectionSeparatorText}>MUSCLE GROUP FILTER TAGS</Text>
+                        </View>
+                        <Text style={styles.fieldHint}>
+                            These tag this exercise to the Browse by Muscle Group cards in the Workouts tab.
+                        </Text>
+                        <MultiPillPicker
+                            label=""
+                            options={ALL_MUSCLE_GROUPS}
+                            selected={form.muscleGroupTags}
+                            onChange={v => setField('muscleGroupTags', v)}
+                            activeColor="#10b981"
+                        />
+
                         {/* Equipment */}
                         <Text style={styles.label}>Equipment (comma-separated)</Text>
                         <TextInput
@@ -418,8 +512,13 @@ export default function WorkoutsManager() {
                         />
 
                         {/* Difficulty */}
-                        <Text style={styles.label}>Difficulty</Text>
-                        <PillRow field="difficulty" options={LEVELS} />
+                        <SinglePillRow
+                            label="Difficulty"
+                            options={LEVELS}
+                            value={form.difficulty}
+                            onChange={v => setField('difficulty', v)}
+                            activeColor="#7c3aed"
+                        />
 
                         {/* Thumbnail URL */}
                         <Text style={styles.label}>Thumbnail URL (R2)</Text>
@@ -430,16 +529,81 @@ export default function WorkoutsManager() {
                             placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/thumb.jpg`}
                             autoCapitalize="none"
                         />
+                        {!!form.thumbnail && (
+                            <Image source={{ uri: form.thumbnail }} style={styles.thumbPreview} contentFit="cover" />
+                        )}
 
-                        {/* Video URL */}
-                        <Text style={styles.label}>Video URL (R2) — optional</Text>
-                        <TextInput
-                            style={[styles.input, { marginBottom: 60 }]}
-                            value={form.videoUrl}
-                            onChangeText={t => setField('videoUrl', t)}
-                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/video.mp4`}
-                            autoCapitalize="none"
-                        />
+                        {/* ── Video section ── */}
+                        <View style={styles.sectionSeparator}>
+                            <Users size={14} color="#8b5cf6" />
+                            <Text style={[styles.sectionSeparatorText, { color: '#8b5cf6' }]}>VIDEO URLS</Text>
+                        </View>
+
+                        {/* Gender variants toggle */}
+                        <View style={styles.toggleRow}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.toggleLabel}>Has gender variants (♂ / ♀)</Text>
+                                <Text style={styles.fieldHint}>
+                                    Upload separate Male &amp; Female versions. App picks based on user profile.
+                                </Text>
+                            </View>
+                            <Switch
+                                value={form.hasGenderVariants}
+                                onValueChange={v => setField('hasGenderVariants', v)}
+                                trackColor={{ true: '#8b5cf6' }}
+                            />
+                        </View>
+
+                        {form.hasGenderVariants ? (
+                            <>
+                                <View style={styles.genderVideoRow}>
+                                    <View style={{ flex: 1, backgroundColor: '#eff6ff', borderRadius: 10, padding: 12, gap: 6 }}>
+                                        <Text style={[styles.label, { marginTop: 0, color: '#2563eb' }]}>♂ Male Video URL</Text>
+                                        <TextInput
+                                            style={styles.input}
+                                            value={form.videoUrlMale}
+                                            onChangeText={t => setField('videoUrlMale', t)}
+                                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/squat-male.mp4`}
+                                            autoCapitalize="none"
+                                        />
+                                    </View>
+                                </View>
+                                <View style={[styles.genderVideoRow, { marginTop: 10 }]}>
+                                    <View style={{ flex: 1, backgroundColor: '#fdf4ff', borderRadius: 10, padding: 12, gap: 6 }}>
+                                        <Text style={[styles.label, { marginTop: 0, color: '#9333ea' }]}>♀ Female Video URL</Text>
+                                        <TextInput
+                                            style={styles.input}
+                                            value={form.videoUrlFemale}
+                                            onChangeText={t => setField('videoUrlFemale', t)}
+                                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/squat-female.mp4`}
+                                            autoCapitalize="none"
+                                        />
+                                    </View>
+                                </View>
+                                <Text style={[styles.fieldHint, { marginTop: 6 }]}>
+                                    Optional: add a fallback video URL below (shown if no gender match or for unisex exercises)
+                                </Text>
+                                <Text style={styles.label}>Fallback / Unisex Video URL</Text>
+                                <TextInput
+                                    style={[styles.input, { marginBottom: 60 }]}
+                                    value={form.videoUrl}
+                                    onChangeText={t => setField('videoUrl', t)}
+                                    placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/video.mp4`}
+                                    autoCapitalize="none"
+                                />
+                            </>
+                        ) : (
+                            <>
+                                <Text style={styles.label}>Video URL (R2)</Text>
+                                <TextInput
+                                    style={[styles.input, { marginBottom: 60 }]}
+                                    value={form.videoUrl}
+                                    onChangeText={t => setField('videoUrl', t)}
+                                    placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/video.mp4`}
+                                    autoCapitalize="none"
+                                />
+                            </>
+                        )}
 
                     </ScrollView>
                 </View>
@@ -493,11 +657,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#f1f5f9',
     },
-    workoutThumb: {
-        width: 72,
-        height: 72,
-        borderRadius: 12,
-    },
+    workoutThumb: { width: 72, height: 72, borderRadius: 12 },
     thumbnailPlaceholder: {
         backgroundColor: '#eff6ff',
         justifyContent: 'center',
@@ -508,12 +668,28 @@ const styles = StyleSheet.create({
     workoutInfo: { flex: 1, marginLeft: 14 },
     workoutHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 },
     workoutTitle: { fontSize: 15, fontWeight: '800', color: '#1e293b', flex: 1 },
-    levelBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginLeft: 6 },
+    levelBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginLeft: 4 },
     levelText: { fontSize: 9, fontWeight: '900' },
-    instructorName: { fontSize: 12, color: '#64748b', fontWeight: '600', marginBottom: 6 },
-    statsRow: { flexDirection: 'row', gap: 12, alignItems: 'center' },
-    stat: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-    statText: { fontSize: 11, fontWeight: '700', color: '#475569' },
+    genderBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 2,
+        backgroundColor: '#f5f3ff',
+        paddingHorizontal: 5,
+        paddingVertical: 2,
+        borderRadius: 4,
+    },
+    genderBadgeText: { fontSize: 9, fontWeight: '900', color: '#8b5cf6' },
+    instructorName: { fontSize: 12, color: '#64748b', fontWeight: '600', marginBottom: 4 },
+    tagChip: {
+        backgroundColor: '#f0fdf4',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: '#bbf7d0',
+    },
+    tagChipText: { fontSize: 10, fontWeight: '700', color: '#10b981' },
     actions: { flexDirection: 'row', gap: 6, marginLeft: 8 },
     actionBtn: { padding: 8, backgroundColor: '#f8fafc', borderRadius: 8 },
 
@@ -541,7 +717,7 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         letterSpacing: 0.5,
     },
-    fieldHint: { fontSize: 11, color: '#94a3b8', marginBottom: 2 },
+    fieldHint: { fontSize: 11, color: '#94a3b8', marginBottom: 2, marginTop: 2 },
     input: {
         backgroundColor: '#f8fafc',
         borderWidth: 1,
@@ -552,11 +728,60 @@ const styles = StyleSheet.create({
         color: '#1e293b',
         fontWeight: '600',
     },
+    thumbPreview: {
+        width: '100%',
+        height: 120,
+        borderRadius: 12,
+        marginTop: 8,
+        backgroundColor: '#f1f5f9',
+    },
     pillRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
-    pill: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, backgroundColor: '#f1f5f9' },
+    pill: {
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderRadius: 10,
+        backgroundColor: '#f1f5f9',
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+    },
     pillActive: { backgroundColor: '#2563eb' },
     pillText: { fontSize: 13, fontWeight: '700', color: '#64748b' },
     pillTextActive: { color: '#ffffff' },
+
+    // Section separators
+    sectionSeparator: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        marginTop: 24,
+        marginBottom: 4,
+        paddingBottom: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+    },
+    sectionSeparatorText: {
+        fontSize: 11,
+        fontWeight: '900',
+        color: '#64748b',
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+    },
+
+    // Gender video
+    toggleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 16,
+        padding: 14,
+        backgroundColor: '#faf5ff',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#e9d5ff',
+    },
+    toggleLabel: { fontSize: 14, fontWeight: '700', color: '#6b21a8', marginBottom: 2 },
+    genderVideoRow: { marginTop: 6 },
+
     // List filters
     filterSection: { paddingHorizontal: 16, marginBottom: 4 },
     filterLabel: { fontSize: 10, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 },
