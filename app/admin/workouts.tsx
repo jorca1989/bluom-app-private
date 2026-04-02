@@ -11,6 +11,7 @@ import {
     Modal,
     Alert,
     Switch,
+    Platform,
 } from 'react-native';
 import { Image } from 'expo-image';
 import {
@@ -234,22 +235,32 @@ export default function WorkoutsManager() {
         }
     };
 
-    const handleDelete = (id: any, title: string) => {
-        const doDelete = async () => {
-            try {
-                await deleteWorkout({ id });
-            } catch (err: any) {
-                Alert.alert('Delete failed', err?.message ?? 'Could not delete exercise');
+    const handleDelete = async (id: any, title: string) => {
+        // On web (admin panel) Alert.alert maps to window.confirm which is unreliable
+        // with multiple buttons — use window.confirm directly on web.
+        const confirmed = Platform.OS === 'web'
+            ? (window as any).confirm(`Delete "${title}"?\n\nThis cannot be undone.`)
+            : await new Promise<boolean>(resolve =>
+                Alert.alert(
+                    'Delete Exercise',
+                    `Delete "${title}"? This cannot be undone.`,
+                    [
+                        { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
+                        { text: 'Delete', style: 'destructive', onPress: () => resolve(true) },
+                    ]
+                )
+            );
+        if (!confirmed) return;
+        try {
+            await deleteWorkout({ id });
+        } catch (err: any) {
+            const msg = err?.message ?? 'Could not delete exercise';
+            if (Platform.OS === 'web') {
+                (window as any).alert('Delete failed: ' + msg);
+            } else {
+                Alert.alert('Delete failed', msg);
             }
-        };
-        Alert.alert(
-            'Delete Exercise',
-            `Delete "${title}"? This cannot be undone.`,
-            [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Delete', style: 'destructive', onPress: doDelete },
-            ]
-        );
+        }
     };
 
     const openEdit = (w: any) => {
@@ -552,19 +563,20 @@ export default function WorkoutsManager() {
                             <Image source={{ uri: form.thumbnail }} style={styles.thumbPreview} contentFit="cover" />
                         )}
 
-                        {/* ── Video + Thumbnail gender section ── */}
+                        {/* ── Gender Thumbnails & Videos — always visible ── */}
                         <View style={styles.sectionSeparator}>
                             <Users size={14} color="#8b5cf6" />
-                            <Text style={[styles.sectionSeparatorText, { color: '#8b5cf6' }]}>VIDEO URLS</Text>
+                            <Text style={[styles.sectionSeparatorText, { color: '#8b5cf6' }]}>THUMBNAILS &amp; VIDEOS BY GENDER</Text>
                         </View>
+                        <Text style={styles.fieldHint}>
+                            Enable the toggle to upload separate ♂ Male and ♀ Female thumbnails and videos.
+                            The app picks the right version based on the user's profile. Leave blank to use the fallback above.
+                        </Text>
 
                         {/* Gender variants toggle */}
                         <View style={styles.toggleRow}>
                             <View style={{ flex: 1 }}>
                                 <Text style={styles.toggleLabel}>Has gender variants (♂ / ♀)</Text>
-                                <Text style={styles.fieldHint}>
-                                    Upload separate Male &amp; Female versions. App picks based on user profile.
-                                </Text>
                             </View>
                             <Switch
                                 value={form.hasGenderVariants}
@@ -573,84 +585,70 @@ export default function WorkoutsManager() {
                             />
                         </View>
 
-                        {form.hasGenderVariants ? (
-                            <>
-                                {/* ── Male block ── */}
-                                <View style={[styles.genderVideoRow, { marginTop: 10 }]}>
-                                    <View style={{ flex: 1, backgroundColor: '#eff6ff', borderRadius: 10, padding: 12, gap: 8 }}>
-                                        <Text style={[styles.label, { marginTop: 0, color: '#2563eb' }]}>♂ Male</Text>
-                                        <Text style={[styles.fieldHint, { marginTop: -4 }]}>Thumbnail</Text>
-                                        <TextInput
-                                            style={styles.input}
-                                            value={form.thumbnailMale}
-                                            onChangeText={t => setField('thumbnailMale', t)}
-                                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/squat-male-thumb.jpg`}
-                                            autoCapitalize="none"
-                                        />
-                                        {!!form.thumbnailMale && (
-                                            <Image source={{ uri: form.thumbnailMale }} style={[styles.thumbPreview, { height: 80 }]} contentFit="cover" />
-                                        )}
-                                        <Text style={[styles.fieldHint, { marginTop: 4 }]}>Video URL</Text>
-                                        <TextInput
-                                            style={styles.input}
-                                            value={form.videoUrlMale}
-                                            onChangeText={t => setField('videoUrlMale', t)}
-                                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/squat-male.mp4`}
-                                            autoCapitalize="none"
-                                        />
-                                    </View>
-                                </View>
-
-                                {/* ── Female block ── */}
-                                <View style={[styles.genderVideoRow, { marginTop: 10 }]}>
-                                    <View style={{ flex: 1, backgroundColor: '#fdf4ff', borderRadius: 10, padding: 12, gap: 8 }}>
-                                        <Text style={[styles.label, { marginTop: 0, color: '#9333ea' }]}>♀ Female</Text>
-                                        <Text style={[styles.fieldHint, { marginTop: -4 }]}>Thumbnail</Text>
-                                        <TextInput
-                                            style={styles.input}
-                                            value={form.thumbnailFemale}
-                                            onChangeText={t => setField('thumbnailFemale', t)}
-                                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/squat-female-thumb.jpg`}
-                                            autoCapitalize="none"
-                                        />
-                                        {!!form.thumbnailFemale && (
-                                            <Image source={{ uri: form.thumbnailFemale }} style={[styles.thumbPreview, { height: 80 }]} contentFit="cover" />
-                                        )}
-                                        <Text style={[styles.fieldHint, { marginTop: 4 }]}>Video URL</Text>
-                                        <TextInput
-                                            style={styles.input}
-                                            value={form.videoUrlFemale}
-                                            onChangeText={t => setField('videoUrlFemale', t)}
-                                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/squat-female.mp4`}
-                                            autoCapitalize="none"
-                                        />
-                                    </View>
-                                </View>
-
-                                <Text style={[styles.fieldHint, { marginTop: 8 }]}>
-                                    The fallback thumbnail &amp; video above are shown when no gender match is found.
-                                </Text>
-                                <Text style={styles.label}>Fallback / Unisex Video URL</Text>
+                        {/* ── Male block — always shown so the fields are visible ── */}
+                        <View style={[styles.genderVideoRow, { marginTop: 10 }]}>
+                            <View style={{ flex: 1, backgroundColor: form.hasGenderVariants ? '#eff6ff' : '#f8fafc', borderRadius: 10, padding: 12, gap: 8, borderWidth: 1, borderColor: form.hasGenderVariants ? '#bfdbfe' : '#e2e8f0' }}>
+                                <Text style={[styles.label, { marginTop: 0, color: form.hasGenderVariants ? '#2563eb' : '#94a3b8' }]}>♂ Male Thumbnail (R2)</Text>
                                 <TextInput
-                                    style={[styles.input, { marginBottom: 60 }]}
-                                    value={form.videoUrl}
-                                    onChangeText={t => setField('videoUrl', t)}
-                                    placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/video.mp4`}
+                                    style={styles.input}
+                                    value={form.thumbnailMale}
+                                    onChangeText={t => setField('thumbnailMale', t)}
+                                    placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/squat-male-thumb.jpg`}
                                     autoCapitalize="none"
+                                    editable={form.hasGenderVariants}
                                 />
-                            </>
-                        ) : (
-                            <>
-                                <Text style={styles.label}>Video URL (R2)</Text>
+                                {!!form.thumbnailMale && (
+                                    <Image source={{ uri: form.thumbnailMale }} style={[styles.thumbPreview, { height: 80 }]} contentFit="cover" />
+                                )}
+                                <Text style={[styles.label, { marginTop: 4, color: form.hasGenderVariants ? '#2563eb' : '#94a3b8' }]}>♂ Male Video URL (R2)</Text>
                                 <TextInput
-                                    style={[styles.input, { marginBottom: 60 }]}
-                                    value={form.videoUrl}
-                                    onChangeText={t => setField('videoUrl', t)}
-                                    placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/video.mp4`}
+                                    style={styles.input}
+                                    value={form.videoUrlMale}
+                                    onChangeText={t => setField('videoUrlMale', t)}
+                                    placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/squat-male.mp4`}
                                     autoCapitalize="none"
+                                    editable={form.hasGenderVariants}
                                 />
-                            </>
-                        )}
+                            </View>
+                        </View>
+
+                        {/* ── Female block ── */}
+                        <View style={[styles.genderVideoRow, { marginTop: 10 }]}>
+                            <View style={{ flex: 1, backgroundColor: form.hasGenderVariants ? '#fdf4ff' : '#f8fafc', borderRadius: 10, padding: 12, gap: 8, borderWidth: 1, borderColor: form.hasGenderVariants ? '#e9d5ff' : '#e2e8f0' }}>
+                                <Text style={[styles.label, { marginTop: 0, color: form.hasGenderVariants ? '#9333ea' : '#94a3b8' }]}>♀ Female Thumbnail (R2)</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    value={form.thumbnailFemale}
+                                    onChangeText={t => setField('thumbnailFemale', t)}
+                                    placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/squat-female-thumb.jpg`}
+                                    autoCapitalize="none"
+                                    editable={form.hasGenderVariants}
+                                />
+                                {!!form.thumbnailFemale && (
+                                    <Image source={{ uri: form.thumbnailFemale }} style={[styles.thumbPreview, { height: 80 }]} contentFit="cover" />
+                                )}
+                                <Text style={[styles.label, { marginTop: 4, color: form.hasGenderVariants ? '#9333ea' : '#94a3b8' }]}>♀ Female Video URL (R2)</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    value={form.videoUrlFemale}
+                                    onChangeText={t => setField('videoUrlFemale', t)}
+                                    placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/squat-female.mp4`}
+                                    autoCapitalize="none"
+                                    editable={form.hasGenderVariants}
+                                />
+                            </View>
+                        </View>
+
+                        {/* Unisex video fallback */}
+                        <Text style={[styles.label, { marginTop: 16 }]}>Fallback / Unisex Video URL (R2)</Text>
+                        <Text style={styles.fieldHint}>Shown when no gender variant exists or as default.</Text>
+                        <TextInput
+                            style={[styles.input, { marginBottom: 60 }]}
+                            value={form.videoUrl}
+                            onChangeText={t => setField('videoUrl', t)}
+                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/video.mp4`}
+                            autoCapitalize="none"
+                        />
 
                     </ScrollView>
                 </View>
