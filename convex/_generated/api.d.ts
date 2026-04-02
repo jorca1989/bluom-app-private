@@ -44,6 +44,7 @@ import type * as mensHealth from "../mensHealth.js";
 import type * as metabolic from "../metabolic.js";
 import type * as migrate_exercises from "../migrate_exercises.js";
 import type * as mindworld from "../mindworld.js";
+import type * as muscleGroupImages from "../muscleGroupImages.js";
 import type * as onboarding from "../onboarding.js";
 import type * as permissions from "../permissions.js";
 import type * as plans from "../plans.js";
@@ -117,6 +118,7 @@ declare const fullApi: ApiFromModules<{
   metabolic: typeof metabolic;
   migrate_exercises: typeof migrate_exercises;
   mindworld: typeof mindworld;
+  muscleGroupImages: typeof muscleGroupImages;
   onboarding: typeof onboarding;
   permissions: typeof permissions;
   plans: typeof plans;

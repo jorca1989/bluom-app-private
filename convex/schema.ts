@@ -794,6 +794,9 @@ export default defineSchema({
     titleLower: v.string(),
     description: v.string(),
     thumbnail: v.string(),
+    // Gender-specific thumbnails — shown in browse cards based on user's biologicalSex
+    thumbnailMale: v.optional(v.string()),
+    thumbnailFemale: v.optional(v.string()),
     videoUrl: v.optional(v.string()),
     // Gender-specific video variants — shown based on user's biologicalSex
     videoUrlMale: v.optional(v.string()),

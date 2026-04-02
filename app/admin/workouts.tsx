@@ -51,7 +51,11 @@ const EMPTY_FORM = {
     muscleGroupTags: [] as string[],
     equipment: '',
     difficulty: 'Beginner',
+    // Universal fallback thumbnail
     thumbnail: '',
+    // Gender-specific thumbnails (for browse cards)
+    thumbnailMale: '',
+    thumbnailFemale: '',
     // Universal fallback video
     videoUrl: '',
     // Gender-specific variants
@@ -192,6 +196,8 @@ export default function WorkoutsManager() {
             title: form.exerciseName.trim(),
             description: form.exerciseDescription.trim(),
             thumbnail: form.thumbnail.trim(),
+            thumbnailMale: form.hasGenderVariants ? (form.thumbnailMale.trim() || undefined) : undefined,
+            thumbnailFemale: form.hasGenderVariants ? (form.thumbnailFemale.trim() || undefined) : undefined,
             videoUrl: form.videoUrl.trim() || undefined,
             videoUrlMale: form.hasGenderVariants ? (form.videoUrlMale.trim() || undefined) : undefined,
             videoUrlFemale: form.hasGenderVariants ? (form.videoUrlFemale.trim() || undefined) : undefined,
@@ -228,11 +234,22 @@ export default function WorkoutsManager() {
         }
     };
 
-    const handleDelete = (id: any) => {
-        Alert.alert('Delete Exercise', 'Remove this exercise from the library?', [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => deleteWorkout({ id }) }
-        ]);
+    const handleDelete = (id: any, title: string) => {
+        const doDelete = async () => {
+            try {
+                await deleteWorkout({ id });
+            } catch (err: any) {
+                Alert.alert('Delete failed', err?.message ?? 'Could not delete exercise');
+            }
+        };
+        Alert.alert(
+            'Delete Exercise',
+            `Delete "${title}"? This cannot be undone.`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Delete', style: 'destructive', onPress: doDelete },
+            ]
+        );
     };
 
     const openEdit = (w: any) => {
@@ -249,10 +266,12 @@ export default function WorkoutsManager() {
             equipment: (w.equipment ?? []).join(', '),
             difficulty: w.difficulty ?? 'Beginner',
             thumbnail: w.thumbnail ?? '',
+            thumbnailMale: w.thumbnailMale ?? '',
+            thumbnailFemale: w.thumbnailFemale ?? '',
             videoUrl: w.videoUrl ?? '',
             videoUrlMale: w.videoUrlMale ?? '',
             videoUrlFemale: w.videoUrlFemale ?? '',
-            hasGenderVariants: !!(w.videoUrlMale || w.videoUrlFemale),
+            hasGenderVariants: !!(w.videoUrlMale || w.videoUrlFemale || w.thumbnailMale || w.thumbnailFemale),
         });
         setIsModalOpen(true);
     };
@@ -316,7 +335,7 @@ export default function WorkoutsManager() {
                 <TouchableOpacity onPress={() => openEdit(item)} style={styles.actionBtn}>
                     <Edit3 size={18} color="#64748b" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleDelete(item._id)} style={styles.actionBtn}>
+                <TouchableOpacity onPress={() => handleDelete(item._id, item.title)} style={styles.actionBtn}>
                     <Trash2 size={18} color="#ef4444" />
                 </TouchableOpacity>
             </View>
@@ -521,7 +540,7 @@ export default function WorkoutsManager() {
                         />
 
                         {/* Thumbnail URL */}
-                        <Text style={styles.label}>Thumbnail URL (R2)</Text>
+                        <Text style={styles.label}>Thumbnail URL — Fallback / Unisex (R2)</Text>
                         <TextInput
                             style={styles.input}
                             value={form.thumbnail}
@@ -533,7 +552,7 @@ export default function WorkoutsManager() {
                             <Image source={{ uri: form.thumbnail }} style={styles.thumbPreview} contentFit="cover" />
                         )}
 
-                        {/* ── Video section ── */}
+                        {/* ── Video + Thumbnail gender section ── */}
                         <View style={styles.sectionSeparator}>
                             <Users size={14} color="#8b5cf6" />
                             <Text style={[styles.sectionSeparatorText, { color: '#8b5cf6' }]}>VIDEO URLS</Text>
@@ -556,9 +575,22 @@ export default function WorkoutsManager() {
 
                         {form.hasGenderVariants ? (
                             <>
-                                <View style={styles.genderVideoRow}>
-                                    <View style={{ flex: 1, backgroundColor: '#eff6ff', borderRadius: 10, padding: 12, gap: 6 }}>
-                                        <Text style={[styles.label, { marginTop: 0, color: '#2563eb' }]}>♂ Male Video URL</Text>
+                                {/* ── Male block ── */}
+                                <View style={[styles.genderVideoRow, { marginTop: 10 }]}>
+                                    <View style={{ flex: 1, backgroundColor: '#eff6ff', borderRadius: 10, padding: 12, gap: 8 }}>
+                                        <Text style={[styles.label, { marginTop: 0, color: '#2563eb' }]}>♂ Male</Text>
+                                        <Text style={[styles.fieldHint, { marginTop: -4 }]}>Thumbnail</Text>
+                                        <TextInput
+                                            style={styles.input}
+                                            value={form.thumbnailMale}
+                                            onChangeText={t => setField('thumbnailMale', t)}
+                                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/squat-male-thumb.jpg`}
+                                            autoCapitalize="none"
+                                        />
+                                        {!!form.thumbnailMale && (
+                                            <Image source={{ uri: form.thumbnailMale }} style={[styles.thumbPreview, { height: 80 }]} contentFit="cover" />
+                                        )}
+                                        <Text style={[styles.fieldHint, { marginTop: 4 }]}>Video URL</Text>
                                         <TextInput
                                             style={styles.input}
                                             value={form.videoUrlMale}
@@ -568,9 +600,23 @@ export default function WorkoutsManager() {
                                         />
                                     </View>
                                 </View>
+
+                                {/* ── Female block ── */}
                                 <View style={[styles.genderVideoRow, { marginTop: 10 }]}>
-                                    <View style={{ flex: 1, backgroundColor: '#fdf4ff', borderRadius: 10, padding: 12, gap: 6 }}>
-                                        <Text style={[styles.label, { marginTop: 0, color: '#9333ea' }]}>♀ Female Video URL</Text>
+                                    <View style={{ flex: 1, backgroundColor: '#fdf4ff', borderRadius: 10, padding: 12, gap: 8 }}>
+                                        <Text style={[styles.label, { marginTop: 0, color: '#9333ea' }]}>♀ Female</Text>
+                                        <Text style={[styles.fieldHint, { marginTop: -4 }]}>Thumbnail</Text>
+                                        <TextInput
+                                            style={styles.input}
+                                            value={form.thumbnailFemale}
+                                            onChangeText={t => setField('thumbnailFemale', t)}
+                                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/squat-female-thumb.jpg`}
+                                            autoCapitalize="none"
+                                        />
+                                        {!!form.thumbnailFemale && (
+                                            <Image source={{ uri: form.thumbnailFemale }} style={[styles.thumbPreview, { height: 80 }]} contentFit="cover" />
+                                        )}
+                                        <Text style={[styles.fieldHint, { marginTop: 4 }]}>Video URL</Text>
                                         <TextInput
                                             style={styles.input}
                                             value={form.videoUrlFemale}
@@ -580,8 +626,9 @@ export default function WorkoutsManager() {
                                         />
                                     </View>
                                 </View>
-                                <Text style={[styles.fieldHint, { marginTop: 6 }]}>
-                                    Optional: add a fallback video URL below (shown if no gender match or for unisex exercises)
+
+                                <Text style={[styles.fieldHint, { marginTop: 8 }]}>
+                                    The fallback thumbnail &amp; video above are shown when no gender match is found.
                                 </Text>
                                 <Text style={styles.label}>Fallback / Unisex Video URL</Text>
                                 <TextInput

@@ -92,6 +92,14 @@ export default function WorkoutsScreen() {
     const categories = ['All', 'Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women'];
     const muscleGroups = ['All', 'Chest', 'Back', 'Biceps', 'Triceps', 'Shoulders', 'Legs', 'Core', 'Glutes', 'Abs'];
 
+    // Merge DB images with fallbacks — must be before any early return (Rules of Hooks)
+    const MUSCLE_CARDS = useMemo(() => {
+        return FALLBACK_MUSCLE_CARDS.map(fc => {
+            const dbEntry = muscleGroupImagesDb?.find(r => r.name === fc.title);
+            return { title: fc.title, image: dbEntry?.imageUrl || fc.image };
+        });
+    }, [muscleGroupImagesDb]);
+
     // Client-side muscle group filter — uses muscleGroupTags when set, falls back to exercises[].primaryMuscles
     const filteredWorkouts = useMemo(() => {
         if (!workouts) return [];
@@ -187,7 +195,10 @@ export default function WorkoutsScreen() {
                 <ScrollView contentContainerStyle={styles.detailContent}>
                     {/* Hero */}
                     <View style={styles.detailHero}>
-                        <Image source={{ uri: selectedWorkout.thumbnail }} style={styles.heroImage} />
+                        <Image
+                            source={{ uri: (userSex === 'male' ? selectedWorkout.thumbnailMale : userSex === 'female' ? selectedWorkout.thumbnailFemale : null) || selectedWorkout.thumbnail }}
+                            style={styles.heroImage}
+                        />
                         <LinearGradient
                             colors={['rgba(0,0,0,0.6)', 'transparent', 'rgba(0,0,0,0.4)']}
                             style={StyleSheet.absoluteFill}
@@ -492,15 +503,6 @@ export default function WorkoutsScreen() {
 
     // ─── LIST VIEW ────────────────────────────────────────────────────────────
 
-    // Merge DB images with fallbacks
-    const MUSCLE_CARDS = useMemo(() => {
-        return FALLBACK_MUSCLE_CARDS.map(fc => {
-            const dbEntry = muscleGroupImagesDb?.find(r => r.name === fc.title);
-            return { title: fc.title, image: dbEntry?.imageUrl || fc.image };
-        });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [muscleGroupImagesDb]);
-
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
             <Stack.Screen options={{ headerShown: false }} />
@@ -584,7 +586,10 @@ export default function WorkoutsScreen() {
                                     activeOpacity={0.9}
                                     onPress={() => setSelectedWorkout(item)}
                                 >
-                                    <Image source={{ uri: item.thumbnail }} style={styles.cardImage} />
+                                    <Image
+                                        source={{ uri: (userSex === 'male' ? item.thumbnailMale : userSex === 'female' ? item.thumbnailFemale : null) || item.thumbnail }}
+                                        style={styles.cardImage}
+                                    />
                                     <LinearGradient colors={['transparent', 'rgba(0,0,0,0.75)']} style={styles.cardGradient} />
                                     <View style={styles.cardContent}>
                                         <View style={styles.cardTop}>
