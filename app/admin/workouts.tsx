@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     View,
     Text,
@@ -59,13 +59,26 @@ const EMPTY_FORM = {
 const EXERCISE_TYPES = ['Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women'];
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 
+
 export default function WorkoutsManager() {
     const [search, setSearch] = useState('');
+    const [filterType, setFilterType] = useState('All');
+    const [filterLevel, setFilterLevel] = useState('All');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingWorkout, setEditingWorkout] = useState<any>(null);
     const [form, setForm] = useState({ ...EMPTY_FORM });
 
-    const workouts = useQuery(api.videoWorkouts.list, { search });
+    const allWorkouts = useQuery(api.videoWorkouts.list, { search });
+
+    // Client-side filter
+    const workouts = useMemo(() => {
+        if (!allWorkouts) return allWorkouts;
+        return allWorkouts.filter((w: any) => {
+            const typeOk = filterType === 'All' || w.category === filterType;
+            const levelOk = filterLevel === 'All' || w.difficulty === filterLevel;
+            return typeOk && levelOk;
+        });
+    }, [allWorkouts, filterType, filterLevel]);
     const createWorkout = useMutation(api.videoWorkouts.createWorkout);
     const updateWorkout = useMutation(api.videoWorkouts.updateWorkout);
     const deleteWorkout = useMutation(api.videoWorkouts.deleteWorkout);
@@ -264,7 +277,49 @@ export default function WorkoutsManager() {
                     value={search}
                     onChangeText={setSearch}
                 />
+                {(filterType !== 'All' || filterLevel !== 'All') && (
+                    <TouchableOpacity onPress={() => { setFilterType('All'); setFilterLevel('All'); }}>
+                        <Text style={{ color: '#2563eb', fontWeight: '700', fontSize: 12 }}>Reset</Text>
+                    </TouchableOpacity>
+                )}
             </View>
+
+            {/* Type filter */}
+            <View style={styles.filterSection}>
+                <Text style={styles.filterLabel}>TYPE</Text>
+                <View style={styles.filterRow}>
+                    {['All', ...EXERCISE_TYPES].map(t => (
+                        <TouchableOpacity
+                            key={t}
+                            style={[styles.filterPill, filterType === t && styles.filterPillActive]}
+                            onPress={() => setFilterType(t)}
+                        >
+                            <Text style={[styles.filterPillTxt, filterType === t && styles.filterPillTxtActive]}>{t}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            </View>
+
+            {/* Difficulty filter */}
+            <View style={[styles.filterSection, { marginBottom: 8 }]}>
+                <Text style={styles.filterLabel}>DIFFICULTY</Text>
+                <View style={styles.filterRow}>
+                    {['All', ...LEVELS].map(l => (
+                        <TouchableOpacity
+                            key={l}
+                            style={[styles.filterPill, filterLevel === l && { backgroundColor: '#7c3aed', borderColor: '#7c3aed' }]}
+                            onPress={() => setFilterLevel(l)}
+                        >
+                            <Text style={[styles.filterPillTxt, filterLevel === l && styles.filterPillTxtActive]}>{l}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            </View>
+
+            {/* Count */}
+            <Text style={{ paddingHorizontal: 24, paddingBottom: 8, fontSize: 12, color: '#94a3b8', fontWeight: '600' }}>
+                {workouts ? `${workouts.length} results` : ''}
+            </Text>
 
             {/* List */}
             {!workouts ? (
@@ -502,4 +557,12 @@ const styles = StyleSheet.create({
     pillActive: { backgroundColor: '#2563eb' },
     pillText: { fontSize: 13, fontWeight: '700', color: '#64748b' },
     pillTextActive: { color: '#ffffff' },
+    // List filters
+    filterSection: { paddingHorizontal: 16, marginBottom: 4 },
+    filterLabel: { fontSize: 10, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 },
+    filterRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+    filterPill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, backgroundColor: '#f1f5f9', borderWidth: 1, borderColor: '#e2e8f0' },
+    filterPillActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
+    filterPillTxt: { fontSize: 12, fontWeight: '700', color: '#64748b' },
+    filterPillTxtActive: { color: '#ffffff' },
 });

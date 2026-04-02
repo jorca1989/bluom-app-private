@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
     View,
     Text,
@@ -36,10 +36,28 @@ export default function RecipesManager() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRecipe, setSelectedRecipe] = useState<any>(null);
 
-    const recipes = useQuery(api.publicRecipes.list, {});
+    const allRecipes = useQuery(api.publicRecipes.list, {});
     const createRecipe = useMutation(api.admin.createPublicRecipe);
     const updateRecipe = useMutation(api.admin.updatePublicRecipe);
     const deleteRecipe = useMutation(api.admin.deletePublicRecipe);
+
+    const [filterCat, setFilterCat] = useState('All');
+    const [filterTier, setFilterTier] = useState('All');
+    const [filterStatus, setFilterStatus] = useState('All');
+
+    const RECIPE_CATEGORIES = ['Breakfast', 'Lunch', 'Dinner', 'Snacks', 'Desserts', 'Vegetarian', 'High Protein', 'Low Carb'];
+
+    const recipes = useMemo(() => {
+        if (!allRecipes) return [];
+        return allRecipes.filter((r: any) => {
+            const searchQ = search.toLowerCase();
+            const matchSearch = !searchQ || r.title?.toLowerCase().includes(searchQ) || r.description?.toLowerCase().includes(searchQ);
+            const matchCat = filterCat === 'All' || r.category === filterCat;
+            const matchTier = filterTier === 'All' || (filterTier === 'Pro' ? r.isPremium : !r.isPremium);
+            const matchStatus = filterStatus === 'All' || r.status === filterStatus;
+            return matchSearch && matchCat && matchTier && matchStatus;
+        });
+    }, [allRecipes, search, filterCat, filterTier, filterStatus]);
 
     // Local state for new/edit recipe
     const [newRecipe, setNewRecipe] = useState({
@@ -258,7 +276,45 @@ export default function RecipesManager() {
                 </TouchableOpacity>
             </View>
 
-            {!recipes ? (
+            {/* ── Filters ── */}
+            <View style={styles.filterBlock}>
+                <View style={styles.filterRow}>
+                    <Text style={styles.filterLabel}>CATEGORY</Text>
+                    <View style={styles.pillRow}>
+                        <TouchableOpacity style={[styles.fPill, filterCat === 'All' && styles.fPillActive]} onPress={() => setFilterCat('All')}>
+                            <Text style={[styles.fPillTxt, filterCat === 'All' && styles.fPillTxtActive]}>All</Text>
+                        </TouchableOpacity>
+                        {RECIPE_CATEGORIES.map(cat => (
+                            <TouchableOpacity key={cat} style={[styles.fPill, filterCat === cat && styles.fPillActive]} onPress={() => setFilterCat(cat)}>
+                                <Text style={[styles.fPillTxt, filterCat === cat && styles.fPillTxtActive]}>{cat}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
+                <View style={styles.filterRow}>
+                    <Text style={styles.filterLabel}>TIER</Text>
+                    <View style={styles.pillRow}>
+                        {['All', 'Pro', 'Free'].map(t => (
+                            <TouchableOpacity key={t} style={[styles.fPill, filterTier === t && styles.fPillActive]} onPress={() => setFilterTier(t)}>
+                                <Text style={[styles.fPillTxt, filterTier === t && styles.fPillTxtActive]}>{t}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
+                <View style={styles.filterRow}>
+                    <Text style={styles.filterLabel}>STATUS</Text>
+                    <View style={styles.pillRow}>
+                        {['All', 'published', 'draft'].map(s => (
+                            <TouchableOpacity key={s} style={[styles.fPill, filterStatus === s && styles.fPillActive]} onPress={() => setFilterStatus(s)}>
+                                <Text style={[styles.fPillTxt, filterStatus === s && styles.fPillTxtActive]}>{s === 'All' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
+                <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '600', paddingHorizontal: 4 }}>{recipes.length} recipes</Text>
+            </View>
+
+            {!allRecipes ? (
                 <ActivityIndicator color="#2563eb" size="large" style={{ marginTop: 40 }} />
             ) : (
                 <FlatList
@@ -712,4 +768,14 @@ const styles = StyleSheet.create({
     typeTextActive: {
         color: '#3b82f6',
     },
+
+    // Filters
+    filterBlock: { paddingHorizontal: 16, paddingBottom: 10, paddingTop: 4, borderBottomWidth: 1, borderBottomColor: '#f1f5f9', gap: 10 },
+    filterRow: { gap: 4 },
+    filterLabel: { fontSize: 10, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 },
+    pillRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+    fPill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: '#e2e8f0', backgroundColor: '#fff' },
+    fPillActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
+    fPillTxt: { fontSize: 12, fontWeight: '700', color: '#64748b' },
+    fPillTxtActive: { color: '#ffffff' },
 });

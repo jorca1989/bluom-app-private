@@ -56,8 +56,20 @@ export default function MeditationsManager() {
     };
 
     const [form, setForm] = useState(emptyForm);
+    const [filterCat, setFilterCat] = useState('All');
+    const [filterType, setFilterType] = useState('All'); // meditation | soundscape | All
+    const [filterTier, setFilterTier] = useState('All'); // All | Pro | Free
 
-    const items = useMemo(() => (Array.isArray(sessions) ? sessions : []), [sessions]);
+    const allItems = useMemo(() => (Array.isArray(sessions) ? sessions : []), [sessions]);
+
+    const items = useMemo(() => {
+        return allItems.filter((s: any) => {
+            const catOk = filterCat === 'All' || s.category === filterCat || (s.tags ?? []).includes(filterCat);
+            const typeOk = filterType === 'All' || s.type === filterType;
+            const tierOk = filterTier === 'All' || (filterTier === 'Pro' ? s.isPremium : !s.isPremium);
+            return catOk && typeOk && tierOk;
+        });
+    }, [allItems, filterCat, filterType, filterTier]);
 
     const resetForm = () => { setForm(emptyForm); setSelectedSession(null); };
 
@@ -223,6 +235,44 @@ export default function MeditationsManager() {
                     <Plus color="#ffffff" size={20} />
                     <Text style={styles.addButtonText}>Add Session</Text>
                 </TouchableOpacity>
+            </View>
+
+            {/* ── Filters ── */}
+            <View style={styles.filterBlock}>
+                <View style={styles.filterRow}>
+                    <Text style={styles.filterLabel}>TYPE</Text>
+                    <View style={styles.pillRow}>
+                        {['All', 'meditation', 'soundscape'].map(t => (
+                            <TouchableOpacity key={t} style={[styles.fPill, filterType === t && styles.fPillActive]} onPress={() => setFilterType(t)}>
+                                <Text style={[styles.fPillTxt, filterType === t && styles.fPillTxtActive]}>{t === 'All' ? 'All' : t.charAt(0).toUpperCase() + t.slice(1)}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
+                <View style={styles.filterRow}>
+                    <Text style={styles.filterLabel}>TIER</Text>
+                    <View style={styles.pillRow}>
+                        {['All', 'Pro', 'Free'].map(t => (
+                            <TouchableOpacity key={t} style={[styles.fPill, filterTier === t && styles.fPillActive]} onPress={() => setFilterTier(t)}>
+                                <Text style={[styles.fPillTxt, filterTier === t && styles.fPillTxtActive]}>{t}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
+                <View style={styles.filterRow}>
+                    <Text style={styles.filterLabel}>CATEGORY</Text>
+                    <View style={styles.pillRow}>
+                        <TouchableOpacity style={[styles.fPill, filterCat === 'All' && styles.fPillCatActive]} onPress={() => setFilterCat('All')}>
+                            <Text style={[styles.fPillTxt, filterCat === 'All' && styles.fPillTxtActive]}>All</Text>
+                        </TouchableOpacity>
+                        {MEDITATION_FILTERS.map(f => (
+                            <TouchableOpacity key={f.id} style={[styles.fPill, filterCat === f.id && { backgroundColor: f.color, borderColor: f.color }]} onPress={() => setFilterCat(filterCat === f.id ? 'All' : f.id)}>
+                                <Text style={[styles.fPillTxt, filterCat === f.id && styles.fPillTxtActive]}>{f.emoji} {f.name}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
+                <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '600', paddingHorizontal: 4 }}>{items.length} sessions</Text>
             </View>
 
             {!sessions ? (
@@ -430,4 +480,15 @@ const styles = StyleSheet.create({
     // Media sections
     mediaSection: { marginTop: 20, borderWidth: 1.5, borderColor: '#bfdbfe', borderRadius: 14, padding: 14 },
     mediaSectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
+
+    // Filters
+    filterBlock: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#f1f5f9', gap: 10 },
+    filterRow: { gap: 6 },
+    filterLabel: { fontSize: 10, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 },
+    pillRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+    fPill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: '#e2e8f0', backgroundColor: '#fff' },
+    fPillActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
+    fPillCatActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
+    fPillTxt: { fontSize: 12, fontWeight: '700', color: '#64748b' },
+    fPillTxtActive: { color: '#ffffff' },
 });
