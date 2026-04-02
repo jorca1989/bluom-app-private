@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput, Image, KeyboardAvoidingView, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 export interface LogSetData {
@@ -33,6 +33,7 @@ export default function SingleExerciseLogModal({
   onClose,
   onSave
 }: SingleExerciseLogModalProps) {
+  const insets = useSafeAreaInsets();
   const [sets, setSets] = useState<LogSetData[]>([]);
   const [durationStr, setDurationStr] = useState('');
   const [distanceStr, setDistanceStr] = useState('');
@@ -111,6 +112,16 @@ export default function SingleExerciseLogModal({
     return Math.round((minutes / parsedDistanceKm) * 10) / 10; // min/km
   }, [durationStr, isCardioLike, parsedDistanceKm]);
 
+  // Live total volume for strength mode = Σ(weight × reps)
+  const totalVolume = useMemo(() => {
+    if (mode !== 'strength') return 0;
+    return sets.reduce((sum, s) => {
+      const w = parseFloat(s.weight) || 0;
+      const r = parseInt(s.reps, 10) || 0;
+      return sum + w * r;
+    }, 0);
+  }, [sets, mode]);
+
   // Only allow saving if at least one set has actual data or duration is provided
   const canSave = mode === 'duration'
      ? (parseInt(durationStr || '0', 10) || 0) > 0
@@ -120,7 +131,7 @@ export default function SingleExerciseLogModal({
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
-      <SafeAreaView style={styles.container} edges={['top']}>
+      <SafeAreaView style={[styles.container, { paddingTop: Math.max(insets.top, 50) }]} edges={['left', 'right', 'bottom']}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose} style={styles.iconBtn}>
@@ -274,6 +285,15 @@ export default function SingleExerciseLogModal({
                     <TouchableOpacity style={styles.addSetBtn} onPress={handleAddSet}>
                       <Text style={styles.addSetBtnText}>+ Add set</Text>
                     </TouchableOpacity>
+
+                    {/* Total Volume Summary */}
+                    {totalVolume > 0 && (
+                      <View style={styles.volumeSummary}>
+                        <Ionicons name="barbell-outline" size={18} color="#3b82f6" />
+                        <Text style={styles.volumeLabel}>Total Volume</Text>
+                        <Text style={styles.volumeValue}>{totalVolume} kg</Text>
+                      </View>
+                    )}
                   </>
                 )}
 
@@ -562,5 +582,28 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#64748b',
     textAlign: 'center',
+  },
+  volumeSummary: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#eff6ff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#bfdbfe',
+  },
+  volumeLabel: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1e40af',
+  },
+  volumeValue: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#2563eb',
   },
 });

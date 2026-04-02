@@ -232,7 +232,7 @@ const pl = StyleSheet.create({
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
-type ActiveModal = 'weight' | 'measurements' | 'scan' | null;
+type ActiveModal = 'weight' | 'measurements' | 'scan' | 'history_measurements' | 'history_scans' | null;
 
 export default function WeightManagementScreen() {
   const router = useRouter();
@@ -246,6 +246,9 @@ export default function WeightManagementScreen() {
   const logBodyScan = useMutation(api.Bodymetrics.logBodyScan);
   const saveBodyPhoto = useMutation(api.Bodymetrics.saveBodyPhoto);
   const generateUploadUrl = useMutation(api.Bodymetrics.generatePhotoUploadUrl);
+  const deleteMeasurement = useMutation(api.Bodymetrics.deleteMeasurement);
+  const deleteBodyScanMutation = useMutation(api.Bodymetrics.deleteBodyScan);
+  const deleteBodyPhotoMutation = useMutation(api.Bodymetrics.deleteBodyPhoto);
 
   // Convex queries
   const weightHistory = useQuery(api.Bodymetrics.getWeightHistory, convexUser?._id ? { userId: convexUser._id, limit: 90 } : 'skip');
@@ -493,6 +496,48 @@ export default function WeightManagementScreen() {
     }
   };
 
+  const handleDeleteMeasurement = (id: any) => {
+    Alert.alert('Delete Measurement', 'Are you sure you want to delete this log?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: async () => {
+          try {
+            await deleteMeasurement({ entryId: id });
+          } catch (e: any) {
+            Alert.alert('Error', e.message);
+          }
+        } 
+      }
+    ]);
+  };
+
+  const handleDeleteScan = (id: any) => {
+    Alert.alert('Delete Scan', 'Are you sure you want to delete this scan?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: async () => {
+          try {
+            await deleteBodyScanMutation({ entryId: id });
+          } catch (e: any) {
+            Alert.alert('Error', e.message);
+          }
+        } 
+      }
+    ]);
+  };
+
+  const handleDeletePhoto = (id: any) => {
+    Alert.alert('Delete Photo', 'Are you sure you want to delete this progress photo? This cannot be undone.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: async () => {
+          try {
+            await deleteBodyPhotoMutation({ entryId: id });
+          } catch (e: any) {
+            Alert.alert('Error', e.message);
+          }
+        } 
+      }
+    ]);
+  };
+
   // ── Latest measurement/scan for display ──────────────────────────────────
   const latestMeasurement = (measurementsHistory ?? [])[0];
   const latestScan = (scanHistory ?? [])[0];
@@ -683,10 +728,18 @@ export default function WeightManagementScreen() {
             </View>
           )}
 
-          <TouchableOpacity style={s.secondaryBtn} onPress={() => setActiveModal('measurements')} activeOpacity={0.88}>
-            <Ionicons name="add" size={16} color="#2563eb" />
-            <Text style={s.secondaryBtnText}>Log Measurements</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            {(measurementsHistory ?? []).length > 0 && isPro && (
+              <TouchableOpacity style={[s.secondaryBtn, { flex: 1, backgroundColor: '#f1f5f9', borderColor: '#e2e8f0' }]} onPress={() => setActiveModal('history_measurements')} activeOpacity={0.88}>
+                <Ionicons name="time-outline" size={16} color="#475569" />
+                <Text style={[s.secondaryBtnText, { color: '#475569' }]}>History</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={[s.secondaryBtn, { flex: 2 }]} onPress={() => setActiveModal('measurements')} activeOpacity={0.88}>
+              <Ionicons name="add" size={16} color="#2563eb" />
+              <Text style={s.secondaryBtnText}>Log Measurements</Text>
+            </TouchableOpacity>
+          </View>
 
           {/* History — pro only */}
           {!isPro && (measurementsHistory ?? []).length > 1 && (
@@ -716,10 +769,18 @@ export default function WeightManagementScreen() {
                   <Text style={s.emptyText}>No scan data yet. Log your body composition.</Text>
                 </View>
               )}
-              <TouchableOpacity style={s.secondaryBtn} onPress={() => setActiveModal('scan')} activeOpacity={0.88}>
-                <Ionicons name="add" size={16} color="#2563eb" />
-                <Text style={s.secondaryBtnText}>Log Body Scan</Text>
-              </TouchableOpacity>
+              <View style={{ flexDirection: 'row', gap: 12 }}>
+                {(scanHistory ?? []).length > 0 && isPro && (
+                  <TouchableOpacity style={[s.secondaryBtn, { flex: 1, backgroundColor: '#f1f5f9', borderColor: '#e2e8f0' }]} onPress={() => setActiveModal('history_scans')} activeOpacity={0.88}>
+                    <Ionicons name="time-outline" size={16} color="#475569" />
+                    <Text style={[s.secondaryBtnText, { color: '#475569' }]}>History</Text>
+                  </TouchableOpacity>
+                )}
+                <TouchableOpacity style={[s.secondaryBtn, { flex: 2 }]} onPress={() => setActiveModal('scan')} activeOpacity={0.88}>
+                  <Ionicons name="add" size={16} color="#2563eb" />
+                  <Text style={s.secondaryBtnText}>Log Scan</Text>
+                </TouchableOpacity>
+              </View>
             </>
           ) : (
             <View style={{ height: 120 }}>
@@ -744,6 +805,13 @@ export default function WeightManagementScreen() {
                         <View style={[s.photoTypeBadge, { backgroundColor: p.type === 'before' ? '#1d4ed8' : p.type === 'after' ? '#065f46' : '#451a03' }]}>
                           <Text style={s.photoTypeText}>{p.type}</Text>
                         </View>
+                        <TouchableOpacity 
+                          style={s.photoDeleteBtn} 
+                          onPress={() => handleDeletePhoto(p._id)}
+                          activeOpacity={0.7}
+                        >
+                          <Ionicons name="trash" size={14} color="#ffffff" />
+                        </TouchableOpacity>
                         <Text style={s.photoDate}>{p.date}</Text>
                       </View>
                     ))}
@@ -951,6 +1019,73 @@ export default function WeightManagementScreen() {
         </SafeAreaView>
       </Modal>
 
+      {/* ── Measurements History Modal ── */}
+      <Modal visible={activeModal === 'history_measurements'} animationType="slide" presentationStyle="pageSheet">
+        <SafeAreaView style={m.container} edges={['top']}>
+          <View style={m.modalHeader}>
+            <Text style={m.modalTitle}>Measurement History</Text>
+            <TouchableOpacity onPress={() => setActiveModal(null)}>
+              <Ionicons name="close" size={24} color="#64748b" />
+            </TouchableOpacity>
+          </View>
+          <ScrollView contentContainerStyle={m.body}>
+            {(measurementsHistory ?? []).map((ms: any) => (
+              <View key={ms._id} style={m.historyCard}>
+                <View style={m.historyHeader}>
+                  <Text style={m.historyDate}>{ms.date}</Text>
+                  <TouchableOpacity onPress={() => handleDeleteMeasurement(ms._id)}>
+                    <Ionicons name="trash-outline" size={20} color="#f87171" />
+                  </TouchableOpacity>
+                </View>
+                <View style={m.historyGrid}>
+                  {MEASUREMENT_FIELDS.filter(f => ms[f.key]).map(f => (
+                    <View key={f.key} style={m.historyItem}>
+                      <Text style={m.historyVal}>{ms[f.key]}</Text>
+                      <Text style={m.historyLbl}>{f.label}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
+      {/* ── Scans History Modal ── */}
+      <Modal visible={activeModal === 'history_scans'} animationType="slide" presentationStyle="pageSheet">
+        <SafeAreaView style={m.container} edges={['top']}>
+          <View style={m.modalHeader}>
+            <Text style={m.modalTitle}>Body Scan History</Text>
+            <TouchableOpacity onPress={() => setActiveModal(null)}>
+              <Ionicons name="close" size={24} color="#64748b" />
+            </TouchableOpacity>
+          </View>
+          <ScrollView contentContainerStyle={m.body}>
+            {(scanHistory ?? []).map((sc: any) => (
+              <View key={sc._id} style={m.historyCard}>
+                <View style={m.historyHeader}>
+                  <View>
+                    <Text style={m.historyDate}>{sc.date}</Text>
+                    {sc.source && <Text style={{ fontSize: 10, color: '#94a3b8', textTransform: 'uppercase' }}>{sc.source}</Text>}
+                  </View>
+                  <TouchableOpacity onPress={() => handleDeleteScan(sc._id)}>
+                    <Ionicons name="trash-outline" size={20} color="#f87171" />
+                  </TouchableOpacity>
+                </View>
+                <View style={m.historyGrid}>
+                  {SCAN_FIELDS.filter(f => sc[f.key] !== undefined).map(f => (
+                    <View key={f.key} style={m.historyItem}>
+                      <Text style={m.historyVal}>{sc[f.key]} {f.unit}</Text>
+                      <Text style={m.historyLbl}>{f.label}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
     </SafeAreaView>
   );
 }
@@ -1127,6 +1262,12 @@ const s = StyleSheet.create({
     borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2,
   },
   photoTypeText: { fontSize: 8, fontWeight: '900', color: '#fff', textTransform: 'uppercase' },
+  photoDeleteBtn: {
+    position: 'absolute', top: 6, right: 6,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    width: 24, height: 24, borderRadius: 12,
+    justifyContent: 'center', alignItems: 'center',
+  },
   photoDate: { fontSize: 9, color: '#475569' },
   photoActions: { flexDirection: 'row', gap: 8 },
   photoBtn: {
@@ -1208,4 +1349,21 @@ const m = StyleSheet.create({
   sourceChipActive: { borderColor: '#2563eb', backgroundColor: '#eff6ff' },
   sourceChipText: { fontSize: 12, fontWeight: '700', color: '#64748b', textTransform: 'capitalize' },
   sourceChipTextActive: { color: '#2563eb' },
+
+  historyCard: {
+    backgroundColor: '#ffffff', borderWidth: 1, borderColor: '#e2e8f0',
+    borderRadius: 16, padding: 16, marginBottom: 12,
+  },
+  historyHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start',
+    borderBottomWidth: 1, borderBottomColor: '#f1f5f9', paddingBottom: 10, marginBottom: 12,
+  },
+  historyDate: { fontSize: 14, fontWeight: '800', color: '#0f172a' },
+  historyGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  historyItem: {
+    width: (width - 80) / 3, backgroundColor: '#f8fafc',
+    borderRadius: 8, padding: 8, alignItems: 'center', borderWidth: 1, borderColor: '#f1f5f9'
+  },
+  historyVal: { fontSize: 13, fontWeight: '900', color: '#0f172a' },
+  historyLbl: { fontSize: 9, color: '#64748b', textAlign: 'center', marginTop: 2 },
 });

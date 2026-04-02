@@ -15,6 +15,7 @@ import {
 import { Image } from 'expo-image';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import { R2_CONFIG } from '@/utils/r2Config';
 import {
     Utensils,
     Plus,
@@ -350,14 +351,14 @@ export default function RecipesManager() {
                             onChangeText={(t) => setNewRecipe((p) => ({ ...p, shortDescription: t }))}
                         />
 
-                        <Text style={styles.label}>Image URL (optional)</Text>
+                        <Text style={styles.label}>Image URL (R2)</Text>
                         <TextInput
-                            style={styles.input}
-                            placeholder="https://..."
+                            style={[styles.input, { marginBottom: 60 }]}
                             value={newRecipe.imageUrl}
-                            onChangeText={(t) => setNewRecipe((p) => ({ ...p, imageUrl: t }))}
+                            onChangeText={t => setNewRecipe(p => ({ ...p, imageUrl: t }))}
+                            placeholder={`${R2_CONFIG.generalBaseUrl}/recipes/image.jpg`}
+                            autoCapitalize="none"
                         />
-
                         <Text style={styles.label}>Visibility</Text>
                         <View style={{ flexDirection: 'row', gap: 12 }}>
                             <TouchableOpacity

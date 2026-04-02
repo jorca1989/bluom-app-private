@@ -1,5 +1,7 @@
 # Dependencies
 node_modules/
+.pnp
+.pnp.js
 
 # Expo
 .expo/
@@ -7,12 +9,25 @@ dist/
 web-build/
 dev-client-builds/
 
-# Native folders
-# We DO NOT ignore these at the root because your custom fixes (like Android setup)
-# need to be saved. The local.properties (with your private paths) is already
-# ignored inside the android/ folder's own .gitignore.
-# android/
-# ios/
+# Native Folders (Managed Workflow)
+# We ignore these so app.config.js remains the source of truth for EAS
+android/
+ios/
+
+# Android Local & Sensitive
+android/local.properties
+android/.gradle
+android/build
+android/app/build
+android/app/src/main/assets
+*.keystore
+!android/app/debug.keystore
+
+# iOS Local & Cached
+ios/build
+ios/Pods
+ios/DerivedData
+*.ext.json
 
 # Local Environment Secrets (SENSITIVE)
 .env
@@ -20,6 +35,7 @@ dev-client-builds/
 .env.production
 .env.test
 .env*.local
+convex-env.tmp
 
 # IDEs and Editors
 .idea/
@@ -35,78 +51,14 @@ Thumbs.db
 # Vercel
 .vercel
 
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-# Android specific sensitive/local files
-android/local.properties
-android/.gradle
-android/build
-android/app/build
-*.keystore
-!android/app/debug.keystore
-# --- ADD THESE ---
-
-# Android
-android/local.properties
-android/.gradle
-android/build
-android/app/build
-android/app/src/main/assets
-
-# iOS
-ios/build
-ios/Pods
-ios/DerivedData
-*.ext.json
-
 # Fastlane
 **/fastlane/report.xml
 **/fastlane/Preview.html
 **/fastlane/screenshots
 **/fastlane/test_output
 
-# Temporary Files
-*.log
-.eslintcache
-
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
-
-# Expo
-.expo/
-dist/
-web-build/
-dev-client-builds/
-
-# Android Local & Sensitive (CRITICAL)
-android/local.properties
-android/.gradle
-android/build
-android/app/build
-android/app/src/main/assets
-*.keystore
-!android/app/debug.keystore
-
-# iOS Local
-ios/build
-ios/Pods
-ios/DerivedData
-
-# Environment Secrets
-.env
-.env.local
-.env.production
-.env.test
-.env*.local
-convex-env.tmp
-
-# Logs & Temp Files
+# Logs & Temporary Files
+logs
 *.log
 ts_errors.log
 ts_output.txt
@@ -114,12 +66,4 @@ out.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# IDEs
-.idea/
-.vscode/
-*.iml
-
-# OS files
-.DS_Store
-Thumbs.db
+.eslintcache

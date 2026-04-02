@@ -419,17 +419,9 @@ export default function FuelScreen() {
             <Text style={styles.sectionTitle}>Quick Actions</Text>
             <QuickActions 
               onPhoto={() => {
-                if (!isPro) {
-                  setProGateMessage('Photo AI logging is a Pro feature.');
-                  return setShowProUpgrade(true);
-                }
                 setShowPhotoCapture(true);
               }}
               onVoice={() => {
-                if (!isPro) {
-                  setProGateMessage('Voice food logging is a Pro feature.');
-                  return setShowProUpgrade(true);
-                }
                 setShowVoiceLog(true);
               }}
               onSearch={() => { setSelectedMeal('Lunch'); setShowFoodSearch(true); }}
@@ -446,10 +438,6 @@ export default function FuelScreen() {
               }}
               onShoppingList={() => router.push('/shopping-list')}
               onAiChef={() => {
-                if (!isPro) {
-                  setProGateMessage('AI Chef is a Pro feature.');
-                  return setShowProUpgrade(true);
-                }
                 router.push('/ai-meal-maker');
               }}
               onMonthlyPlan={() => router.push('/meal-hub')}
@@ -555,12 +543,14 @@ export default function FuelScreen() {
         selectedDate={selectedDate}
         defaultMeal={selectedMeal}
         platform={Platform.OS}
+        isPro={isPro}
       />
 
       <PhotoRecognitionModal
         visible={showPhotoCapture}
         onClose={() => setShowPhotoCapture(false)}
         meal={selectedMeal}
+        isPro={isPro}
         onRecognized={(item) => {
           setShowPhotoCapture(false);
           router.push({

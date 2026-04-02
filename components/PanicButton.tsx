@@ -61,7 +61,7 @@ export default function PanicButton({ userId }: { userId: Id<'users'> }) {
     return () => timerRef.current && clearInterval(timerRef.current);
   }, []);
 
-  const bottom = getBottomContentPadding(insets.bottom, 16) + TAB_BAR_HEIGHT;
+  const bottom = 24;
 
   function openRandom() {
     triggerSound(SoundEffect.UI_TAP);

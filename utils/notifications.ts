@@ -22,30 +22,47 @@
  *   - cancelAllNotifications             → clears everything (call on logout)
  */
 
-import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-// ─── Handler: controls how notifications behave while app is foregrounded ────
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+function safeRequire<T = any>(name: string): T | null {
+  try {
+    // eslint-disable-next-line no-eval
+    const req = (0, eval)('require');
+    return req(name) as T;
+  } catch {
+    return null;
+  }
+}
 
-// ─── Android notification channel ────────────────────────────────────────────
-if (Platform.OS === 'android') {
-  Notifications.setNotificationChannelAsync('bluom-reminders', {
-    name: 'Bluom Reminders',
-    importance: Notifications.AndroidImportance.DEFAULT,
-    vibrationPattern: [0, 250, 250, 250],
-    lightColor: '#2563eb',
-  });
+const Notifications = safeRequire<any>('expo-notifications');
+const Device = safeRequire<any>('expo-device');
+
+// ─── Handler: controls how notifications behave while app is foregrounded ────
+if (Notifications) {
+  try {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+        shouldShowBanner: true,
+        shouldShowList: true,
+      }),
+    });
+
+    // ─── Android notification channel ────────────────────────────────────────────
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('bluom-reminders', {
+        name: 'Bluom Reminders',
+        importance: Notifications.AndroidImportance?.DEFAULT ?? 3,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#2563eb',
+      });
+    }
+  } catch (err) {
+    if (__DEV__) console.warn('[notifications] Failed to initialize handler:', err);
+  }
 }
 
 // ─── Permission + Token Registration ─────────────────────────────────────────
@@ -57,6 +74,8 @@ if (Platform.OS === 'android') {
  * Returns the token string, or null if permission was denied / not a device.
  */
 export async function registerForPushNotificationsAsync(): Promise<string | null> {
+  if (!Notifications || !Device) return null;
+
   if (!Device.isDevice) {
     if (__DEV__) console.warn('[notifications] Push notifications require a physical device.');
     return null;
@@ -104,6 +123,7 @@ export async function sendStepReminder(
   currentSteps: number,
   goalSteps: number
 ): Promise<void> {
+  if (!Notifications) return;
   if (currentSteps >= goalSteps * 0.5) return; // Already halfway — no nag
 
   const remaining = goalSteps - currentSteps;
@@ -123,6 +143,7 @@ export async function sendStepReminder(
  * `type` maps to one of the wellness modules (meditation, journal, mood, etc).
  */
 export async function sendWellnessReminder(type: string): Promise<void> {
+  if (!Notifications) return;
   const messages: Record<string, { title: string; body: string }> = {
     meditation: {
       title: 'Time to breathe 🧘',
@@ -169,6 +190,7 @@ export async function sendHydrationReminder(
   currentOz: number,
   goalOz: number
 ): Promise<void> {
+  if (!Notifications) return;
   if (currentOz >= goalOz * 0.5) return;
 
   const remaining = Math.round(goalOz - currentOz);
@@ -188,6 +210,7 @@ export async function sendHydrationReminder(
  * Only fires if fewer than 2 distinct meals have been logged today.
  */
 export async function sendMealReminder(uniqueMealsLogged: number): Promise<void> {
+  if (!Notifications) return;
   if (uniqueMealsLogged >= 2) return;
 
   const messages = [
@@ -224,6 +247,8 @@ export async function scheduleHabitReminder(
   hour: number,
   minute: number
 ): Promise<void> {
+  if (!Notifications) return;
+
   // Cancel any existing reminder for this habit first (avoid duplicates)
   await cancelHabitReminder(habitId);
 
@@ -249,6 +274,7 @@ export async function scheduleHabitReminder(
  * Cancels a previously scheduled habit reminder.
  */
 export async function cancelHabitReminder(habitId: string): Promise<void> {
+  if (!Notifications) return;
   await Notifications.cancelScheduledNotificationAsync(`habit_${habitId}`);
 }
 
@@ -257,6 +283,7 @@ export async function cancelHabitReminder(habitId: string): Promise<void> {
  * Call this on user logout.
  */
 export async function cancelAllNotifications(): Promise<void> {
+  if (!Notifications) return;
   await Notifications.cancelAllScheduledNotificationsAsync();
   await Notifications.dismissAllNotificationsAsync();
 }

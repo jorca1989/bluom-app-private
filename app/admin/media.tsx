@@ -22,6 +22,7 @@ import {
     FileText,
     Folder
 } from 'lucide-react-native';
+import { R2_CONFIG } from '@/utils/r2Config';
 
 // NOTE: This is a placeholder UI for R2 Media Management
 // Actual R2 operations would require backend integration via Convex mutations
@@ -35,27 +36,30 @@ export default function MediaManager() {
     const mediaItems = [
         {
             id: '1',
-            name: 'hero-banner.jpg',
+            name: 'recipe-dish.jpg',
             type: 'image',
-            url: 'https://pub-your-r2-account.r2.dev/assets/hero-banner.jpg',
-            size: '2.4 MB',
-            uploadedAt: '2024-01-15'
+            url: `${R2_CONFIG.generalBaseUrl}/recipes/dish.jpg`,
+            size: '1.2 MB',
+            uploadedAt: '2024-03-20',
+            account: 'General (Acct 1)'
         },
         {
             id: '2',
             name: 'meditation-audio.mp3',
             type: 'audio',
-            url: 'https://pub-your-r2-account.r2.dev/assets/meditation-audio.mp3',
-            size: '8.1 MB',
-            uploadedAt: '2024-01-14'
+            url: `${R2_CONFIG.generalBaseUrl}/meditations/audio.mp3`,
+            size: '8.5 MB',
+            uploadedAt: '2024-03-19',
+            account: 'General (Acct 1)'
         },
         {
             id: '3',
-            name: 'workout-video.mp4',
+            name: 'workout-drill.mp4',
             type: 'video',
-            url: 'https://pub-your-r2-account.r2.dev/assets/workout-video.mp4',
-            size: '45.3 MB',
-            uploadedAt: '2024-01-13'
+            url: `${R2_CONFIG.workoutBaseUrl}/workouts/drill.mp4`,
+            size: '32.1 MB',
+            uploadedAt: '2024-03-18',
+            account: 'Workouts (Acct 2)'
         }
     ];
 
@@ -165,7 +169,14 @@ export default function MediaManager() {
                                 <Icon size={28} color="#64748b" />
                             </View>
                             <View style={styles.mediaInfo}>
-                                <Text style={styles.mediaName} numberOfLines={1}>{item.name}</Text>
+                                <View style={styles.nameRow}>
+                                    <Text style={styles.mediaName} numberOfLines={1}>{item.name}</Text>
+                                    <View style={[styles.accountBadge, { backgroundColor: item.account.includes('Workouts') ? '#e0e7ff' : '#f1f5f9' }]}>
+                                        <Text style={[styles.accountBadgeText, { color: item.account.includes('Workouts') ? '#4338ca' : '#475569' }]}>
+                                            {item.account}
+                                        </Text>
+                                    </View>
+                                </View>
                                 <Text style={styles.mediaSize}>{item.size} • {item.uploadedAt}</Text>
                                 <View style={styles.urlContainer}>
                                     <Text style={styles.urlText} numberOfLines={1}>{item.url}</Text>
@@ -190,17 +201,27 @@ export default function MediaManager() {
                 })}
 
                 {/* Info Box */}
+                <View style={[styles.infoBox, { backgroundColor: '#eff6ff', borderColor: '#bfdbfe' }]}>
+                    <Text style={[styles.infoTitle, { color: '#1e40af' }]}>📦 R2 Account Split</Text>
+                    <Text style={[styles.infoText, { color: '#1e3a8a' }]}>
+                        We use two separate R2 accounts to manage costs and scalability:{'\n\n'}
+                        <Text style={{ fontWeight: 'bold' }}>1. General Storage (Account 1):</Text>{'\n'}
+                        Used for Meditations, Recipes, and UI Assets.{'\n\n'}
+                        <Text style={{ fontWeight: 'bold' }}>2. Workout Media (Account 2):</Text>{'\n'}
+                        Used for all Exercise Videos and Thumbnails.
+                    </Text>
+                </View>
+
                 <View style={styles.infoBox}>
-                    <Text style={styles.infoTitle}>📦 How to use R2 Media</Text>
+                    <Text style={styles.infoTitle}>🚀 How to upload</Text>
                     <Text style={styles.infoText}>
-                        1. Upload assets to your Cloudflare R2 bucket via dashboard or CLI{'\n'}
-                        2. Files appear here automatically{'\n'}
-                        3. Click Copy to get the R2 URL{'\n'}
-                        4. Paste URL into Recipes, Meditations, Workouts admin forms{'\n'}
-                        5. Assets load directly from R2 CDN in the app
+                        1. Sign in to the correct Cloudflare Dashboard account{'\n'}
+                        2. Upload your file to the designated R2 bucket{'\n'}
+                        3. Copy the 'Public URL' or use the base URLs defined in the system{'\n'}
+                        4. Paste into the corresponding admin screens
                     </Text>
                     <Text style={styles.infoFooter}>
-                        💡 No need to store large files in the repo!
+                        💡 Hint: Use the Workouts account for anything exercise-related!
                     </Text>
                 </View>
             </ScrollView>
@@ -323,7 +344,21 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: '700',
         color: '#1e293b',
+    },
+    nameRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         marginBottom: 4,
+    },
+    accountBadge: {
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 4,
+    },
+    accountBadgeText: {
+        fontSize: 9,
+        fontWeight: '900',
     },
     mediaSize: {
         fontSize: 12,

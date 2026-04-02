@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
+  ScrollView,
   ActivityIndicator,
   Image
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
@@ -36,15 +37,17 @@ interface ExerciseSearchModalProps {
 }
 
 const MUSCLE_GROUPS = [
-  { title: 'Chest' },
-  { title: 'Back' },
-  { title: 'Biceps' },
-  { title: 'Triceps' },
-  { title: 'Shoulders' },
-  { title: 'Legs' },
-  { title: 'Core' },
-  { title: 'Glutes' },
+  { title: 'Chest',     image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80' },
+  { title: 'Back',      image: 'https://images.unsplash.com/photo-1603287681836-b174ce5074c2?w=400&q=80' },
+  { title: 'Biceps',    image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&q=80' },
+  { title: 'Triceps',   image: 'https://images.unsplash.com/photo-1530822847156-5df684ec5933?w=400&q=80' },
+  { title: 'Shoulders', image: 'https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?w=400&q=80' },
+  { title: 'Legs',      image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&q=80' },
+  { title: 'Core',      image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&q=80' },
+  { title: 'Glutes',    image: 'https://images.unsplash.com/photo-1607962837359-5e7e89f86776?w=400&q=80' },
 ];
+
+const EXERCISE_TYPES = ['Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core'];
 
 type Tab = 'search' | 'saved' | 'muscleGroups';
 
@@ -58,7 +61,9 @@ export default function ExerciseSearchModal({
   onExerciseSelect
 }: ExerciseSearchModalProps) {
   const [activeTab, setActiveTab] = useState<Tab>('search');
+  const [selectedType, setSelectedType] = useState<string | null>(null);
   const { user: clerkUser } = useClerkUser();
+  const insets = useSafeAreaInsets();
 
   // Look up the Convex user so we can query saved workouts
   const convexUser = useQuery(
@@ -70,6 +75,14 @@ export default function ExerciseSearchModal({
     api.savedWorkouts.getSavedWorkouts,
     convexUser?._id ? { userId: convexUser._id } : 'skip'
   );
+
+  // Filter search results by exercise type
+  const filteredSearchResults = useMemo(() => {
+    if (!selectedType) return searchResults;
+    return searchResults.filter(ex =>
+      ex.type?.toLowerCase() === selectedType.toLowerCase()
+    );
+  }, [searchResults, selectedType]);
 
   // Convert a saved videoWorkout into an ExerciseLibraryItem-compatible shape
   // so the parent's onExerciseSelect handler can use it
@@ -89,13 +102,13 @@ export default function ExerciseSearchModal({
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
-      <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={[styles.container, { paddingTop: insets.top }]}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={onClose} style={styles.iconBtn}>
+          <TouchableOpacity onPress={onClose} style={styles.iconBtn} hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
             <Ionicons name="chevron-back" size={28} color="#0f172a" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Add Exercise</Text>
+          <Text style={styles.headerTitle}>Exercise Library</Text>
           <View style={{ width: 44 }} />
         </View>
 
@@ -224,14 +237,18 @@ export default function ExerciseSearchModal({
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.muscleCard}
+                  activeOpacity={0.85}
                   onPress={() => {
                     onSearchChange(item.title);
                     setActiveTab('search');
                   }}
                 >
-                  <View style={styles.muscleIconBox}>
-                    <Ionicons name="body-outline" size={28} color="#0ea5e9" />
-                  </View>
+                  <Image
+                    source={{ uri: item.image }}
+                    style={styles.muscleCardImage}
+                    resizeMode="cover"
+                  />
+                  <View style={styles.muscleCardOverlay} />
                   <Text style={styles.muscleCardTitle}>{item.title}</Text>
                 </TouchableOpacity>
               )}
@@ -242,23 +259,47 @@ export default function ExerciseSearchModal({
         {/* ── SEARCH RESULTS TAB ── */}
         {activeTab === 'search' && (
           <View style={styles.content}>
+            {/* Exercise Type Filter */}
+            <View style={styles.typeFilterWrap}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.typeFilterScroll}>
+                <TouchableOpacity
+                  style={[styles.typePill, !selectedType && styles.typePillActive]}
+                  onPress={() => setSelectedType(null)}
+                >
+                  <Text style={[styles.typePillText, !selectedType && styles.typePillTextActive]}>All</Text>
+                </TouchableOpacity>
+                {EXERCISE_TYPES.map(t => (
+                  <TouchableOpacity
+                    key={t}
+                    style={[styles.typePill, selectedType === t && styles.typePillActive]}
+                    onPress={() => setSelectedType(selectedType === t ? null : t)}
+                  >
+                    <Text style={[styles.typePillText, selectedType === t && styles.typePillTextActive]}>{t}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+
             <Text style={styles.sectionHeader}>
-              {searchQuery ? `Results for "${searchQuery}"` : 'All Exercises'}
+              {searchQuery ? `Results for "${searchQuery}"` : selectedType ? `${selectedType} Exercises` : 'All Exercises'}
+              {filteredSearchResults.length > 0 && ` (${filteredSearchResults.length})`}
             </Text>
 
             {loading ? (
               <View style={styles.centerBox}>
                 <ActivityIndicator size="large" color="#06b6d4" />
               </View>
-            ) : searchResults.length === 0 ? (
+            ) : filteredSearchResults.length === 0 ? (
               <View style={styles.centerBox}>
                 <Ionicons name="barbell-outline" size={48} color="#e2e8f0" />
                 <Text style={styles.emptyText}>No exercises found</Text>
-                <Text style={styles.emptySubText}>Try a different search term or browse by muscle group</Text>
+                <Text style={styles.emptySubText}>
+                  {selectedType ? `No ${selectedType} exercises match your search` : 'Try a different search term or browse by muscle group'}
+                </Text>
               </View>
             ) : (
               <FlatList
-                data={searchResults}
+                data={filteredSearchResults}
                 keyExtractor={item => item._id}
                 contentContainerStyle={styles.listContent}
                 renderItem={({ item }) => (
@@ -280,9 +321,16 @@ export default function ExerciseSearchModal({
                           ? (item.name as any).en ?? (item.name as any).name ?? 'Exercise'
                           : item.name}
                       </Text>
-                      <Text style={styles.listSub}>
-                        {item.muscleGroups?.[0] ?? item.category ?? 'Various'}
-                      </Text>
+                      <View style={styles.listMetaRow}>
+                        <Text style={styles.listSub}>
+                          {item.muscleGroups?.[0] ?? item.category ?? 'Various'}
+                        </Text>
+                        {item.type && (
+                          <View style={styles.typeChip}>
+                            <Text style={styles.typeChipText}>{item.type}</Text>
+                          </View>
+                        )}
+                      </View>
                     </View>
                     <Ionicons name="add-circle-outline" size={22} color="#06b6d4" />
                   </TouchableOpacity>
@@ -291,7 +339,7 @@ export default function ExerciseSearchModal({
             )}
           </View>
         )}
-      </SafeAreaView>
+      </View>
     </Modal>
   );
 }
@@ -363,6 +411,37 @@ const styles = StyleSheet.create({
   emptySubText: { marginTop: 8, fontSize: 13, color: '#94a3b8', textAlign: 'center', lineHeight: 18 },
   listContent: { paddingHorizontal: 20, paddingBottom: 60 },
 
+  // Exercise type filter
+  typeFilterWrap: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+    paddingVertical: 10,
+  },
+  typeFilterScroll: {
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  typePill: {
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    borderRadius: 20,
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  typePillActive: {
+    backgroundColor: '#0f172a',
+    borderColor: '#0f172a',
+  },
+  typePillText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#64748b',
+  },
+  typePillTextActive: {
+    color: '#ffffff',
+  },
+
   // Search results list items
   listItem: {
     flexDirection: 'row',
@@ -383,8 +462,18 @@ const styles = StyleSheet.create({
   },
   thumbImage: { width: '100%', height: '100%' },
   listBody: { flex: 1 },
-  listTitle: { fontSize: 15, fontWeight: '600', color: '#0f172a', marginBottom: 3 },
+  listTitle: { fontSize: 15, fontWeight: '600', color: '#0f172a', marginBottom: 4 },
+  listMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   listSub: { fontSize: 12, color: '#94a3b8' },
+  typeChip: {
+    backgroundColor: '#f0f9ff',
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#bae6fd',
+  },
+  typeChipText: { fontSize: 10, fontWeight: '700', color: '#0284c7' },
 
   // Saved workouts items
   savedWorkoutItem: {
@@ -423,25 +512,33 @@ const styles = StyleSheet.create({
   savedWorkoutExercise: { fontSize: 11, color: '#94a3b8' },
 
   // Muscle groups grid
-  muscleGrid: { paddingHorizontal: 16, paddingBottom: 60 },
+  muscleGrid: { paddingHorizontal: 12, paddingBottom: 60 },
   muscleCard: {
     flex: 1,
-    alignItems: 'center',
-    margin: 6,
-    paddingVertical: 16,
-    backgroundColor: '#f8fafc',
+    margin: 5,
+    height: 100,
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
+    overflow: 'hidden',
+    justifyContent: 'flex-end',
+    backgroundColor: '#1e293b',
   },
-  muscleIconBox: {
-    width: 54,
-    height: 54,
-    borderRadius: 14,
-    backgroundColor: '#e0f2fe',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
+  muscleCardImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
   },
-  muscleCardTitle: { fontSize: 12, fontWeight: '600', color: '#475569' },
+  muscleCardOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.38)',
+  },
+  muscleCardTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#ffffff',
+    paddingHorizontal: 10,
+    paddingBottom: 10,
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
 });

@@ -11,7 +11,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSignUp } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -32,6 +32,7 @@ export default function SignupScreen() {
   const [pendingVerification, setPendingVerification] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const insets = useSafeAreaInsets();
   const submitLockRef = useRef(false);
 
   const getFriendlyErrorMessage = (error: any): string => {
@@ -103,7 +104,14 @@ export default function SignupScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardView}>
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingTop: Math.max(insets.top, 20), paddingBottom: Math.max(insets.bottom, 40) }
+          ]}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
           <View style={styles.header}>
             <Text style={styles.title}>{pendingVerification ? 'Verify Your Email' : 'Create Account'}</Text>
             <Text style={styles.subtitle}>
@@ -198,9 +206,12 @@ export default function SignupScreen() {
                       <Text style={styles.dividerText}>or</Text>
                       <View style={styles.dividerLine} />
                     </View>
+                    {/* Social Logins - Hidden for Lite Build */}
+                    {/* 
                     <GoogleSignInButton disabled={loading} />
                     <View style={{ height: 12 }} />
                     <AppleSignInButton disabled={loading} />
+                    */}
                   </>
                 )}
 

@@ -19,24 +19,43 @@ export default function AppleSignInButton({ disabled }: Props) {
     try {
       setLoading(true);
       const redirectUrl = 'bluom://sso-callback';
-      console.log('[auth][apple] redirectUrl', redirectUrl);
+      console.log('🍎 [AppleAuth] Starting OAuth Flow with redirectUrl:', redirectUrl);
 
       const { createdSessionId, setActive, authSessionResult } = await startOAuthFlow({
         redirectUrl,
       });
 
+      console.log('🍎 [AppleAuth] OAuth Flow completed.');
+      console.log('🍎 [AppleAuth] authSessionResult:', JSON.stringify(authSessionResult, null, 2));
+      console.log('🍎 [AppleAuth] createdSessionId:', createdSessionId);
+
       if (authSessionResult?.type === 'cancel' || authSessionResult?.type === 'dismiss') {
+        console.log('🍎 [AppleAuth] User cancelled or dismissed the flow.');
         return;
       }
 
-      if (createdSessionId && setActive) {
-        await setActive({ session: createdSessionId });
+      // Important fix: explicitly check if the type was a success before assuming the session is valid
+      console.log('🍎 [AppleAuth] Flow Result Type:', authSessionResult?.type);
+      
+      if ((authSessionResult?.type === 'success' || createdSessionId) && setActive) {
+        if (createdSessionId) {
+          console.log('🍎 [AppleAuth] Setting active session to:', createdSessionId);
+          await setActive({ session: createdSessionId });
+          console.log('🍎 [AppleAuth] Session successfully set!');
+        } else {
+          console.log('🍎 [AppleAuth] Auth success but no session ID yet. This may be handled by Clerk internally.');
+        }
       } else {
-        Alert.alert('Apple sign-in incomplete', 'Please try again.');
+        console.log('🍎 [AppleAuth] authSessionResult type was not success and missing session ID. Full Result:', JSON.stringify(authSessionResult));
+        Alert.alert('Apple sign-in incomplete', 'Could not establish session. Please try again or use another method.');
       }
     } catch (e: any) {
       const code = e?.code ?? e?.errorCode;
-      if (String(code) === 'ERR_REQUEST_CANCELED') return;
+      if (String(code) === 'ERR_REQUEST_CANCELED') {
+         console.log('🍎 [AppleAuth] Request cleanly cancelled by OS.');
+         return;
+      }
+      console.error('🍎 [AppleAuth] Fatal Error during sign in:', e);
       Alert.alert('Apple sign-in failed', e?.message ? String(e.message) : 'Please try again.');
     } finally {
       setLoading(false);

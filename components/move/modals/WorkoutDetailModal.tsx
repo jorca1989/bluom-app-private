@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 
 interface PlannedExercise {
   id: string;
@@ -39,6 +41,7 @@ interface WorkoutDetailModalProps {
   onStartActiveWorkout: (dayIndex: number) => void;
   onAddExercise?: (dayIndex: number) => void;
   onDeleteExercise?: (exId: string, dayIndex: number) => void;
+  isPro?: boolean;
 }
 
 export default function WorkoutDetailModal({
@@ -51,8 +54,11 @@ export default function WorkoutDetailModal({
   onStartActiveWorkout,
   onAddExercise,
   onDeleteExercise,
+  isPro = false,
 }: WorkoutDetailModalProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = React.useState(initialTab);
+  const [showUpgrade, setShowUpgrade] = React.useState(false);
 
   React.useEffect(() => {
     if (visible) setActiveTab(initialTab);
@@ -153,7 +159,14 @@ export default function WorkoutDetailModal({
                 {onDeleteExercise && (
                   <TouchableOpacity
                     style={styles.deleteBtn}
-                    onPress={e => { e.stopPropagation(); onDeleteExercise(ex.id, dayIndex); }}
+                    onPress={e => { 
+                      e.stopPropagation(); 
+                      if (!isPro) {
+                        setShowUpgrade(true);
+                        return;
+                      }
+                      onDeleteExercise(ex.id, dayIndex); 
+                    }}
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                   >
                     <Ionicons name="trash-outline" size={20} color="#f43f5e" />
@@ -163,7 +176,16 @@ export default function WorkoutDetailModal({
             ))}
 
             {onAddExercise && (
-              <TouchableOpacity style={styles.addExBtn} onPress={() => onAddExercise(dayIndex)}>
+              <TouchableOpacity 
+                style={styles.addExBtn} 
+                onPress={() => {
+                  if (!isPro) {
+                    setShowUpgrade(true);
+                    return;
+                  }
+                  onAddExercise(dayIndex);
+                }}
+              >
                 <Ionicons name="add" size={20} color="#3b82f6" />
                 <Text style={styles.addExBtnText}>Add Exercise</Text>
               </TouchableOpacity>
@@ -175,12 +197,30 @@ export default function WorkoutDetailModal({
         <View style={styles.footer}>
           <TouchableOpacity
             style={styles.startBtn}
-            onPress={() => onStartActiveWorkout(dayIndex)}
+            onPress={() => {
+              if (!isPro) {
+                setShowUpgrade(true);
+                return;
+              }
+              onStartActiveWorkout(dayIndex);
+            }}
           >
             <Ionicons name="play" size={18} color="#ffffff" />
             <Text style={styles.startBtnText}>Start Day {activeTab} Workout</Text>
           </TouchableOpacity>
         </View>
+
+        <ProUpgradeModal 
+          visible={showUpgrade} 
+          onClose={() => setShowUpgrade(false)}
+          onUpgrade={() => {
+            setShowUpgrade(false);
+            onClose();
+            router.push('/premium');
+          }}
+          title="Personalised Training"
+          message="Upgrade to Pro to start your AI-generated fitness plan and modify exercises."
+        />
       </SafeAreaView>
     </Modal>
   );

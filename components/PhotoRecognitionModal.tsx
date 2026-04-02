@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, ActivityIndicator, Platform, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, ActivityIndicator, Platform, Alert, Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import { requireOptionalNativeModule } from 'expo-modules-core';
 import { useAction } from 'convex/react';
+import { useRouter } from 'expo-router';
 import { api } from '@/convex/_generated/api';
+import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 
 type RecognizedFood = {
   name: string;
@@ -20,13 +24,16 @@ interface PhotoRecognitionModalProps {
   onClose: () => void;
   onRecognized: (item: RecognizedFood) => void;
   meal: string;
+  isPro?: boolean;
 }
 
-export default function PhotoRecognitionModal({ visible, onClose, onRecognized, meal }: PhotoRecognitionModalProps) {
+export default function PhotoRecognitionModal({ visible, onClose, onRecognized, meal, isPro = false }: PhotoRecognitionModalProps) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [recognizeError, setRecognizeError] = useState<string | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
   const [cameraReady, setCameraReady] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
   
   const cameraRef = React.useRef<CameraView | null>(null);
   const recognizeFood = useAction(api.ai.recognizeFoodFromImage);
@@ -50,6 +57,10 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
   };
 
   async function handleTakePhoto() {
+    if (!isPro) {
+      setShowUpgrade(true);
+      return;
+    }
     setCaptureError(null);
     try {
       if (!permission?.granted) {
@@ -75,6 +86,10 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
   }
 
   async function handlePickFromGallery() {
+    if (!isPro) {
+      setShowUpgrade(true);
+      return;
+    }
     setCaptureError(null);
     setRecognizeError(null);
     try {
@@ -137,233 +152,285 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
   }
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={handleClose}>
-      <SafeAreaView style={styles.overlay} edges={['bottom', 'top']}>
-        <View style={styles.card}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Photo AI Log</Text>
-            <TouchableOpacity onPress={handleClose} style={styles.closeBtn}>
-              <Ionicons name="close" size={24} color="#64748b" />
-            </TouchableOpacity>
-          </View>
-          
-          <Text style={styles.subtitle}>Take a photo of your food, and we'll automatically extract the macros and calories.</Text>
-
-          {permission && !permission.granted && (
-            <View style={styles.permissionCard}>
-              <Ionicons name="camera-outline" size={32} color="#64748b" style={styles.permIcon}/>
-              <Text style={styles.permissionText}>Camera access is required to take photos</Text>
-              <TouchableOpacity style={styles.permButton} onPress={requestPermission}>
-                <Text style={styles.permButtonText}>Allow Camera Access</Text>
+    <Modal visible={visible} animationType="slide" transparent presentationStyle="fullScreen" onRequestClose={handleClose}>
+      <View style={styles.container}>
+        {!canRecognize && (permission?.granted ?? true) ? (
+          <CameraView
+            ref={(r) => { cameraRef.current = r; }}
+            style={StyleSheet.absoluteFill}
+            facing="back"
+            active={visible && !canRecognize}
+            onCameraReady={() => setCameraReady(true)}
+          >
+            {/* Top Bar with Instruction and Close */}
+            <SafeAreaView style={styles.topBar} edges={['top']}>
+              <View style={styles.topInfo}>
+                <Text style={styles.scanTitle}>Photo AI Log</Text>
+                <Text style={styles.scanSubtitle}>Extract macros from your meal</Text>
+              </View>
+              <TouchableOpacity onPress={handleClose} style={styles.iconCloseBtn}>
+                <Ionicons name="close" size={24} color="#ffffff" />
               </TouchableOpacity>
-            </View>
-          )}
+            </SafeAreaView>
 
-          {!canRecognize && (permission?.granted ?? true) && (
-            <View style={styles.cameraWrapper}>
-              <View style={styles.cameraViewWrap}>
-                 <CameraView
-                  ref={(r) => { cameraRef.current = r; }}
-                  style={styles.camera}
-                  facing="back"
-                  active={visible && !canRecognize}
-                  onCameraReady={() => setCameraReady(true)}
-                />
-                {!cameraReady && (
-                   <View style={styles.cameraLoading}>
-                      <ActivityIndicator size="small" color="#ffffff" />
-                   </View>
-                )}
-              </View>
-              {captureError && <Text style={styles.errorText}>{captureError}</Text>}
-              
-              <View style={styles.actionButtonsRow}>
-                <TouchableOpacity style={styles.primaryActionButton} onPress={handleTakePhoto} activeOpacity={0.8}>
-                   <Ionicons name="camera" size={20} color="#ffffff" />
-                   <Text style={styles.primaryActionText}>Take Photo</Text>
+            {/* Scan Frame Overlay */}
+            <View style={styles.scanOverlay}>
+              <View style={styles.scanFrame} />
+              {captureError && <Text style={styles.errorFloatText}>{captureError}</Text>}
+            </View>
+
+            <SafeAreaView style={styles.bottomControls} edges={['bottom']}>
+              <View style={styles.buttonRow}>
+                <View style={{ width: 44 }} />
+                
+                <TouchableOpacity style={styles.shutterBtn} onPress={handleTakePhoto} activeOpacity={0.8}>
+                  <View style={styles.shutterInner} />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.secondaryActionButton} onPress={handlePickFromGallery} activeOpacity={0.8}>
-                   <Ionicons name="images" size={20} color="#475569" />
-                   <Text style={styles.secondaryActionText}>Upload from Gallery</Text>
+
+                <TouchableOpacity style={styles.galleryIconBtn} onPress={handlePickFromGallery} activeOpacity={0.8}>
+                  <Ionicons name="images-outline" size={24} color="#ffffff" />
                 </TouchableOpacity>
               </View>
-            </View>
-          )}
+            </SafeAreaView>
+          </CameraView>
+        ) : (
+          <SafeAreaView style={styles.resultsOverlay} edges={['top', 'bottom']}>
+             <TouchableOpacity onPress={handleClose} style={styles.resultsCloseBtn}>
+                <Ionicons name="close" size={24} color="#0f172a" />
+              </TouchableOpacity>
 
-          {canRecognize && (
-            <View style={styles.capturedView}>
-              <View style={styles.successBadge}>
-                 <Ionicons name="checkmark-circle" size={28} color="#10b981" />
-                 <Text style={styles.successText}>Photo Captured</Text>
-              </View>
-              
-              {recognizeError && <Text style={styles.errorText}>{recognizeError}</Text>}
+             {permission && !permission.granted ? (
+                <View style={styles.permContainer}>
+                   <Ionicons name="camera-outline" size={48} color="#64748b" />
+                   <Text style={styles.permTitle}>Camera access required</Text>
+                   <Text style={styles.permSub}>Scan food to extract macros automatically.</Text>
+                   <TouchableOpacity style={styles.permBtn} onPress={requestPermission}>
+                      <Text style={styles.permBtnText}>Enable Camera</Text>
+                   </TouchableOpacity>
+                </View>
+             ) : (
+                <View style={styles.analysisCard}>
+                  <View style={styles.successHeader}>
+                    <Ionicons name="checkmark-circle" size={32} color="#10b981" />
+                    <Text style={styles.analysisTitle}>Photo Captured</Text>
+                  </View>
 
-              <View style={styles.actionButtonsRow}>
-                 <TouchableOpacity style={styles.secondaryActionButton} onPress={resetCapture} disabled={loading}>
-                   <Text style={styles.secondaryActionText}>Retake Photo</Text>
-                 </TouchableOpacity>
-                 <TouchableOpacity style={[styles.primaryActionButton, loading && styles.disabledButton]} onPress={handleRecognize} disabled={loading}>
-                   {loading ? <ActivityIndicator size="small" color="#ffffff"/> : (
-                     <>
-                        <Text style={styles.primaryActionText}>Analyze Food</Text>
-                        <Ionicons name="sparkles" size={18} color="#ffffff" />
-                     </>
-                   )}
-                 </TouchableOpacity>
-              </View>
-            </View>
-          )}
-        </View>
-      </SafeAreaView>
+                  {recognizeError && <Text style={styles.errorText}>{recognizeError}</Text>}
+
+                  <View style={styles.resultActions}>
+                    <TouchableOpacity style={styles.retakeBtn} onPress={resetCapture} disabled={loading}>
+                      <Text style={styles.retakeText}>Retake</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={[styles.analyzeBtn, loading && styles.disabledBtn]} 
+                      onPress={handleRecognize} 
+                      disabled={loading}
+                    >
+                      {loading ? <ActivityIndicator size="small" color="#ffffff"/> : (
+                        <>
+                          <Text style={styles.analyzeBtnText}>Analyze Food</Text>
+                          <Ionicons name="sparkles" size={18} color="#ffffff" />
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </View>
+             )}
+          </SafeAreaView>
+        )}
+        <ProUpgradeModal 
+          visible={showUpgrade} 
+          onClose={() => setShowUpgrade(false)}
+          onUpgrade={() => {
+            setShowUpgrade(false);
+            handleClose();
+            router.push('/(tabs)/profile');
+          }}
+          title="AI Photo Log"
+          message="Unlock instant AI food recognition and macro tracking with Bluom Pro."
+        />
+      </View>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
+  container: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.6)',
-    justifyContent: 'center',
-    padding: 16,
+    backgroundColor: '#000000',
   },
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 24,
-    padding: 24,
-    width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 8,
-  },
-  header: {
+  topBar: {
+    paddingHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#0f172a',
+  topInfo: {
+    flex: 1,
   },
-  closeBtn: {
-    padding: 4,
-    backgroundColor: '#f1f5f9',
-    borderRadius: 20,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#64748b',
-    lineHeight: 20,
-    marginBottom: 24,
-  },
-  permissionCard: {
-    backgroundColor: '#f8fafc',
-    borderRadius: 16,
-    padding: 24,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  permIcon: {
-    marginBottom: 12,
-  },
-  permissionText: {
-    fontSize: 15,
-    color: '#475569',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  permButton: {
-    backgroundColor: '#0f172a',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
-  },
-  permButtonText: {
+  scanTitle: {
+    fontSize: 18,
+    fontWeight: '900',
     color: '#ffffff',
-    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
-  cameraWrapper: {
-    gap: 16,
+  scanSubtitle: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontWeight: '600',
   },
-  cameraViewWrap: {
-    width: '100%',
-    aspectRatio: 1,
+  iconCloseBtn: {
+    width: 40,
+    height: 40,
     borderRadius: 20,
-    overflow: 'hidden',
-    backgroundColor: '#0f172a',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scanOverlay: {
+    ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'transparent',
   },
-  camera: {
-    width: '100%',
-    height: '100%',
+  scanFrame: {
+    width: width * 0.7,
+    height: width * 0.7,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.5)',
+    borderRadius: 24,
+    backgroundColor: 'transparent',
   },
-  cameraLoading: {
+  bottomControls: {
     position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 30,
+    paddingBottom: 20,
   },
-  actionButtonsRow: {
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  shutterBtn: {
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderWidth: 4,
+    borderColor: '#ffffff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  shutterInner: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#ffffff',
+  },
+  galleryIconBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  errorFloatText: {
+    position: 'absolute',
+    bottom: 120,
+    color: '#ef4444',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+  },
+  resultsOverlay: {
+    flex: 1,
+    backgroundColor: '#F5F4F0',
+    padding: 20,
+  },
+  resultsCloseBtn: {
+    alignSelf: 'flex-end',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  permContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  permTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a' },
+  permSub: { fontSize: 14, color: '#64748b', textAlign: 'center', paddingHorizontal: 40 },
+  permBtn: {
+    backgroundColor: '#0f172a',
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 16,
+    marginTop: 10,
+  },
+  permBtnText: { color: '#ffffff', fontWeight: 'bold' },
+  analysisCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  successHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 20,
+  },
+  analysisTitle: {
+    fontSize: 20,
+    fontWeight: '900',
+    color: '#0f172a',
+  },
+  resultActions: {
     flexDirection: 'row',
     gap: 12,
   },
-  primaryActionButton: {
+  retakeBtn: {
     flex: 1,
+    backgroundColor: '#f1f5f9',
+    paddingVertical: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+  },
+  retakeText: { color: '#475569', fontWeight: 'bold', fontSize: 15 },
+  analyzeBtn: {
+    flex: 2,
     flexDirection: 'row',
     backgroundColor: '#3b82f6',
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 8,
   },
-  primaryActionText: {
-    color: '#ffffff',
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  secondaryActionButton: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: '#f1f5f9',
-    paddingVertical: 14,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 8,
-  },
-  secondaryActionText: {
-    color: '#475569',
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  disabledButton: {
-     opacity: 0.7,
-  },
-  capturedView: {
-    gap: 20,
-  },
-  successBadge: {
-    backgroundColor: '#f0fdf4',
-    borderWidth: 1,
-    borderColor: '#bbf7d0',
-    borderRadius: 16,
-    padding: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  successText: {
-    color: '#166534',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  errorText: {
-    color: '#ef4444',
-    textAlign: 'center',
-    fontSize: 14,
-  },
+  analyzeBtnText: { color: '#ffffff', fontWeight: 'bold', fontSize: 15 },
+  disabledBtn: { opacity: 0.6 },
+  errorText: { color: '#ef4444', marginBottom: 12, textAlign: 'center', fontWeight: '600' },
 });

@@ -208,10 +208,10 @@ function formatLastSync(ts: number | null | undefined): string {
 
 function categoryLabel(cat: IntegrationDef['category']): string {
   switch (cat) {
-    case 'activity':   return 'Activity & Fitness';
+    case 'activity': return 'Activity & Fitness';
     case 'biometrics': return 'Body Metrics';
-    case 'nutrition':  return 'Nutrition';
-    case 'sleep':      return 'Sleep & Recovery';
+    case 'nutrition': return 'Nutrition';
+    case 'sleep': return 'Sleep & Recovery';
   }
 }
 
@@ -404,8 +404,8 @@ const card = StyleSheet.create({
 
 // ─── Main Screen ──────────────────────────────────────────────
 export default function IntegrationsScreen() {
-  const router  = useRouter();
-  const insets  = useSafeAreaInsets();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
 
   const convexUser = useQuery(
@@ -415,18 +415,18 @@ export default function IntegrationsScreen() {
 
   // Strava connection state derived from DB
   const stravaConnected = !!(convexUser?.stravaAccessToken);
-  const exchangeToken   = useAction(api.strava.exchangeToken);
-  const syncStrava      = useAction(api.integrations.syncStravaActivities);
+  const exchangeToken = useAction(api.strava.exchangeToken);
+  const syncStrava = useAction(api.integrations.syncStravaActivities);
 
   // Native health hook (platform-safe)
   const {
     connected: healthConnected,
-    syncing:   healthSyncing,
-    lastSync:  healthLastSync,
-    connect:   connectHealth,
+    syncing: healthSyncing,
+    lastSync: healthLastSync,
+    connect: connectHealth,
     disconnect: disconnectHealth,
-    sync:      syncHealth,
-    source:    healthSource,
+    sync: syncHealth,
+    source: healthSource,
   } = useHealthSync();
 
   // Per-integration syncing flags
@@ -451,12 +451,12 @@ export default function IntegrationsScreen() {
         const ok = await connectHealth();
         if (!ok) {
           Alert.alert(
-            'Permission Needed',
+            'Health Connection Failed',
             Platform.OS === 'ios'
-              ? 'Please grant Health access in Settings → Privacy & Security → Health → Bluom.'
+              ? 'Bluom was unable to initialize HealthKit. This could be due to missing entitlements, a build configuration error, or the OS blocking the request. Ensure you have made a fresh native build with the latest config.'
               : 'Please grant Health Connect permissions to sync your data.',
             [
-              { text: 'Open Settings', onPress: () => Linking.openSettings() },
+              { text: 'Check Settings', onPress: () => Linking.openSettings() },
               { text: 'Cancel', style: 'cancel' },
             ]
           );
@@ -493,8 +493,8 @@ export default function IntegrationsScreen() {
           Alert.alert('Configuration error', 'Strava client ID is not set.');
           return;
         }
-        const redirectUri = 'bluom://strava-callback';
-        const scope       = 'activity:read_all';
+        const redirectUri = 'https://bluom.app/strava-callback';
+        const scope = 'activity:read_all';
         const url = `https://www.strava.com/oauth/mobile/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&approval_prompt=auto&scope=${scope}`;
         Linking.openURL(url);
       }
@@ -557,11 +557,10 @@ export default function IntegrationsScreen() {
     if (item.platform === 'android' && Platform.OS !== 'android') return false;
     return true;
   };
-
   return (
-    <SafeAreaView style={s.container} edges={['top', 'bottom']}>
-      {/* Header */}
-      <View style={[s.header, { paddingTop: Math.max(insets.top, 12) + 8 }]}>
+    <SafeAreaView style={[s.container, { backgroundColor: '#f8fafc' }]} edges={['top', 'bottom']}>
+      {/* Header - Aligned to match Exercise Library */}
+      <View style={[s.header, { paddingVertical: 12 }]}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.7}>
           <Ionicons name="arrow-back" size={24} color="#0f172a" />
         </TouchableOpacity>
@@ -574,7 +573,7 @@ export default function IntegrationsScreen() {
       <ScrollView
         contentContainerStyle={{
           paddingHorizontal: 20,
-          paddingBottom: getBottomContentPadding(insets.bottom, 16),
+          paddingBottom: Math.max(insets.bottom, 24),
           paddingTop: 8,
         }}
         showsVerticalScrollIndicator={false}
@@ -676,7 +675,7 @@ const s = StyleSheet.create({
   },
   backBtn: { padding: 6, marginTop: 2 },
   headerText: { flex: 1 },
-  title:    { fontSize: 24, fontWeight: '900', color: '#0f172a', letterSpacing: -0.5 },
+  title: { fontSize: 24, fontWeight: '900', color: '#0f172a', letterSpacing: -0.5 },
   subtitle: { fontSize: 13, color: '#64748b', marginTop: 2 },
 
   privacyBanner: {

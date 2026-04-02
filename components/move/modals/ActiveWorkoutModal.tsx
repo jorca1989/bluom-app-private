@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput, Image, KeyboardAvoidingView, Platform, Linking } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 export interface SetData {
@@ -38,6 +38,7 @@ export default function ActiveWorkoutModal({
   onAddExercise,
   onDeleteExercise
 }: ActiveWorkoutModalProps) {
+  const insets = useSafeAreaInsets();
   const [timeSpent, setTimeSpent] = useState(0);
   const [exercises, setExercises] = useState<ActiveExercise[]>([]);
   const [restTimer, setRestTimer] = useState(0);
@@ -133,9 +134,9 @@ export default function ActiveWorkoutModal({
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
-      <SafeAreaView style={styles.container} edges={['top']}>
-        {/* Header */}
-        <View style={styles.header}>
+      <View style={[styles.container, { backgroundColor: '#ffffff' }]}>
+        {/* Header - Aligned to match Exercise Library (+10 offset) */}
+        <View style={[styles.header, { paddingTop: insets.top + 10, paddingBottom: 16 }]}>
           <TouchableOpacity onPress={onClose} style={styles.iconBtn}>
             <Ionicons name="chevron-down" size={28} color="#0f172a" />
           </TouchableOpacity>
@@ -265,6 +266,22 @@ export default function ActiveWorkoutModal({
                         <Text style={styles.addSetBtnText}>+ Add set</Text>
                       </TouchableOpacity>
 
+                      {/* Per-exercise volume summary */}
+                      {(() => {
+                        const exVol = ex.sets.reduce((sum, s) => {
+                          if (s.completed) {
+                            return sum + (parseFloat(s.weight) || 0) * (parseInt(s.reps, 10) || 0);
+                          }
+                          return sum;
+                        }, 0);
+                        return exVol > 0 ? (
+                          <View style={styles.exVolumeRow}>
+                            <Ionicons name="barbell-outline" size={15} color="#3b82f6" />
+                            <Text style={styles.exVolumeText}>Exercise Volume: <Text style={styles.exVolumeVal}>{exVol} kg</Text></Text>
+                          </View>
+                        ) : null;
+                      })()}
+
                       {allSetsCompleted && exIdx < exercises.length - 1 && (
                         <TouchableOpacity style={styles.nextExBtn} onPress={() => setExpandedIndex(exIdx + 1)}>
                            <Text style={styles.nextExBtnText}>Next Exercise</Text>
@@ -312,7 +329,7 @@ export default function ActiveWorkoutModal({
             </View>
           </View>
         )}
-      </SafeAreaView>
+      </View>
     </Modal>
   );
 }
@@ -433,10 +450,11 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   videoPlaceholder: {
-    width: '100%',
-    height: 160,
+    alignSelf: 'center',
+    width: '62%',
+    aspectRatio: 9 / 16,
     backgroundColor: '#0f172a',
-    borderRadius: 12,
+    borderRadius: 16,
     marginBottom: 20,
     overflow: 'hidden',
     justifyContent: 'center',
@@ -445,7 +463,7 @@ const styles = StyleSheet.create({
   videoImage: {
     width: '100%',
     height: '100%',
-    opacity: 0.6,
+    opacity: 0.7,
   },
   playIconOverlay: {
     position: 'absolute',
@@ -633,5 +651,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#94a3b8',
     fontWeight: '500',
+  },
+  exVolumeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    backgroundColor: '#eff6ff',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#dbeafe',
+  },
+  exVolumeText: {
+    fontSize: 13,
+    color: '#475569',
+    fontWeight: '600',
+  },
+  exVolumeVal: {
+    color: '#2563eb',
+    fontWeight: '800',
   },
 });

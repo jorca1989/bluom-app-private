@@ -353,6 +353,7 @@ export default function MoveScreen() {
   const [showWorkoutModal, setShowWorkoutModal] = useState(false);
   const [showAllActivities, setShowAllActivities] = useState(false);
   const [showOutdoor, setShowOutdoor] = useState(false);
+  const [workoutDetailTab, setWorkoutDetailTab] = useState(0);
   const dummyExercises: ActiveExercise[] = [{ id: "1", name: "Barbell Bench Press", sets: [{ id: "1a", weight: "", reps: "", completed: false }] }];
 
   // Search state (debounced)
@@ -360,22 +361,40 @@ export default function MoveScreen() {
   const [selectedCategory, setSelectedCategory] = useState<(typeof workoutCategories)[number]>('All');
   const [selectedExercise, setSelectedExercise] = useState<ExerciseLibraryItem | null>(null);
 
-  // Days per week — always matches fourWeekPlanData.ts (4 days/week)
-  const totalWorkoutsPerWeek = freePlanCurrentWeek?.days?.length ?? 4;
+  // ── Workout display routine: Prioritize AI Plan from Convex ───────────
+  const initialWorkouts = useMemo(() => {
+    // 1. If we have a personalized AI plan, map its workouts to RoutineDay format
+    const aiWorkouts = activePlans?.fitnessPlan?.workouts;
+    if (aiWorkouts && aiWorkouts.length > 0) {
+      return aiWorkouts.map((w: any, idx: number) => ({
+        dayNum: idx + 1,
+        dayTitle: w.focus || w.day || `Workout ${idx + 1}`,
+        muscleGroups: Array.isArray(w.muscleGroups)
+          ? w.muscleGroups.join(', ')
+          : (w.muscleGroups || w.focus || 'Full Body'),
+        exercises: (w.exercises || []).map((ex: any, j: number) => ({
+          id: `ai-d${idx + 1}-e${j}`,
+          name: ex.name || 'Exercise',
+          thumbnailUrl: ex.thumbnailUrl || '',
+          primaryMuscle: Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || 'Various'),
+          equipment: ex.equipment || 'Various',
+          sets: typeof ex.sets === 'number' ? ex.sets : (parseInt(String(ex.sets)) || 3),
+          reps: ex.reps !== undefined ? String(ex.reps) : '10',
+        })),
+      }));
+    }
+    // 2. Otherwise fall back to the free template for the current week
+    return getWeekRoutineDays(currentWeekIndex);
+  }, [currentWeekIndex, activePlans?.fitnessPlan]);
 
-  // ── Workout display routine: SINGLE SOURCE = fourWeekPlanData.ts ───────────
-  // The old AI plan from Convex (activePlans.fitnessPlan.workouts) was a separate
-  // 3-day ABC split that diverged from the plan overview screen. Until we build
-  // the proper adaptive plan system, all users see fourWeekPlanData.ts.
-  const initialWorkouts = useMemo(
-    () => getWeekRoutineDays(currentWeekIndex),
-    [currentWeekIndex]
-  );
 
   const [workouts, setWorkouts] = useState<any[]>(initialWorkouts as any);
   useEffect(() => {
     setWorkouts(initialWorkouts as any);
   }, [initialWorkouts]);
+
+  // Days per week — based on the ACTUAL number of workouts in the plan
+  const totalWorkoutsPerWeek = workouts.length;
 
   const [activeWorkoutExercises, setActiveWorkoutExercises] = useState<ActiveExercise[]>([]);
 
@@ -636,11 +655,14 @@ export default function MoveScreen() {
     }
   };
 
+  const [isSubmittingSteps, setIsSubmittingSteps] = useState(false);
+
   const addSteps = async () => {
     if (!convexUser?._id) return;
     const steps = Math.max(0, Math.floor(safeNumber(stepsInput, 0)));
-    if (!steps) return;
+    if (!steps || isSubmittingSteps) return;
 
+    setIsSubmittingSteps(true);
     try {
       await addStepsEntry({
         userId: convexUser._id,
@@ -667,6 +689,8 @@ export default function MoveScreen() {
       Alert.alert('Success', `${steps.toLocaleString()} steps added`);
     } catch (e: any) {
       Alert.alert('Error', e?.message ?? 'Failed to add steps');
+    } finally {
+      setIsSubmittingSteps(false);
     }
   };
 
@@ -708,7 +732,7 @@ export default function MoveScreen() {
         <View style={isTablet ? { width: '100%', maxWidth: contentMaxWidth ?? 1000, alignSelf: 'center' } : undefined}>
 
           {/* Header */}
-          <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 22 }]}>
+          <View style={[styles.header, { paddingTop: 12 }]}>
             <View style={styles.headerContent}>
               <View style={styles.headerTextContainer}>
                 <Text style={styles.title}>Move</Text>
@@ -829,8 +853,8 @@ export default function MoveScreen() {
             currentWeek={currentWeekIndex + 1}
             totalWeeks={4}
             progressPercent={Math.min(100, Math.floor((accountAgeMs / PLAN_DURATION_MS) * 100))}
-            onInfoPress={() => { }}
-            onWorkoutsPress={() => { }}
+            onInfoPress={() => { setWorkoutDetailTab(0); setShowWorkoutDetail(true); }}
+            onWorkoutsPress={() => { setWorkoutDetailTab(0); setShowWorkoutDetail(true); }}
           />
 
           {/* Weekly Workouts — or Upgrade banner if free plan expired */}
@@ -862,8 +886,8 @@ export default function MoveScreen() {
                     muscleGroups={day.muscleGroups}
                     exercises={day.exercises as any}
                     isUpNext={idx === 0}
-                    onStartWorkout={() => { setSelectedDayIndex(idx); setWorkoutDetailMode('start'); setShowWorkoutDetail(true); }}
-                    onViewWorkout={() => { setSelectedDayIndex(idx); setWorkoutDetailMode('view'); setShowWorkoutDetail(true); }}
+                    onStartWorkout={() => { setWorkoutDetailTab(idx + 1 as any); setWorkoutDetailMode('start'); setShowWorkoutDetail(true); }}
+                    onViewWorkout={() => { setWorkoutDetailTab(idx + 1 as any); setWorkoutDetailMode('view'); setShowWorkoutDetail(true); }}
                   />
                 ))}
               </ScrollView>
@@ -887,7 +911,8 @@ export default function MoveScreen() {
             }}
           />
 
-          <OutdoorActivityBanner onStart={() => setShowOutdoor(true)} />
+          {/* Outdoor Activity - Hidden for Lite Build */}
+          {/* <OutdoorActivityBanner onStart={() => setShowOutdoor(true)} /> */}
 
           {/* Today's Activities */}
           <View style={styles.card}>
@@ -923,7 +948,7 @@ export default function MoveScreen() {
               </View>
             ) : todayActivities.length > 0 ? (
               <View style={styles.activitiesList}>
-                {(showAllActivities ? todayActivities : todayActivities.slice(0, 6)).map((activity) => (
+                {(showAllActivities ? todayActivities : todayActivities.slice(0, 2)).map((activity) => (
                   <View key={activity.id} style={styles.activityItem}>
                     <View style={styles.activityLeft}>
                       <View
@@ -993,7 +1018,7 @@ export default function MoveScreen() {
                             ]);
                           }}
                           activeOpacity={0.7}
-                          style={styles.deleteButtonNaked}
+                          style={styles.deleteButton}
                         >
                           <Ionicons name="trash" size={18} color="#dc2626" />
                         </TouchableOpacity>
@@ -1001,15 +1026,19 @@ export default function MoveScreen() {
                     </View>
                   </View>
                 ))}
-                {todayActivities.length > 6 && (
+                {todayActivities.length > 2 && (
                   <TouchableOpacity
+                    style={styles.viewMoreBtn}
                     onPress={() => setShowAllActivities((s) => !s)}
-                    activeOpacity={0.8}
-                    style={{ paddingTop: 10, alignItems: 'center' }}
                   >
-                    <Text style={{ color: '#2563eb', fontWeight: '700' }}>
-                      {showAllActivities ? 'Show less' : `View all (${todayActivities.length})`}
+                    <Text style={styles.viewMoreText}>
+                      {showAllActivities ? 'Show Less' : `View ${todayActivities.length - 2} more activities`}
                     </Text>
+                    <Ionicons
+                      name={showAllActivities ? 'chevron-up' : 'chevron-down'}
+                      size={16}
+                      color="#3b82f6"
+                    />
                   </TouchableOpacity>
                 )}
               </View>
@@ -1025,7 +1054,7 @@ export default function MoveScreen() {
           </View>
 
           <MoveInsights isPro={!!isPro} onUpgradePress={() => {
-            handleProFeature('Pro Insights', 'Upgrade to Pro to unlock advanced AI insights for your workouts.');
+            router.push('/move-insights');
           }} />
 
         </View>{/* end tablet maxWidth wrapper */}
@@ -1051,7 +1080,7 @@ export default function MoveScreen() {
             console.error("Failed to log entry", e);
           }
           setShowActiveWorkout(false);
-          setCompletedWorkoutsThisWeek(prev => Math.min(prev + 1, totalWorkoutsPerWeek * 4));
+          setCompletedWorkoutsThisWeek(prev => Math.min(prev + 1, workouts.length * 4));
           Alert.alert("Workout Completed!", `Great job! Your activity was saved.`);
         }}
         onAddExercise={() => {
@@ -1067,8 +1096,8 @@ export default function MoveScreen() {
 
       <WorkoutDetailModal
         visible={showWorkoutDetail}
-        initialTab={selectedDayIndex + 1}
         routineDays={workouts as any}
+        initialTab={workoutDetailTab as any}
         isPreviewMode={workoutDetailMode === 'start'}
         onStartActiveWorkout={(idx) => {
           setSelectedDayIndex(idx);
@@ -1086,14 +1115,16 @@ export default function MoveScreen() {
             }))
           }));
           setActiveWorkoutExercises(built);
-          setShowActiveWorkout(true);
+          // Small delay to ensure the previous modal unmounts cleanly on iOS
+          setTimeout(() => setShowActiveWorkout(true), 100);
         }}
         onClose={() => setShowWorkoutDetail(false)}
         onAddExercise={(dayIdx) => {
           if (!isPro) return handleProFeature('Add Exercise', 'Upgrade to Pro to add exercises to your plan.');
           setPlanEditDayIndex(dayIdx);
           setExerciseSearchTarget('plan_add');
-          setShowExerciseSearch(true);
+          setShowWorkoutDetail(false);
+          setTimeout(() => setShowExerciseSearch(true), 100);
         }}
         onDeleteExercise={(id, dayIdx) => {
           if (!isPro) return handleProFeature('Remove Exercise', 'Upgrade to Pro to customize your routine.');
@@ -1116,8 +1147,10 @@ export default function MoveScreen() {
             thumbnailUrl: ex.thumbnailUrl,
             fromRoutine: true
           } as any);
-          setShowExerciseDetail(true);
+          setShowWorkoutDetail(false);
+          setTimeout(() => setShowExerciseDetail(true), 100);
         }}
+        isPro={!!isPro}
       />
 
       <ExerciseSearchModal
@@ -1129,7 +1162,8 @@ export default function MoveScreen() {
         onExerciseSelect={(ex) => {
           setSelectedExerciseForDetail(ex);
           if (exerciseSearchTarget === 'log') {
-            setShowSingleExerciseLog(true);
+            setShowExerciseSearch(false);
+            setTimeout(() => setShowSingleExerciseLog(true), 50);
           } else if (exerciseSearchTarget === 'plan_add') {
             setWorkouts((prev) => {
               const next = [...prev];
@@ -1169,7 +1203,8 @@ export default function MoveScreen() {
             setActiveWorkoutExercises((prev) => [...prev, newActive]);
             setShowExerciseSearch(false);
           } else {
-            setShowExerciseDetail(true);
+            setShowExerciseSearch(false);
+            setTimeout(() => setShowExerciseDetail(true), 50);
           }
         }}
         onClose={() => setShowExerciseSearch(false)}
@@ -1231,7 +1266,7 @@ export default function MoveScreen() {
       <ExerciseDetailModal
         visible={showExerciseDetail}
         exercise={selectedExerciseForDetail}
-        isPro={selectedExerciseForDetail?.fromRoutine || false}
+        isPro={!!isPro || !!selectedExerciseForDetail?.fromRoutine}
         onClose={() => setShowExerciseDetail(false)}
         onUpgradePress={() => { }}
       />
@@ -1358,16 +1393,21 @@ export default function MoveScreen() {
                 keyboardType="numeric"
               />
             </View>
+
             <View style={styles.modalButtons}>
               <TouchableOpacity style={styles.modalButtonSecondary} onPress={() => setShowStepsModal(false)}>
                 <Text style={styles.modalButtonSecondaryText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalButton, !stepsInput && styles.modalButtonDisabled]}
+                style={[styles.modalButton, (!stepsInput || isSubmittingSteps) && styles.modalButtonDisabled]}
                 onPress={addSteps}
-                disabled={!stepsInput}
+                disabled={!stepsInput || isSubmittingSteps}
               >
-                <Text style={styles.modalButtonText}>Add Steps</Text>
+                {isSubmittingSteps ? (
+                  <ActivityIndicator color="#ffffff" />
+                ) : (
+                  <Text style={styles.modalButtonText}>Add Steps</Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
@@ -1579,10 +1619,6 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     padding: 6,
-    borderRadius: 8,
-    backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
   },
   emptyState: {
     alignItems: 'center',
@@ -1606,6 +1642,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#94a3b8',
     textAlign: 'center',
+  },
+  viewMoreBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    gap: 4,
+  },
+  viewMoreText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#3b82f6',
   },
   achievementsList: {
     gap: 12,
@@ -1934,14 +1982,4 @@ const styles = StyleSheet.create({
     color: '#64748b',
     textAlign: 'center',
   },
-  deleteButtonNaked: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: 'transparent',
-  },
 });
-
-
-
-
-

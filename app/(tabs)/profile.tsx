@@ -523,13 +523,15 @@ export default function ProfileScreen() {
             label="AI Coach" sub="Your precision health expert"
             onPress={() => router.push('/ai-coach')}
           />
-          <View style={s.divider} />
+          {/* Integrations - Hidden for Lite Build */}
+          {/* 
           <MenuRow
             icon={<Zap size={18} color="#0ea5e9" />} iconBg="#f0f9ff"
             label="Integrations" sub="Apple Health, Strava & more"
             onPress={() => router.push('/integrations')}
           />
           <View style={s.divider} />
+          */}
           <MenuRow
             icon={<Dumbbell size={18} color="#7c3aed" />} iconBg="#ede9fe"
             label="Move" sub="Workouts, steps & exercise log"

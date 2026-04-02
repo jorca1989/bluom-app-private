@@ -324,9 +324,12 @@ export default function LoginScreen() {
                       <Text style={styles.dividerText}>or</Text>
                       <View style={styles.dividerLine} />
                     </View>
+                    {/* Social Logins - Hidden for Lite Build */}
+                    {/* 
                     <GoogleSignInButton disabled={loading} />
                     <View style={{ height: 12 }} />
                     <AppleSignInButton disabled={loading} />
+                    */}
                   </>
                 )}
               </>

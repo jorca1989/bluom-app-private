@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { api } from '@/convex/_generated/api';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import WorkoutDetailModal from '@/components/move/modals/WorkoutDetailModal';
 import ActiveWorkoutModal, { ActiveExercise } from '@/components/move/modals/ActiveWorkoutModal';
+import ExerciseDetailModal from '@/components/move/modals/ExerciseDetailModal';
 import { FREE_4_WEEK_PLAN, getWeekRoutineDays, PlanWeek } from '@/utils/fourWeekPlanData';
 
 // ─── Week colours ─────────────────────────────────────────────────────────────
@@ -32,6 +33,11 @@ export default function FourWeekPlanScreen() {
   );
   const isPro = convexUser?.subscriptionStatus === 'active' ||
     clerkUser?.emailAddresses?.some(e => e.emailAddress === 'ggovsaas@gmail.com');
+  
+  const activePlans = useQuery(
+    api.plans.getActivePlans,
+    convexUser?._id ? {} : 'skip'
+  );
 
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);  // week index 0-3
@@ -39,6 +45,44 @@ export default function FourWeekPlanScreen() {
   const [showActiveWorkout, setShowActiveWorkout] = useState(false);
   const [activeWorkoutExercises, setActiveWorkoutExercises] = useState<ActiveExercise[]>([]);
   const [activeDayIndex, setActiveDayIndex] = useState(0);
+  const [showExerciseDetail, setShowExerciseDetail] = useState(false);
+  const [selectedExerciseForDetail, setSelectedExerciseForDetail] = useState<any>(null);
+
+  // ── Resolve days: AI plan > static plan ─────────────────────────────────────
+  // The AI plan's `workouts` represents ONE week's template, repeated for all 4 weeks.
+  const aiWorkouts = activePlans?.fitnessPlan?.workouts;
+
+  const getWeekDays = useMemo(() => {
+    return (weekIdx: number) => {
+      if (aiWorkouts && aiWorkouts.length > 0) {
+        return aiWorkouts.map((w: any, i: number) => ({
+          dayNum: i + 1,
+          dayTitle: w.focus || w.day || `Workout ${i + 1}`,
+          muscleGroups: Array.isArray(w.muscleGroups)
+            ? w.muscleGroups.join(', ')
+            : (w.muscleGroups || w.focus || 'Full Body'),
+          exercises: (w.exercises || []).map((ex: any, j: number) => ({
+            id: `ai-w${weekIdx + 1}-d${i + 1}-e${j}`,
+            name: ex.name || 'Exercise',
+            thumbnailUrl: ex.thumbnailUrl || '',
+            primaryMuscle: Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || ex.muscleGroup || 'Various'),
+            equipment: ex.equipment || 'Various',
+            sets: typeof ex.sets === 'number' ? ex.sets : (parseInt(String(ex.sets)) || 3),
+            reps: ex.reps !== undefined ? String(ex.reps) : '10',
+          })),
+        }));
+      }
+      return getWeekRoutineDays(weekIdx);
+    };
+  }, [aiWorkouts]);
+
+  // For week card theme — use AI plan split name or static theme
+  const getWeekTheme = (weekIdx: number): string => {
+    if (aiWorkouts && aiWorkouts.length > 0) {
+      return activePlans?.fitnessPlan?.workoutSplit || `Week ${weekIdx + 1}`;
+    }
+    return FREE_4_WEEK_PLAN[weekIdx]?.theme || 'Phase';
+  };
 
   const handleViewWeek = (weekIndex: number) => {
     setSelectedWeek(weekIndex);
@@ -47,16 +91,17 @@ export default function FourWeekPlanScreen() {
 
   const handleStartActiveWorkout = (dayIndex: number) => {
     if (selectedWeek === null) return;
-    const week = FREE_4_WEEK_PLAN[selectedWeek];
-    const day = week.days[dayIndex];
-    const built: ActiveExercise[] = day.exercises.map(ex => ({
-      id: ex.id,
+    const days = getWeekDays(selectedWeek);
+    const day = days[dayIndex];
+    if (!day) return;
+    const built: ActiveExercise[] = (day.exercises || []).map((ex: any) => ({
+      id: String(ex.id),
       name: ex.name,
       thumbnailUrl: ex.thumbnailUrl,
-      sets: Array.from({ length: ex.sets }).map((_, i) => ({
+      sets: Array.from({ length: typeof ex.sets === 'number' ? ex.sets : 3 }).map((_, i) => ({
         id: `${ex.id}-set-${i}`,
         weight: '',
-        reps: String(ex.reps).split('-')[0],
+        reps: String(ex.reps || '10').split('-')[0],
         completed: false,
       })),
     }));
@@ -100,24 +145,35 @@ export default function FourWeekPlanScreen() {
 
         {/* Week cards */}
         <View style={styles.weekGrid}>
-          {FREE_4_WEEK_PLAN.map((week, idx) => (
-            <TouchableOpacity
-              key={week.weekNum}
-              style={[styles.weekCard, { backgroundColor: WEEK_COLORS[idx] }]}
-              onPress={() => handleViewWeek(idx)}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.weekLabel}>Week {week.weekNum}</Text>
-              <Text style={styles.weekTheme}>{week.theme}</Text>
-              {week.focus.map(f => (
-                <Text key={f} style={styles.weekFocus}>• {f}</Text>
-              ))}
-              <TouchableOpacity style={styles.viewWeekBtn} onPress={() => handleViewWeek(idx)}>
-                <Text style={styles.viewWeekBtnText}>View week</Text>
-                <Ionicons name="chevron-forward" size={14} color="#ffffff" />
+          {[1, 2, 3, 4].map((_, idx) => {
+            const days = getWeekDays(idx);
+            const theme = getWeekTheme(idx);
+
+            return (
+              <TouchableOpacity
+                key={`week-card-${idx}`}
+                style={[styles.weekCard, { backgroundColor: WEEK_COLORS[idx] }]}
+                onPress={() => handleViewWeek(idx)}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.weekLabel}>Week {idx + 1}</Text>
+                <Text style={styles.weekTheme} numberOfLines={1}>{theme}</Text>
+
+                <View style={styles.daysSummary}>
+                  {days.map((d: any, dIdx: number) => (
+                    <Text key={`daysum-${idx}-${dIdx}`} style={styles.daySummaryText} numberOfLines={1}>
+                      {dIdx + 1}. {d.dayTitle}
+                    </Text>
+                  ))}
+                </View>
+
+                <View style={styles.viewWeekBtn}>
+                  <Text style={styles.viewWeekBtnText}>View week</Text>
+                  <Ionicons name="chevron-forward" size={14} color="#ffffff" />
+                </View>
               </TouchableOpacity>
-            </TouchableOpacity>
-          ))}
+            );
+          })}
         </View>
 
         {/* Pro upgrade banner (free users) / Pro rotating plan (pro users) */}
@@ -157,11 +213,25 @@ export default function FourWeekPlanScreen() {
       {selectedWeek !== null && (
         <WorkoutDetailModal
           visible={showWorkoutDetail}
-          routineDays={getWeekRoutineDays(selectedWeek)}
+          routineDays={getWeekDays(selectedWeek) as any}
           initialTab={1}
-          isPreviewMode={true}
+          isPreviewMode={false}
           onClose={() => setShowWorkoutDetail(false)}
           onStartActiveWorkout={handleStartActiveWorkout}
+          onExercisePress={(ex) => {
+            setSelectedExerciseForDetail({
+              _id: ex.id,
+              name: ex.name,
+              category: ex.primaryMuscle,
+              type: 'strength',
+              muscleGroups: [ex.primaryMuscle],
+              thumbnailUrl: ex.thumbnailUrl,
+              fromRoutine: true,
+            } as any);
+            setShowWorkoutDetail(false);
+            setTimeout(() => setShowExerciseDetail(true), 100);
+          }}
+          isPro={isPro}
         />
       )}
 
@@ -173,6 +243,18 @@ export default function FourWeekPlanScreen() {
         onFinishWorkout={(time, vol, sets, ex) => {
           setShowActiveWorkout(false);
         }}
+      />
+
+      {/* Exercise detail modal — plan exercises are always fully visible */}
+      <ExerciseDetailModal
+        visible={showExerciseDetail}
+        exercise={selectedExerciseForDetail}
+        isPro={true}
+        onClose={() => {
+          setShowExerciseDetail(false);
+          setShowWorkoutDetail(true);
+        }}
+        onUpgradePress={() => {}}
       />
 
       <ProUpgradeModal
@@ -225,8 +307,9 @@ const styles = StyleSheet.create({
     minHeight: 160,
   },
   weekLabel: { fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.6)', marginBottom: 4 },
-  weekTheme: { fontSize: 20, fontWeight: '900', color: '#ffffff', marginBottom: 8 },
-  weekFocus: { fontSize: 12, color: 'rgba(255,255,255,0.8)', marginBottom: 2 },
+  weekTheme: { fontSize: 18, fontWeight: '900', color: '#ffffff', marginBottom: 10 },
+  daysSummary: { gap: 3, marginBottom: 12 },
+  daySummaryText: { fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: '600' },
   viewWeekBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
     marginTop: 12,

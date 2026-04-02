@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     View,
     Text,
@@ -55,6 +55,8 @@ export default function WorkoutsScreen() {
     const [showLogModal, setShowLogModal] = useState(false);
     const [selectedExerciseForLog, setSelectedExerciseForLog] = useState<any>(null);
     const [showHistory, setShowHistory] = useState(false);
+    const [selectedMuscle, setSelectedMuscle] = useState('All');
+    const [listTab, setListTab] = useState<'browse' | 'muscles'>('browse');
 
     const convexUser = useQuery(
         api.users.getUserByClerkId,
@@ -68,7 +70,21 @@ export default function WorkoutsScreen() {
         category: selectedCategory === 'All' ? undefined : selectedCategory
     });
 
-    const categories = ['All', 'Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core'];
+    const categories = ['All', 'Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women'];
+    const muscleGroups = ['All', 'Chest', 'Back', 'Biceps', 'Triceps', 'Shoulders', 'Legs', 'Core', 'Glutes', 'Abs'];
+
+    // Client-side muscle group filter
+    const filteredWorkouts = useMemo(() => {
+        if (!workouts) return [];
+        if (selectedMuscle === 'All') return workouts;
+        const m = selectedMuscle.toLowerCase();
+        return workouts.filter(w =>
+            w.exercises?.some((ex: any) =>
+                ex.primaryMuscles?.some((pm: string) => pm.toLowerCase().includes(m)) ||
+                ex.secondaryMuscles?.some((sm: string) => sm.toLowerCase().includes(m))
+            )
+        );
+    }, [workouts, selectedMuscle]);
 
     const toggleSave = useMutation(api.savedWorkouts.toggleSaveWorkout);
     const isSaved = useQuery(
@@ -251,22 +267,10 @@ export default function WorkoutsScreen() {
                                                     <Text style={styles.exerciseType}>{ex.exerciseType}</Text>
                                                 )}
                                             </View>
-                                            {/* Log button with Dumbbell icon */}
-                                            <TouchableOpacity
-                                                style={styles.logButton}
-                                                onPress={() => handleLogExercise(ex)}
-                                            >
-                                                <Dumbbell size={14} color="#ffffff" />
-                                                <Text style={styles.logButtonText}>Log</Text>
-                                            </TouchableOpacity>
                                         </View>
 
-                                        {!!ex.description && (
-                                            <Text style={styles.exerciseDesc}>{ex.description}</Text>
-                                        )}
-
-                                        {/* Instructions */}
-                                        {ex.instructions && ex.instructions.length > 0 && (
+                                        {/* Instructions — Pro only */}
+                                        {isPro && ex.instructions && ex.instructions.length > 0 && (
                                             <View style={styles.instructionsBox}>
                                                 <Text style={styles.instructionsTitle}>Instructions</Text>
                                                 {ex.instructions.map((step: string, i: number) => (
@@ -278,7 +282,7 @@ export default function WorkoutsScreen() {
                                         )}
 
                                         {/* Muscles */}
-                                        {(ex.primaryMuscles?.length > 0 || ex.secondaryMuscles?.length > 0) && (
+                                        {(ex.primaryMuscles?.length > 0 || (isPro && ex.secondaryMuscles?.length > 0)) && (
                                             <View style={styles.musclesBox}>
                                                 {ex.primaryMuscles?.length > 0 && (
                                                     <View style={styles.muscleGroup}>
@@ -288,7 +292,7 @@ export default function WorkoutsScreen() {
                                                         ))}
                                                     </View>
                                                 )}
-                                                {ex.secondaryMuscles?.length > 0 && (
+                                                {isPro && ex.secondaryMuscles?.length > 0 && (
                                                     <View style={styles.muscleGroup}>
                                                         <Text style={styles.muscleGroupTitle}>Secondary Muscles</Text>
                                                         {ex.secondaryMuscles.map((m: string, i: number) => (
@@ -417,9 +421,7 @@ export default function WorkoutsScreen() {
                                 <View style={styles.videoPlayerPlaceholder}>
                                     <Play size={48} color="rgba(255,255,255,0.5)" />
                                     <Text style={styles.videoPlaceholderText}>No video URL configured</Text>
-                                    <Text style={styles.videoPlaceholderSub}>
-                                        Add a Video URL in the admin panel
-                                    </Text>
+                                    <Text style={styles.videoPlaceholderSub}>Add a Video URL in the admin panel</Text>
                                 </View>
                             )}
                         </View>
@@ -454,10 +456,25 @@ export default function WorkoutsScreen() {
     }
 
     // ─── LIST VIEW ────────────────────────────────────────────────────────────
+
+    const MUSCLE_CARDS = [
+        { title: 'Chest', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Back', image: 'https://images.unsplash.com/photo-1603287681836-b174ce5074c2?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Shoulders', image: 'https://images.unsplash.com/photo-1530822847156-5df684ec5ee1?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Biceps', image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Triceps', image: 'https://images.unsplash.com/photo-1550345332-09e3ac987658?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Legs', image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Glutes', image: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Core', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Abs', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=400' },
+        { title: 'Cardio', image: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&q=80&w=400' },
+    ];
+
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
             <Stack.Screen options={{ headerShown: false }} />
 
+            {/* ── Header ── */}
             <View style={styles.header}>
                 <View>
                     <Text style={styles.title}>Workouts</Text>
@@ -468,91 +485,158 @@ export default function WorkoutsScreen() {
                 </TouchableOpacity>
             </View>
 
+            {/* ── Search Bar ── */}
             <View style={styles.searchContainer}>
                 <View style={styles.searchBar}>
                     <Search size={20} color="#94a3b8" />
                     <TextInput
-                        placeholder="Search for routines..."
+                        placeholder="Search workouts..."
                         style={styles.searchInput}
                         value={search}
                         onChangeText={setSearch}
+                        returnKeyType="search"
                     />
-                </View>
-            </View>
-
-            <View style={styles.categoryContainer}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
-                    {categories.map(c => (
-                        <TouchableOpacity
-                            key={c}
-                            style={[styles.categoryPill, selectedCategory === c && styles.categoryPillActive]}
-                            onPress={() => setSelectedCategory(c)}
-                        >
-                            <Text style={[styles.categoryText, selectedCategory === c && styles.categoryTextActive]}>
-                                {c}
-                            </Text>
+                    {search.length > 0 && (
+                        <TouchableOpacity onPress={() => setSearch('')}>
+                            <X size={18} color="#cbd5e1" />
                         </TouchableOpacity>
-                    ))}
-                </ScrollView>
+                    )}
+                </View>
             </View>
 
-            {!workouts ? (
-                <View style={styles.loading}>
-                    <ActivityIndicator size="large" color="#2563eb" />
-                </View>
-            ) : (
-                <ScrollView contentContainerStyle={styles.listContainer}>
-                    {workouts.map(item => (
-                        <TouchableOpacity
-                            key={item._id}
-                            style={styles.workoutCard}
-                            activeOpacity={0.9}
-                            onPress={() => setSelectedWorkout(item)}
-                        >
-                            <Image source={{ uri: item.thumbnail }} style={styles.cardImage} />
-                            <LinearGradient
-                                colors={['transparent', 'rgba(0,0,0,0.7)']}
-                                style={styles.cardGradient}
-                            />
-                            <View style={styles.cardContent}>
-                                <View style={styles.cardTop}>
-                                    <View style={[styles.difficultyBadge, {
-                                        backgroundColor:
-                                            item.difficulty === 'Beginner' ? '#10b981'
-                                                : item.difficulty === 'Advanced' ? '#ef4444'
-                                                    : '#f59e0b'
-                                    }]}>
-                                        <Text style={styles.difficultyText}>{item.difficulty}</Text>
+            {/* ── Tabs: Browse / Muscles ── */}
+            <View style={styles.tabsRow}>
+                <TouchableOpacity
+                    style={[styles.tabItem, listTab === 'browse' && styles.tabItemActive]}
+                    onPress={() => setListTab('browse')}
+                >
+                    <Dumbbell size={15} color={listTab === 'browse' ? '#2563eb' : '#94a3b8'} />
+                    <Text style={[styles.tabText, listTab === 'browse' && styles.tabTextActive]}>Browse</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.tabItem, listTab === 'muscles' && styles.tabItemActive]}
+                    onPress={() => setListTab('muscles')}
+                >
+                    <Zap size={15} color={listTab === 'muscles' ? '#2563eb' : '#94a3b8'} />
+                    <Text style={[styles.tabText, listTab === 'muscles' && styles.tabTextActive]}>
+                        Muscles{selectedMuscle !== 'All' ? ` · ${selectedMuscle}` : ''}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+
+            {/* ══ BROWSE TAB ══ */}
+            {listTab === 'browse' && (
+                <>
+                    {/* Type filter chips */}
+                    <View style={styles.filterRow}>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll}>
+                            {categories.map(c => (
+                                <TouchableOpacity
+                                    key={c}
+                                    style={[styles.filterPill, selectedCategory === c && styles.filterPillActive]}
+                                    onPress={() => setSelectedCategory(c)}
+                                >
+                                    <Text style={[styles.filterPillText, selectedCategory === c && styles.filterPillTextActive]}>{c}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    </View>
+
+                    {!workouts ? (
+                        <View style={styles.loading}><ActivityIndicator size="large" color="#2563eb" /></View>
+                    ) : (
+                        <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
+                            {filteredWorkouts.map(item => (
+                                <TouchableOpacity
+                                    key={item._id}
+                                    style={styles.workoutCard}
+                                    activeOpacity={0.9}
+                                    onPress={() => setSelectedWorkout(item)}
+                                >
+                                    <Image source={{ uri: item.thumbnail }} style={styles.cardImage} />
+                                    <LinearGradient colors={['transparent', 'rgba(0,0,0,0.75)']} style={styles.cardGradient} />
+                                    <View style={styles.cardContent}>
+                                        <View style={styles.cardTop}>
+                                            <View style={[styles.difficultyBadge, {
+                                                backgroundColor: item.difficulty === 'Beginner' ? '#10b981' : item.difficulty === 'Advanced' ? '#ef4444' : '#f59e0b'
+                                            }]}>
+                                                <Text style={styles.difficultyText}>{item.difficulty}</Text>
+                                            </View>
+                                            {item.isPremium && (
+                                                <View style={styles.premiumBadge}>
+                                                    <Star size={10} color="#ffffff" fill="#ffffff" />
+                                                    <Text style={styles.premiumText}>PRO</Text>
+                                                </View>
+                                            )}
+                                        </View>
+                                        <View style={styles.cardBottom}>
+                                            <Text style={styles.cardTitle}>{item.title}</Text>
+                                            <View style={styles.cardStats}>
+                                                <View style={styles.cardStat}>
+                                                    <Dumbbell size={12} color="#ffffff" />
+                                                    <Text style={styles.cardStatText}>{item.category}</Text>
+                                                </View>
+                                                <View style={styles.cardStat}>
+                                                    <Star size={12} color="#ffffff" fill="#ffffff" />
+                                                    <Text style={styles.cardStatText}>{item.rating}</Text>
+                                                </View>
+                                            </View>
+                                        </View>
                                     </View>
-                                    {item.isPremium && (
-                                        <View style={styles.premiumBadge}>
-                                            <Star size={10} color="#ffffff" fill="#ffffff" />
-                                            <Text style={styles.premiumText}>PRO</Text>
+                                </TouchableOpacity>
+                            ))}
+
+                            {filteredWorkouts.length === 0 && (
+                                <View style={styles.empty}>
+                                    <Dumbbell size={64} color="#e2e8f0" />
+                                    <Text style={styles.emptyText}>No routines found</Text>
+                                    <Text style={styles.emptySubText}>Try a different type or clear the muscle filter</Text>
+                                </View>
+                            )}
+                        </ScrollView>
+                    )}
+                </>
+            )}
+
+            {/* ══ MUSCLES TAB ══ */}
+            {listTab === 'muscles' && (
+                <ScrollView contentContainerStyle={styles.muscleGridContent} showsVerticalScrollIndicator={false}>
+                    <Text style={styles.muscleSectionHeader}>Browse by Muscle Group</Text>
+                    <View style={styles.muscleImageGrid}>
+                        {MUSCLE_CARDS.map(mc => {
+                            const isActive = selectedMuscle === mc.title;
+                            return (
+                                <TouchableOpacity
+                                    key={mc.title}
+                                    style={[styles.muscleImageCard, isActive && styles.muscleImageCardActive]}
+                                    activeOpacity={0.85}
+                                    onPress={() => {
+                                        setSelectedMuscle(isActive ? 'All' : mc.title);
+                                        setListTab('browse');
+                                    }}
+                                >
+                                    <Image source={{ uri: mc.image }} style={styles.muscleCardImage} />
+                                    <LinearGradient
+                                        colors={isActive ? ['rgba(37,99,235,0.7)', 'rgba(37,99,235,0.9)'] : ['transparent', 'rgba(0,0,0,0.65)']}
+                                        style={StyleSheet.absoluteFill}
+                                    />
+                                    {isActive && (
+                                        <View style={styles.muscleCheckBadge}>
+                                            <ChevronRight size={14} color="#ffffff" />
                                         </View>
                                     )}
-                                </View>
-                                <View style={styles.cardBottom}>
-                                    <Text style={styles.cardTitle}>{item.title}</Text>
-                                    <View style={styles.cardStats}>
-                                        <View style={styles.cardStat}>
-                                            <Dumbbell size={12} color="#ffffff" />
-                                            <Text style={styles.cardStatText}>{item.category}</Text>
-                                        </View>
-                                        <View style={styles.cardStat}>
-                                            <Star size={12} color="#ffffff" fill="#ffffff" />
-                                            <Text style={styles.cardStatText}>{item.rating}</Text>
-                                        </View>
-                                    </View>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    ))}
+                                    <Text style={styles.muscleCardLabel}>{mc.title}</Text>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
 
-                    {workouts.length === 0 && (
-                        <View style={styles.empty}>
-                            <Dumbbell size={64} color="#e2e8f0" />
-                            <Text style={styles.emptyText}>No routines found</Text>
-                        </View>
+                    {/* All muscles reset */}
+                    {selectedMuscle !== 'All' && (
+                        <TouchableOpacity style={styles.clearMuscleBtn} onPress={() => setSelectedMuscle('All')}>
+                            <X size={14} color="#2563eb" />
+                            <Text style={styles.clearMuscleBtnText}>Clear filter: {selectedMuscle}</Text>
+                        </TouchableOpacity>
                     )}
                 </ScrollView>
             )}
@@ -578,30 +662,68 @@ const styles = StyleSheet.create({
         shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12,
     },
     searchInput: { flex: 1, marginLeft: 12, fontSize: 16, fontWeight: '600', color: '#1e293b' },
-    categoryContainer: { marginBottom: 24 },
-    categoryScroll: { paddingHorizontal: 24, gap: 10 },
-    categoryPill: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 25, backgroundColor: '#ffffff', borderWidth: 1, borderColor: '#e2e8f0' },
-    categoryPillActive: { backgroundColor: '#1e293b', borderColor: '#1e293b' },
-    categoryText: { fontSize: 14, fontWeight: '700', color: '#64748b' },
-    categoryTextActive: { color: '#ffffff' },
-    listContainer: { paddingHorizontal: 24, paddingBottom: 40, gap: 20 },
-    workoutCard: { height: 200, borderRadius: 24, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.1, shadowRadius: 20, elevation: 10 },
+    // Tabs
+    tabsRow: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#f1f5f9', paddingHorizontal: 16, backgroundColor: '#ffffff' },
+    tabItem: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 13, borderBottomWidth: 3, borderBottomColor: 'transparent', gap: 6 },
+    tabItemActive: { borderBottomColor: '#2563eb' },
+    tabText: { fontSize: 13, fontWeight: '700', color: '#94a3b8' },
+    tabTextActive: { color: '#2563eb' },
+    // Type filter pills row
+    filterRow: { borderBottomWidth: 1, borderBottomColor: '#f1f5f9', paddingVertical: 10, backgroundColor: '#ffffff' },
+    filterScroll: { paddingHorizontal: 16, gap: 8 },
+    filterPill: { paddingHorizontal: 16, paddingVertical: 7, borderRadius: 20, backgroundColor: '#f8fafc', borderWidth: 1, borderColor: '#e2e8f0' },
+    filterPillActive: { backgroundColor: '#1e293b', borderColor: '#1e293b' },
+    filterPillText: { fontSize: 13, fontWeight: '700', color: '#64748b' },
+    filterPillTextActive: { color: '#ffffff' },
+    listContainer: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 40, flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+    workoutCard: { width: (width - 44) / 2, height: 220, borderRadius: 20, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.14, shadowRadius: 16, elevation: 6, backgroundColor: '#ffffff', borderWidth: 2, borderColor: '#e2e8f0' },
     cardImage: { width: '100%', height: '100%' },
-    cardGradient: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '60%' },
-    cardContent: { position: 'absolute', inset: 0, padding: 20, justifyContent: 'space-between' },
+    cardGradient: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '70%' },
+    cardContent: { position: 'absolute', inset: 0, padding: 14, justifyContent: 'space-between' },
     cardTop: { flexDirection: 'row', justifyContent: 'space-between' },
-    difficultyBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-    difficultyText: { fontSize: 10, fontWeight: '900', color: '#ffffff' },
-    premiumBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, backgroundColor: '#6366f1', flexDirection: 'row', alignItems: 'center', gap: 4 },
-    premiumText: { fontSize: 10, fontWeight: '900', color: '#ffffff' },
+    difficultyBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+    difficultyText: { fontSize: 9, fontWeight: '900', color: '#ffffff' },
+    premiumBadge: { paddingHorizontal: 6, paddingVertical: 4, borderRadius: 6, backgroundColor: '#6366f1', flexDirection: 'row', alignItems: 'center', gap: 3 },
+    premiumText: { fontSize: 9, fontWeight: '900', color: '#ffffff' },
     cardBottom: {},
-    cardTitle: { fontSize: 20, fontWeight: '900', color: '#ffffff', marginBottom: 6 },
-    cardStats: { flexDirection: 'row', gap: 16 },
+    cardTitle: { fontSize: 14, fontWeight: '900', color: '#ffffff', marginBottom: 6, lineHeight: 18 },
+    cardStats: { flexDirection: 'row', gap: 8 },
     cardStat: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-    cardStatText: { color: '#ffffff', fontSize: 12, fontWeight: '700' },
+    cardStatText: { color: '#ffffff', fontSize: 10, fontWeight: '700' },
     loading: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    empty: { alignItems: 'center', paddingVertical: 60, gap: 16 },
+    empty: { alignItems: 'center', paddingVertical: 60, gap: 12, width: '100%' },
     emptyText: { color: '#94a3b8', fontSize: 16, fontWeight: '600' },
+    emptySubText: { color: '#cbd5e1', fontSize: 13, fontWeight: '500', textAlign: 'center' },
+    // Muscle image grid
+    muscleGridContent: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 40 },
+    muscleSectionHeader: { fontSize: 16, fontWeight: '800', color: '#1e293b', paddingVertical: 14 },
+    muscleImageGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+    muscleImageCard: {
+        width: (width - 44) / 2,
+        height: 120,
+        borderRadius: 16,
+        overflow: 'hidden',
+        justifyContent: 'flex-end',
+        borderWidth: 2,
+        borderColor: 'transparent',
+    },
+    muscleImageCardActive: { borderColor: '#2563eb' },
+    muscleCardImage: { ...StyleSheet.absoluteFillObject as any, width: '100%', height: '100%' },
+    muscleCardLabel: { color: '#ffffff', fontWeight: '900', fontSize: 18, padding: 12 },
+    muscleCheckBadge: {
+        position: 'absolute', top: 8, right: 8,
+        backgroundColor: '#2563eb',
+        width: 24, height: 24, borderRadius: 12,
+        justifyContent: 'center', alignItems: 'center',
+    },
+    clearMuscleBtn: {
+        flexDirection: 'row', alignItems: 'center', gap: 6,
+        marginTop: 8, paddingVertical: 12, paddingHorizontal: 16,
+        backgroundColor: '#eff6ff', borderRadius: 12,
+        borderWidth: 1, borderColor: '#bfdbfe',
+        alignSelf: 'flex-start',
+    },
+    clearMuscleBtnText: { fontSize: 13, fontWeight: '700', color: '#2563eb' },
 
     // Detail screen
     detailContainer: { flex: 1, backgroundColor: '#F5F4F0' },
@@ -680,13 +802,13 @@ const styles = StyleSheet.create({
     startButton: { backgroundColor: '#2563eb', height: 64, borderRadius: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, shadowColor: '#2563eb', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16 },
     startButtonText: { color: '#ffffff', fontSize: 18, fontWeight: '900' },
 
-    // Video modal
-    videoModalContainer: { flex: 1, backgroundColor: 'rgba(0,0,0,0.92)', justifyContent: 'center', alignItems: 'center' },
-    videoModal: { width: '100%', aspectRatio: 16 / 9, paddingHorizontal: 20 },
+    // Video modal — portrait (9 : 16) for exercisematic vertical videos
+    videoModalContainer: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)', justifyContent: 'center', alignItems: 'center' },
+    videoModal: { width: width * 0.72, alignItems: 'stretch' },
     videoHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-    videoTitle: { color: '#ffffff', fontSize: 16, fontWeight: '800', flex: 1, marginRight: 12 },
-    videoPlayer: { width: '100%', aspectRatio: 16 / 9, backgroundColor: '#000000', borderRadius: 16 },
-    videoPlayerPlaceholder: { width: '100%', aspectRatio: 16 / 9, backgroundColor: '#1e293b', borderRadius: 16, justifyContent: 'center', alignItems: 'center' },
-    videoPlaceholderText: { color: '#ffffff', fontSize: 16, fontWeight: '700', marginTop: 16 },
-    videoPlaceholderSub: { color: '#94a3b8', fontSize: 13, marginTop: 4 },
+    videoTitle: { color: '#ffffff', fontSize: 15, fontWeight: '800', flex: 1, marginRight: 12 },
+    videoPlayer: { width: '100%', aspectRatio: 9 / 16, backgroundColor: '#000000', borderRadius: 20 },
+    videoPlayerPlaceholder: { width: '100%', aspectRatio: 9 / 16, backgroundColor: '#1e293b', borderRadius: 20, justifyContent: 'center', alignItems: 'center', gap: 12 },
+    videoPlaceholderText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
+    videoPlaceholderSub: { color: '#94a3b8', fontSize: 13, textAlign: 'center', paddingHorizontal: 16 },
 });

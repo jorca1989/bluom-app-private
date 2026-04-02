@@ -28,6 +28,7 @@ import {
   Easing,
   useWindowDimensions,
   ScrollView,
+  StatusBar,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -602,16 +603,18 @@ export default function MeditationPlayerScreen({
 
   return (
     <Modal visible={visible} animationType="slide" transparent={false} supportedOrientations={['portrait', 'landscape']}>
-      <SafeAreaView style={playerStyles.container} edges={['top', 'bottom', 'left', 'right']}>
-
-        {/* Header */}
-        <View style={playerStyles.header}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <SafeAreaView style={[playerStyles.container]} edges={['bottom']}>
+        {/* Header - Aligned to match Exercise Library */}
+        <View style={[playerStyles.header, { paddingTop: insets.top > 0 ? insets.top : 20 }]}>
           <TouchableOpacity style={playerStyles.closeButton} onPress={handleClose}>
             <Ionicons name="close" size={24} color="#1e293b" />
           </TouchableOpacity>
-          <Text style={playerStyles.headerTitle} numberOfLines={1}>
-            {sessionTitle || soundscape?.name || 'Meditation'}
-          </Text>
+          <View style={playerStyles.headerTitleContainer}>
+            <Text style={playerStyles.headerTitle} numberOfLines={1}>
+              {sessionTitle || soundscape?.name || 'Meditation'}
+            </Text>
+          </View>
           <View style={{ width: 40 }} />
         </View>
 
@@ -645,9 +648,10 @@ const playerStyles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 20, paddingVertical: 14,
+    paddingHorizontal: 20, paddingBottom: 14,
     backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#e5e7eb',
   },
+  headerTitleContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   closeButton: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
   headerTitle: { flex: 1, fontSize: 18, fontWeight: '700', color: '#1e293b', textAlign: 'center' },
   body: { flexGrow: 1 },

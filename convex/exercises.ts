@@ -20,6 +20,7 @@ export const createExercise = mutation({
         caloriesPerMinute: v.optional(v.float64()),
         muscleGroups: v.array(v.string()),
         description: v.optional(v.string()),
+        thumbnailUrl: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         await checkAdminPower(ctx);
@@ -51,6 +52,7 @@ export const updateExercise = mutation({
             caloriesPerMinute: v.optional(v.float64()),
             muscleGroups: v.optional(v.array(v.string())),
             description: v.optional(v.string()),
+            thumbnailUrl: v.optional(v.string()),
         }),
     },
     handler: async (ctx, args) => {
@@ -398,6 +400,60 @@ export const list = query({
         }
 
         return exercises;
+    },
+});
+
+// Admin-only: fetch all exercises (no limit) for the admin panel
+export const listAll = query({
+    args: {
+        search: v.optional(v.string()),
+        category: v.optional(v.string()),
+        muscleGroup: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        await checkAdminPower(ctx);
+        let exercises: any[];
+
+        if (args.category && args.category !== "All") {
+            exercises = await ctx.db
+                .query("exerciseLibrary")
+                .withIndex("by_category", (q) => q.eq("category", args.category!))
+                .order("desc")
+                .collect();
+        } else {
+            exercises = await ctx.db.query("exerciseLibrary").order("desc").collect();
+        }
+
+        if (args.search) {
+            const searchLower = args.search.toLowerCase();
+            exercises = exercises.filter((e: any) => {
+                const nameStr = typeof e.name === "object" ? e.name.en ?? "" : (e.name ?? "");
+                const nameMatch = nameStr.toLowerCase().includes(searchLower) || (e.nameLower ?? "").includes(searchLower);
+                const muscleMatch = e.muscleGroups?.some((m: string) => m.toLowerCase().includes(searchLower));
+                return nameMatch || muscleMatch;
+            });
+        }
+
+        if (args.muscleGroup && args.muscleGroup !== "All") {
+            const mg = args.muscleGroup.toLowerCase();
+            exercises = exercises.filter((e: any) =>
+                e.muscleGroups?.some((m: string) => m.toLowerCase().includes(mg))
+            );
+        }
+
+        return exercises;
+    },
+});
+
+// Admin-only: delete all exercises in the library
+export const clearAll = mutation({
+    handler: async (ctx) => {
+        await checkAdminPower(ctx);
+        const all = await ctx.db.query("exerciseLibrary").collect();
+        for (const doc of all) {
+            await ctx.db.delete(doc._id);
+        }
+        return { deleted: all.length };
     },
 });
 

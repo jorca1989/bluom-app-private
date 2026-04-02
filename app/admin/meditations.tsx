@@ -12,6 +12,7 @@ import {
     TextInput,
     Switch,
 } from 'react-native';
+import { Image } from 'expo-image';
 import {
     Plus,
     Clock,
@@ -20,11 +21,13 @@ import {
     FilePen,
     Video,
     Music,
+    Image as ImageIcon,
 } from 'lucide-react-native';
 import { useUser } from '@clerk/clerk-expo';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { MEDITATION_FILTERS } from '@/constants/meditationFilters';
+import { R2_CONFIG } from '@/utils/r2Config';
 
 export default function MeditationsManager() {
     const { user } = useUser();
@@ -143,9 +146,18 @@ export default function MeditationsManager() {
 
     const renderMeditation = ({ item }: { item: any }) => (
         <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => handleEdit(item)}>
-            <View style={styles.iconBox}>
-                <Text style={{ fontSize: 24 }}>{MEDITATION_FILTERS.find(c => c.id === item.category)?.emoji || '🧘'}</Text>
-            </View>
+            {item.coverImage ? (
+                <Image
+                    source={{ uri: item.coverImage }}
+                    style={styles.coverThumb}
+                    contentFit="cover"
+                    transition={300}
+                />
+            ) : (
+                <View style={[styles.coverThumb, styles.iconBox]}>
+                    <Text style={{ fontSize: 22 }}>{MEDITATION_FILTERS.find(c => c.id === item.category)?.emoji || '🧘'}</Text>
+                </View>
+            )}
             <View style={styles.content}>
                 <View style={styles.headerRow}>
                     <Text style={styles.medTitle} numberOfLines={1}>{item.title}</Text>
@@ -309,7 +321,7 @@ export default function MeditationsManager() {
                                 <Music size={16} color="#3b82f6" />
                                 <Text style={[styles.label, { margin: 0, color: '#3b82f6' }]}>Audio URL (MP3 / AAC)</Text>
                             </View>
-                            <TextInput style={styles.input} value={form.audioUrl} onChangeText={t => setForm(p => ({ ...p, audioUrl: t }))} placeholder="https://cdn.example.com/audio.mp3" autoCapitalize="none" keyboardType="url" />
+                            <TextInput style={styles.input} value={form.audioUrl} onChangeText={t => setForm(p => ({ ...p, audioUrl: t }))} placeholder={`${R2_CONFIG.generalBaseUrl}/meditations/track.mp3`} autoCapitalize="none" keyboardType="url" />
                         </View>
 
                         {/* Video URL — NEW */}
@@ -325,7 +337,7 @@ export default function MeditationsManager() {
                                 style={styles.input}
                                 value={form.videoUrl}
                                 onChangeText={t => setForm(p => ({ ...p, videoUrl: t }))}
-                                placeholder="https://pub-xxx.r2.dev/video.mp4  or  https://youtu.be/xxxxx"
+                                placeholder={`${R2_CONFIG.workoutBaseUrl}/meditations/video.mp4`}
                                 autoCapitalize="none"
                                 keyboardType="url"
                             />
@@ -335,11 +347,11 @@ export default function MeditationsManager() {
                         </View>
 
                         <Text style={styles.label}>Cover Image Square URL</Text>
-                        <TextInput style={styles.input} value={form.coverImage} onChangeText={t => setForm(p => ({ ...p, coverImage: t }))} placeholder="https://pub-xxx.r2.dev/square.png" autoCapitalize="none" keyboardType="url" />
+                        <TextInput style={styles.input} value={form.coverImage} onChangeText={t => setForm(p => ({ ...p, coverImage: t }))} placeholder={`${R2_CONFIG.generalBaseUrl}/meditations/square.png`} autoCapitalize="none" keyboardType="url" />
 
                         <View style={{ marginTop: 16 }}>
                             <Text style={[styles.label, { marginTop: 0 }]}>Cover Image Landscape URL</Text>
-                            <TextInput style={styles.input} value={form.coverImageLandscape} onChangeText={t => setForm(p => ({ ...p, coverImageLandscape: t }))} placeholder="https://pub-xxx.r2.dev/landscape.png" autoCapitalize="none" keyboardType="url" />
+                            <TextInput style={styles.input} value={form.coverImageLandscape} onChangeText={t => setForm(p => ({ ...p, coverImageLandscape: t }))} placeholder={`${R2_CONFIG.generalBaseUrl}/meditations/landscape.png`} autoCapitalize="none" keyboardType="url" />
                             <Text style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>Used exclusively for the massive Recommended/Featured hero card in the Hub.</Text>
                         </View>
 
@@ -391,7 +403,8 @@ const styles = StyleSheet.create({
     summaryVal: { fontSize: 22, fontWeight: '900', color: '#1e293b' },
     summaryLabel: { fontSize: 11, fontWeight: '700', color: '#64748b', marginTop: 2 },
     card: { backgroundColor: '#fff', borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 8, elevation: 1, marginBottom: 10 },
-    iconBox: { width: 56, height: 56, borderRadius: 14, backgroundColor: '#f5f3ff', justifyContent: 'center', alignItems: 'center' },
+    coverThumb: { width: 64, height: 64, borderRadius: 14 },
+    iconBox: { backgroundColor: '#f5f3ff', justifyContent: 'center', alignItems: 'center' },
     content: { flex: 1, marginLeft: 14 },
     headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
     medTitle: { fontSize: 15, fontWeight: '800', color: '#1e293b', flex: 1, marginRight: 6 },

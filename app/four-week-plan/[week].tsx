@@ -5,28 +5,34 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getBottomContentPadding } from '@/utils/layout';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { useUser } from '@clerk/clerk-expo';
+import { useAccessControl } from '@/hooks/useAccessControl';
+import { FREE_4_WEEK_PLAN, getWeekRoutineDays } from '@/utils/fourWeekPlanData';
 
 type WeekTemplate = {
   title: string;
   subtitle: string;
   colors: [string, string];
   days: Array<{
-    name: string;
-    focus: string;
-    items: string[];
+    dayNum: number;
+    dayTitle: string;
+    muscleGroups: string;
+    exercises: Array<{ name: string }>;
   }>;
 };
 
-const WEEK_TEMPLATES: WeekTemplate[] = [
+const WEEK_TEMPLATES: any[] = [
   {
     title: 'Week 1',
     subtitle: 'Foundation',
     colors: ['#0f172a', '#1e293b'],
     days: [
-      { name: 'Day 1', focus: 'Full body strength', items: ['Squat pattern', 'Push', 'Pull', 'Core'] },
-      { name: 'Day 2', focus: 'Zone 2 cardio', items: ['Walk / cycle', 'Mobility finisher'] },
-      { name: 'Day 3', focus: 'Full body strength', items: ['Hinge pattern', 'Push', 'Pull', 'Core'] },
-      { name: 'Day 4', focus: 'Recovery', items: ['Stretching', 'Easy walk'] },
+      { dayNum: 1, dayTitle: 'Full Body Strength', muscleGroups: 'Squat pattern, Push, Pull, Core' },
+      { dayNum: 2, dayTitle: 'Zone 2 Cardio', muscleGroups: 'Walk / cycle, Mobility finisher' },
+      { dayNum: 3, dayTitle: 'Full Body Strength', muscleGroups: 'Hinge pattern, Push, Pull, Core' },
+      { dayNum: 4, dayTitle: 'Recovery', muscleGroups: 'Stretching, Easy walk' },
     ],
   },
   {
@@ -34,10 +40,10 @@ const WEEK_TEMPLATES: WeekTemplate[] = [
     subtitle: 'Strength',
     colors: ['#1e1b4b', '#4c1d95'],
     days: [
-      { name: 'Day 1', focus: 'Lower body', items: ['Squat focus', 'Glutes', 'Calves'] },
-      { name: 'Day 2', focus: 'Upper body', items: ['Push focus', 'Pull focus', 'Arms'] },
-      { name: 'Day 3', focus: 'Cardio intervals', items: ['Intervals', 'Cooldown'] },
-      { name: 'Day 4', focus: 'Full body', items: ['Compound circuit', 'Core'] },
+      { dayNum: 1, dayTitle: 'Lower Body', muscleGroups: 'Squat focus, Glutes, Calves' },
+      { dayNum: 2, dayTitle: 'Upper Body', muscleGroups: 'Push focus, Pull focus, Arms' },
+      { dayNum: 3, dayTitle: 'Cardio intervals', muscleGroups: 'Intervals, Cooldown' },
+      { dayNum: 4, dayTitle: 'Full Body', muscleGroups: 'Compound circuit, Core' },
     ],
   },
   {
@@ -45,10 +51,10 @@ const WEEK_TEMPLATES: WeekTemplate[] = [
     subtitle: 'Conditioning',
     colors: ['#064e3b', '#065f46'],
     days: [
-      { name: 'Day 1', focus: 'Tempo strength', items: ['Full body tempo', 'Core'] },
-      { name: 'Day 2', focus: 'Conditioning', items: ['HIIT / circuits', 'Cooldown'] },
-      { name: 'Day 3', focus: 'Endurance', items: ['Longer walk / cycle', 'Mobility'] },
-      { name: 'Day 4', focus: 'Recovery', items: ['Stretching', 'Breathwork'] },
+      { dayNum: 1, dayTitle: 'Tempo Strength', muscleGroups: 'Full body tempo, Core' },
+      { dayNum: 2, dayTitle: 'Conditioning', muscleGroups: 'HIIT / circuits, Cooldown' },
+      { dayNum: 3, dayTitle: 'Endurance', muscleGroups: 'Longer walk / cycle, Mobility' },
+      { dayNum: 4, dayTitle: 'Recovery', muscleGroups: 'Stretching, Breathwork' },
     ],
   },
   {
@@ -56,10 +62,10 @@ const WEEK_TEMPLATES: WeekTemplate[] = [
     subtitle: 'Performance',
     colors: ['#7c2d12', '#92400e'],
     days: [
-      { name: 'Day 1', focus: 'Full body power', items: ['Explosive emphasis', 'Core'] },
-      { name: 'Day 2', focus: 'Intervals', items: ['Short intervals', 'Cooldown'] },
-      { name: 'Day 3', focus: 'Strength test', items: ['Rep PRs (safe)', 'Accessory'] },
-      { name: 'Day 4', focus: 'Deload option', items: ['Light full body', 'Mobility'] },
+      { dayNum: 1, dayTitle: 'Full Body Power', muscleGroups: 'Explosive emphasis, Core' },
+      { dayNum: 2, dayTitle: 'Intervals', muscleGroups: 'Short intervals, Cooldown' },
+      { dayNum: 3, dayTitle: 'Strength Test', muscleGroups: 'Rep PRs (safe), Accessory' },
+      { dayNum: 4, dayTitle: 'Deload Option', muscleGroups: 'Light full body, Mobility' },
     ],
   },
 ];
@@ -68,14 +74,35 @@ export default function FourWeekPlanWeekScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ week?: string }>();
+  const { user: clerkUser } = useUser();
+  const { isPro } = useAccessControl();
+
+  const activePlans = useQuery(api.plans.getActivePlans, clerkUser?.id ? {} : 'skip');
 
   const weekIndex = useMemo(() => {
     const n = parseInt(String(params.week ?? '1'), 10);
     if (!Number.isFinite(n)) return 0;
-    return Math.min(Math.max(n - 1, 0), WEEK_TEMPLATES.length - 1);
+    return Math.min(Math.max(n - 1, 0), 3);
   }, [params.week]);
 
-  const week = WEEK_TEMPLATES[weekIndex];
+  const week = useMemo(() => {
+    // If Pro and we have an AI plan, we use the AI split for ALL weeks in this view
+    // (In a more advanced version, we'd have 4 different AI weeks)
+    if (isPro && activePlans?.fitnessPlan?.workouts) {
+      return {
+        title: `Week ${weekIndex + 1}`,
+        subtitle: activePlans.fitnessPlan.workoutSplit || 'Personalised Plan',
+        colors: WEEK_TEMPLATES[weekIndex].colors,
+        days: activePlans.fitnessPlan.workouts.map((w: any, idx: number) => ({
+          dayNum: idx + 1,
+          dayTitle: w.focus || w.day || `Workout ${idx + 1}`,
+          muscleGroups: w.muscleGroups || w.focus || 'Full Body',
+        })),
+      };
+    }
+    return WEEK_TEMPLATES[weekIndex];
+  }, [isPro, activePlans, weekIndex]);
+
   const bottomPad = useMemo(() => getBottomContentPadding(insets.bottom, 18), [insets.bottom]);
 
   return (
@@ -98,22 +125,15 @@ export default function FourWeekPlanWeekScreen() {
           </LinearGradient>
 
           <View style={s.dayList}>
-            {week.days.map((d) => (
-              <View key={d.name} style={s.dayCard}>
+            {week.days.map((d: any) => (
+              <View key={d.dayNum} style={s.dayCard}>
                 <View style={s.dayHeader}>
                   <View style={s.dayBadge}>
-                    <Text style={s.dayBadgeText}>{d.name}</Text>
+                    <Text style={s.dayBadgeText}>Day {d.dayNum}</Text>
                   </View>
-                  <Text style={s.dayFocus}>{d.focus}</Text>
+                  <Text style={s.dayFocus}>{d.dayTitle}</Text>
                 </View>
-                <View style={s.dayItems}>
-                  {d.items.map((it) => (
-                    <View key={it} style={s.itemRow}>
-                      <View style={s.dot} />
-                      <Text style={s.itemText}>{it}</Text>
-                    </View>
-                  ))}
-                </View>
+                <Text style={s.dayMuscleGroups}>{d.muscleGroups}</Text>
               </View>
             ))}
           </View>
@@ -173,6 +193,7 @@ const s = StyleSheet.create({
   },
   dayBadgeText: { fontSize: 11, fontWeight: '900', color: '#ffffff' },
   dayFocus: { flex: 1, fontSize: 13, fontWeight: '900', color: '#0f172a' },
+  dayMuscleGroups: { fontSize: 12, fontWeight: '700', color: '#64748b', marginTop: 2, marginLeft: 2 },
   dayItems: { gap: 8 },
   itemRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#94a3b8' },

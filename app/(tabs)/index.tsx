@@ -15,7 +15,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { useUser } from '@clerk/clerk-expo';
 import { useQuery, useMutation } from 'convex/react';
@@ -209,30 +209,38 @@ export default function HomeScreen() {
     skinColor: 'f5d0a0',
   });
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const raw = await SecureStore.getItemAsync(AVATAR_CONFIG_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (!parsed || typeof parsed !== 'object') return;
-        const fixHex = (v: any) => {
-          const s = String(v ?? '');
-          return s.startsWith('#') ? s.slice(1) : s;
-        };
-        setHomeAvatar((prev) => ({
-          ...prev,
-          ...parsed,
-          seed: parsed.seed ?? prev.seed,
-          hairColor: fixHex(parsed.hairColor ?? prev.hairColor),
-          skinColor: fixHex(parsed.skinColor ?? prev.skinColor),
-          facialHairColor: fixHex(parsed.facialHairColor ?? prev.facialHairColor),
-        }));
-      } catch {
-        // ignore
-      }
-    })();
-  }, [clerkUser?.id]);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+      (async () => {
+        try {
+          const raw = await SecureStore.getItemAsync(AVATAR_CONFIG_KEY);
+          if (!raw) return;
+          const parsed = JSON.parse(raw);
+          if (!parsed || typeof parsed !== 'object') return;
+          const fixHex = (v: any) => {
+            const s = String(v ?? '');
+            return s.startsWith('#') ? s.slice(1) : s;
+          };
+          if (isActive) {
+            setHomeAvatar((prev) => ({
+              ...prev,
+              ...parsed,
+              seed: parsed.seed ?? prev.seed,
+              hairColor: fixHex(parsed.hairColor ?? prev.hairColor),
+              skinColor: fixHex(parsed.skinColor ?? prev.skinColor),
+              facialHairColor: fixHex(parsed.facialHairColor ?? prev.facialHairColor),
+            }));
+          }
+        } catch {
+          // ignore
+        }
+      })();
+      return () => {
+        isActive = false;
+      };
+    }, [clerkUser?.id])
+  );
 
   // ── Weather ──
   const [weather, setWeather] = useState<{

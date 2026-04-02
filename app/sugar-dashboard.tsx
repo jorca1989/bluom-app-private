@@ -114,6 +114,7 @@ export default function MetabolicHub() {
 
   const pct = Math.round((progress?.progress ?? 0) * 100);
   const streak = progress?.streak ?? 0;
+  const isPro = !!(appUser?.isPro || appUser?.isAdmin || convexUser?.subscriptionStatus === 'active');
 
   // --- Modals State ---
   const [showScan, setShowScan] = useState(false);
@@ -380,7 +381,16 @@ export default function MetabolicHub() {
         </View>
       </Modal>
 
-      <SugarScanModal visible={showScan} onClose={() => setShowScan(false)} onResult={handleScanResult} />
+      <SugarScanModal 
+        visible={showScan} 
+        onClose={() => setShowScan(false)} 
+        onResult={handleScanResult} 
+        isPro={isPro}
+        onUpgrade={() => {
+          setShowScan(false);
+          setShowUpgrade(true);
+        }}
+      />
 
       <ProUpgradeModal
         visible={showUpgrade}

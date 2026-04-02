@@ -1,6 +1,6 @@
 import '../global.css';
 import React, { useEffect, useRef, useState } from 'react';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View, Text, Platform } from 'react-native';
@@ -94,6 +94,7 @@ function InitialLayout() {
   const { isLoading: convexLoading, isAuthenticated: convexAuthenticated } = useConvexAuth();
   const router = useRouter();
   const segments = useSegments();
+  const navigationState = useRootNavigationState();
 
   const convexUser = useQuery(
     api.users.getUserByClerkId,
@@ -134,7 +135,7 @@ function InitialLayout() {
   // ─── THE ONLY NAVIGATION LOGIC IN THE APP ────────────────────────────────
   useEffect(() => {
     if (Platform.OS === 'web') return;
-    if (!isLoaded || convexLoading) return;
+    if (!isLoaded || convexLoading || !navigationState?.key) return;
     if (!isSignedIn || !convexAuthenticated) {
       // Not signed in → go to login
       if (segments[0] !== '(auth)') {

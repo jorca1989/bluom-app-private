@@ -11,6 +11,7 @@ import {
     Modal,
     Alert
 } from 'react-native';
+import { Image } from 'expo-image';
 import {
     Dumbbell,
     Plus,
@@ -21,9 +22,11 @@ import {
     Edit3,
     X,
     Play,
+    Image as ImageIcon,
 } from 'lucide-react-native';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import { R2_CONFIG } from '@/utils/r2Config';
 
 // ─── FIELD GUIDE ──────────────────────────────────────────────────────────────
 // Unified form — each entry is ONE exercise that doubles as its own workout card.
@@ -53,7 +56,7 @@ const EMPTY_FORM = {
     videoUrl: '',
 };
 
-const EXERCISE_TYPES = ['Strength', 'Cardio', 'HIIT', 'Yoga', 'Stretching'];
+const EXERCISE_TYPES = ['Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women'];
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 
 export default function WorkoutsManager() {
@@ -172,9 +175,18 @@ export default function WorkoutsManager() {
     // ── List item ────────────────────────────────────────────────────────────
     const renderItem = ({ item }: { item: any }) => (
         <View style={styles.workoutCard}>
-            <View style={styles.thumbnailPlaceholder}>
-                <Play size={24} color="#2563eb" />
-            </View>
+            {item.thumbnail ? (
+                <Image
+                    source={{ uri: item.thumbnail }}
+                    style={styles.workoutThumb}
+                    contentFit="cover"
+                    transition={300}
+                />
+            ) : (
+                <View style={[styles.workoutThumb, styles.thumbnailPlaceholder]}>
+                    <ImageIcon size={22} color="#94a3b8" />
+                </View>
+            )}
             <View style={styles.workoutInfo}>
                 <View style={styles.workoutHeader}>
                     <Text style={styles.workoutTitle} numberOfLines={1}>{item.title}</Text>
@@ -360,7 +372,7 @@ export default function WorkoutsManager() {
                             style={styles.input}
                             value={form.thumbnail}
                             onChangeText={t => setField('thumbnail', t)}
-                            placeholder="https://pub-xxx.r2.dev/workouts/thumb.jpg"
+                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/thumb.jpg`}
                             autoCapitalize="none"
                         />
 
@@ -370,7 +382,7 @@ export default function WorkoutsManager() {
                             style={[styles.input, { marginBottom: 60 }]}
                             value={form.videoUrl}
                             onChangeText={t => setField('videoUrl', t)}
-                            placeholder="https://pub-xxx.r2.dev/workouts/video.mp4"
+                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/video.mp4`}
                             autoCapitalize="none"
                         />
 
@@ -426,13 +438,17 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#f1f5f9',
     },
-    thumbnailPlaceholder: {
-        width: 54,
-        height: 54,
+    workoutThumb: {
+        width: 72,
+        height: 72,
         borderRadius: 12,
+    },
+    thumbnailPlaceholder: {
         backgroundColor: '#eff6ff',
         justifyContent: 'center',
         alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
     },
     workoutInfo: { flex: 1, marginLeft: 14 },
     workoutHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 },

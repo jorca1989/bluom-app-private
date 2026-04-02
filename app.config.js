@@ -15,21 +15,22 @@ export default ({ config }) => {
             name: "Bluom",
             slug: "bolt-expo-nativewind",
             owner: "ggovsaas",
-            version: "1.0.21",
+            version: "1.0.22",
             scheme: "bluom",
             userInterfaceStyle: "automatic",
-            runtimeVersion: "1.0.21",
+            runtimeVersion: "1.0.22",
             privacyPolicyUrl: "https://www.bluom.app/legal/privacy",
             ios: {
                 bundleIdentifier: "com.jwfca.bluom",
-                buildNumber: "31",
+                buildNumber: "32",
                 googleServicesFile: "./GoogleService-Info.plist",
                 entitlements: {
-                    "com.apple.developer.healthkit": true,
+                    // "com.apple.developer.healthkit": true,
+                    "com.apple.developer.associated-domains": ["applinks:bluom.app"],
                 },
                 infoPlist: {
                     ITSAppUsesNonExemptEncryption: false,
-                    UIBackgroundModes: ["audio", "location"],
+                    UIBackgroundModes: ["audio"],
 
                     // ── Camera & Photos (updated for Body Scan feature) ──
                     NSPhotoLibraryUsageDescription:
@@ -38,36 +39,33 @@ export default ({ config }) => {
                         "Bluom uses the camera to scan food items for nutrition insights and to take body progress photos for AI-powered body composition analysis.",
 
                     // ── Location (Weather & Workouts) ──────────────────────────────
+                    /*
                     NSLocationWhenInUseUsageDescription:
                         "Bluom uses your location to provide real-time local weather data on your dashboard and to track your outdoor running or cycling workout routes.",
                     NSLocationAlwaysAndWhenInUseUsageDescription:
                         "Bluom uses your location in the background to accurately record your outdoor workout distance, pace, and routes, even when your phone is in your pocket or the app is closed.",
                     NSLocationAlwaysUsageDescription:
                         "Bluom securely uses your location in the background to maintain accurate live tracking for your outdoor workouts.",
+                    */
 
                     // ── HealthKit (NEW) ───────────────────────────────────────────
-                    // NSHealthShareUsageDescription: what we READ from HealthKit.
-                    // Apple requires this to be specific — generic text = instant rejection.
+                    /*
                     NSHealthShareUsageDescription:
                         "Bluom reads your daily step count, active calories burned, walking distance, body weight, sleep duration, heart rate, and (if you choose to grant access) cycle-related data like menstrual flow and ovulation test results from Apple Health. This data automatically updates your daily calorie burn goal, tracks your body composition progress over time, and generates personalised recovery, Wellness, and cycle insights — so you never have to log manually.",
 
-                    // NSHealthUpdateUsageDescription: what we WRITE to HealthKit.
-                    // Bluom is read-only, but the key must still be present.
                     NSHealthUpdateUsageDescription:
-                        "Bluom does not write any data to Apple Health. This key is present to satisfy HealthKit requirements.",
+                        "Bluom can sync your logged workouts, sleep minutes, and weight back to Apple Health, helping you maintain a unified and complete record of your wellness activities across all your devices.",
+                    */
 
-                    // ── Motion (NEW) ──────────────────────────────────────────────
-                    // Required if react-native-health uses CMPedometer.
-                    NSMotionUsageDescription:
-                        "Bluom uses motion data to count your steps in the background and update your daily activity goal in real time.",
+                    // ── Motion (Removed for Lite Build) ──────────────────────────
+                    // NSMotionUsageDescription:
+                    //     "Bluom uses motion data to count your steps in the background and update your daily activity goal in real time.",
 
                     // ── URL Schemes ───────────────────────────────────────────────
                     CFBundleURLTypes: [
                         {
                             CFBundleURLSchemes: [
-                                // Google Sign-In callback
-                                "com.googleusercontent.apps.769417597120-b9g72gt78bjm10kes8u63q1rgqs41kem",
-                                // Strava OAuth callback (NEW) — must match redirectUri in IntegrationsScreen
+                                // Strava OAuth callback — must match redirectUri in IntegrationsScreen
                                 "bluom",
                             ],
                         },
@@ -92,11 +90,11 @@ export default ({ config }) => {
             },
             android: {
                 package: "com.jwfca.bluom",
-                versionCode: 31,
+                versionCode: 32,
                 googleServicesFile: "./google-services.json",
                 splash: {
                     image: "./assets/images/splash.png",
-                    imageWidth: 288,
+                    imageWidth: 420,
                     resizeMode: "contain"
                 },
                 permissions: [
@@ -108,25 +106,9 @@ export default ({ config }) => {
                     "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
                     "android.permission.WAKE_LOCK",
 
-                    // ── Location (Weather & Workouts) ─────────────────────────────
-                    "android.permission.ACCESS_COARSE_LOCATION",
-                    "android.permission.ACCESS_FINE_LOCATION",
-                    "android.permission.ACCESS_BACKGROUND_LOCATION",
+                    // ── Location (Removed for Lite Build) ─────────────────────────
 
-                    // ── Health Connect (NEW) ──────────────────────────────────────
-                    // These appear as individual toggles in Android Settings,
-                    // just like the Fitbit / Samsung Health permissions panel.
-                    // Requires Health Connect app installed (Android 14+ has it built-in).
-                    "android.permission.FOREGROUND_SERVICE_HEALTH",
-                    "android.permission.health.READ_STEPS",
-                    "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
-                    "android.permission.health.READ_DISTANCE",
-                    "android.permission.health.READ_WEIGHT",
-                    "android.permission.health.READ_SLEEP",
-                    "android.permission.health.READ_HEART_RATE",
-                    "android.permission.health.READ_EXERCISE",
-                    "android.permission.health.READ_BODY_FAT",
-                    "android.permission.health.READ_MENSTRUATION",
+                    // ── Health Connect (Removed for Lite Build) ────────────────────
                 ],
             },
             icon: "./assets/images/icon.png",
@@ -148,6 +130,7 @@ export default ({ config }) => {
                 "expo-asset",
                 "expo-splash-screen",
                 "@react-native-community/datetimepicker",
+                /*
                 "expo-apple-authentication",
                 [
                     "react-native-health",
@@ -156,6 +139,7 @@ export default ({ config }) => {
                     }
                 ],
                 "react-native-health-connect",
+                */
                 [
                     "expo-camera",
                     {
@@ -163,6 +147,7 @@ export default ({ config }) => {
                             "Bluom uses the camera to scan food items for nutrition insights and to take body progress photos for AI-powered body composition analysis.",
                     },
                 ],
+                "expo-notifications",
             ],
             extra: {
                 router: {},
@@ -187,6 +172,8 @@ export default ({ config }) => {
     return {
         ...base.expo,
         ...config,
+        // Override dynamic config slug to match EAS
+        slug: "bolt-expo-nativewind",
         plugins,
     };
 };

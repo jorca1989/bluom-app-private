@@ -1,6 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Modal, View, Text, TouchableOpacity, ActivityIndicator, Platform, Alert } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Modal, View, Text, TouchableOpacity, ActivityIndicator, Platform, Alert, StyleSheet as RNStyleSheet, Dimensions } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import { Ionicons } from '@expo/vector-icons';
+
+const { width: screenWidth } = Dimensions.get('window');
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { requireOptionalNativeModule } from 'expo-modules-core';
 import { useAction } from 'convex/react';
@@ -15,12 +18,19 @@ export type SugarScanResult = {
   notes: string;
 };
 
-export function SugarScanModal(props: {
+export function SugarScanModal({
+  visible,
+  onClose,
+  onResult,
+  isPro,
+  onUpgrade
+}: {
   visible: boolean;
   onClose: () => void;
   onResult: (result: SugarScanResult) => void;
+  isPro: boolean;
+  onUpgrade: () => void;
 }) {
-  const { visible, onClose, onResult } = props;
   const insets = useSafeAreaInsets();
   const cameraRef = useRef<CameraView | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
@@ -43,6 +53,10 @@ export function SugarScanModal(props: {
   async function takePhoto() {
     setError(null);
     try {
+      if (!isPro) {
+        onUpgrade();
+        return;
+      }
       if (!permission?.granted) {
         const next = await requestPermission();
         if (!next.granted) return;
@@ -65,6 +79,10 @@ export function SugarScanModal(props: {
   }
 
   async function pickFromGallery() {
+    if (!isPro) {
+      onUpgrade();
+      return;
+    }
     setError(null);
     try {
       // Avoid redbox/crash if the currently installed build doesn't include the native module yet.
@@ -131,81 +149,177 @@ export function SugarScanModal(props: {
   }
 
   return (
-    // NOTE (Android): the camera preview can render as a SurfaceView which may ignore stacking/clipping
-    // inside transparent modals. Using a full-screen modal avoids the "double layer" preview artifact.
-    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
-      <SafeAreaView className="flex-1 bg-black/60 justify-center px-5" edges={['top', 'bottom']}>
-        <View className="bg-white rounded-2xl border border-slate-200 p-5" style={{ marginBottom: Math.max(insets.bottom, 12) }}>
-          <View className="flex-row items-center justify-between mb-3">
-            <Text className="text-slate-900 font-extrabold text-lg">Scan Product</Text>
-            <TouchableOpacity onPress={onClose} activeOpacity={0.8} className="w-9 h-9 rounded-xl bg-slate-100 items-center justify-center">
-              <Text className="text-slate-600 font-black">✕</Text>
-            </TouchableOpacity>
-          </View>
-
-          {permission && !permission.granted ? (
-            <View className="bg-slate-50 border border-slate-200 rounded-xl p-3 mb-3">
-              <Text className="text-slate-800 font-bold mb-2">Camera permission is required.</Text>
-              <TouchableOpacity onPress={requestPermission} activeOpacity={0.85} className="bg-slate-900 rounded-xl py-3 items-center">
-                <Text className="text-white font-extrabold">Grant Permission</Text>
+    <Modal visible={visible} animationType="slide" transparent presentationStyle="fullScreen" onRequestClose={onClose}>
+      <View style={st.container}>
+        {!capturedBase64 && (permission?.granted ?? true) ? (
+          <CameraView
+            ref={(r) => { cameraRef.current = r; }}
+            style={RNStyleSheet.absoluteFill}
+            facing="back"
+            active={visible && !capturedBase64}
+          >
+            {/* Top Bar */}
+            <SafeAreaView style={st.topBar} edges={['top']}>
+              <View style={st.topInfo}>
+                <Text style={st.scanTitle}>Scan Product</Text>
+                <Text style={st.scanSubtitle}>Identify hidden sugars & alternatives</Text>
+              </View>
+              <TouchableOpacity onPress={onClose} style={st.iconCloseBtn}>
+                <Ionicons name="close" size={24} color="#ffffff" />
               </TouchableOpacity>
-            </View>
-          ) : null}
+            </SafeAreaView>
 
-          {!canScan ? (
-            <View className="rounded-2xl overflow-hidden border border-slate-200 mb-3">
-              {(permission?.granted ?? false) ? (
-                <View
-                  className="h-64 bg-slate-900 overflow-hidden"
-                  collapsable={false}
-                  style={{ borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
-                >
-                  <CameraView
-                    ref={(r) => {
-                      cameraRef.current = r;
-                    }}
-                    style={{ width: '100%', height: '100%', borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
-                    facing="back"
-                    active={visible && !canScan}
-                  />
-                </View>
-              ) : (
-                <View className="h-64 bg-slate-900 items-center justify-center px-4">
-                  <Text className="text-white font-bold text-center">Enable camera permission to scan products.</Text>
-                </View>
-              )}
-              <View className="bg-white px-3 py-3 flex-row items-center justify-between gap-3">
-                <TouchableOpacity onPress={takePhoto} activeOpacity={0.9} className="flex-1 bg-orange-500 py-3 items-center rounded-xl">
-                  <Text className="text-white font-extrabold">Take Photo</Text>
+            {/* Frame Overlay */}
+            <View style={st.scanOverlay}>
+              <View style={st.scanFrame} />
+              {!!error && <Text style={st.errorFloatText}>{error}</Text>}
+            </View>
+
+            {/* Bottom Controls */}
+            <SafeAreaView style={st.bottomControls} edges={['bottom']}>
+              <View style={st.buttonRow}>
+                <View style={{ width: 44 }} />
+                
+                <TouchableOpacity style={st.shutterBtn} onPress={takePhoto} activeOpacity={0.8}>
+                  <View style={st.shutterInner} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={pickFromGallery} activeOpacity={0.9} className="bg-slate-100 border border-slate-200 px-3 py-3 rounded-xl">
-                  <Text className="text-slate-900 font-extrabold text-xs">Upload from Gallery</Text>
+
+                <TouchableOpacity style={st.galleryIconBtn} onPress={pickFromGallery} activeOpacity={0.8}>
+                  <Ionicons name="images-outline" size={24} color="#ffffff" />
                 </TouchableOpacity>
               </View>
-            </View>
-          ) : (
-            <View className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-3 flex-row items-center justify-between">
-              <Text className="text-emerald-800 font-extrabold">Photo captured</Text>
-              <TouchableOpacity onPress={() => setCapturedBase64(null)} activeOpacity={0.8}>
-                <Text className="text-blue-600 font-extrabold">Retake</Text>
+            </SafeAreaView>
+          </CameraView>
+        ) : (
+          <SafeAreaView style={st.resultsOverlay} edges={['top', 'bottom']}>
+             <TouchableOpacity onPress={onClose} style={st.resultsCloseBtn}>
+                <Ionicons name="close" size={24} color="#0f172a" />
               </TouchableOpacity>
-            </View>
-          )}
 
-          {!!error ? <Text className="text-red-600 font-bold mb-3">{error}</Text> : null}
+             {permission && !permission.granted ? (
+                <View style={st.permContainer}>
+                   <Ionicons name="camera-outline" size={48} color="#64748b" />
+                   <Text style={st.permTitle}>Camera access required</Text>
+                   <Text style={st.permSub}>Scan food products to find hidden sugars.</Text>
+                   <TouchableOpacity style={st.permBtn} onPress={requestPermission}>
+                      <Text style={st.permBtnText}>Enable Camera</Text>
+                   </TouchableOpacity>
+                </View>
+             ) : (
+                <View style={st.analysisCard}>
+                  <View style={st.successHeader}>
+                    <Ionicons name="checkmark-circle" size={32} color="#10b981" />
+                    <Text style={st.analysisTitle}>Photo Captured</Text>
+                  </View>
 
-          <TouchableOpacity
-            onPress={runScan}
-            disabled={!canScan || loading}
-            activeOpacity={0.9}
-            className={`rounded-xl py-3 items-center ${!canScan || loading ? 'bg-slate-300' : 'bg-blue-600'}`}
-          >
-            {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white font-extrabold">Analyze</Text>}
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+                  {!!error && <Text style={st.errorText}>{error}</Text>}
+
+                  <View style={st.resultActions}>
+                    <TouchableOpacity style={st.retakeBtn} onPress={() => setCapturedBase64(null)} disabled={loading}>
+                      <Text style={st.retakeText}>Retake</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={[st.analyzeBtn, loading && st.disabledBtn]} 
+                      onPress={runScan} 
+                      disabled={loading}
+                    >
+                      {loading ? <ActivityIndicator size="small" color="#ffffff"/> : (
+                        <>
+                          <Text style={st.analyzeBtnText}>Analyze Product</Text>
+                          <Ionicons name="sparkles" size={18} color="#ffffff" />
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </View>
+             )}
+          </SafeAreaView>
+        )}
+      </View>
     </Modal>
   );
 }
 
-
+const st = RNStyleSheet.create({
+  container: { flex: 1, backgroundColor: '#000' },
+  topBar: {
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 0, left: 0, right: 0,
+    zIndex: 10,
+  },
+  topInfo: { flex: 1 },
+  scanTitle: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#fff',
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
+  scanSubtitle: { fontSize: 12, color: 'rgba(255,255,255,0.8)', fontWeight: '600' },
+  iconCloseBtn: {
+    width: 40, height: 40, borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  scanOverlay: { ...RNStyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center' },
+  scanFrame: {
+    width: screenWidth * 0.7, height: screenWidth * 0.7,
+    borderWidth: 2, borderColor: 'rgba(255,255,255,0.5)',
+    borderRadius: 24,
+  },
+  bottomControls: {
+    position: 'absolute',
+    bottom: 0, left: 0, right: 0,
+    paddingHorizontal: 30, paddingBottom: 20,
+  },
+  buttonRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  shutterBtn: {
+    width: 76, height: 76, borderRadius: 38,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    borderWidth: 4, borderColor: '#fff',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  shutterInner: { width: 60, height: 60, borderRadius: 30, backgroundColor: '#fff' },
+  galleryIconBtn: {
+    width: 44, height: 44, borderRadius: 22,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  errorFloatText: {
+    position: 'absolute', bottom: 120,
+    color: '#ef4444', fontWeight: 'bold',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 12,
+  },
+  resultsOverlay: { flex: 1, backgroundColor: '#F5F4F0', padding: 20 },
+  resultsCloseBtn: {
+    alignSelf: 'flex-end', width: 40, height: 40, borderRadius: 20,
+    backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', marginBottom: 20,
+  },
+  permContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
+  permTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a' },
+  permSub: { fontSize: 14, color: '#64748b', textAlign: 'center', paddingHorizontal: 40 },
+  permBtn: { backgroundColor: '#0f172a', paddingHorizontal: 24, paddingVertical: 14, borderRadius: 16 },
+  permBtnText: { color: '#fff', fontWeight: 'bold' },
+  analysisCard: {
+    backgroundColor: '#fff', borderRadius: 24, padding: 24,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1, shadowRadius: 10, elevation: 4,
+  },
+  successHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 },
+  analysisTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a' },
+  resultActions: { flexDirection: 'row', gap: 12 },
+  retakeBtn: { flex: 1, backgroundColor: '#f1f5f9', paddingVertical: 16, borderRadius: 16, alignItems: 'center' },
+  retakeText: { color: '#475569', fontWeight: 'bold', fontSize: 15 },
+  analyzeBtn: {
+    flex: 2, flexDirection: 'row', backgroundColor: '#3b82f6',
+    paddingVertical: 16, borderRadius: 16, justifyContent: 'center', alignItems: 'center', gap: 8,
+  },
+  analyzeBtnText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
+  disabledBtn: { opacity: 0.6 },
+  errorText: { color: '#ef4444', marginBottom: 12, textAlign: 'center', fontWeight: '600' },
+});

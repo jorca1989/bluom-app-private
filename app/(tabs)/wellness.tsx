@@ -215,7 +215,7 @@ export default function WellnessScreen() {
     );
   }
 
-  const bottomPad = getBottomContentPadding(insets.bottom, 16) + TAB_BAR_HEIGHT + 96;
+  const bottomPad = getBottomContentPadding(insets.bottom, 16) + TAB_BAR_HEIGHT;
 
   return (
     <SafeAreaView style={s.container} edges={['top']}>
@@ -470,7 +470,7 @@ export default function WellnessScreen() {
       {showGamesHub && <GamesHub userId={user._id} onClose={() => setShowGamesHub(false)} />}
       {showMindWorld && <MindWorldScreen visible={true} onClose={() => setShowMindWorld(false)} />}
       {showLifeGoals && <LifeGoalsHub userId={user._id} onClose={() => setShowLifeGoals(false)} />}
-      <PanicButton userId={user._id} />
+      {/* <PanicButton userId={user._id} /> */}
     </SafeAreaView>
   );
 }

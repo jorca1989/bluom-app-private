@@ -304,15 +304,15 @@ export default function AiMealMakerScreen() {
 
   return (
     <SafeAreaView style={st.container} edges={['top']}>
-      <ProUpgradeModal
-        visible={showUpgrade}
-        title="Upgrade to Pro"
-        message={upgradeMessage}
+      <ProUpgradeModal 
+        visible={showUpgrade} 
         onClose={() => setShowUpgrade(false)}
         onUpgrade={() => {
           setShowUpgrade(false);
-          router.push('/premium');
+          router.push('/(tabs)/profile');
         }}
+        title="AI Chef Pro"
+        message={upgradeMessage}
       />
 
       {/* Header */}
@@ -370,7 +370,14 @@ export default function AiMealMakerScreen() {
 
           <TouchableOpacity
             style={st.modeCard}
-            onPress={() => setMode('text')}
+            onPress={() => {
+              if (!isPro) {
+                setUpgradeMessage('AI recipe generation is a Pro feature.');
+                setShowUpgrade(true);
+                return;
+              }
+              setMode('text');
+            }}
             activeOpacity={0.88}
           >
             <View style={[st.modeIcon, { backgroundColor: '#d1fae5' }]}>

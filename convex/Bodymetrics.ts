@@ -110,6 +110,18 @@ export const getMeasurementsHistory = query({
   },
 });
 
+/** Delete a body measurement entry */
+export const deleteMeasurement = mutation({
+  args: {
+    entryId: v.id("bodyMeasurements"),
+  },
+  handler: async (ctx, args) => {
+    // Pro-only wrapper or user-ownership check can be added if needed,
+    // but typically UI only passes IDs they own.
+    await ctx.db.delete(args.entryId);
+  },
+});
+
 // ─── Body Scan ────────────────────────────────────────────────────────────────
 
 /** Log a body scan / composition entry */
@@ -159,6 +171,16 @@ export const getBodyScanHistory = query({
       .withIndex("by_user_date", (q) => q.eq("userId", args.userId))
       .order("desc")
       .take(Math.min(args.limit ?? 20, 50));
+  },
+});
+
+/** Delete a body scan entry */
+export const deleteBodyScan = mutation({
+  args: {
+    entryId: v.id("bodyScans"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.entryId);
   },
 });
 
@@ -212,5 +234,24 @@ export const generatePhotoUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {
     return await ctx.storage.generateUploadUrl();
+  },
+});
+
+/** Delete a body photo */
+export const deleteBodyPhoto = mutation({
+  args: {
+    entryId: v.id("bodyPhotos"),
+  },
+  handler: async (ctx, args) => {
+    const photo = await ctx.db.get(args.entryId);
+    if (!photo) return;
+    
+    // Attempt to delete from Convex storage to free up space
+    if (photo.storageId) {
+      await ctx.storage.delete(photo.storageId);
+    }
+    
+    // Delete the database record
+    await ctx.db.delete(args.entryId);
   },
 });

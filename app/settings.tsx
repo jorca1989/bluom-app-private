@@ -217,13 +217,12 @@ export default function SettingsScreen() {
                         <Text style={styles.sectionTitle}>Account</Text>
                     </View>
                     <View style={styles.itemsList}>
-                        {/* Integrations disabled for Build 18 submission */}
-
-                        <TouchableOpacity style={styles.item} activeOpacity={0.7} onPress={() => { }}>
+                        <TouchableOpacity style={styles.item} activeOpacity={0.7} onPress={() => router.push('/integrations' as any)}>
                             <View style={styles.itemLeft}>
-                                <Text style={styles.itemLabel}>Profile Information</Text>
-                                <Text style={styles.itemValue}>{convexUser.name || 'Not set'}</Text>
+                                <Text style={styles.itemLabel}>Connected Apps & Devices</Text>
+                                <Text style={styles.itemValue}>Strava, Apple Health, etc.</Text>
                             </View>
+                            <Ionicons name="apps-outline" size={18} color="#2563eb" style={{ marginRight: 8 }} />
                             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
                         </TouchableOpacity>
 

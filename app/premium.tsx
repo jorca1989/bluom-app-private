@@ -29,12 +29,11 @@ import {
 import { BlurView } from 'expo-blur';
 import Svg, { Path } from 'react-native-svg';
 import * as SecureStore from 'expo-secure-store';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width, height } = Dimensions.get('window');
 
-// ─── Cloudflare R2 hero image ───────────────────────────────────────────────
-// Replace this URL with your actual R2 public URL
-const HERO_IMAGE_URL = 'https://pub-YOUR_R2_ACCOUNT.r2.dev/premium-hero.jpg';
+const HERO_IMAGE_URL = 'https://pub-df4415ed308d4c5c9617037ae2ddcbe9.r2.dev/Premiun.tsx%20hero.png';
 
 // ─── Feature list ────────────────────────────────────────────────────────────
 const FEATURES = [
@@ -62,19 +61,6 @@ function fmt(amount: number, code: string | null) {
   try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: code }).format(amount); } catch { return String(amount); }
 }
 
-// ─── Wave mask component ──────────────────────────────────────────────────────
-function WaveMask() {
-  return (
-    <View style={styles.waveContainer} pointerEvents="none">
-      <Svg width={width} height={80} viewBox={`0 0 ${width} 80`} preserveAspectRatio="none">
-        <Path
-          d={`M0,0 L${width},0 L${width},28 Q${width * 0.75},80 ${width * 0.5},52 Q${width * 0.25},24 0,60 Z`}
-          fill="#0a0a0f"
-        />
-      </Svg>
-    </View>
-  );
-}
 
 // ─── Plan card ────────────────────────────────────────────────────────────────
 function PlanCard({ title, subtitle, price, priceNote, popular, disabled, onPress }: {
@@ -219,8 +205,13 @@ export default function PremiumScreen() {
       {/* ── Hero image (fixed behind scroll) ── */}
       <Animated.View style={[styles.heroContainer, { transform: [{ scale: heroScale }, { translateY: heroTranslateY }], opacity: heroOpacity }]}>
         <Image source={{ uri: HERO_IMAGE_URL }} style={styles.heroImage} resizeMode="cover" />
-        {/* Dark gradient overlay on image */}
-        <View style={styles.heroOverlay} />
+        
+        {/* Semi-dark overall overlay + fade-to-background transition */}
+        <LinearGradient
+          colors={['rgba(15,23,42,0.3)', 'rgba(15,23,42,0.45)', 'rgba(15,23,42,0.75)', BG]}
+          locations={[0, 0.5, 0.8, 1]}
+          style={StyleSheet.absoluteFillObject}
+        />
       </Animated.View>
 
       {/* Close button — always on top */}
@@ -247,12 +238,7 @@ export default function PremiumScreen() {
           </View>
         </View>
 
-        {/* ── Wave transition into dark card ── */}
-        <View style={{ marginTop: -20 }}>
-          <WaveMask />
-        </View>
-
-        {/* ── Dark content card ── */}
+        {/* ── Main content card ── */}
         <View style={styles.contentCard}>
 
           {isPro ? (
@@ -405,11 +391,11 @@ export default function PremiumScreen() {
 const HERO_HEIGHT = height * 0.52;
 const GOLD = '#d4af37';
 const GOLD_LIGHT = '#f0d060';
-const BG = '#0a0a0f';
-const CARD = '#12121a';
-const BORDER = '#1e1e2e';
-const TEXT = '#f0ede8';
-const MUTED = '#6b6880';
+const BG = '#f8fafc';
+const CARD = '#ffffff';
+const BORDER = '#e2e8f0';
+const TEXT = '#0f172a';
+const MUTED = '#64748b';
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: BG },
@@ -428,7 +414,7 @@ const styles = StyleSheet.create({
   },
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10,10,15,0.45)',
+    backgroundColor: 'rgba(15,23,42,0.4)',
   },
   heroSpacer: {
     height: HERO_HEIGHT - 180,
@@ -458,11 +444,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 
-  // Wave
-  waveContainer: {
-    marginTop: -1,
-    zIndex: 1,
-  },
+  // Wave (removed, integrated into gradient)
 
   // Close button
   closeBtn: {
@@ -569,16 +551,16 @@ const styles = StyleSheet.create({
   planPriceGold: { color: GOLD_LIGHT },
   planNote: { fontSize: 11, fontWeight: '700', color: GOLD, marginTop: 2 },
   planCta: {
-    backgroundColor: '#1e1e2e',
-    borderRadius: 10,
+    backgroundColor: GOLD,
+    borderRadius: 12,
     paddingVertical: 13,
     alignItems: 'center',
   },
   planCtaGold: {
     backgroundColor: GOLD,
   },
-  planCtaText: { fontSize: 14, fontWeight: '800', color: TEXT },
-  planCtaTextDark: { color: '#0a0a0f' },
+  planCtaText: { fontSize: 14, fontWeight: '800', color: '#0f172a' },
+  planCtaTextDark: { color: '#0f172a' },
 
   upgradingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 8 },
   upgradingText: { fontSize: 13, color: MUTED },
@@ -650,4 +632,5 @@ const styles = StyleSheet.create({
   legalLinks: { flexDirection: 'row', alignItems: 'center' },
   legalLink: { fontSize: 11, fontWeight: '700', color: '#3b82f6' },
   legalDot: { color: MUTED, paddingHorizontal: 4 },
+
 });

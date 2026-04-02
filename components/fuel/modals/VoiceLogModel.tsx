@@ -23,9 +23,11 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Audio } from 'expo-av';
+import { useRouter } from 'expo-router';
 import { useMutation, useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
+import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 
 const { width } = Dimensions.get('window');
 
@@ -52,6 +54,7 @@ interface Props {
   defaultMeal?: MealName;
   /** Platform string for AI key selection */
   platform?: string;
+  isPro?: boolean;
 }
 
 const MEAL_OPTIONS: MealName[] = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
@@ -69,7 +72,9 @@ type Stage = 'idle' | 'recording' | 'processing' | 'review';
 export default function VoiceLogModal({
   visible, onClose, userId, selectedDate,
   defaultMeal = 'Lunch', platform = 'ios',
+  isPro = false,
 }: Props) {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
 
   // Convex
@@ -82,6 +87,7 @@ export default function VoiceLogModal({
   const [selectedMeal, setSelectedMeal] = useState<MealName>(defaultMeal);
   const [saving,      setSaving]      = useState(false);
   const [transcript,  setTranscript]  = useState('');
+  const [showUpgrade, setShowUpgrade] = useState(false);
 
   // Recording ref
   const recordingRef = useRef<Audio.Recording | null>(null);
@@ -106,6 +112,10 @@ export default function VoiceLogModal({
   // ── Recording ──────────────────────────────────────────────────────────────
 
   const startRecording = async () => {
+    if (!isPro) {
+      setShowUpgrade(true);
+      return;
+    }
     try {
       const { status } = await Audio.requestPermissionsAsync();
       if (status !== 'granted') {
@@ -395,6 +405,17 @@ export default function VoiceLogModal({
           )}
 
         </ScrollView>
+        <ProUpgradeModal 
+          visible={showUpgrade} 
+          onClose={() => setShowUpgrade(false)}
+          onUpgrade={() => {
+            setShowUpgrade(false);
+            onClose();
+            router.push('/(tabs)/profile');
+          }}
+          title="AI Voice Log"
+          message="Experience the future of food logging. Upgrade to Pro for instant voice-to-macros parsing."
+        />
       </SafeAreaView>
     </Modal>
   );

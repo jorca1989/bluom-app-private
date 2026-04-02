@@ -355,7 +355,13 @@ Allergies: ${(args.allergies ?? []).join(", ") || "none"}
 Dislikes / avoid: ${(args.dislikes ?? []).join(", ") || "none"}
 ${args.requestText ? `Special request: ${args.requestText}` : ""}
 
-Return ONLY valid JSON with this exact shape:
+CRITICAL STRICT CONSTRAINTS:
+1. You MUST generate ONLY valid, machine-readable JSON.
+2. DO NOT output any markdown blocks (e.g. \`\`\`json).
+3. DO NOT output conversational text before or after the JSON (e.g. "Here is your recipe" or "Enjoy").
+4. The recipe MUST be realistic, biologically edible, and use normal flavor profiles.
+
+Return EXACTLY this JSON shape:
 {
   "title": "string",
   "description": "string",
