@@ -275,16 +275,34 @@ export default function WorkoutsScreen() {
                                     <Text style={styles.infoLabel}>Difficulty</Text>
                                     <Text style={styles.infoValue}>{selectedWorkout.difficulty}</Text>
                                 </View>
-                                <View style={styles.infoItem}>
-                                    <Text style={styles.infoLabel}>Equipment</Text>
-                                    <Text style={styles.infoValue}>
-                                        {selectedWorkout.equipment?.length > 0
-                                            ? selectedWorkout.equipment.join(', ')
-                                            : 'None'}
-                                    </Text>
-                                </View>
                             </View>
                         </View>
+
+                        {/* Equipment */}
+                        {(selectedWorkout.equipment?.length > 0 || selectedWorkout.optionalEquipment?.length > 0) && (
+                            <View style={styles.infoSection}>
+                                <Text style={styles.sectionTitle}>Equipment</Text>
+                                <View style={styles.equipmentList}>
+                                    {selectedWorkout.equipment?.map((eq: string, i: number) => (
+                                        <View key={i} style={styles.equipmentItem}>
+                                            <View style={styles.equipmentDot} />
+                                            <Text style={styles.equipmentText}>{eq}</Text>
+                                        </View>
+                                    ))}
+                                    {selectedWorkout.optionalEquipment?.length > 0 && (
+                                        <>
+                                            <Text style={styles.equipmentOrLabel}>or alternatively:</Text>
+                                            {selectedWorkout.optionalEquipment.map((eq: string, i: number) => (
+                                                <View key={`opt-${i}`} style={styles.equipmentItem}>
+                                                    <View style={[styles.equipmentDot, styles.equipmentDotOptional]} />
+                                                    <Text style={[styles.equipmentText, styles.equipmentTextOptional]}>{eq}</Text>
+                                                </View>
+                                            ))}
+                                        </>
+                                    )}
+                                </View>
+                            </View>
+                        )}
 
                         {/* ── Exercise Details ── */}
                         {hasExercises && (
@@ -292,26 +310,18 @@ export default function WorkoutsScreen() {
                                 <Text style={styles.sectionTitle}>Exercise Details</Text>
                                 {selectedWorkout.exercises.map((ex: any, idx: number) => (
                                     <View key={idx} style={styles.exerciseDetailCard}>
-                                        <View style={styles.exerciseHeader}>
-                                            <View style={styles.exerciseIndex}>
-                                                <Text style={styles.exerciseIndexText}>{idx + 1}</Text>
-                                            </View>
-                                            <View style={{ flex: 1 }}>
-                                                <Text style={styles.exerciseName}>{ex.name}</Text>
-                                                {ex.exerciseType && (
-                                                    <Text style={styles.exerciseType}>{ex.exerciseType}</Text>
-                                                )}
-                                            </View>
-                                        </View>
-
                                         {/* Instructions — Pro only */}
                                         {isPro && ex.instructions && ex.instructions.length > 0 && (
                                             <View style={styles.instructionsBox}>
                                                 <Text style={styles.instructionsTitle}>Instructions</Text>
                                                 {ex.instructions.map((step: string, i: number) => (
-                                                    <Text key={i} style={styles.instructionItem}>
-                                                        {i + 1}. {step}
-                                                    </Text>
+                                                    <View key={i} style={styles.instructionRow}>
+                                                        <View style={styles.instructionNumWrap}>
+                                                            <Text style={styles.instructionNum}>{i + 1}</Text>
+                                                            <View style={styles.instructionNumUnderline} />
+                                                        </View>
+                                                        <Text style={styles.instructionItem}>{step}</Text>
+                                                    </View>
                                                 ))}
                                             </View>
                                         )}
@@ -592,29 +602,12 @@ export default function WorkoutsScreen() {
                                     />
                                     <LinearGradient colors={['transparent', 'rgba(0,0,0,0.75)']} style={styles.cardGradient} />
                                     <View style={styles.cardContent}>
-                                        <View style={styles.cardTop}>
-                                            <View style={[styles.difficultyBadge, {
-                                                backgroundColor: item.difficulty === 'Beginner' ? '#10b981' : item.difficulty === 'Advanced' ? '#ef4444' : '#f59e0b'
-                                            }]}>
-                                                <Text style={styles.difficultyText}>{item.difficulty}</Text>
-                                            </View>
-                                            {item.isPremium && (
-                                                <View style={styles.premiumBadge}>
-                                                    <Star size={10} color="#ffffff" fill="#ffffff" />
-                                                    <Text style={styles.premiumText}>PRO</Text>
-                                                </View>
-                                            )}
-                                        </View>
                                         <View style={styles.cardBottom}>
                                             <Text style={styles.cardTitle}>{item.title}</Text>
                                             <View style={styles.cardStats}>
                                                 <View style={styles.cardStat}>
                                                     <Dumbbell size={12} color="#ffffff" />
                                                     <Text style={styles.cardStatText}>{item.category}</Text>
-                                                </View>
-                                                <View style={styles.cardStat}>
-                                                    <Star size={12} color="#ffffff" fill="#ffffff" />
-                                                    <Text style={styles.cardStatText}>{item.rating}</Text>
                                                 </View>
                                             </View>
                                         </View>
@@ -715,12 +708,7 @@ const styles = StyleSheet.create({
     workoutCard: { width: (width - 44) / 2, height: 220, borderRadius: 20, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.14, shadowRadius: 16, elevation: 6, backgroundColor: '#ffffff', borderWidth: 2, borderColor: '#e2e8f0' },
     cardImage: { width: '100%', height: '100%' },
     cardGradient: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '70%' },
-    cardContent: { position: 'absolute', inset: 0, padding: 14, justifyContent: 'space-between' },
-    cardTop: { flexDirection: 'row', justifyContent: 'space-between' },
-    difficultyBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-    difficultyText: { fontSize: 9, fontWeight: '900', color: '#ffffff' },
-    premiumBadge: { paddingHorizontal: 6, paddingVertical: 4, borderRadius: 6, backgroundColor: '#6366f1', flexDirection: 'row', alignItems: 'center', gap: 3 },
-    premiumText: { fontSize: 9, fontWeight: '900', color: '#ffffff' },
+    cardContent: { position: 'absolute', inset: 0, padding: 14, justifyContent: 'flex-end' },
     cardBottom: {},
     cardTitle: { fontSize: 14, fontWeight: '900', color: '#ffffff', marginBottom: 6, lineHeight: 18 },
     cardStats: { flexDirection: 'row', gap: 8 },
@@ -795,12 +783,6 @@ const styles = StyleSheet.create({
     infoLabel: { fontSize: 15, color: '#64748b', fontWeight: '600' },
     infoValue: { fontSize: 15, color: '#1e293b', fontWeight: '700' },
     exerciseDetailCard: { backgroundColor: '#f8fafc', padding: 16, borderRadius: 16, marginBottom: 16 },
-    exerciseHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
-    exerciseIndex: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#2563eb', justifyContent: 'center', alignItems: 'center' },
-    exerciseIndexText: { color: '#ffffff', fontWeight: '900', fontSize: 14 },
-    exerciseName: { fontSize: 16, fontWeight: '700', color: '#1e293b', marginBottom: 2 },
-    exerciseType: { fontSize: 12, color: '#2563eb', fontWeight: '600' },
-    exerciseDesc: { fontSize: 13, color: '#64748b', marginTop: 2, marginBottom: 12 },
     // Log button with Dumbbell icon
     logButton: {
         backgroundColor: '#2563eb',
@@ -812,9 +794,22 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     logButtonText: { color: '#ffffff', fontSize: 14, fontWeight: '700' },
+    // Equipment list
+    equipmentList: { gap: 8 },
+    equipmentItem: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+    equipmentDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#2563eb', flexShrink: 0 },
+    equipmentDotOptional: { backgroundColor: '#94a3b8' },
+    equipmentText: { fontSize: 15, color: '#1e293b', fontWeight: '600', flex: 1 },
+    equipmentTextOptional: { color: '#64748b', fontWeight: '500' },
+    equipmentOrLabel: { fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 4, marginBottom: 2 },
+    // Instructions
     instructionsBox: { backgroundColor: '#ffffff', padding: 12, borderRadius: 12, marginTop: 8 },
-    instructionsTitle: { fontSize: 14, fontWeight: '800', color: '#1e293b', marginBottom: 8 },
-    instructionItem: { fontSize: 13, color: '#475569', lineHeight: 20, marginBottom: 4 },
+    instructionsTitle: { fontSize: 14, fontWeight: '800', color: '#1e293b', marginBottom: 12 },
+    instructionRow: { flexDirection: 'row', gap: 12, marginBottom: 12, alignItems: 'flex-start' },
+    instructionNumWrap: { alignItems: 'center', width: 22, flexShrink: 0, paddingTop: 2 },
+    instructionNum: { fontSize: 13, fontWeight: '900', color: '#2563eb', lineHeight: 18 },
+    instructionNumUnderline: { width: 14, height: 3, borderRadius: 2, backgroundColor: '#2563eb', marginTop: 2 },
+    instructionItem: { fontSize: 13, color: '#475569', lineHeight: 20, flex: 1 },
     musclesBox: { flexDirection: 'row', gap: 12, marginTop: 8 },
     muscleGroup: { flex: 1, backgroundColor: '#eff6ff', padding: 12, borderRadius: 12 },
     muscleGroupTitle: { fontSize: 13, fontWeight: '800', color: '#2563eb', marginBottom: 6 },

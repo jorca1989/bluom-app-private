@@ -809,6 +809,7 @@ export default defineSchema({
     // Muscle group filter tags — maps to the Browse by Muscle Group cards in workouts.tsx
     muscleGroupTags: v.optional(v.array(v.string())),
     equipment: v.array(v.string()),
+    optionalEquipment: v.optional(v.array(v.string())), // alternatives / "or" options
     rating: v.float64(),
     reviews: v.float64(),
     instructor: v.string(),

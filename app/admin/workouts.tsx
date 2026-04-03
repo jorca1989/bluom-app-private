@@ -51,6 +51,7 @@ const EMPTY_FORM = {
     // Muscle group filter tags for workouts.tsx Browse by Muscle Group
     muscleGroupTags: [] as string[],
     equipment: '',
+    optionalEquipment: '',
     difficulty: 'Beginner',
     // Universal fallback thumbnail
     thumbnail: '',
@@ -174,6 +175,8 @@ export default function WorkoutsManager() {
 
         const equipmentArray = form.equipment
             .split(',').map(e => e.trim()).filter(e => e.length > 0);
+        const optionalEquipmentArray = form.optionalEquipment
+            .split(',').map(e => e.trim()).filter(e => e.length > 0);
 
         const exercises = form.exerciseName.trim()
             ? [{
@@ -209,6 +212,7 @@ export default function WorkoutsManager() {
             categories: types,
             muscleGroupTags: form.muscleGroupTags,
             equipment: equipmentArray,
+            optionalEquipment: optionalEquipmentArray.length > 0 ? optionalEquipmentArray : undefined,
             instructor: 'Bluom Coach',
             isPremium: true,
             exercises,
@@ -275,6 +279,7 @@ export default function WorkoutsManager() {
             secondaryMuscles: (ex.secondaryMuscles ?? []).join(', '),
             muscleGroupTags: w.muscleGroupTags ?? [],
             equipment: (w.equipment ?? []).join(', '),
+            optionalEquipment: (w.optionalEquipment ?? []).join(', '),
             difficulty: w.difficulty ?? 'Beginner',
             thumbnail: w.thumbnail ?? '',
             thumbnailMale: w.thumbnailMale ?? '',
@@ -533,12 +538,22 @@ export default function WorkoutsManager() {
                         />
 
                         {/* Equipment */}
-                        <Text style={styles.label}>Equipment (comma-separated)</Text>
+                        <Text style={styles.label}>Required Equipment (comma-separated)</Text>
                         <TextInput
                             style={styles.input}
                             value={form.equipment}
                             onChangeText={t => setField('equipment', t)}
-                            placeholder="e.g. Dumbbells, Yoga mat  (leave empty for bodyweight)"
+                            placeholder="e.g. Hyperextension bench, Roman chair"
+                        />
+                        <Text style={styles.label}>Optional / Alternative Equipment (comma-separated)</Text>
+                        <Text style={{ fontSize: 11, color: '#94a3b8', marginBottom: 6, marginTop: -4 }}>
+                            Items listed here appear as "or:" alternatives in the app
+                        </Text>
+                        <TextInput
+                            style={styles.input}
+                            value={form.optionalEquipment}
+                            onChangeText={t => setField('optionalEquipment', t)}
+                            placeholder="e.g. Body weight, Dumbbell, Weight plate"
                         />
 
                         {/* Difficulty */}
