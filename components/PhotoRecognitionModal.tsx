@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, ActivityIndicator, Platform, Alert, Dimensions } from 'react-native';
 
 const { width } = Dimensions.get('window');
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import { requireOptionalNativeModule } from 'expo-modules-core';
@@ -29,6 +29,7 @@ interface PhotoRecognitionModalProps {
 
 export default function PhotoRecognitionModal({ visible, onClose, onRecognized, meal, isPro = false }: PhotoRecognitionModalProps) {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);
   const [recognizeError, setRecognizeError] = useState<string | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
@@ -163,7 +164,10 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
             onCameraReady={() => setCameraReady(true)}
           >
             {/* Top Bar with Instruction and Close */}
-            <SafeAreaView style={styles.topBar} edges={['top']}>
+            <SafeAreaView
+              style={[styles.topBar, { paddingTop: Math.max(insets.top, 44) }]}
+              edges={['top']}
+            >
               <View style={styles.topInfo}>
                 <Text style={styles.scanTitle}>Photo AI Log</Text>
                 <Text style={styles.scanSubtitle}>Extract macros from your meal</Text>

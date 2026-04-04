@@ -65,11 +65,17 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
 
   const displaySessions = rawSessions ?? fallbackSessions;
   
-  // Groupings for the UI
-  const featuredSession = displaySessions[0];
-  const trendingSessions = displaySessions.slice(1, 5); // Just taking nearest for mockup logic
-  const quickSessions = displaySessions.filter(s => (s.duration ?? 0) <= 5);
-  const deepDiveSessions = displaySessions.filter(s => (s.duration ?? 0) > 10);
+  // Groupings for the UI — prefer admin-curated flags, fall back to array slice
+  const featuredSessions = useMemo(() => {
+    const featured = displaySessions.filter((s: any) => s.isFeatured);
+    return featured.length > 0 ? featured : displaySessions.slice(0, 3);
+  }, [displaySessions]);
+  const trendingSessions = useMemo(() => {
+    const trending = displaySessions.filter((s: any) => s.isTrending);
+    return trending.length > 0 ? trending : displaySessions.slice(0, 4);
+  }, [displaySessions]);
+  const quickSessions = displaySessions.filter((s: any) => (s.duration ?? 0) <= 5);
+  const deepDiveSessions = displaySessions.filter((s: any) => (s.duration ?? 0) > 10);
 
   const handleStartSession = (session: any) => {
     if (session.coverImage) Image.prefetch(session.coverImage);
@@ -93,8 +99,8 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
   return (
     <Modal visible={true} animationType="slide" transparent={false}>
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-        {/* Header */}
-        <View style={styles.header}>
+        {/* Header — explicit paddingTop from insets prevents top cut-off on intermittent SafeArea timing issues */}
+        <View style={[styles.header, { paddingTop: Math.max(insets.top, 16) }]}>
           <View>
             <Text style={styles.headerGreeting}>{getGreeting()}</Text>
             <Text style={styles.headerTitle}>Ready to unwind?</Text>
@@ -132,23 +138,47 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
             ))}
           </ScrollView>
 
-          {/* Featured Hero (Only if All is selected, else just show list) */}
-          {!selectedCategory && featuredSession && (
-            <TouchableOpacity style={styles.heroCard} onPress={() => handleStartSession(featuredSession)} activeOpacity={0.9}>
-              <Image source={{ uri: featuredSession.coverImageLandscape || featuredSession.coverImage }} style={StyleSheet.absoluteFillObject} contentFit="cover" />
-              <LinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={StyleSheet.absoluteFillObject} />
-              
-              <View style={styles.heroContent}>
-                <View style={styles.heroBadge}>
-                  <Text style={styles.heroBadgeText}>RECOMMENDED</Text>
-                </View>
-                <Text style={styles.heroTitle}>{featuredSession.title}</Text>
-                <Text style={styles.heroDuration}>{featuredSession.duration} min · {MEDITATION_FILTERS.find(c=>c.id === featuredSession.category)?.name || 'Session'}</Text>
-              </View>
-              <View style={styles.heroPlay}>
-                <Ionicons name="play" size={24} color="#1e293b" />
-              </View>
-            </TouchableOpacity>
+          {/* Featured Sessions — swipable carousel driven by admin isFeatured toggle */}
+          {!selectedCategory && featuredSessions.length > 0 && (
+            <View style={{ marginBottom: 28 }}>
+              <Text style={styles.sectionTitle}>Featured</Text>
+              <ScrollView
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                decelerationRate="fast"
+                snapToInterval={width - 40 + 14}
+                contentContainerStyle={{ paddingHorizontal: 20, gap: 14 }}
+              >
+                {featuredSessions.map((session: any) => (
+                  <TouchableOpacity
+                    key={session._id}
+                    style={[styles.heroCard, { width: width - 40 }]}
+                    onPress={() => handleStartSession(session)}
+                    activeOpacity={0.9}
+                  >
+                    <Image
+                      source={{ uri: session.coverImageLandscape || session.coverImage }}
+                      style={StyleSheet.absoluteFillObject}
+                      contentFit="cover"
+                    />
+                    <LinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={StyleSheet.absoluteFillObject} />
+                    <View style={styles.heroContent}>
+                      <View style={styles.heroBadge}>
+                        <Text style={styles.heroBadgeText}>✦ FEATURED</Text>
+                      </View>
+                      <Text style={styles.heroTitle}>{session.title}</Text>
+                      <Text style={styles.heroDuration}>
+                        {session.duration} min · {MEDITATION_FILTERS.find((c: any) => c.id === session.category)?.name || 'Session'}
+                      </Text>
+                    </View>
+                    <View style={styles.heroPlay}>
+                      <Ionicons name="play" size={24} color="#1e293b" />
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
           )}
 
           {/* Section: Trending Right Now */}
@@ -174,10 +204,16 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
               <Text style={styles.sectionTitle}>Soundscapes</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScroll}>
                 {[SOUNDSCAPES.rain, SOUNDSCAPES.forest, SOUNDSCAPES.ocean, SOUNDSCAPES.brownNoise].map((ss, idx) => (
-                   <TouchableOpacity key={idx} style={styles.soundscapeCard} onPress={() => handleStartSoundscape(ss)}>
-                     <View style={styles.soundscapeIconBox}><Text style={{fontSize: 28}}>{idx===0?'🌧':idx===1?'🌲':idx===2?'🌊':'🎧'}</Text></View>
-                     <Text style={styles.soundscapeTitle}>{ss.name}</Text>
-                   </TouchableOpacity>
+                  <TouchableOpacity key={idx} style={styles.soundscapeCard} onPress={() => handleStartSoundscape(ss)}>
+                    <View style={styles.soundscapeIconBox}>
+                      <Text style={{ fontSize: 28 }}>{idx === 0 ? '🌧' : idx === 1 ? '🌲' : idx === 2 ? '🌊' : '🎧'}</Text>
+                    </View>
+                    {/* Play button below icon, NOT overlapping */}
+                    <Text style={styles.soundscapeTitle}>{ss.name}</Text>
+                    <View style={styles.soundscapePlay}>
+                      <Ionicons name="play" size={12} color="#2563eb" />
+                    </View>
+                  </TouchableOpacity>
                 ))}
               </ScrollView>
             </View>
@@ -280,14 +316,19 @@ const styles = StyleSheet.create({
   squareCardTitle: { fontSize: 14, fontWeight: '700', color: '#0f172a', marginTop: 10, lineHeight: 18 },
   squareCardSub: { fontSize: 12, color: '#64748b', marginTop: 4 },
 
-  soundscapeCard: { width: 110, alignItems: 'center' },
+  soundscapeCard: { width: 110, alignItems: 'center', gap: 8 },
   soundscapeIconBox: {
     width: 80, height: 80, borderRadius: 40, backgroundColor: '#fff',
-    justifyContent: 'center', alignItems: 'center', marginBottom: 10,
+    justifyContent: 'center', alignItems: 'center',
     borderWidth: 1, borderColor: '#e2e8f0',
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 6,
   },
   soundscapeTitle: { fontSize: 13, fontWeight: '600', color: '#475569', textAlign: 'center' },
+  soundscapePlay: {
+    width: 28, height: 28, borderRadius: 14, backgroundColor: '#eff6ff',
+    justifyContent: 'center', alignItems: 'center',
+    borderWidth: 1, borderColor: '#dbeafe',
+  },
 
   listCard: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff',

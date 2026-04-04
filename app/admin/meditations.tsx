@@ -217,6 +217,11 @@ export default function MeditationsManager() {
                             <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#64748b' }}>DRAFT</Text>
                         </View>
                     )}
+                    {item.isFeatured && (
+                        <View style={{ backgroundColor: '#fef3c7', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, alignSelf: 'center' }}>
+                            <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#d97706' }}>✦ FEATURED</Text>
+                        </View>
+                    )}
                     <TouchableOpacity onPress={() => handleEdit(item)}><FilePen size={20} color="#64748b" /></TouchableOpacity>
                     <TouchableOpacity onPress={() => handleDelete(item._id, item.title)}><X size={20} color="#ef4444" /></TouchableOpacity>
                 </View>
@@ -428,7 +433,7 @@ export default function MeditationsManager() {
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20, marginBottom: 40 }}>
                             <View>
                                 <Text style={{ fontWeight: '800', color: '#64748b', textTransform: 'uppercase', fontSize: 13 }}>Featured ✨</Text>
-                                <Text style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>Show in 'Trending' row in the Hub</Text>
+                                <Text style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>Pin to the swipable Featured carousel at top of Hub</Text>
                             </View>
                             <Switch value={form.isFeatured} onValueChange={v => setForm(p => ({ ...p, isFeatured: v }))} trackColor={{ true: '#f59e0b' }} />
                         </View>

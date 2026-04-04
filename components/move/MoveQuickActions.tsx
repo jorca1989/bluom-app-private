@@ -76,12 +76,13 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     alignItems: 'flex-start',
   },
   actionItem: {
     alignItems: 'center',
-    width: 72,
+    flex: 1,
+    maxWidth: 88,
   },
   iconCircle: {
     width: 60,

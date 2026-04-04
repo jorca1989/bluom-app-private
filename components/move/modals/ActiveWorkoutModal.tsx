@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput, Image, KeyboardAvoidingView, Platform, Linking } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { Video, ResizeMode } from 'expo-av';
 
 export interface SetData {
   id: string;
@@ -203,20 +204,36 @@ export default function ActiveWorkoutModal({
 
                   {isExpanded && (
                     <View style={styles.exExpandedContent}>
-                      {ex.thumbnailUrl && (
-                        <TouchableOpacity
-                          activeOpacity={ex.videoUrl ? 0.9 : 1}
-                          onPress={() => {
-                            if (ex.videoUrl) Linking.openURL(ex.videoUrl);
-                          }}
-                          style={styles.videoPlaceholder}
-                        >
-                          <Image source={{ uri: ex.thumbnailUrl }} style={styles.videoImage} resizeMode="cover" />
-                          <View style={styles.playIconOverlay}>
-                            <Ionicons name="play-circle" size={48} color="rgba(255,255,255,0.8)" />
-                          </View>
-                        </TouchableOpacity>
-                      )}
+                      {(ex.thumbnailUrl || ex.videoUrl) ? (
+                        <View style={styles.videoBox}>
+                          {ex.videoUrl && (ex.videoUrl.includes('.mp4') || ex.videoUrl.includes('.webm') || ex.videoUrl.includes('.mov')) ? (
+                            <Video
+                              source={{ uri: ex.videoUrl }}
+                              style={styles.videoPlayerInline}
+                              resizeMode={ResizeMode.COVER}
+                              useNativeControls
+                              shouldPlay={false}
+                            />
+                          ) : (
+                            <TouchableOpacity
+                              activeOpacity={ex.videoUrl ? 0.9 : 1}
+                              onPress={() => {
+                                if (ex.videoUrl) Linking.openURL(ex.videoUrl);
+                              }}
+                              style={styles.videoPlaceholder}
+                            >
+                              {ex.thumbnailUrl ? (
+                                <Image source={{ uri: ex.thumbnailUrl }} style={styles.videoImage} resizeMode="cover" />
+                              ) : (
+                                <View style={styles.videoImage} /> // Blank dark bg
+                              )}
+                              <View style={styles.playIconOverlay}>
+                                <Ionicons name="play-circle" size={48} color="rgba(255,255,255,0.8)" />
+                              </View>
+                            </TouchableOpacity>
+                          )}
+                        </View>
+                      ) : null}
 
                       {/* Sets Header */}
                       <View style={styles.setsHeader}>
@@ -449,14 +466,23 @@ const styles = StyleSheet.create({
   exExpandedContent: {
     padding: 16,
   },
-  videoPlaceholder: {
+  videoBox: {
     alignSelf: 'center',
     width: '62%',
     aspectRatio: 9 / 16,
-    backgroundColor: '#0f172a',
-    borderRadius: 16,
     marginBottom: 20,
+    borderRadius: 16,
     overflow: 'hidden',
+  },
+  videoPlayerInline: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#0f172a',
+  },
+  videoPlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#0f172a',
     justifyContent: 'center',
     alignItems: 'center',
   },

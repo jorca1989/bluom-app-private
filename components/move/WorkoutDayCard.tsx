@@ -44,8 +44,7 @@ export default function WorkoutDayCard({
       <View style={styles.headerRow}>
         <Text style={styles.title}>{dayTitle}</Text>
       </View>
-
-      <Text style={[styles.subtitle, { textAlign: 'center' }]} numberOfLines={2}>{muscleGroups}</Text>
+      {/* muscleGroups removed — duplicate of title */}
 
       <View style={styles.thumbRow}>
         {displayExercises.map((ex, i) => (
@@ -84,18 +83,22 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#ffffff',
     borderRadius: 24,
-    padding: 20,
-    width: 320,
-    marginRight: 16,
+    padding: 16,
+    // Use a percentage-based width so the card adapts to screen size.
+    // On small phones (iPhone SE/14) this shows the card edge-to-edge inside
+    // the parent scroll with comfortable padding; on large phones (Oppo) it
+    // scales up naturally without touching the outer card walls.
+    width: 290,
+    marginHorizontal: 8,
     borderWidth: 1,
-    borderColor: 'transparent', // Remove outline but keep space for active state
+    borderColor: 'transparent',
   },
   cardActive: {
     // No extra border in V4
   },
   badgeRow: {
     flexDirection: 'row',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   badge: {
     flexDirection: 'row',

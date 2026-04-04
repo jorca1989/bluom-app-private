@@ -13,7 +13,6 @@ import { useUser } from '@clerk/clerk-expo';
 import PanicButton from '../../components/PanicButton';
 import MeditationHub from '../../components/MeditationHub';
 import GamesHub from '../../components/GamesHub';
-import MindWorldScreen from '../../components/mindworld/MindWorldScreen';
 import LifeGoalsHub from '../../components/LifeGoalsHub';
 import { triggerSound, SoundEffect } from '../../utils/soundEffects';
 import { getBottomContentPadding, TAB_BAR_HEIGHT } from '../../utils/layout';
@@ -159,7 +158,6 @@ export default function WellnessScreen() {
   const [showInsightsModal, setShowInsightsModal] = useState(false);
   const [showMeditationHub, setShowMeditationHub] = useState(false);
   const [showGamesHub, setShowGamesHub] = useState(false);
-  const [showMindWorld, setShowMindWorld] = useState(false);
   const [showLifeGoals, setShowLifeGoals] = useState(params.showLifeGoals === 'true');
   const [sleepInput, setSleepInput] = useState('');
 
@@ -347,11 +345,6 @@ export default function WellnessScreen() {
               onPress={() => router.push('/habit-hub' as any)}
             />
             <HubCard
-              icon="planet" label="Mind World" sub="Grow your garden"
-              gradient={['#0891b2', '#164e63']}
-              onPress={() => setShowMindWorld(true)}
-            />
-            <HubCard
               icon="flag" label="Life Goals" sub="Dream & achieve"
               gradient={['#d97706', '#92400e']}
               onPress={() => setShowLifeGoals(true)}
@@ -468,7 +461,6 @@ export default function WellnessScreen() {
 
       {showMeditationHub && <MeditationHub userId={user._id} onClose={() => setShowMeditationHub(false)} />}
       {showGamesHub && <GamesHub userId={user._id} onClose={() => setShowGamesHub(false)} />}
-      {showMindWorld && <MindWorldScreen visible={true} onClose={() => setShowMindWorld(false)} />}
       {showLifeGoals && <LifeGoalsHub userId={user._id} onClose={() => setShowLifeGoals(false)} />}
       {/* <PanicButton userId={user._id} /> */}
     </SafeAreaView>

@@ -47,6 +47,7 @@ import type * as mindworld from "../mindworld.js";
 import type * as muscleGroupImages from "../muscleGroupImages.js";
 import type * as onboarding from "../onboarding.js";
 import type * as permissions from "../permissions.js";
+import type * as pillReminder from "../pillReminder.js";
 import type * as plans from "../plans.js";
 import type * as programs from "../programs.js";
 import type * as publicRecipes from "../publicRecipes.js";
@@ -121,6 +122,7 @@ declare const fullApi: ApiFromModules<{
   muscleGroupImages: typeof muscleGroupImages;
   onboarding: typeof onboarding;
   permissions: typeof permissions;
+  pillReminder: typeof pillReminder;
   plans: typeof plans;
   programs: typeof programs;
   publicRecipes: typeof publicRecipes;

@@ -56,7 +56,7 @@ export default function WorkoutsScreen() {
     const [selectedExerciseForLog, setSelectedExerciseForLog] = useState<any>(null);
     const [showHistory, setShowHistory] = useState(false);
     const [selectedMuscle, setSelectedMuscle] = useState('All');
-    const [listTab, setListTab] = useState<'browse' | 'muscles'>('browse');
+    const [listTab, setListTab] = useState<'browse' | 'muscles' | 'saved'>('browse');
 
     const convexUser = useQuery(
         api.users.getUserByClerkId,
@@ -118,6 +118,16 @@ export default function WorkoutsScreen() {
         });
     }, [workouts, selectedMuscle]);
 
+    // All saved workouts — used for the Saved tab and per-card bookmark state
+    const savedWorkouts = useQuery(
+        api.savedWorkouts.getSavedWorkouts,
+        convexUser?._id ? { userId: convexUser._id } : 'skip'
+    );
+    const savedIds = useMemo(
+        () => new Set((savedWorkouts ?? []).map((w: any) => w._id)),
+        [savedWorkouts]
+    );
+
     const toggleSave = useMutation(api.savedWorkouts.toggleSaveWorkout);
     const isSaved = useQuery(
         api.savedWorkouts.isWorkoutSaved,
@@ -148,6 +158,16 @@ export default function WorkoutsScreen() {
             await toggleSave({ userId: convexUser._id, workoutId: selectedWorkout._id });
         } catch {
             Alert.alert('Error', 'Failed to save workout');
+        }
+    };
+
+    // Toggle save directly from a card (without opening the workout)
+    const handleCardToggleSave = async (workoutId: any) => {
+        if (!convexUser?._id) return;
+        try {
+            await toggleSave({ userId: convexUser._id, workoutId });
+        } catch {
+            Alert.alert('Error', 'Could not update saved workout');
         }
     };
 
@@ -547,7 +567,7 @@ export default function WorkoutsScreen() {
                 </View>
             </View>
 
-            {/* ── Tabs: Browse / Muscles ── */}
+            {/* ── Tabs: Browse / Muscles / Saved ── */}
             <View style={styles.tabsRow}>
                 <TouchableOpacity
                     style={[styles.tabItem, listTab === 'browse' && styles.tabItemActive]}
@@ -563,6 +583,19 @@ export default function WorkoutsScreen() {
                     <Zap size={15} color={listTab === 'muscles' ? '#2563eb' : '#94a3b8'} />
                     <Text style={[styles.tabText, listTab === 'muscles' && styles.tabTextActive]}>
                         Muscles{selectedMuscle !== 'All' ? ` · ${selectedMuscle}` : ''}
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.tabItem, listTab === 'saved' && styles.tabItemActive]}
+                    onPress={() => setListTab('saved')}
+                >
+                    <Bookmark
+                        size={15}
+                        color={listTab === 'saved' ? '#2563eb' : '#94a3b8'}
+                        fill={listTab === 'saved' ? '#2563eb' : 'transparent'}
+                    />
+                    <Text style={[styles.tabText, listTab === 'saved' && styles.tabTextActive]}>
+                        Saved{savedWorkouts?.length ? ` · ${savedWorkouts.length}` : ''}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -589,31 +622,46 @@ export default function WorkoutsScreen() {
                         <View style={styles.loading}><ActivityIndicator size="large" color="#2563eb" /></View>
                     ) : (
                         <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
-                            {filteredWorkouts.map(item => (
-                                <TouchableOpacity
-                                    key={item._id}
-                                    style={styles.workoutCard}
-                                    activeOpacity={0.9}
-                                    onPress={() => setSelectedWorkout(item)}
-                                >
-                                    <Image
-                                        source={{ uri: (userSex === 'male' ? item.thumbnailMale : userSex === 'female' ? item.thumbnailFemale : null) || item.thumbnail }}
-                                        style={styles.cardImage}
-                                    />
-                                    <LinearGradient colors={['transparent', 'rgba(0,0,0,0.75)']} style={styles.cardGradient} />
-                                    <View style={styles.cardContent}>
-                                        <View style={styles.cardBottom}>
-                                            <Text style={styles.cardTitle}>{item.title}</Text>
-                                            <View style={styles.cardStats}>
-                                                <View style={styles.cardStat}>
-                                                    <Dumbbell size={12} color="#ffffff" />
-                                                    <Text style={styles.cardStatText}>{item.category}</Text>
+                            {filteredWorkouts.map(item => {
+                                const isItemSaved = savedIds.has(item._id);
+                                return (
+                                    <TouchableOpacity
+                                        key={item._id}
+                                        style={styles.workoutCard}
+                                        activeOpacity={0.9}
+                                        onPress={() => setSelectedWorkout(item)}
+                                    >
+                                        <Image
+                                            source={{ uri: (userSex === 'male' ? item.thumbnailMale : userSex === 'female' ? item.thumbnailFemale : null) || item.thumbnail }}
+                                            style={styles.cardImage}
+                                        />
+                                        <LinearGradient colors={['transparent', 'rgba(0,0,0,0.75)']} style={styles.cardGradient} />
+                                        {/* Save icon — top right */}
+                                        <TouchableOpacity
+                                            style={styles.cardSaveBtn}
+                                            onPress={() => handleCardToggleSave(item._id)}
+                                            hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+                                        >
+                                            <Bookmark
+                                                size={18}
+                                                color="#ffffff"
+                                                fill={isItemSaved ? '#ffffff' : 'transparent'}
+                                            />
+                                        </TouchableOpacity>
+                                        <View style={styles.cardContent}>
+                                            <View style={styles.cardBottom}>
+                                                <Text style={styles.cardTitle}>{item.title}</Text>
+                                                <View style={styles.cardStats}>
+                                                    <View style={styles.cardStat}>
+                                                        <Dumbbell size={12} color="#ffffff" />
+                                                        <Text style={styles.cardStatText}>{item.category}</Text>
+                                                    </View>
                                                 </View>
                                             </View>
                                         </View>
-                                    </View>
-                                </TouchableOpacity>
-                            ))}
+                                    </TouchableOpacity>
+                                );
+                            })}
 
                             {filteredWorkouts.length === 0 && (
                                 <View style={styles.empty}>
@@ -669,6 +717,57 @@ export default function WorkoutsScreen() {
                     )}
                 </ScrollView>
             )}
+
+            {/* ══ SAVED TAB ══ */}
+            {listTab === 'saved' && (
+                <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
+                    {!savedWorkouts ? (
+                        <View style={styles.loading}><ActivityIndicator size="large" color="#2563eb" /></View>
+                    ) : savedWorkouts.length === 0 ? (
+                        <View style={styles.empty}>
+                            <Bookmark size={64} color="#e2e8f0" />
+                            <Text style={styles.emptyText}>No saved workouts yet</Text>
+                            <Text style={styles.emptySubText}>Tap the bookmark icon on any workout to save it here</Text>
+                        </View>
+                    ) : (
+                        savedWorkouts.map((item: any) => {
+                            const isItemSaved = true; // always saved in this tab
+                            return (
+                                <TouchableOpacity
+                                    key={item._id}
+                                    style={styles.workoutCard}
+                                    activeOpacity={0.9}
+                                    onPress={() => setSelectedWorkout(item)}
+                                >
+                                    <Image
+                                        source={{ uri: (userSex === 'male' ? item.thumbnailMale : userSex === 'female' ? item.thumbnailFemale : null) || item.thumbnail }}
+                                        style={styles.cardImage}
+                                    />
+                                    <LinearGradient colors={['transparent', 'rgba(0,0,0,0.75)']} style={styles.cardGradient} />
+                                    <TouchableOpacity
+                                        style={styles.cardSaveBtn}
+                                        onPress={() => handleCardToggleSave(item._id)}
+                                        hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+                                    >
+                                        <Bookmark size={18} color="#ffffff" fill="#ffffff" />
+                                    </TouchableOpacity>
+                                    <View style={styles.cardContent}>
+                                        <View style={styles.cardBottom}>
+                                            <Text style={styles.cardTitle}>{item.title}</Text>
+                                            <View style={styles.cardStats}>
+                                                <View style={styles.cardStat}>
+                                                    <Dumbbell size={12} color="#ffffff" />
+                                                    <Text style={styles.cardStatText}>{item.category}</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            );
+                        })
+                    )}
+                </ScrollView>
+            )}
         </SafeAreaView>
     );
 }
@@ -709,6 +808,12 @@ const styles = StyleSheet.create({
     cardImage: { width: '100%', height: '100%' },
     cardGradient: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '70%' },
     cardContent: { position: 'absolute', inset: 0, padding: 14, justifyContent: 'flex-end' },
+    cardSaveBtn: {
+        position: 'absolute', top: 10, right: 10,
+        width: 32, height: 32, borderRadius: 16,
+        backgroundColor: 'rgba(0,0,0,0.35)',
+        justifyContent: 'center', alignItems: 'center',
+    },
     cardBottom: {},
     cardTitle: { fontSize: 14, fontWeight: '900', color: '#ffffff', marginBottom: 6, lineHeight: 18 },
     cardStats: { flexDirection: 'row', gap: 8 },

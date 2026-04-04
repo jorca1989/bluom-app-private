@@ -276,7 +276,7 @@ export default function ProfileScreen() {
               <Ionicons name="close" size={20} color="#1e293b" />
             </TouchableOpacity>
           </View>
-          <ScrollView contentContainerStyle={{ padding: 20, gap: 20 }}>
+          <ScrollView contentContainerStyle={{ padding: 20, gap: 20, paddingBottom: Math.max(insets.bottom, 24) + 16 }}>
             {/* Preview */}
             <View style={{ alignItems: 'center', marginBottom: 8 }}>
               <LinearGradient colors={AVATAR_BG_PAIRS[tempBgIdx]} style={s.avatarLarge}>

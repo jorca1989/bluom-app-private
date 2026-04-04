@@ -286,6 +286,8 @@ export default function MensHealthScreen() {
   // @ts-ignore
   const wellnessLog = useQuery(api.wellness.getTodayLog, convexUser?._id ? { userId: convexUser._id, date: today } : 'skip');
   // @ts-ignore
+  const sleepLogsQuery = useQuery(api.wellness.getSleepLogs, convexUser?._id ? { userId: convexUser._id, startDate: today, endDate: today } : 'skip');
+  // @ts-ignore
   const logSession = useMutation(api.mensHealth.logSession);
   // @ts-ignore
   const logSupps = useMutation(api.mensHealth.logSupplement);
@@ -312,6 +314,15 @@ export default function MensHealthScreen() {
   const [recovery, setRecovery] = useState(5);
   const [focus, setFocus] = useState(5);
   const [sleep, setSleep] = useState(convexUser?.sleepHours ?? 7);
+
+  const todaySleep = sleepLogsQuery?.[0]?.hours;
+  useEffect(() => {
+    if (todaySleep !== undefined) {
+      setSleep(todaySleep);
+    } else if (convexUser?.sleepHours !== undefined) {
+      setSleep(convexUser.sleepHours);
+    }
+  }, [todaySleep, convexUser?.sleepHours]);
 
   // ── Enhanced cycle ──
   const [cyclePhase, setCyclePhase] = useState('off');
@@ -513,23 +524,22 @@ export default function MensHealthScreen() {
 
       {/* Vitality Check-In Modal */}
       <Modal visible={showVitality} animationType="slide" presentationStyle="pageSheet">
-        <View style={{ flex: 1, backgroundColor: '#0f172a', padding: 24 }}>
-          <View style={s.modalHeader}>
-            <Text style={s.modalTitle}>Vitality Check-In</Text>
-            <TouchableOpacity onPress={() => setShowVitality(false)} style={s.modalClose}>
-              <Ionicons name="close" size={20} color="#e2e8f0" />
-            </TouchableOpacity>
-          </View>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['top']}>
+          <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 60 }} showsVerticalScrollIndicator={false}>
+            <View style={s.modalHeader}>
+              <Text style={s.modalTitle}>Vitality Check-In</Text>
+              <TouchableOpacity onPress={() => setShowVitality(false)} style={s.modalClose}>
+                <Ionicons name="close" size={20} color="#e2e8f0" />
+              </TouchableOpacity>
+            </View>
 
-          <Text style={s.modalSub}>Rate each pillar honestly. Your T-Opt score updates in real time.</Text>
+            <Text style={s.modalSub}>Rate each pillar honestly. Your T-Opt score updates in real time.</Text>
 
-          {/* T-Opt live score */}
-          <View style={s.tOptLive}>
-            <Text style={s.tOptLiveLabel}>T-OPT SCORE</Text>
-            <Text style={[s.tOptLiveVal, { color: tOpt.score >= 70 ? '#4ade80' : tOpt.score >= 50 ? '#fcd34d' : '#f87171' }]}>{tOpt.score}%</Text>
-          </View>
-
-          <ScrollView showsVerticalScrollIndicator={false}>
+            {/* T-Opt live score */}
+            <View style={s.tOptLive}>
+              <Text style={s.tOptLiveLabel}>T-OPT SCORE</Text>
+              <Text style={[s.tOptLiveVal, { color: tOpt.score >= 70 ? '#4ade80' : tOpt.score >= 50 ? '#fcd34d' : '#f87171' }]}>{tOpt.score}%</Text>
+            </View>
             {[
               { label: 'Drive / Libido', value: drive, onChange: setDrive, icon: 'flame-outline', color: '#ef4444' },
               { label: 'Recovery Status', value: recovery, onChange: setRecovery, icon: 'battery-charging-outline', color: '#4ade80' },
@@ -563,11 +573,11 @@ export default function MensHealthScreen() {
               <Text style={s.moodSyncTxt}>Mood synced from Wellness: {wellnessLog?.moodEmoji ?? '—'}</Text>
             </View>
 
-            <TouchableOpacity style={[s.saveBtn, { backgroundColor: mc.gradient[0] }]} onPress={handleSaveVitality}>
-              <Text style={s.saveBtnTxt}>Update System Status</Text>
-            </TouchableOpacity>
+              <TouchableOpacity style={[s.saveBtn, { backgroundColor: mc.gradient[0] }]} onPress={handleSaveVitality}>
+                <Text style={s.saveBtnTxt}>Update System Status</Text>
+              </TouchableOpacity>
           </ScrollView>
-        </View>
+        </SafeAreaView>
       </Modal>
 
       {/* Pelvic Protocol Modal */}
@@ -610,31 +620,47 @@ export default function MensHealthScreen() {
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
-            {/* Priority grouping */}
-            {(['critical', 'core', 'optional'] as const).map(priority => {
-              const group = supps.filter(s => s.priority === priority);
-              if (group.length === 0) return null;
-              return (
-                <View key={priority} style={{ marginBottom: 20 }}>
-                  <View style={s.suppGroupHeader}>
-                    <View style={[s.suppGroupDot, { backgroundColor: priority === 'critical' ? '#ef4444' : priority === 'core' ? '#4ade80' : '#64748b' }]} />
-                    <Text style={s.suppGroupLabel}>{priority === 'critical' ? '⚠️ Critical' : priority === 'core' ? '✅ Core Stack' : '💡 Optional'}</Text>
+
+            <View style={{ marginTop: 10 }}>
+              {!isPro && (
+                <View style={{ marginBottom: 16, padding: 16, borderRadius: 16, backgroundColor: '#1e293b', flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                  <Ionicons name="lock-closed" size={24} color="#fcd34d" />
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 15, fontWeight: '800', color: '#fff' }}>Unlock Your Stack</Text>
+                    <Text style={{ fontSize: 13, color: '#94a3b8', marginTop: 2 }}>Upgrade to Pro to see personalised recommendations tailored to your goals.</Text>
                   </View>
-                  {group.map((supp, i) => (
-                    <View key={i} style={s.suppCard}>
-                      <View style={s.suppTop}>
-                        <Text style={s.suppName}>{supp.name}</Text>
-                        <View style={[s.evidenceBadge, { backgroundColor: supp.evidence === 'Grade A' ? '#14532d' : supp.evidence === 'Prescription' ? '#7f1d1d' : '#422006' }]}>
-                          <Text style={[s.evidenceTxt, { color: supp.evidence === 'Grade A' ? '#4ade80' : supp.evidence === 'Prescription' ? '#fca5a5' : '#fcd34d' }]}>{supp.evidence}</Text>
-                        </View>
-                      </View>
-                      <Text style={s.suppDose}>💊 {supp.dose} · ⏰ {supp.timing}</Text>
-                      <Text style={s.suppReason}>{supp.reason}</Text>
-                    </View>
-                  ))}
+                  <TouchableOpacity onPress={() => { setShowSupps(false); router.push('/premium' as any); }}>
+                    <Text style={{ color: mc.accent, fontWeight: '700' }}>Upgrade</Text>
+                  </TouchableOpacity>
                 </View>
-              );
-            })}
+              )}
+
+              {/* Priority grouping */}
+              {(['critical', 'core', 'optional'] as const).map(priority => {
+                const group = supps.filter(s => s.priority === priority);
+                if (group.length === 0) return null;
+                return (
+                  <View key={priority} style={{ marginBottom: 20 }}>
+                    <View style={s.suppGroupHeader}>
+                      <View style={[s.suppGroupDot, { backgroundColor: priority === 'critical' ? '#ef4444' : priority === 'core' ? '#4ade80' : '#64748b' }]} />
+                      <Text style={s.suppGroupLabel}>{priority === 'critical' ? '⚠️ Critical' : priority === 'core' ? '✅ Core Stack' : '💡 Optional'}</Text>
+                    </View>
+                    {group.map((supp, i) => (
+                      <View key={i} style={s.suppCard}>
+                        <View style={s.suppTop}>
+                          <Text style={s.suppName}>{isPro ? supp.name : '••••••••••••••••'}</Text>
+                          <View style={[s.evidenceBadge, { backgroundColor: supp.evidence === 'Grade A' ? '#14532d' : supp.evidence === 'Prescription' ? '#7f1d1d' : '#422006' }]}>
+                            <Text style={[s.evidenceTxt, { color: supp.evidence === 'Grade A' ? '#4ade80' : supp.evidence === 'Prescription' ? '#fca5a5' : '#fcd34d' }]}>{supp.evidence}</Text>
+                          </View>
+                        </View>
+                        <Text style={s.suppDose}>💊 {isPro ? supp.dose : '•••'} · ⏰ {isPro ? supp.timing : '••••'}</Text>
+                        <Text style={s.suppReason}>{isPro ? supp.reason : 'Personalisation locked for free users.'}</Text>
+                      </View>
+                    ))}
+                  </View>
+                );
+              })}
+            </View>
             <TouchableOpacity style={[s.saveBtn, { backgroundColor: mc.gradient[0] }]} onPress={handleSaveSupps}>
               <Text style={s.saveBtnTxt}>Log Today's Stack</Text>
             </TouchableOpacity>
@@ -839,8 +865,7 @@ export default function MensHealthScreen() {
               {
                 icon: 'flask-outline', label: 'Supplement Stack',
                 sub: `${supps.filter(s => s.priority === 'core').length} core · ${supps.filter(s => s.priority === 'critical').length} critical`,
-                color: '#a78bfa', onPress: () => isPro ? setShowSupps(true) : promptUpgrade('Supplement stack is Pro'),
-                proLock: !isPro,
+                color: '#a78bfa', onPress: () => setShowSupps(true),
               },
               ...(profile?.trainingMode === 'enhanced' ? [{
                 icon: 'heart-circle-outline', label: 'Health Markers',

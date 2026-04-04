@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { Video, ResizeMode } from 'expo-av';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,6 +9,7 @@ interface ExerciseDetailModalProps {
   visible: boolean;
   exercise: any;
   isPro: boolean;
+  freeAccess?: boolean; // set true for 4-week plan exercises — no Pro gate
   onClose: () => void;
   onUpgradePress: () => void;
 }
@@ -16,10 +18,13 @@ export default function ExerciseDetailModal({
   visible,
   exercise,
   isPro,
+  freeAccess = false,
   onClose,
   onUpgradePress
 }: ExerciseDetailModalProps) {
   if (!visible || !exercise) return null;
+  // 4-week plan exercises are always unlocked
+  const canSeeDetails = isPro || freeAccess;
 
   const exerciseName =
     typeof exercise.name === 'object'
@@ -77,21 +82,34 @@ export default function ExerciseDetailModal({
           {/* ── LOCKED SECTION: Pro only ── */}
           <View style={styles.lockedSection}>
             {/* Blurred content preview */}
-            <View style={[styles.lockedContent, !isPro && styles.lockedContentBlurred]} pointerEvents={isPro ? 'auto' : 'none'}>
+            <View style={[styles.lockedContent, !canSeeDetails && styles.lockedContentBlurred]} pointerEvents={canSeeDetails ? 'auto' : 'none'}>
 
               {/* Video / Media */}
               {videoUrl ? (
-                <View style={styles.mediaBox}>
-                  <Image
-                    source={{ uri: videoUrl }}
-                    style={styles.mediaImage}
-                    resizeMode="cover"
-                    blurRadius={isPro ? 0 : 10}
-                  />
-                  {isPro && (
+                <View style={[styles.mediaBox, !canSeeDetails && styles.mediaBoxBlurred]}>
+                  {videoUrl.includes('.mp4') || videoUrl.includes('.webm') || videoUrl.includes('.mov') ? (
+                    <Video
+                      source={{ uri: videoUrl }}
+                      style={styles.mediaImage}
+                      resizeMode={ResizeMode.COVER}
+                      useNativeControls={canSeeDetails}
+                      shouldPlay={false}
+                    />
+                  ) : (
+                    <Image
+                      source={{ uri: videoUrl }}
+                      style={styles.mediaImage}
+                      resizeMode="cover"
+                      blurRadius={canSeeDetails ? 0 : 10}
+                    />
+                  )}
+                  {canSeeDetails && (!videoUrl.includes('.mp4') && !videoUrl.includes('.webm') && !videoUrl.includes('.mov')) && (
                     <View style={styles.playOverlay}>
                       <Ionicons name="play-circle" size={52} color="rgba(255,255,255,0.9)" />
                     </View>
+                  )}
+                  {!canSeeDetails && (
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255,255,255,0.4)' }]} />
                   )}
                 </View>
               ) : (
@@ -162,8 +180,8 @@ export default function ExerciseDetailModal({
 
             </View>
 
-            {/* ── Lock Overlay for free users (fasting.tsx style) ── */}
-            {!isPro && (
+            {/* ── Lock Overlay: only for non-pro users without free access ── */}
+            {!canSeeDetails && (
               <View style={styles.lockOverlay}>
                 <View style={styles.lockCard}>
                   <Ionicons name="lock-closed" size={32} color="#3b82f6" />
@@ -292,7 +310,6 @@ const styles = StyleSheet.create({
     opacity: 0.25,
   },
 
-  // Media box (portrait for vertical videos)
   mediaBox: {
     width: '60%',
     alignSelf: 'center',
@@ -305,6 +322,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#f1f5f9',
     overflow: 'hidden',
+  },
+  mediaBoxBlurred: {
+    opacity: 0.5,
   },
   mediaImage: {
     width: '100%',

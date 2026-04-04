@@ -8,6 +8,8 @@ import {
   Alert,
   Modal,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -367,50 +369,56 @@ export default function ShoppingListScreen() {
         }}
       >
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalCard, { paddingBottom: getBottomContentPadding(insets.bottom, 16) }]}>
-            {/* Handle */}
-            <View style={styles.modalHandle} />
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ width: '100%' }}
+            keyboardVerticalOffset={0}
+          >
+            <View style={[styles.modalCard, { paddingBottom: getBottomContentPadding(insets.bottom, 16) }]}>
+              {/* Handle */}
+              <View style={styles.modalHandle} />
 
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Add item</Text>
-              <TouchableOpacity
-                onPress={() => { setShowAddModal(false); resetAddModal(); }}
-                style={styles.modalClose}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="close" size={20} color="#64748b" />
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Add item</Text>
+                <TouchableOpacity
+                  onPress={() => { setShowAddModal(false); resetAddModal(); }}
+                  style={styles.modalClose}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="close" size={20} color="#64748b" />
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.label}>Item name</Text>
+              <TextInput
+                value={draftName}
+                onChangeText={setDraftName}
+                placeholder="e.g. Eggs"
+                placeholderTextColor="#94a3b8"
+                style={styles.input}
+                autoCapitalize="sentences"
+                autoFocus
+                returnKeyType="next"
+              />
+
+              <Text style={styles.label}>Quantity</Text>
+              <TextInput
+                value={draftQty}
+                onChangeText={setDraftQty}
+                placeholder="e.g. 6"
+                placeholderTextColor="#94a3b8"
+                style={styles.input}
+                keyboardType="default"
+                returnKeyType="done"
+                onSubmitEditing={submitAdd}
+              />
+
+              <TouchableOpacity style={styles.saveBtn} onPress={submitAdd} activeOpacity={0.85}>
+                <Ionicons name="add-circle-outline" size={18} color="#ffffff" />
+                <Text style={styles.saveBtnText}>Add to list</Text>
               </TouchableOpacity>
             </View>
-
-            <Text style={styles.label}>Item name</Text>
-            <TextInput
-              value={draftName}
-              onChangeText={setDraftName}
-              placeholder="e.g. Eggs"
-              placeholderTextColor="#94a3b8"
-              style={styles.input}
-              autoCapitalize="sentences"
-              autoFocus
-              returnKeyType="next"
-            />
-
-            <Text style={styles.label}>Quantity</Text>
-            <TextInput
-              value={draftQty}
-              onChangeText={setDraftQty}
-              placeholder="e.g. 6"
-              placeholderTextColor="#94a3b8"
-              style={styles.input}
-              keyboardType="default"
-              returnKeyType="done"
-              onSubmitEditing={submitAdd}
-            />
-
-            <TouchableOpacity style={styles.saveBtn} onPress={submitAdd} activeOpacity={0.85}>
-              <Ionicons name="add-circle-outline" size={18} color="#ffffff" />
-              <Text style={styles.saveBtnText}>Add to list</Text>
-            </TouchableOpacity>
-          </View>
+          </KeyboardAvoidingView>
         </View>
       </Modal>
     </SafeAreaView>

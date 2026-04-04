@@ -317,6 +317,17 @@ export default function RecipesScreen() {
   const isPro = appUser.isPro || appUser.isAdmin;
   const gridItemWidth = useMemo(() => (width - 64) / 2, []);
 
+  // Pre-compute image sources once per recipe list to maintain stable object
+  // references across renders — React Native's image cache keyed by reference.
+  const imageSources = useMemo(() => {
+    const map = new Map<string, any>();
+    (recipes ?? []).forEach(r => {
+      const src = getRecipeImageSource(r);
+      if (src) map.set(r._id, src);
+    });
+    return map;
+  }, [recipes]);
+
   const n = (value: unknown, fallback = 0) => {
     const num = typeof value === 'number' ? value : Number(value);
     return Number.isFinite(num) ? num : fallback;
@@ -432,31 +443,38 @@ export default function RecipesScreen() {
 
         {!loading && recipes && recipes.length > 0 && (
           <View style={styles.recipesGrid}>
-            {recipes.map((recipe) => (
-              <TouchableOpacity
-                key={recipe._id}
-                style={[styles.recipeCard, { width: gridItemWidth }]}
-                onPress={() => setSelectedRecipe(recipe)}
-                activeOpacity={0.8}
-              >
-                <View style={styles.recipeCardImageContainer}>
-                  {getRecipeImageSource(recipe) ? (
-                    <Image source={getRecipeImageSource(recipe)} style={styles.recipeCardImage} />
-                  ) : (
-                    <View style={styles.recipeCardImagePlaceholder}>
-                      <Ionicons name="restaurant" size={32} color="#94a3b8" />
-                    </View>
-                  )}
-                </View>
-                <View style={styles.recipeCardContent}>
-                  <Text style={styles.recipeCardTitle} numberOfLines={2}>{recipe.title}</Text>
-                  <View style={styles.recipeCardMacros}>
-                    <Text style={styles.macro}>{Math.round(n(recipe.calories))} cal</Text>
-                    <Text style={styles.macro}>{Math.round(n(recipe.protein))}g P</Text>
+            {recipes.map((recipe) => {
+              const imageSource = imageSources.get(recipe._id);
+              return (
+                <TouchableOpacity
+                  key={recipe._id}
+                  style={[styles.recipeCard, { width: gridItemWidth }]}
+                  onPress={() => setSelectedRecipe(recipe)}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.recipeCardImageContainer}>
+                    {imageSource ? (
+                      <Image
+                        source={imageSource}
+                        style={styles.recipeCardImage}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={styles.recipeCardImagePlaceholder}>
+                        <Ionicons name="restaurant" size={32} color="#94a3b8" />
+                      </View>
+                    )}
                   </View>
-                </View>
-              </TouchableOpacity>
-            ))}
+                  <View style={styles.recipeCardContent}>
+                    <Text style={styles.recipeCardTitle} numberOfLines={2}>{recipe.title}</Text>
+                    <View style={styles.recipeCardMacros}>
+                      <Text style={styles.macro}>{Math.round(n(recipe.calories))} cal</Text>
+                      <Text style={styles.macro}>{Math.round(n(recipe.protein))}g P</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         )}
       </ScrollView>
@@ -483,13 +501,16 @@ export default function RecipesScreen() {
               </View>
 
               <View style={styles.recipeImageContainer}>
-                {getRecipeImageSource(selectedRecipe) ? (
-                  <Image source={getRecipeImageSource(selectedRecipe)} style={styles.recipeImage} />
-                ) : (
-                  <View style={styles.recipeImagePlaceholder}>
-                    <Ionicons name="restaurant" size={48} color="#94a3b8" />
-                  </View>
-                )}
+                {(() => {
+                  const detailImg = getRecipeImageSource(selectedRecipe);
+                  return detailImg ? (
+                    <Image source={detailImg} style={styles.recipeImage} resizeMode="cover" />
+                  ) : (
+                    <View style={styles.recipeImagePlaceholder}>
+                      <Ionicons name="restaurant" size={48} color="#94a3b8" />
+                    </View>
+                  );
+                })()}
               </View>
 
               <View style={styles.card}>

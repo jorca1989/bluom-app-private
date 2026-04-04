@@ -31,8 +31,7 @@ import { SoundEffect, triggerSound } from '@/utils/soundEffects';
 import { useCelebration } from '@/context/CelebrationContext';
 // Health integrations disabled for Build 18 submission.
 import { useResponsive } from '@/utils/responsive';
-import CurrentProgramCard from '@/components/move/CurrentProgramCard';
-import WorkoutDayCard from '@/components/move/WorkoutDayCard';
+import ProgramWorkoutWidget from '@/components/move/ProgramWorkoutWidget';
 import MoveQuickActions from '@/components/move/MoveQuickActions';
 import MoveInsights from '@/components/move/MoveInsights';
 import OutdoorActivityBanner from '@/components/move/OutdoorActivityBanner';
@@ -845,19 +844,7 @@ export default function MoveScreen() {
             </View>
           </View>
 
-          {/* Current Program */}
-          <CurrentProgramCard
-            programName={`Week ${currentWeekIndex + 1}: ${freePlanCurrentWeek?.theme ?? 'Foundation'}`}
-            level={isPro ? 'Pro' : 'Beginner'}
-            daysPerWeek={totalWorkoutsPerWeek}
-            currentWeek={currentWeekIndex + 1}
-            totalWeeks={4}
-            progressPercent={Math.min(100, Math.floor((accountAgeMs / PLAN_DURATION_MS) * 100))}
-            onInfoPress={() => { setWorkoutDetailTab(0); setShowWorkoutDetail(true); }}
-            onWorkoutsPress={() => { setWorkoutDetailTab(0); setShowWorkoutDetail(true); }}
-          />
-
-          {/* Weekly Workouts — or Upgrade banner if free plan expired */}
+          {/* Program and Workouts Widget — or Upgrade banner if free plan expired */}
           {freePlanExpired ? (
             <TouchableOpacity
               style={[styles.card, { marginHorizontal: 24, marginTop: 24, backgroundColor: '#1e293b', borderWidth: 0, alignItems: 'center', padding: 32 }]}
@@ -872,26 +859,27 @@ export default function MoveScreen() {
               </View>
             </TouchableOpacity>
           ) : (
-            <View style={[styles.card, { padding: 0, paddingBottom: 24, marginHorizontal: 24, marginTop: 24 }]}>
-              <View style={[styles.cardHeader, { paddingHorizontal: 20, paddingTop: 20, marginBottom: 16 }]}>
-                <Text style={styles.cardTitle}>
-                  {`Week ${currentWeekIndex + 1} — ${freePlanCurrentWeek?.theme ?? 'Workouts'} (Swipe)`}
-                </Text>
-              </View>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}>
-                {workouts.map((day: any, idx: number) => (
-                  <WorkoutDayCard
-                    key={day.dayNum}
-                    dayTitle={day.dayTitle}
-                    muscleGroups={day.muscleGroups}
-                    exercises={day.exercises as any}
-                    isUpNext={idx === 0}
-                    onStartWorkout={() => { setWorkoutDetailTab(idx + 1 as any); setWorkoutDetailMode('start'); setShowWorkoutDetail(true); }}
-                    onViewWorkout={() => { setWorkoutDetailTab(idx + 1 as any); setWorkoutDetailMode('view'); setShowWorkoutDetail(true); }}
-                  />
-                ))}
-              </ScrollView>
-            </View>
+            <ProgramWorkoutWidget
+              programName={`Week ${currentWeekIndex + 1}: ${freePlanCurrentWeek?.theme ?? 'Foundation'}`}
+              level={isPro ? 'Pro' : 'Beginner'}
+              daysPerWeek={totalWorkoutsPerWeek}
+              currentWeek={currentWeekIndex + 1}
+              totalWeeks={4}
+              progressPercent={Math.min(100, Math.floor((accountAgeMs / PLAN_DURATION_MS) * 100))}
+              workouts={workouts as any}
+              onInfoPress={() => { setWorkoutDetailTab(0); setShowWorkoutDetail(true); }}
+              onWorkoutsPress={() => { setWorkoutDetailTab(0); setShowWorkoutDetail(true); }}
+              onStartWorkout={(idx) => { 
+                setWorkoutDetailTab(idx + 1 as any); 
+                setWorkoutDetailMode('start'); 
+                setShowWorkoutDetail(true); 
+              }}
+              onViewWorkout={(idx) => { 
+                setWorkoutDetailTab(idx + 1 as any); 
+                setWorkoutDetailMode('view'); 
+                setShowWorkoutDetail(true); 
+              }}
+            />
           )}
 
 
@@ -1101,7 +1089,6 @@ export default function MoveScreen() {
         isPreviewMode={workoutDetailMode === 'start'}
         onStartActiveWorkout={(idx) => {
           setSelectedDayIndex(idx);
-          setShowWorkoutDetail(false);
           const built: ActiveExercise[] = (workouts[idx]?.exercises ?? []).map((ex: any) => ({
             id: ex.id,
             name: ex.name,
@@ -1115,8 +1102,10 @@ export default function MoveScreen() {
             }))
           }));
           setActiveWorkoutExercises(built);
-          // Small delay to ensure the previous modal unmounts cleanly on iOS
-          setTimeout(() => setShowActiveWorkout(true), 100);
+          // Open ActiveWorkoutModal FIRST so it is already mounted before the preview modal closes.
+          // This prevents the brief flash of the Move screen background between transitions.
+          setShowActiveWorkout(true);
+          setTimeout(() => setShowWorkoutDetail(false), 80);
         }}
         onClose={() => setShowWorkoutDetail(false)}
         onAddExercise={(dayIdx) => {
@@ -1138,17 +1127,24 @@ export default function MoveScreen() {
           });
         }}
         onExercisePress={(ex) => {
+          // Pass ALL exercise data so ExerciseDetailModal has everything to display
           setSelectedExerciseForDetail({
             _id: ex.id,
             name: ex.name,
             category: ex.primaryMuscle,
             type: 'strength',
             muscleGroups: [ex.primaryMuscle],
+            primaryMuscles: [ex.primaryMuscle],
+            secondaryMuscles: ex.secondaryMuscles ?? [],
             thumbnailUrl: ex.thumbnailUrl,
-            fromRoutine: true
+            videoUrl: ex.videoUrl,
+            instructions: ex.instructions ?? [],
+            equipment: ex.equipment,
+            fromRoutine: true, // ← free users can see full details for plan exercises
           } as any);
-          setShowWorkoutDetail(false);
-          setTimeout(() => setShowExerciseDetail(true), 100);
+          // Open detail first to avoid flash of move screen
+          setShowExerciseDetail(true);
+          setTimeout(() => setShowWorkoutDetail(false), 80);
         }}
         isPro={!!isPro}
       />
@@ -1266,9 +1262,10 @@ export default function MoveScreen() {
       <ExerciseDetailModal
         visible={showExerciseDetail}
         exercise={selectedExerciseForDetail}
-        isPro={!!isPro || !!selectedExerciseForDetail?.fromRoutine}
+        isPro={!!isPro}
+        freeAccess={!!selectedExerciseForDetail?.fromRoutine}
         onClose={() => setShowExerciseDetail(false)}
-        onUpgradePress={() => { }}
+        onUpgradePress={() => { setShowExerciseDetail(false); router.push('/premium'); }}
       />
 
       <OutdoorActivityModal

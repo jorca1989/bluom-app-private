@@ -1022,4 +1022,28 @@ export default defineSchema({
     .index("by_user_exercise", ["userId", "exerciseName"])
     .index("by_user_workout", ["userId", "workoutId"]),
 
+  // Pill Reminders (Vitality Stack)
+  pillSchedules: defineTable({
+    userId: v.id("users"),
+    pillName: v.string(),
+    reminderTime: v.string(),
+    color: v.string(),
+    shape: v.union(v.literal("round"), v.literal("oval"), v.literal("square")),
+    daysOfWeek: v.array(v.number()),
+    active: v.optional(v.boolean()),
+  }).index("by_user", ["userId"]),
+
+  pillLogs: defineTable({
+    userId: v.id("users"),
+    pillName: v.string(),
+    date: v.string(), // YYYY-MM-DD
+    taken: v.boolean(),
+    takenAt: v.optional(v.number()),
+    reminderTime: v.string(),
+    color: v.string(),
+    shape: v.union(v.literal("round"), v.literal("oval"), v.literal("square")),
+    notes: v.optional(v.string()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_date", ["userId", "date"]),
 });

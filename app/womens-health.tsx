@@ -697,18 +697,46 @@ export default function WomensHealthScreen() {
             <Text style={s.suppIntro}>
               Personalised based on your cycle phase, stress level, birth control method, health focus and age.
             </Text>
-            {suppStack.map((supp, i) => (
-              <View key={i} style={s.suppCard}>
-                <View style={s.suppTop}>
-                  <Text style={s.suppName}>{supp.name}</Text>
-                  <View style={[s.evidenceBadge, { backgroundColor: supp.evidence === 'Grade A' ? '#dcfce7' : '#fef9c3' }]}>
-                    <Text style={[s.evidenceTxt, { color: supp.evidence === 'Grade A' ? '#15803d' : '#92400e' }]}>{supp.evidence}</Text>
-                  </View>
-                </View>
-                <Text style={s.suppDose}>💊 {supp.dose} · ⏰ {supp.timing}</Text>
-                <Text style={s.suppReason}>{supp.reason}</Text>
+
+            <TouchableOpacity style={s.actionTile} onPress={() => { setShowSupps(false); router.push('/pill-reminder' as any); }} activeOpacity={0.8}>
+              <View style={[s.actionIcon, { backgroundColor: '#fdf2f8' }]}>
+                <Ionicons name="medical-outline" size={22} color="#e11d48" />
               </View>
-            ))}
+              <View style={{ flex: 1 }}>
+                <Text style={s.actionLabel}>Birth Control & Pill Reminder</Text>
+                <Text style={s.actionSub}>Track your medications and supplements safely</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color="#94a3b8" />
+            </TouchableOpacity>
+
+            <View style={{ marginTop: 10 }}>
+              {!isPro && (
+                <View style={{ marginBottom: 16, padding: 16, borderRadius: 16, backgroundColor: '#fdf2f8', flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                  <Ionicons name="lock-closed" size={24} color="#e11d48" />
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 15, fontWeight: '800', color: '#0f172a' }}>Unlock Your Vitamin Stack</Text>
+                    <Text style={{ fontSize: 13, color: '#475569', marginTop: 2 }}>See your personalised supplement recommendations tailored to your cycle phase.</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => { setShowSupps(false); router.push('/premium' as any); }}>
+                    <Text style={{ color: '#e11d48', fontWeight: '700' }}>Upgrade</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {suppStack.map((supp, i) => (
+                <View key={i} style={s.suppCard}>
+                  <View style={s.suppTop}>
+                    <Text style={s.suppName}>{isPro ? supp.name : '••••••••••••••••'}</Text>
+                    <View style={[s.evidenceBadge, { backgroundColor: supp.evidence === 'Grade A' ? '#dcfce7' : '#fef9c3' }]}>
+                      <Text style={[s.evidenceTxt, { color: supp.evidence === 'Grade A' ? '#15803d' : '#92400e' }]}>{supp.evidence}</Text>
+                    </View>
+                  </View>
+                  <Text style={s.suppDose}>💊 {isPro ? supp.dose : '•••'} · ⏰ {isPro ? supp.timing : '••••'}</Text>
+                  <Text style={s.suppReason}>{isPro ? supp.reason : 'Personalisation locked for free users.'}</Text>
+                </View>
+              ))}
+            </View>
+
             <View style={s.suppDisclaimer}>
               <Ionicons name="shield-checkmark-outline" size={16} color="#94a3b8" />
               <Text style={s.suppDisclaimerTxt}>Always consult a healthcare provider before starting new supplements, especially during pregnancy.</Text>
@@ -894,7 +922,7 @@ export default function WomensHealthScreen() {
             {[
               { icon: 'pulse-outline', label: 'Daily Bio-Log', sub: `Mood, energy, symptoms${lifeStage === 'cycle' ? ', flow' : ''}`, onPress: () => setShowBioModal(true), color: '#fdf2f8' },
               { icon: 'fitness-outline', label: 'Pelvic Power Protocol', sub: 'Core, floor & posture', onPress: () => setShowPelvicModal(true), color: '#fdf2f8' },
-              { icon: 'flask-outline', label: 'Vitality Stack', sub: `${suppStack.length} personalised supplements`, onPress: () => isPro ? setShowSupps(true) : promptUpgrade('Supplement stack is a Pro feature'), color: '#fdf2f8' },
+              { icon: 'flask-outline', label: 'Vitality Stack', sub: `${suppStack.length} personalised supplements`, onPress: () => setShowSupps(true), color: '#fdf2f8' },
             ].map((a, i) => (
               <TouchableOpacity key={i} style={s.actionTile} onPress={a.onPress} activeOpacity={0.8}>
                 <View style={[s.actionIcon, { backgroundColor: a.color }]}>
