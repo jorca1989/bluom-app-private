@@ -206,20 +206,21 @@ export default function ActiveWorkoutModal({
                     <View style={styles.exExpandedContent}>
                       {(ex.thumbnailUrl || ex.videoUrl) ? (
                         <View style={styles.videoBox}>
-                          {ex.videoUrl && (ex.videoUrl.includes('.mp4') || ex.videoUrl.includes('.webm') || ex.videoUrl.includes('.mov')) ? (
+                          {ex.videoUrl ? (
                             <Video
                               source={{ uri: ex.videoUrl }}
                               style={styles.videoPlayerInline}
                               resizeMode={ResizeMode.COVER}
                               useNativeControls
-                              shouldPlay={false}
+                              shouldPlay
+                              isLooping
+                              usePoster={!!ex.thumbnailUrl}
+                              posterSource={ex.thumbnailUrl ? { uri: ex.thumbnailUrl } : undefined}
+                              posterStyle={{ resizeMode: 'cover' }}
                             />
                           ) : (
                             <TouchableOpacity
-                              activeOpacity={ex.videoUrl ? 0.9 : 1}
-                              onPress={() => {
-                                if (ex.videoUrl) Linking.openURL(ex.videoUrl);
-                              }}
+                              activeOpacity={1}
                               style={styles.videoPlaceholder}
                             >
                               {ex.thumbnailUrl ? (
@@ -228,7 +229,7 @@ export default function ActiveWorkoutModal({
                                 <View style={styles.videoImage} /> // Blank dark bg
                               )}
                               <View style={styles.playIconOverlay}>
-                                <Ionicons name="play-circle" size={48} color="rgba(255,255,255,0.8)" />
+                                <Ionicons name="image-outline" size={48} color="rgba(255,255,255,0.8)" />
                               </View>
                             </TouchableOpacity>
                           )}
@@ -468,8 +469,8 @@ const styles = StyleSheet.create({
   },
   videoBox: {
     alignSelf: 'center',
-    width: '62%',
-    aspectRatio: 9 / 16,
+    width: '100%',
+    aspectRatio: 1 / 1,
     marginBottom: 20,
     borderRadius: 16,
     overflow: 'hidden',

@@ -419,9 +419,19 @@ export default function HomeScreen() {
         <Text style={s.greetLine1}>{greeting.line1}</Text>
         <Text style={[s.greetLine2, { color: greeting.accent }]}>{greeting.line2}</Text>
       </View>
-      <View style={{ width: 52, height: 52, borderRadius: 18, overflow: 'hidden' }}>
-        <Avatar config={homeAvatar} size={52} />
-      </View>
+      <TouchableOpacity
+        onPress={() => router.push('/(tabs)/profile')}
+        activeOpacity={0.8}
+        style={{ position: 'relative' }}
+      >
+        <View style={{ width: 52, height: 52, borderRadius: 18, overflow: 'hidden' }}>
+          <Avatar config={homeAvatar} size={52} />
+        </View>
+        {/* Edit badge */}
+        <View style={s.avatarEditBadge}>
+          <Ionicons name="pencil" size={10} color="#fff" />
+        </View>
+      </TouchableOpacity>
     </View>
   );
 
@@ -919,6 +929,19 @@ const s = StyleSheet.create({
   greetLine1: { fontSize: 19, fontWeight: '800', color: '#0f172a', marginBottom: 2 },
   greetLine2: { fontSize: 13, fontWeight: '600' },
   greetLogo: { width: 52, height: 18 },
+  avatarEditBadge: {
+    position: 'absolute',
+    bottom: -3,
+    right: -3,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#3b82f6',
+    borderWidth: 2,
+    borderColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 
   // Generic card
   card: { backgroundColor: '#fff', borderRadius: 20, padding: 17, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 10, elevation: 1 },

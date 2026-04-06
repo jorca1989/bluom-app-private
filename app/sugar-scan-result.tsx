@@ -280,7 +280,7 @@ export default function SugarScanResultScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ebf1fe' },
+  container: { flex: 1, backgroundColor: '#F5F4F0' },
   header: {
     paddingHorizontal: 16,
     paddingBottom: 12,

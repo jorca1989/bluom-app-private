@@ -683,7 +683,7 @@ export default function MealHubScreen() {
                 <Text style={[ms.dietBadgeText, { color: dietMeta.color }]}>{dietMeta.label}</Text>
               </View>
               <Text style={ms.heroTitle}>
-                {isPro ? 'AI-Personalised Plan' : '30-Day Meal Plan'}
+                {isPro ? 'AI-Personalised Plan' : '28-Day Meal Plan'}
               </Text>
               <Text style={ms.heroSub}>
                 {isPro
@@ -782,9 +782,9 @@ export default function MealHubScreen() {
               >
                 <View style={[ms.blob, { top: -20, right: 0, width: 100, height: 100, backgroundColor: 'rgba(139,92,246,0.2)' }]} />
                 <Ionicons name="sparkles" size={22} color="#a78bfa" style={{ marginBottom: 10 }} />
-                <Text style={ms.upsellTitle}>Unlock AI Meal Personalisation</Text>
+                <Text style={ms.upsellTitle}>Continue Your Journey</Text>
                 <Text style={ms.upsellSub}>
-                  Pro users get a 30-day plan built around their exact macros, diet type, and goals — refreshed every month. Swap any meal with one tap.
+                  Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.
                 </Text>
                 <View style={ms.upsellCta}>
                   <Text style={ms.upsellCtaText}>Upgrade to Pro →</Text>

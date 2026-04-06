@@ -43,6 +43,7 @@ import SingleExerciseLogModal from '@/components/move/modals/SingleExerciseLogMo
 import ExerciseDetailModal from '@/components/move/modals/ExerciseDetailModal';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { FREE_4_WEEK_PLAN, getWeekRoutineDays } from '@/utils/fourWeekPlanData';
+import { buildPlanFromDBWorkouts } from '@/utils/buildPlanFromDB';
 
 
 
@@ -360,7 +361,10 @@ export default function MoveScreen() {
   const [selectedCategory, setSelectedCategory] = useState<(typeof workoutCategories)[number]>('All');
   const [selectedExercise, setSelectedExercise] = useState<ExerciseLibraryItem | null>(null);
 
-  // ── Workout display routine: Prioritize AI Plan from Convex ───────────
+  // DB workouts for plan (api.videoWorkouts.list) — used as fallback when no AI plan
+  const dbWorkouts = useQuery(api.videoWorkouts.list, {});
+
+  // ── Workout display routine: Prioritize AI Plan > DB workouts > static ──
   const initialWorkouts = useMemo(() => {
     // 1. If we have a personalized AI plan, map its workouts to RoutineDay format
     const aiWorkouts = activePlans?.fitnessPlan?.workouts;
@@ -375,6 +379,7 @@ export default function MoveScreen() {
           id: `ai-d${idx + 1}-e${j}`,
           name: ex.name || 'Exercise',
           thumbnailUrl: ex.thumbnailUrl || '',
+          videoUrl: ex.videoUrl || '',
           primaryMuscle: Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || 'Various'),
           equipment: ex.equipment || 'Various',
           sets: typeof ex.sets === 'number' ? ex.sets : (parseInt(String(ex.sets)) || 3),
@@ -382,9 +387,14 @@ export default function MoveScreen() {
         })),
       }));
     }
-    // 2. Otherwise fall back to the free template for the current week
+    // 2. Try DB workouts (api.videoWorkouts.list) — undefined means still loading
+    if (dbWorkouts !== undefined && dbWorkouts.length > 0) {
+      const dbDaysPerWeek = Number(convexUser?.weeklyWorkoutTime) || 4;
+      return buildPlanFromDBWorkouts(dbWorkouts, currentWeekIndex, dbDaysPerWeek, convexUser?.biologicalSex || 'male');
+    }
+    // 3. Fall back to the static free template
     return getWeekRoutineDays(currentWeekIndex);
-  }, [currentWeekIndex, activePlans?.fitnessPlan]);
+  }, [currentWeekIndex, activePlans?.fitnessPlan, dbWorkouts, convexUser]);
 
 
   const [workouts, setWorkouts] = useState<any[]>(initialWorkouts as any);
@@ -848,12 +858,12 @@ export default function MoveScreen() {
           {freePlanExpired ? (
             <TouchableOpacity
               style={[styles.card, { marginHorizontal: 24, marginTop: 24, backgroundColor: '#1e293b', borderWidth: 0, alignItems: 'center', padding: 32 }]}
-              onPress={() => handleProFeature('Continue Your Transformation', 'Your free 4-week plan has ended! Upgrade to Pro for a personalised, rotating plan that never stops.')}
+              onPress={() => handleProFeature('Continue Your Journey', 'Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.')}
               activeOpacity={0.85}
             >
               <Ionicons name="lock-closed" size={32} color="#f59e0b" style={{ marginBottom: 12 }} />
-              <Text style={{ fontSize: 18, fontWeight: '900', color: '#ffffff', marginBottom: 8, textAlign: 'center' }}>Your 4-Week Plan is Complete!</Text>
-              <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', textAlign: 'center', lineHeight: 20, marginBottom: 16 }}>Upgrade to Pro to continue your transformation with a personalised, AI-driven plan that adapts every cycle.</Text>
+              <Text style={{ fontSize: 18, fontWeight: '900', color: '#ffffff', marginBottom: 8, textAlign: 'center' }}>Your 28-Day Blueprint is Complete!</Text>
+              <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', textAlign: 'center', lineHeight: 20, marginBottom: 16 }}>Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.</Text>
               <View style={{ backgroundColor: '#3b82f6', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 14 }}>
                 <Text style={{ color: '#ffffff', fontWeight: '800', fontSize: 15 }}>Upgrade to Pro →</Text>
               </View>

@@ -159,7 +159,7 @@ export function SugarScanModal({
             active={visible && !capturedBase64}
           >
             {/* Top Bar */}
-            <SafeAreaView style={st.topBar} edges={['top']}>
+            <SafeAreaView style={[st.topBar, { paddingTop: Math.max(insets.top, 44) }]} edges={['top']}>
               <View style={st.topInfo}>
                 <Text style={st.scanTitle}>Scan Product</Text>
                 <Text style={st.scanSubtitle}>Identify hidden sugars & alternatives</Text>
@@ -191,7 +191,7 @@ export function SugarScanModal({
             </SafeAreaView>
           </CameraView>
         ) : (
-          <SafeAreaView style={st.resultsOverlay} edges={['top', 'bottom']}>
+          <View style={[st.resultsOverlay, { paddingTop: Math.max(insets.top, 44) + 20, paddingBottom: Math.max(insets.bottom, 20) }]}>
              <TouchableOpacity onPress={onClose} style={st.resultsCloseBtn}>
                 <Ionicons name="close" size={24} color="#0f172a" />
               </TouchableOpacity>
@@ -233,7 +233,7 @@ export function SugarScanModal({
                   </View>
                 </View>
              )}
-          </SafeAreaView>
+          </View>
         )}
       </View>
     </Modal>

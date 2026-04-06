@@ -299,7 +299,7 @@ export default function WellnessScreen() {
               <View style={s.planBannerLeft}>
                 <View style={s.planBannerBadge}>
                   <Text style={s.planBannerBadgeText}>
-                    {isPro ? '✦ PRO · AI-Powered · Refreshes Monthly' : '30-Day Blueprint · Free'}
+                    {isPro ? '✦ PRO · AI-Powered · Refreshes Monthly' : '28-Day Blueprint · Free'}
                   </Text>
                 </View>
                 <Text style={s.planBannerTitle}>
@@ -308,7 +308,7 @@ export default function WellnessScreen() {
                 <Text style={s.planBannerSub}>
                   {isPro
                     ? 'AI plan tailored to your stress, sleep & goals — rotates every 30 days'
-                    : 'A structured 30-day programme based on your onboarding. Upgrade for AI personalisation.'}
+                    : 'Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue.'}
                 </Text>
 
                 <View style={s.planBannerCta}>
@@ -388,11 +388,11 @@ export default function WellnessScreen() {
       </ScrollView>
 
       {/* ── Insights Modal ── */}
-      <Modal visible={showInsightsModal} animationType="slide">
-        <SafeAreaView style={s.modalWrap} edges={['top']}>
-          <View style={s.modalHeader}>
+      <Modal visible={showInsightsModal} animationType="slide" presentationStyle="pageSheet">
+        <SafeAreaView style={s.modalWrap} edges={['bottom']}>
+          <View style={[s.modalHeader, { paddingTop: Math.max(insets.top, 16) }]}>
             <Text style={s.modalTitle}>Wellness Analytics</Text>
-            <TouchableOpacity onPress={() => setShowInsightsModal(false)}>
+            <TouchableOpacity onPress={() => setShowInsightsModal(false)} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Ionicons name="close" size={28} color="#0f172a" />
             </TouchableOpacity>
           </View>
@@ -414,10 +414,10 @@ export default function WellnessScreen() {
 
       {/* ── Sleep Modal ── */}
       <Modal visible={showSleepModal} animationType="slide" presentationStyle="pageSheet">
-        <SafeAreaView style={s.modalWrap} edges={['top']}>
-          <View style={s.modalHeader}>
+        <SafeAreaView style={s.modalWrap} edges={['bottom']}>
+          <View style={[s.modalHeader, { paddingTop: Math.max(insets.top, 16) }]}>
             <Text style={s.modalTitle}>Log Sleep</Text>
-            <TouchableOpacity onPress={() => setShowSleepModal(false)}>
+            <TouchableOpacity onPress={() => setShowSleepModal(false)} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Ionicons name="close" size={28} color="#0f172a" />
             </TouchableOpacity>
           </View>
@@ -436,10 +436,10 @@ export default function WellnessScreen() {
 
       {/* ── Mood Modal ── */}
       <Modal visible={showMoodModal} animationType="slide" presentationStyle="pageSheet">
-        <SafeAreaView style={s.modalWrap} edges={['top']}>
-          <View style={s.modalHeader}>
+        <SafeAreaView style={s.modalWrap} edges={['bottom']}>
+          <View style={[s.modalHeader, { paddingTop: Math.max(insets.top, 16) }]}>
             <Text style={s.modalTitle}>How are you feeling?</Text>
-            <TouchableOpacity onPress={() => setShowMoodModal(false)}>
+            <TouchableOpacity onPress={() => setShowMoodModal(false)} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Ionicons name="close" size={28} color="#0f172a" />
             </TouchableOpacity>
           </View>

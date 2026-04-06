@@ -84,12 +84,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 24,
     padding: 16,
-    // Use a percentage-based width so the card adapts to screen size.
-    // On small phones (iPhone SE/14) this shows the card edge-to-edge inside
-    // the parent scroll with comfortable padding; on large phones (Oppo) it
-    // scales up naturally without touching the outer card walls.
-    width: 290,
-    marginHorizontal: 8,
+    width: 280,
     borderWidth: 1,
     borderColor: 'transparent',
   },

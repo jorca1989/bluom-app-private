@@ -151,6 +151,7 @@ export default function WorkoutsScreen() {
     );
 
     const logExercise = useMutation(api.workoutExerciseLogs.logExercise);
+    const logExerciseEntry = useMutation(api.exercise.logExerciseEntry);
 
     const handleToggleSave = async () => {
         if (!convexUser?._id || !selectedWorkout?._id) return;
@@ -195,6 +196,18 @@ export default function WorkoutsScreen() {
                 duration: data.duration,
                 notes: undefined,
             });
+
+            // Double log to the main exercise entries so it shows up in "Today's Activities" and KPI counters!
+            await logExerciseEntry({
+                userId: convexUser._id,
+                exerciseName: selectedExerciseForLog.name,
+                exerciseType: (selectedExerciseForLog.exerciseType || 'strength') as "strength" | "cardio" | "hiit" | "yoga",
+                duration: data.duration || 30, // fallback average 30m if not provided
+                met: selectedExerciseForLog.exerciseType === 'cardio' ? 7.0 : 5.0, // base average MET
+                sets: data.sets?.length || 0,
+                date: today,
+            });
+
             setShowLogModal(false);
             setSelectedExerciseForLog(null);
             Alert.alert('Success', 'Exercise logged!');
@@ -274,7 +287,7 @@ export default function WorkoutsScreen() {
                             </View>
                             <View style={styles.statBox}>
                                 <Dumbbell size={16} color="#2563eb" />
-                                <Text style={styles.statVal}>{selectedWorkout.difficulty}</Text>
+                                <Text style={styles.statVal} numberOfLines={1} adjustsFontSizeToFit>{selectedWorkout.difficulty}</Text>
                                 <Text style={styles.statLab}>Level</Text>
                             </View>
                             <View style={styles.statBox}>

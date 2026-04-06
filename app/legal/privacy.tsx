@@ -13,13 +13,13 @@ export default function PrivacyPolicy() {
                 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet" />
             </Head>
 
-            <div className="bg-[#ebf1fe] text-[#1e293b] min-h-screen font-sans">
+            <div className="bg-[#F5F4F0] text-[#1e293b] min-h-screen font-sans">
                 <style dangerouslySetInnerHTML={{
                     __html: `
-                        body { margin: 0; background-color: #ebf1fe !important; }
+                        body { margin: 0; background-color: #F5F4F0 !important; }
                         .font-outfit { font-family: 'Outfit', sans-serif; }
                         .font-inter { font-family: 'Inter', sans-serif; }
-                        html { scroll-behavior: smooth; background-color: #ebf1fe; }
+                        html { scroll-behavior: smooth; background-color: #F5F4F0; }
                     `}} />
 
                 {/* Header */}

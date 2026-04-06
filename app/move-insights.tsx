@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
     cardTitle: { fontSize: 16, fontWeight: '800', color: '#0f172a' },
     divider: { height: 1, backgroundColor: '#f1f5f9' },
-    chartContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 80, marginVertical: 16, paddingHorizontal: 4 },
+    chartContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 120, marginTop: 20, marginBottom: 16, paddingHorizontal: 4 },
     chartBarWrapper: { alignItems: 'center', flex: 1 },
     chartBar: { width: 20, backgroundColor: '#2563eb', borderRadius: 4, minHeight: 6 },
     chartDay: { fontSize: 11, color: '#94a3b8', marginTop: 6, fontWeight: '600' },

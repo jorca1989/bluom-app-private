@@ -204,14 +204,18 @@ export default function ProfileScreen() {
     { text: 'Sign Out', style: 'destructive', onPress: async () => { try { await signOut(); router.replace('/login'); } catch { } } },
   ]);
 
-  const handleReset = () => Alert.alert('Reset Goal', 'This will restart your onboarding.', [
-    { text: 'Cancel', style: 'cancel' },
-    {
-      text: 'Reset', style: 'destructive', onPress: async () => {
-        if (convexUser) { await resetOnboarding({ userId: convexUser._id }); router.replace('/onboarding'); }
-      }
-    },
-  ]);
+  const handleReset = () => Alert.alert(
+    'Restart Onboarding?',
+    'Are you sure you want to restart onboarding? Your current goal and preferences will be reset.',
+    [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Yes, Restart', style: 'destructive', onPress: async () => {
+          if (convexUser) { await resetOnboarding({ userId: convexUser._id }); router.replace('/onboarding'); }
+        }
+      },
+    ]
+  );
 
   const refreshRC = async () => {
     setRcLoading(true);

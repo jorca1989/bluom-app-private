@@ -77,6 +77,20 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
   const quickSessions = displaySessions.filter((s: any) => (s.duration ?? 0) <= 5);
   const deepDiveSessions = displaySessions.filter((s: any) => (s.duration ?? 0) > 10);
 
+  const combinedSoundscapes = useMemo(() => {
+    const local = [SOUNDSCAPES.rain, SOUNDSCAPES.forest, SOUNDSCAPES.ocean, SOUNDSCAPES.brownNoise].map((ss, idx) => ({
+      _id: `local-${ss.id}`,
+      title: ss.name,
+      isLocal: true,
+      emoji: idx === 0 ? '🌧' : idx === 1 ? '🌲' : idx === 2 ? '🌊' : '🎧',
+      localRef: ss,
+    }));
+    const fromDb = allSessions 
+      ? allSessions.filter((s: any) => s.type === 'soundscape' || (s.category && s.category.toLowerCase() === 'soundscapes'))
+      : [];
+    return [...local, ...fromDb];
+  }, [allSessions]);
+
   const handleStartSession = (session: any) => {
     if (session.coverImage) Image.prefetch(session.coverImage);
     setActiveSession(session);
@@ -98,9 +112,10 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
 
   return (
     <Modal visible={true} animationType="slide" transparent={false}>
-      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      {/* SafeAreaView with edges=['bottom'] only — top is handled explicitly in header to avoid double-padding */}
+      <SafeAreaView style={styles.container} edges={['bottom']}>
         {/* Header — explicit paddingTop from insets prevents top cut-off on intermittent SafeArea timing issues */}
-        <View style={[styles.header, { paddingTop: Math.max(insets.top, 16) }]}>
+        <View style={[styles.header, { paddingTop: Math.max(insets.top, 44) }]}>
           <View>
             <Text style={styles.headerGreeting}>{getGreeting()}</Text>
             <Text style={styles.headerTitle}>Ready to unwind?</Text>
@@ -144,16 +159,16 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
               <Text style={styles.sectionTitle}>Featured</Text>
               <ScrollView
                 horizontal
-                pagingEnabled
                 showsHorizontalScrollIndicator={false}
                 decelerationRate="fast"
-                snapToInterval={width - 40 + 14}
-                contentContainerStyle={{ paddingHorizontal: 20, gap: 14 }}
+                snapToInterval={width - 32} // Card (width-48) + Gap (16)
+                snapToAlignment="start"
+                contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }}
               >
                 {featuredSessions.map((session: any) => (
                   <TouchableOpacity
                     key={session._id}
-                    style={[styles.heroCard, { width: width - 40 }]}
+                    style={[styles.heroCard, { width: width - 48 }]}
                     onPress={() => handleStartSession(session)}
                     activeOpacity={0.9}
                   >
@@ -199,17 +214,27 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
           )}
 
           {/* Soundscapes */}
-          {!selectedCategory && (
+          {!selectedCategory && combinedSoundscapes.length > 0 && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Soundscapes</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScroll}>
-                {[SOUNDSCAPES.rain, SOUNDSCAPES.forest, SOUNDSCAPES.ocean, SOUNDSCAPES.brownNoise].map((ss, idx) => (
-                  <TouchableOpacity key={idx} style={styles.soundscapeCard} onPress={() => handleStartSoundscape(ss)}>
+                {combinedSoundscapes.map((ss: any) => (
+                  <TouchableOpacity 
+                    key={ss._id} 
+                    style={styles.soundscapeCard} 
+                    onPress={() => ss.isLocal ? handleStartSoundscape(ss.localRef) : handleStartSession(ss)}
+                  >
                     <View style={styles.soundscapeIconBox}>
-                      <Text style={{ fontSize: 28 }}>{idx === 0 ? '🌧' : idx === 1 ? '🌲' : idx === 2 ? '🌊' : '🎧'}</Text>
+                      {ss.isLocal ? (
+                        <Text style={{ fontSize: 28 }}>{ss.emoji}</Text>
+                      ) : ss.coverImage ? (
+                        <Image source={{ uri: ss.coverImage }} style={{ width: 80, height: 80, borderRadius: 40 }} />
+                      ) : (
+                        <Text style={{ fontSize: 28 }}>🎧</Text>
+                      )}
                     </View>
                     {/* Play button below icon, NOT overlapping */}
-                    <Text style={styles.soundscapeTitle}>{ss.name}</Text>
+                    <Text style={styles.soundscapeTitle}>{ss.title}</Text>
                     <View style={styles.soundscapePlay}>
                       <Ionicons name="play" size={12} color="#2563eb" />
                     </View>
@@ -287,7 +312,7 @@ const styles = StyleSheet.create({
   categoryPillTextActive: { color: '#fff' },
 
   heroCard: {
-    marginHorizontal: 20, height: 220, borderRadius: 24, overflow: 'hidden',
+    height: 220, borderRadius: 24, overflow: 'hidden',
     justifyContent: 'flex-end', padding: 20, marginBottom: 28,
   },
   heroContent: { flex: 1, justifyContent: 'flex-end' },

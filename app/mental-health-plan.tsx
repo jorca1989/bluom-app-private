@@ -734,14 +734,14 @@ export default function MentalHealthPlanScreen() {
 
           <View style={ps.heroBadge}>
             <Text style={ps.heroBadgeText}>
-              {isPro ? '✦ PRO · AI-Powered · Rotates Monthly' : '30-Day Blueprint · Free'}
+              {isPro ? '✦ PRO · AI-Powered · Rotates Monthly' : '28-Day Blueprint · Free'}
             </Text>
           </View>
           <Text style={ps.heroTitle}>Mental Health{'\n'}Blueprint</Text>
           <Text style={ps.heroSub}>
             {isPro
               ? 'Personalised to your stress patterns, sleep data & goals.'
-              : 'A research-backed 30-day programme. Upgrade to Pro for AI personalisation.'}
+              : 'A research-backed 28-day programme. Free users get a full 28-day blueprint. Upgrade to Pro to continue.'}
           </Text>
 
           {/* Progress bar */}
@@ -865,9 +865,9 @@ export default function MentalHealthPlanScreen() {
               >
                 <View style={[ps.blob, { top: -20, right: 0, width: 100, height: 100, backgroundColor: 'rgba(139,92,246,0.2)' }]} />
                 <Ionicons name="sparkles" size={22} color="#a78bfa" style={{ marginBottom: 10 }} />
-                <Text style={ps.upsellTitle}>Unlock AI Personalisation</Text>
+                <Text style={ps.upsellTitle}>Continue Your Journey</Text>
                 <Text style={ps.upsellSub}>
-                  Pro users get a Gemini-powered plan tailored to their stress level, mood history, and sleep data — refreshed every 30 days.
+                  Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with a Gemini-powered plan tailored to your stress, mood, and sleep — refreshed monthly.
                 </Text>
                 <View style={ps.upsellCta}>
                   <Text style={ps.upsellCtaText}>Upgrade to Pro →</Text>

@@ -44,8 +44,8 @@ export default function AdminTestUsersScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ebf1fe' },
-  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#ebf1fe' },
+  container: { flex: 1, backgroundColor: '#F5F4F0' },
+  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F4F0' },
   title: { fontSize: 28, fontWeight: '900', color: '#0f172a' },
   subtitle: { marginTop: 6, color: '#475569', fontWeight: '700' },
   card: {

@@ -198,7 +198,7 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
             </SafeAreaView>
           </CameraView>
         ) : (
-          <SafeAreaView style={styles.resultsOverlay} edges={['top', 'bottom']}>
+          <View style={[styles.resultsOverlay, { paddingTop: Math.max(insets.top, 44) + 20, paddingBottom: Math.max(insets.bottom, 20) }]}>
              <TouchableOpacity onPress={handleClose} style={styles.resultsCloseBtn}>
                 <Ionicons name="close" size={24} color="#0f172a" />
               </TouchableOpacity>
@@ -240,7 +240,7 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
                   </View>
                 </View>
              )}
-          </SafeAreaView>
+          </View>
         )}
         <ProUpgradeModal 
           visible={showUpgrade} 

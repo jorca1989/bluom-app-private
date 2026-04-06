@@ -201,11 +201,11 @@ export default function SignupScreen() {
 
                 {Platform.OS !== 'web' && (
                   <>
-                    <View style={styles.divider}>
+                    {/* <View style={styles.divider}>
                       <View style={styles.dividerLine} />
                       <Text style={styles.dividerText}>or</Text>
                       <View style={styles.dividerLine} />
-                    </View>
+                    </View> */}
                     {/* Social Logins - Hidden for Lite Build */}
                     {/* 
                     <GoogleSignInButton disabled={loading} />

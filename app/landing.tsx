@@ -56,15 +56,15 @@ export default function LandingPage() {
                 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet" />
             </Head>
 
-            <div className="bg-[#ebf1fe] text-[#1e293b] min-h-screen font-sans selection:bg-blue-200 overflow-y-auto">
+            <div className="bg-[#F5F4F0] text-[#1e293b] min-h-screen font-sans selection:bg-blue-200 overflow-y-auto">
                 <style dangerouslySetInnerHTML={{
                     __html: `
-            body { margin: 0; background-color: #ebf1fe !important; }
+            body { margin: 0; background-color: #F5F4F0 !important; }
             .font-outfit { font-family: 'Outfit', sans-serif; }
             .font-inter { font-family: 'Inter', sans-serif; }
-            html { scroll-behavior: smooth; background-color: #ebf1fe; }
+            html { scroll-behavior: smooth; background-color: #F5F4F0; }
             ::-webkit-scrollbar { width: 8px; }
-            ::-webkit-scrollbar-track { background: #ebf1fe; }
+            ::-webkit-scrollbar-track { background: #F5F4F0; }
             ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
             ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
           `}} />
@@ -158,7 +158,7 @@ export default function LandingPage() {
                     {/* Content Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                         {/* Hydration Card */}
-                        <section id="fuel" className="bg-white rounded-[40px] p-10 md:p-14 shadow-2xl shadow-blue-900/5 border border-white flex flex-col justify-between overflow-hidden relative group">
+                        <section id="fuel" className="bg-white rounded-[40px] p-10 md:p-14 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-white flex flex-col justify-between overflow-hidden relative group">
                             <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-sky-300/20 blur-3xl pointer-events-none" />
                             <div className="relative z-10">
                                 <span className="text-sky-600 text-sm font-black uppercase tracking-widest mb-4 block">Hydration</span>
@@ -173,7 +173,7 @@ export default function LandingPage() {
                         </section>
 
                         {/* Nutrition Card */}
-                        <section className="bg-white rounded-[40px] p-10 md:p-14 shadow-2xl shadow-blue-900/5 border border-white flex flex-col justify-between overflow-hidden relative group">
+                        <section className="bg-white rounded-[40px] p-10 md:p-14 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-white flex flex-col justify-between overflow-hidden relative group">
                             <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-orange-300/20 blur-3xl pointer-events-none" />
                             <div className="relative z-10">
                                 <span className="text-orange-600 text-sm font-black uppercase tracking-widest mb-4 block">Nutrition</span>
@@ -188,7 +188,7 @@ export default function LandingPage() {
                         </section>
 
                         {/* Wellness Card */}
-                        <section id="wellness" className="bg-white rounded-[40px] p-10 md:p-14 shadow-2xl shadow-blue-900/5 border border-white flex flex-col justify-between overflow-hidden relative group">
+                        <section id="wellness" className="bg-white rounded-[40px] p-10 md:p-14 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-white flex flex-col justify-between overflow-hidden relative group">
                             <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-violet-300/15 blur-3xl pointer-events-none" />
                             <div className="relative z-10">
                                 <span className="text-violet-600 text-sm font-black uppercase tracking-widest mb-4 block">Mental Health</span>
@@ -203,7 +203,7 @@ export default function LandingPage() {
                         </section>
 
                         {/* Shop Card */}
-                        <section id="shop" className="bg-white rounded-[40px] p-10 md:p-14 shadow-2xl shadow-blue-900/5 border border-white flex flex-col justify-between overflow-hidden relative group">
+                        <section id="shop" className="bg-white rounded-[40px] p-10 md:p-14 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-white flex flex-col justify-between overflow-hidden relative group">
                             <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-emerald-300/15 blur-3xl pointer-events-none" />
                             <div className="relative z-10">
                                 <span className="text-[#2563eb] text-sm font-black uppercase tracking-widest mb-4 block">Precision Gear</span>
@@ -230,7 +230,7 @@ export default function LandingPage() {
                     </section>
 
                     {/* Move showcase */}
-                    <section className="bg-white rounded-[50px] p-10 md:p-14 shadow-2xl shadow-blue-900/5 border border-white overflow-hidden">
+                    <section className="bg-white rounded-[50px] p-10 md:p-14 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-white overflow-hidden">
                         <div className="grid md:grid-cols-2 gap-10 items-center">
                             <div>
                                 <span className="text-[#5fc660] text-sm font-black uppercase tracking-widest mb-4 block">Move</span>
@@ -246,7 +246,7 @@ export default function LandingPage() {
                     </section>
 
                     {/* Games showcase */}
-                    <section className="bg-white rounded-[50px] p-10 md:p-14 shadow-2xl shadow-blue-900/5 border border-white overflow-hidden">
+                    <section className="bg-white rounded-[50px] p-10 md:p-14 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-white overflow-hidden">
                         <div className="grid md:grid-cols-2 gap-10 items-center">
                             <div>
                                 <span className="text-emerald-600 text-sm font-black uppercase tracking-widest mb-4 block">Mind</span>
@@ -262,7 +262,7 @@ export default function LandingPage() {
                     </section>
 
                     {/* Tabs overview (4 pillars) */}
-                    <section className="bg-white rounded-[50px] p-10 md:p-14 shadow-2xl shadow-blue-900/5 border border-white overflow-hidden">
+                    <section className="bg-white rounded-[50px] p-10 md:p-14 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-white overflow-hidden">
                         <div className="grid md:grid-cols-2 gap-10 items-center">
                             <div>
                                 <span className="text-[#2563eb] text-sm font-black uppercase tracking-widest mb-4 block">All-in-one</span>
@@ -297,12 +297,12 @@ export default function LandingPage() {
                             <div>
                                 <h4 className="text-slate-900 font-black uppercase tracking-widest text-xs mb-4">Company</h4>
                                 <div className="space-y-3 text-slate-500 text-sm font-bold">
-                                    <a href="/about" className="block hover:text-[#2563eb] transition-colors">About Us</a>
-                                    <a href="/legal/privacy" className="block hover:text-[#2563eb] transition-colors">Privacy</a>
-                                    <a href="/legal/terms" className="block hover:text-[#2563eb] transition-colors">Terms</a>
-                                    <a href="/legal/ai-safety" className="block hover:text-[#2563eb] transition-colors">AI Safety</a>
-                                    <a href="/legal/refund-policy" className="block hover:text-[#2563eb] transition-colors">Refund Policy</a>
-                                    <a href="/legal/data-deletion" className="block hover:text-[#2563eb] transition-colors">Data Deletion</a>
+                                    <a href="https://www.bluom.app/about" className="block hover:text-[#2563eb] transition-colors">About Us</a>
+                                    <a href="https://www.bluom.app/legal/privacy" className="block hover:text-[#2563eb] transition-colors">Privacy</a>
+                                    <a href="https://www.bluom.app/legal/terms" className="block hover:text-[#2563eb] transition-colors">Terms</a>
+                                    <a href="https://www.bluom.app/legal/ai-safety" className="block hover:text-[#2563eb] transition-colors">AI Safety</a>
+                                    <a href="https://www.bluom.app/legal/refund-policy" className="block hover:text-[#2563eb] transition-colors">Refund Policy</a>
+                                    <a href="https://www.bluom.app/legal/data-deletion" className="block hover:text-[#2563eb] transition-colors">Data Deletion</a>
                                 </div>
                             </div>
 
@@ -310,9 +310,9 @@ export default function LandingPage() {
                             <div>
                                 <h4 className="text-slate-900 font-black uppercase tracking-widest text-xs mb-4">Support</h4>
                                 <div className="space-y-3 text-slate-500 text-sm font-bold">
-                                    <a href="/support" className="block hover:text-[#2563eb] transition-colors">Help Center</a>
-                                    <a href="/legal/subscription-faq" className="block hover:text-[#2563eb] transition-colors">Billing FAQ</a>
-                                    <a href="/feedback" className="block hover:text-[#2563eb] transition-colors">Feedback</a>
+                                    <a href="https://www.bluom.app/support" className="block hover:text-[#2563eb] transition-colors">Help Center</a>
+                                    <a href="https://www.bluom.app/legal/subscription-faq" className="block hover:text-[#2563eb] transition-colors">Billing FAQ</a>
+                                    <a href="https://www.bluom.app/feedback" className="block hover:text-[#2563eb] transition-colors">Feedback</a>
                                 </div>
                             </div>
                         </div>

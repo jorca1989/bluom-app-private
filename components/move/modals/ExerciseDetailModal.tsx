@@ -87,27 +87,17 @@ export default function ExerciseDetailModal({
               {/* Video / Media */}
               {videoUrl ? (
                 <View style={[styles.mediaBox, !canSeeDetails && styles.mediaBoxBlurred]}>
-                  {videoUrl.includes('.mp4') || videoUrl.includes('.webm') || videoUrl.includes('.mov') ? (
-                    <Video
-                      source={{ uri: videoUrl }}
-                      style={styles.mediaImage}
-                      resizeMode={ResizeMode.COVER}
-                      useNativeControls={canSeeDetails}
-                      shouldPlay={false}
-                    />
-                  ) : (
-                    <Image
-                      source={{ uri: videoUrl }}
-                      style={styles.mediaImage}
-                      resizeMode="cover"
-                      blurRadius={canSeeDetails ? 0 : 10}
-                    />
-                  )}
-                  {canSeeDetails && (!videoUrl.includes('.mp4') && !videoUrl.includes('.webm') && !videoUrl.includes('.mov')) && (
-                    <View style={styles.playOverlay}>
-                      <Ionicons name="play-circle" size={52} color="rgba(255,255,255,0.9)" />
-                    </View>
-                  )}
+                  <Video
+                    source={{ uri: videoUrl }}
+                    style={styles.mediaImage}
+                    resizeMode={ResizeMode.COVER}
+                    useNativeControls={canSeeDetails}
+                    shouldPlay
+                    isLooping
+                    usePoster={!!exercise.thumbnailUrl}
+                    posterSource={exercise.thumbnailUrl ? { uri: exercise.thumbnailUrl } : undefined}
+                    posterStyle={{ resizeMode: 'cover' }}
+                  />
                   {!canSeeDetails && (
                     <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255,255,255,0.4)' }]} />
                   )}
@@ -311,9 +301,9 @@ const styles = StyleSheet.create({
   },
 
   mediaBox: {
-    width: '60%',
+    width: '100%',
     alignSelf: 'center',
-    aspectRatio: 9 / 16,
+    aspectRatio: 1 / 1,
     backgroundColor: '#f8fafc',
     borderRadius: 16,
     justifyContent: 'center',

@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput, Image, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -174,14 +174,7 @@ export default function SingleExerciseLogModal({
               </View>
 
               <View style={styles.exExpandedContent}>
-                {exercise.thumbnailUrl && (
-                  <View style={styles.videoPlaceholder}>
-                     <Image source={{ uri: exercise.thumbnailUrl }} style={styles.videoImage} resizeMode="cover" />
-                     <View style={styles.playIconOverlay}>
-                       <Ionicons name="play-circle" size={48} color="rgba(255,255,255,0.8)" />
-                     </View>
-                  </View>
-                )}
+                {/* Thumbnail/video intentionally hidden in logging form — user focuses on entering sets/reps */}
 
                 {mode === 'duration' ? (
                   <View style={styles.cardioContainer}>

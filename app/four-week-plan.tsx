@@ -18,6 +18,7 @@ import WorkoutDetailModal from '@/components/move/modals/WorkoutDetailModal';
 import ActiveWorkoutModal, { ActiveExercise } from '@/components/move/modals/ActiveWorkoutModal';
 import ExerciseDetailModal from '@/components/move/modals/ExerciseDetailModal';
 import { FREE_4_WEEK_PLAN, getWeekRoutineDays, PlanWeek } from '@/utils/fourWeekPlanData';
+import { buildWeekFromDBWorkouts } from '@/utils/buildPlanFromDB';
 
 // ─── Week colours ─────────────────────────────────────────────────────────────
 const WEEK_COLORS = ['#1e293b', '#4c1d95', '#065f46', '#92400e'];
@@ -39,6 +40,8 @@ export default function FourWeekPlanScreen() {
     convexUser?._id ? {} : 'skip'
   );
 
+  const dbWorkouts = useQuery(api.videoWorkouts.list, {});
+
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);  // week index 0-3
   const [showWorkoutDetail, setShowWorkoutDetail] = useState(false);
@@ -54,6 +57,7 @@ export default function FourWeekPlanScreen() {
 
   const getWeekDays = useMemo(() => {
     return (weekIdx: number) => {
+      // 1. AI plan takes priority
       if (aiWorkouts && aiWorkouts.length > 0) {
         return aiWorkouts.map((w: any, i: number) => ({
           dayNum: i + 1,
@@ -65,6 +69,7 @@ export default function FourWeekPlanScreen() {
             id: `ai-w${weekIdx + 1}-d${i + 1}-e${j}`,
             name: ex.name || 'Exercise',
             thumbnailUrl: ex.thumbnailUrl || '',
+            videoUrl: ex.videoUrl || '',
             primaryMuscle: Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || ex.muscleGroup || 'Various'),
             equipment: ex.equipment || 'Various',
             sets: typeof ex.sets === 'number' ? ex.sets : (parseInt(String(ex.sets)) || 3),
@@ -72,9 +77,15 @@ export default function FourWeekPlanScreen() {
           })),
         }));
       }
+      // 2. DB workouts
+      if (dbWorkouts && dbWorkouts.length > 0) {
+        const dbDaysPerWeek = Number(convexUser?.weeklyWorkoutTime) || 4;
+        return buildWeekFromDBWorkouts(dbWorkouts, weekIdx, dbDaysPerWeek, convexUser?.biologicalSex || 'male');
+      }
+      // 3. Static fallback
       return getWeekRoutineDays(weekIdx);
     };
-  }, [aiWorkouts]);
+  }, [aiWorkouts, dbWorkouts, convexUser]);
 
   // For week card theme — use AI plan split name or static theme
   const getWeekTheme = (weekIdx: number): string => {
@@ -112,8 +123,8 @@ export default function FourWeekPlanScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
+      <View style={[styles.header, { paddingTop: Math.max(insets.top, 44) }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={26} color="#0f172a" />
         </TouchableOpacity>
@@ -139,7 +150,7 @@ export default function FourWeekPlanScreen() {
             Follow this 4-week routine to build momentum.{' '}
             {isPro
               ? 'Your personalised plan adapts as you progress.'
-              : 'Upgrade to Pro for a personalised plan that adapts over time.'}
+              : 'Free users get a full 28-day blueprint. Upgrade to Pro to continue your journey.'}
           </Text>
         </View>
 
@@ -196,9 +207,9 @@ export default function FourWeekPlanScreen() {
         ) : (
           <TouchableOpacity style={styles.unlockBanner} onPress={() => setShowUpgrade(true)} activeOpacity={0.9}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.unlockTitle}>Unlock Pro Plan</Text>
+              <Text style={styles.unlockTitle}>Continue Your Journey</Text>
               <Text style={styles.unlockSub}>
-                Get a personalised routine, exercise swaps, and progressive guidance.
+                Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.
               </Text>
             </View>
             <View style={styles.goProBtn}>
@@ -225,7 +236,12 @@ export default function FourWeekPlanScreen() {
               category: ex.primaryMuscle,
               type: 'strength',
               muscleGroups: [ex.primaryMuscle],
+              primaryMuscles: [ex.primaryMuscle],
+              secondaryMuscles: ex.secondaryMuscles ?? [],
               thumbnailUrl: ex.thumbnailUrl,
+              videoUrl: ex.videoUrl,
+              instructions: ex.instructions ?? [],
+              equipment: ex.equipment,
               fromRoutine: true,
             } as any);
             setShowWorkoutDetail(false);

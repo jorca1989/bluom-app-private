@@ -494,39 +494,30 @@ export default function PersonalizedPlanScreen() {
             1. NUTRITION — navigates to /meal-hub
             Data source: same Convex nutritionPlan used by meal-hub.tsx
             ════════════════════════════════════════════════════════ */}
-        <View style={{ position: 'relative' }}>
-          <SectionCard
-            onPress={() => router.push('/meal-hub' as any)}
-            accentColor="#f59e0b"
-            iconBg="#fef3c7"
-            icon={<Utensils size={20} color="#d97706" />}
-            title="Nutrition Blueprint"
-            subtitle={
-              isLoading ? 'Loading…'
-                : nutritionPlan
-                  ? `${Math.round(nutritionPlan.calorieTarget)} kcal · 30-day meal plan`
-                  : `${Math.round(convexUser?.dailyCalories ?? 2000)} kcal · Baseline targets`
-            }
-            isPro={isPro && !!nutritionPlan}
-          >
-            {isLoading
-              ? <View style={{ padding: 18 }}><ActivityIndicator color="#f59e0b" /></View>
-              : <NutritionPreview
-                nutritionPlan={nutritionPlan}
-                isPro={isPro}
-                convexUser={convexUser}
-                rotationDays={rotationDays}
-              />
-            }
-          </SectionCard>
-
-          {/* Lock overlay for free users — nutrition is pro-only */}
-          {!isPro && (
-            <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
-              <ProLockedOverlay onPress={() => router.push('/premium' as any)} />
-            </View>
-          )}
-        </View>
+        <SectionCard
+          onPress={() => router.push('/meal-hub' as any)}
+          accentColor="#f59e0b"
+          iconBg="#fef3c7"
+          icon={<Utensils size={20} color="#d97706" />}
+          title="Nutrition Blueprint"
+          subtitle={
+            isLoading ? 'Loading…'
+              : nutritionPlan
+                ? `${Math.round(nutritionPlan.calorieTarget)} kcal · 28-day meal plan`
+                : `${Math.round(convexUser?.dailyCalories ?? 2000)} kcal · Baseline targets`
+          }
+          isPro={isPro && !!nutritionPlan}
+        >
+          {isLoading
+            ? <View style={{ padding: 18 }}><ActivityIndicator color="#f59e0b" /></View>
+            : <NutritionPreview
+              nutritionPlan={nutritionPlan}
+              isPro={isPro}
+              convexUser={convexUser}
+              rotationDays={rotationDays}
+            />
+          }
+        </SectionCard>
 
         {/* ════════════════════════════════════════════════════════
             2. FITNESS — navigates to /four-week-plan
@@ -566,10 +557,9 @@ export default function PersonalizedPlanScreen() {
             <LinearGradient colors={['#0f172a', '#1e1b4b']} style={s.upsell}>
               <View style={s.upsellBlob} />
               <Ionicons name="sparkles" size={22} color="#a78bfa" style={{ marginBottom: 10 }} />
-              <Text style={s.upsellTitle}>Unlock AI Personalisation</Text>
+              <Text style={s.upsellTitle}>Continue Your Journey</Text>
               <Text style={s.upsellSub}>
-                Pro users get a 30-day AI-generated meal plan tailored to their macros, diet type,
-                and goals — refreshed monthly, with one-tap meal swaps.
+                Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.
               </Text>
               <View style={s.upsellCta}>
                 <Text style={s.upsellCtaText}>Upgrade to Pro →</Text>

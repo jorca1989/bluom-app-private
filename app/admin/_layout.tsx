@@ -71,7 +71,7 @@ export default function AdminLayout() {
 
     if (!isLoaded) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#ebf1fe' }}>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F5F4F0' }}>
                 <ActivityIndicator size="large" color="#2563eb" />
             </View>
         );
@@ -84,7 +84,7 @@ export default function AdminLayout() {
 
     if (!isMasterAdmin) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#ebf1fe', padding: 20 }}>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F5F4F0', padding: 20 }}>
                 <Text style={{ fontSize: 28, fontWeight: '900', color: '#1e293b', marginBottom: 12 }}>
                     {!user ? 'Login Required' : 'Access Denied'}
                 </Text>
@@ -184,7 +184,7 @@ export default function AdminLayout() {
                     <Stack
                         screenOptions={{
                             headerShown: false,
-                            contentStyle: { backgroundColor: '#ebf1fe' },
+                            contentStyle: { backgroundColor: '#F5F4F0' },
                         }}
                     />
                 </View>
@@ -196,7 +196,7 @@ export default function AdminLayout() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#ebf1fe',
+        backgroundColor: '#F5F4F0',
     },
     mainLayout: {
         flex: 1,

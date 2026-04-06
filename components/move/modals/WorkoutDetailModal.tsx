@@ -75,10 +75,11 @@ export default function WorkoutDetailModal({
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
-      <SafeAreaView style={styles.container} edges={['top']}>
+      {/* SafeAreaView handles bottom (home indicator) only — top handled explicitly to prevent double-padding */}
+      <SafeAreaView style={styles.container} edges={['bottom']}>
 
-        {/* Header */}
-        <View style={styles.header}>
+        {/* Header — explicit paddingTop guards against clipping during modal slide-in on any device */}
+        <View style={[styles.header, { paddingTop: Math.max(insets.top, 44) }]}>
           <TouchableOpacity onPress={onClose} style={styles.iconBtn}>
             <Ionicons name="chevron-back" size={28} color="#0f172a" />
           </TouchableOpacity>
@@ -183,8 +184,8 @@ export default function WorkoutDetailModal({
           </View>
         </ScrollView>
 
-        {/* Footer — always above home indicator on all devices */}
-        <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) + 8 }]}>
+        {/* Footer — paddingBottom driven entirely by insets so it works on all devices */}
+        <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom + 16, 24) }]}>
           <TouchableOpacity
             style={styles.startBtn}
             onPress={() => onStartActiveWorkout(dayIndex)}
@@ -306,7 +307,6 @@ const styles = StyleSheet.create({
   footer: {
     paddingHorizontal: 16,
     paddingVertical: 16,
-    paddingBottom: 32,
     borderTopWidth: 1,
     borderTopColor: '#f1f5f9',
     backgroundColor: '#ffffff',

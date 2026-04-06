@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import WorkoutDayCard from './WorkoutDayCard';
 
@@ -34,6 +34,13 @@ interface ProgramWorkoutWidgetProps {
   onStartWorkout: (index: number) => void;
   onViewWorkout: (index: number) => void;
 }
+
+const CARD_WIDTH = 280;
+const CARD_GAP = 12; // marginHorizontal 6 on both sides
+const SNAP_INTERVAL = CARD_WIDTH + CARD_GAP;
+const { width: SCREEN_W } = Dimensions.get('window');
+const WIDGET_WIDTH = SCREEN_W - 48; // widget has marginHorizontal: 24
+const SIDE_PADDING = Math.max(0, (WIDGET_WIDTH - SNAP_INTERVAL) / 2);
 
 export default function ProgramWorkoutWidget({
   programName = 'Your 4-Week Program',
@@ -81,7 +88,14 @@ export default function ProgramWorkoutWidget({
 
       {/* Bottom - Workout List */}
       <View style={styles.workoutsContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          decelerationRate="fast"
+          snapToInterval={280 + 12} // width + gap
+          snapToAlignment="center"
+          contentContainerStyle={[styles.scrollContent, { gap: 12, paddingHorizontal: (SCREEN_W - 48 - 280) / 2 }]}
+        >
           {workouts.map((day, idx) => (
             <WorkoutDayCard
               key={day.dayNum || idx}

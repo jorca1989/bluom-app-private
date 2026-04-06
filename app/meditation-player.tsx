@@ -606,7 +606,7 @@ export default function MeditationPlayerScreen({
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <SafeAreaView style={[playerStyles.container]} edges={['bottom']}>
         {/* Header - Aligned to match Exercise Library */}
-        <View style={[playerStyles.header, { paddingTop: insets.top > 0 ? insets.top : 20 }]}>
+        <View style={[playerStyles.header, { paddingTop: Math.max(insets.top, 44) }]}>
           <TouchableOpacity style={playerStyles.closeButton} onPress={handleClose}>
             <Ionicons name="close" size={24} color="#1e293b" />
           </TouchableOpacity>
@@ -658,7 +658,7 @@ const playerStyles = StyleSheet.create({
 
   // Visual
   animationContainer: { alignItems: 'center', marginBottom: 8 },
-  breathingText: { fontSize: 24, fontWeight: '600', color: '#1e293b', marginTop: 16, marginBottom: 4 },
+  breathingText: { fontSize: 24, fontWeight: '600', color: '#1e293b', marginTop: 28, marginBottom: 4 },
   instructionsText: { fontSize: 14, color: '#64748b', textAlign: 'center', paddingHorizontal: 24, lineHeight: 20 },
   coverContainer: {
     alignItems: 'center', justifyContent: 'center', borderRadius: 20,

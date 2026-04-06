@@ -10,10 +10,11 @@ import {
   Platform,
   ScrollView,
   Alert,
+  Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSignIn } from '@clerk/clerk-expo';
-import { useRouter } from 'expo-router';
+import { useRouter, Link } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, LogIn, Eye, EyeOff } from 'lucide-react-native';
 import { MASTER_ADMINS } from '@/convex/permissions';
@@ -87,7 +88,7 @@ export default function LoginScreen() {
         await setActive({ session: result.createdSessionId });
         // Web: take admins straight to the admin dashboard (Vercel + hobby plan checks depend on author access).
         if (Platform.OS === 'web') {
-          router.replace(isAdminEmail(email) ? '/admin' : '/');
+          router.replace(isAdminEmail(email) ? '/admin' : '/(tabs)');
         }
       } else {
         Alert.alert('Verification incomplete', `Clerk returned status: ${result?.status ?? 'unknown'}`);
@@ -142,7 +143,7 @@ export default function LoginScreen() {
           await setActive({ session: result.createdSessionId });
           // Web: take admins straight to the admin dashboard.
           if (Platform.OS === 'web') {
-            router.replace(isAdminEmail(email) ? '/admin' : '/');
+            router.replace(isAdminEmail(email) ? '/admin' : '/(tabs)');
           }
         } else {
           console.warn('[Auth] signIn.create returned non-complete status:', result.status);
@@ -294,6 +295,12 @@ export default function LoginScreen() {
                   </TouchableOpacity>
                 </View>
 
+                <Link href="/(auth)/forgot-password" asChild>
+                  <Pressable style={{ alignItems: 'flex-end', marginBottom: 16 }}>
+                    <Text className="text-blue-600 font-semibold">Forgot Password?</Text>
+                  </Pressable>
+                </Link>
+
                 <TouchableOpacity
                   style={[styles.primaryButton, loading && styles.buttonDisabled]}
                   onPress={handleEmailLogin}
@@ -319,11 +326,6 @@ export default function LoginScreen() {
 
                 {Platform.OS !== 'web' && (
                   <>
-                    <View style={styles.divider}>
-                      <View style={styles.dividerLine} />
-                      <Text style={styles.dividerText}>or</Text>
-                      <View style={styles.dividerLine} />
-                    </View>
                     {/* Social Logins - Hidden for Lite Build */}
                     {/* 
                     <GoogleSignInButton disabled={loading} />
