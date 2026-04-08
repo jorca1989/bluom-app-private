@@ -207,17 +207,25 @@ export default function ActiveWorkoutModal({
                       {(ex.thumbnailUrl || ex.videoUrl) ? (
                         <View style={styles.videoBox}>
                           {ex.videoUrl ? (
-                            <Video
-                              source={{ uri: ex.videoUrl }}
-                              style={styles.videoPlayerInline}
-                              resizeMode={ResizeMode.COVER}
-                              useNativeControls
-                              shouldPlay
-                              isLooping
-                              usePoster={!!ex.thumbnailUrl}
-                              posterSource={ex.thumbnailUrl ? { uri: ex.thumbnailUrl } : undefined}
-                              posterStyle={{ resizeMode: 'cover' }}
-                            />
+                            ex.videoUrl.toLowerCase().endsWith('.gif') ? (
+                              <Image 
+                                source={{ uri: ex.videoUrl }} 
+                                style={styles.videoPlayerInline} 
+                                resizeMode="cover" 
+                              />
+                            ) : (
+                              <Video
+                                source={{ uri: ex.videoUrl }}
+                                style={styles.videoPlayerInline}
+                                resizeMode={ResizeMode.COVER}
+                                useNativeControls
+                                shouldPlay
+                                isLooping
+                                usePoster={!!ex.thumbnailUrl}
+                                posterSource={ex.thumbnailUrl ? { uri: ex.thumbnailUrl } : undefined}
+                                posterStyle={{ resizeMode: 'cover' }}
+                              />
+                            )
                           ) : (
                             <TouchableOpacity
                               activeOpacity={1}

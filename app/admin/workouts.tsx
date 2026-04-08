@@ -572,7 +572,7 @@ export default function WorkoutsManager() {
                             style={styles.input}
                             value={form.thumbnail}
                             onChangeText={t => setField('thumbnail', t)}
-                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/thumb.jpg`}
+                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/thumb.jpg (or .gif)`}
                             autoCapitalize="none"
                         />
                         {!!form.thumbnail && (
@@ -662,7 +662,7 @@ export default function WorkoutsManager() {
                             style={[styles.input, { marginBottom: 60 }]}
                             value={form.videoUrl}
                             onChangeText={t => setField('videoUrl', t)}
-                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/video.mp4`}
+                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/video.mp4 (or .gif)`}
                             autoCapitalize="none"
                         />
 

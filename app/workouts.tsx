@@ -497,14 +497,22 @@ export default function WorkoutsScreen() {
                                         : undefined;
                                 const resolvedUrl = genderUrl || selectedWorkout.videoUrl;
                                 return resolvedUrl ? (
-                                    <Video
-                                        source={{ uri: resolvedUrl }}
-                                        style={styles.videoPlayer}
-                                        useNativeControls
-                                        resizeMode={ResizeMode.CONTAIN}
-                                        isLooping
-                                        shouldPlay
-                                    />
+                                    resolvedUrl.toLowerCase().endsWith('.gif') ? (
+                                        <Image
+                                            source={{ uri: resolvedUrl }}
+                                            style={styles.videoPlayer}
+                                            resizeMode="contain"
+                                        />
+                                    ) : (
+                                        <Video
+                                            source={{ uri: resolvedUrl }}
+                                            style={styles.videoPlayer}
+                                            useNativeControls
+                                            resizeMode={ResizeMode.CONTAIN}
+                                            isLooping
+                                            shouldPlay
+                                        />
+                                    )
                                 ) : (
                                     <View style={styles.videoPlayerPlaceholder}>
                                         <Play size={48} color="rgba(255,255,255,0.5)" />

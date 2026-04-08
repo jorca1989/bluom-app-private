@@ -87,17 +87,25 @@ export default function ExerciseDetailModal({
               {/* Video / Media */}
               {videoUrl ? (
                 <View style={[styles.mediaBox, !canSeeDetails && styles.mediaBoxBlurred]}>
-                  <Video
-                    source={{ uri: videoUrl }}
-                    style={styles.mediaImage}
-                    resizeMode={ResizeMode.COVER}
-                    useNativeControls={canSeeDetails}
-                    shouldPlay
-                    isLooping
-                    usePoster={!!exercise.thumbnailUrl}
-                    posterSource={exercise.thumbnailUrl ? { uri: exercise.thumbnailUrl } : undefined}
-                    posterStyle={{ resizeMode: 'cover' }}
-                  />
+                  {videoUrl.toLowerCase().endsWith('.gif') ? (
+                    <Image 
+                      source={{ uri: videoUrl }} 
+                      style={styles.mediaImage} 
+                      resizeMode="cover" 
+                    />
+                  ) : (
+                    <Video
+                      source={{ uri: videoUrl }}
+                      style={styles.mediaImage}
+                      resizeMode={ResizeMode.COVER}
+                      useNativeControls={canSeeDetails}
+                      shouldPlay
+                      isLooping
+                      usePoster={!!exercise.thumbnailUrl}
+                      posterSource={exercise.thumbnailUrl ? { uri: exercise.thumbnailUrl } : undefined}
+                      posterStyle={{ resizeMode: 'cover' }}
+                    />
+                  )}
                   {!canSeeDetails && (
                     <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255,255,255,0.4)' }]} />
                   )}
