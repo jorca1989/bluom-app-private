@@ -31,7 +31,7 @@ import { api } from '@/convex/_generated/api';
 import { R2_CONFIG } from '@/utils/r2Config';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const EXERCISE_TYPES = ['Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women'];
+const EXERCISE_TYPES = ['Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women', 'Functional/Mobility', 'Warm-up/Activation', 'Calisthenics/Bodyweight', 'Plyometrics'];
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 const ALL_MUSCLE_GROUPS = [
     'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps',
