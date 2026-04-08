@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
+import { Image } from 'expo-image';
 import { Video, ResizeMode } from 'expo-av';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -91,7 +92,7 @@ export default function ExerciseDetailModal({
                     <Image 
                       source={{ uri: videoUrl }} 
                       style={styles.mediaImage} 
-                      resizeMode="cover" 
+                      contentFit="cover" 
                     />
                   ) : (
                     <Video

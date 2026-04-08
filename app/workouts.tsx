@@ -5,13 +5,13 @@ import {
     StyleSheet,
     TouchableOpacity,
     ScrollView,
-    Image,
     TextInput,
     ActivityIndicator,
     Modal,
     Dimensions,
     Alert
 } from 'react-native';
+import { Image } from 'expo-image';
 import { Stack, useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -501,7 +501,7 @@ export default function WorkoutsScreen() {
                                         <Image
                                             source={{ uri: resolvedUrl }}
                                             style={styles.videoPlayer}
-                                            resizeMode="contain"
+                                            contentFit="contain"
                                         />
                                     ) : (
                                         <Video

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput, Image, KeyboardAvoidingView, Platform, Linking } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform, Linking } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Video, ResizeMode } from 'expo-av';
@@ -211,7 +212,7 @@ export default function ActiveWorkoutModal({
                               <Image 
                                 source={{ uri: ex.videoUrl }} 
                                 style={styles.videoPlayerInline} 
-                                resizeMode="cover" 
+                                contentFit="cover" 
                               />
                             ) : (
                               <Video
@@ -232,7 +233,7 @@ export default function ActiveWorkoutModal({
                               style={styles.videoPlaceholder}
                             >
                               {ex.thumbnailUrl ? (
-                                <Image source={{ uri: ex.thumbnailUrl }} style={styles.videoImage} resizeMode="cover" />
+                                <Image source={{ uri: ex.thumbnailUrl }} style={styles.videoImage} contentFit="cover" />
                               ) : (
                                 <View style={styles.videoImage} /> // Blank dark bg
                               )}
