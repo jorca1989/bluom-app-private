@@ -33,7 +33,7 @@ import { R2_CONFIG } from '@/utils/r2Config';
 
 const DEFAULT_MUSCLE_GROUPS = [
     'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps',
-    'Legs', 'Glutes', 'Core', 'Abs', 'Cardio',
+    'Legs', 'Glutes', 'Core', 'Abs', 'Cardio', 'Pelvic Floor', 'Serratus',
 ];
 
 export default function MediaManager() {

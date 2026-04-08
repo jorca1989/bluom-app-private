@@ -37,7 +37,8 @@ const ALL_MUSCLE_GROUPS = [
     'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps',
     'Legs', 'Quads', 'Hamstrings', 'Glutes', 'Calves',
     'Core', 'Abs', 'Obliques', 'Lats', 'Traps',
-    'Forearms', 'Hip Flexors', 'Lower Back', 'Full Body',
+    'Forearms', 'Hip Flexors', 'Lower Back', 'Full Body', 'Pelvic Floor',
+    'Serratus', 'Rhomboids', 'Adductors', 'Abductors', 'Neck', 'Rotator Cuff'
 ];
 
 const EMPTY_FORM = {

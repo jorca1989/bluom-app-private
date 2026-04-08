@@ -5,7 +5,7 @@ import { checkAdminPower } from "./functions";
 // ─── Default muscle groups (fallback order) ───────────────────────────────────
 export const DEFAULT_MUSCLE_GROUPS = [
     "Chest", "Back", "Shoulders", "Biceps", "Triceps",
-    "Legs", "Glutes", "Core", "Abs", "Cardio",
+    "Legs", "Glutes", "Core", "Abs", "Cardio", "Pelvic Floor", "Serratus",
 ];
 
 // ─── Public query — used by app/workouts.tsx to render muscle cards ────────────

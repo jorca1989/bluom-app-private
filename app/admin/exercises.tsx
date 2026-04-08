@@ -30,7 +30,8 @@ export const ALL_MUSCLE_GROUPS = [
     'Chest', 'Back', 'Biceps', 'Triceps', 'Shoulders',
     'Legs', 'Quads', 'Hamstrings', 'Glutes', 'Calves',
     'Core', 'Abs', 'Obliques', 'Lats', 'Traps',
-    'Forearms', 'Hip Flexors', 'Lower Back', 'Full Body',
+    'Forearms', 'Hip Flexors', 'Lower Back', 'Full Body', 'Pelvic Floor',
+    'Serratus', 'Rhomboids', 'Adductors', 'Abductors', 'Neck', 'Rotator Cuff'
 ] as const;
 
 const PAGE_SIZE = 50;

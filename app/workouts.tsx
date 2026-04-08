@@ -90,7 +90,7 @@ export default function WorkoutsScreen() {
     ];
 
     const categories = ['All', 'Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women'];
-    const muscleGroups = ['All', 'Chest', 'Back', 'Biceps', 'Triceps', 'Shoulders', 'Legs', 'Core', 'Glutes', 'Abs'];
+    const muscleGroups = ['All', 'Chest', 'Back', 'Biceps', 'Triceps', 'Shoulders', 'Legs', 'Core', 'Glutes', 'Abs', 'Pelvic Floor', 'Serratus'];
 
     // Merge DB images with fallbacks — must be before any early return (Rules of Hooks)
     const MUSCLE_CARDS = useMemo(() => {

@@ -37,14 +37,16 @@ interface ExerciseSearchModalProps {
 }
 
 const MUSCLE_GROUPS = [
-  { title: 'Chest',     image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80' },
-  { title: 'Back',      image: 'https://images.unsplash.com/photo-1603287681836-b174ce5074c2?w=400&q=80' },
-  { title: 'Biceps',    image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&q=80' },
-  { title: 'Triceps',   image: 'https://images.unsplash.com/photo-1530822847156-5df684ec5933?w=400&q=80' },
+  { title: 'Chest', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80' },
+  { title: 'Back', image: 'https://images.unsplash.com/photo-1603287681836-b174ce5074c2?w=400&q=80' },
+  { title: 'Biceps', image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&q=80' },
+  { title: 'Triceps', image: 'https://images.unsplash.com/photo-1530822847156-5df684ec5933?w=400&q=80' },
   { title: 'Shoulders', image: 'https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?w=400&q=80' },
-  { title: 'Legs',      image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&q=80' },
-  { title: 'Core',      image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&q=80' },
-  { title: 'Glutes',    image: 'https://images.unsplash.com/photo-1607962837359-5e7e89f86776?w=400&q=80' },
+  { title: 'Legs', image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&q=80' },
+  { title: 'Core', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&q=80' },
+  { title: 'Glutes', image: 'https://images.unsplash.com/photo-1607962837359-5e7e89f86776?w=400&q=80' },
+  { title: 'Pelvic Floor', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80' },
+  { title: 'Serratus', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80' },
 ];
 
 const EXERCISE_TYPES = ['Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core'];
