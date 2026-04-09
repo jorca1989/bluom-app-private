@@ -21,7 +21,6 @@ export interface ExerciseLibraryItem {
   _id: string;
   name: string;
   category: string;
-  type: string;
   muscleGroups: string[];
   thumbnailUrl?: string;
 }
@@ -82,7 +81,7 @@ export default function ExerciseSearchModal({
   const filteredSearchResults = useMemo(() => {
     if (!selectedType) return searchResults;
     return searchResults.filter(ex =>
-      ex.type?.toLowerCase() === selectedType.toLowerCase()
+      ex.category?.toLowerCase() === selectedType.toLowerCase()
     );
   }, [searchResults, selectedType]);
 
@@ -95,7 +94,6 @@ export default function ExerciseSearchModal({
       _id: workout._id,
       name: firstEx?.name ?? workout.title,
       category: workout.category ?? 'Strength',
-      type: (firstEx?.exerciseType ?? 'strength').toLowerCase(),
       muscleGroups: firstEx?.primaryMuscles ?? [],
       thumbnailUrl: workout.thumbnail,
     };
@@ -327,9 +325,9 @@ export default function ExerciseSearchModal({
                         <Text style={styles.listSub}>
                           {item.muscleGroups?.[0] ?? item.category ?? 'Various'}
                         </Text>
-                        {item.type && (
+                        {item.category && (
                           <View style={styles.typeChip}>
-                            <Text style={styles.typeChipText}>{item.type}</Text>
+                            <Text style={styles.typeChipText}>{item.category}</Text>
                           </View>
                         )}
                       </View>

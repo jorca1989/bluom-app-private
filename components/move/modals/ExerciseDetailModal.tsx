@@ -34,10 +34,6 @@ export default function ExerciseDetailModal({
 
   const exerciseType = exercise.type || exercise.exerciseType || exercise.category || 'Strength';
   const difficulty = exercise.difficulty || exercise.level || null;
-  const description =
-    exercise.description ||
-    'This exercise targets the primary muscle group effectively, ensuring maximal hypertrophy and strength gains when performed with proper form.';
-
   const instructions: string[] = exercise.instructions ?? [];
   const primaryMuscles: string[] = exercise.primaryMuscles ?? exercise.muscleGroups ?? [];
   const secondaryMuscles: string[] = exercise.secondaryMuscles ?? [];
@@ -72,12 +68,6 @@ export default function ExerciseDetailModal({
                 <Text style={styles.diffChipText}>{difficulty}</Text>
               </View>
             )}
-          </View>
-
-          {/* Description */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Description</Text>
-            <Text style={styles.paragraph}>{description}</Text>
           </View>
 
           {/* ── LOCKED SECTION: Pro only ── */}

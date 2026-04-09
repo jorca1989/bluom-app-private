@@ -23,10 +23,6 @@ export const EXERCISE_CATEGORIES = [
     'Functional/Mobility', 'Warm-up/Activation', 'Calisthenics/Bodyweight', 'Plyometrics', 'Balance'
 ] as const;
 
-export const EXERCISE_TYPES = [
-    'strength', 'cardio', 'hiit', 'yoga', 'functional', 'warmup', 'calisthenics', 'plyometrics', 'balance'
-] as const;
-
 export const ALL_MUSCLE_GROUPS = [
     'Chest', 'Back', 'Biceps', 'Triceps', 'Shoulders',
     'Legs', 'Quads', 'Hamstrings', 'Glutes', 'Calves',
@@ -40,11 +36,9 @@ const PAGE_SIZE = 50;
 const EMPTY_FORM = {
     name: '',
     categories: ['Strength'] as string[],  // multi-select
-    types: ['strength'] as string[],         // multi-select (primary = types[0] for MET calc)
     met: '6.0',
     caloriesPerMinute: '0',
     muscleGroups: [] as string[],
-    description: '',
     thumbnailUrl: '',
 };
 
@@ -166,17 +160,13 @@ export default function ExerciseLibraryManager() {
         }
         try {
             const cats = form.categories.length ? form.categories : ['Strength'];
-            const typs = form.types.length ? form.types : ['strength'];
             const payload: any = {
                 name: { en: form.name.trim() },
                 category: cats[0],            // primary category (backward-compat)
                 categories: cats,             // full list
-                type: typs[0] as any,         // primary type for MET calc
-                types: typs,                  // full list
                 met: parseFloat(form.met),
                 caloriesPerMinute: parseFloat(form.caloriesPerMinute) || undefined,
                 muscleGroups: form.muscleGroups,
-                description: form.description.trim() || undefined,
                 thumbnailUrl: form.thumbnailUrl.trim() || undefined,
             };
             if (editingExercise) {
@@ -228,11 +218,9 @@ export default function ExerciseLibraryManager() {
         setForm({
             name: typeof ex.name === 'object' ? ex.name.en : (ex.name ?? ''),
             categories: ex.categories ?? (ex.category ? [ex.category] : ['Strength']),
-            types: ex.types ?? (ex.type ? [ex.type] : ['strength']),
             met: String(ex.met ?? '6.0'),
             caloriesPerMinute: String(ex.caloriesPerMinute ?? '0'),
             muscleGroups: existingMuscles,
-            description: ex.description ?? '',
             thumbnailUrl: ex.thumbnailUrl ?? '',
         });
         setIsModalOpen(true);
@@ -409,32 +397,6 @@ export default function ExerciseLibraryManager() {
                             </Text>
                         )}
 
-                        <Text style={styles.label}>Type — calorie calc (select all that apply)</Text>
-                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
-                            {EXERCISE_TYPES.map(t => {
-                                const active = form.types.includes(t);
-                                return (
-                                    <TouchableOpacity
-                                        key={t}
-                                        onPress={() => {
-                                            const next = active
-                                                ? form.types.filter(x => x !== t)
-                                                : [...form.types, t];
-                                            setForm(f => ({ ...f, types: next }));
-                                        }}
-                                        style={[styles.pill, active && { backgroundColor: '#f59e0b', borderColor: '#f59e0b' }]}
-                                    >
-                                        <Text style={[styles.pillTxt, active && styles.pillTxtActive]}>{t}</Text>
-                                    </TouchableOpacity>
-                                );
-                            })}
-                        </View>
-                        {form.types.length > 0 && (
-                            <Text style={{ fontSize: 10, color: '#94a3b8', fontWeight: '600', marginBottom: 8 }}>
-                                Primary MET type: {form.types[0]}
-                            </Text>
-                        )}
-
                         <View style={{ flexDirection: 'row', gap: 14 }}>
                             <View style={{ flex: 1 }}>
                                 <Text style={styles.label}>MET Value *</Text>
@@ -463,15 +425,6 @@ export default function ExerciseLibraryManager() {
                         <MuscleGroupPicker
                             selected={form.muscleGroups}
                             onChange={v => setForm(f => ({ ...f, muscleGroups: v }))}
-                        />
-
-                        <Text style={[styles.label, { marginTop: 20 }]}>Description</Text>
-                        <TextInput
-                            style={[styles.input, { height: 80, textAlignVertical: 'top' }]}
-                            multiline
-                            value={form.description}
-                            onChangeText={t => setForm(f => ({ ...f, description: t }))}
-                            placeholder="Instructions or notes…"
                         />
                     </ScrollView>
                 </View>
