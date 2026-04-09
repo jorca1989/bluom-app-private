@@ -187,7 +187,17 @@ export default function ExerciseLibraryManager() {
     const handleDelete = (id: any, name: string) => {
         Alert.alert('Delete Exercise', `Delete "${name}"?`, [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => deleteExercise({ id }) },
+            {
+                text: 'Delete',
+                style: 'destructive',
+                onPress: async () => {
+                    try {
+                        await deleteExercise({ id });
+                    } catch (err: any) {
+                        Alert.alert('Error', err?.message || 'Failed to delete exercise.');
+                    }
+                }
+            },
         ]);
     };
 
