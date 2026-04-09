@@ -438,6 +438,13 @@ export const listAll = query({
             );
         }
 
+        // Sort so that exercises with a thumbnailUrl appear first
+        exercises.sort((a, b) => {
+            const aHasThumb = !!a.thumbnailUrl ? 1 : 0;
+            const bHasThumb = !!b.thumbnailUrl ? 1 : 0;
+            return bHasThumb - aHasThumb;
+        });
+
         return exercises;
     },
 });
