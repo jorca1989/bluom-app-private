@@ -14,7 +14,7 @@ import {
 import { Image } from 'expo-image';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { Dumbbell, Plus, Search, Trash2, Edit3, X, Image as ImageIcon } from 'lucide-react-native';
+import { Dumbbell, Plus, Search, Trash2, Edit3, X, Image as ImageIcon, Filter } from 'lucide-react-native';
 import { R2_CONFIG } from '@/utils/r2Config';
 
 // ─── Shared constants (must match ExerciseSearchModal + app/workouts.tsx) ────
@@ -55,7 +55,7 @@ function FilterPills({
     return (
         <View style={fp.wrap}>
             <Text style={fp.label}>{label}</Text>
-            <View style={fp.row}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={fp.row}>
                 <TouchableOpacity
                     style={[fp.pill, value === 'All' && { backgroundColor: color }]}
                     onPress={() => onChange('All')}
@@ -71,7 +71,7 @@ function FilterPills({
                         <Text style={[fp.pillTxt, value === o && fp.pillTxtActive]}>{o}</Text>
                     </TouchableOpacity>
                 ))}
-            </View>
+            </ScrollView>
         </View>
     );
 }
@@ -79,7 +79,7 @@ function FilterPills({
 const fp = StyleSheet.create({
     wrap: { paddingHorizontal: 16, marginBottom: 6 },
     label: { fontSize: 10, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', marginBottom: 6, letterSpacing: 0.5 },
-    row: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+    row: { flexDirection: 'row', gap: 6, paddingRight: 32 },
     pill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, backgroundColor: '#f1f5f9', borderWidth: 1, borderColor: '#e2e8f0' },
     pillTxt: { fontSize: 12, fontWeight: '700', color: '#64748b' },
     pillTxtActive: { color: '#ffffff' },
@@ -130,6 +130,8 @@ export default function ExerciseLibraryManager() {
     const [search, setSearch] = useState('');
     const [filterCategory, setFilterCategory] = useState('All');
     const [filterMuscle, setFilterMuscle] = useState('All');
+    const [showSearch, setShowSearch] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
     const [page, setPage] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingExercise, setEditingExercise] = useState<any>(null);
@@ -267,10 +269,12 @@ export default function ExerciseLibraryManager() {
                     <Text style={styles.title}>Exercise Library</Text>
                     <Text style={styles.subtitle}>{allExercises === undefined ? 'Loading…' : `${total} exercises`}</Text>
                 </View>
-                <View style={{ flexDirection: 'row', gap: 10 }}>
-                    <TouchableOpacity style={styles.clearBtn} onPress={handleClearAll}>
-                        <Trash2 size={15} color="#ef4444" />
-                        <Text style={styles.clearBtnTxt}>Clear All</Text>
+                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                    <TouchableOpacity onPress={() => setShowSearch(!showSearch)} style={{ padding: 6 }}>
+                        <Search size={20} color={showSearch ? '#2563eb' : '#64748b'} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setShowFilters(!showFilters)} style={{ padding: 6 }}>
+                        <Filter size={20} color={(filterCategory !== 'All' || filterMuscle !== 'All' || showFilters) ? '#2563eb' : '#64748b'} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.addBtn} onPress={openNew}>
                         <Plus color="#fff" size={18} />
@@ -280,39 +284,44 @@ export default function ExerciseLibraryManager() {
             </View>
 
             {/* Search */}
-            <View style={styles.searchBar}>
-                <Search size={17} color="#94a3b8" />
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="Search name or muscle…"
-                    value={search}
-                    onChangeText={t => { setSearch(t); setPage(0); }}
-                    clearButtonMode="while-editing"
-                />
-                {search.length > 0 && (
-                    <TouchableOpacity onPress={() => { setSearch(''); setPage(0); }}>
-                        <X size={16} color="#94a3b8" />
-                    </TouchableOpacity>
-                )}
-            </View>
+            {showSearch && (
+                <View style={styles.searchBar}>
+                    <Search size={17} color="#94a3b8" />
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="Search name or muscle…"
+                        value={search}
+                        onChangeText={t => { setSearch(t); setPage(0); }}
+                        clearButtonMode="while-editing"
+                        autoFocus
+                    />
+                    {search.length > 0 && (
+                        <TouchableOpacity onPress={() => { setSearch(''); setPage(0); }}>
+                            <X size={16} color="#94a3b8" />
+                        </TouchableOpacity>
+                    )}
+                </View>
+            )}
 
-            {/* Category filter */}
-            <FilterPills
-                label="Category"
-                options={EXERCISE_CATEGORIES}
-                value={filterCategory}
-                onChange={v => { setFilterCategory(v); setPage(0); }}
-                color="#2563eb"
-            />
-
-            {/* Muscle filter */}
-            <FilterPills
-                label="Muscle Group"
-                options={ALL_MUSCLE_GROUPS}
-                value={filterMuscle}
-                onChange={v => { setFilterMuscle(v); setPage(0); }}
-                color="#059669"
-            />
+            {/* Filters Drawer */}
+            {showFilters && (
+                <View style={{ backgroundColor: '#fff', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+                    <FilterPills
+                        label="Category"
+                        options={EXERCISE_CATEGORIES}
+                        value={filterCategory}
+                        onChange={v => { setFilterCategory(v); setPage(0); }}
+                        color="#2563eb"
+                    />
+                    <FilterPills
+                        label="Muscle Group"
+                        options={ALL_MUSCLE_GROUPS}
+                        value={filterMuscle}
+                        onChange={v => { setFilterMuscle(v); setPage(0); }}
+                        color="#059669"
+                    />
+                </View>
+            )}
 
             {/* List */}
             {allExercises === undefined ? (
@@ -366,7 +375,7 @@ export default function ExerciseLibraryManager() {
                             style={styles.input}
                             value={form.thumbnailUrl}
                             onChangeText={t => setForm(f => ({ ...f, thumbnailUrl: t }))}
-                            placeholder={`${R2_CONFIG.generalBaseUrl}/exercises/squat.gif`}
+                            placeholder={`${R2_CONFIG.exerciseLibraryBaseUrl}/exercises/squat.gif`}
                             autoCapitalize="none"
                             keyboardType="url"
                         />

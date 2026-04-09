@@ -44,6 +44,8 @@ export default function RecipesManager() {
     const [filterCat, setFilterCat] = useState('All');
     const [filterTier, setFilterTier] = useState('All');
     const [filterStatus, setFilterStatus] = useState('All');
+    const [showSearch, setShowSearch] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
 
     const RECIPE_CATEGORIES = ['Breakfast', 'Lunch', 'Dinner', 'Snacks', 'Desserts', 'Vegetarian', 'High Protein', 'Low Carb'];
 
@@ -253,66 +255,82 @@ export default function RecipesManager() {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <View>
+                <View style={{ flex: 1 }}>
                     <Text style={styles.title}>Recipes Manager</Text>
                     <Text style={styles.subtitle}>Curate and manage global food content</Text>
                 </View>
-                <TouchableOpacity style={styles.addButton} onPress={() => { resetForm(); setIsModalOpen(true); }}>
-                    <Plus color="#ffffff" size={20} />
-                    <Text style={styles.addButtonText}>Add Recipe</Text>
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                    <TouchableOpacity onPress={() => setShowSearch(!showSearch)} style={{ padding: 6 }}>
+                        <Search size={20} color={showSearch ? '#2563eb' : '#64748b'} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setShowFilters(!showFilters)} style={{ padding: 6 }}>
+                        <Filter size={20} color={(filterCat !== 'All' || filterTier !== 'All' || filterStatus !== 'All' || showFilters) ? '#2563eb' : '#64748b'} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.addButton} onPress={() => { resetForm(); setIsModalOpen(true); }}>
+                        <Plus color="#ffffff" size={20} />
+                        <Text style={styles.addButtonText}>Add</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
 
-            <View style={styles.searchBar}>
-                <Search size={18} color="#94a3b8" />
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="Search recipes..."
-                    value={search}
-                    onChangeText={setSearch}
-                />
-                <TouchableOpacity style={styles.filterButton}>
-                    <Filter size={18} color="#64748b" />
-                </TouchableOpacity>
-            </View>
-
-            {/* ── Filters ── */}
-            <View style={styles.filterBlock}>
-                <View style={styles.filterRow}>
-                    <Text style={styles.filterLabel}>CATEGORY</Text>
-                    <View style={styles.pillRow}>
-                        <TouchableOpacity style={[styles.fPill, filterCat === 'All' && styles.fPillActive]} onPress={() => setFilterCat('All')}>
-                            <Text style={[styles.fPillTxt, filterCat === 'All' && styles.fPillTxtActive]}>All</Text>
+            {/* Search */}
+            {showSearch && (
+                <View style={styles.searchBar}>
+                    <Search size={18} color="#94a3b8" />
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="Search recipes..."
+                        value={search}
+                        onChangeText={setSearch}
+                        autoFocus
+                    />
+                    {search.length > 0 && (
+                        <TouchableOpacity onPress={() => setSearch('')}>
+                            <X size={16} color="#94a3b8" />
                         </TouchableOpacity>
-                        {RECIPE_CATEGORIES.map(cat => (
-                            <TouchableOpacity key={cat} style={[styles.fPill, filterCat === cat && styles.fPillActive]} onPress={() => setFilterCat(cat)}>
-                                <Text style={[styles.fPillTxt, filterCat === cat && styles.fPillTxtActive]}>{cat}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
+                    )}
                 </View>
-                <View style={styles.filterRow}>
-                    <Text style={styles.filterLabel}>TIER</Text>
-                    <View style={styles.pillRow}>
-                        {['All', 'Pro', 'Free'].map(t => (
-                            <TouchableOpacity key={t} style={[styles.fPill, filterTier === t && styles.fPillActive]} onPress={() => setFilterTier(t)}>
-                                <Text style={[styles.fPillTxt, filterTier === t && styles.fPillTxtActive]}>{t}</Text>
+            )}
+
+            {/* ── Filters Drawer ── */}
+            {showFilters && (
+                <View style={styles.filterBlock}>
+                    <View style={styles.filterRow}>
+                        <Text style={styles.filterLabel}>CATEGORY</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillRow}>
+                            <TouchableOpacity style={[styles.fPill, filterCat === 'All' && styles.fPillActive]} onPress={() => setFilterCat('All')}>
+                                <Text style={[styles.fPillTxt, filterCat === 'All' && styles.fPillTxtActive]}>All</Text>
                             </TouchableOpacity>
-                        ))}
+                            {RECIPE_CATEGORIES.map(cat => (
+                                <TouchableOpacity key={cat} style={[styles.fPill, filterCat === cat && styles.fPillActive]} onPress={() => setFilterCat(cat)}>
+                                    <Text style={[styles.fPillTxt, filterCat === cat && styles.fPillTxtActive]}>{cat}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
                     </View>
-                </View>
-                <View style={styles.filterRow}>
-                    <Text style={styles.filterLabel}>STATUS</Text>
-                    <View style={styles.pillRow}>
-                        {['All', 'published', 'draft'].map(s => (
-                            <TouchableOpacity key={s} style={[styles.fPill, filterStatus === s && styles.fPillActive]} onPress={() => setFilterStatus(s)}>
-                                <Text style={[styles.fPillTxt, filterStatus === s && styles.fPillTxtActive]}>{s === 'All' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}</Text>
-                            </TouchableOpacity>
-                        ))}
+                    <View style={styles.filterRow}>
+                        <Text style={styles.filterLabel}>TIER</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillRow}>
+                            {['All', 'Pro', 'Free'].map(t => (
+                                <TouchableOpacity key={t} style={[styles.fPill, filterTier === t && styles.fPillActive]} onPress={() => setFilterTier(t)}>
+                                    <Text style={[styles.fPillTxt, filterTier === t && styles.fPillTxtActive]}>{t}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
                     </View>
+                    <View style={styles.filterRow}>
+                        <Text style={styles.filterLabel}>STATUS</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillRow}>
+                            {['All', 'published', 'draft'].map(s => (
+                                <TouchableOpacity key={s} style={[styles.fPill, filterStatus === s && styles.fPillActive]} onPress={() => setFilterStatus(s)}>
+                                    <Text style={[styles.fPillTxt, filterStatus === s && styles.fPillTxtActive]}>{s === 'All' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    </View>
+                    <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '600', paddingHorizontal: 4 }}>{recipes.length} recipes</Text>
                 </View>
-                <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '600', paddingHorizontal: 4 }}>{recipes.length} recipes</Text>
-            </View>
+            )}
 
             {!allRecipes ? (
                 <ActivityIndicator color="#2563eb" size="large" style={{ marginTop: 40 }} />
@@ -773,7 +791,7 @@ const styles = StyleSheet.create({
     filterBlock: { paddingHorizontal: 16, paddingBottom: 10, paddingTop: 4, borderBottomWidth: 1, borderBottomColor: '#f1f5f9', gap: 10 },
     filterRow: { gap: 4 },
     filterLabel: { fontSize: 10, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 },
-    pillRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+    pillRow: { flexDirection: 'row', gap: 6, paddingRight: 32 },
     fPill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: '#e2e8f0', backgroundColor: '#fff' },
     fPillActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
     fPillTxt: { fontSize: 12, fontWeight: '700', color: '#64748b' },

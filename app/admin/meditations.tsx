@@ -22,6 +22,8 @@ import {
     Video,
     Music,
     Image as ImageIcon,
+    Filter,
+    Search,
 } from 'lucide-react-native';
 import { useUser } from '@clerk/clerk-expo';
 import { useMutation, useQuery } from 'convex/react';
@@ -59,17 +61,22 @@ export default function MeditationsManager() {
     const [filterCat, setFilterCat] = useState('All');
     const [filterType, setFilterType] = useState('All'); // meditation | soundscape | All
     const [filterTier, setFilterTier] = useState('All'); // All | Pro | Free
+    const [search, setSearch] = useState('');
+    const [showSearch, setShowSearch] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
 
     const allItems = useMemo(() => (Array.isArray(sessions) ? sessions : []), [sessions]);
 
     const items = useMemo(() => {
+        const searchQ = search.toLowerCase();
         return allItems.filter((s: any) => {
+            const matchSearch = !searchQ || s.title?.toLowerCase().includes(searchQ) || s.description?.toLowerCase().includes(searchQ);
             const catOk = filterCat === 'All' || s.category === filterCat || (s.tags ?? []).includes(filterCat);
             const typeOk = filterType === 'All' || s.type === filterType;
             const tierOk = filterTier === 'All' || (filterTier === 'Pro' ? s.isPremium : !s.isPremium);
-            return catOk && typeOk && tierOk;
+            return matchSearch && catOk && typeOk && tierOk;
         });
-    }, [allItems, filterCat, filterType, filterTier]);
+    }, [allItems, search, filterCat, filterType, filterTier]);
 
     const resetForm = () => { setForm(emptyForm); setSelectedSession(null); };
 
@@ -232,41 +239,69 @@ export default function MeditationsManager() {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <View>
+                <View style={{ flex: 1 }}>
                     <Text style={styles.title}>Meditations Hub</Text>
                     <Text style={styles.subtitle}>Curate audio & video wellness sessions</Text>
                 </View>
-                <TouchableOpacity style={styles.addButton} onPress={() => { resetForm(); setIsModalOpen(true); }}>
-                    <Plus color="#ffffff" size={20} />
-                    <Text style={styles.addButtonText}>Add Session</Text>
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                    <TouchableOpacity onPress={() => setShowSearch(!showSearch)} style={{ padding: 6 }}>
+                        <Search size={20} color={showSearch ? '#2563eb' : '#64748b'} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setShowFilters(!showFilters)} style={{ padding: 6 }}>
+                        <Filter size={20} color={(filterCat !== 'All' || filterType !== 'All' || filterTier !== 'All' || showFilters) ? '#2563eb' : '#64748b'} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.addButton} onPress={() => { resetForm(); setIsModalOpen(true); }}>
+                        <Plus color="#ffffff" size={20} />
+                        <Text style={styles.addButtonText}>Add</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
 
-            {/* ── Filters ── */}
-            <View style={styles.filterBlock}>
+            {/* Search Bar */}
+            {showSearch && (
+                <View style={styles.searchBar}>
+                    <Search size={18} color="#94a3b8" />
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="Search sessions..."
+                        value={search}
+                        onChangeText={setSearch}
+                        autoFocus
+                    />
+                    {search.length > 0 && (
+                        <TouchableOpacity onPress={() => setSearch('')}>
+                            <X size={16} color="#94a3b8" />
+                        </TouchableOpacity>
+                    )}
+                </View>
+            )}
+
+            {/* ── Filters Drawer ── */}
+            {showFilters && (
+                <View style={styles.filterBlock}>
                 <View style={styles.filterRow}>
                     <Text style={styles.filterLabel}>TYPE</Text>
-                    <View style={styles.pillRow}>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillRow}>
                         {['All', 'meditation', 'soundscape'].map(t => (
                             <TouchableOpacity key={t} style={[styles.fPill, filterType === t && styles.fPillActive]} onPress={() => setFilterType(t)}>
                                 <Text style={[styles.fPillTxt, filterType === t && styles.fPillTxtActive]}>{t === 'All' ? 'All' : t.charAt(0).toUpperCase() + t.slice(1)}</Text>
                             </TouchableOpacity>
                         ))}
-                    </View>
+                    </ScrollView>
                 </View>
                 <View style={styles.filterRow}>
                     <Text style={styles.filterLabel}>TIER</Text>
-                    <View style={styles.pillRow}>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillRow}>
                         {['All', 'Pro', 'Free'].map(t => (
                             <TouchableOpacity key={t} style={[styles.fPill, filterTier === t && styles.fPillActive]} onPress={() => setFilterTier(t)}>
                                 <Text style={[styles.fPillTxt, filterTier === t && styles.fPillTxtActive]}>{t}</Text>
                             </TouchableOpacity>
                         ))}
-                    </View>
+                    </ScrollView>
                 </View>
                 <View style={styles.filterRow}>
                     <Text style={styles.filterLabel}>CATEGORY</Text>
-                    <View style={styles.pillRow}>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillRow}>
                         <TouchableOpacity style={[styles.fPill, filterCat === 'All' && styles.fPillCatActive]} onPress={() => setFilterCat('All')}>
                             <Text style={[styles.fPillTxt, filterCat === 'All' && styles.fPillTxtActive]}>All</Text>
                         </TouchableOpacity>
@@ -275,10 +310,11 @@ export default function MeditationsManager() {
                                 <Text style={[styles.fPillTxt, filterCat === f.id && styles.fPillTxtActive]}>{f.emoji} {f.name}</Text>
                             </TouchableOpacity>
                         ))}
-                    </View>
+                    </ScrollView>
                 </View>
                 <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '600', paddingHorizontal: 4 }}>{items.length} sessions</Text>
-            </View>
+                </View>
+            )}
 
             {!sessions ? (
                 <ActivityIndicator size="large" color="#2563eb" style={{ marginTop: 40 }} />
@@ -449,9 +485,11 @@ const styles = StyleSheet.create({
     container: { flex: 1 },
     header: { padding: 24, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     title: { fontSize: 24, fontWeight: '900', color: '#1e293b' },
-    subtitle: { fontSize: 14, color: '#64748b', fontWeight: '600', marginTop: 4 },
+    subtitle: { fontSize: 13, color: '#64748b', fontWeight: '600', marginTop: 4 },
     addButton: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#8b5cf6', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, gap: 8 },
     addButtonText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+    searchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', marginHorizontal: 24, paddingHorizontal: 16, height: 46, borderRadius: 14, borderWidth: 1, borderColor: '#e2e8f0', marginBottom: 12 },
+    searchInput: { flex: 1, marginLeft: 10, fontSize: 15, fontWeight: '600', color: '#1e293b' },
     list: { padding: 24, paddingTop: 0, gap: 12 },
     statsSummary: { flexDirection: 'row', gap: 10, marginBottom: 24 },
     summaryBox: { flex: 1, backgroundColor: '#fff', padding: 16, borderRadius: 16, alignItems: 'center', borderWidth: 1, borderColor: '#e2e8f0' },
@@ -490,7 +528,7 @@ const styles = StyleSheet.create({
     filterBlock: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#f1f5f9', gap: 10 },
     filterRow: { gap: 6 },
     filterLabel: { fontSize: 10, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 },
-    pillRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+    pillRow: { flexDirection: 'row', gap: 6, paddingRight: 32 },
     fPill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: '#e2e8f0', backgroundColor: '#fff' },
     fPillActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
     fPillCatActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },

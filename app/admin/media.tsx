@@ -353,8 +353,8 @@ export default function MediaManager() {
                                 We use two separate R2 accounts to manage costs and scalability:{'\n\n'}
                                 <Text style={{ fontWeight: 'bold' }}>1. General Storage (Account 1):</Text>{'\n'}
                                 Used for Meditations, Recipes, and UI Assets.{'\n\n'}
-                                <Text style={{ fontWeight: 'bold' }}>2. Workout Media (Account 2):</Text>{'\n'}
-                                Used for all Exercise Videos and Thumbnails.
+                                <Text style={{ fontWeight: 'bold' }}>2. Workout Media & Exercises (Account 2):</Text>{'\n'}
+                                Used for Workout Videos, plus a highly optimized dedicated bucket for Exercise Thumbnails (exerciselibrary).
                             </Text>
                         </View>
 

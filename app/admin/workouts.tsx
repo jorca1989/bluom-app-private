@@ -25,6 +25,7 @@ import {
     Image as ImageIcon,
     Users,
     Tag,
+    Filter,
 } from 'lucide-react-native';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
@@ -148,6 +149,8 @@ export default function WorkoutsManager() {
     const [search, setSearch] = useState('');
     const [filterType, setFilterType] = useState('All');
     const [filterLevel, setFilterLevel] = useState('All');
+    const [showSearch, setShowSearch] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingWorkout, setEditingWorkout] = useState<any>(null);
     const [form, setForm] = useState({ ...EMPTY_FORM });
@@ -364,63 +367,79 @@ export default function WorkoutsManager() {
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <View>
+                <View style={{ flex: 1 }}>
                     <Text style={styles.title}>Exercise Library</Text>
                     <Text style={styles.subtitle}>Manage exercises for workout plans</Text>
                 </View>
-                <TouchableOpacity style={styles.addButton} onPress={openNew}>
-                    <Plus color="#ffffff" size={20} />
-                    <Text style={styles.addButtonText}>New Exercise</Text>
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                    <TouchableOpacity onPress={() => setShowSearch(!showSearch)} style={{ padding: 6 }}>
+                        <Search size={20} color={showSearch ? '#2563eb' : '#64748b'} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setShowFilters(!showFilters)} style={{ padding: 6 }}>
+                        <Filter size={20} color={(filterType !== 'All' || filterLevel !== 'All' || showFilters) ? '#2563eb' : '#64748b'} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.addButton} onPress={openNew}>
+                        <Plus color="#ffffff" size={20} />
+                        <Text style={styles.addButtonText}>New</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
 
             {/* Search */}
-            <View style={styles.searchBar}>
-                <Search size={18} color="#94a3b8" />
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="Search library..."
-                    value={search}
-                    onChangeText={setSearch}
-                />
-                {(filterType !== 'All' || filterLevel !== 'All') && (
-                    <TouchableOpacity onPress={() => { setFilterType('All'); setFilterLevel('All'); }}>
-                        <Text style={{ color: '#2563eb', fontWeight: '700', fontSize: 12 }}>Reset</Text>
-                    </TouchableOpacity>
-                )}
-            </View>
-
-            {/* Type filter */}
-            <View style={styles.filterSection}>
-                <Text style={styles.filterLabel}>TYPE</Text>
-                <View style={styles.filterRow}>
-                    {['All', ...EXERCISE_TYPES].map(t => (
-                        <TouchableOpacity
-                            key={t}
-                            style={[styles.filterPill, filterType === t && styles.filterPillActive]}
-                            onPress={() => setFilterType(t)}
-                        >
-                            <Text style={[styles.filterPillTxt, filterType === t && styles.filterPillTxtActive]}>{t}</Text>
+            {showSearch && (
+                <View style={styles.searchBar}>
+                    <Search size={18} color="#94a3b8" />
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="Search library..."
+                        value={search}
+                        onChangeText={setSearch}
+                        autoFocus
+                    />
+                    {(filterType !== 'All' || filterLevel !== 'All') && (
+                        <TouchableOpacity onPress={() => { setFilterType('All'); setFilterLevel('All'); }}>
+                            <Text style={{ color: '#2563eb', fontWeight: '700', fontSize: 12 }}>Reset</Text>
                         </TouchableOpacity>
-                    ))}
+                    )}
                 </View>
-            </View>
+            )}
 
-            {/* Difficulty filter */}
-            <View style={[styles.filterSection, { marginBottom: 8 }]}>
-                <Text style={styles.filterLabel}>DIFFICULTY</Text>
-                <View style={styles.filterRow}>
-                    {['All', ...LEVELS].map(l => (
-                        <TouchableOpacity
-                            key={l}
-                            style={[styles.filterPill, filterLevel === l && { backgroundColor: '#7c3aed', borderColor: '#7c3aed' }]}
-                            onPress={() => setFilterLevel(l)}
-                        >
-                            <Text style={[styles.filterPillTxt, filterLevel === l && styles.filterPillTxtActive]}>{l}</Text>
-                        </TouchableOpacity>
-                    ))}
+            {/* Filters Drawer */}
+            {showFilters && (
+                <View style={{ backgroundColor: '#fff', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+                    {/* Type filter */}
+                    <View style={styles.filterSection}>
+                        <Text style={styles.filterLabel}>TYPE</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
+                            {['All', ...EXERCISE_TYPES].map(t => (
+                                <TouchableOpacity
+                                    key={t}
+                                    style={[styles.filterPill, filterType === t && styles.filterPillActive]}
+                                    onPress={() => setFilterType(t)}
+                                >
+                                    <Text style={[styles.filterPillTxt, filterType === t && styles.filterPillTxtActive]}>{t}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    </View>
+
+                    {/* Difficulty filter */}
+                    <View style={[styles.filterSection, { marginBottom: 8 }]}>
+                        <Text style={styles.filterLabel}>DIFFICULTY</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
+                            {['All', ...LEVELS].map(l => (
+                                <TouchableOpacity
+                                    key={l}
+                                    style={[styles.filterPill, filterLevel === l && { backgroundColor: '#7c3aed', borderColor: '#7c3aed' }]}
+                                    onPress={() => setFilterLevel(l)}
+                                >
+                                    <Text style={[styles.filterPillTxt, filterLevel === l && styles.filterPillTxtActive]}>{l}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    </View>
                 </View>
-            </View>
+            )}
 
             <Text style={{ paddingHorizontal: 24, paddingBottom: 8, fontSize: 12, color: '#94a3b8', fontWeight: '600' }}>
                 {workouts ? `${workouts.length} results` : ''}
@@ -844,9 +863,9 @@ const styles = StyleSheet.create({
     genderVideoRow: { marginTop: 6 },
 
     // List filters
-    filterSection: { paddingHorizontal: 16, marginBottom: 4 },
-    filterLabel: { fontSize: 10, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 },
-    filterRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+    filterSection: { marginBottom: 4 },
+    filterLabel: { fontSize: 10, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6, paddingHorizontal: 16 },
+    filterRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 16, paddingRight: 32 },
     filterPill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, backgroundColor: '#f1f5f9', borderWidth: 1, borderColor: '#e2e8f0' },
     filterPillActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
     filterPillTxt: { fontSize: 12, fontWeight: '700', color: '#64748b' },

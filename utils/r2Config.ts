@@ -13,7 +13,13 @@ export const R2_CONFIG = {
 
   /**
    * Account 2: Workout Media
-   * Used for Exercise Thumbnails, Workout Videos, and all fitness-related assets.
+   * Used for Workout Videos and all fitness-related video assets.
    */
   workoutBaseUrl: 'https://pub-f21d719c948b41dd8ef5e188aceea102.r2.dev',
+
+  /**
+   * Account 2: Exercise Library
+   * Highly optimized bucket specifically for thousands of exercise GIF/Image thumbnails.
+   */
+  exerciseLibraryBaseUrl: 'https://pub-cedb677c4c5e4c6ab71a00a90efd8168.r2.dev',
 };
