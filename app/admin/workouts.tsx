@@ -35,13 +35,15 @@ import { R2_CONFIG } from '@/utils/r2Config';
 const EXERCISE_TYPES = ['Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women', 'Functional/Mobility', 'Warm-up/Activation', 'Calisthenics/Bodyweight', 'Plyometrics', 'Balance'];
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 const ALL_MUSCLE_GROUPS = [
-    'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps',
-    'Legs', 'Quads', 'Hamstrings', 'Glutes', 'Calves',
-    'Core', 'Abs', 'Obliques', 'Lats', 'Traps',
-    'Forearms', 'Hip Flexors', 'Lower Back', 'Full Body', 'Pelvic Floor',
-    'Serratus', 'Rhomboids', 'Adductors', 'Abductors', 'Neck', 'Rotator Cuff',
-    'Posterior Chain', 'Erector Spinae', 'Rectus Abdominis', 'Transverse Abdominis',
-    'Gluteus Medius', 'Quadratus Lumborum'
+    'Full Body', 'Upper Body', 'Lower Body',
+    'Chest', 'Pectoralis Major', 'Pectoralis Minor', 'Upper Chest', 'Lower Chest',
+    'Back', 'Upper Back', 'Mid Back', 'Lower Back', 'Latissimus Dorsi', 'Lats', 'Trapezius', 'Traps', 'Rhomboids', 'Erector Spinae', 'Teres Major', 'Teres Minor', 'Infraspinatus', 'Posterior Chain',
+    'Shoulders', 'Anterior Deltoid', 'Lateral Deltoid', 'Posterior Deltoid', 'Rotator Cuff', 'Supraspinatus', 'Subscapularis',
+    'Biceps', 'Triceps', 'Forearms', 'Brachialis',
+    'Legs', 'Quads', 'Hamstrings', 'Calves', 'Tibialis Anterior',
+    'Glutes', 'Gluteus Maximus', 'Gluteus Medius', 'Gluteus Minimus', 'Piriformis', 'Hip Flexors', 'Adductors', 'Abductors', 'Psoas',
+    'Core', 'Abs', 'Obliques', 'Internal Obliques', 'External Obliques', 'Rectus Abdominis', 'Transverse Abdominis', 'Quadratus Lumborum', 'Pelvic Floor',
+    'Neck', 'Serratus'
 ];
 
 const EMPTY_FORM = {

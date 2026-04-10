@@ -24,13 +24,15 @@ export const EXERCISE_CATEGORIES = [
 ] as const;
 
 export const ALL_MUSCLE_GROUPS = [
-    'Chest', 'Back', 'Biceps', 'Triceps', 'Shoulders',
-    'Legs', 'Quads', 'Hamstrings', 'Glutes', 'Calves',
-    'Core', 'Abs', 'Obliques', 'Lats', 'Traps',
-    'Forearms', 'Hip Flexors', 'Lower Back', 'Full Body', 'Pelvic Floor',
-    'Serratus', 'Rhomboids', 'Adductors', 'Abductors', 'Neck', 'Rotator Cuff',
-    'Posterior Chain', 'Erector Spinae', 'Rectus Abdominis', 'Transverse Abdominis',
-    'Gluteus Medius', 'Quadratus Lumborum'
+    'Full Body', 'Upper Body', 'Lower Body',
+    'Chest', 'Pectoralis Major', 'Pectoralis Minor', 'Upper Chest', 'Lower Chest',
+    'Back', 'Upper Back', 'Mid Back', 'Lower Back', 'Latissimus Dorsi', 'Lats', 'Trapezius', 'Traps', 'Rhomboids', 'Erector Spinae', 'Teres Major', 'Teres Minor', 'Infraspinatus', 'Posterior Chain',
+    'Shoulders', 'Anterior Deltoid', 'Lateral Deltoid', 'Posterior Deltoid', 'Rotator Cuff', 'Supraspinatus', 'Subscapularis',
+    'Biceps', 'Triceps', 'Forearms', 'Brachialis',
+    'Legs', 'Quads', 'Hamstrings', 'Calves', 'Tibialis Anterior',
+    'Glutes', 'Gluteus Maximus', 'Gluteus Medius', 'Gluteus Minimus', 'Piriformis', 'Hip Flexors', 'Adductors', 'Abductors', 'Psoas',
+    'Core', 'Abs', 'Obliques', 'Internal Obliques', 'External Obliques', 'Rectus Abdominis', 'Transverse Abdominis', 'Quadratus Lumborum', 'Pelvic Floor',
+    'Neck', 'Serratus'
 ] as const;
 
 const PAGE_SIZE = 50;

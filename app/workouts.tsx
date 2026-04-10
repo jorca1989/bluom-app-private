@@ -90,7 +90,17 @@ export default function WorkoutsScreen() {
     ];
 
     const categories = ['All', 'Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women', 'Functional/Mobility', 'Warm-up/Activation', 'Calisthenics/Bodyweight', 'Plyometrics', 'Balance'];
-    const muscleGroups = ['All', 'Chest', 'Back', 'Biceps', 'Triceps', 'Shoulders', 'Legs', 'Core', 'Glutes', 'Abs', 'Pelvic Floor', 'Serratus', 'Posterior Chain', 'Erector Spinae', 'Rectus Abdominis', 'Transverse Abdominis', 'Gluteus Medius', 'Quadratus Lumborum'];
+    const muscleGroups = [
+        'All', 'Full Body', 'Upper Body', 'Lower Body',
+        'Chest', 'Pectoralis Major', 'Pectoralis Minor', 'Upper Chest', 'Lower Chest',
+        'Back', 'Upper Back', 'Mid Back', 'Lower Back', 'Latissimus Dorsi', 'Lats', 'Trapezius', 'Traps', 'Rhomboids', 'Erector Spinae', 'Teres Major', 'Teres Minor', 'Infraspinatus', 'Posterior Chain',
+        'Shoulders', 'Anterior Deltoid', 'Lateral Deltoid', 'Posterior Deltoid', 'Rotator Cuff', 'Supraspinatus', 'Subscapularis',
+        'Biceps', 'Triceps', 'Forearms', 'Brachialis',
+        'Legs', 'Quads', 'Hamstrings', 'Calves', 'Tibialis Anterior',
+        'Glutes', 'Gluteus Maximus', 'Gluteus Medius', 'Gluteus Minimus', 'Piriformis', 'Hip Flexors', 'Adductors', 'Abductors', 'Psoas',
+        'Core', 'Abs', 'Obliques', 'Internal Obliques', 'External Obliques', 'Rectus Abdominis', 'Transverse Abdominis', 'Quadratus Lumborum', 'Pelvic Floor',
+        'Neck', 'Serratus'
+    ];
 
     // Merge DB images with fallbacks — must be before any early return (Rules of Hooks)
     const MUSCLE_CARDS = useMemo(() => {
