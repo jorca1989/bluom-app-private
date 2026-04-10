@@ -77,13 +77,29 @@ export default function ExerciseSearchModal({
     convexUser?._id ? { userId: convexUser._id } : 'skip'
   );
 
-  // Filter search results by exercise type
+  // Filter search results by exercise type and query
   const filteredSearchResults = useMemo(() => {
-    if (!selectedType) return searchResults;
-    return searchResults.filter(ex =>
-      ex.category?.toLowerCase() === selectedType.toLowerCase()
-    );
-  }, [searchResults, selectedType]);
+    let results = searchResults;
+
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      results = results.filter(ex => {
+        const name = typeof ex.name === 'object' ? (ex.name as any).en ?? (ex.name as any).name : ex.name;
+        if (name && typeof name === 'string' && name.toLowerCase().includes(q)) return true;
+        if (ex.category && ex.category.toLowerCase().includes(q)) return true;
+        if (ex.muscleGroups && ex.muscleGroups.some(m => m.toLowerCase().includes(q))) return true;
+        return false;
+      });
+    }
+
+    if (selectedType) {
+      results = results.filter(ex =>
+        ex.category?.toLowerCase() === selectedType.toLowerCase()
+      );
+    }
+
+    return results;
+  }, [searchResults, selectedType, searchQuery]);
 
   // Convert a saved videoWorkout into an ExerciseLibraryItem-compatible shape
   // so the parent's onExerciseSelect handler can use it

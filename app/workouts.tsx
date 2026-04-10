@@ -90,7 +90,7 @@ export default function WorkoutsScreen() {
     ];
 
     const categories = ['All', 'Strength', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women', 'Functional/Mobility', 'Warm-up/Activation', 'Calisthenics/Bodyweight', 'Plyometrics', 'Balance'];
-    const muscleGroups = ['All', 'Chest', 'Back', 'Biceps', 'Triceps', 'Shoulders', 'Legs', 'Core', 'Glutes', 'Abs', 'Pelvic Floor', 'Serratus'];
+    const muscleGroups = ['All', 'Chest', 'Back', 'Biceps', 'Triceps', 'Shoulders', 'Legs', 'Core', 'Glutes', 'Abs', 'Pelvic Floor', 'Serratus', 'Posterior Chain', 'Erector Spinae', 'Rectus Abdominis', 'Transverse Abdominis', 'Gluteus Medius', 'Quadratus Lumborum'];
 
     // Merge DB images with fallbacks — must be before any early return (Rules of Hooks)
     const MUSCLE_CARDS = useMemo(() => {

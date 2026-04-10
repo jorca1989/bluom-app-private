@@ -1,4 +1,4 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { checkAdminPower } from "./functions";
 
@@ -460,6 +460,8 @@ export const clearAll = mutation({
         return { deleted: all.length };
     },
 });
+
+
 
 export const getByNames = query({
     args: { names: v.array(v.string()) },

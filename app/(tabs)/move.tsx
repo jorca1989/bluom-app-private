@@ -364,6 +364,35 @@ export default function MoveScreen() {
   // DB workouts for plan (api.videoWorkouts.list) — used as fallback when no AI plan
   const dbWorkouts = useQuery(api.videoWorkouts.list, {});
 
+  // Extract all unique exercises from video workouts for plan modifications
+  const videoWorkoutExercises = useMemo(() => {
+    if (!dbWorkouts) return [];
+    const allEx: any[] = [];
+    const seen = new Set<string>();
+    for (const w of dbWorkouts) {
+      if (w.exercises) {
+        for (const ex of w.exercises) {
+          if (!seen.has(ex.name)) {
+            seen.add(ex.name);
+            allEx.push({
+              _id: `${w._id}-${ex.name}`,
+              name: ex.name,
+              category: ex.primaryMuscles?.[0] || w.category || 'Various',
+              muscleGroups: ex.primaryMuscles && ex.primaryMuscles.length > 0 ? ex.primaryMuscles : w.muscleGroupTags || [],
+              thumbnailUrl: (convexUser?.biologicalSex === 'male' ? w.thumbnailMale : convexUser?.biologicalSex === 'female' ? w.thumbnailFemale : null) || w.thumbnail,
+              videoUrl: (convexUser?.biologicalSex === 'male' ? w.videoUrlMale : convexUser?.biologicalSex === 'female' ? w.videoUrlFemale : null) || w.videoUrl,
+              type: ex.exerciseType || 'strength',
+              equipment: w.equipment?.length > 0 ? w.equipment[0] : 'Various',
+              instructions: ex.instructions || [],
+            });
+          }
+        }
+      }
+    }
+    return allEx;
+  }, [dbWorkouts, convexUser?.biologicalSex]);
+
+
   // ── Workout display routine: Prioritize AI Plan > DB workouts > static ──
   const initialWorkouts = useMemo(() => {
     // 1. If we have a personalized AI plan, map its workouts to RoutineDay format
@@ -1161,8 +1190,16 @@ export default function MoveScreen() {
 
       <ExerciseSearchModal
         visible={showExerciseSearch}
-        searchResults={searchResults as any}
-        loading={searchLoading}
+        searchResults={
+          (exerciseSearchTarget === 'plan_add' || exerciseSearchTarget === 'active_add')
+            ? (videoWorkoutExercises as any)
+            : (searchResults as any)
+        }
+        loading={
+          (exerciseSearchTarget === 'plan_add' || exerciseSearchTarget === 'active_add')
+            ? (dbWorkouts === undefined)
+            : searchLoading
+        }
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onExerciseSelect={(ex) => {
