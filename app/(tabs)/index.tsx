@@ -176,7 +176,7 @@ export default function HomeScreen() {
   const weightKg = convexUser?.weight ?? 70;
   const prefersLbs = (convexUser?.preferredUnits?.weight ?? 'kg') === 'lbs';
   const prefersMetric = (convexUser?.preferredUnits?.volume ?? 'ml') === 'ml';
-  const weightDisplay = prefersLbs ? (weightKg * 2.2046).toFixed(1) : weightKg;
+  const weightDisplay = prefersLbs ? (weightKg * 2.2046).toFixed(1) : weightKg.toFixed(1);
   const weightUnit = prefersLbs ? 'lb' : 'kg';
   const waterGoalOz = Math.round(weightKg * 30 * 0.033814);
   const waterGoalDisplay = prefersMetric ? Math.round(weightKg * 30) : waterGoalOz;
@@ -622,7 +622,7 @@ export default function HomeScreen() {
       </TouchableOpacity>
       <TouchableOpacity
         style={[s.kpiCard, { backgroundColor: '#ffffff' }]}
-        onPress={() => router.push('/Weightmanagement' as any)} activeOpacity={0.8}
+        onPress={() => router.push('/weightmanagement' as any)} activeOpacity={0.8}
       >
         <View style={s.kpiHead}>
           <Scale size={17} color="#475569" />

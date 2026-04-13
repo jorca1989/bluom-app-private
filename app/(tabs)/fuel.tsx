@@ -399,7 +399,7 @@ export default function FuelScreen() {
                  }));
 
                  return (
-                   <MealCard 
+                   <MealCard
                      key={m.name}
                      title={m.name}
                      icon={m.icon}
@@ -412,6 +412,47 @@ export default function FuelScreen() {
                    />
                  );
               })}
+
+              {/* ── 5th card: Extra Meal — Pro only ── */}
+              <TouchableOpacity
+                style={[styles.extraMealCard, isPro && styles.extraMealCardPro]}
+                activeOpacity={0.8}
+                onPress={() => {
+                  if (!isPro) {
+                    setProGateMessage('Add unlimited extra meals and snacks with Bluom Pro. Upgrade to unlock full nutrition tracking.');
+                    setShowProUpgrade(true);
+                  } else {
+                    setSelectedMeal('Snack');
+                    setShowFoodSearch(true);
+                  }
+                }}
+              >
+                <View style={styles.extraMealLeft}>
+                  <View style={[styles.extraMealIconWrap, isPro ? styles.extraMealIconWrapPro : styles.extraMealIconWrapLocked]}>
+                    {isPro
+                      ? <Ionicons name="add" size={22} color="#2563eb" />
+                      : <Ionicons name="lock-closed" size={18} color="#94a3b8" />
+                    }
+                  </View>
+                  <View>
+                    <Text style={[styles.extraMealTitle, !isPro && styles.extraMealTitleLocked]}>
+                      Add Extra Meal
+                    </Text>
+                    <Text style={styles.extraMealSub}>
+                      {isPro ? 'Log another snack or custom meal' : 'Upgrade to Pro for unlimited meals'}
+                    </Text>
+                  </View>
+                </View>
+                {!isPro && (
+                  <View style={styles.proCrown}>
+                    <Ionicons name="star" size={11} color="#ffffff" />
+                    <Text style={styles.proCrownText}>PRO</Text>
+                  </View>
+                )}
+                {isPro && (
+                  <Ionicons name="chevron-forward" size={18} color="#2563eb" />
+                )}
+              </TouchableOpacity>
             </View>
           )}
 
@@ -614,6 +655,71 @@ const styles = StyleSheet.create({
   mealsSection: {
     paddingHorizontal: 20,
     marginTop: 24,
+  },
+  extraMealCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#f8fafc',
+    borderRadius: 18,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    marginTop: 10,
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
+    borderStyle: 'dashed',
+  },
+  extraMealCardPro: {
+    backgroundColor: '#eff6ff',
+    borderColor: '#bfdbfe',
+    borderStyle: 'dashed',
+  },
+  extraMealLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  extraMealIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  extraMealIconWrapPro: {
+    backgroundColor: '#dbeafe',
+  },
+  extraMealIconWrapLocked: {
+    backgroundColor: '#f1f5f9',
+  },
+  extraMealTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: 2,
+  },
+  extraMealTitleLocked: {
+    color: '#94a3b8',
+  },
+  extraMealSub: {
+    fontSize: 12,
+    color: '#94a3b8',
+    fontWeight: '500',
+  },
+  proCrown: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: '#6366f1',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  proCrownText: {
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#ffffff',
   },
   fastingBanner: {
      marginHorizontal: 20,

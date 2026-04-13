@@ -194,9 +194,15 @@ export default function ProfileScreen() {
   const unlockedCount = dbAchievements.length;
   const avatarGradient = AVATAR_BG_PAIRS[0];
 
-  // Stats
+  // Stats — respect the user's preferred unit system
   const goal = convexUser?.fitnessGoal?.replace(/_/g, ' ') ?? '—';
-  const weight = convexUser?.weight ? `${convexUser.weight} kg` : '—';
+  const prefersLbsProfile = (convexUser?.preferredUnits?.weight ?? 'kg') === 'lbs';
+  const weightRaw = convexUser?.weight ?? 0;
+  const weight = weightRaw
+    ? prefersLbsProfile
+      ? `${(weightRaw * 2.2046).toFixed(1)} lb`
+      : `${weightRaw.toFixed(1)} kg`
+    : '—';
   const streak = gardenState?.meditationStreak ?? 0;
 
   const handleSignOut = () => Alert.alert('Sign Out', 'Are you sure?', [
@@ -500,7 +506,7 @@ export default function ProfileScreen() {
           <MenuRow
             icon={<Scale size={18} color="#0ea5e9" />} iconBg="#f0f9ff"
             label="Weight Journey" sub="Logs, measurements & progress photos"
-            onPress={() => router.push('/Weightmanagement')}
+            onPress={() => router.push('/weightmanagement' as any)}
           />
           <View style={s.divider} />
           <MenuRow

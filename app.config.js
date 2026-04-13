@@ -15,14 +15,14 @@ export default ({ config }) => {
             name: "Bluom",
             slug: "bolt-expo-nativewind",
             owner: "ggovsaas",
-            version: "1.0.24",
+            version: "1.0.25",
             scheme: "bluom",
             userInterfaceStyle: "automatic",
-            runtimeVersion: "1.0.24",
+            runtimeVersion: "1.0.25",
             privacyPolicyUrl: "https://www.bluom.app/legal/privacy",
             ios: {
                 bundleIdentifier: "com.jwfca.bluom",
-                buildNumber: "34",
+                buildNumber: "37",
                 googleServicesFile: "./GoogleService-Info.plist",
                 entitlements: {
                     // "com.apple.developer.healthkit": true,
@@ -90,7 +90,7 @@ export default ({ config }) => {
             },
             android: {
                 package: "com.jwfca.bluom",
-                versionCode: 34,
+                versionCode: 50,
                 googleServicesFile: "./google-services.json",
                 splash: {
                     image: "./assets/images/splash.png",

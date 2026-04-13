@@ -43,7 +43,7 @@ export default function SingleExerciseLogModal({
   const exType = useMemo(() => String(exercise?.type ?? 'strength').toLowerCase(), [exercise?.type]);
   const isStrength = exType === 'strength';
   const isCardioLike = exType === 'cardio' || exType === 'hiit';
-  const isMindBody = exType === 'yoga' || exType === 'pilates' || exType === 'stretching';
+  const isMindBody = exType === 'yoga' || exType === 'pilates' || exType === 'post-workout stretch' || exType === 'stretching';
   const mode: 'strength' | 'duration' = isStrength ? 'strength' : 'duration';
 
   useEffect(() => {

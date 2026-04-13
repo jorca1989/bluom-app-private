@@ -1,7 +1,7 @@
 {
   "name": "BluomApp",
   "main": "expo-router/entry",
-  "version": "1.0.22",
+  "version": "1.0.25",
   "private": true,
   "scripts": {
     "eas-build-pre-install": "npm config set legacy-peer-deps true",

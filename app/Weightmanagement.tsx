@@ -97,19 +97,20 @@ function today() { return new Date().toISOString().split('T')[0]; }
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 /** Sparkline — minimal SVG-style weight trend using View-based bars */
-function WeightSparkline({ data }: { data: Array<{ weightKg: number; date: string }> }) {
+function WeightSparkline({ data, useLbs }: { data: Array<{ weightKg: number; date: string }>; useLbs: boolean }) {
   if (!data.length) return null;
   const reversed = [...data].reverse(); // oldest first
-  const min = Math.min(...reversed.map(d => d.weightKg));
-  const max = Math.max(...reversed.map(d => d.weightKg));
-  const range = max - min || 1;
+  const minKg = Math.min(...reversed.map(d => d.weightKg));
+  const maxKg = Math.max(...reversed.map(d => d.weightKg));
+  const range = maxKg - minKg || 1;
   const barW = Math.max(3, Math.floor((width - 96) / reversed.length) - 2);
+  const fmt = (kg: number) => useLbs ? `${kgToLbs(kg)} lb` : `${kg} kg`;
 
   return (
     <View style={spark.wrap}>
       <View style={spark.chart}>
         {reversed.map((point, i) => {
-          const fillH = ((point.weightKg - min) / range) * 60 + 10;
+          const fillH = ((point.weightKg - minKg) / range) * 60 + 10;
           const isLast = i === reversed.length - 1;
           return (
             <View key={i} style={spark.barWrap}>
@@ -119,8 +120,8 @@ function WeightSparkline({ data }: { data: Array<{ weightKg: number; date: strin
         })}
       </View>
       <View style={spark.labels}>
-        <Text style={spark.label}>{min} kg</Text>
-        <Text style={spark.label}>{max} kg</Text>
+        <Text style={spark.label}>{fmt(minKg)}</Text>
+        <Text style={spark.label}>{fmt(maxKg)}</Text>
       </View>
     </View>
   );
@@ -694,7 +695,7 @@ export default function WeightManagementScreen() {
           <SectionHeader icon="analytics-outline" title="Weight Trend" sub="90-day history" proLocked />
           {isPro ? (
             (weightHistory ?? []).length > 1 ? (
-              <WeightSparkline data={weightHistory ?? []} />
+              <WeightSparkline data={weightHistory ?? []} useLbs={useLbs} />
             ) : (
               <View style={s.emptyChart}>
                 <Ionicons name="analytics-outline" size={28} color="#94a3b8" />

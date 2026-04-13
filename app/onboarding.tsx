@@ -520,8 +520,10 @@ export default function OnboardingScreen() {
     try {
       const w = parseFloat(answers.weight) || 0;
       const weightKg = units.weight === 'kg' ? w : w * 0.453592;
-      const h = parseFloat(answers.height) || 0;
-      const heightCm = units.height === 'cm' ? h : h * 30.48;
+      // HeightRuler always calls onValueChange with a cm value (it converts
+      // inches → cm internally via Math.round(inches * 2.54)).  Do NOT apply
+      // a second ft→cm conversion here — that's what caused the 40000+ cal bug.
+      const heightCm = parseFloat(answers.height) || 170;
       const age = parseFloat(answers.age) || 30;
       const gender = answers.gender as 'male' | 'female';
 

@@ -247,7 +247,15 @@ export async function triggerSound(effect: SoundEffect) {
     if (!s.soundEffectsEnabled) return;
     const sound = await loadSound(effect);
     if (!sound) return;
-    await sound.setVolumeAsync(s.volume);
+
+    let finalVolume = s.volume;
+    if (effect === SoundEffect.NAV_TABS || effect === SoundEffect.UI_TAP) {
+      finalVolume = s.volume * 0.5;
+    } else if (effect === SoundEffect.ENTER_MEDITATION_HUB) {
+      finalVolume = s.volume * 0.75;
+    }
+
+    await sound.setVolumeAsync(finalVolume);
     // More robust than replayAsync across platforms/codecs.
     try {
       await sound.stopAsync();
