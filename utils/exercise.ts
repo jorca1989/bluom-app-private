@@ -44,6 +44,8 @@ export const MET_VALUES: Record<string, number> = {
   pilates: 3.0,
   post_workout_stretch: 2.3,
   powerlifting: 6.0,
+  hypertrophy: 5.0,
+  isolation: 4.0,
 };
 
 /**
@@ -74,6 +76,8 @@ export function getSuggestedMET(exerciseName: string): number {
   if (name.includes("yoga")) return MET_VALUES.yoga_vinyasa;
   if (name.includes("stretch")) return MET_VALUES.post_workout_stretch;
   if (name.includes("powerlift")) return MET_VALUES.powerlifting;
+  if (name.includes("hypertrophy")) return MET_VALUES.hypertrophy;
+  if (name.includes("isolation")) return MET_VALUES.isolation;
   if (name.includes("weight") || name.includes("lift"))
     return MET_VALUES.weight_lifting_vigorous;
 
