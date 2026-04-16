@@ -215,26 +215,26 @@ export default function ActiveWorkoutModal({
                                 contentFit="cover" 
                               />
                             ) : (
-                              <Video
-                                source={{ uri: ex.videoUrl }}
-                                style={styles.videoPlayerInline}
-                                resizeMode={ResizeMode.COVER}
-                                useNativeControls
-                                shouldPlay
-                                isLooping
-                                usePoster={!!ex.thumbnailUrl}
-                                posterSource={ex.thumbnailUrl ? { uri: ex.thumbnailUrl } : undefined}
-                                posterStyle={{ resizeMode: 'cover' }}
-                              />
+                                <Video
+                                  source={{ uri: ex.videoUrl }}
+                                  style={styles.videoPlayerInline}
+                                  resizeMode={ResizeMode.COVER}
+                                  useNativeControls
+                                  shouldPlay
+                                  isLooping
+                                  usePoster={!!ex.thumbnailUrl}
+                                  posterSource={ex.thumbnailUrl ? { uri: ex.thumbnailUrl } : undefined}
+                                  posterStyle={{ resizeMode: 'cover' }}
+                                />
                             )
                           ) : (
                             <TouchableOpacity
                               activeOpacity={1}
                               style={styles.videoPlaceholder}
                             >
-                              {ex.thumbnailUrl ? (
-                                <Image source={{ uri: ex.thumbnailUrl }} style={styles.videoImage} contentFit="cover" />
-                              ) : (
+                                {ex.thumbnailUrl ? (
+                                  <Image source={{ uri: ex.thumbnailUrl }} style={styles.videoImage} contentFit="cover" />
+                                ) : (
                                 <View style={styles.videoImage} /> // Blank dark bg
                               )}
                               <View style={styles.playIconOverlay}>
@@ -487,19 +487,19 @@ const styles = StyleSheet.create({
   videoPlayerInline: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
   },
   videoPlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
   },
   videoImage: {
     width: '100%',
     height: '100%',
-    opacity: 0.7,
+
   },
   playIconOverlay: {
     position: 'absolute',

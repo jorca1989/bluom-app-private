@@ -95,10 +95,10 @@ export default function WorkoutsScreen() {
         'Chest', 'Pectoralis Major', 'Pectoralis Minor', 'Upper Chest', 'Lower Chest',
         'Back', 'Upper Back', 'Mid Back', 'Lower Back', 'Latissimus Dorsi', 'Lats', 'Trapezius', 'Traps', 'Rhomboids', 'Erector Spinae', 'Teres Major', 'Teres Minor', 'Infraspinatus', 'Posterior Chain',
         'Shoulders', 'Anterior Deltoid', 'Lateral Deltoid', 'Posterior Deltoid', 'Rotator Cuff', 'Supraspinatus', 'Subscapularis',
-        'Biceps', 'Triceps', 'Forearms', 'Brachialis',
+        'Biceps', 'Short Head Biceps', 'Long Head Biceps', 'Triceps', 'Long Head Triceps', 'Lateral Head Triceps', 'Medial Head Triceps', 'Forearms', 'Brachialis',
         'Legs', 'Quads', 'Hamstrings', 'Calves', 'Tibialis Anterior',
         'Glutes', 'Gluteus Maximus', 'Gluteus Medius', 'Gluteus Minimus', 'Piriformis', 'Hip Flexors', 'Adductors', 'Abductors', 'Psoas',
-        'Core', 'Abs', 'Obliques', 'Internal Obliques', 'External Obliques', 'Rectus Abdominis', 'Transverse Abdominis', 'Quadratus Lumborum', 'Pelvic Floor',
+        'Core', 'Abs', 'Obliques', 'Internal Obliques', 'External Obliques', 'Rectus Abdominis', 'Transverse Abdominis', 'Quadratus Lumborum', 'Pelvic Floor', 'Stability', 'Anti-Extension',
         'Neck', 'Serratus'
     ];
 
@@ -511,14 +511,14 @@ export default function WorkoutsScreen() {
                                         <Image
                                             source={{ uri: resolvedUrl }}
                                             style={styles.videoPlayer}
-                                            contentFit="contain"
+                                            contentFit="cover"
                                         />
                                     ) : (
                                         <Video
                                             source={{ uri: resolvedUrl }}
                                             style={styles.videoPlayer}
                                             useNativeControls
-                                            resizeMode={ResizeMode.CONTAIN}
+                                            resizeMode={ResizeMode.COVER}
                                             isLooping
                                             shouldPlay
                                         />
@@ -974,8 +974,8 @@ const styles = StyleSheet.create({
     videoModal: { width: width * 0.72, alignItems: 'stretch' },
     videoHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
     videoTitle: { color: '#ffffff', fontSize: 15, fontWeight: '800', flex: 1, marginRight: 12 },
-    videoPlayer: { width: '100%', aspectRatio: 9 / 16, backgroundColor: '#000000', borderRadius: 20 },
-    videoPlayerPlaceholder: { width: '100%', aspectRatio: 9 / 16, backgroundColor: '#1e293b', borderRadius: 20, justifyContent: 'center', alignItems: 'center', gap: 12 },
-    videoPlaceholderText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
-    videoPlaceholderSub: { color: '#94a3b8', fontSize: 13, textAlign: 'center', paddingHorizontal: 16 },
+    videoPlayer: { width: '100%', aspectRatio: 9 / 16, backgroundColor: '#ffffff', borderRadius: 20 },
+    videoPlayerPlaceholder: { width: '100%', aspectRatio: 9 / 16, backgroundColor: '#f1f5f9', borderRadius: 20, justifyContent: 'center', alignItems: 'center', gap: 12 },
+    videoPlaceholderText: { color: '#1e293b', fontSize: 16, fontWeight: '700' },
+    videoPlaceholderSub: { color: '#64748b', fontSize: 13, textAlign: 'center', paddingHorizontal: 16 },
 });
