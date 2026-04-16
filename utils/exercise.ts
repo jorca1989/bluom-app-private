@@ -51,6 +51,7 @@ export const MET_VALUES: Record<string, number> = {
   unilateral: 4.5,
   stability: 4.0,
   anti_extension: 4.5,
+  prehab: 3.5,
 };
 
 /**
@@ -88,6 +89,7 @@ export function getSuggestedMET(exerciseName: string): number {
   if (name.includes("unilateral")) return MET_VALUES.unilateral;
   if (name.includes("stability")) return MET_VALUES.stability;
   if (name.includes("anti-extension") || name.includes("anti extension")) return MET_VALUES.anti_extension;
+  if (name.includes("prehab")) return MET_VALUES.prehab;
   if (name.includes("weight") || name.includes("lift"))
     return MET_VALUES.weight_lifting_vigorous;
 
