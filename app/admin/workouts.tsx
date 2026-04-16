@@ -32,7 +32,7 @@ import { api } from '@/convex/_generated/api';
 import { R2_CONFIG } from '@/utils/r2Config';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const EXERCISE_TYPES = ['Strength', 'Powerlifting', 'Hypertrophy', 'Isolation', 'Compound', 'Unilateral', 'Cardio', 'Conditioning', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women', 'Functional/Mobility', 'Warm-up/Activation', 'Post-workout Stretch', 'Calisthenics/Bodyweight', 'Plyometrics', 'Balance', 'Rehab', 'Posture'];
+const EXERCISE_TYPES = ['Strength', 'Powerlifting', 'Hypertrophy', 'Isolation', 'Compound', 'Unilateral', 'Cardio', 'Conditioning', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women', 'Functional/Mobility', 'Warm-up/Activation', 'Post-workout Stretch', 'Calisthenics/Bodyweight', 'Plyometrics', 'Balance', 'Rehab', 'Posture', 'Stability', 'Anti-Extension'];
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 const ALL_MUSCLE_GROUPS = [
     'Full Body', 'Upper Body', 'Lower Body',
@@ -42,7 +42,7 @@ const ALL_MUSCLE_GROUPS = [
     'Biceps', 'Short Head Biceps', 'Long Head Biceps', 'Triceps', 'Long Head Triceps', 'Lateral Head Triceps', 'Medial Head Triceps', 'Forearms', 'Brachialis',
     'Legs', 'Quads', 'Hamstrings', 'Calves', 'Tibialis Anterior',
     'Glutes', 'Gluteus Maximus', 'Gluteus Medius', 'Gluteus Minimus', 'Piriformis', 'Hip Flexors', 'Adductors', 'Abductors', 'Psoas',
-    'Core', 'Abs', 'Obliques', 'Internal Obliques', 'External Obliques', 'Rectus Abdominis', 'Transverse Abdominis', 'Quadratus Lumborum', 'Pelvic Floor', 'Stability', 'Anti-Extension',
+    'Core', 'Abs', 'Obliques', 'Internal Obliques', 'External Obliques', 'Rectus Abdominis', 'Transverse Abdominis', 'Quadratus Lumborum', 'Pelvic Floor',
     'Neck', 'Serratus'
 ];
 
