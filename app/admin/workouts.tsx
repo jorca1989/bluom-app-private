@@ -40,7 +40,7 @@ const ALL_MUSCLE_GROUPS = [
     'Back', 'Upper Back', 'Mid Back', 'Lower Back', 'Latissimus Dorsi', 'Lats', 'Trapezius', 'Traps', 'Rhomboids', 'Erector Spinae', 'Teres Major', 'Teres Minor', 'Infraspinatus', 'Posterior Chain',
     'Shoulders', 'Anterior Deltoid', 'Lateral Deltoid', 'Posterior Deltoid', 'Rotator Cuff', 'Supraspinatus', 'Subscapularis',
     'Biceps', 'Short Head Biceps', 'Long Head Biceps', 'Triceps', 'Long Head Triceps', 'Lateral Head Triceps', 'Medial Head Triceps', 'Forearms', 'Brachialis',
-    'Legs', 'Quads', 'Hamstrings', 'Calves', 'Tibialis Anterior',
+    'Legs', 'Quads', 'Hamstrings', 'Calves', 'Gastrocnemius', 'Tibialis Anterior', 'Shin', 'Ankle', 'Extensor Digitorum Longus', 'Extensor Hallucis Longus',
     'Glutes', 'Gluteus Maximus', 'Gluteus Medius', 'Gluteus Minimus', 'Piriformis', 'Hip Flexors', 'Adductors', 'Abductors', 'Psoas',
     'Core', 'Abs', 'Obliques', 'Internal Obliques', 'External Obliques', 'Rectus Abdominis', 'Transverse Abdominis', 'Quadratus Lumborum', 'Pelvic Floor',
     'Neck', 'Serratus'
