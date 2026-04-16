@@ -19,7 +19,7 @@ import { R2_CONFIG } from '@/utils/r2Config';
 
 // ─── Shared constants (must match ExerciseSearchModal + app/workouts.tsx) ────
 export const EXERCISE_CATEGORIES = [
-    'Strength', 'Powerlifting', 'Hypertrophy', 'Isolation', 'Compound', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women',
+    'Strength', 'Powerlifting', 'Hypertrophy', 'Isolation', 'Compound', 'Unilateral', 'Cardio', 'Conditioning', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women',
     'Functional/Mobility', 'Warm-up/Activation', 'Post-workout Stretch', 'Calisthenics/Bodyweight', 'Plyometrics', 'Balance', 'Rehab', 'Posture'
 ] as const;
 

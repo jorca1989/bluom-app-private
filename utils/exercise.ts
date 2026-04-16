@@ -47,6 +47,8 @@ export const MET_VALUES: Record<string, number> = {
   hypertrophy: 5.0,
   isolation: 4.0,
   compound: 6.0,
+  conditioning: 7.5,
+  unilateral: 4.5,
 };
 
 /**
@@ -80,6 +82,8 @@ export function getSuggestedMET(exerciseName: string): number {
   if (name.includes("hypertrophy")) return MET_VALUES.hypertrophy;
   if (name.includes("isolation")) return MET_VALUES.isolation;
   if (name.includes("compound")) return MET_VALUES.compound;
+  if (name.includes("condition")) return MET_VALUES.conditioning;
+  if (name.includes("unilateral")) return MET_VALUES.unilateral;
   if (name.includes("weight") || name.includes("lift"))
     return MET_VALUES.weight_lifting_vigorous;
 
