@@ -52,6 +52,9 @@ export const MET_VALUES: Record<string, number> = {
   stability: 4.0,
   anti_extension: 4.5,
   prehab: 3.5,
+  proprioception: 3.5,
+  anti_lateral_flexion: 4.5,
+  hip_hinge: 6.0,
 };
 
 /**
@@ -90,6 +93,9 @@ export function getSuggestedMET(exerciseName: string): number {
   if (name.includes("stability")) return MET_VALUES.stability;
   if (name.includes("anti-extension") || name.includes("anti extension")) return MET_VALUES.anti_extension;
   if (name.includes("prehab")) return MET_VALUES.prehab;
+  if (name.includes("proprioception")) return MET_VALUES.proprioception;
+  if (name.includes("anti-lateral") || name.includes("anti lateral")) return MET_VALUES.anti_lateral_flexion;
+  if (name.includes("hinge")) return MET_VALUES.hip_hinge;
   if (name.includes("weight") || name.includes("lift"))
     return MET_VALUES.weight_lifting_vigorous;
 
