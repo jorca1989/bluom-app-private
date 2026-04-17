@@ -72,79 +72,95 @@ const EMPTY_FORM = {
     hasGenderVariants: false,
 };
 
-// ─── Multi-select pill component ──────────────────────────────────────────────
-function MultiPillPicker({
+// ─── Dropdown Field Component  ────────────────────────────────────────────────
+function DropdownField({
     label,
     options,
     selected,
     onChange,
-    activeColor = '#2563eb',
+    multi = false,
+    placeholder = 'Select...'
 }: {
-    label: string;
+    label?: string;
     options: string[];
-    selected: string[];
-    onChange: (v: string[]) => void;
-    activeColor?: string;
+    selected: any;
+    onChange: (v: any) => void;
+    multi?: boolean;
+    placeholder?: string;
 }) {
-    const toggle = (opt: string) => {
-        if (selected.includes(opt)) {
-            onChange(selected.filter(s => s !== opt));
-        } else {
-            onChange([...selected, opt]);
-        }
-    };
-    return (
-        <View>
-            <Text style={styles.label}>{label}</Text>
-            <View style={styles.pillRow}>
-                {options.map(opt => {
-                    const active = selected.includes(opt);
-                    return (
-                        <TouchableOpacity
-                            key={opt}
-                            onPress={() => toggle(opt)}
-                            style={[styles.pill, active && { backgroundColor: activeColor, borderColor: activeColor, borderWidth: 1 }]}
-                        >
-                            <Text style={[styles.pillText, active && styles.pillTextActive]}>{opt}</Text>
-                        </TouchableOpacity>
-                    );
-                })}
-            </View>
-        </View>
-    );
-}
+    const [open, setOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const currentSelected = selected || (multi ? [] : '');
+    
+    let text = placeholder;
+    if (multi && currentSelected.length > 0) {
+        text = currentSelected.join(', ');
+    } else if (!multi && currentSelected && currentSelected !== 'All') {
+        text = currentSelected;
+    } else if (!multi && currentSelected === 'All') {
+        text = 'All';
+    }
 
-// ─── Single-select pill row ───────────────────────────────────────────────────
-function SinglePillRow({
-    label,
-    options,
-    value,
-    onChange,
-    activeColor = '#7c3aed',
-}: {
-    label: string;
-    options: string[];
-    value: string;
-    onChange: (v: string) => void;
-    activeColor?: string;
-}) {
+    const filteredOptions = useMemo(() => {
+        if (!searchQuery) return options;
+        return options.filter((o: string) => o.toLowerCase().includes(searchQuery.toLowerCase()));
+    }, [options, searchQuery]);
+
     return (
-        <View>
-            <Text style={styles.label}>{label}</Text>
-            <View style={styles.pillRow}>
-                {options.map(opt => {
-                    const active = value === opt;
-                    return (
-                        <TouchableOpacity
-                            key={opt}
-                            onPress={() => onChange(opt)}
-                            style={[styles.pill, active && { backgroundColor: activeColor, borderColor: activeColor, borderWidth: 1 }]}
-                        >
-                            <Text style={[styles.pillText, active && styles.pillTextActive]}>{opt}</Text>
-                        </TouchableOpacity>
-                    );
-                })}
-            </View>
+        <View style={multi ? { marginBottom: 12 } : undefined}>
+            {label ? <Text style={styles.label}>{label}</Text> : null}
+            <TouchableOpacity style={[styles.input, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', height: 46 }]} onPress={() => { setOpen(true); setSearchQuery(''); }}>
+                <Text style={{ color: (multi ? currentSelected.length === 0 : !currentSelected) ? '#94a3b8' : '#1e293b', flex: 1 }} numberOfLines={1}>
+                    {text}
+                </Text>
+                <Text style={{ color: '#64748b', marginLeft: 8, fontSize: 10 }}>▼</Text>
+            </TouchableOpacity>
+
+            <Modal visible={open} animationType="slide" transparent>
+                <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+                    <View style={{ backgroundColor: '#fff', height: '80%', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20 }}>
+                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                             <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{label || placeholder}</Text>
+                             <TouchableOpacity onPress={() => setOpen(false)}><X size={24} color="#64748b" /></TouchableOpacity>
+                         </View>
+                         {options.length > 10 && (
+                            <TextInput 
+                                style={[styles.input, { marginBottom: 16 }]}
+                                placeholder="Search..."
+                                value={searchQuery}
+                                onChangeText={setSearchQuery}
+                                autoCapitalize="none"
+                            />
+                         )}
+                         <FlatList 
+                             data={filteredOptions}
+                             keyExtractor={i => i}
+                             keyboardShouldPersistTaps="handled"
+                             renderItem={({item}) => {
+                                 const isActive = multi ? currentSelected.includes(item) : currentSelected === item;
+                                 return (
+                                     <TouchableOpacity 
+                                         style={{ paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f1f5f9', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+                                         onPress={() => {
+                                            if (multi) {
+                                                if (isActive) onChange(currentSelected.filter((s: string) => s !== item));
+                                                else onChange([...currentSelected, item]);
+                                            } else {
+                                                onChange(item);
+                                                setOpen(false);
+                                            }
+                                         }}
+                                     >
+                                         <Text style={{ fontSize: 16, color: isActive ? '#2563eb' : '#1e293b', fontWeight: isActive ? '700' : '500' }}>{item}</Text>
+                                         {isActive && <Text style={{ color: '#2563eb', fontWeight: 'bold', fontSize: 18 }}>✓</Text>}
+                                     </TouchableOpacity>
+                                 );
+                             }}
+                             ListEmptyComponent={<Text style={{ color: '#94a3b8', textAlign: 'center', marginTop: 20 }}>No results found</Text>}
+                         />
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -153,6 +169,7 @@ export default function WorkoutsManager() {
     const [search, setSearch] = useState('');
     const [filterType, setFilterType] = useState('All');
     const [filterLevel, setFilterLevel] = useState('All');
+    const [filterMuscle, setFilterMuscle] = useState('All');
     const [showSearch, setShowSearch] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -166,9 +183,10 @@ export default function WorkoutsManager() {
             const typeOk = filterType === 'All' || w.category === filterType ||
                 (w.categories ?? []).includes(filterType);
             const levelOk = filterLevel === 'All' || w.difficulty === filterLevel;
-            return typeOk && levelOk;
+            const muscleOk = filterMuscle === 'All' || (w.muscleGroupTags ?? []).includes(filterMuscle);
+            return typeOk && levelOk && muscleOk;
         });
-    }, [allWorkouts, filterType, filterLevel]);
+    }, [allWorkouts, filterType, filterLevel, filterMuscle]);
 
     const createWorkout = useMutation(api.videoWorkouts.createWorkout);
     const updateWorkout = useMutation(api.videoWorkouts.updateWorkout);
@@ -400,8 +418,8 @@ export default function WorkoutsManager() {
                         onChangeText={setSearch}
                         autoFocus
                     />
-                    {(filterType !== 'All' || filterLevel !== 'All') && (
-                        <TouchableOpacity onPress={() => { setFilterType('All'); setFilterLevel('All'); }}>
+                    {(filterType !== 'All' || filterLevel !== 'All' || filterMuscle !== 'All') && (
+                        <TouchableOpacity onPress={() => { setFilterType('All'); setFilterLevel('All'); setFilterMuscle('All'); }}>
                             <Text style={{ color: '#2563eb', fontWeight: '700', fontSize: 12 }}>Reset</Text>
                         </TouchableOpacity>
                     )}
@@ -410,37 +428,33 @@ export default function WorkoutsManager() {
 
             {/* Filters Drawer */}
             {showFilters && (
-                <View style={{ backgroundColor: '#fff', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
-                    {/* Type filter */}
-                    <View style={styles.filterSection}>
-                        <Text style={styles.filterLabel}>TYPE</Text>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
-                            {['All', ...EXERCISE_TYPES].map(t => (
-                                <TouchableOpacity
-                                    key={t}
-                                    style={[styles.filterPill, filterType === t && styles.filterPillActive]}
-                                    onPress={() => setFilterType(t)}
-                                >
-                                    <Text style={[styles.filterPillTxt, filterType === t && styles.filterPillTxtActive]}>{t}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
+                <View style={{ backgroundColor: '#fff', padding: 16, borderBottomWidth: 1, borderBottomColor: '#f1f5f9', flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
+                    <View style={{ flex: 1, minWidth: '30%', marginBottom: 8 }}>
+                        <DropdownField 
+                            label="TYPE"
+                            options={['All', ...EXERCISE_TYPES]}
+                            selected={filterType}
+                            onChange={setFilterType}
+                            multi={false}
+                        />
                     </View>
-
-                    {/* Difficulty filter */}
-                    <View style={[styles.filterSection, { marginBottom: 8 }]}>
-                        <Text style={styles.filterLabel}>DIFFICULTY</Text>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
-                            {['All', ...LEVELS].map(l => (
-                                <TouchableOpacity
-                                    key={l}
-                                    style={[styles.filterPill, filterLevel === l && { backgroundColor: '#7c3aed', borderColor: '#7c3aed' }]}
-                                    onPress={() => setFilterLevel(l)}
-                                >
-                                    <Text style={[styles.filterPillTxt, filterLevel === l && styles.filterPillTxtActive]}>{l}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
+                    <View style={{ flex: 1, minWidth: '30%', marginBottom: 8 }}>
+                        <DropdownField 
+                            label="DIFFICULTY"
+                            options={['All', ...LEVELS]}
+                            selected={filterLevel}
+                            onChange={setFilterLevel}
+                            multi={false}
+                        />
+                    </View>
+                    <View style={{ width: '100%' }}>
+                        <DropdownField 
+                            label="MUSCLE GROUP"
+                            options={['All', ...ALL_MUSCLE_GROUPS]}
+                            selected={filterMuscle}
+                            onChange={setFilterMuscle}
+                            multi={false}
+                        />
                     </View>
                 </View>
             )}
@@ -503,12 +517,12 @@ export default function WorkoutsManager() {
                         />
 
                         {/* Exercise Type — multi-select */}
-                        <MultiPillPicker
+                        <DropdownField
                             label="Exercise Type (select all that apply)"
                             options={EXERCISE_TYPES}
                             selected={form.exerciseTypes}
-                            onChange={v => setField('exerciseTypes', v)}
-                            activeColor="#2563eb"
+                            onChange={(v: string[]) => setField('exerciseTypes', v)}
+                            multi={true}
                         />
                         {form.exerciseTypes.length > 1 && (
                             <Text style={styles.fieldHint}>
@@ -553,12 +567,12 @@ export default function WorkoutsManager() {
                         <Text style={styles.fieldHint}>
                             These tag this exercise to the Browse by Muscle Group cards in the Workouts tab.
                         </Text>
-                        <MultiPillPicker
+                        <DropdownField
                             label=""
                             options={ALL_MUSCLE_GROUPS}
                             selected={form.muscleGroupTags}
-                            onChange={v => setField('muscleGroupTags', v)}
-                            activeColor="#10b981"
+                            onChange={(v: string[]) => setField('muscleGroupTags', v)}
+                            multi={true}
                         />
 
                         {/* Equipment */}
@@ -581,12 +595,12 @@ export default function WorkoutsManager() {
                         />
 
                         {/* Difficulty */}
-                        <SinglePillRow
+                        <DropdownField
                             label="Difficulty"
                             options={LEVELS}
-                            value={form.difficulty}
-                            onChange={v => setField('difficulty', v)}
-                            activeColor="#7c3aed"
+                            selected={form.difficulty}
+                            onChange={(v: string) => setField('difficulty', v)}
+                            multi={false}
                         />
 
                         {/* Thumbnail URL */}
