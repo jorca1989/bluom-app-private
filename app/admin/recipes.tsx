@@ -136,7 +136,7 @@ export default function RecipesManager() {
     const updateRecipe = useMutation(api.admin.updatePublicRecipe);
     const deleteRecipe = useMutation(api.admin.deletePublicRecipe);
 
-    const [filterCat, setFilterCat] = useState('All');
+    const [filterCats, setFilterCats] = useState<string[]>([]);
     const [filterTier, setFilterTier] = useState('All');
     const [filterStatus, setFilterStatus] = useState('All');
     const [showSearch, setShowSearch] = useState(false);
@@ -149,12 +149,17 @@ export default function RecipesManager() {
         return allRecipes.filter((r: any) => {
             const searchQ = search.toLowerCase();
             const matchSearch = !searchQ || r.title?.toLowerCase().includes(searchQ) || r.description?.toLowerCase().includes(searchQ);
-            const matchCat = filterCat === 'All' || r.category === filterCat || (r.categories ?? []).includes(filterCat);
+            
+            // Multi-category match logic
+            const matchCat = filterCats.length === 0 || 
+                             filterCats.includes(r.category) || 
+                             (r.categories ?? []).some(c => filterCats.includes(c));
+
             const matchTier = filterTier === 'All' || (filterTier === 'Pro' ? r.isPremium : !r.isPremium);
             const matchStatus = filterStatus === 'All' || r.status === filterStatus;
             return matchSearch && matchCat && matchTier && matchStatus;
         });
-    }, [allRecipes, search, filterCat, filterTier, filterStatus]);
+    }, [allRecipes, search, filterCats, filterTier, filterStatus]);
 
     // Local state for new/edit recipe
     const [newRecipe, setNewRecipe] = useState({
@@ -360,7 +365,7 @@ export default function RecipesManager() {
                         <Search size={20} color={showSearch ? '#2563eb' : '#64748b'} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => setShowFilters(!showFilters)} style={{ padding: 6 }}>
-                        <Filter size={20} color={(filterCat !== 'All' || filterTier !== 'All' || filterStatus !== 'All' || showFilters) ? '#2563eb' : '#64748b'} />
+                        <Filter size={20} color={(filterCats.length > 0 || filterTier !== 'All' || filterStatus !== 'All' || showFilters) ? '#2563eb' : '#64748b'} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.addButton} onPress={() => { resetForm(); setIsModalOpen(true); }}>
                         <Plus color="#ffffff" size={20} />
@@ -391,19 +396,14 @@ export default function RecipesManager() {
             {/* ── Filters Drawer ── */}
             {showFilters && (
                 <View style={styles.filterBlock}>
-                    <View style={styles.filterRow}>
-                        <Text style={styles.filterLabel}>CATEGORY</Text>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillRow}>
-                            <TouchableOpacity style={[styles.fPill, filterCat === 'All' && styles.fPillActive]} onPress={() => setFilterCat('All')}>
-                                <Text style={[styles.fPillTxt, filterCat === 'All' && styles.fPillTxtActive]}>All</Text>
-                            </TouchableOpacity>
-                            {RECIPE_CATEGORIES.map(cat => (
-                                <TouchableOpacity key={cat} style={[styles.fPill, filterCat === cat && styles.fPillActive]} onPress={() => setFilterCat(cat)}>
-                                    <Text style={[styles.fPillTxt, filterCat === cat && styles.fPillTxtActive]}>{cat}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
-                    </View>
+                        <DropdownField
+                            label="CATEGORY"
+                            options={RECIPE_CATEGORIES}
+                            selected={filterCats}
+                            onChange={setFilterCats}
+                            multi
+                            placeholder="All Categories"
+                        />
                     <View style={styles.filterRow}>
                         <Text style={styles.filterLabel}>TIER</Text>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillRow}>
@@ -424,7 +424,15 @@ export default function RecipesManager() {
                             ))}
                         </ScrollView>
                     </View>
-                    <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '600', paddingHorizontal: 4 }}>{recipes.length} recipes</Text>
+                    {(filterCats.length > 0 || filterTier !== 'All' || filterStatus !== 'All') && (
+                        <TouchableOpacity 
+                            onPress={() => { setFilterCats([]); setFilterTier('All'); setFilterStatus('All'); }}
+                            style={{ alignSelf: 'flex-start', marginTop: 4, paddingHorizontal: 4 }}
+                        >
+                            <Text style={{ fontSize: 12, color: '#2563eb', fontWeight: '800' }}>Reset Filters</Text>
+                        </TouchableOpacity>
+                    )}
+                    <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '600', paddingHorizontal: 4, marginTop: 4 }}>{recipes.length} recipes found</Text>
                 </View>
             )}
 
