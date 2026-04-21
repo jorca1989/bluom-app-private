@@ -399,7 +399,8 @@ export default defineSchema({
     carbs: v.float64(),
     fat: v.float64(),
     tags: v.optional(v.array(v.string())),
-    category: v.optional(v.string()),
+    category: v.optional(v.string()), // primary category (backward-compat)
+    categories: v.optional(v.array(v.string())), // multi-category tags
     status: v.optional(v.string()), // 'published' | 'draft'
     isPremium: v.optional(v.boolean()),
     ingredients: v.optional(v.array(v.string())),

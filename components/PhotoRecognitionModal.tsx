@@ -198,10 +198,17 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
             </SafeAreaView>
           </CameraView>
         ) : (
-          <View style={[styles.resultsOverlay, { paddingTop: Math.max(insets.top, 44) + 20, paddingBottom: Math.max(insets.bottom, 20) }]}>
-             <TouchableOpacity onPress={handleClose} style={styles.resultsCloseBtn}>
-                <Ionicons name="close" size={24} color="#0f172a" />
+          <View style={styles.resultsOverlay}>
+            <View style={[styles.resultsHeader, { paddingTop: Math.max(insets.top, 12) + 8 }]}>
+              <TouchableOpacity onPress={handleClose} style={styles.resultsHeaderBtn} activeOpacity={0.8}>
+                <Ionicons name="arrow-back" size={22} color="#1e293b" />
               </TouchableOpacity>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.resultsTitle}>Photo AI Log</Text>
+                <Text style={styles.resultsSub}>Ready to analyze</Text>
+              </View>
+              <View style={{ width: 40 }} />
+            </View>
 
              {permission && !permission.granted ? (
                 <View style={styles.permContainer}>
@@ -363,18 +370,25 @@ const styles = StyleSheet.create({
   resultsOverlay: {
     flex: 1,
     backgroundColor: '#F5F4F0',
-    padding: 20,
   },
-  resultsCloseBtn: {
-    alignSelf: 'flex-end',
+  resultsHeader: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: '#F5F4F0',
+  },
+  resultsHeaderBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f1f5f9',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
   },
+  resultsTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
+  resultsSub: { marginTop: 2, fontSize: 12, fontWeight: '700', color: '#64748b' },
   permContainer: {
     flex: 1,
     alignItems: 'center',
@@ -395,6 +409,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 24,
     padding: 24,
+    marginHorizontal: 20,
+    marginTop: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,

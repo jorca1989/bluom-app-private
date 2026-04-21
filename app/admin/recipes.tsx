@@ -28,8 +28,103 @@ import {
     X,
     Target,
     FilePen,
-    Trash2
+    Trash2,
+    ChevronDown,
+    Check
 } from 'lucide-react-native';
+
+// ─── Dropdown Field Component  ────────────────────────────────────────────────
+function DropdownField({
+    label,
+    options,
+    selected,
+    onChange,
+    multi = false,
+    placeholder = 'Select...'
+}: {
+    label?: string;
+    options: string[];
+    selected: any;
+    onChange: (v: any) => void;
+    multi?: boolean;
+    placeholder?: string;
+}) {
+    const [open, setOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const currentSelected = selected || (multi ? [] : '');
+
+    let text = placeholder;
+    if (multi && currentSelected.length > 0) {
+        text = currentSelected.join(', ');
+    } else if (!multi && currentSelected && currentSelected !== 'All') {
+        text = currentSelected;
+    } else if (!multi && currentSelected === 'All') {
+        text = 'All';
+    }
+
+    const filteredOptions = useMemo(() => {
+        if (!searchQuery) return options;
+        return options.filter((o: string) => o.toLowerCase().includes(searchQuery.toLowerCase()));
+    }, [options, searchQuery]);
+
+    return (
+        <View style={{ marginBottom: 12 }}>
+            {label ? <Text style={styles.label}>{label}</Text> : null}
+            <TouchableOpacity style={[styles.input, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', height: 46 }]} onPress={() => { setOpen(true); setSearchQuery(''); }}>
+                <Text style={{ color: (multi ? currentSelected.length === 0 : !currentSelected) ? '#94a3b8' : '#1e293b', flex: 1 }} numberOfLines={1}>
+                    {text}
+                </Text>
+                <ChevronDown size={14} color="#64748b" />
+            </TouchableOpacity>
+
+            <Modal visible={open} animationType="slide" transparent>
+                <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+                    <View style={{ backgroundColor: '#fff', height: '80%', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{label || placeholder}</Text>
+                            <TouchableOpacity onPress={() => setOpen(false)}><X size={24} color="#64748b" /></TouchableOpacity>
+                        </View>
+                        {options.length > 10 && (
+                            <TextInput
+                                style={[styles.input, { marginBottom: 16 }]}
+                                placeholder="Search..."
+                                value={searchQuery}
+                                onChangeText={setSearchQuery}
+                                autoCapitalize="none"
+                            />
+                        )}
+                        <FlatList
+                            data={filteredOptions}
+                            keyExtractor={i => i}
+                            keyboardShouldPersistTaps="handled"
+                            renderItem={({ item }) => {
+                                const isActive = multi ? currentSelected.includes(item) : currentSelected === item;
+                                return (
+                                    <TouchableOpacity
+                                        style={{ paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f1f5f9', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+                                        onPress={() => {
+                                            if (multi) {
+                                                if (isActive) onChange(currentSelected.filter((s: string) => s !== item));
+                                                else onChange([...currentSelected, item]);
+                                            } else {
+                                                onChange(item);
+                                                setOpen(false);
+                                            }
+                                        }}
+                                    >
+                                        <Text style={{ fontSize: 16, color: isActive ? '#2563eb' : '#1e293b', fontWeight: isActive ? '700' : '500' }}>{item}</Text>
+                                        {isActive && <Check size={18} color="#2563eb" />}
+                                    </TouchableOpacity>
+                                );
+                            }}
+                            ListEmptyComponent={<Text style={{ color: '#94a3b8', textAlign: 'center', marginTop: 20 }}>No results found</Text>}
+                        />
+                    </View>
+                </View>
+            </Modal>
+        </View>
+    );
+}
 
 export default function RecipesManager() {
     const [search, setSearch] = useState('');
@@ -54,7 +149,7 @@ export default function RecipesManager() {
         return allRecipes.filter((r: any) => {
             const searchQ = search.toLowerCase();
             const matchSearch = !searchQ || r.title?.toLowerCase().includes(searchQ) || r.description?.toLowerCase().includes(searchQ);
-            const matchCat = filterCat === 'All' || r.category === filterCat;
+            const matchCat = filterCat === 'All' || r.category === filterCat || (r.categories ?? []).includes(filterCat);
             const matchTier = filterTier === 'All' || (filterTier === 'Pro' ? r.isPremium : !r.isPremium);
             const matchStatus = filterStatus === 'All' || r.status === filterStatus;
             return matchSearch && matchCat && matchTier && matchStatus;
@@ -65,6 +160,7 @@ export default function RecipesManager() {
     const [newRecipe, setNewRecipe] = useState({
         title: '',
         category: 'Breakfast',
+        categories: [] as string[],
         shortDescription: '',
         imageUrl: '',
         cookTimeMinutes: '30',
@@ -74,7 +170,6 @@ export default function RecipesManager() {
         carbs: '0',
         fat: '0',
         ingredientsText: '',
-
         instructionsText: '',
         tags: [] as string[],
         status: 'published',
@@ -84,6 +179,7 @@ export default function RecipesManager() {
         setNewRecipe({
             title: '',
             category: 'Breakfast',
+            categories: [],
             shortDescription: '',
             imageUrl: '',
             cookTimeMinutes: '30',
@@ -94,7 +190,6 @@ export default function RecipesManager() {
             fat: '0',
             ingredientsText: '',
             instructionsText: '',
-
             tags: [],
             status: 'published',
         });
@@ -106,6 +201,7 @@ export default function RecipesManager() {
         setNewRecipe({
             title: recipe.title,
             category: recipe.category || 'Breakfast',
+            categories: recipe.categories || (recipe.category ? [recipe.category] : []),
             shortDescription: recipe.description || '',
             imageUrl: recipe.imageUrl || '',
             cookTimeMinutes: String(recipe.cookTimeMinutes || 30),
@@ -139,6 +235,7 @@ export default function RecipesManager() {
             const commonArgs = {
                 title,
                 category: newRecipe.category,
+                categories: newRecipe.categories,
                 description: newRecipe.shortDescription.trim() || undefined,
                 imageUrl: newRecipe.imageUrl.trim() || undefined,
                 cookTimeMinutes: Number(newRecipe.cookTimeMinutes || 0) || undefined,
@@ -149,7 +246,6 @@ export default function RecipesManager() {
                 fat: Number(newRecipe.fat || 0) || 0,
                 ingredients: parseLines(newRecipe.ingredientsText),
                 instructions: parseLines(newRecipe.instructionsText),
-
                 tags: newRecipe.tags,
                 status: newRecipe.status,
                 isPremium: false,
@@ -372,24 +468,17 @@ export default function RecipesManager() {
                             onChangeText={(t) => setNewRecipe((p) => ({ ...p, title: t }))}
                         />
 
-                        <Text style={styles.label}>Category</Text>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
-                            {['Breakfast', 'Lunch', 'Dinner', 'Snacks', 'Desserts', 'Vegetarian', 'High Protein', 'Low Carb'].map((cat) => (
-                                <TouchableOpacity
-                                    key={cat}
-                                    style={[
-                                        styles.categoryChip,
-                                        newRecipe.category === cat && styles.categoryChipActive
-                                    ]}
-                                    onPress={() => setNewRecipe(prev => ({ ...prev, category: cat }))}
-                                >
-                                    <Text style={[
-                                        styles.categoryChipText,
-                                        newRecipe.category === cat && styles.categoryChipTextActive
-                                    ]}>{cat}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
+                        <DropdownField
+                            label="Categories"
+                            options={RECIPE_CATEGORIES}
+                            selected={newRecipe.categories}
+                            onChange={(cats) => setNewRecipe(prev => ({
+                                ...prev,
+                                categories: cats,
+                                category: cats[0] || 'Breakfast' // Sync primary for legacy compat
+                            }))}
+                            multi
+                        />
 
                         <View style={styles.inputGrid}>
                             <View style={styles.inputField}>

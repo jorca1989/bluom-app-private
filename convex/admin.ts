@@ -162,6 +162,7 @@ export const createPublicRecipe = mutation({
         fat: v.float64(),
         tags: v.optional(v.array(v.string())),
         category: v.optional(v.string()),
+        categories: v.optional(v.array(v.string())),
         isPremium: v.optional(v.boolean()),
         ingredients: v.optional(v.array(v.string())),
         instructions: v.optional(v.array(v.string())),
@@ -184,6 +185,7 @@ export const createPublicRecipe = mutation({
             fat: args.fat,
             tags: args.tags,
             category: args.category,
+            categories: args.categories,
             isPremium: args.isPremium,
             ingredients: args.ingredients,
             instructions: args.instructions,
@@ -309,6 +311,7 @@ export const updatePublicRecipe = mutation({
         fat: v.optional(v.float64()),
         tags: v.optional(v.array(v.string())),
         category: v.optional(v.string()),
+        categories: v.optional(v.array(v.string())),
         isPremium: v.optional(v.boolean()),
         ingredients: v.optional(v.array(v.string())),
         instructions: v.optional(v.array(v.string())),
@@ -333,6 +336,7 @@ export const updatePublicRecipe = mutation({
         if (args.fat !== undefined) updateFields.fat = args.fat;
         if (args.tags) updateFields.tags = args.tags;
         if (args.category) updateFields.category = args.category;
+        if (args.categories) updateFields.categories = args.categories;
         if (args.isPremium !== undefined) updateFields.isPremium = args.isPremium;
         if (args.ingredients) updateFields.ingredients = args.ingredients;
         if (args.instructions) updateFields.instructions = args.instructions;

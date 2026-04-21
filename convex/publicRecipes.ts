@@ -18,7 +18,11 @@ export const list = query({
     recipes = recipes.filter(r => r.status !== 'draft');
 
     if (category && category !== "All") {
-      recipes = recipes.filter((r) => (r.category ?? "") === category);
+      recipes = recipes.filter((r) => {
+        const matchSingle = (r.category ?? "") === category;
+        const matchMulti = (r.categories ?? []).includes(category);
+        return matchSingle || matchMulti;
+      });
     }
 
     if (search) {

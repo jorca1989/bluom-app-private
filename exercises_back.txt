@@ -1,0 +1,149 @@
+# Back exercises — one name per line, no extension, no _female suffix
+# Script tries male (.mp4) + female (_female.mp4) + male thumb + female thumb automatically
+# Lines starting with # are ignored
+# Add any missing exercise names at the bottom and re-run
+
+# ── First 16 visible in Dropbox (alphabetical) ──────────────────────────────
+45 degree hyperextension (arms in front of chest)
+45 degree hyperextension arms to chest
+alternate superman
+Alternating Superman
+Archer pull up
+around the world superman hold
+assisted chin up normal width reverse grip
+assisted chin up reverse close grip
+assisted chin up reverse wide grip
+Assisted Chin-up on a bench
+Assisted close grip underhand chin up
+Assisted Close-grip Underhand Chin-up
+Assisted parallel close grip pull up
+Assisted Parallel Close-Grip Pull-up
+assisted pull up close grip
+
+# ── Band Assisted (stopping point area) ─────────────────────────────────────
+Band Assisted Chin Up
+Band Assisted Chin Up (From Knee)
+
+# ── Band exercises ────────────────────────────────────────────────────────────
+Band Deadlift
+Band Fixed Back Underhand Pulldown
+Band Kneeling Single Arm High Row
+Band Lying Reverse Grip Row
+Band Pull Up
+Band Rotating Hammer Grip Incline Bench Row
+Band Seated Row
+Band Single Arm Row
+Band bent-over row
+Band Face Pull
+Band Good Morning
+Band Lat Pulldown
+Band Romanian Deadlift
+Band Shrug
+Band Single Arm Lat Pulldown
+Band Straight Arm Pulldown
+
+# ── Barbell exercises ─────────────────────────────────────────────────────────
+Barbell Bent Over Row
+Barbell Coan Deadlift
+Barbell Deadlift
+Barbell Good Morning
+Barbell Incline Bench Row
+Barbell Romanian Deadlift
+Barbell Shrug
+Barbell Smith Bent Over Row
+Barbell Snatch
+Barbell Sumo Deadlift
+Barbell T-Bar Row
+Barbell Wide Grip Bent Over Row
+
+# ── Bodyweight / Calisthenics ─────────────────────────────────────────────────
+Bodyweight Row
+Chin Up
+Chin-Up
+Close Grip Chin Up
+Close Grip Pull Up
+Commando Pull Up
+Crossover Pull Up
+Dead Hang
+Inverted Row
+Muscle Up
+Neutral Grip Pull Up
+One Arm Chin Up
+One Arm Pull Up
+Pull Up
+Strict Muscle Up
+Wide Grip Pull Up
+Wide Grip Chin Up
+
+# ── Cable exercises ───────────────────────────────────────────────────────────
+Cable Close Grip Seated Row
+Cable Face Pull
+Cable High Row
+Cable Incline Row
+Cable Lat Pulldown
+Cable Low Row
+Cable Neutral Grip Lat Pulldown
+Cable One Arm Row
+Cable Pullover
+Cable Reverse Grip Lat Pulldown
+Cable Row
+Cable Seated Row
+Cable Single Arm Lat Pulldown
+Cable Straight Arm Pulldown
+Cable Wide Grip Seated Row
+
+# ── Dumbbell exercises ────────────────────────────────────────────────────────
+Dumbbell Bent Over Row
+Dumbbell Deadlift
+Dumbbell Incline Row
+Dumbbell Romanian Deadlift
+Dumbbell Row
+Dumbbell Shrug
+Dumbbell Single Arm Row
+Dumbbell Snatch
+Dumbbell Sumo Deadlift
+
+# ── Kettlebell exercises ──────────────────────────────────────────────────────
+Kettlebell Deadlift
+Kettlebell Good Morning
+Kettlebell Romanian Deadlift
+Kettlebell Row
+Kettlebell Shrug
+Kettlebell Single Arm Row
+Kettlebell Sumo Deadlift
+Kettlebell Swing
+
+# ── Machine exercises ─────────────────────────────────────────────────────────
+Machine High Row
+Machine Lat Pulldown
+Machine Low Row
+Machine Row
+Machine Seated Row
+Machine Shrug
+Seated Cable Row
+Smith Machine Bent Over Row
+Smith Machine Row
+
+# ── Other / Compound ─────────────────────────────────────────────────────────
+Back Extension
+Back Hyperextension
+Chest Supported Row
+Face Pull
+Good Morning
+Hyperextension
+Incline Bench Row
+Landmine Row
+Meadows Row
+Pendlay Row
+Rack Pull
+Renegade Row
+Romanian Deadlift
+Seal Row
+Stiff Leg Deadlift
+Straight Arm Pulldown
+Superman
+T-Bar Row
+Trap Bar Deadlift
+TRX Row
+Underhand Barbell Row
+Yates Row
