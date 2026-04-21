@@ -11,6 +11,7 @@ import {
     ActivityIndicator,
     Alert,
     Dimensions,
+    Platform,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useQuery, useMutation } from 'convex/react';
@@ -268,25 +269,42 @@ export default function RecipesManager() {
             setIsModalOpen(false);
             resetForm();
         } catch (e: any) {
-            Alert.alert('Save failed', e?.message ?? 'Could not save recipe.');
+            const msg = e?.message ?? 'Could not save recipe.';
+            if (Platform.OS === 'web') {
+                (window as any).alert('Save failed: ' + msg);
+            } else {
+                Alert.alert('Save failed', msg);
+            }
         }
     };
 
     const handleDelete = (recipeId: any, title: string) => {
-        Alert.alert('Delete recipe', `Delete "${title}"?`, [
-            { text: 'Cancel', style: 'cancel' },
-            {
-                text: 'Delete',
-                style: 'destructive',
-                onPress: async () => {
-                    try {
-                        await deleteRecipe({ recipeId });
-                    } catch (e: any) {
-                        Alert.alert('Delete failed', e?.message ?? 'Could not delete recipe.');
-                    }
+        const performDelete = async () => {
+            try {
+                await deleteRecipe({ recipeId });
+            } catch (e: any) {
+                const msg = e?.message ?? 'Could not delete recipe.';
+                if (Platform.OS === 'web') {
+                    (window as any).alert('Delete failed: ' + msg);
+                } else {
+                    Alert.alert('Delete failed', msg);
+                }
+            }
+        };
+
+        if (Platform.OS === 'web') {
+            const confirmed = (window as any).confirm(`Delete "${title}"?`);
+            if (confirmed) performDelete();
+        } else {
+            Alert.alert('Delete recipe', `Delete "${title}"?`, [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: performDelete,
                 },
-            },
-        ]);
+            ]);
+        }
     };
 
     const renderRecipeItem = ({ item }: { item: any }) => (
