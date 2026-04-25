@@ -21,8 +21,11 @@ import Svg, { Circle } from 'react-native-svg';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-// Circle sizing — 7 items fit in card inner width (screen - 48px card margin - 6 gaps of 8px)
-const CIRCLE_SIZE = Math.floor(Math.max(42, Math.min(50, (SCREEN_WIDTH - 48 - 6 * 8) / 7)));
+// Dynamically calculate the circle size so 7 circles fit exactly in the container
+// The container has 24px padding on each side (48px total). 
+// Let's divide the remaining space allowing for space-between flex layout.
+const containerWidth = SCREEN_WIDTH - 48;
+const CIRCLE_SIZE = Math.floor(Math.min(50, containerWidth / 7.5));
 const STROKE_WIDTH_SELECTED = 3.5;
 const STROKE_WIDTH_DEFAULT = 2;
 
@@ -205,7 +208,8 @@ const DayStrip = ({
         ref={scrollRef}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { width: SCREEN_WIDTH }]}
+        bounces={false}
       >
         {days.map((day) => {
           const isSelected = day.fullDate === selectedDate;
@@ -238,9 +242,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 24,
-    gap: 8,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
 
   itemWrap: {

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 
@@ -31,6 +32,7 @@ export default function LogRecipeModal({
   onClose,
 }: LogRecipeModalProps) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   if (!visible || !recipe) return null;
 
   const perServing = recipe.nutrition?.perServing || recipe.nutrition || {
@@ -45,7 +47,7 @@ export default function LogRecipeModal({
       <View style={styles.overlay}>
         <SafeAreaView style={[styles.modalContent, { paddingBottom: Math.max(insets.bottom, 24) }]} edges={['bottom']}>
           <View style={styles.header}>
-            <Text style={styles.title}>Log Recipe</Text>
+            <Text style={styles.title}>{t('modals.logRecipe.title', recipe?.ingredients ? 'Log Recipe' : 'Log Food')}</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
               <Ionicons name="close" size={20} color="#64748b" />
             </TouchableOpacity>
@@ -56,8 +58,8 @@ export default function LogRecipeModal({
               <View style={styles.successIconWrap}>
                  <Ionicons name="checkmark-sharp" size={40} color="#10b981" />
               </View>
-              <Text style={styles.successTitle}>Recipe Logged!</Text>
-              <Text style={styles.successSub}>Added to your {meal.toLowerCase()}.</Text>
+              <Text style={styles.successTitle}>{t('modals.logRecipe.logged', recipe?.ingredients ? 'Recipe Logged!' : 'Food Logged!')}</Text>
+              <Text style={styles.successSub}>{t('modals.logRecipe.addedTo', 'Added to your')} {t(`fuel.meals.${meal.toLowerCase()}`, meal).toLowerCase()}.</Text>
             </View>
           ) : (
             <View style={styles.body}>
@@ -80,7 +82,7 @@ export default function LogRecipeModal({
               </View>
 
               <View style={styles.field}>
-                <Text style={styles.label}>Log to Meal</Text>
+                <Text style={styles.label}>{t('modals.logRecipe.logToMeal', 'Log to Meal')}</Text>
                 <View style={styles.mealSelector}>
                   {(['Breakfast', 'Lunch', 'Dinner', 'Snack'] as MealName[]).map((m) => (
                     <TouchableOpacity
@@ -89,7 +91,7 @@ export default function LogRecipeModal({
                       onPress={() => onMealChange(m)}
                     >
                       <Text style={[styles.mealText, meal === m && styles.mealTextActive]}>
-                        {m}
+                        {t(`fuel.meals.${m.toLowerCase()}`, m)}
                       </Text>
                     </TouchableOpacity>
                   ))}
@@ -97,7 +99,7 @@ export default function LogRecipeModal({
               </View>
 
               <View style={styles.field}>
-                <Text style={styles.label}>Quantity (Servings)</Text>
+                <Text style={styles.label}>{t('modals.logRecipe.qty', 'Quantity (Servings)')}</Text>
                 <View style={styles.qtyControls}>
                   <TouchableOpacity style={styles.qtyBtn} onPress={() => onQuantityChange(Math.max(1, quantity - 1))}>
                     <Ionicons name="remove" size={24} color="#64748b" />
@@ -111,10 +113,10 @@ export default function LogRecipeModal({
 
               <View style={styles.btnRow}>
                 <TouchableOpacity style={styles.cancelBtn} onPress={onCancel}>
-                  <Text style={styles.cancelBtnTxt}>Skip</Text>
+                  <Text style={styles.cancelBtnTxt}>{t('modals.logRecipe.skip', 'Skip')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.saveBtn} onPress={onSave}>
-                  <Text style={styles.saveBtnTxt}>Log to {meal}</Text>
+                  <Text style={styles.saveBtnTxt}>{t('modals.logRecipe.logTo', 'Log to')} {t(`fuel.meals.${meal.toLowerCase()}`, meal)}</Text>
                 </TouchableOpacity>
               </View>
             </View>

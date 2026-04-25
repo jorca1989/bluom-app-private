@@ -524,7 +524,28 @@ export const generateReflectionInsight = action({
     };
   },
 });
+/**
+ * Simple text translation action using Gemini.
+ */
+export const translateText = action({
+  args: {
+    text: v.string(),
+    targetLang: v.string(),
+  },
+  handler: async (_ctx, args) => {
+    const prompt = `Translate the following text into ${args.targetLang}. 
+Return ONLY the translated text. Do not include any explanations or extra commentary.
+If it is a list of items separated by newlines, maintain the same format.
 
+Text to translate:
+${args.text}`;
 
-
-
+    try {
+      const result = await generateContentWithFallback([{ text: prompt }]);
+      return result.response.text().trim();
+    } catch (err) {
+      console.error("Translation error:", err);
+      return args.text; // Fallback to original text on error
+    }
+  },
+});

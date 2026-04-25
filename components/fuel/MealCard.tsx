@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 export interface FoodItem {
   id: string; // Convex _id
@@ -21,6 +22,7 @@ interface MealCardProps {
 }
 
 const MealCard = ({ title, icon, time, foods, onAddPress, onDeletePress }: MealCardProps) => {
+  const { t } = useTranslation();
   const totals = foods.reduce(
     (acc, f) => ({
       cal: acc.cal + f.cal,
@@ -59,7 +61,7 @@ const MealCard = ({ title, icon, time, foods, onAddPress, onDeletePress }: MealC
         <View style={styles.foodsList}>
           {foods.map((food, i) => (
             <View key={food.id || i} style={styles.foodRow}>
-              <Text style={styles.foodName}>{food.name}</Text>
+              <Text style={styles.foodName}>{t(`db.${food.name.replace(/\s+/g, '')}`, food.name)}</Text>
               <View style={styles.foodRight}>
                 <Text style={styles.foodCal}>{Math.round(food.cal)} kcal</Text>
                 <TouchableOpacity onPress={() => onDeletePress(food.id)} style={styles.deleteBtn}>
@@ -79,13 +81,13 @@ const MealCard = ({ title, icon, time, foods, onAddPress, onDeletePress }: MealC
             <View style={[styles.macroSegment, { backgroundColor: '#fde047', width: `${fatPct}%` }]} />
           </View>
           <Text style={styles.macroText}>
-            P:{Math.round(totals.protein)}g C:{Math.round(totals.carbs)}g F:{Math.round(totals.fat)}g
+            {t('fuel.mealCard.p', 'P')}:{Math.round(totals.protein)}g {t('fuel.mealCard.c', 'C')}:{Math.round(totals.carbs)}g {t('fuel.mealCard.f', 'F')}:{Math.round(totals.fat)}g
           </Text>
         </View>
       )}
 
       {foods.length === 0 && (
-        <Text style={styles.emptyText}>Tap + to log a meal</Text>
+        <Text style={styles.emptyText}>{t('fuel.mealCard.empty', 'Tap + to log a meal')}</Text>
       )}
     </View>
   );

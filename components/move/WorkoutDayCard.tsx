@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 interface ExerciseThumb {
   id: string;
@@ -25,6 +26,7 @@ export default function WorkoutDayCard({
   onStartWorkout,
   onViewWorkout
 }: WorkoutDayCardProps) {
+  const { t } = useTranslation();
 
   // For visual truncation if more than 3 exercises
   const displayExercises = exercises.slice(0, 3);
@@ -36,7 +38,7 @@ export default function WorkoutDayCard({
         <View style={styles.badgeRow}>
           <View style={styles.badge}>
             <View style={styles.badgeDot} />
-            <Text style={styles.badgeText}>Up Next</Text>
+            <Text style={styles.badgeText}>{t('move.upNext', 'Up Next')}</Text>
           </View>
         </View>
       )}
@@ -63,16 +65,16 @@ export default function WorkoutDayCard({
         )}
       </View>
       
-      <Text style={[styles.countText, { textAlign: 'center' }]}>{exercises.length} exercises</Text>
+      <Text style={[styles.countText, { textAlign: 'center' }]}>{t('move.exercisesCount', '{{count}} exercises', { count: exercises.length })}</Text>
 
       <View style={styles.actionsBox}>
         <TouchableOpacity style={styles.primaryBtn} onPress={onStartWorkout}>
-          <Text style={styles.primaryBtnText}>Start Workout</Text>
+          <Text style={styles.primaryBtnText}>{t('move.startWorkout', 'Start Workout')}</Text>
           <Ionicons name="arrow-forward" size={18} color="#ffffff" />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.secondaryBtn} onPress={onViewWorkout}>
-          <Text style={styles.secondaryBtnText}>View Workout</Text>
+          <Text style={styles.secondaryBtnText}>{t('move.viewWorkout', 'View Workout')}</Text>
         </TouchableOpacity>
       </View>
     </View>

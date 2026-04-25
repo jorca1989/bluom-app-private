@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useMutation, useAction } from 'convex/react';
+import { useMutation, useAction, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
+import { useTranslation } from 'react-i18next';
 
 interface CreateRecipeModalProps {
   visible: boolean;
@@ -17,6 +18,7 @@ const UNIT_OPTIONS = ['g', 'ml', 'cup', 'tbsp', 'tsp', 'piece'] as const;
 
 export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, userId }: CreateRecipeModalProps) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const createRecipe = useMutation(api.recipes.createRecipe);
   const upsertExternalFood = useMutation(api.foodCatalog.upsertExternalFood);
   const matchIngredientLines = useAction(api.externalFoods.matchIngredientLines);
@@ -220,7 +222,7 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
 
       handleClose();
     } catch {
-      Alert.alert('Error', 'Failed to save recipe.');
+      Alert.alert(t('common.error', 'Error'), t('modals.createRecipe.error', 'Failed to save recipe.'));
     } finally {
       setSaveLoading(false);
     }
@@ -242,7 +244,7 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleClose}>
       <SafeAreaView style={styles.modalContainer} edges={['top']}>
         <View style={styles.modalHeader}>
-          <Text style={styles.modalTitle}>Create Recipe</Text>
+          <Text style={styles.modalTitle}>{t('modals.createRecipe.title', 'Create Recipe')}</Text>
           <TouchableOpacity onPress={handleClose} style={styles.closeBtn}>
             <Ionicons name="close" size={24} color="#64748b" />
           </TouchableOpacity>
@@ -256,10 +258,10 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
           {step === 1 && (
             <View style={styles.stepContainer}>
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Recipe Name <Text style={styles.required}>*</Text></Text>
+                <Text style={styles.label}>{t('modals.createRecipe.name', 'Recipe Name')} <Text style={styles.required}>*</Text></Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="e.g. Chicken Stir Fry"
+                  placeholder={t('modals.createRecipe.namePlaceholder', 'e.g. Chicken Stir Fry')}
                   value={recipeForm.name}
                   onChangeText={(v) => setRecipeForm({ ...recipeForm, name: v })}
                   placeholderTextColor="#94a3b8"
@@ -267,7 +269,7 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Servings <Text style={styles.required}>*</Text></Text>
+                <Text style={styles.label}>{t('modals.createRecipe.servings', 'Servings')} <Text style={styles.required}>*</Text></Text>
                 <TextInput
                   style={styles.input}
                   placeholder="e.g. 4"
@@ -280,7 +282,7 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
               </View>
 
               <View style={styles.switchRow}>
-                <Text style={styles.label}>Use Bulk Import for Ingredients?</Text>
+                <Text style={styles.label}>{t('modals.createRecipe.bulkImport', 'Use Bulk Import for Ingredients?')}</Text>
                 <TouchableOpacity 
                    style={[styles.checkbox, bulkImportEnabled && styles.checkboxActive]} 
                    onPress={() => setBulkImportEnabled(!bulkImportEnabled)}
@@ -291,7 +293,7 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
 
               {bulkImportEnabled && (
                 <View style={styles.inputGroup}>
-                  <Text style={styles.hintText}>Paste or type your ingredients (one per line):</Text>
+                  <Text style={styles.hintText}>{t('modals.createRecipe.pasteIngredients', 'Paste or type your ingredients (one per line):')}</Text>
                   <TextInput
                     style={styles.textArea}
                     placeholder="2 chicken breasts&#10;1 cup broccoli&#10;1 tbsp olive oil"
@@ -302,7 +304,7 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
                     textAlignVertical="top"
                     placeholderTextColor="#cbd5e1"
                   />
-                  <Text style={styles.subtext}>We'll try to automatically match them to foods in the database.</Text>
+                  <Text style={styles.subtext}>{t('modals.createRecipe.autoMatchHint', 'We\'ll try to automatically match them to foods in the database.')}</Text>
                 </View>
               )}
 
@@ -311,7 +313,7 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
                 onPress={handleNextStep1}
                 disabled={!recipeForm.name || !recipeForm.servings}
               >
-                <Text style={styles.primaryButtonText}>Next: Ingredients</Text>
+                <Text style={styles.primaryButtonText}>{t('modals.createRecipe.nextIngredients', 'Next: Ingredients')}</Text>
                 <Ionicons name="arrow-forward" size={18} color="#ffffff" />
               </TouchableOpacity>
             </View>
@@ -322,15 +324,15 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
               {matchingLoading ? (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator size="large" color="#3b82f6" />
-                  <Text style={styles.loadingText}>Matching your ingredients...</Text>
+                  <Text style={styles.loadingText}>{t('modals.createRecipe.matching', 'Matching your ingredients...')}</Text>
                 </View>
               ) : (
                 <View style={styles.ingredientsList}>
                   {matchedIngredients.length === 0 && (
                      <View style={styles.emptyContainer}>
                         <Ionicons name="restaurant-outline" size={48} color="#cbd5e1" />
-                        <Text style={styles.emptyText}>No ingredients added.</Text>
-                        <Text style={styles.emptySubtext}>Please go back and add ingredients.</Text>
+                        <Text style={styles.emptyText}>{t('modals.createRecipe.noIngredients', 'No ingredients added.')}</Text>
+                        <Text style={styles.emptySubtext}>{t('modals.createRecipe.goBack', 'Please go back and add ingredients.')}</Text>
                      </View>
                   )}
                   {matchedIngredients.map((ing, idx) => {
@@ -351,7 +353,7 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
                                {ing?.servingSize ? ` • ${String(ing.servingSize)}` : ''}
                              </Text>
                              {!!ing?.original && (
-                                <Text style={styles.ingOriginal}>Found from: "{String(ing.original)}"</Text>
+                                <Text style={styles.ingOriginal}>{t('modals.createRecipe.foundFrom', 'Found from:')} "{String(ing.original)}"</Text>
                              )}
                           </View>
                           
@@ -365,7 +367,7 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
 
                         {(isUnmatched || isEditing) && (
                           <View style={styles.searchBox}>
-                            <Text style={styles.searchLabel}>Search manually for a better match:</Text>
+                            <Text style={styles.searchLabel}>{t('modals.createRecipe.searchManually', 'Search manually for a better match:')}</Text>
                             <TextInput
                               style={styles.searchInput}
                               placeholder="e.g. 1 cup oatmeal"
@@ -408,19 +410,19 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
                              <View style={styles.totalsRow}>
                                 <View style={styles.totalItem}>
                                    <Text style={styles.totalVal}>{Math.round(totals.calories)}</Text>
-                                   <Text style={styles.totalLbl}>kcal</Text>
+                                   <Text style={styles.totalLbl}>{t('common.kcal', 'kcal')}</Text>
                                 </View>
                                 <View style={styles.totalItem}>
                                    <Text style={styles.totalVal}>{Math.round(totals.protein)}</Text>
-                                   <Text style={styles.totalLbl}>P</Text>
+                                   <Text style={styles.totalLbl}>{t('common.proteinShort', 'P')}</Text>
                                 </View>
                                 <View style={styles.totalItem}>
                                    <Text style={styles.totalVal}>{Math.round(totals.carbs)}</Text>
-                                   <Text style={styles.totalLbl}>C</Text>
+                                   <Text style={styles.totalLbl}>{t('common.carbsShort', 'C')}</Text>
                                 </View>
                                 <View style={styles.totalItem}>
                                    <Text style={styles.totalVal}>{Math.round(totals.fat)}</Text>
-                                   <Text style={styles.totalLbl}>F</Text>
+                                   <Text style={styles.totalLbl}>{t('common.fatShort', 'F')}</Text>
                                 </View>
                              </View>
                           </>
@@ -433,14 +435,14 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
 
               <View style={styles.buttonRow}>
                  <TouchableOpacity style={styles.secondaryButton} onPress={() => setStep(1)}>
-                    <Text style={styles.secondaryButtonText}>Back</Text>
+                    <Text style={styles.secondaryButtonText}>{t('common.back', 'Back')}</Text>
                  </TouchableOpacity>
                  <TouchableOpacity
                     style={[styles.primaryButton, styles.flexButton, (matchedIngredients.length === 0 || matchedIngredients.some((ing) => ing.unmatched)) && styles.disabledButton]}
                     onPress={() => setStep(3)}
                     disabled={matchedIngredients.length === 0 || matchedIngredients.some((ing) => ing.unmatched)}
                  >
-                    <Text style={styles.primaryButtonText}>Next: Review</Text>
+                    <Text style={styles.primaryButtonText}>{t('modals.createRecipe.nextReview', 'Next: Review')}</Text>
                     <Ionicons name="arrow-forward" size={18} color="#ffffff" />
                  </TouchableOpacity>
               </View>
@@ -450,41 +452,41 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
           {step === 3 && (
             <View style={styles.stepContainer}>
               <View style={styles.reviewWidget}>
-                 <Text style={styles.reviewLabel}>Recipe</Text>
+                 <Text style={styles.reviewLabel}>{t('modals.createRecipe.recipe', 'Recipe')}</Text>
                  <Text style={styles.reviewTitle}>{recipeForm.name}</Text>
-                 <Text style={styles.reviewSub}>Makes {recipeForm.servings} Servings</Text>
+                 <Text style={styles.reviewSub}>{t('modals.createRecipe.makesServings', { count: recipeForm.servings })}</Text>
 
                  <View style={styles.macrosDivider} />
                  
-                 <Text style={styles.reviewSub}>Nutrition info per serving</Text>
+                 <Text style={styles.reviewSub}>{t('modals.createRecipe.perServing', 'Nutrition info per serving')}</Text>
                  <View style={styles.macrosGrid}>
                     <View style={styles.macroStat}>
                        <Text style={styles.macroStatVal}>{Math.round(macros.calories / servings)}</Text>
-                       <Text style={styles.macroStatLbl}>kcal</Text>
+                       <Text style={styles.macroStatLbl}>{t('common.kcal', 'kcal')}</Text>
                     </View>
                     <View style={styles.macroStat}>
                        <Text style={styles.macroStatVal}>{Math.round(macros.protein / servings)}g</Text>
-                       <Text style={styles.macroStatLbl}>Protein</Text>
+                       <Text style={styles.macroStatLbl}>{t('common.protein', 'Protein')}</Text>
                     </View>
                     <View style={styles.macroStat}>
                        <Text style={styles.macroStatVal}>{Math.round(macros.carbs / servings)}g</Text>
-                       <Text style={styles.macroStatLbl}>Carbs</Text>
+                       <Text style={styles.macroStatLbl}>{t('common.carbs', 'Carbs')}</Text>
                     </View>
                     <View style={styles.macroStat}>
                        <Text style={styles.macroStatVal}>{Math.round(macros.fat / servings)}g</Text>
-                       <Text style={styles.macroStatLbl}>Fat</Text>
+                       <Text style={styles.macroStatLbl}>{t('common.fat', 'Fat')}</Text>
                     </View>
                  </View>
               </View>
 
               <View style={styles.buttonRow}>
                  <TouchableOpacity style={styles.secondaryButton} onPress={() => setStep(2)}>
-                    <Text style={styles.secondaryButtonText}>Back</Text>
+                    <Text style={styles.secondaryButtonText}>{t('common.back', 'Back')}</Text>
                  </TouchableOpacity>
                  <TouchableOpacity style={[styles.primaryButton, styles.flexButton, saveLoading && styles.disabledButton]} onPress={handleSaveRecipe} disabled={saveLoading}>
                     {saveLoading ? <ActivityIndicator size="small" color="#ffffff"/> : (
                        <>
-                          <Text style={styles.primaryButtonText}>Save Recipe</Text>
+                          <Text style={styles.primaryButtonText}>{t('modals.createRecipe.saveRecipe', 'Save Recipe')}</Text>
                           <Ionicons name="checkmark" size={18} color="#ffffff" />
                        </>
                     )}

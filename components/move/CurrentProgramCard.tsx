@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 interface CurrentProgramCardProps {
   programName?: string;
@@ -14,13 +15,18 @@ interface CurrentProgramCardProps {
 }
 
 export default function CurrentProgramCard({
-  programName = 'Your 4-Week Program',
-  level = 'Beginner',
+  programName,
+  level,
   daysPerWeek = 3,
   currentWeek = 1,
   totalWeeks = 4,
   progressPercent = 0,
 }: CurrentProgramCardProps) {
+  const { t } = useTranslation();
+  
+  const displayProgramName = programName || t('move.your4WeekProgram', 'Your 4-Week Program');
+  const displayLevel = level ? t(`common.${level.toLowerCase()}`, level) : t('common.beginner', 'Beginner');
+
   return (
     <View style={styles.card}>
       <View style={styles.content}>
@@ -29,9 +35,9 @@ export default function CurrentProgramCard({
              <Ionicons name="fitness" size={24} color="#3b82f6" />
           </View>
           <View style={styles.titleBox}>
-             <Text style={styles.programTitle} numberOfLines={1}>{programName}</Text>
+             <Text style={styles.programTitle} numberOfLines={1}>{displayProgramName}</Text>
              <Text style={styles.programSubtitle}>
-               {level} • {daysPerWeek} days/week
+               {displayLevel} • {daysPerWeek} {t('move.daysPerWeek', 'days/week')}
              </Text>
           </View>
         </View>
@@ -39,7 +45,7 @@ export default function CurrentProgramCard({
         <View style={styles.progressContainer}>
           <View style={styles.progressRow}>
             <Text style={styles.progressText}>
-              Week {currentWeek} of {totalWeeks}
+              {t('move.weekOfTotal', 'Week {{current}} of {{total}}', { current: currentWeek, total: totalWeeks })}
             </Text>
             <Text style={styles.progressPercent}>{progressPercent}%</Text>
           </View>

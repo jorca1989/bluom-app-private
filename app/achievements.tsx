@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,6 +30,7 @@ function formatDate(ts: number) {
 export default function AchievementsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const { user: clerkUser } = useUser();
 
   const convexUser = useQuery(
@@ -80,9 +82,9 @@ export default function AchievementsScreen() {
           <Ionicons name="arrow-back" size={20} color="#0f172a" />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <Text style={s.title}>Achievements</Text>
+          <Text style={s.title}>{t('achievements.title', 'Conquistas')}</Text>
           <Text style={s.subTitle}>
-            {unlockedCount}/{totalVisible} unlocked · Level {level}
+            {unlockedCount}/{totalVisible} {t('achievements.unlocked', 'desbloqueadas')} · {t('achievements.level', 'Nível')} {level}
           </Text>
         </View>
       </View>
@@ -98,11 +100,11 @@ export default function AchievementsScreen() {
           </View>
           <View style={s.statCard}>
             <Text style={[s.statVal, { color: '#d97706' }]}>{tokens}</Text>
-            <Text style={s.statLbl}>Tokens</Text>
+            <Text style={s.statLbl}>{t('achievements.tokens', 'Tokens')}</Text>
           </View>
           <View style={s.statCard}>
             <Text style={s.statVal}>{streak}</Text>
-            <Text style={s.statLbl}>Streak</Text>
+            <Text style={s.statLbl}>{t('achievements.streak', 'Sequência')}</Text>
           </View>
         </View>
 
@@ -112,12 +114,24 @@ export default function AchievementsScreen() {
             style={[s.chip, category === 'all' && s.chipActive]}
             activeOpacity={0.85}
           >
-            <Text style={[s.chipTxt, category === 'all' && s.chipTxtActive]}>All</Text>
+            <Text style={[s.chipTxt, category === 'all' && s.chipTxtActive]}>{t('achievements.filterAll', 'Tudo')}</Text>
           </TouchableOpacity>
 
           {(Object.keys(CATEGORY_CONFIG) as AchievementCategory[]).map((k) => {
             const cc = CATEGORY_CONFIG[k];
             const active = category === k;
+            const CAT_PT: Record<string, string> = {
+              fuel: t('achievements.cat.fuel', 'Alimentação'),
+              move: t('achievements.cat.move', 'Movimento'),
+              wellness: t('achievements.cat.wellness', 'Bem-estar'),
+              mind: t('achievements.cat.mind', 'Mente'),
+              habits: t('achievements.cat.habits', 'Hábitos'),
+              productivity: t('achievements.cat.productivity', 'Produtividade'),
+              health: t('achievements.cat.health', 'Saúde'),
+              social: t('achievements.cat.social', 'Social'),
+              ai: t('achievements.cat.ai', 'IA'),
+              milestone: t('achievements.cat.milestone', 'Marco'),
+            };
             return (
               <TouchableOpacity
                 key={k}
@@ -125,7 +139,7 @@ export default function AchievementsScreen() {
                 style={[s.chip, active && s.chipActive]}
                 activeOpacity={0.85}
               >
-                <Text style={[s.chipTxt, active && s.chipTxtActive]}>{cc.emoji} {cc.label}</Text>
+                <Text style={[s.chipTxt, active && s.chipTxtActive]}>{cc.emoji} {CAT_PT[k] ?? cc.label}</Text>
               </TouchableOpacity>
             );
           })}
@@ -137,6 +151,14 @@ export default function AchievementsScreen() {
             const locked = !unlocked;
             const rc = RARITY_CONFIG[a.rarity];
             const isSecretLocked = !!a.secret && locked;
+            const RARITY_PT: Record<string, string> = {
+              common: t('achievements.rarity.common', 'Comum'),
+              rare: t('achievements.rarity.rare', 'Raro'),
+              epic: t('achievements.rarity.epic', 'Épico'),
+              legendary: t('achievements.rarity.legendary', 'Lendário'),
+            };
+            const aTitle = isSecretLocked ? t('achievements.secret', 'Conquista Secreta') : t(`achievements.${a.id}.title`, a.title);
+            const aDesc  = isSecretLocked ? t('achievements.secretDesc', 'Desbloqueie para revelar os detalhes.') : t(`achievements.${a.id}.desc`, a.description);
             return (
               <TouchableOpacity
                 key={a.id}
@@ -150,20 +172,16 @@ export default function AchievementsScreen() {
                 <View style={s.cardTop}>
                   <Text style={s.icon}>{isSecretLocked ? '❓' : a.icon}</Text>
                   <View style={[s.rarityPill, { backgroundColor: rc.color + '22' }]}>
-                    <Text style={[s.rarityTxt, { color: rc.color }]}>{rc.label}</Text>
+                    <Text style={[s.rarityTxt, { color: rc.color }]}>{RARITY_PT[a.rarity] ?? rc.label}</Text>
                   </View>
                 </View>
 
-                <Text style={s.cardTitle} numberOfLines={2}>
-                  {isSecretLocked ? 'Secret Achievement' : a.title}
-                </Text>
-                <Text style={s.cardDesc} numberOfLines={3}>
-                  {isSecretLocked ? 'Unlock to reveal details.' : a.description}
-                </Text>
+                <Text style={s.cardTitle} numberOfLines={2}>{aTitle}</Text>
+                <Text style={s.cardDesc} numberOfLines={3}>{aDesc}</Text>
 
                 <View style={s.cardBottom}>
                   <View style={s.rewardPill}>
-                    <Text style={s.rewardTxt}>+{a.xpReward} XP · +{a.tokenReward} Tokens</Text>
+                    <Text style={s.rewardTxt}>+{a.xpReward} XP · +{a.tokenReward} {t('achievements.tokens', 'Tokens')}</Text>
                   </View>
                   {unlocked ? (
                     <Ionicons name="checkmark-circle" size={18} color="#10b981" />
@@ -181,7 +199,7 @@ export default function AchievementsScreen() {
         <View style={s.modalOverlay}>
           <View style={s.modalCard}>
             <View style={s.modalHeader}>
-              <Text style={s.modalTitle}>Achievement</Text>
+              <Text style={s.modalTitle}>{t('achievements.modalTitle', 'Conquista')}</Text>
               <TouchableOpacity onPress={() => setDetail(null)} style={s.modalClose} activeOpacity={0.85}>
                 <Ionicons name="close" size={18} color="#0f172a" />
               </TouchableOpacity>
@@ -192,26 +210,46 @@ export default function AchievementsScreen() {
               const rc = RARITY_CONFIG[detail.rarity];
               const cc = CATEGORY_CONFIG[detail.category];
               const isSecretLocked = !!detail.secret && !unlocked;
+              const CAT_PT: Record<string, string> = {
+                fuel: t('achievements.cat.fuel', 'Alimentação'),
+                move: t('achievements.cat.move', 'Movimento'),
+                wellness: t('achievements.cat.wellness', 'Bem-estar'),
+                mind: t('achievements.cat.mind', 'Mente'),
+                habits: t('achievements.cat.habits', 'Hábitos'),
+                productivity: t('achievements.cat.productivity', 'Produtividade'),
+                health: t('achievements.cat.health', 'Saúde'),
+                social: t('achievements.cat.social', 'Social'),
+                ai: t('achievements.cat.ai', 'IA'),
+                milestone: t('achievements.cat.milestone', 'Marco'),
+              };
+              const RARITY_PT: Record<string, string> = {
+                common: t('achievements.rarity.common', 'Comum'),
+                rare: t('achievements.rarity.rare', 'Raro'),
+                epic: t('achievements.rarity.epic', 'Épico'),
+                legendary: t('achievements.rarity.legendary', 'Lendário'),
+              };
+              const dTitle = isSecretLocked ? t('achievements.secret', 'Conquista Secreta') : t(`achievements.${detail.id}.title`, detail.title);
+              const dDesc  = isSecretLocked ? t('achievements.secretDesc', 'Desbloqueie para revelar os detalhes.') : t(`achievements.${detail.id}.desc`, detail.description);
               return (
                 <View>
                   <View style={s.modalHero}>
                     <Text style={s.modalIcon}>{isSecretLocked ? '❓' : detail.icon}</Text>
                     <View style={{ flex: 1 }}>
-                      <Text style={s.modalName}>{isSecretLocked ? 'Secret Achievement' : detail.title}</Text>
+                      <Text style={s.modalName}>{dTitle}</Text>
                       <Text style={s.modalMeta}>
-                        {cc.emoji} {cc.label} · <Text style={{ color: rc.color, fontWeight: '900' }}>{rc.label}</Text>
+                        {cc.emoji} {CAT_PT[detail.category] ?? cc.label} · <Text style={{ color: rc.color, fontWeight: '900' }}>{RARITY_PT[detail.rarity] ?? rc.label}</Text>
                       </Text>
                     </View>
                   </View>
 
-                  <Text style={s.modalDesc}>{isSecretLocked ? 'Unlock to reveal details.' : detail.description}</Text>
+                  <Text style={s.modalDesc}>{dDesc}</Text>
 
                   <View style={s.modalRewards}>
-                    <Text style={s.modalRewardTxt}>Rewards: +{detail.xpReward} XP · +{detail.tokenReward} Tokens</Text>
+                    <Text style={s.modalRewardTxt}>{t('achievements.rewards', 'Recompensas')}: +{detail.xpReward} XP · +{detail.tokenReward} {t('achievements.tokens', 'Tokens')}</Text>
                     {unlocked ? (
-                      <Text style={s.modalUnlocked}>Unlocked: {formatDate(unlocked.unlockedAt)}</Text>
+                      <Text style={s.modalUnlocked}>{t('achievements.unlockedOn', 'Desbloqueada')}: {formatDate(unlocked.unlockedAt)}</Text>
                     ) : (
-                      <Text style={s.modalLocked}>Not unlocked yet</Text>
+                      <Text style={s.modalLocked}>{t('achievements.notYet', 'Ainda não desbloqueada')}</Text>
                     )}
                   </View>
                 </View>

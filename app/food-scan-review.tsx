@@ -9,6 +9,7 @@ import { api } from '@/convex/_generated/api';
 import { getBottomContentPadding } from '@/utils/layout';
 import { triggerSound, SoundEffect } from '@/utils/soundEffects';
 import { useCelebration } from '@/context/CelebrationContext';
+import { useTranslation } from 'react-i18next';
 
 function toMealTypeLower(meal: string) {
   const m = (meal ?? '').toLowerCase();
@@ -23,6 +24,7 @@ function toMealTypeLower(meal: string) {
 type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 
 export default function FoodScanReviewScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
@@ -60,7 +62,7 @@ export default function FoodScanReviewScreen() {
     if (!convexUser?._id) return;
     const trimmed = name.trim();
     if (!trimmed) {
-      Alert.alert('Missing name', 'Enter a food name (or keep “Unknown”).');
+      Alert.alert(t('foodReview.missingName', 'Missing name'), t('foodReview.enterName', 'Enter a food name (or keep “Unknown”).'));
       return;
     }
     setSaving(true);
@@ -78,10 +80,10 @@ export default function FoodScanReviewScreen() {
       });
       triggerSound(SoundEffect.LOG_MEAL);
       celebration.trigger('confetti');
-      Alert.alert('Saved', `Added ${trimmed} to ${meal}`);
+      Alert.alert(t('common.saved', 'Saved'), t('foodReview.addedMsg', 'Added {{name}} to {{meal}}', { name: trimmed, meal: t(`common.${meal.toLowerCase()}`, meal) }));
       router.replace('/(tabs)/fuel');
     } catch (e: any) {
-      Alert.alert('Could not save', e?.message ? String(e.message) : 'Please try again.');
+      Alert.alert(t('common.error', 'Could not save'), e?.message ? String(e.message) : t('common.tryAgain', 'Please try again.'));
     } finally {
       setSaving(false);
     }
@@ -94,8 +96,8 @@ export default function FoodScanReviewScreen() {
           <Ionicons name="arrow-back" size={22} color="#1e293b" />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle}>Review Macros</Text>
-          <Text style={styles.headerSub}>{meal} • {date}</Text>
+          <Text style={styles.headerTitle}>{t('foodReview.title', 'Review Macros')}</Text>
+          <Text style={styles.headerSub}>{t(`common.${meal.toLowerCase()}`, meal)} • {date}</Text>
         </View>
         <View style={{ width: 40 }} />
       </View>
@@ -106,16 +108,16 @@ export default function FoodScanReviewScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Food</Text>
+          <Text style={styles.cardTitle}>{t('foodReview.food', 'Food')}</Text>
           <TextInput
             value={name}
             onChangeText={setName}
-            placeholder="Food name"
+            placeholder={t('foodReview.foodPlaceholder', 'Food name')}
             style={styles.input}
             autoCapitalize="words"
             returnKeyType="done"
           />
-          <Text style={styles.hint}>You can overwrite anything the AI guessed.</Text>
+          <Text style={styles.hint}>{t('foodReview.hint', 'You can overwrite anything the AI guessed.')}</Text>
         </View>
 
         <View style={styles.card}>
@@ -128,7 +130,7 @@ export default function FoodScanReviewScreen() {
                 onPress={() => setMeal(m)}
               >
                 <Text style={[styles.mealOptionText, meal === m && styles.mealOptionTextActive]}>
-                  {m}
+                  {t(`common.${m.toLowerCase()}`, m)}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -136,15 +138,15 @@ export default function FoodScanReviewScreen() {
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Per serving (editable)</Text>
-          <Row label="Calories" value={calories} onChange={setCalories} />
-          <Row label="Protein (g)" value={protein} onChange={setProtein} />
-          <Row label="Carbs (g)" value={carbs} onChange={setCarbs} />
-          <Row label="Fat (g)" value={fat} onChange={setFat} />
+          <Text style={styles.cardTitle}>{t('foodReview.perServing', 'Per serving (editable)')}</Text>
+          <Row label={t('fuel.calories', 'Calories')} value={calories} onChange={setCalories} />
+          <Row label={t('fuel.protein', 'Protein (g)')} value={protein} onChange={setProtein} />
+          <Row label={t('fuel.carbs', 'Carbs (g)')} value={carbs} onChange={setCarbs} />
+          <Row label={t('fuel.fat', 'Fat (g)')} value={fat} onChange={setFat} />
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Servings</Text>
+          <Text style={styles.cardTitle}>{t('foodReview.servings', 'Servings')}</Text>
           <TextInput
             value={servings}
             onChangeText={setServings}
@@ -153,7 +155,7 @@ export default function FoodScanReviewScreen() {
             style={styles.input}
           />
           <Text style={styles.hint}>
-            Total: {Math.round(parsed.cals * parsed.s)} cal • P{Math.round(parsed.p * parsed.s)} C{Math.round(parsed.cb * parsed.s)} F{Math.round(parsed.f * parsed.s)}
+            {t('foodReview.total', 'Total')}: {Math.round(parsed.cals * parsed.s)} {t('fuel.summary.kcal', 'cal')} • {t('fuel.mealCard.p', 'P')}{Math.round(parsed.p * parsed.s)} {t('fuel.mealCard.c', 'C')}{Math.round(parsed.cb * parsed.s)} {t('fuel.mealCard.f', 'F')}{Math.round(parsed.f * parsed.s)}
           </Text>
         </View>
 
@@ -164,7 +166,7 @@ export default function FoodScanReviewScreen() {
           disabled={saving}
         >
           <Ionicons name="checkmark-circle" size={18} color="#fff" />
-          <Text style={styles.primaryText}>{saving ? 'Saving…' : `Save to ${meal}`}</Text>
+          <Text style={styles.primaryText}>{saving ? t('common.saving', 'Saving…') : t('foodReview.saveToMeal', 'Save to {{meal}}', { meal: t(`common.${meal.toLowerCase()}`, meal) })}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

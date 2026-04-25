@@ -6,6 +6,7 @@ import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
+import { useTranslation } from 'react-i18next';
 // import DateTimePicker from '@react-native-community/datetimepicker';
 
 const { width } = Dimensions.get('window');
@@ -20,6 +21,7 @@ interface LifeGoalsHubProps {
 const CATEGORIES = ['All', 'Work', 'Travel', 'Health', 'Personal'] as const;
 
 export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<Tab>('pending');
     const [showAddModal, setShowAddModal] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<typeof CATEGORIES[number]>('All');
@@ -51,7 +53,7 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
 
     const handleCreate = async () => {
         if (!newTitle.trim()) {
-            Alert.alert("Error", "Please enter a goal title.");
+            Alert.alert(t('common.error', 'Error'), t('wellness.lifeGoalsHub.errNoTitle', 'Please enter a goal title.'));
             return;
         }
 
@@ -69,9 +71,9 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
             });
             setShowAddModal(false);
             resetForm();
-            Alert.alert("Success", "Goal added successfully!");
+            Alert.alert(t('common.success', 'Success'), t('wellness.lifeGoalsHub.successAdded', 'Goal added successfully!'));
         } catch (e: any) {
-            Alert.alert("Error", e.message || "Failed to add goal.");
+            Alert.alert(t('common.error', 'Error'), e.message || t('wellness.lifeGoalsHub.errFailed', 'Failed to add goal.'));
         }
     };
 
@@ -94,11 +96,11 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
             }
         });
         // Trigger celebration or toast?
-        Alert.alert("Congratulations!", "You've achieved a life goal! 🎉");
+        Alert.alert(t('wellness.lifeGoalsHub.congrats', 'Congratulations!'), t('wellness.lifeGoalsHub.achievedMsg', 'You\'ve achieved a life goal! 🎉'));
     };
 
     const handleDelete = (goalId: Id<"lifeGoals">) => {
-        Alert.alert("Delete Goal", "Are you sure?", [
+        Alert.alert(t('wellness.lifeGoalsHub.deleteGoal', 'Delete Goal'), t('wellness.lifeGoalsHub.areYouSure', 'Are you sure?'), [
             { text: "Cancel", style: "cancel" },
             { text: "Delete", style: "destructive", onPress: () => deleteGoal({ goalId }) }
         ]);
@@ -111,7 +113,7 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
             <View style={[styles.container, { paddingTop: Platform.OS === 'android' ? insets.top : 0 }]}>
                 {/* Header */}
                 <View style={[styles.header, { paddingTop: 20 }]}>
-                    <Text style={styles.headerTitle}>Life Goals</Text>
+                    <Text style={styles.headerTitle}>{t('wellness.lifeGoalsHub.title', 'Life Goals')}</Text>
                     <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                         <Ionicons name="close" size={24} color="#64748b" />
                     </TouchableOpacity>
@@ -123,19 +125,19 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
                         style={[styles.tab, activeTab === 'pending' && styles.activeTab]}
                         onPress={() => setActiveTab('pending')}
                     >
-                        <Text style={[styles.tabText, activeTab === 'pending' && styles.activeTabText]}>Pending</Text>
+                        <Text style={[styles.tabText, activeTab === 'pending' && styles.activeTabText]}>{t('wellness.lifeGoalsHub.pending', 'Pending')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.tab, activeTab === 'savings' && styles.activeTab]}
                         onPress={() => setActiveTab('savings')}
                     >
-                        <Text style={[styles.tabText, activeTab === 'savings' && styles.activeTabText]}>Savings</Text>
+                        <Text style={[styles.tabText, activeTab === 'savings' && styles.activeTabText]}>{t('wellness.lifeGoalsHub.savings', 'Savings')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.tab, activeTab === 'achieved' && styles.activeTab]}
                         onPress={() => setActiveTab('achieved')}
                     >
-                        <Text style={[styles.tabText, activeTab === 'achieved' && styles.activeTabText]}>Achieved</Text>
+                        <Text style={[styles.tabText, activeTab === 'achieved' && styles.activeTabText]}>{t('wellness.lifeGoalsHub.achieved', 'Achieved')}</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -186,14 +188,14 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
                                 {goal.weblink && (
                                     <TouchableOpacity style={styles.metaItem} onPress={() => Linking.openURL(goal.weblink!)}>
                                         <Ionicons name="link-outline" size={14} color="#3b82f6" />
-                                        <Text style={[styles.metaText, { color: '#3b82f6' }]}>Link</Text>
+                                        <Text style={[styles.metaText, { color: '#3b82f6' }]}>{t('wellness.lifeGoalsHub.link', 'Link')}</Text>
                                     </TouchableOpacity>
                                 )}
                             </View>
 
                             {goal.status !== 'achieved' && (
                                 <TouchableOpacity style={styles.actionButton} onPress={() => handleAchieve(goal._id)}>
-                                    <Text style={styles.actionButtonText}>Mark Achieved</Text>
+                                    <Text style={styles.actionButtonText}>{t('wellness.lifeGoalsHub.markAchieved', 'Mark Achieved')}</Text>
                                 </TouchableOpacity>
                             )}
                         </View>
@@ -201,7 +203,7 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
                     {(!filteredGoals || filteredGoals.length === 0) && (
                         <View style={styles.emptyState}>
                             <Ionicons name="flag-outline" size={48} color="#cbd5e1" />
-                            <Text style={styles.emptyText}>No goals found. Add one!</Text>
+                            <Text style={styles.emptyText}>{t('wellness.lifeGoalsHub.noGoals', 'No goals found. Add one!')}</Text>
                         </View>
                     )}
                 </ScrollView>
@@ -216,17 +218,17 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
                     <View style={styles.modalOverlay}>
                         <View style={styles.modalContent}>
                             <View style={styles.modalHeader}>
-                                <Text style={styles.modalTitle}>New Life Goal</Text>
+                                <Text style={styles.modalTitle}>{t('wellness.lifeGoalsHub.newLifeGoal', 'New Life Goal')}</Text>
                                 <TouchableOpacity onPress={() => setShowAddModal(false)}>
                                     <Ionicons name="close" size={24} color="#1e293b" />
                                 </TouchableOpacity>
                             </View>
 
                             <ScrollView contentContainerStyle={{ padding: 20 }}>
-                                <Text style={styles.label}>Title</Text>
-                                <TextInput style={styles.input} placeholder="e.g. Visit Japan" value={newTitle} onChangeText={setNewTitle} />
+                                <Text style={styles.label}>{t('wellness.lifeGoalsHub.labelTitle', 'Title')}</Text>
+                                <TextInput style={styles.input} placeholder={t('wellness.lifeGoalsHub.phVisitJapan', 'e.g. Visit Japan')} value={newTitle} onChangeText={setNewTitle} />
 
-                                <Text style={styles.label}>Category</Text>
+                                <Text style={styles.label}>{t('wellness.lifeGoalsHub.labelCategory', 'Category')}</Text>
                                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
                                     {CATEGORIES.filter(c => c !== 'All').map(cat => (
                                         <TouchableOpacity
@@ -239,26 +241,26 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
                                     ))}
                                 </View>
 
-                                <Text style={styles.label}>Type</Text>
+                                <Text style={styles.label}>{t('wellness.lifeGoalsHub.labelType', 'Type')}</Text>
                                 <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
                                     <TouchableOpacity
                                         style={[styles.typeButton, !isSavingsGoal && styles.typeButtonActive]}
                                         onPress={() => setIsSavingsGoal(false)}
                                     >
-                                        <Text style={[styles.typeText, !isSavingsGoal && styles.typeTextActive]}>Standard Goal</Text>
+                                        <Text style={[styles.typeText, !isSavingsGoal && styles.typeTextActive]}>{t('wellness.lifeGoalsHub.standardGoal', 'Standard Goal')}</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={[styles.typeButton, isSavingsGoal && styles.typeButtonActive]}
                                         onPress={() => setIsSavingsGoal(true)}
                                     >
-                                        <Text style={[styles.typeText, isSavingsGoal && styles.typeTextActive]}>Savings Goal</Text>
+                                        <Text style={[styles.typeText, isSavingsGoal && styles.typeTextActive]}>{t('wellness.lifeGoalsHub.savingsGoal', 'Savings Goal')}</Text>
                                     </TouchableOpacity>
                                 </View>
 
-                                <Text style={styles.label}>Target Cost (Optional)</Text>
+                                <Text style={styles.label}>{t('wellness.lifeGoalsHub.targetCost', 'Target Cost (Optional)')}</Text>
                                 <TextInput style={styles.input} placeholder="$0.00" keyboardType="numeric" value={newCost} onChangeText={setNewCost} />
 
-                                <Text style={styles.label}>Target Date (YYYY-MM-DD)</Text>
+                                <Text style={styles.label}>{t('wellness.lifeGoalsHub.targetDate', 'Target Date (YYYY-MM-DD)')}</Text>
                                 <TextInput
                                     style={styles.input}
                                     placeholder="YYYY-MM-DD"
@@ -266,14 +268,14 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
                                     onChangeText={setNewDeadline}
                                 />
 
-                                <Text style={styles.label}>Web Link (Optional)</Text>
+                                <Text style={styles.label}>{t('wellness.lifeGoalsHub.webLink', 'Web Link (Optional)')}</Text>
                                 <TextInput style={styles.input} placeholder="https://..." value={newWeblink} onChangeText={setNewWeblink} autoCapitalize="none" />
 
-                                <Text style={styles.label}>Description (Optional)</Text>
+                                <Text style={styles.label}>{t('wellness.lifeGoalsHub.description', 'Description (Optional)')}</Text>
                                 <TextInput style={[styles.input, { height: 80 }]} multiline placeholder="Details..." value={newDesc} onChangeText={setNewDesc} />
 
                                 <TouchableOpacity style={styles.mainButton} onPress={handleCreate}>
-                                    <Text style={styles.mainButtonText}>Create Goal</Text>
+                                    <Text style={styles.mainButtonText}>{t('wellness.lifeGoalsHub.createGoal', 'Create Goal')}</Text>
                                 </TouchableOpacity>
                             </ScrollView>
                         </View>

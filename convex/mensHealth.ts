@@ -194,17 +194,17 @@ export const getOptimizationStatus = query({
         let recommendedStack: { name: string, reason: string }[] = [];
 
         // Base
-        recommendedStack.push({ name: "Multivitamin", reason: "Foundation" });
+        recommendedStack.push({ name: "Multivitamin", reason: "mensHealth.reasons.foundation" });
 
         // Activity Based
         if (user.activityLevel === 'very_active' || user.activityLevel === 'extremely_active' || user.fitnessGoal === 'build_muscle') {
-            recommendedStack.push({ name: "Creatine Monohydrate", reason: "Muscle energy & cognition" });
-            recommendedStack.push({ name: "Electrolytes", reason: "Hydration support" });
+            recommendedStack.push({ name: "Creatine Monohydrate", reason: "mensHealth.reasons.muscleEnergy" });
+            recommendedStack.push({ name: "Electrolytes", reason: "mensHealth.reasons.hydration" });
         }
 
         // Goals Base
         if (user.fitnessGoal === 'build_muscle') {
-            recommendedStack.push({ name: "Whey Protein", reason: "Recovery" });
+            recommendedStack.push({ name: "Whey Protein", reason: "mensHealth.reasons.recovery" });
         }
         if (
             user.fitnessGoal === 'improve_health' ||
@@ -212,7 +212,7 @@ export const getOptimizationStatus = query({
             user.fitnessGoal === 'general_health' ||
             user.fitnessGoal === 'lose_weight'
         ) {
-            recommendedStack.push({ name: "Omega-3", reason: "Inflammation control" });
+            recommendedStack.push({ name: "Omega-3", reason: "mensHealth.reasons.inflammation" });
         }
 
 
@@ -220,11 +220,11 @@ export const getOptimizationStatus = query({
         // Vitality has mood (1-10) and stress (string)
         if (vitality) {
             if ((vitality.mood !== undefined && vitality.mood <= 4) || vitality.stress === 'high' || vitality.stress === 'very_high') {
-                recommendedStack.push({ name: "Ashwagandha", reason: "Cortisol management" });
-                recommendedStack.push({ name: "Magnesium", reason: "Relaxation" });
+                recommendedStack.push({ name: "Ashwagandha", reason: "mensHealth.reasons.cortisol" });
+                recommendedStack.push({ name: "Magnesium", reason: "mensHealth.reasons.relaxation" });
             }
             if (vitality.drive && vitality.drive <= 4) {
-                recommendedStack.push({ name: "Maca Root", reason: "Libido support" });
+                recommendedStack.push({ name: "Maca Root", reason: "mensHealth.reasons.libido" });
             }
         }
 

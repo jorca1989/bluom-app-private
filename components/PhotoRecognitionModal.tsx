@@ -10,6 +10,7 @@ import { useAction } from 'convex/react';
 import { useRouter } from 'expo-router';
 import { api } from '@/convex/_generated/api';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
+import { useTranslation } from 'react-i18next';
 
 type RecognizedFood = {
   name: string;
@@ -30,6 +31,7 @@ interface PhotoRecognitionModalProps {
 export default function PhotoRecognitionModal({ visible, onClose, onRecognized, meal, isPro = false }: PhotoRecognitionModalProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [recognizeError, setRecognizeError] = useState<string | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
@@ -169,8 +171,8 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
               edges={['top']}
             >
               <View style={styles.topInfo}>
-                <Text style={styles.scanTitle}>Photo AI Log</Text>
-                <Text style={styles.scanSubtitle}>Extract macros from your meal</Text>
+                <Text style={styles.scanTitle}>{t('modals.photo.title', 'Photo AI Log')}</Text>
+                <Text style={styles.scanSubtitle}>{t('modals.photo.extract', 'Extract macros from your meal')}</Text>
               </View>
               <TouchableOpacity onPress={handleClose} style={styles.iconCloseBtn}>
                 <Ionicons name="close" size={24} color="#ffffff" />
@@ -204,8 +206,8 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
                 <Ionicons name="arrow-back" size={22} color="#1e293b" />
               </TouchableOpacity>
               <View style={{ flex: 1 }}>
-                <Text style={styles.resultsTitle}>Photo AI Log</Text>
-                <Text style={styles.resultsSub}>Ready to analyze</Text>
+                <Text style={styles.resultsTitle}>{t('modals.photo.title', 'Photo AI Log')}</Text>
+                <Text style={styles.resultsSub}>{t('modals.photo.ready', 'Ready to analyze')}</Text>
               </View>
               <View style={{ width: 40 }} />
             </View>
@@ -213,24 +215,24 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
              {permission && !permission.granted ? (
                 <View style={styles.permContainer}>
                    <Ionicons name="camera-outline" size={48} color="#64748b" />
-                   <Text style={styles.permTitle}>Camera access required</Text>
-                   <Text style={styles.permSub}>Scan food to extract macros automatically.</Text>
+                   <Text style={styles.permTitle}>{t('modals.photo.camRequired', 'Camera access required')}</Text>
+                   <Text style={styles.permSub}>{t('modals.photo.scanFood', 'Scan food to extract macros automatically.')}</Text>
                    <TouchableOpacity style={styles.permBtn} onPress={requestPermission}>
-                      <Text style={styles.permBtnText}>Enable Camera</Text>
+                      <Text style={styles.permBtnText}>{t('modals.photo.enableCam', 'Enable Camera')}</Text>
                    </TouchableOpacity>
                 </View>
              ) : (
                 <View style={styles.analysisCard}>
                   <View style={styles.successHeader}>
                     <Ionicons name="checkmark-circle" size={32} color="#10b981" />
-                    <Text style={styles.analysisTitle}>Photo Captured</Text>
+                    <Text style={styles.analysisTitle}>{t('modals.photo.captured', 'Photo Captured')}</Text>
                   </View>
 
                   {recognizeError && <Text style={styles.errorText}>{recognizeError}</Text>}
 
                   <View style={styles.resultActions}>
                     <TouchableOpacity style={styles.retakeBtn} onPress={resetCapture} disabled={loading}>
-                      <Text style={styles.retakeText}>Retake</Text>
+                      <Text style={styles.retakeText}>{t('modals.photo.retake', 'Retake')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
                       style={[styles.analyzeBtn, loading && styles.disabledBtn]} 
@@ -239,7 +241,7 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
                     >
                       {loading ? <ActivityIndicator size="small" color="#ffffff"/> : (
                         <>
-                          <Text style={styles.analyzeBtnText}>Analyze Food</Text>
+                          <Text style={styles.analyzeBtnText}>{t('modals.photo.analyze', 'Analyze Food')}</Text>
                           <Ionicons name="sparkles" size={18} color="#ffffff" />
                         </>
                       )}
@@ -257,8 +259,8 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
             handleClose();
             router.push('/(tabs)/profile');
           }}
-          title="AI Photo Log"
-          message="Unlock instant AI food recognition and macro tracking with Bluom Pro."
+          title={t('modals.photo.title', 'AI Photo Log')}
+          message={t('modals.photo.upsell', 'Unlock instant AI food recognition and macro tracking with Bluom Pro.')}
         />
       </View>
     </Modal>

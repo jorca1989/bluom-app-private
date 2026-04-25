@@ -21,6 +21,7 @@ import { SoundEffect, triggerSound } from '@/utils/soundEffects';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getBottomContentPadding } from '@/utils/layout';
 import { useUser as useAppUser } from '@/context/UserContext';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
@@ -70,6 +71,7 @@ const games: GameDef[] = [
 ];
 
 export default function GamesHub({ userId, onClose }: GamesHubProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const appUser = useAppUser();
@@ -128,8 +130,8 @@ export default function GamesHub({ userId, onClose }: GamesHubProps) {
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 12 }]}>
           <View>
-            <Text style={styles.headerTitle}>🎮 Mind Games Hub</Text>
-            <Text style={styles.headerSubtitle}>Train focus & mindfulness</Text>
+            <Text style={styles.headerTitle}>🎮 {t('wellness.gamesHub.title', 'Mind Games Hub')}</Text>
+            <Text style={styles.headerSubtitle}>{t('wellness.gamesHub.subtitle', 'Train focus & mindfulness')}</Text>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Ionicons name="close" size={24} color="#64748b" />
@@ -271,15 +273,15 @@ export default function GamesHub({ userId, onClose }: GamesHubProps) {
                     <View style={{ backgroundColor: '#3b82f6', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 }}>
                       <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800', letterSpacing: 1 }}>BETA</Text>
                     </View>
-                    <Text style={{ fontSize: 13, fontWeight: '700', color: '#1e40af' }}>Games are being improved</Text>
+                    <Text style={{ fontSize: 13, fontWeight: '700', color: '#1e40af' }}>{t('wellness.gamesHub.gamesImproved', 'Games are being improved')}</Text>
                   </View>
-                  <Text style={{ fontSize: 11, color: '#64748b' }}>We're actively enhancing game quality and adding new ones!</Text>
+                  <Text style={{ fontSize: 11, color: '#64748b' }}>{t('wellness.gamesHub.activelyEnhancing', 'We\'re actively enhancing game quality and adding new ones!')}</Text>
                 </View>
               </View>
 
               <View style={styles.limitRow}>
                 <Text style={styles.limitText}>
-                  {isPro ? 'Premium: unlimited games' : `Free: ${Math.min(2, playsToday)}/2 games today`}
+                  {isPro ? t('wellness.gamesHub.premiumUnlimited', 'Premium: unlimited games') : t('wellness.gamesHub.freeLimit', 'Free: {{plays}}/2 games today', { plays: Math.min(2, playsToday) })}
                 </Text>
               </View>
               <View style={styles.gamesGrid}>
@@ -293,11 +295,11 @@ export default function GamesHub({ userId, onClose }: GamesHubProps) {
                     <View style={{ marginBottom: 16, width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center' }}>
                       <game.icon size={26} color="#fff" />
                     </View>
-                    <Text style={styles.gameName}>{game.name}</Text>
-                    <Text style={styles.gameDescription}>{game.description}</Text>
+                    <Text style={styles.gameName}>{t(`wellness.gamesHub.game_${game.id}_name`, game.name)}</Text>
+                    <Text style={styles.gameDescription}>{t(`wellness.gamesHub.game_${game.id}_desc`, game.description)}</Text>
                     {!game.implemented && (
                       <View style={styles.soonPill}>
-                        <Text style={styles.soonPillText}>Coming soon</Text>
+                        <Text style={styles.soonPillText}>{t('wellness.gamesHub.comingSoon', 'Coming soon')}</Text>
                       </View>
                     )}
                   </TouchableOpacity>
@@ -316,9 +318,9 @@ export default function GamesHub({ userId, onClose }: GamesHubProps) {
           onClose();
           router.push('/premium');
         }}
-        title="Upgrade to Pro"
-        message="Free users can play 2 games per day. Upgrade to Pro for unlimited games and progress tracking."
-        upgradeLabel="View Pro Plans"
+        title={t('wellness.gamesHub.upgradeToPro', 'Upgrade to Pro')}
+        message={t('wellness.gamesHub.upgradeMessage', 'Free users can play 2 games per day. Upgrade to Pro for unlimited games and progress tracking.')}
+        upgradeLabel={t('wellness.gamesHub.viewProPlans', 'View Pro Plans')}
         soundEffect={SoundEffect.UPGRADE_MORE_GAMES}
       />
     </Modal>
@@ -326,6 +328,7 @@ export default function GamesHub({ userId, onClose }: GamesHubProps) {
 }
 
 function ReactionTestGame({ onBack, onComplete }: { onBack: () => void; onComplete: (reactionMs: number) => void }) {
+  const { t } = useTranslation();
   const [state, setState] = useState<'ready' | 'waiting' | 'now'>('ready');
   const [message, setMessage] = useState('Tap Start to begin');
   const [reactionTime, setReactionTime] = useState<number | null>(null);
@@ -365,7 +368,7 @@ function ReactionTestGame({ onBack, onComplete }: { onBack: () => void; onComple
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleTap} activeOpacity={0.9} style={[styles.reactionBox, { backgroundColor: state === 'now' ? '#86efac' : state === 'waiting' ? '#fef08a' : '#f3f4f6' }]}>
         <Text style={styles.reactionMessage}>{message}</Text>
@@ -383,6 +386,7 @@ function ReactionTestGame({ onBack, onComplete }: { onBack: () => void; onComple
 
 
 function BalanceGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [balance, setBalance] = useState(0);
   const [time, setTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -430,7 +434,7 @@ function BalanceGame({ onBack, onComplete }: { onBack: () => void; onComplete: (
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Balance</Text>
       <Text style={styles.gameSubtitle}>Keep the ball centered</Text>
@@ -460,6 +464,7 @@ function BalanceGame({ onBack, onComplete }: { onBack: () => void; onComplete: (
 
 // Speed Match - Does current symbol match the PREVIOUS one? Fast-paced memory game
 function SpotDifferenceGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [currentSymbol, setCurrentSymbol] = useState<{ shape: string; color: string }>({ shape: '●', color: '#3b82f6' });
   const [previousSymbol, setPreviousSymbol] = useState<{ shape: string; color: string } | null>(null);
   const [score, setScore] = useState(0);
@@ -582,7 +587,7 @@ function SpotDifferenceGame({ onBack, onComplete }: { onBack: () => void; onComp
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Speed Match</Text>
       <Text style={styles.gameSubtitle}>Does this match the PREVIOUS card?</Text>
@@ -698,6 +703,7 @@ function SpotDifferenceGame({ onBack, onComplete }: { onBack: () => void; onComp
 }
 
 function SequenceRecallGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [phase, setPhase] = useState<'show' | 'input'>('show');
   const [sequence, setSequence] = useState('');
   const [input, setInput] = useState('');
@@ -735,7 +741,7 @@ function SequenceRecallGame({ onBack, onComplete }: { onBack: () => void; onComp
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Sequence Recall</Text>
       <Text style={styles.gameSubtitle}>Round {round}/3</Text>
@@ -767,6 +773,7 @@ function SequenceRecallGame({ onBack, onComplete }: { onBack: () => void; onComp
 }
 
 function FocusFrenzyGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [timeLeft, setTimeLeft] = useState(10);
   const [score, setScore] = useState(0);
   const [pos, setPos] = useState({ x: 40, y: 80 });
@@ -802,7 +809,7 @@ function FocusFrenzyGame({ onBack, onComplete }: { onBack: () => void; onComplet
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Focus Frenzy</Text>
       <Text style={styles.gameSubtitle}>Tap the target as many times as you can</Text>
@@ -817,6 +824,7 @@ function FocusFrenzyGame({ onBack, onComplete }: { onBack: () => void; onComplet
 }
 
 function WaveRiderGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [phase, setPhase] = useState<'inhale' | 'exhale'>('inhale');
   const [cycle, setCycle] = useState(0);
   const [score, setScore] = useState(0);
@@ -855,7 +863,7 @@ function WaveRiderGame({ onBack, onComplete }: { onBack: () => void; onComplete:
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Wave Rider</Text>
       <Text style={styles.gameSubtitle}>Breathe with the wave. Tap “Sync” each phase.</Text>
@@ -874,6 +882,7 @@ function WaveRiderGame({ onBack, onComplete }: { onBack: () => void; onComplete:
 }
 
 function FocusShiftGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [task, setTask] = useState<'math' | 'word'>('math');
   const [score, setScore] = useState(0);
   const [round, setRound] = useState(1);
@@ -947,7 +956,7 @@ function FocusShiftGame({ onBack, onComplete }: { onBack: () => void; onComplete
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Focus Shift</Text>
       <Text style={styles.gameSubtitle}>Quickly switch between math and word tasks</Text>
@@ -973,6 +982,7 @@ function FocusShiftGame({ onBack, onComplete }: { onBack: () => void; onComplete
 }
 
 function MemoryMatrixGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [grid, setGrid] = useState<boolean[]>([]);
   const [revealed, setRevealed] = useState<boolean[]>([]);
   const [level, setLevel] = useState(1);
@@ -1042,7 +1052,7 @@ function MemoryMatrixGame({ onBack, onComplete }: { onBack: () => void; onComple
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Memory Matrix</Text>
       <Text style={styles.gameSubtitle}>Remember and repeat the pattern</Text>
@@ -1080,6 +1090,7 @@ function MemoryMatrixGame({ onBack, onComplete }: { onBack: () => void; onComple
 }
 
 function WordScrambleGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [word, setWord] = useState('');
   const [scrambled, setScrambled] = useState('');
   const [userInput, setUserInput] = useState('');
@@ -1147,7 +1158,7 @@ function WordScrambleGame({ onBack, onComplete }: { onBack: () => void; onComple
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Word Scramble</Text>
       <Text style={styles.gameSubtitle}>Unscramble the word</Text>
@@ -1174,6 +1185,7 @@ function WordScrambleGame({ onBack, onComplete }: { onBack: () => void; onComple
 }
 
 function MathBingoGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [grid, setGrid] = useState<number[]>([]);
   const [target, setTarget] = useState(0);
   const [score, setScore] = useState(0);
@@ -1231,7 +1243,7 @@ function MathBingoGame({ onBack, onComplete }: { onBack: () => void; onComplete:
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Math Bingo</Text>
       <Text style={styles.gameSubtitle}>Find the target number</Text>
@@ -1264,6 +1276,7 @@ function MathBingoGame({ onBack, onComplete }: { onBack: () => void; onComplete:
 }
 
 function AnagramChallengeGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [word, setWord] = useState('');
   const [scrambled, setScrambled] = useState('');
   const [userInput, setUserInput] = useState('');
@@ -1351,7 +1364,7 @@ function AnagramChallengeGame({ onBack, onComplete }: { onBack: () => void; onCo
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Anagram Challenge</Text>
       <Text style={styles.gameSubtitle}>Rearrange letters to form a word</Text>
@@ -1387,6 +1400,7 @@ function AnagramChallengeGame({ onBack, onComplete }: { onBack: () => void; onCo
 }
 
 function FingerTapGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [sequence, setSequence] = useState<number[]>([]);
   const [userSequence, setUserSequence] = useState<number[]>([]);
   const [showingSequence, setShowingSequence] = useState(false);
@@ -1463,7 +1477,7 @@ function FingerTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Finger Tap</Text>
       <Text style={styles.gameSubtitle}>Repeat the finger sequence</Text>
@@ -1512,6 +1526,7 @@ function FingerTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
 }
 
 function RhythmTapGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [beats, setBeats] = useState<boolean[]>([]);
   const [currentBeat, setCurrentBeat] = useState(0);
   const [score, setScore] = useState(0);
@@ -1587,7 +1602,7 @@ function RhythmTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Rhythm Tap</Text>
       <Text style={styles.gameSubtitle}>Tap to the rhythm</Text>
@@ -1645,6 +1660,7 @@ function RhythmTapGame({ onBack, onComplete }: { onBack: () => void; onComplete:
 }
 
 function CalmColorsGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [currentColor, setCurrentColor] = useState('');
   const [colorName, setColorName] = useState('');
   const [options, setOptions] = useState<string[]>([]);
@@ -1715,7 +1731,7 @@ function CalmColorsGame({ onBack, onComplete }: { onBack: () => void; onComplete
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Calm Colors</Text>
       <Text style={styles.gameSubtitle}>Breathe with the colors</Text>
@@ -1762,6 +1778,7 @@ function CalmColorsGame({ onBack, onComplete }: { onBack: () => void; onComplete
 }
 
 function RelaxingRipplesGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [ripples, setRipples] = useState<{ id: number; x: number; y: number; size: number }[]>([]);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
@@ -1814,7 +1831,7 @@ function RelaxingRipplesGame({ onBack, onComplete }: { onBack: () => void; onCom
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Relaxing Ripples</Text>
       <Text style={styles.gameSubtitle}>Create peaceful ripples</Text>
@@ -1872,10 +1889,11 @@ function ComingSoonGame({
   onBack: () => void;
   onComplete: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <View style={[styles.comingSoonCard, { borderColor: game.color }]}>
         <Text style={styles.comingSoonEmoji}>{game.emoji}</Text>
@@ -1900,6 +1918,7 @@ function ComingSoonGame({
 }
 
 function VisualFilterGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   // Enhanced version with levels, timer, combos, and increasing complexity
   const [level, setLevel] = useState(1);
   const [round, setRound] = useState(1);
@@ -2024,7 +2043,7 @@ function VisualFilterGame({ onBack, onComplete }: { onBack: () => void; onComple
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Visual Filter</Text>
       <Text style={styles.gameSubtitle}>{status}</Text>
@@ -2090,6 +2109,7 @@ function VisualFilterGame({ onBack, onComplete }: { onBack: () => void; onComple
 }
 
 function TaskSwitcherGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [timeLeft, setTimeLeft] = useState(15);
   const [score, setScore] = useState(0);
   const [rule, setRule] = useState<'parity' | 'threshold'>('parity');
@@ -2129,7 +2149,7 @@ function TaskSwitcherGame({ onBack, onComplete }: { onBack: () => void; onComple
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Task Switcher</Text>
       <Text style={styles.gameSubtitle}>Rules switch every turn</Text>
@@ -2151,6 +2171,7 @@ function TaskSwitcherGame({ onBack, onComplete }: { onBack: () => void; onComple
 }
 
 function AttentionTrainerGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [trial, setTrial] = useState(0);
   const [score, setScore] = useState(0);
   const [shown, setShown] = useState<'target' | 'distractor'>('distractor');
@@ -2191,7 +2212,7 @@ function AttentionTrainerGame({ onBack, onComplete }: { onBack: () => void; onCo
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Attention Trainer</Text>
       <Text style={styles.gameSubtitle}>Tap only when the target appears</Text>
@@ -2206,6 +2227,7 @@ function AttentionTrainerGame({ onBack, onComplete }: { onBack: () => void; onCo
 }
 
 function ConcentrationChallengeGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [holding, setHolding] = useState(false);
   const [best, setBest] = useState(0);
   const [current, setCurrent] = useState(0);
@@ -2235,7 +2257,7 @@ function ConcentrationChallengeGame({ onBack, onComplete }: { onBack: () => void
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Concentration</Text>
       <Text style={styles.gameSubtitle}>Press & hold to stay focused</Text>
@@ -2260,6 +2282,7 @@ function ConcentrationChallengeGame({ onBack, onComplete }: { onBack: () => void
 }
 
 function BreatheMountainGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [cycle, setCycle] = useState(0);
   const [phase, setPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
   const [running, setRunning] = useState(false);
@@ -2301,7 +2324,7 @@ function BreatheMountainGame({ onBack, onComplete }: { onBack: () => void; onCom
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Breathe Mountain</Text>
       <Text style={styles.gameSubtitle}>5 calm breathing cycles</Text>
@@ -2329,6 +2352,7 @@ function BreatheMountainGame({ onBack, onComplete }: { onBack: () => void; onCom
 
 // Stroop Challenge - Tests attention and inhibition (HARDER VERSION)
 function StroopChallengeGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [score, setScore] = useState(0);
   const [round, setRound] = useState(1);
   const [level, setLevel] = useState(1);
@@ -2489,7 +2513,7 @@ function StroopChallengeGame({ onBack, onComplete }: { onBack: () => void; onCom
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Stroop Challenge</Text>
       <Text style={styles.gameSubtitle}>What COLOR is the word displayed in?</Text>
@@ -2573,6 +2597,7 @@ function StroopChallengeGame({ onBack, onComplete }: { onBack: () => void; onCom
 
 // N-Back Memory - Working memory training
 function NBackGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [nLevel, setNLevel] = useState(2); // Start with 2-back
   const [sequence, setSequence] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -2714,7 +2739,7 @@ function NBackGame({ onBack, onComplete }: { onBack: () => void; onComplete: (sc
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>{nLevel}-Back Memory</Text>
       <Text style={styles.gameSubtitle}>Does this match the item from {nLevel} steps ago?</Text>
@@ -2792,6 +2817,7 @@ function NBackGame({ onBack, onComplete }: { onBack: () => void; onComplete: (sc
 
 // Pattern Recognition - Complete visual sequences
 function PatternRecognitionGame({ onBack, onComplete }: { onBack: () => void; onComplete: (score: number) => void }) {
+  const { t } = useTranslation();
   const [level, setLevel] = useState(1);
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
@@ -2926,7 +2952,7 @@ function PatternRecognitionGame({ onBack, onComplete }: { onBack: () => void; on
   return (
     <View style={styles.gameContainer}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back to Games</Text>
+        <Text style={styles.backButtonText}>{t('wellness.gamesHub.backToGames', '← Back to Games')}</Text>
       </TouchableOpacity>
       <Text style={styles.gameTitle}>Pattern Match</Text>
       <Text style={styles.gameSubtitle}>Complete the sequence</Text>

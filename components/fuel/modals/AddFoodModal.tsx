@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
+import { useTranslation } from 'react-i18next';
 
 interface AddFoodModalProps {
   visible: boolean;
@@ -13,6 +14,7 @@ interface AddFoodModalProps {
 }
 
 export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalProps) {
+  const { t } = useTranslation();
   const createFood = useMutation(api.foodCatalog.createFood);
 
   const [step, setStep] = useState(1);
@@ -34,7 +36,7 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
 
   const handleSave = async () => {
     if (!form.name || !form.calories || !form.totalFat || !form.totalCarbs || !form.protein) {
-      setError('Please fill in all required fields');
+      setError(t('modals.addFood.error', 'Please fill in all required fields'));
       return;
     }
 
@@ -52,10 +54,10 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
         fat: parseFloat(form.totalFat) || 0,
       });
 
-      Alert.alert('Success', 'Food/ingredient added!');
+      Alert.alert(t('modals.addFood.successTitle', 'Success'), t('modals.addFood.successMsg', 'Food/ingredient added!'));
       handleClose();
     } catch {
-      setError('Failed to save. Please try again.');
+      setError(t('modals.addFood.errorFailed', 'Failed to save. Please try again.'));
     } finally {
       setSaving(false);
     }
@@ -74,7 +76,7 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleClose}>
       <SafeAreaView style={styles.modalContainer} edges={['top', 'bottom']}>
         <View style={styles.modalHeader}>
-          <Text style={styles.modalTitle}>Add Custom Food</Text>
+          <Text style={styles.modalTitle}>{t('modals.addFood.title', 'Add Custom Food')}</Text>
           <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
             <Ionicons name="close" size={24} color="#64748b" />
           </TouchableOpacity>
@@ -91,13 +93,13 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
                 <View style={styles.stepDot} />
               </View>
 
-              <Text style={styles.stepTitle}>Basic Information</Text>
+              <Text style={styles.stepTitle}>{t('modals.addFood.basicInfo', 'Basic Information')}</Text>
               
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Food Name <Text style={styles.required}>*</Text></Text>
+                <Text style={styles.label}>{t('modals.addFood.foodName', 'Food Name')} <Text style={styles.required}>*</Text></Text>
                 <TextInput 
                   style={styles.input} 
-                  placeholder="e.g. Scrambled Eggs" 
+                  placeholder={t('modals.addFood.namePlaceholder', 'e.g. Scrambled Eggs')} 
                   value={form.name} 
                   onChangeText={(v) => handleChange('name', v)} 
                   placeholderTextColor="#94a3b8"
@@ -105,10 +107,10 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Brand (Optional)</Text>
+                <Text style={styles.label}>{t('modals.addFood.brand', 'Brand (Optional)')}</Text>
                 <TextInput 
                   style={styles.input} 
-                  placeholder="e.g. Happy Farms" 
+                  placeholder={t('modals.addFood.brandPlaceholder', 'e.g. Happy Farms')} 
                   value={form.brand} 
                   onChangeText={(v) => handleChange('brand', v)} 
                   placeholderTextColor="#94a3b8"
@@ -116,7 +118,7 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Serving Size</Text>
+                <Text style={styles.label}>{t('modals.addFood.servingSize', 'Serving Size')}</Text>
                 <View style={styles.servingSelector}>
                   {['100g', '100ml', '1cup', '1piece'].map((size) => (
                     <TouchableOpacity
@@ -125,7 +127,7 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
                       onPress={() => handleChange('servingSize', size)}
                     >
                       <Text style={[styles.servingOptionText, form.servingSize === size && styles.servingOptionTextActive]}>
-                        per {size}
+                        {t('modals.addFood.per', 'per')} {t(`modals.addFood.sizes.${size}`, size)}
                       </Text>
                     </TouchableOpacity>
                   ))}
@@ -137,7 +139,7 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
                 onPress={() => setStep(2)} 
                 disabled={!form.name}
               >
-                <Text style={styles.primaryButtonText}>Next: Nutrition</Text>
+                <Text style={styles.primaryButtonText}>{t('modals.addFood.nextNutrition', 'Next: Nutrition')}</Text>
                 <Ionicons name="arrow-forward" size={18} color="#ffffff" />
               </TouchableOpacity>
             </View>
@@ -153,13 +155,13 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
                 <View style={styles.stepDot} />
               </View>
 
-              <Text style={styles.stepTitle}>Nutrition Info</Text>
-              <Text style={styles.stepSubtitle}>Enter values for {form.servingSize}</Text>
+              <Text style={styles.stepTitle}>{t('modals.addFood.nutritionInfo', 'Nutrition Info')}</Text>
+              <Text style={styles.stepSubtitle}>{t('modals.addFood.enterValues', 'Enter values for')} {t(`modals.addFood.sizes.${form.servingSize}`, form.servingSize)}</Text>
 
               <View style={styles.macroGrid}>
                 <View style={styles.macroCard}>
                   <Text style={styles.macroEmoji}>🔥</Text>
-                  <Text style={styles.macroLabel}>Calories</Text>
+                  <Text style={styles.macroLabel}>{t('modals.addFood.calories', 'Calories')}</Text>
                   <TextInput 
                     style={styles.macroInput} 
                     placeholder="0" 
@@ -174,7 +176,7 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
 
                 <View style={styles.macroCard}>
                    <Text style={styles.macroEmoji}>🍗</Text>
-                  <Text style={styles.macroLabel}>Protein</Text>
+                  <Text style={styles.macroLabel}>{t('modals.addFood.protein', 'Protein')}</Text>
                   <TextInput 
                     style={styles.macroInput} 
                     placeholder="0" 
@@ -189,7 +191,7 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
 
                 <View style={styles.macroCard}>
                    <Text style={styles.macroEmoji}>🍚</Text>
-                  <Text style={styles.macroLabel}>Carbs</Text>
+                  <Text style={styles.macroLabel}>{t('modals.addFood.carbs', 'Carbs')}</Text>
                   <TextInput 
                     style={styles.macroInput} 
                     placeholder="0" 
@@ -204,7 +206,7 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
 
                 <View style={styles.macroCard}>
                    <Text style={styles.macroEmoji}>🥜</Text>
-                  <Text style={styles.macroLabel}>Fat</Text>
+                  <Text style={styles.macroLabel}>{t('modals.addFood.fat', 'Fat')}</Text>
                   <TextInput 
                     style={styles.macroInput} 
                     placeholder="0" 
@@ -220,14 +222,14 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
 
               <View style={styles.buttonRow}>
                 <TouchableOpacity style={styles.secondaryButton} onPress={() => setStep(1)}>
-                  <Text style={styles.secondaryButtonText}>Back</Text>
+                  <Text style={styles.secondaryButtonText}>{t('modals.addFood.back', 'Back')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.primaryButton, styles.flexButton, (!form.calories || !form.totalFat || !form.totalCarbs || !form.protein) && styles.buttonDisabled]}
                   onPress={() => setStep(3)}
                   disabled={!form.calories || !form.totalFat || !form.totalCarbs || !form.protein}
                 >
-                  <Text style={styles.primaryButtonText}>Next: Review</Text>
+                  <Text style={styles.primaryButtonText}>{t('modals.addFood.nextReview', 'Next: Review')}</Text>
                   <Ionicons name="arrow-forward" size={18} color="#ffffff" />
                 </TouchableOpacity>
               </View>
@@ -244,12 +246,12 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
                 <View style={[styles.stepDot, styles.stepDotActive]} />
               </View>
 
-              <Text style={styles.stepTitle}>Review & Save</Text>
+              <Text style={styles.stepTitle}>{t('modals.addFood.reviewSave', 'Review & Save')}</Text>
               
               <View style={styles.reviewCard}>
                 <View style={styles.reviewHeader}>
                   <Text style={styles.reviewName}>{form.name}</Text>
-                  {form.brand ? <Text style={styles.reviewBrand}>by {form.brand}</Text> : null}
+                  {form.brand ? <Text style={styles.reviewBrand}>{t('modals.addFood.by', 'by')} {form.brand}</Text> : null}
                   <View style={styles.reviewBadge}>
                     <Text style={styles.reviewBadgeText}>{form.servingSize}</Text>
                   </View>
@@ -263,17 +265,17 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
                   <View style={styles.reviewMacroDivider} />
                   <View style={styles.reviewMacroItem}>
                     <Text style={styles.reviewMacroValue}>{form.protein}g</Text>
-                    <Text style={styles.reviewMacroLabel}>Protein</Text>
+                    <Text style={styles.reviewMacroLabel}>{t('modals.addFood.protein', 'Protein')}</Text>
                   </View>
                   <View style={styles.reviewMacroDivider} />
                   <View style={styles.reviewMacroItem}>
                     <Text style={styles.reviewMacroValue}>{form.totalCarbs}g</Text>
-                    <Text style={styles.reviewMacroLabel}>Carbs</Text>
+                    <Text style={styles.reviewMacroLabel}>{t('modals.addFood.carbs', 'Carbs')}</Text>
                   </View>
                   <View style={styles.reviewMacroDivider} />
                   <View style={styles.reviewMacroItem}>
                     <Text style={styles.reviewMacroValue}>{form.totalFat}g</Text>
-                    <Text style={styles.reviewMacroLabel}>Fat</Text>
+                    <Text style={styles.reviewMacroLabel}>{t('modals.addFood.fat', 'Fat')}</Text>
                   </View>
                 </View>
               </View>
@@ -282,10 +284,10 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
 
               <View style={styles.buttonRow}>
                 <TouchableOpacity style={styles.secondaryButton} onPress={() => setStep(2)}>
-                  <Text style={styles.secondaryButtonText}>Back</Text>
+                  <Text style={styles.secondaryButtonText}>{t('modals.addFood.back', 'Back')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.primaryButton, styles.flexButton, saving && styles.buttonDisabled]} onPress={handleSave} disabled={saving}>
-                  <Text style={styles.primaryButtonText}>{saving ? 'Saving...' : 'Save Food'}</Text>
+                  <Text style={styles.primaryButtonText}>{saving ? t('modals.addFood.saving', 'Saving...') : t('modals.addFood.saveFood', 'Save Food')}</Text>
                   {saving ? null : <Ionicons name="checkmark" size={18} color="#ffffff" />}
                 </TouchableOpacity>
               </View>

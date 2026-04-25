@@ -7,6 +7,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Alert, Modal, Image, Pressable,
@@ -160,6 +161,7 @@ export default function ProfileScreen() {
   const dbAchievements = (useQuery(api.achievements.getUserAchievements, convexUser?._id ? { userId: convexUser._id } : 'skip') ?? []) as any[];
   const gardenState = useQuery(api.mindworld.getGardenState, convexUser?._id ? { userId: convexUser._id } : 'skip');
   const resetOnboarding = useMutation(api.users.resetOnboarding);
+  const { t } = useTranslation();
 
   // Avatar state — stored in SecureStore
   const defaultAvatarConfig: AvatarConfig = useMemo(() => ({
@@ -195,7 +197,22 @@ export default function ProfileScreen() {
   const avatarGradient = AVATAR_BG_PAIRS[0];
 
   // Stats — respect the user's preferred unit system
-  const goal = convexUser?.fitnessGoal?.replace(/_/g, ' ') ?? '—';
+  const GOAL_PT: Record<string, string> = {
+    lose_weight: 'Perder Peso',
+    build_muscle: 'Ganhar Músculo',
+    maintain: 'Manter',
+    general_health: 'Saúde Geral',
+    improve_endurance: 'Resistência',
+  };
+  const SEX_PT: Record<string, string> = {
+    male: 'Masculino',
+    female: 'Feminino',
+    other: 'Outro',
+  };
+  const goalRaw = convexUser?.fitnessGoal ?? '';
+  const goal = (GOAL_PT[goalRaw] ?? goalRaw.replace(/_/g, ' ')) || '—';
+  const sexRaw = convexUser?.biologicalSex ?? '';
+  const sexLabel = (SEX_PT[sexRaw] ?? sexRaw) || '—';
   const prefersLbsProfile = (convexUser?.preferredUnits?.weight ?? 'kg') === 'lbs';
   const weightRaw = convexUser?.weight ?? 0;
   const weight = weightRaw
@@ -205,18 +222,18 @@ export default function ProfileScreen() {
     : '—';
   const streak = gardenState?.meditationStreak ?? 0;
 
-  const handleSignOut = () => Alert.alert('Sign Out', 'Are you sure?', [
-    { text: 'Cancel', style: 'cancel' },
-    { text: 'Sign Out', style: 'destructive', onPress: async () => { try { await signOut(); router.replace('/login'); } catch { } } },
+  const handleSignOut = () => Alert.alert(t('profile.signOutTitle', 'Terminar Sessão'), t('profile.signOutMsg', 'Tens a certeza?'), [
+    { text: t('common.cancel', 'Cancelar'), style: 'cancel' },
+    { text: t('profile.signOut', 'Terminar Sessão'), style: 'destructive', onPress: async () => { try { await signOut(); router.replace('/login'); } catch { } } },
   ]);
 
   const handleReset = () => Alert.alert(
-    'Restart Onboarding?',
-    'Are you sure you want to restart onboarding? Your current goal and preferences will be reset.',
+    t('profile.restartTitle', 'Reiniciar Onboarding?'),
+    t('profile.restartMsg', 'Tens a certeza que queres reiniciar o onboarding? O teu objetivo e preferências atuais serão redefinidos.'),
     [
-      { text: 'Cancel', style: 'cancel' },
+      { text: t('common.cancel', 'Cancelar'), style: 'cancel' },
       {
-        text: 'Yes, Restart', style: 'destructive', onPress: async () => {
+        text: t('profile.restartYes', 'Sim, Reiniciar'), style: 'destructive', onPress: async () => {
           if (convexUser) { await resetOnboarding({ userId: convexUser._id }); router.replace('/onboarding'); }
         }
       },
@@ -281,7 +298,7 @@ export default function ProfileScreen() {
       <Modal visible={showAvatarPick} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['top']}>
           <View style={s.pickerHeader}>
-            <Text style={s.pickerTitle}>Choose Your Avatar</Text>
+            <Text style={s.pickerTitle}>{t('profile.chooseAvatar', 'Escolhe o teu Avatar')}</Text>
             <TouchableOpacity onPress={() => setShowAvatarPick(false)} style={s.pickerClose}>
               <Ionicons name="close" size={20} color="#1e293b" />
             </TouchableOpacity>
@@ -295,7 +312,7 @@ export default function ProfileScreen() {
             </View>
 
             {/* Hair */}
-            <Text style={s.pickerSectionLbl}>Hair</Text>
+            <Text style={s.pickerSectionLbl}>{t('profile.hair', 'Cabelo')}</Text>
             <View style={s.chipRow}>
               {TOP_STYLES.map(opt => (
                 <TouchableOpacity
@@ -308,7 +325,7 @@ export default function ProfileScreen() {
               ))}
             </View>
 
-            <Text style={s.pickerSectionLbl}>Hair Colour</Text>
+            <Text style={s.pickerSectionLbl}>{t('profile.hairColor', 'Cor do Cabelo')}</Text>
             <View style={s.swatchRow}>
               {HAIR_COLORS.map(c => (
                 <TouchableOpacity
@@ -320,7 +337,7 @@ export default function ProfileScreen() {
             </View>
 
             {/* Face */}
-            <Text style={s.pickerSectionLbl}>Eyes</Text>
+            <Text style={s.pickerSectionLbl}>{t('profile.eyes', 'Olhos')}</Text>
             <View style={s.chipRow}>
               {EYES.map(opt => (
                 <TouchableOpacity
@@ -333,7 +350,7 @@ export default function ProfileScreen() {
               ))}
             </View>
 
-            <Text style={s.pickerSectionLbl}>Mouth</Text>
+            <Text style={s.pickerSectionLbl}>{t('profile.mouth', 'Boca')}</Text>
             <View style={s.chipRow}>
               {MOUTHS.map(opt => (
                 <TouchableOpacity
@@ -346,7 +363,7 @@ export default function ProfileScreen() {
               ))}
             </View>
 
-            <Text style={s.pickerSectionLbl}>Brows</Text>
+            <Text style={s.pickerSectionLbl}>{t('profile.brows', 'Sobrancelhas')}</Text>
             <View style={s.chipRow}>
               {BROWS.map(opt => (
                 <TouchableOpacity
@@ -359,7 +376,7 @@ export default function ProfileScreen() {
               ))}
             </View>
 
-            <Text style={s.pickerSectionLbl}>Beard & Mustache</Text>
+            <Text style={s.pickerSectionLbl}>{t('profile.beard', 'Barba e Bigode')}</Text>
             <View style={s.chipRow}>
               {FACIAL_HAIR.map(opt => (
                 <TouchableOpacity
@@ -372,7 +389,7 @@ export default function ProfileScreen() {
               ))}
             </View>
 
-            <Text style={s.pickerSectionLbl}>Skin Tone</Text>
+            <Text style={s.pickerSectionLbl}>{t('profile.skinTone', 'Tom de Pele')}</Text>
             <View style={s.swatchRow}>
               {SKIN_TONES.map(c => (
                 <TouchableOpacity
@@ -384,7 +401,7 @@ export default function ProfileScreen() {
             </View>
 
             <TouchableOpacity style={s.saveAvatarBtn} onPress={saveAvatar}>
-              <Text style={s.saveAvatarTxt}>Save Avatar</Text>
+              <Text style={s.saveAvatarTxt}>{t('profile.saveAvatar', 'Guardar Avatar')}</Text>
             </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>
@@ -418,11 +435,11 @@ export default function ProfileScreen() {
           {isPro ? (
             <View style={s.proBadge}>
               <Sparkles size={12} color="#d97706" />
-              <Text style={s.proBadgeTxt}>Pro Member</Text>
+              <Text style={s.proBadgeTxt}>{t('profile.proMember', 'Membro Pro')}</Text>
             </View>
           ) : (
             <TouchableOpacity style={s.upgradeChip} onPress={() => router.push('/premium')} activeOpacity={0.85}>
-              <Text style={s.upgradeChipTxt}>✦ Upgrade to Pro</Text>
+              <Text style={s.upgradeChipTxt}>{t('profile.upgradePro', '✦ Atualizar para Pro')}</Text>
             </TouchableOpacity>
           )}
 
@@ -430,7 +447,7 @@ export default function ProfileScreen() {
           <View style={s.statsRow}>
             <View style={s.stat}>
               <Text style={s.statVal}>{level}</Text>
-              <Text style={s.statLbl}>Level</Text>
+              <Text style={s.statLbl}>{t('profile.level', 'Nível')}</Text>
             </View>
             <View style={s.statDivider} />
             <View style={s.stat}>
@@ -440,12 +457,12 @@ export default function ProfileScreen() {
             <View style={s.statDivider} />
             <View style={s.stat}>
               <Text style={[s.statVal, { color: '#fcd34d' }]}>{tokens}</Text>
-              <Text style={s.statLbl}>Tokens</Text>
+              <Text style={s.statLbl}>{t('profile.tokens', 'Fichas')}</Text>
             </View>
             <View style={s.statDivider} />
             <View style={s.stat}>
               <Text style={s.statVal}>{streak}</Text>
-              <Text style={s.statLbl}>Streak</Text>
+              <Text style={s.statLbl}>{t('profile.streak', 'Sequência')}</Text>
             </View>
           </View>
         </LinearGradient>
@@ -456,27 +473,27 @@ export default function ProfileScreen() {
         {/* ── QUICK STATS ── */}
         <View style={s.quickStats}>
           {[
-            { icon: '🎯', label: 'Goal', value: goal },
-            { icon: '⚖️', label: 'Weight', value: weight },
-            { icon: convexUser?.biologicalSex === 'female' ? '🌸' : '⚡', label: 'Sex', value: convexUser?.biologicalSex ?? '—' },
-            { icon: '😴', label: 'Sleep', value: convexUser?.sleepHours ? `${convexUser.sleepHours}h` : '—' },
+            { icon: '🎯', label: t('profile.goal', 'Objetivo'), value: goal },
+            { icon: '⚖️', label: t('profile.weight', 'Peso'), value: weight },
+            { icon: convexUser?.biologicalSex === 'female' ? '🌸' : '⚡', label: t('profile.sex', 'Sexo'), value: sexLabel },
+            { icon: '😴', label: t('profile.sleep', 'Sono'), value: convexUser?.sleepHours ? `${convexUser.sleepHours}h` : '—' },
           ].map(item => (
             <View key={item.label} style={s.quickStatItem}>
               <Text style={s.quickStatEmoji}>{item.icon}</Text>
-              <Text style={s.quickStatVal}>{item.value}</Text>
+              <Text style={s.quickStatVal} numberOfLines={1} adjustsFontSizeToFit>{item.value}</Text>
               <Text style={s.quickStatLbl}>{item.label}</Text>
             </View>
           ))}
         </View>
 
         {/* ── ACCOUNT ── */}
-        <Section title="Account">
+        <Section title={t('profile.sectionAccount', 'Conta')}>
           {!isPro && (
             <>
               <MenuRow
                 icon={<Sparkles size={18} color="#f59e0b" />} iconBg="#fef3c7"
-                label="Go Premium" sub="Unlock all features & AI plans"
-                badge="✦ Upgrade"
+                label={t('profile.goPremium', 'Ir Premium')} sub={t('profile.goPremiumSub', 'Desbloquear todas as funcionalidades e planos IA')}
+                badge={t('profile.upgrade', '✦ Atualizar')}
                 onPress={() => router.push('/premium')}
               />
               <View style={s.divider} />
@@ -484,28 +501,28 @@ export default function ProfileScreen() {
           )}
           <MenuRow
             icon={<Sparkles size={18} color="#6366f1" />} iconBg="#eef2ff"
-            label="My Blueprint" sub="Nutrition, fitness & wellness plan"
+            label={t('profile.myBlueprint', 'O Meu Plano')} sub={t('profile.myBlueprintSub', 'Plano de nutrição, fitness e bem-estar')}
             onPress={() => router.push('/personalized-plan')}
           />
           <View style={s.divider} />
           <MenuRow
             icon={<TrendingDown size={18} color="#ef4444" />} iconBg="#fee2e2"
-            label="Sugar Control" sub="90-day reset + daily check-ins"
+            label={t('profile.sugarControl', 'Controlo de Açúcar')} sub={t('profile.sugarControlSub', 'Reset de 90 dias + check-ins diários')}
             onPress={() => router.push('/sugar-dashboard')}
           />
           <View style={s.divider} />
           <MenuRow
             icon={<RefreshCcw size={18} color="#f97316" />} iconBg="#fff7ed"
-            label="Restart Goal" sub="Reset biometrics & onboarding"
+            label={t('profile.restartGoal', 'Reiniciar Objetivo')} sub={t('profile.restartGoalSub', 'Redefinir biómetràs e onboarding')}
             onPress={handleReset}
           />
         </Section>
 
         {/* ── HEALTH & TRACKING ── */}
-        <Section title="Health & Tracking">
+        <Section title={t('profile.sectionHealth', 'Saúde e Monitorização')}>
           <MenuRow
             icon={<Scale size={18} color="#0ea5e9" />} iconBg="#f0f9ff"
-            label="Weight Journey" sub="Logs, measurements & progress photos"
+            label={t('profile.weightJourney', 'Jornada de Peso')} sub={t('profile.weightJourneySub', 'Registos, medidas e fotos de progresso')}
             onPress={() => router.push('/weightmanagement' as any)}
           />
           <View style={s.divider} />
@@ -514,23 +531,23 @@ export default function ProfileScreen() {
               ? <Calendar size={18} color="#db2777" />
               : <Zap size={18} color="#3b82f6" />}
             iconBg={convexUser?.biologicalSex === 'female' ? '#fdf2f8' : '#eff6ff'}
-            label={convexUser?.biologicalSex === 'female' ? "Women's Health" : "Men's Health"}
-            sub="Hormonal blueprint & daily protocols"
+            label={convexUser?.biologicalSex === 'female' ? t('profile.womensHealth', 'Saúde Feminina') : t('profile.mensHealth', 'Saúde Masculina')}
+            sub={t('profile.hormonal', 'Plano hormonal e protocolos diários')}
             onPress={() => router.push(convexUser?.biologicalSex === 'female' ? '/womens-health' : '/mens-health')}
           />
           <View style={s.divider} />
           <MenuRow
             icon={<Clock size={18} color="#f59e0b" />} iconBg="#fffbeb"
-            label="Fasting Tracker" sub="Protocols, timers & streaks"
+            label={t('profile.fastingTracker', 'Rastreador de Jejum')} sub={t('profile.fastingTrackerSub', 'Protocolos, temporizadores e sequências')}
             onPress={() => router.push('/fasting')}
           />
         </Section>
 
         {/* ── TOOLS ── */}
-        <Section title="Tools">
+        <Section title={t('profile.sectionTools', 'Ferramentas')}>
           <MenuRow
             icon={<MessageSquare size={18} color="#2563eb" />} iconBg="#eff6ff"
-            label="AI Coach" sub="Your precision health expert"
+            label={t('profile.aiCoach', 'Treinador IA')} sub={t('profile.aiCoachSub', 'O teu especialista em saúde de precisão')}
             onPress={() => router.push('/ai-coach')}
           />
           {/* Integrations - Hidden for Lite Build */}
@@ -544,59 +561,59 @@ export default function ProfileScreen() {
           */}
           <MenuRow
             icon={<Dumbbell size={18} color="#7c3aed" />} iconBg="#ede9fe"
-            label="Move" sub="Workouts, steps & exercise log"
+            label={t('profile.move', 'Movimento')} sub={t('profile.moveSub', 'Treinos, passos e registo de exercício')}
             onPress={() => router.push('/move')}
           />
           <View style={s.divider} />
           <MenuRow
             icon={<Utensils size={18} color="#16a34a" />} iconBg="#f0fdf4"
-            label="Fuel" sub="Meal plan & food tracker"
+            label={t('profile.fuel', 'Nutrição')} sub={t('profile.fuelSub', 'Plano de refeições e registo de alimentos')}
             onPress={() => router.push('/fuel')}
           />
           <View style={s.divider} />
           <MenuRow
             icon={<Heart size={18} color="#8b5cf6" />} iconBg="#f5f3ff"
-            label="Wellness" sub="Mood, sleep & meditation"
+            label={t('profile.wellness', 'Bem-estar')} sub={t('profile.wellnessSub', 'Humor, sono e meditação')}
             onPress={() => router.push('/wellness')}
           />
           <View style={s.divider} />
           <MenuRow
             icon={<LayoutGrid size={18} color="#0ea5e9" />} iconBg="#f0f9ff"
-            label="Productivity Hub" sub="Tasks, focus & goals"
+            label={t('profile.productivity', 'Hub de Produtividade')} sub={t('profile.productivitySub', 'Tarefas, foco e objetivos')}
             onPress={() => router.push('/todo')}
           />
           <View style={s.divider} />
           <MenuRow
             icon={<BookOpen size={18} color="#10b981" />} iconBg="#ecfdf5"
-            label="Bluom Library" sub="Curated knowledge & protocols"
+            label={t('profile.library', 'Biblioteca Bluom')} sub={t('profile.librarySub', 'Conhecimento curado e protocolos')}
             onPress={() => router.push('/library')}
           />
           <View style={s.divider} />
           <MenuRow
             icon={<Trophy size={18} color="#d97706" />} iconBg="#fffbeb"
-            label="Achievements" sub={`${unlockedCount} unlocked · ${level} Level`}
+            label={t('profile.achievements', 'Conquistas')} sub={`${unlockedCount} ${t('profile.achievementsUnlocked', 'desbloqueadas')} · ${t('profile.level', 'Nível')} ${level}`}
             onPress={() => router.push('/achievements' as any)}
           />
         </Section>
 
         {/* ── SUPPORT ── */}
-        <Section title="Support">
+        <Section title={t('profile.sectionSupport', 'Suporte')}>
           <MenuRow
             icon={<Bug size={18} color="#64748b" />} iconBg="#f1f5f9"
-            label="Help & Feedback"
+            label={t('profile.helpFeedback', 'Ajuda e Feedback')}
             onPress={() => router.push('/support')}
           />
           <View style={s.divider} />
           <MenuRow
             icon={<Settings size={18} color="#2563eb" />} iconBg="#eff6ff"
-            label="Settings" sub="Units, goals, notifications"
+            label={t('profile.settings', 'Definições')} sub={t('profile.settingsSub', 'Unidades, objetivos, notificações')}
             onPress={() => router.push('/settings')}
           />
         </Section>
 
         {/* ── ADMIN DEBUG ── */}
         {convexUser?.isAdmin && (
-          <Section title="Admin Debug">
+          <Section title={t('profile.sectionAdmin', 'Debug Admin')}>
             <MenuRow
               icon={<Sparkles size={18} color="#0284c7" />} iconBg="#e0f2fe"
               label={rcLoading ? 'Loading RevenueCat…' : 'Refresh RevenueCat'}
@@ -615,14 +632,14 @@ export default function ProfileScreen() {
         <View style={s.section}>
           <TouchableOpacity style={s.signOutBtn} onPress={handleSignOut} activeOpacity={0.8}>
             <LogOut size={18} color="#ef4444" />
-            <Text style={s.signOutTxt}>Sign Out</Text>
+            <Text style={s.signOutTxt}>{t('profile.signOut', 'Terminar Sessão')}</Text>
           </TouchableOpacity>
         </View>
 
         {/* Footer */}
         <View style={s.footer}>
           <Image source={require('../../assets/images/logo.png')} style={s.footerLogo} resizeMode="contain" />
-          <Text style={s.footerTxt}>Bluom · Life Optimised</Text>
+          <Text style={s.footerTxt}>Bluom · {t('profile.footer', 'Vida Optimizada')}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

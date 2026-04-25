@@ -13,6 +13,7 @@ import {
     Switch,
     Platform,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Image } from 'expo-image';
 import {
     Dumbbell,
@@ -48,7 +49,9 @@ const ALL_MUSCLE_GROUPS = [
 
 const EMPTY_FORM = {
     exerciseName: '',
+    title_pt: '', title_es: '', title_fr: '', title_de: '', title_nl: '',
     exerciseDescription: '',
+    desc_pt: '', desc_es: '', desc_fr: '', desc_de: '', desc_nl: '',
     // Multi-select types — stored as array
     exerciseTypes: ['Strength'] as string[],
     instructions: '',
@@ -166,6 +169,7 @@ function DropdownField({
 }
 
 export default function WorkoutsManager() {
+    const { t } = useTranslation();
     const [search, setSearch] = useState('');
     const [filterType, setFilterType] = useState('All');
     const [filterLevel, setFilterLevel] = useState('All');
@@ -222,9 +226,21 @@ export default function WorkoutsManager() {
             }]
             : [];
 
+        const buildLocalizations = (pt: string, es: string, fr: string, de: string, nl: string) => {
+            const obj: Record<string, string> = {};
+            if (pt.trim()) obj.pt = pt.trim();
+            if (es.trim()) obj.es = es.trim();
+            if (fr.trim()) obj.fr = fr.trim();
+            if (de.trim()) obj.de = de.trim();
+            if (nl.trim()) obj.nl = nl.trim();
+            return Object.keys(obj).length > 0 ? obj : undefined;
+        };
+
         return {
             title: form.exerciseName.trim(),
+            titleLocalizations: buildLocalizations(form.title_pt, form.title_es, form.title_fr, form.title_de, form.title_nl),
             description: form.exerciseDescription.trim(),
+            descriptionLocalizations: buildLocalizations(form.desc_pt, form.desc_es, form.desc_fr, form.desc_de, form.desc_nl),
             thumbnail: form.thumbnail.trim(),
             thumbnailMale: form.hasGenderVariants ? (form.thumbnailMale.trim() || undefined) : undefined,
             thumbnailFemale: form.hasGenderVariants ? (form.thumbnailFemale.trim() || undefined) : undefined,
@@ -247,7 +263,7 @@ export default function WorkoutsManager() {
 
     const handleSave = async () => {
         if (!form.exerciseName.trim()) {
-            Alert.alert('Error', 'Exercise Name is required');
+            Alert.alert(t('common.error', 'Error'), t('admin.errorRequiredName', 'Exercise Name is required'));
             return;
         }
         try {
@@ -261,7 +277,7 @@ export default function WorkoutsManager() {
             setEditingWorkout(null);
             setForm({ ...EMPTY_FORM });
         } catch (error: any) {
-            Alert.alert('Error', error?.message ?? 'Failed to save exercise');
+            Alert.alert(t('common.error', 'Error'), error?.message ?? t('admin.errorSave', 'Failed to save exercise'));
         }
     };
 
@@ -269,14 +285,14 @@ export default function WorkoutsManager() {
         // On web (admin panel) Alert.alert maps to window.confirm which is unreliable
         // with multiple buttons — use window.confirm directly on web.
         const confirmed = Platform.OS === 'web'
-            ? (window as any).confirm(`Delete "${title}"?\n\nThis cannot be undone.`)
+            ? (window as any).confirm(t('admin.deleteConfirm', 'Delete "{{title}}"? This cannot be undone.', { title }))
             : await new Promise<boolean>(resolve =>
                 Alert.alert(
-                    'Delete Exercise',
-                    `Delete "${title}"? This cannot be undone.`,
+                    t('admin.deleteTitle', 'Delete Exercise'),
+                    t('admin.deleteConfirm', 'Delete "{{title}}"? This cannot be undone.', { title }),
                     [
-                        { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
-                        { text: 'Delete', style: 'destructive', onPress: () => resolve(true) },
+                        { text: t('common.cancel', 'Cancel'), style: 'cancel', onPress: () => resolve(false) },
+                        { text: t('admin.delete', 'Delete'), style: 'destructive', onPress: () => resolve(true) },
                     ]
                 )
             );
@@ -295,10 +311,14 @@ export default function WorkoutsManager() {
 
     const openEdit = (w: any) => {
         const ex = w.exercises?.[0] ?? {};
+        const tl = w.titleLocalizations || {};
+        const dl = w.descriptionLocalizations || {};
         setEditingWorkout(w);
         setForm({
             exerciseName: ex.name ?? w.title ?? '',
+            title_pt: tl.pt || '', title_es: tl.es || '', title_fr: tl.fr || '', title_de: tl.de || '', title_nl: tl.nl || '',
             exerciseDescription: ex.description ?? w.description ?? '',
+            desc_pt: dl.pt || '', desc_es: dl.es || '', desc_fr: dl.fr || '', desc_de: dl.de || '', desc_nl: dl.nl || '',
             exerciseTypes: w.categories ?? (ex.exerciseTypes ?? (ex.exerciseType ? [ex.exerciseType] : ['Strength'])),
             instructions: (ex.instructions ?? []).join('\n'),
             primaryMuscles: (ex.primaryMuscles ?? []).join(', '),
@@ -336,7 +356,7 @@ export default function WorkoutsManager() {
             )}
             <View style={styles.workoutInfo}>
                 <View style={styles.workoutHeader}>
-                    <Text style={styles.workoutTitle} numberOfLines={1}>{item.title}</Text>
+                    <Text style={styles.workoutTitle} numberOfLines={1}>{t(`db.${item.title?.replace(/\s+/g, '')}`, item.title) as string}</Text>
                     <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
                         {(item.videoUrlMale || item.videoUrlFemale) && (
                             <View style={styles.genderBadge}>
@@ -351,18 +371,18 @@ export default function WorkoutsManager() {
                             <Text style={[styles.levelText, {
                                 color: item.difficulty === 'Advanced' ? '#ef4444'
                                     : item.difficulty === 'Intermediate' ? '#f59e0b' : '#10b981'
-                            }]}>{item.difficulty?.toUpperCase()}</Text>
+                            }]}>{(t(`admin.${item.difficulty?.toLowerCase()}`, item.difficulty) as string).toUpperCase()}</Text>
                         </View>
                     </View>
                 </View>
                 <Text style={styles.instructorName} numberOfLines={1}>
-                    {(item.categories ?? [item.category]).join(' · ')} {item.equipment?.length ? `• ${item.equipment.join(', ')}` : '• Bodyweight'}
+                    {(item.categories ?? [item.category]).map((c: string) => t(`admin.${c.replace(/[\s/]/g, '').toLowerCase()}`, c) as string).join(' · ')} {item.equipment?.length ? `• ${item.equipment.map((e: string) => t(`db.${e.replace(/\s+/g, '')}`, e) as string).join(', ')}` : `• ${t('admin.calisthenicsBodyweight', 'Bodyweight') as string}`}
                 </Text>
                 {(item.muscleGroupTags?.length > 0) && (
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 2 }}>
-                        {item.muscleGroupTags.slice(0, 4).map((t: string) => (
-                            <View key={t} style={styles.tagChip}>
-                                <Text style={styles.tagChipText}>{t}</Text>
+                        {item.muscleGroupTags.slice(0, 4).map((mt: string) => (
+                            <View key={mt} style={styles.tagChip}>
+                                <Text style={styles.tagChipText}>{t(`admin.${mt.replace(/[\s/]/g, '').toLowerCase()}`, mt) as string}</Text>
                             </View>
                         ))}
                         {item.muscleGroupTags.length > 4 && (
@@ -390,8 +410,8 @@ export default function WorkoutsManager() {
             {/* Header */}
             <View style={styles.header}>
                 <View style={{ flex: 1 }}>
-                    <Text style={styles.title}>Exercise Library</Text>
-                    <Text style={styles.subtitle}>Manage exercises for workout plans</Text>
+                    <Text style={styles.title}>{t('admin.library', 'Exercise Library')}</Text>
+                    <Text style={styles.subtitle}>{t('admin.manageExercises', 'Manage exercises for workout plans')}</Text>
                 </View>
                 <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
                     <TouchableOpacity onPress={() => setShowSearch(!showSearch)} style={{ padding: 6 }}>
@@ -402,7 +422,7 @@ export default function WorkoutsManager() {
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.addButton} onPress={openNew}>
                         <Plus color="#ffffff" size={20} />
-                        <Text style={styles.addButtonText}>New</Text>
+                        <Text style={styles.addButtonText}>{t('admin.new', 'New')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -413,14 +433,14 @@ export default function WorkoutsManager() {
                     <Search size={18} color="#94a3b8" />
                     <TextInput
                         style={styles.searchInput}
-                        placeholder="Search library..."
+                        placeholder={t('admin.searchLibrary', 'Search library...')}
                         value={search}
                         onChangeText={setSearch}
                         autoFocus
                     />
                     {(filterType !== 'All' || filterLevel !== 'All' || filterMuscle !== 'All') && (
                         <TouchableOpacity onPress={() => { setFilterType('All'); setFilterLevel('All'); setFilterMuscle('All'); }}>
-                            <Text style={{ color: '#2563eb', fontWeight: '700', fontSize: 12 }}>Reset</Text>
+                            <Text style={{ color: '#2563eb', fontWeight: '700', fontSize: 12 }}>{t('admin.reset', 'Reset')}</Text>
                         </TouchableOpacity>
                     )}
                 </View>
@@ -431,7 +451,7 @@ export default function WorkoutsManager() {
                 <View style={{ backgroundColor: '#fff', padding: 16, borderBottomWidth: 1, borderBottomColor: '#f1f5f9', flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
                     <View style={{ flex: 1, minWidth: '30%', marginBottom: 8 }}>
                         <DropdownField 
-                            label="TYPE"
+                            label={t('admin.type', 'TYPE')}
                             options={['All', ...EXERCISE_TYPES]}
                             selected={filterType}
                             onChange={setFilterType}
@@ -440,7 +460,7 @@ export default function WorkoutsManager() {
                     </View>
                     <View style={{ flex: 1, minWidth: '30%', marginBottom: 8 }}>
                         <DropdownField 
-                            label="DIFFICULTY"
+                            label={t('admin.difficulty', 'DIFFICULTY')}
                             options={['All', ...LEVELS]}
                             selected={filterLevel}
                             onChange={setFilterLevel}
@@ -449,7 +469,7 @@ export default function WorkoutsManager() {
                     </View>
                     <View style={{ width: '100%' }}>
                         <DropdownField 
-                            label="MUSCLE GROUP"
+                            label={t('admin.muscleGroup', 'MUSCLE GROUP')}
                             options={['All', ...ALL_MUSCLE_GROUPS]}
                             selected={filterMuscle}
                             onChange={setFilterMuscle}
@@ -460,7 +480,7 @@ export default function WorkoutsManager() {
             )}
 
             <Text style={{ paddingHorizontal: 24, paddingBottom: 8, fontSize: 12, color: '#94a3b8', fontWeight: '600' }}>
-                {workouts ? `${workouts.length} results` : ''}
+                {workouts ? `${workouts.length} ${t('admin.results', 'results')}` : ''}
             </Text>
 
             {/* List */}
@@ -474,7 +494,7 @@ export default function WorkoutsManager() {
                     contentContainerStyle={styles.listContent}
                     ListEmptyComponent={
                         <View style={{ padding: 40, alignItems: 'center' }}>
-                            <Text style={{ color: '#94a3b8', fontSize: 15 }}>No exercises yet</Text>
+                            <Text style={{ color: '#94a3b8', fontSize: 15 }}>{t('admin.noExercisesYet', 'No exercises yet')}</Text>
                         </View>
                     }
                 />
@@ -488,37 +508,57 @@ export default function WorkoutsManager() {
                             <X size={24} color="#64748b" />
                         </TouchableOpacity>
                         <Text style={styles.modalTitle}>
-                            {editingWorkout ? 'Edit Exercise' : 'New Exercise'}
+                            {editingWorkout ? t('admin.editExercise', 'Edit Exercise') : t('admin.newExercise', 'New Exercise')}
                         </Text>
                         <TouchableOpacity onPress={handleSave}>
-                            <Text style={styles.saveBtn}>Save</Text>
+                            <Text style={styles.saveBtn}>{t('admin.save', 'Save')}</Text>
                         </TouchableOpacity>
                     </View>
 
                     <ScrollView style={styles.form} keyboardShouldPersistTaps="handled">
 
                         {/* Exercise Name */}
-                        <Text style={styles.label}>Exercise Name *</Text>
+                        <Text style={styles.label}>{t('admin.exerciseName', 'Exercise Name *')} (EN)</Text>
                         <TextInput
                             style={styles.input}
                             value={form.exerciseName}
                             onChangeText={t => setField('exerciseName', t)}
-                            placeholder="e.g. Ab Wheel Rollout, Barbell Squat"
+                            placeholder={t('admin.exerciseNamePlaceholder', 'e.g. Ab Wheel Rollout, Barbell Squat')}
                         />
+                        <Text style={styles.label}>Name (PT)</Text>
+                        <TextInput style={styles.input} placeholder="ex. Rolo Abdominal" value={form.title_pt} onChangeText={v => setField('title_pt', v)} />
+                        <Text style={styles.label}>Name (ES)</Text>
+                        <TextInput style={styles.input} placeholder="ej. Rodillo Abdominal" value={form.title_es} onChangeText={v => setField('title_es', v)} />
+                        <Text style={styles.label}>Name (FR)</Text>
+                        <TextInput style={styles.input} placeholder="ex. Rouleau Abdominal" value={form.title_fr} onChangeText={v => setField('title_fr', v)} />
+                        <Text style={styles.label}>Name (DE)</Text>
+                        <TextInput style={styles.input} placeholder="z.B. Bauchroller" value={form.title_de} onChangeText={v => setField('title_de', v)} />
+                        <Text style={styles.label}>Name (NL)</Text>
+                        <TextInput style={styles.input} placeholder="bijv. Buikrol" value={form.title_nl} onChangeText={v => setField('title_nl', v)} />
 
                         {/* Exercise Description */}
-                        <Text style={styles.label}>Exercise Description</Text>
+                        <Text style={styles.label}>{t('admin.exerciseDescription', 'Exercise Description')} (EN)</Text>
                         <TextInput
                             style={[styles.input, { height: 80 }]}
                             multiline
                             value={form.exerciseDescription}
                             onChangeText={t => setField('exerciseDescription', t)}
-                            placeholder="What does this exercise target? Brief description."
+                            placeholder={t('admin.exerciseDescriptionPlaceholder', 'What does this exercise target? Brief description.')}
                         />
+                        <Text style={styles.label}>Description (PT)</Text>
+                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descrição em português..." value={form.desc_pt} onChangeText={v => setField('desc_pt', v)} />
+                        <Text style={styles.label}>Description (ES)</Text>
+                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descripción en español..." value={form.desc_es} onChangeText={v => setField('desc_es', v)} />
+                        <Text style={styles.label}>Description (FR)</Text>
+                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Description en français..." value={form.desc_fr} onChangeText={v => setField('desc_fr', v)} />
+                        <Text style={styles.label}>Description (DE)</Text>
+                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschreibung auf Deutsch..." value={form.desc_de} onChangeText={v => setField('desc_de', v)} />
+                        <Text style={styles.label}>Description (NL)</Text>
+                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschrijving in het Nederlands..." value={form.desc_nl} onChangeText={v => setField('desc_nl', v)} />
 
                         {/* Exercise Type — multi-select */}
                         <DropdownField
-                            label="Exercise Type (select all that apply)"
+                            label={t('admin.exerciseTypeLabel', 'Exercise Type (select all that apply)')}
                             options={EXERCISE_TYPES}
                             selected={form.exerciseTypes}
                             onChange={(v: string[]) => setField('exerciseTypes', v)}
@@ -531,18 +571,18 @@ export default function WorkoutsManager() {
                         )}
 
                         {/* Instructions */}
-                        <Text style={styles.label}>Instructions — one step per line</Text>
-                        <Text style={styles.fieldHint}>These appear as a numbered list in the app</Text>
+                        <Text style={styles.label}>{t('admin.instructionsLabel', 'Instructions — one step per line')}</Text>
+                        <Text style={styles.fieldHint}>{t('admin.instructionsHint', 'These appear as a numbered list in the app')}</Text>
                         <TextInput
                             style={[styles.input, { height: 130, marginTop: 6 }]}
                             multiline
                             value={form.instructions}
                             onChangeText={t => setField('instructions', t)}
-                            placeholder={"Kneel and grip the wheel shoulder-width\nBrace core and exhale\nRoll forward until hips extend\nPull back slowly to start"}
+                            placeholder={t('admin.instructionsPlaceholder', "Kneel and grip the wheel shoulder-width\nBrace core and exhale\nRoll forward until hips extend\nPull back slowly to start")}
                         />
 
                         {/* Primary Muscles */}
-                        <Text style={styles.label}>Primary Muscles (comma-separated)</Text>
+                        <Text style={styles.label}>{t('admin.primaryMuscles', 'Primary Muscles (comma-separated)')}</Text>
                         <TextInput
                             style={styles.input}
                             value={form.primaryMuscles}
@@ -551,7 +591,7 @@ export default function WorkoutsManager() {
                         />
 
                         {/* Secondary Muscles */}
-                        <Text style={styles.label}>Secondary Muscles (comma-separated)</Text>
+                        <Text style={styles.label}>{t('admin.secondaryMuscles', 'Secondary Muscles (comma-separated)')}</Text>
                         <TextInput
                             style={styles.input}
                             value={form.secondaryMuscles}
@@ -562,10 +602,10 @@ export default function WorkoutsManager() {
                         {/* Muscle Group Tags — for the Browse by Muscle Group filter cards */}
                         <View style={styles.sectionSeparator}>
                             <Tag size={14} color="#64748b" />
-                            <Text style={styles.sectionSeparatorText}>MUSCLE GROUP FILTER TAGS</Text>
+                            <Text style={styles.sectionSeparatorText}>{t('admin.muscleGroupFilterTags', 'MUSCLE GROUP FILTER TAGS')}</Text>
                         </View>
                         <Text style={styles.fieldHint}>
-                            These tag this exercise to the Browse by Muscle Group cards in the Workouts tab.
+                            {t('admin.muscleGroupFilterHint', 'These tag this exercise to the Browse by Muscle Group cards in the Workouts tab.')}
                         </Text>
                         <DropdownField
                             label=""
@@ -576,16 +616,16 @@ export default function WorkoutsManager() {
                         />
 
                         {/* Equipment */}
-                        <Text style={styles.label}>Required Equipment (comma-separated)</Text>
+                        <Text style={styles.label}>{t('admin.requiredEquipment', 'Required Equipment (comma-separated)')}</Text>
                         <TextInput
                             style={styles.input}
                             value={form.equipment}
                             onChangeText={t => setField('equipment', t)}
                             placeholder="e.g. Hyperextension bench, Roman chair"
                         />
-                        <Text style={styles.label}>Optional / Alternative Equipment (comma-separated)</Text>
+                        <Text style={styles.label}>{t('admin.optionalEquipment', 'Optional / Alternative Equipment (comma-separated)')}</Text>
                         <Text style={{ fontSize: 11, color: '#94a3b8', marginBottom: 6, marginTop: -4 }}>
-                            Items listed here appear as "or:" alternatives in the app
+                            {t('admin.optionalEquipmentHint', 'Items listed here appear as "or:" alternatives in the app')}
                         </Text>
                         <TextInput
                             style={styles.input}
@@ -596,7 +636,7 @@ export default function WorkoutsManager() {
 
                         {/* Difficulty */}
                         <DropdownField
-                            label="Difficulty"
+                            label={t('admin.difficultyLabel', 'Difficulty')}
                             options={LEVELS}
                             selected={form.difficulty}
                             onChange={(v: string) => setField('difficulty', v)}
@@ -604,7 +644,7 @@ export default function WorkoutsManager() {
                         />
 
                         {/* Thumbnail URL */}
-                        <Text style={styles.label}>Thumbnail URL — Fallback / Unisex (R2)</Text>
+                        <Text style={styles.label}>{t('admin.thumbnailUrl', 'Thumbnail URL — Fallback / Unisex (R2)')}</Text>
                         <TextInput
                             style={styles.input}
                             value={form.thumbnail}
@@ -619,17 +659,16 @@ export default function WorkoutsManager() {
                         {/* ── Gender Thumbnails & Videos — always visible ── */}
                         <View style={styles.sectionSeparator}>
                             <Users size={14} color="#8b5cf6" />
-                            <Text style={[styles.sectionSeparatorText, { color: '#8b5cf6' }]}>THUMBNAILS &amp; VIDEOS BY GENDER</Text>
+                            <Text style={[styles.sectionSeparatorText, { color: '#8b5cf6' }]}>{t('admin.thumbnailsVideosGender', 'THUMBNAILS & VIDEOS BY GENDER')}</Text>
                         </View>
                         <Text style={styles.fieldHint}>
-                            Enable the toggle to upload separate ♂ Male and ♀ Female thumbnails and videos.
-                            The app picks the right version based on the user's profile. Leave blank to use the fallback above.
+                            {t('admin.genderToggleHint', 'Enable the toggle to upload separate ♂ Male and ♀ Female thumbnails and videos. The app picks the right version based on the user\'s profile. Leave blank to use the fallback above.')}
                         </Text>
 
                         {/* Gender variants toggle */}
                         <View style={styles.toggleRow}>
                             <View style={{ flex: 1 }}>
-                                <Text style={styles.toggleLabel}>Has gender variants (♂ / ♀)</Text>
+                                <Text style={styles.toggleLabel}>{t('admin.hasGenderVariants', 'Has gender variants (♂ / ♀)')}</Text>
                             </View>
                             <Switch
                                 value={form.hasGenderVariants}
@@ -641,7 +680,7 @@ export default function WorkoutsManager() {
                         {/* ── Male block — always shown so the fields are visible ── */}
                         <View style={[styles.genderVideoRow, { marginTop: 10 }]}>
                             <View style={{ flex: 1, backgroundColor: form.hasGenderVariants ? '#eff6ff' : '#f8fafc', borderRadius: 10, padding: 12, gap: 8, borderWidth: 1, borderColor: form.hasGenderVariants ? '#bfdbfe' : '#e2e8f0' }}>
-                                <Text style={[styles.label, { marginTop: 0, color: form.hasGenderVariants ? '#2563eb' : '#94a3b8' }]}>♂ Male Thumbnail (R2)</Text>
+                                <Text style={[styles.label, { marginTop: 0, color: form.hasGenderVariants ? '#2563eb' : '#94a3b8' }]}>{t('admin.maleThumbnail', '♂ Male Thumbnail (R2)')}</Text>
                                 <TextInput
                                     style={styles.input}
                                     value={form.thumbnailMale}
@@ -653,7 +692,7 @@ export default function WorkoutsManager() {
                                 {!!form.thumbnailMale && (
                                     <Image source={{ uri: form.thumbnailMale }} style={[styles.thumbPreview, { height: 80 }]} contentFit="cover" />
                                 )}
-                                <Text style={[styles.label, { marginTop: 4, color: form.hasGenderVariants ? '#2563eb' : '#94a3b8' }]}>♂ Male Video URL (R2)</Text>
+                                <Text style={[styles.label, { marginTop: 4, color: form.hasGenderVariants ? '#2563eb' : '#94a3b8' }]}>{t('admin.maleVideo', '♂ Male Video URL (R2)')}</Text>
                                 <TextInput
                                     style={styles.input}
                                     value={form.videoUrlMale}
@@ -668,7 +707,7 @@ export default function WorkoutsManager() {
                         {/* ── Female block ── */}
                         <View style={[styles.genderVideoRow, { marginTop: 10 }]}>
                             <View style={{ flex: 1, backgroundColor: form.hasGenderVariants ? '#fdf4ff' : '#f8fafc', borderRadius: 10, padding: 12, gap: 8, borderWidth: 1, borderColor: form.hasGenderVariants ? '#e9d5ff' : '#e2e8f0' }}>
-                                <Text style={[styles.label, { marginTop: 0, color: form.hasGenderVariants ? '#9333ea' : '#94a3b8' }]}>♀ Female Thumbnail (R2)</Text>
+                                <Text style={[styles.label, { marginTop: 0, color: form.hasGenderVariants ? '#9333ea' : '#94a3b8' }]}>{t('admin.femaleThumbnail', '♀ Female Thumbnail (R2)')}</Text>
                                 <TextInput
                                     style={styles.input}
                                     value={form.thumbnailFemale}
@@ -680,7 +719,7 @@ export default function WorkoutsManager() {
                                 {!!form.thumbnailFemale && (
                                     <Image source={{ uri: form.thumbnailFemale }} style={[styles.thumbPreview, { height: 80 }]} contentFit="cover" />
                                 )}
-                                <Text style={[styles.label, { marginTop: 4, color: form.hasGenderVariants ? '#9333ea' : '#94a3b8' }]}>♀ Female Video URL (R2)</Text>
+                                <Text style={[styles.label, { marginTop: 4, color: form.hasGenderVariants ? '#9333ea' : '#94a3b8' }]}>{t('admin.femaleVideo', '♀ Female Video URL (R2)')}</Text>
                                 <TextInput
                                     style={styles.input}
                                     value={form.videoUrlFemale}
@@ -693,8 +732,8 @@ export default function WorkoutsManager() {
                         </View>
 
                         {/* Unisex video fallback */}
-                        <Text style={[styles.label, { marginTop: 16 }]}>Fallback / Unisex Video URL (R2)</Text>
-                        <Text style={styles.fieldHint}>Shown when no gender variant exists or as default.</Text>
+                        <Text style={[styles.label, { marginTop: 16 }]}>{t('admin.fallbackVideo', 'Fallback / Unisex Video URL (R2)')}</Text>
+                        <Text style={styles.fieldHint}>{t('admin.fallbackVideoHint', 'Shown when no gender variant exists or as default.')}</Text>
                         <TextInput
                             style={[styles.input, { marginBottom: 60 }]}
                             value={form.videoUrl}

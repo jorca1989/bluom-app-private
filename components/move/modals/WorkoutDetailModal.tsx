@@ -11,6 +11,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 
 export interface PlannedExercise {
@@ -62,6 +63,7 @@ export default function WorkoutDetailModal({
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = React.useState(initialTab);
   const [showUpgrade, setShowUpgrade] = React.useState(false);
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     if (visible) setActiveTab(initialTab);
@@ -69,7 +71,7 @@ export default function WorkoutDetailModal({
 
   const dayIndex = activeTab - 1;
   const currentDay = routineDays[dayIndex] ?? null;
-  const displayTitle = currentDay?.dayTitle ?? `Day ${activeTab}`;
+  const displayTitle = currentDay?.dayTitle ?? t('common.dayNum', 'Day {{num}}', { num: activeTab });
   const displayMuscleGroup = currentDay?.muscleGroups ?? '';
   const displayExercises = currentDay?.exercises ?? [];
 
@@ -84,7 +86,7 @@ export default function WorkoutDetailModal({
             <Ionicons name="chevron-back" size={28} color="#0f172a" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>
-            {isPreviewMode ? `Day ${activeTab} Preview` : 'Week Overview'}
+            {isPreviewMode ? t('move.dayPreview', 'Day {{day}} Preview', { day: activeTab }) : t('move.weekOverview', 'Week Overview')}
           </Text>
           <View style={{ width: 28 }} />
         </View>
@@ -101,7 +103,7 @@ export default function WorkoutDetailModal({
                     style={[styles.tab, isActive && styles.tabActive]}
                     onPress={() => setActiveTab(i + 1)}
                   >
-                    <Text style={[styles.tabText, isActive && styles.tabTextActive]}>Day {day.dayNum}</Text>
+                    <Text style={[styles.tabText, isActive && styles.tabTextActive]}>{t('common.dayNum', 'Day {{num}}', { num: day.dayNum })}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -119,7 +121,7 @@ export default function WorkoutDetailModal({
           <View style={styles.infoBanner}>
             <Ionicons name="information-circle-outline" size={16} color="#2563eb" />
             <Text style={styles.infoText}>
-              Tap any exercise to see its details. Pro users can add or remove exercises.
+              {t('move.detailInfo', 'Tap any exercise to see its details. Pro users can add or remove exercises.')}
             </Text>
           </View>
 
@@ -178,7 +180,7 @@ export default function WorkoutDetailModal({
                 }}
               >
                 <Ionicons name="add" size={20} color="#3b82f6" />
-                <Text style={styles.addExBtnText}>Add Exercise</Text>
+                <Text style={styles.addExBtnText}>{t('move.addExercise', 'Add Exercise')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -191,7 +193,7 @@ export default function WorkoutDetailModal({
             onPress={() => onStartActiveWorkout(dayIndex)}
           >
             <Ionicons name="play" size={18} color="#ffffff" />
-            <Text style={styles.startBtnText}>Start Day {activeTab} Workout</Text>
+            <Text style={styles.startBtnText}>{t('move.startDayWorkout', 'Start Day {{day}} Workout', { day: activeTab })}</Text>
           </TouchableOpacity>
         </View>
 
@@ -203,8 +205,8 @@ export default function WorkoutDetailModal({
             onClose();
             router.push('/premium');
           }}
-          title="Personalised Training"
-          message="Upgrade to Pro to add or remove exercises from your plan."
+          title={t('move.personalisedTraining', 'Personalised Training')}
+          message={t('move.upgradeDetail', 'Upgrade to Pro to add or remove exercises from your plan.')}
         />
       </SafeAreaView>
     </Modal>

@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useUser as useClerkUser } from '@clerk/clerk-expo';
+import { useTranslation } from 'react-i18next';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -72,6 +73,7 @@ export default function MoveInsightsScreen() {
     const insets = useSafeAreaInsets();
     const { user: clerkUser } = useClerkUser();
     const [showUpgrade, setShowUpgrade] = useState(false);
+    const { t } = useTranslation();
 
     const convexUser = useQuery(
         api.users.getUserByClerkId,
@@ -179,7 +181,7 @@ export default function MoveInsightsScreen() {
                 <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
                     <Ionicons name="chevron-back" size={26} color="#0f172a" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Move Insights</Text>
+                <Text style={styles.headerTitle}>{t('move.insightsTitle', 'Move Insights')}</Text>
                 <View style={{ width: 44 }} />
             </View>
 
@@ -191,7 +193,7 @@ export default function MoveInsightsScreen() {
                 {/* ── WEEKLY PROGRESS CHART (Visible to all) ──────────────── */}
                 <View style={styles.card}>
                     <View style={styles.cardHeader}>
-                        <Text style={styles.cardTitle}>Weekly Progress</Text>
+                        <Text style={styles.cardTitle}>{t('move.weeklyProgress', 'Weekly Progress')}</Text>
                         <Ionicons name="trending-up" size={20} color="#2563eb" />
                     </View>
                     <View style={styles.chartContainer}>
@@ -208,54 +210,54 @@ export default function MoveInsightsScreen() {
                     <View style={styles.weeklyStatsRow}>
                         <View style={styles.weeklyStatItem}>
                             <Text style={styles.weeklyStatVal}>{weekData.reduce((a, b) => a + b, 0)}</Text>
-                            <Text style={styles.weeklyStatLab}>Sessions</Text>
+                            <Text style={styles.weeklyStatLab}>{t('move.sessions', 'Sessions')}</Text>
                         </View>
                         <View style={styles.weeklyStatItem}>
                             <Text style={styles.weeklyStatVal}>
                                 {Math.round((thisWeekEntries ?? []).reduce((s: number, e: any) => s + e.duration, 0) / 60)}h
                             </Text>
-                            <Text style={styles.weeklyStatLab}>Total Time</Text>
+                            <Text style={styles.weeklyStatLab}>{t('move.totalTime', 'Total Time')}</Text>
                         </View>
                         <View style={styles.weeklyStatItem}>
                             <Text style={styles.weeklyStatVal}>
                                 {Math.round((thisWeekEntries ?? []).reduce((s: number, e: any) => s + e.caloriesBurned, 0))}
                             </Text>
-                            <Text style={styles.weeklyStatLab}>Calories</Text>
+                            <Text style={styles.weeklyStatLab}>{t('move.calories', 'Calories')}</Text>
                         </View>
                     </View>
                 </View>
 
                 {/* ── ADVANCED INSIGHTS SECTION ──────────────────────────── */}
-                <View style={{ position: 'relative' }}>
+                <View style={{ position: 'relative', marginTop: 16 }}>
                     {insights.hasData ? (
                         <>
                             <View style={styles.card}>
-                                <Text style={styles.cardTitle}>This Week vs Last Week</Text>
+                                <Text style={styles.cardTitle}>{t('move.thisWeekVsLastWeek', 'This Week vs Last Week')}</Text>
                                 <StatRow
                                     icon="flame-outline" iconColor="#ea580c" iconBg="#fed7aa"
-                                    label="Calorie Burn Trend"
+                                    label={t('move.calorieBurnTrend', 'Calorie Burn Trend')}
                                     value={`${insights.twCalories} kcal`}
-                                    sub="This week total"
-                                    trend={insights.calDelta !== null ? `${Math.abs(insights.calDelta)}% vs last week` : undefined}
+                                    sub={t('move.thisWeekTotal', 'This week total')}
+                                    trend={insights.calDelta !== null ? t('move.vsLastWeek', { val: Math.abs(insights.calDelta) }) : undefined}
                                     trendUp={insights.calDelta !== null ? insights.calDelta >= 0 : undefined}
                                 />
                                 <View style={styles.divider} />
                                 <StatRow
                                     icon="flash-outline" iconColor="#7c3aed" iconBg="#ede9fe"
-                                    label="Consistency Streak"
-                                    value={`${insights.streak} day${insights.streak !== 1 ? 's' : ''}`}
-                                    sub={insights.streak >= 3 ? '🔥 On fire!' : 'Keep going!'}
+                                    label={t('move.consistencyStreak', 'Consistency Streak')}
+                                    value={t('move.daysCount', { count: insights.streak })}
+                                    sub={insights.streak >= 3 ? t('move.onFire', '🔥 On fire!') : t('move.keepGoing', 'Keep going!')}
                                 />
                                 <View style={styles.divider} />
                                 <StatRow
                                     icon="barbell-outline" iconColor="#0891b2" iconBg="#cffafe"
-                                    label="Avg Session Length"
+                                    label={t('move.avgSessionLength', 'Avg Session Length')}
                                     value={`${insights.twAvgDuration} min`}
                                 />
                             </View>
 
                             <View style={styles.card}>
-                                <Text style={styles.cardTitle}>Workout Mix</Text>
+                                <Text style={styles.cardTitle}>{t('move.workoutMix', 'Workout Mix')}</Text>
                                 <View style={{ marginTop: 16 }}>
                                     {insights.typeEntries.map(([type, count]) => (
                                         <MiniBar
@@ -273,9 +275,9 @@ export default function MoveInsightsScreen() {
                                 <View style={[styles.card, styles.bestDayCard]}>
                                     <Ionicons name="trophy" size={24} color="#f59e0b" />
                                     <View style={{ flex: 1 }}>
-                                        <Text style={styles.bestDayLabel}>Most Active Day</Text>
+                                        <Text style={styles.bestDayLabel}>{t('move.mostActiveDay', 'Most Active Day')}</Text>
                                         <Text style={styles.bestDayValue}>{insights.bestDayLabel}</Text>
-                                        <Text style={styles.bestDaySub}>{insights.bestDayCount} sessions</Text>
+                                        <Text style={styles.bestDaySub}>{t('move.sessions_count', { count: insights.bestDayCount })}</Text>
                                     </View>
                                 </View>
                             )}
@@ -283,8 +285,8 @@ export default function MoveInsightsScreen() {
                     ) : (
                         <View style={styles.emptyCard}>
                             <Ionicons name="analytics-outline" size={48} color="#e2e8f0" />
-                            <Text style={styles.emptyTitle}>No workout data yet</Text>
-                            <Text style={styles.emptySub}>Log sessions to unlock trends.</Text>
+                            <Text style={styles.emptyTitle}>{t('move.noWorkoutDataYet', 'No workout data yet')}</Text>
+                            <Text style={styles.emptySub}>{t('move.logToUnlockTrends', 'Log sessions to unlock trends.')}</Text>
                         </View>
                     )}
 
@@ -295,10 +297,10 @@ export default function MoveInsightsScreen() {
                                 <View style={styles.lockIconCircle}>
                                     <Ionicons name="lock-closed" size={28} color="#2563eb" />
                                 </View>
-                                <Text style={styles.lockTitle}>Unlock Pro Analysis</Text>
-                                <Text style={styles.lockSubtitle}>Get trends, volume tracking, and personal bests.</Text>
+                                <Text style={styles.lockTitle}>{t('move.unlockProAnalysis', 'Unlock Pro Analysis')}</Text>
+                                <Text style={styles.lockSubtitle}>{t('move.unlockProDesc', 'Get trends, volume tracking, and personal bests.')}</Text>
                                 <TouchableOpacity style={styles.lockUpgradeBtn} onPress={() => setShowUpgrade(true)}>
-                                    <Text style={styles.lockUpgradeText}>Upgrade to Pro</Text>
+                                    <Text style={styles.lockUpgradeText}>{t('move.upgradeToPro', 'Upgrade to Pro')}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

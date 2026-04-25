@@ -3,6 +3,7 @@
  */
 
 import { ExerciseType } from "@/types";
+import i18n from 'i18next';
 
 /**
  * Common MET values for exercises
@@ -122,17 +123,17 @@ export function getExerciseIcon(type: ExerciseType): string {
  */
 export function formatDuration(minutes: number): string {
   if (minutes < 60) {
-    return `${minutes}min`;
+    return `${minutes}${i18n.t('common.minShort', 'min')}`;
   }
 
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
 
   if (remainingMinutes === 0) {
-    return `${hours}h`;
+    return `${hours}${i18n.t('common.hourShort', 'h')}`;
   }
 
-  return `${hours}h ${remainingMinutes}min`;
+  return `${hours}${i18n.t('common.hourShort', 'h')} ${remainingMinutes}${i18n.t('common.minShort', 'min')}`;
 }
 
 /**
@@ -152,5 +153,5 @@ export function calculatePace(
 export function formatPace(pace: number): string {
   const minutes = Math.floor(pace);
   const seconds = Math.round((pace - minutes) * 60);
-  return `${minutes}:${seconds.toString().padStart(2, "0")} min/km`;
+  return `${minutes}:${seconds.toString().padStart(2, "0")} ${i18n.t('common.minPerKm', 'min/km')}`;
 }

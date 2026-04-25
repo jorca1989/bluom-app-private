@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useQuery, useMutation } from 'convex/react';
+import { useTranslation } from 'react-i18next';
 import { api } from '@/convex/_generated/api';
 import { R2_CONFIG } from '@/utils/r2Config';
 import {
@@ -128,6 +129,7 @@ function DropdownField({
 }
 
 export default function RecipesManager() {
+    const { t } = useTranslation();
     const [search, setSearch] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRecipe, setSelectedRecipe] = useState<any>(null);
@@ -154,7 +156,7 @@ export default function RecipesManager() {
             // Multi-category match logic
             const matchCat = filterCats.length === 0 || 
                              filterCats.includes(r.category) || 
-                             (r.categories ?? []).some(c => filterCats.includes(c));
+                             (r.categories ?? []).some((c: string) => filterCats.includes(c));
 
             const matchTier = filterTier === 'All' || (filterTier === 'Pro' ? r.isPremium : !r.isPremium);
             const matchStatus = filterStatus === 'All' || r.status === filterStatus;
@@ -165,9 +167,11 @@ export default function RecipesManager() {
     // Local state for new/edit recipe
     const [newRecipe, setNewRecipe] = useState({
         title: '',
+        title_pt: '', title_es: '', title_fr: '', title_de: '', title_nl: '',
         category: 'Breakfast',
         categories: [] as string[],
         shortDescription: '',
+        desc_pt: '', desc_es: '', desc_fr: '', desc_de: '', desc_nl: '',
         imageUrl: '',
         cookTimeMinutes: '30',
         servings: '2',
@@ -184,9 +188,11 @@ export default function RecipesManager() {
     const resetForm = () => {
         setNewRecipe({
             title: '',
+            title_pt: '', title_es: '', title_fr: '', title_de: '', title_nl: '',
             category: 'Breakfast',
             categories: [],
             shortDescription: '',
+            desc_pt: '', desc_es: '', desc_fr: '', desc_de: '', desc_nl: '',
             imageUrl: '',
             cookTimeMinutes: '30',
             servings: '2',
@@ -204,11 +210,15 @@ export default function RecipesManager() {
 
     const handleEdit = (recipe: any) => {
         setSelectedRecipe(recipe);
+        const tl = recipe.titleLocalizations || {};
+        const dl = recipe.descriptionLocalizations || {};
         setNewRecipe({
             title: recipe.title,
+            title_pt: tl.pt || '', title_es: tl.es || '', title_fr: tl.fr || '', title_de: tl.de || '', title_nl: tl.nl || '',
             category: recipe.category || 'Breakfast',
             categories: recipe.categories || (recipe.category ? [recipe.category] : []),
             shortDescription: recipe.description || '',
+            desc_pt: dl.pt || '', desc_es: dl.es || '', desc_fr: dl.fr || '', desc_de: dl.de || '', desc_nl: dl.nl || '',
             imageUrl: recipe.imageUrl || '',
             cookTimeMinutes: String(recipe.cookTimeMinutes || 30),
             servings: String(recipe.servings || 2),
@@ -238,11 +248,23 @@ export default function RecipesManager() {
                     .map((l) => l.trim())
                     .filter(Boolean);
 
+            const buildLocalizations = (pt: string, es: string, fr: string, de: string, nl: string) => {
+                const obj: Record<string, string> = {};
+                if (pt.trim()) obj.pt = pt.trim();
+                if (es.trim()) obj.es = es.trim();
+                if (fr.trim()) obj.fr = fr.trim();
+                if (de.trim()) obj.de = de.trim();
+                if (nl.trim()) obj.nl = nl.trim();
+                return Object.keys(obj).length > 0 ? obj : undefined;
+            };
+
             const commonArgs = {
                 title,
+                titleLocalizations: buildLocalizations(newRecipe.title_pt, newRecipe.title_es, newRecipe.title_fr, newRecipe.title_de, newRecipe.title_nl),
                 category: newRecipe.category,
                 categories: newRecipe.categories,
                 description: newRecipe.shortDescription.trim() || undefined,
+                descriptionLocalizations: buildLocalizations(newRecipe.desc_pt, newRecipe.desc_es, newRecipe.desc_fr, newRecipe.desc_de, newRecipe.desc_nl),
                 imageUrl: newRecipe.imageUrl.trim() || undefined,
                 cookTimeMinutes: Number(newRecipe.cookTimeMinutes || 0) || undefined,
                 servings: Number(newRecipe.servings || 0) || 1,
@@ -323,7 +345,7 @@ export default function RecipesManager() {
             )}
             <View style={styles.recipeContent}>
                 <View style={styles.recipeHeader}>
-                    <Text style={styles.recipeTitle} numberOfLines={1}>{item.title}</Text>
+                    <Text style={styles.recipeTitle} numberOfLines={1}>{t(`db.${item.title?.replace(/\s+/g, '')}`, item.title) as string}</Text>
                     <View style={{ flexDirection: 'row', gap: 4 }}>
                         <TouchableOpacity onPress={() => handleEdit(item)} style={{ padding: 6 }}>
                             <FilePen size={16} color="#64748b" />
@@ -375,8 +397,8 @@ export default function RecipesManager() {
         <View style={styles.container}>
             <View style={styles.header}>
                 <View style={{ flex: 1 }}>
-                    <Text style={styles.title}>Recipes Manager</Text>
-                    <Text style={styles.subtitle}>Curate and manage global food content</Text>
+                    <Text style={styles.title}>{t('admin.recipesManager', 'Recipes Manager')}</Text>
+                    <Text style={styles.subtitle}>{t('admin.curateManageRecipes', 'Curate and manage global food content')}</Text>
                 </View>
                 <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
                     <TouchableOpacity onPress={() => setShowSearch(!showSearch)} style={{ padding: 6 }}>
@@ -387,7 +409,7 @@ export default function RecipesManager() {
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.addButton} onPress={() => { resetForm(); setIsModalOpen(true); }}>
                         <Plus color="#ffffff" size={20} />
-                        <Text style={styles.addButtonText}>Add</Text>
+                        <Text style={styles.addButtonText}>{t('admin.add', 'Add')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -398,7 +420,7 @@ export default function RecipesManager() {
                     <Search size={18} color="#94a3b8" />
                     <TextInput
                         style={styles.searchInput}
-                        placeholder="Search recipes..."
+                        placeholder={t('admin.searchRecipes', 'Search recipes...')}
                         value={search}
                         onChangeText={setSearch}
                         autoFocus
@@ -415,15 +437,15 @@ export default function RecipesManager() {
             {showFilters && (
                 <View style={styles.filterBlock}>
                         <DropdownField
-                            label="CATEGORY"
+                            label={t('admin.category', 'CATEGORY')}
                             options={RECIPE_CATEGORIES}
                             selected={filterCats}
                             onChange={setFilterCats}
                             multi
-                            placeholder="All Categories"
+                            placeholder={t('admin.allCategories', 'All Categories')}
                         />
                     <View style={styles.filterRow}>
-                        <Text style={styles.filterLabel}>TIER</Text>
+                        <Text style={styles.filterLabel}>{t('admin.tier', 'TIER')}</Text>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillRow}>
                             {['All', 'Pro', 'Free'].map(t => (
                                 <TouchableOpacity key={t} style={[styles.fPill, filterTier === t && styles.fPillActive]} onPress={() => setFilterTier(t)}>
@@ -433,7 +455,7 @@ export default function RecipesManager() {
                         </ScrollView>
                     </View>
                     <View style={styles.filterRow}>
-                        <Text style={styles.filterLabel}>STATUS</Text>
+                        <Text style={styles.filterLabel}>{t('admin.status', 'STATUS')}</Text>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillRow}>
                             {['All', 'published', 'draft'].map(s => (
                                 <TouchableOpacity key={s} style={[styles.fPill, filterStatus === s && styles.fPillActive]} onPress={() => setFilterStatus(s)}>
@@ -447,10 +469,10 @@ export default function RecipesManager() {
                             onPress={() => { setFilterCats([]); setFilterTier('All'); setFilterStatus('All'); }}
                             style={{ alignSelf: 'flex-start', marginTop: 4, paddingHorizontal: 4 }}
                         >
-                            <Text style={{ fontSize: 12, color: '#2563eb', fontWeight: '800' }}>Reset Filters</Text>
+                            <Text style={{ fontSize: 12, color: '#2563eb', fontWeight: '800' }}>{t('admin.resetFilters', 'Reset Filters')}</Text>
                         </TouchableOpacity>
                     )}
-                    <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '600', paddingHorizontal: 4, marginTop: 4 }}>{recipes.length} recipes found</Text>
+                    <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '600', paddingHorizontal: 4, marginTop: 4 }}>{recipes.length} {t('admin.recipesFound', 'recipes found')}</Text>
                 </View>
             )}
 
@@ -467,7 +489,7 @@ export default function RecipesManager() {
                     ListEmptyComponent={
                         <View style={styles.emptyState}>
                             <Utensils size={48} color="#cbd5e1" />
-                            <Text style={styles.emptyText}>No public recipes found.</Text>
+                            <Text style={styles.emptyText}>{t('admin.noPublicRecipesFound', 'No public recipes found.')}</Text>
                         </View>
                     }
                 />
@@ -480,22 +502,32 @@ export default function RecipesManager() {
                         <TouchableOpacity onPress={() => setIsModalOpen(false)}>
                             <X size={24} color="#64748b" />
                         </TouchableOpacity>
-                        <Text style={styles.modalTitle}>{selectedRecipe ? 'Edit Recipe' : 'New Recipe'}</Text>
+                        <Text style={styles.modalTitle}>{selectedRecipe ? t('admin.editRecipe', 'Edit Recipe') : t('admin.newRecipe', 'New Recipe')}</Text>
                         <TouchableOpacity onPress={handleSave}>
-                            <Text style={styles.modalSave}>Save</Text>
+                            <Text style={styles.modalSave}>{t('admin.save', 'Save')}</Text>
                         </TouchableOpacity>
                     </View>
                     <ScrollView style={styles.modalForm}>
-                        <Text style={styles.label}>Name</Text>
+                        <Text style={styles.label}>{t('admin.name', 'Name')} (EN)</Text>
                         <TextInput
                             style={styles.input}
-                            placeholder="e.g. Mediterranean Salmon"
+                            placeholder={t('admin.recipeNamePlaceholder', 'e.g. Mediterranean Salmon')}
                             value={newRecipe.title}
                             onChangeText={(t) => setNewRecipe((p) => ({ ...p, title: t }))}
                         />
+                        <Text style={styles.label}>Name (PT)</Text>
+                        <TextInput style={styles.input} placeholder="ex. Salmão Mediterrâneo" value={newRecipe.title_pt} onChangeText={v => setNewRecipe(p => ({ ...p, title_pt: v }))} />
+                        <Text style={styles.label}>Name (ES)</Text>
+                        <TextInput style={styles.input} placeholder="ej. Salmón Mediterráneo" value={newRecipe.title_es} onChangeText={v => setNewRecipe(p => ({ ...p, title_es: v }))} />
+                        <Text style={styles.label}>Name (FR)</Text>
+                        <TextInput style={styles.input} placeholder="ex. Saumon Méditerranéen" value={newRecipe.title_fr} onChangeText={v => setNewRecipe(p => ({ ...p, title_fr: v }))} />
+                        <Text style={styles.label}>Name (DE)</Text>
+                        <TextInput style={styles.input} placeholder="z.B. Mediterraner Lachs" value={newRecipe.title_de} onChangeText={v => setNewRecipe(p => ({ ...p, title_de: v }))} />
+                        <Text style={styles.label}>Name (NL)</Text>
+                        <TextInput style={styles.input} placeholder="bijv. Mediterrane Zalm" value={newRecipe.title_nl} onChangeText={v => setNewRecipe(p => ({ ...p, title_nl: v }))} />
 
                         <DropdownField
-                            label="Categories"
+                            label={t('admin.categories', 'Categories')}
                             options={RECIPE_CATEGORIES}
                             selected={newRecipe.categories}
                             onChange={(cats) => setNewRecipe(prev => ({
@@ -508,7 +540,7 @@ export default function RecipesManager() {
 
                         <View style={styles.inputGrid}>
                             <View style={styles.inputField}>
-                                <Text style={styles.label}>Prep time (min)</Text>
+                                <Text style={styles.label}>{t('admin.prepTime', 'Prep time (min)')}</Text>
                                 <TextInput
                                     style={styles.input}
                                     keyboardType="numeric"
@@ -519,7 +551,7 @@ export default function RecipesManager() {
                                 />
                             </View>
                             <View style={styles.inputField}>
-                                <Text style={styles.label}>Servings</Text>
+                                <Text style={styles.label}>{t('admin.servings', 'Servings')}</Text>
                                 <TextInput
                                     style={styles.input}
                                     keyboardType="numeric"
@@ -531,16 +563,26 @@ export default function RecipesManager() {
                             </View>
                         </View>
 
-                        <Text style={styles.label}>Short description</Text>
+                        <Text style={styles.label}>{t('admin.shortDescription', 'Short description')} (EN)</Text>
                         <TextInput
                             style={[styles.input, { height: 90 }]}
                             multiline
-                            placeholder="One-line description users see in-app..."
+                            placeholder={t('admin.shortDescriptionPlaceholder', 'One-line description users see in-app...')}
                             value={newRecipe.shortDescription}
                             onChangeText={(t) => setNewRecipe((p) => ({ ...p, shortDescription: t }))}
                         />
+                        <Text style={styles.label}>Description (PT)</Text>
+                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descrição em português..." value={newRecipe.desc_pt} onChangeText={v => setNewRecipe(p => ({ ...p, desc_pt: v }))} />
+                        <Text style={styles.label}>Description (ES)</Text>
+                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descripción en español..." value={newRecipe.desc_es} onChangeText={v => setNewRecipe(p => ({ ...p, desc_es: v }))} />
+                        <Text style={styles.label}>Description (FR)</Text>
+                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Description en français..." value={newRecipe.desc_fr} onChangeText={v => setNewRecipe(p => ({ ...p, desc_fr: v }))} />
+                        <Text style={styles.label}>Description (DE)</Text>
+                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschreibung auf Deutsch..." value={newRecipe.desc_de} onChangeText={v => setNewRecipe(p => ({ ...p, desc_de: v }))} />
+                        <Text style={styles.label}>Description (NL)</Text>
+                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschrijving in het Nederlands..." value={newRecipe.desc_nl} onChangeText={v => setNewRecipe(p => ({ ...p, desc_nl: v }))} />
 
-                        <Text style={styles.label}>Image URL (R2)</Text>
+                        <Text style={styles.label}>{t('admin.imageUrl', 'Image URL (R2)')}</Text>
                         <TextInput
                             style={[styles.input, { marginBottom: 60 }]}
                             value={newRecipe.imageUrl}
@@ -548,26 +590,26 @@ export default function RecipesManager() {
                             placeholder={`${R2_CONFIG.generalBaseUrl}/recipes/image.jpg`}
                             autoCapitalize="none"
                         />
-                        <Text style={styles.label}>Visibility</Text>
+                        <Text style={styles.label}>{t('admin.visibility', 'Visibility')}</Text>
                         <View style={{ flexDirection: 'row', gap: 12 }}>
                             <TouchableOpacity
                                 style={[styles.typeOption, newRecipe.status === 'published' && styles.typeOptionActive]}
                                 onPress={() => setNewRecipe(prev => ({ ...prev, status: 'published' }))}
                             >
-                                <Text style={[styles.typeText, newRecipe.status === 'published' && styles.typeTextActive]}>Published</Text>
+                                <Text style={[styles.typeText, newRecipe.status === 'published' && styles.typeTextActive]}>{t('admin.published', 'Published')}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={[styles.typeOption, newRecipe.status === 'draft' && styles.typeOptionActive]}
                                 onPress={() => setNewRecipe(prev => ({ ...prev, status: 'draft' }))}
                             >
-                                <Text style={[styles.typeText, newRecipe.status === 'draft' && styles.typeTextActive]}>Draft</Text>
+                                <Text style={[styles.typeText, newRecipe.status === 'draft' && styles.typeTextActive]}>{t('admin.draft', 'Draft')}</Text>
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.label}>Nutrition facts</Text>
+                        <Text style={styles.label}>{t('admin.nutritionFacts', 'Nutrition facts')}</Text>
                         <View style={styles.inputGrid}>
                             <View style={styles.inputField}>
-                                <Text style={styles.label}>Calories</Text>
+                                <Text style={styles.label}>{t('admin.calories', 'Calories')}</Text>
                                 <TextInput
                                     style={styles.input}
                                     keyboardType="numeric"
@@ -578,7 +620,7 @@ export default function RecipesManager() {
                                 />
                             </View>
                             <View style={styles.inputField}>
-                                <Text style={styles.label}>Protein (g)</Text>
+                                <Text style={styles.label}>{t('admin.protein', 'Protein (g)')}</Text>
                                 <TextInput
                                     style={styles.input}
                                     keyboardType="numeric"
@@ -591,7 +633,7 @@ export default function RecipesManager() {
                         </View>
                         <View style={styles.inputGrid}>
                             <View style={styles.inputField}>
-                                <Text style={styles.label}>Carbs (g)</Text>
+                                <Text style={styles.label}>{t('admin.carbs', 'Carbs (g)')}</Text>
                                 <TextInput
                                     style={styles.input}
                                     keyboardType="numeric"
@@ -602,7 +644,7 @@ export default function RecipesManager() {
                                 />
                             </View>
                             <View style={styles.inputField}>
-                                <Text style={styles.label}>Fat (g)</Text>
+                                <Text style={styles.label}>{t('admin.fat', 'Fat (g)')}</Text>
                                 <TextInput
                                     style={styles.input}
                                     keyboardType="numeric"
@@ -614,7 +656,7 @@ export default function RecipesManager() {
                             </View>
                         </View>
 
-                        <Text style={styles.label}>Ingredients (one per line)</Text>
+                        <Text style={styles.label}>{t('admin.ingredientsList', 'Ingredients (one per line)')}</Text>
                         <TextInput
                             style={[styles.input, { height: 150 }]}
                             multiline
@@ -623,7 +665,7 @@ export default function RecipesManager() {
                             onChangeText={(t) => setNewRecipe((p) => ({ ...p, ingredientsText: t }))}
                         />
 
-                        <Text style={styles.label}>Instructions (one step per line)</Text>
+                        <Text style={styles.label}>{t('admin.instructionsSteps', 'Instructions (one step per line)')}</Text>
                         <TextInput
                             style={[styles.input, { height: 150 }]}
                             multiline

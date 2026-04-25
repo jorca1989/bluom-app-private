@@ -66,6 +66,7 @@ const PROVIDER_DEFAULT: any = (Maps as any)?.PROVIDER_DEFAULT;
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
+import { useTranslation } from 'react-i18next';
 
 const { width, height } = Dimensions.get('window');
 
@@ -105,10 +106,10 @@ const ACTIVITY_CONFIG: Record<ActivityType, {
   paceLabel: string;  // 'Pace' or 'Speed'
   paceUnit: string;   // '/km' or 'km/h'
 }> = {
-  running: { label: 'Running', icon: 'walk', color: '#ef4444', bg: '#fee2e2', metPerHour: 9.8, paceLabel: 'Pace', paceUnit: '/km' },
-  cycling: { label: 'Cycling', icon: 'bicycle', color: '#3b82f6', bg: '#dbeafe', metPerHour: 7.5, paceLabel: 'Speed', paceUnit: 'km/h' },
-  hiking: { label: 'Hiking', icon: 'footsteps', color: '#16a34a', bg: '#dcfce7', metPerHour: 6.0, paceLabel: 'Pace', paceUnit: '/km' },
-  walking: { label: 'Walking', icon: 'walk', color: '#f59e0b', bg: '#fef3c7', metPerHour: 3.5, paceLabel: 'Pace', paceUnit: '/km' },
+  running: { label: 'running', icon: 'walk', color: '#ef4444', bg: '#fee2e2', metPerHour: 9.8, paceLabel: 'Pace', paceUnit: '/km' },
+  cycling: { label: 'cycling', icon: 'bicycle', color: '#3b82f6', bg: '#dbeafe', metPerHour: 7.5, paceLabel: 'Speed', paceUnit: 'km/h' },
+  hiking: { label: 'hiking', icon: 'footsteps', color: '#16a34a', bg: '#dcfce7', metPerHour: 6.0, paceLabel: 'Pace', paceUnit: '/km' },
+  walking: { label: 'walking', icon: 'walk', color: '#f59e0b', bg: '#fef3c7', metPerHour: 3.5, paceLabel: 'Pace', paceUnit: '/km' },
 };
 
 // ─── Haversine distance (metres between two coords) ──────────
@@ -193,6 +194,7 @@ export default function OutdoorActivityScreen({
   onClose,
   initialActivity = 'running',
 }: OutdoorActivityScreenProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
 
@@ -205,23 +207,23 @@ export default function OutdoorActivityScreen({
       <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
         <SafeAreaView style={{ flex: 1, backgroundColor: '#0b1220', paddingTop: Math.max(insets.top, 12) }} edges={['top', 'bottom']}>
           <View style={{ paddingHorizontal: 20, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Text style={{ color: '#fff', fontSize: 18, fontWeight: '900' }}>Outdoor Activity</Text>
+            <Text style={{ color: '#fff', fontSize: 18, fontWeight: '900' }}>{t('move.outdoorActivity', 'Outdoor Activity')}</Text>
             <TouchableOpacity onPress={onClose} activeOpacity={0.8} style={{ width: 38, height: 38, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' }}>
               <Ionicons name="close" size={20} color="#fff" />
             </TouchableOpacity>
           </View>
 
           <View style={{ paddingHorizontal: 20, gap: 12 }}>
-            <Text style={{ color: '#fff', fontSize: 18, fontWeight: '900' }}>Native build required</Text>
+            <Text style={{ color: '#fff', fontSize: 18, fontWeight: '900' }}>{t('move.nativeBuildRequired', 'Native build required')}</Text>
             <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, lineHeight: 19 }}>
-              This recorder uses Maps + background tracking. Your current build doesn’t include the required native modules yet.
+              {t('move.nativeBuildRequiredDesc', 'This recorder uses Maps + background tracking. Your current build doesn’t include the required native modules yet.')}
             </Text>
             <View style={{ backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: 14, padding: 14, gap: 6 }}>
               <Text style={{ color: '#e2e8f0', fontFamily: 'monospace', fontSize: 12, fontWeight: '700' }}>npx expo run:android</Text>
               <Text style={{ color: '#e2e8f0', fontFamily: 'monospace', fontSize: 12, fontWeight: '700' }}>npx expo run:ios</Text>
             </View>
             <TouchableOpacity onPress={onClose} activeOpacity={0.85} style={{ marginTop: 8, backgroundColor: '#3b82f6', borderRadius: 16, paddingVertical: 14, alignItems: 'center' }}>
-              <Text style={{ color: '#fff', fontWeight: '900' }}>Close</Text>
+              <Text style={{ color: '#fff', fontWeight: '900' }}>{t('common.close', 'Close')}</Text>
             </TouchableOpacity>
           </View>
         </SafeAreaView>
@@ -499,7 +501,7 @@ export default function OutdoorActivityScreen({
                 <View style={[sel.tileIcon, { backgroundColor: c.bg }]}>
                   <Ionicons name={c.icon as any} size={28} color={c.color} />
                 </View>
-                <Text style={[sel.tileLabel, activityType === type && { color: c.color }]}>{c.label}</Text>
+                <Text style={[sel.tileLabel, activityType === type && { color: c.color }]}>{t(`move.${c.label}`)}</Text>
                 {activityType === type && (
                   <View style={[sel.checkBadge, { backgroundColor: c.color }]}>
                     <Ionicons name="checkmark" size={12} color="#fff" />
@@ -513,7 +515,7 @@ export default function OutdoorActivityScreen({
           <View style={sel.infoStrip}>
             <Ionicons name="location" size={16} color="#3b82f6" />
             <Text style={sel.infoText}>
-              GPS will activate when you start. Keep your phone accessible for best accuracy.
+              {t('move.gpsAccuracyTip', 'GPS will activate when you start. Keep your phone accessible for best accuracy.')}
             </Text>
           </View>
 
@@ -524,7 +526,7 @@ export default function OutdoorActivityScreen({
             activeOpacity={0.9}
           >
             <Ionicons name="play" size={22} color="#fff" />
-            <Text style={sel.startBtnText}>Start {cfg.label}</Text>
+            <Text style={sel.startBtnText}>{t('common.start', 'Start')} {t(`move.${cfg.label}`)}</Text>
           </TouchableOpacity>
         </SafeAreaView>
       </Modal>
@@ -546,18 +548,18 @@ export default function OutdoorActivityScreen({
           <View style={sum.header}>
             <View style={[sum.badge, { backgroundColor: cfg.bg }]}>
               <Ionicons name={cfg.icon as any} size={20} color={cfg.color} />
-              <Text style={[sum.badgeText, { color: cfg.color }]}>{cfg.label}</Text>
+              <Text style={[sum.badgeText, { color: cfg.color }]}>{t(`move.${cfg.label}`)}</Text>
             </View>
-            <Text style={sum.title}>Activity Complete</Text>
+            <Text style={sum.title}>{t('move.activityComplete', 'Activity Complete')}</Text>
           </View>
 
           <View style={sum.statsGrid}>
             {[
-              { label: 'Distance', value: `${distanceKm.toFixed(2)} km` },
-              { label: 'Duration', value: formatDuration(elapsedSecs) },
-              { label: 'Calories', value: `~${cals} kcal` },
+              { label: t('move.distance', 'Distance'), value: `${distanceKm.toFixed(2)} km` },
+              { label: t('move.duration', 'Duration'), value: formatDuration(elapsedSecs) },
+              { label: t('move.calories', 'Calories'), value: `~${cals} kcal` },
               {
-                label: activityType === 'cycling' ? 'Avg Speed' : 'Avg Pace',
+                label: activityType === 'cycling' ? t('move.avgSpeed', 'Avg Speed') : t('move.avgPace', 'Avg Pace'),
                 value: activityType === 'cycling'
                   ? `${formatSpeed(distanceKm, elapsedSecs)} km/h`
                   : `${formatPace(distanceKm, elapsedSecs)} /km`
@@ -605,13 +607,13 @@ export default function OutdoorActivityScreen({
               ? <ActivityIndicator color="#fff" />
               : <>
                 <Ionicons name="checkmark-circle" size={20} color="#fff" />
-                <Text style={sum.saveBtnText}>Save Activity</Text>
+                <Text style={sum.saveBtnText}>{t('move.saveActivity', 'Save Activity')}</Text>
               </>
             }
           </TouchableOpacity>
 
           <TouchableOpacity style={sum.discardBtn} onPress={onClose}>
-            <Text style={sum.discardText}>Discard</Text>
+            <Text style={sum.discardText}>{t('move.discard', 'Discard')}</Text>
           </TouchableOpacity>
         </SafeAreaView>
       </Modal>

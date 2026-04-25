@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -23,6 +24,7 @@ export default function AiCoachScreen() {
   const { user: clerkUser } = useUser();
   const appUser = useAppUser();
   const scrollViewRef = useRef<ScrollView>(null);
+  const { t } = useTranslation();
 
   const convexUser = useQuery(
     api.users.getUserByClerkId,
@@ -45,29 +47,29 @@ export default function AiCoachScreen() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'coach',
-      content: 'Hello! I am your Bluom AI Coach. How can I help you with your fitness, nutrition, or wellness today?'
+      content: t('aiCoach.welcome', 'Olá! Sou o teu Treinador IA Bluom. Como posso ajudar-te com fitness, nutrição ou bem-estar hoje?')
     },
     {
       role: 'coach',
-      content: '📝 Help me build a consistent daily routine',
+      content: t('aiCoach.q1', '📝 Ajuda-me a criar uma rotina diária consistente'),
       isQuickQuestion: true,
       prompt: "Help me build a consistent daily routine"
     },
     {
       role: 'coach',
-      content: '😴 Improve my sleep quality naturally',
+      content: t('aiCoach.q2', '😴 Melhorar a minha qualidade de sono naturalmente'),
       isQuickQuestion: true,
       prompt: "Improve my sleep quality naturally"
     },
     {
       role: 'coach',
-      content: '💧 Create a personalized water intake plan',
+      content: t('aiCoach.q3', '💧 Criar um plano de ingestão de água personalizado'),
       isQuickQuestion: true,
       prompt: "Create a personalized water intake plan"
     },
     {
       role: 'coach',
-      content: '🧘 Quick techniques to manage daily stress',
+      content: t('aiCoach.q4', '🧘 Técnicas rápidas para gerir o stress diário'),
       isQuickQuestion: true,
       prompt: "Quick techniques to manage daily stress"
     }
@@ -100,10 +102,10 @@ export default function AiCoachScreen() {
   }, [storedMessages, convexUser?._id]);
 
   const emojiIceBreakers = [
-    { id: 'fuel', label: 'Fuel', prompt: "Analyze my last meal for energy levels.", icon: 'nutrition-outline', color: 'bg-orange-50 text-orange-600 border-orange-100' },
-    { id: 'mind', label: 'Mind', prompt: "I'm feeling overwhelmed, help me prioritize.", icon: 'rose-outline', color: 'bg-purple-50 text-purple-600 border-purple-100' },
-    { id: 'move', label: 'Move', prompt: "Give me a 5-minute desk stretch for focus.", icon: 'body-outline', color: 'bg-blue-50 text-blue-600 border-blue-100' },
-    { id: 'life', label: 'Life', prompt: "Optimize my schedule for a high-stress day.", icon: 'calendar-outline', color: 'bg-green-50 text-green-600 border-green-100' },
+    { id: 'fuel', label: t('aiCoach.ibFuel', 'Combustível'), prompt: "Analyze my last meal for energy levels.", icon: 'nutrition-outline', color: 'bg-orange-50 text-orange-600 border-orange-100' },
+    { id: 'mind', label: t('aiCoach.ibMind', 'Mente'), prompt: "I'm feeling overwhelmed, help me prioritize.", icon: 'rose-outline', color: 'bg-purple-50 text-purple-600 border-purple-100' },
+    { id: 'move', label: t('aiCoach.ibMove', 'Movimento'), prompt: "Give me a 5-minute desk stretch for focus.", icon: 'body-outline', color: 'bg-blue-50 text-blue-600 border-blue-100' },
+    { id: 'life', label: t('aiCoach.ibLife', 'Vida'), prompt: "Optimize my schedule for a high-stress day.", icon: 'calendar-outline', color: 'bg-green-50 text-green-600 border-green-100' },
   ];
 
   const quickQuestions = [
@@ -119,11 +121,11 @@ export default function AiCoachScreen() {
 
     if (!canChat) {
       Alert.alert(
-        'Daily Limit Reached',
-        'Free users get 3 messages per day. Upgrade to Pro for unlimited coaching.',
+        t('aiCoach.limitTitle', 'Limite Diário Atingido'),
+        t('aiCoach.limitMsg', 'Utilizadores gratuitos têm 3 mensagens por dia. Atualiza para Pro para coaching ilimitado.'),
         [
-          { text: 'Not now', style: 'cancel' },
-          { text: 'Go Pro', onPress: () => router.push('/premium') }
+          { text: t('common.notNow', 'Agora não'), style: 'cancel' },
+          { text: t('common.goPro', 'Ir Pro'), onPress: () => router.push('/premium') }
         ]
       );
       return;
@@ -173,13 +175,13 @@ export default function AiCoachScreen() {
           <Ionicons name="arrow-back" size={20} color="#0f172a" />
         </TouchableOpacity>
         <View className="flex-1">
-          <Text className="text-slate-900 font-black text-lg">AI Coach</Text>
-          <Text className="text-slate-500 font-bold text-xs">Precision Health Expert</Text>
+          <Text className="text-slate-900 font-black text-lg">{t('aiCoach.title', 'Treinador IA')}</Text>
+          <Text className="text-slate-500 font-bold text-xs">{t('aiCoach.subtitle', 'Especialista em Saúde de Precisão')}</Text>
         </View>
         {!(appUser.isPro || appUser.isAdmin) && (
           <View className="bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
             <Text className="text-blue-600 font-bold text-[10px] uppercase">
-              {messageCount ?? 0}/{freeLimit} Daily
+              {messageCount ?? 0}/{freeLimit} {t('aiCoach.daily', 'Diário')}
             </Text>
           </View>
         )}
@@ -228,7 +230,7 @@ export default function AiCoachScreen() {
                 {m.isQuickQuestion && (
                   <View className="flex-row items-center mt-1">
                     <Ionicons name="chevron-forward" size={12} color="#3b82f6" />
-                    <Text className="text-xs text-blue-600 ml-1">Tap to ask</Text>
+                    <Text className="text-xs text-blue-600 ml-1">{t('aiCoach.tapToAsk', 'Toca para perguntar')}</Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -268,7 +270,7 @@ export default function AiCoachScreen() {
           <View className="px-4 pb-3 flex-row items-center gap-2">
             <TextInput
               className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-900 font-semibold"
-              placeholder="Ask me anything..."
+              placeholder={t('aiCoach.placeholder', 'Pergunta-me qualquer coisa...')}
               placeholderTextColor="#94a3b8"
               value={input}
               onChangeText={setInput}

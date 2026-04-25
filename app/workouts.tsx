@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     View,
     Text,
@@ -38,6 +39,7 @@ import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { BlurView } from 'expo-blur';
 import { useUser as useAppUser } from '@/context/UserContext';
 import SingleExerciseLogModal from '@/components/move/modals/SingleExerciseLogModal';
+import { getLocalizedField, getLocalizedExerciseName } from '@/utils/localize';
 // expo-av for real video playback
 import { Video, ResizeMode } from 'expo-av';
 
@@ -57,6 +59,8 @@ export default function WorkoutsScreen() {
     const [showHistory, setShowHistory] = useState(false);
     const [selectedMuscle, setSelectedMuscle] = useState('All');
     const [listTab, setListTab] = useState<'browse' | 'muscles' | 'saved'>('browse');
+    const { t, i18n } = useTranslation();
+    const lang = i18n.language;
 
     const convexUser = useQuery(
         api.users.getUserByClerkId,
@@ -265,7 +269,7 @@ export default function WorkoutsScreen() {
 
                         {selectedWorkout.isPremium && (
                             <View style={styles.premiumDetailBadge}>
-                                <Text style={styles.premiumDetailText}>PREMIUM</Text>
+                                <Text style={styles.premiumDetailText}>{t('workouts.premium', 'PREMIUM')}</Text>
                             </View>
                         )}
                     </View>
@@ -274,12 +278,12 @@ export default function WorkoutsScreen() {
                     <View style={styles.detailBody}>
                         {locked && (
                             <View style={styles.lockNotice}>
-                                <Text style={styles.lockNoticeText}>Pro required — preview only</Text>
+                                <Text style={styles.lockNoticeText}>{t('workouts.proRequired', 'Pro required — preview only') as string}</Text>
                             </View>
                         )}
 
                         <View style={styles.titleRow}>
-                            <Text style={styles.detailTitle}>{selectedWorkout.title}</Text>
+                            <Text style={styles.detailTitle}>{getLocalizedField(selectedWorkout, 'title', lang)}</Text>
                             <TouchableOpacity onPress={handleToggleSave}>
                                 {isSaved
                                     ? <Bookmark size={24} color="#2563eb" fill="#2563eb" />
@@ -287,36 +291,36 @@ export default function WorkoutsScreen() {
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.detailDescription}>{selectedWorkout.description}</Text>
+                        <Text style={styles.detailDescription}>{getLocalizedField(selectedWorkout, 'description', lang)}</Text>
 
                         <View style={styles.statsStrip}>
                             <View style={styles.statBox}>
                                 <Star size={16} color="#f59e0b" fill="#f59e0b" />
                                 <Text style={styles.statVal}>{selectedWorkout.rating}</Text>
-                                <Text style={styles.statLab}>Rating</Text>
+                                <Text style={styles.statLab}>{t('workouts.rating', 'Rating') as string}</Text>
                             </View>
                             <View style={styles.statBox}>
                                 <Dumbbell size={16} color="#2563eb" />
-                                <Text style={styles.statVal} numberOfLines={1} adjustsFontSizeToFit>{selectedWorkout.difficulty}</Text>
-                                <Text style={styles.statLab}>Level</Text>
+                                <Text style={styles.statVal} numberOfLines={1} adjustsFontSizeToFit>{t(`workouts.levels.${selectedWorkout.difficulty}`, selectedWorkout.difficulty) as string}</Text>
+                                <Text style={styles.statLab}>{t('workouts.level', 'Level') as string}</Text>
                             </View>
                             <View style={styles.statBox}>
                                 <Text style={styles.statVal}>{selectedWorkout.equipment?.length ?? 0}</Text>
-                                <Text style={styles.statLab}>Equipment</Text>
+                                <Text style={styles.statLab}>{t('workouts.equipment', 'Equipment') as string}</Text>
                             </View>
                         </View>
 
                         {/* Details */}
                         <View style={styles.infoSection}>
-                            <Text style={styles.sectionTitle}>Details</Text>
+                            <Text style={styles.sectionTitle}>{t('workouts.details', 'Details') as string}</Text>
                             <View style={styles.infoGrid}>
                                 <View style={styles.infoItem}>
-                                    <Text style={styles.infoLabel}>Instructor</Text>
-                                    <Text style={styles.infoValue}>{selectedWorkout.instructor || 'Bluom Coach'}</Text>
+                                    <Text style={styles.infoLabel}>{t('workouts.instructor', 'Instructor') as string}</Text>
+                                    <Text style={styles.infoValue}>{selectedWorkout.instructor || t('workouts.coach', 'Bluom Coach') as string}</Text>
                                 </View>
                                 <View style={styles.infoItem}>
-                                    <Text style={styles.infoLabel}>Difficulty</Text>
-                                    <Text style={styles.infoValue}>{selectedWorkout.difficulty}</Text>
+                                    <Text style={styles.infoLabel}>{t('workouts.difficulty', 'Difficulty') as string}</Text>
+                                    <Text style={styles.infoValue}>{t(`workouts.levels.${selectedWorkout.difficulty}`, selectedWorkout.difficulty) as string}</Text>
                                 </View>
                             </View>
                         </View>
@@ -324,21 +328,21 @@ export default function WorkoutsScreen() {
                         {/* Equipment */}
                         {(selectedWorkout.equipment?.length > 0 || selectedWorkout.optionalEquipment?.length > 0) && (
                             <View style={styles.infoSection}>
-                                <Text style={styles.sectionTitle}>Equipment</Text>
+                                <Text style={styles.sectionTitle}>{t('workouts.equipment', 'Equipment')}</Text>
                                 <View style={styles.equipmentList}>
                                     {selectedWorkout.equipment?.map((eq: string, i: number) => (
                                         <View key={i} style={styles.equipmentItem}>
                                             <View style={styles.equipmentDot} />
-                                            <Text style={styles.equipmentText}>{eq}</Text>
+                                            <Text style={styles.equipmentText}>{t(`workouts.equip.${eq}`, eq) as string}</Text>
                                         </View>
                                     ))}
                                     {selectedWorkout.optionalEquipment?.length > 0 && (
                                         <>
-                                            <Text style={styles.equipmentOrLabel}>or alternatively:</Text>
+                                            <Text style={styles.equipmentOrLabel}>{t('workouts.orAlternatively', 'or alternatively:')}</Text>
                                             {selectedWorkout.optionalEquipment.map((eq: string, i: number) => (
                                                 <View key={`opt-${i}`} style={styles.equipmentItem}>
                                                     <View style={[styles.equipmentDot, styles.equipmentDotOptional]} />
-                                                    <Text style={[styles.equipmentText, styles.equipmentTextOptional]}>{eq}</Text>
+                                                    <Text style={[styles.equipmentText, styles.equipmentTextOptional]}>{t(`workouts.equip.${eq}`, eq) as string}</Text>
                                                 </View>
                                             ))}
                                         </>
@@ -350,20 +354,20 @@ export default function WorkoutsScreen() {
                         {/* ── Exercise Details ── */}
                         {hasExercises && (
                             <View style={styles.infoSection}>
-                                <Text style={styles.sectionTitle}>Exercise Details</Text>
+                                <Text style={styles.sectionTitle}>{t('workouts.exerciseDetails', 'Exercise Details')}</Text>
                                 {selectedWorkout.exercises.map((ex: any, idx: number) => (
                                     <View key={idx} style={styles.exerciseDetailCard}>
                                         {/* Instructions — Pro only */}
                                         {isPro && ex.instructions && ex.instructions.length > 0 && (
                                             <View style={styles.instructionsBox}>
-                                                <Text style={styles.instructionsTitle}>Instructions</Text>
+                                                <Text style={styles.instructionsTitle}>{t('workouts.instructions', 'Instructions')}</Text>
                                                 {ex.instructions.map((step: string, i: number) => (
                                                     <View key={i} style={styles.instructionRow}>
                                                         <View style={styles.instructionNumWrap}>
                                                             <Text style={styles.instructionNum}>{i + 1}</Text>
                                                             <View style={styles.instructionNumUnderline} />
                                                         </View>
-                                                        <Text style={styles.instructionItem}>{step}</Text>
+                                                        <Text style={styles.instructionItem}>{t(`db.${step.replace(/\s+/g, '')}`, step)}</Text>
                                                     </View>
                                                 ))}
                                             </View>
@@ -374,17 +378,17 @@ export default function WorkoutsScreen() {
                                             <View style={styles.musclesBox}>
                                                 {ex.primaryMuscles?.length > 0 && (
                                                     <View style={styles.muscleGroup}>
-                                                        <Text style={styles.muscleGroupTitle}>Primary Muscles</Text>
+                                                        <Text style={styles.muscleGroupTitle}>{t('workouts.primaryMuscles', 'Primary Muscles')}</Text>
                                                         {ex.primaryMuscles.map((m: string, i: number) => (
-                                                            <Text key={i} style={styles.muscleItem}>• {m}</Text>
+                                                            <Text key={i} style={styles.muscleItem}>• {t(`workouts.muscles.${m}`, m) as string}</Text>
                                                         ))}
                                                     </View>
                                                 )}
                                                 {isPro && ex.secondaryMuscles?.length > 0 && (
                                                     <View style={styles.muscleGroup}>
-                                                        <Text style={styles.muscleGroupTitle}>Secondary Muscles</Text>
+                                                        <Text style={styles.muscleGroupTitle}>{t('workouts.secondaryMuscles', 'Secondary Muscles')}</Text>
                                                         {ex.secondaryMuscles.map((m: string, i: number) => (
-                                                            <Text key={i} style={styles.muscleItem}>• {m}</Text>
+                                                            <Text key={i} style={styles.muscleItem}>• {t(`workouts.muscles.${m}`, m) as string}</Text>
                                                         ))}
                                                     </View>
                                                 )}
@@ -398,19 +402,19 @@ export default function WorkoutsScreen() {
                         {/* Workout Progress */}
                         {exerciseProgress && (
                             <View style={styles.infoSection}>
-                                <Text style={styles.sectionTitle}>Workout Progress</Text>
+                                <Text style={styles.sectionTitle}>{t('workouts.workoutProgress', 'Workout Progress')}</Text>
                                 <View style={styles.progressGrid}>
                                     <View style={styles.progressCard}>
                                         <Text style={styles.progressValue}>{exerciseProgress.maxWeight} kg</Text>
-                                        <Text style={styles.progressLabel}>Max Weight</Text>
+                                        <Text style={styles.progressLabel}>{t('workouts.maxWeight', 'Max Weight')}</Text>
                                     </View>
                                     <View style={styles.progressCard}>
                                         <Text style={styles.progressValue}>{exerciseProgress.maxVolume} kg</Text>
-                                        <Text style={styles.progressLabel}>Max Volume</Text>
+                                        <Text style={styles.progressLabel}>{t('workouts.maxVolume', 'Max Volume')}</Text>
                                     </View>
                                     <View style={styles.progressCard}>
                                         <Text style={styles.progressValue}>{exerciseProgress.totalSessions}</Text>
-                                        <Text style={styles.progressLabel}>Sessions</Text>
+                                        <Text style={styles.progressLabel}>{t('workouts.sessions', 'Sessions')}</Text>
                                     </View>
                                 </View>
                             </View>
@@ -424,7 +428,7 @@ export default function WorkoutsScreen() {
                                     onPress={() => setShowHistory(v => !v)}
                                 >
                                     <Text style={styles.sectionTitle}>
-                                        Workout History ({exerciseHistory.length})
+                                        {t('workouts.workoutHistory', 'Workout History')} ({exerciseHistory.length})
                                     </Text>
                                     {showHistory
                                         ? <ChevronUp size={20} color="#64748b" />
@@ -437,11 +441,11 @@ export default function WorkoutsScreen() {
                                         <View style={styles.historyDetails}>
                                             {log.sets && (
                                                 <Text style={styles.historyText}>
-                                                    {log.sets.length} sets • {log.sets.reduce((s: number, x: any) => s + x.reps, 0)} reps
+                                                    {log.sets.length} {t('workouts.sets', 'sets')} • {log.sets.reduce((s: number, x: any) => s + x.reps, 0)} {t('workouts.reps', 'reps')}
                                                 </Text>
                                             )}
                                             {log.duration && (
-                                                <Text style={styles.historyText}>{log.duration} min</Text>
+                                                <Text style={styles.historyText}>{log.duration} {t('workouts.min', 'min')}</Text>
                                             )}
                                         </View>
                                     </View>
@@ -453,10 +457,10 @@ export default function WorkoutsScreen() {
                             <View style={styles.blurBlock}>
                                 <BlurView intensity={35} tint="light" style={StyleSheet.absoluteFill} />
                                 <View style={styles.blurOverlay}>
-                                    <Text style={styles.blurTitle}>Upgrade to Pro</Text>
-                                    <Text style={styles.blurText}>Unlock the full workout video + breakdown.</Text>
+                                    <Text style={styles.blurTitle}>{t('workouts.upgradeToPro', 'Upgrade to Pro')}</Text>
+                                    <Text style={styles.blurText}>{t('workouts.unlockVideoDesc', 'Unlock the full workout video + breakdown.')}</Text>
                                     <TouchableOpacity style={styles.blurBtn} onPress={() => setShowUpgrade(true)}>
-                                        <Text style={styles.blurBtnText}>View Pro Plans</Text>
+                                        <Text style={styles.blurBtnText}>{t('common.viewProPlans', 'View Pro Plans')}</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -472,7 +476,7 @@ export default function WorkoutsScreen() {
                             onPress={() => handleLogExercise(selectedWorkout.exercises[0])}
                         >
                             <Dumbbell size={22} color="#ffffff" />
-                            <Text style={styles.startButtonText}>Log Exercise</Text>
+                            <Text style={styles.startButtonText}>{t('workouts.logExercise', 'Log Exercise')}</Text>
                         </TouchableOpacity>
                     </View>
                 )}
@@ -489,7 +493,7 @@ export default function WorkoutsScreen() {
                         <View style={styles.videoModal}>
                             <View style={styles.videoHeader}>
                                 <Text style={styles.videoTitle} numberOfLines={1}>
-                                    {selectedWorkout.title}
+                                    {getLocalizedField(selectedWorkout, 'title', lang)}
                                 </Text>
                                 <TouchableOpacity onPress={() => setShowVideoModal(false)}>
                                     <X size={24} color="#ffffff" />
@@ -526,8 +530,8 @@ export default function WorkoutsScreen() {
                                 ) : (
                                     <View style={styles.videoPlayerPlaceholder}>
                                         <Play size={48} color="rgba(255,255,255,0.5)" />
-                                        <Text style={styles.videoPlaceholderText}>No video URL configured</Text>
-                                        <Text style={styles.videoPlaceholderSub}>Add a Video URL in the admin panel</Text>
+                                        <Text style={styles.videoPlaceholderText}>{t('workouts.noVideo', 'No video URL configured')}</Text>
+                                        <Text style={styles.videoPlaceholderSub}>{t('workouts.addVideo', 'Add a Video URL in the admin panel')}</Text>
                                     </View>
                                 );
                             })()}
@@ -543,9 +547,9 @@ export default function WorkoutsScreen() {
                         setSelectedWorkout(null);
                         router.push('/premium');
                     }}
-                    title="Upgrade to Pro"
-                    message="This workout is locked. Upgrade to Pro to access premium workout videos and full breakdowns."
-                    upgradeLabel="View Pro Plans"
+                    title={t('common.upgradeToPro', 'Upgrade to Pro')}
+                    message={t('workouts.proMessage', 'This workout is locked. Upgrade to Pro to access premium workout videos and full breakdowns.')}
+                    upgradeLabel={t('common.viewProPlans', 'View Pro Plans')}
                 />
 
                 <SingleExerciseLogModal
@@ -571,8 +575,8 @@ export default function WorkoutsScreen() {
             {/* ── Header ── */}
             <View style={styles.header}>
                 <View>
-                    <Text style={styles.title}>Workouts</Text>
-                    <Text style={styles.subtitle}>Guided video routines</Text>
+                    <Text style={styles.title}>{t('workouts.title', 'Workouts')}</Text>
+                    <Text style={styles.subtitle}>{t('workouts.subtitle', 'Guided video routines')}</Text>
                 </View>
                 <TouchableOpacity onPress={() => router.back()} style={styles.headerCircle}>
                     <X size={20} color="#1e293b" />
@@ -584,7 +588,7 @@ export default function WorkoutsScreen() {
                 <View style={styles.searchBar}>
                     <Search size={20} color="#94a3b8" />
                     <TextInput
-                        placeholder="Search workouts..."
+                        placeholder={t('workouts.searchPlaceholder', 'Search workouts...')}
                         style={styles.searchInput}
                         value={search}
                         onChangeText={setSearch}
@@ -605,7 +609,7 @@ export default function WorkoutsScreen() {
                     onPress={() => setListTab('browse')}
                 >
                     <Dumbbell size={15} color={listTab === 'browse' ? '#2563eb' : '#94a3b8'} />
-                    <Text style={[styles.tabText, listTab === 'browse' && styles.tabTextActive]}>Browse</Text>
+                    <Text style={[styles.tabText, listTab === 'browse' && styles.tabTextActive]}>{t('workouts.browse', 'Browse')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.tabItem, listTab === 'muscles' && styles.tabItemActive]}
@@ -613,7 +617,7 @@ export default function WorkoutsScreen() {
                 >
                     <Zap size={15} color={listTab === 'muscles' ? '#2563eb' : '#94a3b8'} />
                     <Text style={[styles.tabText, listTab === 'muscles' && styles.tabTextActive]}>
-                        Muscles{selectedMuscle !== 'All' ? ` · ${selectedMuscle}` : ''}
+                        {t('workouts.musclesTab', 'Muscles')}{selectedMuscle !== 'All' ? ` · ${t(`workouts.muscles.${selectedMuscle}`, selectedMuscle)}` : ''}
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -626,7 +630,7 @@ export default function WorkoutsScreen() {
                         fill={listTab === 'saved' ? '#2563eb' : 'transparent'}
                     />
                     <Text style={[styles.tabText, listTab === 'saved' && styles.tabTextActive]}>
-                        Saved{savedWorkouts?.length ? ` · ${savedWorkouts.length}` : ''}
+                        {t('workouts.saved', 'Saved')}{savedWorkouts?.length ? ` · ${savedWorkouts.length}` : ''}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -643,7 +647,7 @@ export default function WorkoutsScreen() {
                                     style={[styles.filterPill, selectedCategory === c && styles.filterPillActive]}
                                     onPress={() => setSelectedCategory(c)}
                                 >
-                                    <Text style={[styles.filterPillText, selectedCategory === c && styles.filterPillTextActive]}>{c}</Text>
+                                    <Text style={[styles.filterPillText, selectedCategory === c && styles.filterPillTextActive]}>{t(`workouts.categories.${c}`, c) as string}</Text>
                                 </TouchableOpacity>
                             ))}
                         </ScrollView>
@@ -681,11 +685,11 @@ export default function WorkoutsScreen() {
                                         </TouchableOpacity>
                                         <View style={styles.cardContent}>
                                             <View style={styles.cardBottom}>
-                                                <Text style={styles.cardTitle}>{item.title}</Text>
+                                                <Text style={styles.cardTitle}>{getLocalizedField(item, 'title', lang)}</Text>
                                                 <View style={styles.cardStats}>
                                                     <View style={styles.cardStat}>
                                                         <Dumbbell size={12} color="#ffffff" />
-                                                        <Text style={styles.cardStatText}>{item.category}</Text>
+                                                        <Text style={styles.cardStatText}>{t(`workouts.categories.${item.category}`, item.category) as string}</Text>
                                                     </View>
                                                 </View>
                                             </View>
@@ -697,8 +701,8 @@ export default function WorkoutsScreen() {
                             {filteredWorkouts.length === 0 && (
                                 <View style={styles.empty}>
                                     <Dumbbell size={64} color="#e2e8f0" />
-                                    <Text style={styles.emptyText}>No routines found</Text>
-                                    <Text style={styles.emptySubText}>Try a different type or clear the muscle filter</Text>
+                                    <Text style={styles.emptyText}>{t('workouts.noRoutines', 'No routines found')}</Text>
+                                    <Text style={styles.emptySubText}>{t('workouts.noRoutinesSub', 'Try a different type or clear the muscle filter')}</Text>
                                 </View>
                             )}
                         </ScrollView>
@@ -709,7 +713,7 @@ export default function WorkoutsScreen() {
             {/* ══ MUSCLES TAB ══ */}
             {listTab === 'muscles' && (
                 <ScrollView contentContainerStyle={styles.muscleGridContent} showsVerticalScrollIndicator={false}>
-                    <Text style={styles.muscleSectionHeader}>Browse by Muscle Group</Text>
+                    <Text style={styles.muscleSectionHeader}>{t('workouts.browseByMuscle', 'Browse by Muscle Group')}</Text>
                     <View style={styles.muscleImageGrid}>
                         {MUSCLE_CARDS.map(mc => {
                             const isActive = selectedMuscle === mc.title;
@@ -733,7 +737,7 @@ export default function WorkoutsScreen() {
                                             <ChevronRight size={14} color="#ffffff" />
                                         </View>
                                     )}
-                                    <Text style={styles.muscleCardLabel}>{mc.title}</Text>
+                                    <Text style={styles.muscleCardLabel}>{t(`workouts.muscles.${mc.title}`, mc.title) as string}</Text>
                                 </TouchableOpacity>
                             );
                         })}
@@ -743,7 +747,7 @@ export default function WorkoutsScreen() {
                     {selectedMuscle !== 'All' && (
                         <TouchableOpacity style={styles.clearMuscleBtn} onPress={() => setSelectedMuscle('All')}>
                             <X size={14} color="#2563eb" />
-                            <Text style={styles.clearMuscleBtnText}>Clear filter: {selectedMuscle}</Text>
+                            <Text style={styles.clearMuscleBtnText}>{t('workouts.clearFilter', 'Clear filter:')} {t(`workouts.muscles.${selectedMuscle}`, selectedMuscle) as string}</Text>
                         </TouchableOpacity>
                     )}
                 </ScrollView>
@@ -757,8 +761,8 @@ export default function WorkoutsScreen() {
                     ) : savedWorkouts.length === 0 ? (
                         <View style={styles.empty}>
                             <Bookmark size={64} color="#e2e8f0" />
-                            <Text style={styles.emptyText}>No saved workouts yet</Text>
-                            <Text style={styles.emptySubText}>Tap the bookmark icon on any workout to save it here</Text>
+                            <Text style={styles.emptyText}>{t('workouts.noSaved', 'No saved workouts yet')}</Text>
+                            <Text style={styles.emptySubText}>{t('workouts.noSavedSub', 'Tap the bookmark icon on any workout to save it here')}</Text>
                         </View>
                     ) : (
                         savedWorkouts.map((item: any) => {
@@ -784,11 +788,11 @@ export default function WorkoutsScreen() {
                                     </TouchableOpacity>
                                     <View style={styles.cardContent}>
                                         <View style={styles.cardBottom}>
-                                            <Text style={styles.cardTitle}>{item.title}</Text>
+                                            <Text style={styles.cardTitle}>{getLocalizedField(item, 'title', lang)}</Text>
                                             <View style={styles.cardStats}>
                                                 <View style={styles.cardStat}>
                                                     <Dumbbell size={12} color="#ffffff" />
-                                                    <Text style={styles.cardStatText}>{item.category}</Text>
+                                                    <Text style={styles.cardStatText}>{t(`workouts.categories.${item.category}`, item.category) as string}</Text>
                                                 </View>
                                             </View>
                                         </View>

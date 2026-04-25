@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, TouchableOpacity, ScrollView, Image, Linking, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -8,6 +9,7 @@ import { useAccessControl } from '@/hooks/useAccessControl';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 
 export default function LibraryScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { isPro, promptUpgrade } = useAccessControl();
@@ -18,35 +20,35 @@ export default function LibraryScreen() {
   const articles = [
     {
       id: '1',
-      title: 'Precision Nutrition: Why Bio-Individuality Matters',
-      category: 'Nutrition',
+      title: t('wellness.library.art1Title', 'Precision Nutrition: Why Bio-Individuality Matters'),
+      category: t('wellness.library.catNutrition', 'Nutrition'),
       image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800',
       shopLink: 'https://amazon.com',
-      shopLabel: 'Shop Supplements'
+      shopLabel: t('wellness.library.shopSupplements', 'Shop Supplements')
     },
     {
       id: '2',
-      title: 'The Autophagy Secret: How Fasting Rewires Your Cells',
-      category: 'Wellness',
+      title: t('wellness.library.art2Title', 'The Autophagy Secret: How Fasting Rewires Your Cells'),
+      category: t('wellness.library.catWellness', 'Wellness'),
       image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800',
       shopLink: 'https://bluom-app.myshopify.com',
-      shopLabel: 'Shop Bluom Gear'
+      shopLabel: t('wellness.library.shopGear', 'Shop Bluom Gear')
     },
     {
       id: '3',
-      title: 'Hormone Optimization for High Performance',
-      category: 'Health',
+      title: t('wellness.library.art3Title', 'Hormone Optimization for High Performance'),
+      category: t('wellness.library.catHealth', 'Health'),
       image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
       shopLink: 'https://amazon.com',
-      shopLabel: 'Shop Health Tech'
+      shopLabel: t('wellness.library.shopTech', 'Shop Health Tech')
     }
   ];
 
   const handleArticlePress = (title: string) => {
     if (!isPro) {
-      promptUpgrade('Upgrade to access full research papers and guides.');
+      promptUpgrade(t('wellness.library.upgradePrompt', 'Upgrade to access full research papers and guides.'));
     } else {
-      Alert.alert('Pro Content', `Opening: ${title} (Content Reader coming soon)`);
+      Alert.alert(t('wellness.library.proContent', 'Pro Content'), t('wellness.library.openingTitle', 'Opening: {{title}} (Content Reader coming soon)', { title }));
     }
   };
 
@@ -57,8 +59,8 @@ export default function LibraryScreen() {
           <Ionicons name="arrow-back" size={20} color="#0f172a" />
         </TouchableOpacity>
         <View className="flex-1">
-          <Text className="text-slate-900 font-black text-lg">Bluom Library</Text>
-          <Text className="text-slate-500 font-bold text-xs">Curated Knowledge</Text>
+          <Text className="text-slate-900 font-black text-lg">{t('wellness.library.title', 'Bluom Library')}</Text>
+          <Text className="text-slate-500 font-bold text-xs">{t('wellness.library.subtitle', 'Curated Knowledge')}</Text>
         </View>
       </View>
 
@@ -77,14 +79,12 @@ export default function LibraryScreen() {
                 {!isPro && (
                   <View className="absolute bottom-4 right-4 bg-slate-900/80 px-3 py-1 rounded-full flex-row items-center gap-1">
                     <Ionicons name="lock-closed" size={12} color="white" />
-                    <Text className="text-white font-bold text-xs">Pro</Text>
+                    <Text className="text-white font-bold text-xs">{t('wellness.library.pro', 'Pro')}</Text>
                   </View>
                 )}
               </View>
               <Text className="text-slate-900 font-black text-xl leading-tight mb-2">{a.title}</Text>
-              <Text className="text-slate-500 font-semibold mb-4 leading-5">
-                Unlock the science behind precision living with our expert-led research papers and guides.
-              </Text>
+              <Text className="text-slate-500 font-semibold mb-4 leading-5">{t('wellness.library.articleDesc', 'Unlock the science behind precision living with our expert-led research papers and guides.')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -102,8 +102,8 @@ export default function LibraryScreen() {
         visible={showUpgrade}
         onClose={() => { setShowUpgrade(false); }}
         onUpgrade={() => { setShowUpgrade(false); router.push('/premium'); }}
-        title="Bluom Library Pro"
-        message="Upgrade to Pro to access our full curated knowledge library and research papers."
+        title={t('wellness.library.modalTitle', 'Bluom Library Pro')}
+        message={t('wellness.library.modalMessage', 'Upgrade to Pro to access our full curated knowledge library and research papers.')}
       />
     </SafeAreaView>
   );

@@ -149,10 +149,20 @@ export const deleteUser = mutation({
 /**
  * Recipes: Create Public Recipe
  */
+const localizationsValidator = v.optional(v.object({
+    pt: v.optional(v.string()),
+    es: v.optional(v.string()),
+    fr: v.optional(v.string()),
+    de: v.optional(v.string()),
+    nl: v.optional(v.string()),
+}));
+
 export const createPublicRecipe = mutation({
     args: {
         title: v.string(),
         description: v.optional(v.string()),
+        titleLocalizations: localizationsValidator,
+        descriptionLocalizations: localizationsValidator,
         imageUrl: v.optional(v.string()),
         cookTimeMinutes: v.optional(v.float64()),
         servings: v.float64(),
@@ -176,6 +186,8 @@ export const createPublicRecipe = mutation({
             title: args.title.trim(),
             titleLower,
             description: args.description?.trim(),
+            titleLocalizations: args.titleLocalizations,
+            descriptionLocalizations: args.descriptionLocalizations,
             imageUrl: args.imageUrl?.trim(),
             cookTimeMinutes: args.cookTimeMinutes,
             servings: args.servings,
@@ -302,6 +314,8 @@ export const updatePublicRecipe = mutation({
         recipeId: v.id("publicRecipes"),
         title: v.optional(v.string()),
         description: v.optional(v.string()),
+        titleLocalizations: localizationsValidator,
+        descriptionLocalizations: localizationsValidator,
         imageUrl: v.optional(v.string()),
         cookTimeMinutes: v.optional(v.float64()),
         servings: v.optional(v.float64()),
@@ -327,6 +341,8 @@ export const updatePublicRecipe = mutation({
             updateFields.titleLower = args.title.trim().toLowerCase();
         }
         if (args.description) updateFields.description = args.description.trim();
+        if (args.titleLocalizations !== undefined) updateFields.titleLocalizations = args.titleLocalizations;
+        if (args.descriptionLocalizations !== undefined) updateFields.descriptionLocalizations = args.descriptionLocalizations;
         if (args.imageUrl) updateFields.imageUrl = args.imageUrl.trim();
         if (args.cookTimeMinutes !== undefined) updateFields.cookTimeMinutes = args.cookTimeMinutes;
         if (args.servings !== undefined) updateFields.servings = args.servings;

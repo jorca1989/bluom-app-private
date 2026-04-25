@@ -403,6 +403,8 @@ export default defineSchema({
     categories: v.optional(v.array(v.string())), // multi-category tags
     status: v.optional(v.string()), // 'published' | 'draft'
     isPremium: v.optional(v.boolean()),
+    titleLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
+    descriptionLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
     ingredients: v.optional(v.array(v.string())),
     instructions: v.optional(v.array(v.string())),
     createdAt: v.float64(),
@@ -566,8 +568,11 @@ export default defineSchema({
     title: v.string(),
     category: v.string(),
     duration: v.float64(), // minutes
+    titleLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
+    descriptionLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
     description: v.string(),
     audioUrl: v.optional(v.string()),
+    audioUrls: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
     videoUrl: v.optional(v.string()),
     coverImage: v.optional(v.string()),
     coverImageLandscape: v.optional(v.string()),
@@ -798,6 +803,8 @@ export default defineSchema({
     // Gender-specific thumbnails — shown in browse cards based on user's biologicalSex
     thumbnailMale: v.optional(v.string()),
     thumbnailFemale: v.optional(v.string()),
+    titleLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
+    descriptionLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
     videoUrl: v.optional(v.string()),
     // Gender-specific video variants — shown based on user's biologicalSex
     videoUrlMale: v.optional(v.string()),

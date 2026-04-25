@@ -22,6 +22,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import { triggerSound, SoundEffect } from '@/utils/soundEffects';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useAccessControl } from '@/hooks/useAccessControl';
+import { useTranslation } from 'react-i18next';
 
 type ShoppingDoc = {
   _id: any;
@@ -67,6 +68,7 @@ const CATEGORY_META: Record<ShoppingDoc['category'], { emoji: string; color: str
 export default function ShoppingListScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const { user: clerkUser, isLoaded: isClerkLoaded } = useClerkUser();
   const { isPro, isLoading: isAccessLoading, promptUpgrade } = useAccessControl();
 
@@ -123,7 +125,7 @@ export default function ShoppingListScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         <View style={styles.center}>
-          <Text style={styles.muted}>Loading...</Text>
+          <Text style={styles.muted}>{t('shopping.loading', 'Loading...')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -133,7 +135,7 @@ export default function ShoppingListScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         <View style={styles.center}>
-          <Text style={styles.muted}>Please sign in to use Shopping List</Text>
+          <Text style={styles.muted}>{t('shopping.signIn', 'Please sign in to use Shopping List')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -147,7 +149,7 @@ export default function ShoppingListScreen() {
   const openAdd = () => {
     if (!convexUser?._id) return;
     if (!canAddAnother) {
-      promptUpgrade('Free plan limited to 2 items. Upgrade for unlimited.');
+      promptUpgrade(t('shopping.upgradePrompt', 'Free plan limited to 2 items. Upgrade for unlimited.'));
       return;
     }
     triggerSound(SoundEffect.UI_TAP);
@@ -157,12 +159,12 @@ export default function ShoppingListScreen() {
   const submitAdd = async () => {
     if (!convexUser?._id) return;
     if (!canAddAnother) {
-      promptUpgrade('Free plan limited to 2 items. Upgrade for unlimited.');
+      promptUpgrade(t('shopping.upgradePrompt', 'Free plan limited to 2 items. Upgrade for unlimited.'));
       return;
     }
     const name = draftName.trim();
     if (!name) {
-      Alert.alert('Missing item', 'Type an item name first.');
+      Alert.alert(t('shopping.missingItemTitle', 'Missing item'), t('shopping.missingItemMsg', 'Type an item name first.'));
       return;
     }
     const qtyRaw = draftQty.trim();
@@ -176,7 +178,7 @@ export default function ShoppingListScreen() {
       setShowAddModal(false);
       resetAddModal();
     } catch {
-      Alert.alert('Error', 'Could not add item. Please try again.');
+      Alert.alert(t('common.error', 'Error'), t('shopping.errorAdd', 'Could not add item. Please try again.'));
     }
   };
 
@@ -184,12 +186,12 @@ export default function ShoppingListScreen() {
     const done = (items ?? []).filter((i) => i.completed);
     if (!done.length || !convexUser?._id) return;
     Alert.alert(
-      'Clear completed',
-      `Remove ${done.length} checked item${done.length > 1 ? 's' : ''}?`,
+      t('shopping.clearTitle', 'Clear completed'),
+      t('shopping.clearMsg', { count: done.length, defaultValue: `Remove ${done.length} checked item${done.length > 1 ? 's' : ''}?` }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
         {
-          text: 'Clear',
+          text: t('common.clear', 'Clear'),
           style: 'destructive',
           onPress: () => {
             done.forEach((item) =>
@@ -209,10 +211,10 @@ export default function ShoppingListScreen() {
           <Ionicons name="arrow-back" size={22} color="#0f172a" />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.title}>Shopping List</Text>
+          <Text style={styles.title}>{t('shopping.title', 'Shopping List')}</Text>
           {totalItemsCount > 0 && (
             <Text style={styles.headerSub}>
-              {completedCount}/{totalItemsCount} done
+              {completedCount}/{totalItemsCount} {t('shopping.done', 'done')}
             </Text>
           )}
         </View>
@@ -234,7 +236,7 @@ export default function ShoppingListScreen() {
           </View>
           {completedCount > 0 && (
             <TouchableOpacity onPress={handleClearCompleted} activeOpacity={0.7}>
-              <Text style={styles.clearBtn}>Clear done</Text>
+              <Text style={styles.clearBtn}>{t('shopping.clearDoneBtn', 'Clear done')}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -243,7 +245,7 @@ export default function ShoppingListScreen() {
       {/* ── Body ── */}
       {loading ? (
         <View style={styles.center}>
-          <Text style={styles.muted}>Loading your list...</Text>
+          <Text style={styles.muted}>{t('shopping.loadingList', 'Loading your list...')}</Text>
         </View>
       ) : !items || items.length === 0 ? (
         /* ── Empty state — no logo, clean and actionable ── */
@@ -251,12 +253,12 @@ export default function ShoppingListScreen() {
           <View style={styles.emptyIconWrap}>
             <Text style={styles.emptyEmoji}>🛒</Text>
           </View>
-          <Text style={styles.emptyTitle}>Your list is empty</Text>
-          <Text style={styles.emptySub}>Add items manually or pull straight from a recipe.</Text>
+          <Text style={styles.emptyTitle}>{t('shopping.emptyTitle', 'Your list is empty')}</Text>
+          <Text style={styles.emptySub}>{t('shopping.emptySub', 'Add items manually or pull straight from a recipe.')}</Text>
 
           <TouchableOpacity style={styles.emptyPrimaryBtn} onPress={openAdd} activeOpacity={0.85}>
             <Ionicons name="add-circle-outline" size={18} color="#ffffff" />
-            <Text style={styles.emptyPrimaryText}>Add first item</Text>
+            <Text style={styles.emptyPrimaryText}>{t('shopping.addFirst', 'Add first item')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -265,7 +267,7 @@ export default function ShoppingListScreen() {
             activeOpacity={0.8}
           >
             <Ionicons name="book-outline" size={16} color="#3b82f6" />
-            <Text style={styles.emptySecondaryText}>Browse recipes</Text>
+            <Text style={styles.emptySecondaryText}>{t('shopping.browseRecipes', 'Browse recipes')}</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -283,7 +285,7 @@ export default function ShoppingListScreen() {
             return (
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionEmoji}>{meta.emoji}</Text>
-                <Text style={styles.sectionTitle}>{section.title}</Text>
+                <Text style={styles.sectionTitle}>{t(`shopping.categories.${section.title}`, section.title)}</Text>
                 <View style={[styles.sectionPill, { backgroundColor: meta.color + '22' }]}>
                   <Text style={[styles.sectionPillText, { color: meta.color }]}>
                     {section.data.length}
@@ -299,13 +301,13 @@ export default function ShoppingListScreen() {
                 onPress={() => {
                   if (!convexUser?._id) return;
                   deleteItem({ userId: convexUser._id, itemId: item._id }).catch(() => {
-                    Alert.alert('Error', 'Could not delete item. Please try again.');
+                    Alert.alert(t('common.error', 'Error'), t('shopping.errorDelete', 'Could not delete item. Please try again.'));
                   });
                 }}
                 activeOpacity={0.8}
               >
                 <Ionicons name="trash-outline" size={18} color="#ffffff" />
-                <Text style={styles.deleteText}>Delete</Text>
+                <Text style={styles.deleteText}>{t('common.delete', 'Delete')}</Text>
               </TouchableOpacity>
             );
 
@@ -320,7 +322,7 @@ export default function ShoppingListScreen() {
                       itemId: item._id,
                       completed: !item.completed,
                     }).catch(() => {
-                      Alert.alert('Error', 'Could not update item.');
+                      Alert.alert(t('common.error', 'Error'), t('shopping.errorUpdate', 'Could not update item.'));
                     });
                   }}
                   activeOpacity={0.85}
@@ -353,9 +355,9 @@ export default function ShoppingListScreen() {
           setShowUpgrade(false);
           router.push('/premium');
         }}
-        title="Upgrade to Pro"
-        message="Free users can add up to 2 items. Upgrade for unlimited items and sync across devices."
-        upgradeLabel="View Pro Plans"
+        title={t('shopping.upgradeTitle', 'Upgrade to Pro')}
+        message={t('shopping.upgradeMsg', 'Free users can add up to 2 items. Upgrade for unlimited items and sync across devices.')}
+        upgradeLabel={t('shopping.viewPro', 'View Pro Plans')}
       />
 
       {/* ── Add Item modal ── */}
@@ -379,7 +381,7 @@ export default function ShoppingListScreen() {
               <View style={styles.modalHandle} />
 
               <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Add item</Text>
+                <Text style={styles.modalTitle}>{t('shopping.addItem', 'Add item')}</Text>
                 <TouchableOpacity
                   onPress={() => { setShowAddModal(false); resetAddModal(); }}
                   style={styles.modalClose}
@@ -389,11 +391,11 @@ export default function ShoppingListScreen() {
                 </TouchableOpacity>
               </View>
 
-              <Text style={styles.label}>Item name</Text>
+              <Text style={styles.label}>{t('shopping.itemName', 'Item name')}</Text>
               <TextInput
                 value={draftName}
                 onChangeText={setDraftName}
-                placeholder="e.g. Eggs"
+                placeholder={t('shopping.namePlaceholder', 'e.g. Eggs')}
                 placeholderTextColor="#94a3b8"
                 style={styles.input}
                 autoCapitalize="sentences"
@@ -401,11 +403,11 @@ export default function ShoppingListScreen() {
                 returnKeyType="next"
               />
 
-              <Text style={styles.label}>Quantity</Text>
+              <Text style={styles.label}>{t('shopping.quantity', 'Quantity')}</Text>
               <TextInput
                 value={draftQty}
                 onChangeText={setDraftQty}
-                placeholder="e.g. 6"
+                placeholder={t('shopping.qtyPlaceholder', 'e.g. 6')}
                 placeholderTextColor="#94a3b8"
                 style={styles.input}
                 keyboardType="default"
@@ -415,7 +417,7 @@ export default function ShoppingListScreen() {
 
               <TouchableOpacity style={styles.saveBtn} onPress={submitAdd} activeOpacity={0.85}>
                 <Ionicons name="add-circle-outline" size={18} color="#ffffff" />
-                <Text style={styles.saveBtnText}>Add to list</Text>
+                <Text style={styles.saveBtnText}>{t('shopping.addToList', 'Add to list')}</Text>
               </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>

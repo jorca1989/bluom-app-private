@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import {
   View,
   Text,
@@ -79,232 +81,245 @@ interface StepGroup {
 
 // --- Configuration ---
 
-const STEP_GROUPS: StepGroup[] = [
+const getStepGroups = (t: any): StepGroup[] => [
   {
     id: 'identity',
-    title: "Let's get to know you",
-    description: "Your basics help us tailor the experience.",
+    title: t('onboarding.groups.identityTitle'),
+    description: t('onboarding.groups.identityDesc'),
     questions: [
-      { id: 'age', question: "How old are you?", type: 'number', placeholder: "Age", min: 13, max: 100 },
+      { id: 'age', question: t('onboarding.questions.age'), type: 'number', placeholder: t('onboarding.questions.agePlaceholder'), min: 13, max: 100 },
       {
         id: 'gender',
-        question: "Biological Sex",
+        question: t('onboarding.questions.gender'),
         type: 'select',
-        options: [{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }],
-        subtitle: "Used for accurate calorie calculations."
+        options: [{ label: t('onboarding.questions.genderMale'), value: 'male' }, { label: t('onboarding.questions.genderFemale'), value: 'female' }],
+        subtitle: t('onboarding.questions.genderSub')
       },
     ]
   },
   {
     id: 'biometrics',
-    title: "Your Body Metrics",
-    description: "These numbers set your baseline.",
+    title: t('onboarding.groups.biometricsTitle'),
+    description: t('onboarding.groups.biometricsDesc'),
     questions: [
-      { id: 'weight', question: "Current Weight", type: 'number_with_units', placeholder: "Weight" },
-      { id: 'height', question: "Height", type: 'height_ruler', placeholder: "Height" },
-      {
-        id: 'targetWeight',
-        question: "Target Weight",
-        type: 'number_with_units',
-        placeholder: "Goal Weight",
-        subtitle: "Where do you want to be?"
-      },
+      { id: 'weight', question: t('onboarding.questions.weight'), type: 'number_with_units', placeholder: t('onboarding.questions.weightPlaceholder') },
+      { id: 'height', question: t('onboarding.questions.height'), type: 'height_ruler', placeholder: t('onboarding.questions.heightPlaceholder') },
+      { id: 'targetWeight', question: t('onboarding.questions.targetWeight'), type: 'number_with_units', placeholder: t('onboarding.questions.targetWeightPlaceholder'), subtitle: t('onboarding.questions.targetWeightSub') },
     ]
   },
   {
     id: 'training',
-    title: "Training Profile",
-    description: "How do you like to move?",
+    title: t('onboarding.groups.trainingTitle'),
+    description: t('onboarding.groups.trainingDesc'),
     questions: [
       {
         id: 'fitnessGoal',
-        question: "Main Goal",
+        question: t('onboarding.questions.fitnessGoal'),
         type: 'select_with_info',
         hasInfo: true,
         options: [
-          { label: 'Lose Weight', value: 'lose_weight', info: 'Create a sustainable calorie deficit to shed fat while keeping energy levels high.' },
-          { label: 'Build Muscle', value: 'build_muscle', info: 'Maximize hypertrophy with progressive overload and optimal protein intake. Supports Recomp if target weight < current.' },
-          { label: 'Maintain', value: 'maintain', info: 'Focus on performance and metabolic health without changing your body weight.' },
-          { label: 'Endurance', value: 'improve_endurance', info: 'Optimize for aerobic capacity, stamina, and cardiovascular efficiency.' },
-          { label: 'General Health', value: 'general_health', info: 'Prioritize longevity, balanced energy, and disease prevention through holistic habits.' }
+          { label: t('onboarding.questions.goalLoseWeight'), value: 'lose_weight', info: t('onboarding.questions.goalLoseWeightInfo') },
+          { label: t('onboarding.questions.goalBuildMuscle'), value: 'build_muscle', info: t('onboarding.questions.goalBuildMuscleInfo') },
+          { label: t('onboarding.questions.goalMaintain'), value: 'maintain', info: t('onboarding.questions.goalMaintainInfo') },
+          { label: t('onboarding.questions.goalEndurance'), value: 'improve_endurance', info: t('onboarding.questions.goalEnduranceInfo') },
+          { label: t('onboarding.questions.goalGeneralHealth'), value: 'general_health', info: t('onboarding.questions.goalGeneralHealthInfo') }
         ]
       },
       {
         id: 'experience',
-        question: "Experience Level",
+        question: t('onboarding.questions.experience'),
         type: 'select',
         options: [
-          { label: 'Beginner', value: 'beginner' },
-          { label: 'Intermediate', value: 'intermediate' },
-          { label: 'Advanced', value: 'advanced' }
+          { label: t('onboarding.questions.expBeginner'), value: 'beginner' },
+          { label: t('onboarding.questions.expIntermediate'), value: 'intermediate' },
+          { label: t('onboarding.questions.expAdvanced'), value: 'advanced' }
         ]
       },
       {
         id: 'workoutPreference',
-        question: "Workout Style",
+        question: t('onboarding.questions.workoutStyle'),
         type: 'select_with_info',
         hasInfo: true,
         options: [
-          { label: 'Strength', value: 'strength', info: 'Focus on building muscle and power through resistance.' },
-          { label: 'Cardio', value: 'cardio', info: 'Endurance activities like running, cycling, or swimming.' },
-          { label: 'HIIT', value: 'hiit', info: 'High Intensity Interval Training for burning calories fast.' },
-          { label: 'Yoga/Flex', value: 'yoga', info: 'Focus on flexibility, balance, and mind-body connection.' },
-          { label: 'CrossFit', value: 'crossfit', info: 'High-intensity functional movements.' },
-          { label: 'Pilates', value: 'pilates', info: 'Low-impact flexibility and muscular strength.' },
-          { label: 'Mixed', value: 'mixed', info: 'A combination of different styles.' }
+          { label: t('onboarding.questions.wsStrength'), value: 'strength', info: t('onboarding.questions.wsStrengthInfo') },
+          { label: t('onboarding.questions.wsCardio'), value: 'cardio', info: t('onboarding.questions.wsCardioInfo') },
+          { label: t('onboarding.questions.wsHiit'), value: 'hiit', info: t('onboarding.questions.wsHiitInfo') },
+          { label: t('onboarding.questions.wsYoga'), value: 'yoga', info: t('onboarding.questions.wsYogaInfo') },
+          { label: t('onboarding.questions.wsCrossfit'), value: 'crossfit', info: t('onboarding.questions.wsCrossfitInfo') },
+          { label: t('onboarding.questions.wsPilates'), value: 'pilates', info: t('onboarding.questions.wsPilatesInfo') },
+          { label: t('onboarding.questions.wsMixed'), value: 'mixed', info: t('onboarding.questions.wsMixedInfo') }
         ]
       },
-      { id: 'goal', question: "Major 12-Month Milestone", type: 'text', placeholder: "e.g. Run a marathon, buy a house..." },
+      { id: 'goal', question: t('onboarding.questions.milestone'), type: 'text', placeholder: t('onboarding.questions.milestonePlaceholder') },
     ]
   },
   {
     id: 'activity',
-    title: "Daily Activity",
+    title: t('onboarding.groups.activityTitle'),
     questions: [
       {
         id: 'activityLevel',
-        question: "Activity Level",
+        question: t('onboarding.questions.activityLevel'),
         type: 'select',
-        subtitle: "Be honest for best results!",
+        subtitle: t('onboarding.questions.activitySub'),
         options: [
-          { label: 'Sedentary (Desk Job)', value: 'sedentary' },
-          { label: 'Lightly Active', value: 'lightly_active' },
-          { label: 'Moderately Active', value: 'moderately_active' },
-          { label: 'Very Active', value: 'very_active' },
-          { label: 'Extremely Active', value: 'extremely_active' }
+          { label: t('onboarding.questions.actSedentary'), value: 'sedentary' },
+          { label: t('onboarding.questions.actLightlyActive'), value: 'lightly_active' },
+          { label: t('onboarding.questions.actModeratelyActive'), value: 'moderately_active' },
+          { label: t('onboarding.questions.actVeryActive'), value: 'very_active' },
+          { label: t('onboarding.questions.actExtremelyActive'), value: 'extremely_active' }
         ]
       },
       {
         id: 'timeAvailable',
-        question: "Weekly Time Available",
+        question: t('onboarding.questions.weeklyTime'),
         type: 'select',
         options: [
-          { label: '< 2 hours', value: '1' },
-          { label: '2-4 hours', value: '3' },
-          { label: '4-6 hours', value: '5' },
-          { label: '6+ hours', value: '7' },
+          { label: '< 2h', value: '1' },
+          { label: '2–4h', value: '3' },
+          { label: '4–6h', value: '5' },
+          { label: '6+h', value: '7' },
         ]
       }
     ]
   },
   {
     id: 'commitment',
-    title: "Your Commitment Level",
-    description: "How intense do you want this journey to be?",
+    title: t('onboarding.groups.commitmentTitle'),
+    description: t('onboarding.groups.commitmentDesc'),
     questions: [
       {
         id: 'commitmentLevel',
-        question: "Choose Your Approach",
+        question: t('onboarding.questions.commitmentApproach'),
         type: 'select_with_info',
         hasInfo: true,
-        toastFeedback: "Perfect! We'll tailor your plan to match your commitment.",
+        toastFeedback: t('onboarding.questions.commitToast'),
         options: [
-          { label: 'I want it easy', value: 'easy', info: 'Take your time with gentle, sustainable changes. Slower progress but easier to maintain long-term.' },
-          { label: 'Balanced effort', value: 'balanced', info: 'A steady, proven approach. Moderate changes with consistent, measurable results.' },
-          { label: 'Maximum effort', value: 'maximum', info: 'Go all-in for rapid transformation. Intensive commitment required but fastest results.' }
+          { label: t('onboarding.questions.commitEasy'), value: 'easy', info: t('onboarding.questions.commitEasyInfo') },
+          { label: t('onboarding.questions.commitBalanced'), value: 'balanced', info: t('onboarding.questions.commitBalancedInfo') },
+          { label: t('onboarding.questions.commitMaximum'), value: 'maximum', info: t('onboarding.questions.commitMaximumInfo') }
         ]
       },
     ]
   },
   {
     id: 'lifestyle',
-    title: "Lifestyle & Balance",
+    title: t('onboarding.groups.lifestyleTitle'),
     questions: [
-      { id: 'sleepHours', question: "Average Sleep (Hours)", type: 'number', min: 4, max: 12 },
+      { id: 'sleepHours', question: t('onboarding.questions.sleepHours'), type: 'number', min: 4, max: 12 },
       {
         id: 'stressLevel',
-        question: "Stress Level",
+        question: t('onboarding.questions.stressLevel'),
         type: 'select',
         options: [
-          { label: 'Low', value: 'low' },
-          { label: 'Moderate', value: 'moderate' },
-          { label: 'High', value: 'high' },
-          { label: 'Very High', value: 'very_high' }
+          { label: t('onboarding.questions.stressLow'), value: 'low' },
+          { label: t('onboarding.questions.stressMod'), value: 'moderate' },
+          { label: t('onboarding.questions.stressHigh'), value: 'high' },
+          { label: t('onboarding.questions.stressVeryHigh'), value: 'very_high' }
         ]
       },
       {
         id: 'lifeStressor',
-        question: "Main Stressors",
+        question: t('onboarding.questions.mainStressors'),
         type: 'multiselect',
         options: [
-          { label: 'Work & Career', value: 'Work/Career' },
-          { label: 'Family & Parenting', value: 'Family/Parenting' },
-          { label: 'Finances', value: 'Financial Planning' },
-          { label: 'Health & Self‑Care', value: 'Health/Self-Care' },
-          { label: 'Social & Relationships', value: 'Social/Relationships' },
-          { label: 'Sleep Quality', value: 'Sleep' },
-          { label: 'Lack of Purpose', value: 'Purpose' },
-          { label: 'Time Management', value: 'Time' },
-          { label: 'Environment / Housing', value: 'Environment' },
-          { label: 'Burnout', value: 'Burnout' },
-          { label: 'Workload Overwhelm', value: 'Overwhelm' },
-          { label: 'Loneliness', value: 'Loneliness' },
+          { label: t('onboarding.questions.stressorWork'), value: 'Work/Career' },
+          { label: t('onboarding.questions.stressorFamily'), value: 'Family/Parenting' },
+          { label: t('onboarding.questions.stressorFinances'), value: 'Financial Planning' },
+          { label: t('onboarding.questions.stressorHealth'), value: 'Health/Self-Care' },
+          { label: t('onboarding.questions.stressorSocial'), value: 'Social/Relationships' },
+          { label: t('onboarding.questions.stressorSleep'), value: 'Sleep' },
+          { label: t('onboarding.questions.stressorPurpose'), value: 'Purpose' },
+          { label: t('onboarding.questions.stressorTime'), value: 'Time' },
+          { label: t('onboarding.questions.stressorEnvironment'), value: 'Environment' },
+          { label: t('onboarding.questions.stressorBurnout'), value: 'Burnout' },
+          { label: t('onboarding.questions.stressorOverwhelm'), value: 'Overwhelm' },
+          { label: t('onboarding.questions.stressorLoneliness'), value: 'Loneliness' },
         ]
       }
     ]
   },
   {
     id: 'mindset',
-    title: "Mindset",
-    description: "What drives you and what holds you back?",
+    title: t('onboarding.groups.mindsetTitle'),
+    description: t('onboarding.groups.mindsetDesc'),
     questions: [
       {
         id: 'motivation',
-        question: "Motivations",
+        question: t('onboarding.questions.motivations'),
         type: 'multiselect',
-        options: ['Health', 'Appearance', 'Energy', 'Strength', 'Confidence', 'Longevity']
+        options: [
+          { label: t('onboarding.questions.motivHealth'), value: 'Health' },
+          { label: t('onboarding.questions.motivAppearance'), value: 'Appearance' },
+          { label: t('onboarding.questions.motivEnergy'), value: 'Energy' },
+          { label: t('onboarding.questions.motivStrength'), value: 'Strength' },
+          { label: t('onboarding.questions.motivConfidence'), value: 'Confidence' },
+          { label: t('onboarding.questions.motivLongevity'), value: 'Longevity' }
+        ]
       },
       {
         id: 'challenges',
-        question: "Challenges",
+        question: t('onboarding.questions.challenges'),
         type: 'multiselect',
-        options: ['Time', 'Motivation', 'Knowledge', 'Consistency', 'Diet', 'Social Support']
+        options: [
+          { label: t('onboarding.questions.chalTime'), value: 'Time' },
+          { label: t('onboarding.questions.chalMotivation'), value: 'Motivation' },
+          { label: t('onboarding.questions.chalKnowledge'), value: 'Knowledge' },
+          { label: t('onboarding.questions.chalConsistency'), value: 'Consistency' },
+          { label: t('onboarding.questions.chalDiet'), value: 'Diet' },
+          { label: t('onboarding.questions.chalSocial'), value: 'Social Support' }
+        ]
       },
       {
         id: 'coachingStyle',
-        question: "Preferred Coaching Style",
+        question: t('onboarding.questions.coachingStyle'),
         type: 'select',
         options: [
-          { label: 'Direct & Disciplined', value: 'Direct & Disciplined' },
-          { label: 'Encouraging & Gentle', value: 'Encouraging & Gentle' },
-          { label: 'Data-Driven', value: 'Data-Driven & Analytical' }
+          { label: t('onboarding.questions.csDirect'), value: 'Direct & Disciplined' },
+          { label: t('onboarding.questions.csEncouraging'), value: 'Encouraging & Gentle' },
+          { label: t('onboarding.questions.csData'), value: 'Data-Driven & Analytical' }
         ]
       }
     ]
   },
   {
     id: 'diet',
-    title: "Nutrition Preference",
+    title: t('onboarding.groups.dietTitle'),
     questions: [
       {
         id: 'nutritionPreference',
-        question: "Dietary Approach",
+        question: t('onboarding.questions.dietApproach'),
         type: 'select_with_info',
         hasInfo: true,
         options: [
-          { label: 'High Protein', value: 'high_protein', info: 'Boosts metabolism and muscle recovery. Ideal for building lean mass and controlling appetite.' },
-          { label: 'Low Carb', value: 'low_carb', info: 'Minimized carbohydrates to stabilize blood sugar and shift metabolism toward fat burning.' },
-          { label: 'Balanced', value: 'balanced', info: 'A sustainable mix of all macronutrients to fuel varied activities and lifestyle needs.' },
-          { label: 'Plant-Based', value: 'plant_based', info: 'Nutrient-dense approach focusing on vegetables, fruits, legumes, and whole grains.' },
-          { label: 'Flexible (IIFYM)', value: 'flexible', info: 'Track macros instead of restricting foods. Eat what you enjoy within your daily targets.' }
+          { label: t('onboarding.questions.dietHighProtein'), value: 'high_protein', info: t('onboarding.questions.dietHighProteinInfo') },
+          { label: t('onboarding.questions.dietLowCarb'), value: 'low_carb', info: t('onboarding.questions.dietLowCarbInfo') },
+          { label: t('onboarding.questions.dietBalanced'), value: 'balanced', info: t('onboarding.questions.dietBalancedInfo') },
+          { label: t('onboarding.questions.dietPlantBased'), value: 'plant_based', info: t('onboarding.questions.dietPlantBasedInfo') },
+          { label: t('onboarding.questions.dietFlexible'), value: 'flexible', info: t('onboarding.questions.dietFlexibleInfo') }
         ]
       },
       {
         id: 'mealFrequency',
-        question: "Meals Per Day",
+        question: t('onboarding.questions.mealsPerDay'),
         type: 'select',
         options: [
-          { label: '2 meals (Intermittent Fasting)', value: '2' },
-          { label: '3 meals (Standard / IF)', value: '3' },
-          { label: '4-5 meals (High Performance)', value: '4' },
-          { label: '6+ meals (Hyper-Metabolic)', value: '6' },
+          { label: t('onboarding.questions.meals2'), value: '2' },
+          { label: t('onboarding.questions.meals3'), value: '3' },
+          { label: t('onboarding.questions.meals4'), value: '4' },
+          { label: t('onboarding.questions.meals6'), value: '6' },
         ]
       },
       {
         id: 'peakEnergy',
-        question: "Peak Energy Time",
+        question: t('onboarding.questions.peakEnergy'),
         type: 'select',
-        options: ['Early Morning', 'Mid-Day', 'Evening', 'Late Night']
+        options: [
+          { label: t('onboarding.questions.peakEarlyMorning'), value: 'Early Morning' },
+          { label: t('onboarding.questions.peakMidday'), value: 'Mid-Day' },
+          { label: t('onboarding.questions.peakEvening'), value: 'Evening' },
+          { label: t('onboarding.questions.peakLateNight'), value: 'Late Night' },
+        ]
       }
     ]
   }
@@ -347,6 +362,8 @@ const WELCOME_SLIDES = [
 // --- Main Component ---
 
 export default function OnboardingScreen() {
+  const { t } = useTranslation();
+  const STEP_GROUPS = React.useMemo(() => getStepGroups(t), [t]);
   const { user: clerkUser } = useUser();
   const insets = useSafeAreaInsets();
 
@@ -365,6 +382,25 @@ export default function OnboardingScreen() {
   const [calculatedResults, setCalculatedResults] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasShownRecompAlert, setHasShownRecompAlert] = useState(false);
+  const [showLangPicker, setShowLangPicker] = useState(false);
+  const [currentLang, setCurrentLang] = useState(i18n.language || 'en');
+
+  const LANG_OPTIONS = [
+    { code: 'pt', flag: '🇵🇹', label: 'PT' },
+    { code: 'en', flag: '🇬🇧', label: 'EN' },
+    { code: 'es', flag: '🇪🇸', label: 'ES' },
+    { code: 'fr', flag: '🇫🇷', label: 'FR' },
+    { code: 'de', flag: '🇩🇪', label: 'DE' },
+    { code: 'nl', flag: '🇳🇱', label: 'NL' },
+  ];
+
+  const handleLangChange = (code: string) => {
+    setCurrentLang(code);
+    i18n.changeLanguage(code);
+    setShowLangPicker(false);
+  };
+
+  const currentLangOption = LANG_OPTIONS.find(l => l.code === currentLang) || LANG_OPTIONS[1];
 
   // Toast state (unified — handles both inline feedback AND transition messages)
   const [toastVisible, setToastVisible] = useState(false);
@@ -704,7 +740,7 @@ export default function OnboardingScreen() {
         </ScrollView>
         <View style={[styles.estimatorFooter, { paddingBottom: insets.bottom + 20 }]}>
           <TouchableOpacity style={styles.primaryBtn} onPress={handleEstimatorContinue}>
-            <Text style={styles.primaryBtnText}>Continue</Text>
+            <Text style={styles.primaryBtnText}>{t('onboarding.nav.continue', 'Continue')}</Text>
             <ChevronRight size={20} color="#fff" />
           </TouchableOpacity>
         </View>
@@ -716,13 +752,13 @@ export default function OnboardingScreen() {
     <Modal visible={showResults} animationType="slide">
       <SafeAreaView style={styles.resultsContainer}>
         <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
-          <Text style={styles.resultsHeader}>Your Blueprint</Text>
-          <Text style={styles.resultsSub}>Based on your goals, here is your daily target.</Text>
+          <Text style={styles.resultsHeader}>{t('onboarding.results.title', 'Your Blueprint')}</Text>
+          <Text style={styles.resultsSub}>{t('onboarding.results.subtitle', 'Based on your goals, here is your daily target.')}</Text>
 
           <View style={styles.macroCard}>
             <View style={styles.calorieCircle}>
               <Text style={styles.calorieVal}>{calculatedResults?.dailyCalories}</Text>
-              <Text style={styles.calorieLabel}>Daily Calories</Text>
+              <Text style={styles.calorieLabel}>{t('onboarding.results.dailyCalories', 'Daily Calories')}</Text>
             </View>
           </View>
 
@@ -736,9 +772,9 @@ export default function OnboardingScreen() {
             </View>
             <BlurView intensity={100} tint="light" style={StyleSheet.absoluteFill}>
               <View style={styles.lockOverlay}>
-                <View style={styles.proBadge}><Text style={styles.proText}>PRO INSIGHTS</Text></View>
+                <View style={styles.proBadge}><Text style={styles.proText}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text></View>
                 <Lock size={32} color="#1e293b" style={{ marginTop: 16 }} />
-                <Text style={styles.lockText}>Unlock your full macro breakdown & meal plans.</Text>
+                <Text style={styles.lockText}>{t('onboarding.results.unlockMacros', 'Unlock your full macro breakdown & meal plans.')}</Text>
               </View>
             </BlurView>
           </View>
@@ -746,7 +782,7 @@ export default function OnboardingScreen() {
           <TouchableOpacity style={styles.primaryBtn} onPress={handleFinalSubmit} disabled={isSubmitting}>
             {isSubmitting
               ? <ActivityIndicator color="#fff" />
-              : <Text style={styles.primaryBtnText}>Continue to Plan</Text>
+              : <Text style={styles.primaryBtnText}>{t('onboarding.results.continueToPlan', 'Continue to Plan')}</Text>
             }
           </TouchableOpacity>
         </ScrollView>
@@ -765,11 +801,9 @@ export default function OnboardingScreen() {
               {currentWelcomeSlide === 0 && (
                 <>
                   <Image source={WELCOME_LOGO} style={{ width: 140, height: 40, marginBottom: 40 }} resizeMode="contain" />
-                  <Text style={[styles.welcomeTitle, { color: '#1e293b' }]}>Your Life, Optimized.</Text>
-                  <Text style={[styles.welcomeSubtitle, { color: '#2563EB' }]}>AI Life Management</Text>
-                  <Text style={styles.welcomeDesc}>
-                    Welcome to Bluom. The only system that integrates your Nutrition, Movement, and Mind into one seamless flow.
-                  </Text>
+                  <Text style={[styles.welcomeTitle, { color: '#1e293b' }]}>{t('onboarding.welcome.slide1Title', 'Your Life, Optimized.')}</Text>
+                  <Text style={[styles.welcomeSubtitle, { color: '#2563EB' }]}>{t('onboarding.welcome.slide1Sub', 'AI Life Management')}</Text>
+                  <Text style={styles.welcomeDesc}>{t('onboarding.welcome.slide1Desc', 'Welcome to Bluom. The only system that integrates your Nutrition, Movement, and Mind into one seamless flow.')}</Text>
                 </>
               )}
               {currentWelcomeSlide === 1 && (
@@ -777,22 +811,20 @@ export default function OnboardingScreen() {
                   <View style={{ flexDirection: 'row', gap: 12, marginBottom: 40 }}>
                     <View style={[styles.pillarCard, { borderColor: '#2563EB', backgroundColor: '#eff6ff' }]}>
                       <Ionicons name="sunny" size={28} color="#2563EB" />
-                      <Text style={[styles.pillarText, { color: '#2563EB' }]}>Nutrition</Text>
+                      <Text style={[styles.pillarText, { color: '#2563EB' }]}>{t('onboarding.welcome.pillarNutrition', 'Nutrition')}</Text>
                     </View>
                     <View style={[styles.pillarCard, { borderColor: '#2563EB', backgroundColor: '#eff6ff' }]}>
                       <Ionicons name="fitness" size={28} color="#2563EB" />
-                      <Text style={[styles.pillarText, { color: '#2563EB' }]}>Move</Text>
+                      <Text style={[styles.pillarText, { color: '#2563EB' }]}>{t('onboarding.welcome.pillarMove', 'Move')}</Text>
                     </View>
                     <View style={[styles.pillarCard, { borderColor: '#2563EB', backgroundColor: '#eff6ff' }]}>
                       <Ionicons name="leaf" size={28} color="#2563EB" />
-                      <Text style={[styles.pillarText, { color: '#2563EB' }]}>Mind</Text>
+                      <Text style={[styles.pillarText, { color: '#2563EB' }]}>{t('onboarding.welcome.pillarMind', 'Mind')}</Text>
                     </View>
                   </View>
-                  <Text style={[styles.welcomeTitle, { color: '#1e293b' }]}>A Complete Ecosystem</Text>
-                  <Text style={[styles.welcomeSubtitle, { color: '#2563EB' }]}>Beyond the Pillars</Text>
-                  <Text style={styles.welcomeDesc}>
-                    Includes specialized protocols for Men & Women's health, Productivity architecture, and Mindset & Meditation.
-                  </Text>
+                  <Text style={[styles.welcomeTitle, { color: '#1e293b' }]}>{t('onboarding.welcome.slide2Title', 'A Complete Ecosystem')}</Text>
+                  <Text style={[styles.welcomeSubtitle, { color: '#2563EB' }]}>{t('onboarding.welcome.slide2Sub', 'Beyond the Pillars')}</Text>
+                  <Text style={styles.welcomeDesc}>{t('onboarding.welcome.slide2Desc', "Includes specialized protocols for Men & Women's health, Productivity architecture, and Mindset & Meditation.")}</Text>
                 </>
               )}
               {currentWelcomeSlide === 2 && (
@@ -800,11 +832,9 @@ export default function OnboardingScreen() {
                   <View style={[styles.iconCircle, { backgroundColor: '#eff6ff' }]}>
                     <Sparkles size={60} color="#2563EB" />
                   </View>
-                  <Text style={[styles.welcomeTitle, { color: '#1e293b' }]}>Your Blueprint</Text>
-                  <Text style={[styles.welcomeSubtitle, { color: '#2563EB' }]}>Ready to Evolve?</Text>
-                  <Text style={styles.welcomeDesc}>
-                    Answer a few quick questions to get your custom nutrition plan and workout recommendations.
-                  </Text>
+                  <Text style={[styles.welcomeTitle, { color: '#1e293b' }]}>{t('onboarding.welcome.slide3Title', 'Your Blueprint')}</Text>
+                  <Text style={[styles.welcomeSubtitle, { color: '#2563EB' }]}>{t('onboarding.welcome.slide3Sub', 'Ready to Evolve?')}</Text>
+                  <Text style={styles.welcomeDesc}>{t('onboarding.welcome.slide3Desc', 'Answer a few quick questions to get your custom nutrition plan and workout recommendations.')}</Text>
                 </>
               )}
             </View>
@@ -817,11 +847,36 @@ export default function OnboardingScreen() {
               </View>
               <TouchableOpacity style={styles.welcomeBtn} onPress={handleWelcomeNext}>
                 <Text style={styles.welcomeBtnText}>
-                  {currentWelcomeSlide === 2 ? "Let's Go!" : "Next"}
+                  {currentWelcomeSlide === 2 ? t('onboarding.welcome.letsGo', "Let's Go!") : t('onboarding.welcome.next', 'Next')}
                 </Text>
               </TouchableOpacity>
             </View>
           </SafeAreaView>
+
+          {/* Floating language selector */}
+          <View style={{ position: 'absolute', bottom: 140, right: 24 }}>
+            {showLangPicker && (
+              <View style={styles.langPickerPopup}>
+                {LANG_OPTIONS.map(lang => (
+                  <TouchableOpacity
+                    key={lang.code}
+                    style={[styles.langOption, currentLang === lang.code && styles.langOptionActive]}
+                    onPress={() => handleLangChange(lang.code)}
+                  >
+                    <Text style={styles.langFlag}>{lang.flag}</Text>
+                    <Text style={[styles.langCode, currentLang === lang.code && { color: '#2563eb', fontWeight: '800' }]}>{lang.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+            <TouchableOpacity
+              style={styles.langFab}
+              onPress={() => setShowLangPicker(v => !v)}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.langFabFlag}>{currentLangOption.flag}</Text>
+            </TouchableOpacity>
+          </View>
         </LinearGradient>
       ) : (
         <SafeAreaView style={styles.container} edges={['top']}>
@@ -877,7 +932,7 @@ export default function OnboardingScreen() {
             </View>
 
             <TouchableOpacity style={styles.nextBtn} onPress={handleNext}>
-              <Text style={styles.nextBtnText}>Continue</Text>
+              <Text style={styles.nextBtnText}>{t('onboarding.nav.continue', 'Continue')}</Text>
               <ChevronRight size={20} color="#fff" />
             </TouchableOpacity>
           </ScrollView>
@@ -961,4 +1016,31 @@ const styles = StyleSheet.create({
 
   primaryBtn: { backgroundColor: '#2563eb', padding: 20, borderRadius: 20, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8 },
   primaryBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+
+  // Language FAB
+  langFab: {
+    width: 48, height: 48, borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    alignItems: 'center', justifyContent: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15, shadowRadius: 6, elevation: 4,
+  },
+  langFabFlag: { fontSize: 24 },
+  langPickerPopup: {
+    backgroundColor: 'rgba(255,255,255,0.97)',
+    borderRadius: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 4,
+    marginBottom: 10,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15, shadowRadius: 12, elevation: 6,
+    minWidth: 90,
+  },
+  langOption: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    paddingVertical: 9, paddingHorizontal: 12, borderRadius: 10,
+  },
+  langOptionActive: { backgroundColor: '#eff6ff' },
+  langFlag: { fontSize: 18 },
+  langCode: { fontSize: 13, fontWeight: '600', color: '#475569' },
 });

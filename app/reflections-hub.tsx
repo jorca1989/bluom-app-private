@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     View,
     Text,
@@ -24,26 +25,27 @@ import { getBottomContentPadding } from '@/utils/layout';
 
 const { width } = Dimensions.get('window');
 
-const GRATITUDE_PROMPTS = [
-    "What made you smile today?",
-    "Who is someone you're grateful for?",
-    "What is a challenge you've overcome recently?",
-    "Describe a small win from this week.",
-    "What is something in nature you enjoyed?",
-    "What is a skill you are thankful to have?",
+const getGratitudePrompts = (t: any) => [
+    t('wellness.reflections.gPrompt1', 'What made you smile today?'),
+    t('wellness.reflections.gPrompt2', 'Who is someone you\'re grateful for?'),
+    t('wellness.reflections.gPrompt3', 'What is a challenge you\'ve overcome recently?'),
+    t('wellness.reflections.gPrompt4', 'Describe a small win from this week.'),
+    t('wellness.reflections.gPrompt5', 'What is something in nature you enjoyed?'),
+    t('wellness.reflections.gPrompt6', 'What is a skill you are thankful to have?')
 ];
 
-const JOURNAL_PROMPTS = [
-    "What did you learn about yourself today?",
-    "Describe a moment of peace.",
-    "What is weighing on your mind right now?",
-    "What are you most excited about for tomorrow?",
-    "If you could change one thing about today, what would it be?",
-    "What does your ideal day look like?",
-    "How did you practice self-care today?",
+const getJournalPrompts = (t: any) => [
+    t('wellness.reflections.jPrompt1', 'What did you learn about yourself today?'),
+    t('wellness.reflections.jPrompt2', 'Describe a moment of peace.'),
+    t('wellness.reflections.jPrompt3', 'What is weighing on your mind right now?'),
+    t('wellness.reflections.jPrompt4', 'What are you most excited about for tomorrow?'),
+    t('wellness.reflections.jPrompt5', 'If you could change one thing about today, what would it be?'),
+    t('wellness.reflections.jPrompt6', 'What does your ideal day look like?'),
+    t('wellness.reflections.jPrompt7', 'How did you practice self-care today?')
 ];
 
 export default function ReflectionsHub() {
+    const { t } = useTranslation();
     const router = useRouter();
     const { user: clerkUser } = useUser();
     const insets = useSafeAreaInsets();
@@ -71,7 +73,7 @@ export default function ReflectionsHub() {
     // Gratitude State
     const [gratitudeEntry, setGratitudeEntry] = useState('');
     const [gratitudeLines, setGratitudeLines] = useState<string[]>(['', '', '']);
-    const [gratitudePrompt, setGratitudePrompt] = useState<string>(GRATITUDE_PROMPTS[0]);
+    const [gratitudePrompt, setGratitudePrompt] = useState<string>(getGratitudePrompts(t)[0]);
 
     // Journal State
     const [journalContent, setJournalContent] = useState('');
@@ -88,13 +90,15 @@ export default function ReflectionsHub() {
     const [triggerGlow, setTriggerGlow] = useState(false);
 
     const shuffleGratitudePrompt = () => {
-        const random = GRATITUDE_PROMPTS[Math.floor(Math.random() * GRATITUDE_PROMPTS.length)];
+        const prompts = getGratitudePrompts(t);
+        const random = prompts[Math.floor(Math.random() * prompts.length)];
         setGratitudePrompt(random);
         triggerSound(SoundEffect.UI_TAP);
     };
 
     const generateJournalPrompt = () => {
-        const random = JOURNAL_PROMPTS[Math.floor(Math.random() * JOURNAL_PROMPTS.length)];
+        const prompts = getJournalPrompts(t);
+        const random = prompts[Math.floor(Math.random() * prompts.length)];
         setJournalPrompt(random);
         triggerSound(SoundEffect.UI_TAP);
     };
@@ -359,7 +363,7 @@ export default function ReflectionsHub() {
                             ))}
                         </View>
                         <TouchableOpacity style={styles.skipBtn} onPress={() => finalizeJournalSave(null)}>
-                            <Text style={styles.skipText}>Skip Mood Log</Text>
+                            <Text style={styles.skipText}>{t('wellness.reflections.skipMood', 'Ignorar registo de humor')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -371,14 +375,14 @@ export default function ReflectionsHub() {
                     onPress={() => setActiveTab('gratitude')}
                 >
                     <Ionicons name="heart" size={20} color={activeTab === 'gratitude' ? '#fff' : '#64748b'} />
-                    <Text style={[styles.tabText, activeTab === 'gratitude' && styles.activeTabText]}>Gratitude</Text>
+                    <Text style={[styles.tabText, activeTab === 'gratitude' && styles.activeTabText]}>{t('wellness.reflections.gratitudeTab', 'Gratidão')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.tab, activeTab === 'journal' && styles.activeTab]}
                     onPress={() => setActiveTab('journal')}
                 >
                     <Ionicons name="book" size={20} color={activeTab === 'journal' ? '#fff' : '#64748b'} />
-                    <Text style={[styles.tabText, activeTab === 'journal' && styles.activeTabText]}>Journal</Text>
+                    <Text style={[styles.tabText, activeTab === 'journal' && styles.activeTabText]}>{t('wellness.reflections.journalTab', 'Diário')}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -392,7 +396,7 @@ export default function ReflectionsHub() {
                         {activeTab === 'gratitude' ? (
                             <View style={styles.card}>
                                 <View style={styles.sectionHeader}>
-                                    <Text style={styles.sectionTitle}>Daily Gratitude</Text>
+                                    <Text style={styles.sectionTitle}>{t('wellness.reflections.dailyGratitude', 'Gratidão Diária')}</Text>
                                     <SparkleEffect visible={triggerSparkle} />
                                 </View>
 
@@ -400,17 +404,17 @@ export default function ReflectionsHub() {
                                     <Text style={styles.promptText}>{gratitudePrompt}</Text>
                                     <TouchableOpacity onPress={shuffleGratitudePrompt} style={styles.shuffleButton}>
                                         <Ionicons name="shuffle" size={16} color="#f43f5e" />
-                                        <Text style={styles.shuffleText}>Surprise Me</Text>
+                                        <Text style={styles.shuffleText}>{t('wellness.reflections.surpriseMe', 'Surpreenda-me')}</Text>
                                     </TouchableOpacity>
                                 </View>
 
-                                <Text style={styles.label}>Quick 3 (Optional)</Text>
+                                <Text style={styles.label}>{t('wellness.reflections.quick3', '3 Rápidas (Opcional)')}</Text>
                                 {gratitudeLines.map((line, i) => (
                                     <View key={i} style={styles.lineInputContainer}>
                                         <Text style={styles.lineNumber}>{i + 1}.</Text>
                                         <TextInput
                                             style={styles.lineInput}
-                                            placeholder="I'm grateful for..."
+                                            placeholder={t('wellness.reflections.gratefulFor', 'Sou grato por...')}
                                             value={line}
                                             onChangeText={(t) => {
                                                 const newLines = [...gratitudeLines];

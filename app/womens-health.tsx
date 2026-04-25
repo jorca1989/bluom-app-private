@@ -19,6 +19,7 @@
 import React, {
   useState, useEffect, useMemo, useRef, useCallback,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Modal, TextInput, Alert, Animated, Dimensions,
@@ -106,6 +107,7 @@ const WOMENS_QUIZ = [
 // CYCLE LOGIC
 // ─────────────────────────────────────────────────────────────
 interface CyclePhase {
+  id: string;
   name: string;
   day: number;
   description: string;
@@ -120,71 +122,97 @@ interface CyclePhase {
   tip: string;
 }
 
-function getCyclePhase(lastPeriodDate: number, cycleLength = 28): CyclePhase {
+function getCyclePhase(lastPeriodDate: number, t: Function, cycleLength = 28): CyclePhase {
   const now       = Date.now();
   const daysSince = Math.floor((now - lastPeriodDate) / (1000 * 60 * 60 * 24));
   const cycleDay  = (daysSince % cycleLength) + 1;
 
   if (cycleDay <= 5) return {
-    name: 'Menstrual', day: cycleDay,
-    description: 'Uterine lining sheds. Oestrogen and progesterone are at their lowest.',
-    energy: 'Low — honour rest', workout: 'Gentle yoga, walks, stretching',
-    nutrition: 'Iron-rich foods: lentils, leafy greens, red meat',
-    mood: 'Introspective, emotional', color: '#dc2626', bg: '#fef2f2',
-    gradient: ['#dc2626', '#b91c1c'], hormone: 'Low oestrogen & progesterone',
-    tip: 'Use a heating pad, reduce caffeine, and prioritise sleep.',
+    id: 'menstrual', day: cycleDay,
+    name:        t('womensHealth.phaseName.menstrual',    'Menstrual'),
+    description: t('womensHealth.phaseDesc.menstrual',    'O revestimento uterino descama. Os estrogénios e a progesterona estão no nível mais baixo.'),
+    energy:      t('womensHealth.phaseEnergy.menstrual',  'Baixa — honra o descanso'),
+    workout:     t('womensHealth.phaseWorkout.menstrual', 'Yoga suave, caminhadas, alongamentos'),
+    nutrition:   t('womensHealth.phaseNutrition.menstrual','Alimentos ricos em ferro: lentilhas, vegetais de folha verde, carne vermelha'),
+    mood:        t('womensHealth.phaseMood.menstrual',    'Introspetivo, emocional'),
+    color: '#dc2626', bg: '#fef2f2',
+    gradient: ['#dc2626', '#b91c1c'],
+    hormone:     t('womensHealth.phaseHormone.menstrual', 'Estrogénio & progesterona baixos'),
+    tip:         t('womensHealth.phaseTip.menstrual',     'Usa uma almofada de calor, reduz a cafeína e prioriza o sono.'),
   };
   if (cycleDay <= 13) return {
-    name: 'Follicular', day: cycleDay,
-    description: 'FSH rises, follicles develop, oestrogen climbs. Energy and clarity build.',
-    energy: 'Rising — great for new starts', workout: 'Strength training, HIIT, cardio',
-    nutrition: 'Complex carbs, fermented foods, lean protein',
-    mood: 'Optimistic, motivated, social', color: '#16a34a', bg: '#f0fdf4',
-    gradient: ['#16a34a', '#15803d'], hormone: 'Rising oestrogen, FSH active',
-    tip: 'Schedule demanding projects and creative work now — your brain is firing.',
+    id: 'follicular', day: cycleDay,
+    name:        t('womensHealth.phaseName.follicular',    'Folicular'),
+    description: t('womensHealth.phaseDesc.follicular',    'A FSH sobe, os folículos desenvolvem-se, o estrogénio sobe. Energia e clareza aumentam.'),
+    energy:      t('womensHealth.phaseEnergy.follicular',  'A subir — ótimo para novos começos'),
+    workout:     t('womensHealth.phaseWorkout.follicular', 'Treino de força, HIIT, cardio'),
+    nutrition:   t('womensHealth.phaseNutrition.follicular','Hidratos complexos, alimentos fermentados, proteína magra'),
+    mood:        t('womensHealth.phaseMood.follicular',    'Otimista, motivada, social'),
+    color: '#16a34a', bg: '#f0fdf4',
+    gradient: ['#16a34a', '#15803d'],
+    hormone:     t('womensHealth.phaseHormone.follicular', 'Estrogénio a subir, FSH ativa'),
+    tip:         t('womensHealth.phaseTip.follicular',     'Agenda projetos exigentes e trabalho criativo agora — o teu cérebro está em modo turbo.'),
   };
   if (cycleDay === 14) return {
-    name: 'Ovulation', day: cycleDay,
-    description: 'LH surge triggers egg release. Peak oestrogen. You feel your best.',
-    energy: 'Peak — highest physical capacity', workout: 'PR attempts, intense cardio',
-    nutrition: 'Antioxidants, zinc-rich foods (pumpkin seeds, oysters)',
-    mood: 'Confident, magnetic, communicative', color: '#2563eb', bg: '#eff6ff',
-    gradient: ['#2563eb', '#1d4ed8'], hormone: 'LH surge + peak oestrogen',
-    tip: 'Your voice is literally more attractive now — lean into social situations.',
+    id: 'ovulation', day: cycleDay,
+    name:        t('womensHealth.phaseName.ovulation',    'Ovulação'),
+    description: t('womensHealth.phaseDesc.ovulation',    'O pico de LH desencadeia a libertação do óvulo. Estrogénio em pico. Sentes-te melhor.'),
+    energy:      t('womensHealth.phaseEnergy.ovulation',  'Pico — maior capacidade física'),
+    workout:     t('womensHealth.phaseWorkout.ovulation', 'Recordes pessoais, cardio intenso'),
+    nutrition:   t('womensHealth.phaseNutrition.ovulation','Antioxidantes, alimentos ricos em zinco (sementes de abóbora, ostras)'),
+    mood:        t('womensHealth.phaseMood.ovulation',    'Confiante, magnética, comunicativa'),
+    color: '#2563eb', bg: '#eff6ff',
+    gradient: ['#2563eb', '#1d4ed8'],
+    hormone:     t('womensHealth.phaseHormone.ovulation', 'Pico de LH + estrogénio no máximo'),
+    tip:         t('womensHealth.phaseTip.ovulation',     'A tua voz é literalmente mais atrativa agora — aproveita as situações sociais.'),
   };
   if (cycleDay <= 21) return {
-    name: 'Luteal (Early)', day: cycleDay,
-    description: 'Progesterone rises as corpus luteum forms. Body temperature elevates.',
-    energy: 'Stable — sustained effort', workout: 'Moderate lifting, Pilates, cycling',
-    nutrition: 'Magnesium (dark chocolate, nuts), B6 for mood',
-    mood: 'Focused, detail-oriented, some bloating', color: '#d97706', bg: '#fffbeb',
-    gradient: ['#d97706', '#b45309'], hormone: 'Rising progesterone',
-    tip: 'This is the best phase for detail-oriented admin and deep focused work.',
+    id: 'luteal_early', day: cycleDay,
+    name:        t('womensHealth.phaseName.lutealEarly',    'Luteal (Início)'),
+    description: t('womensHealth.phaseDesc.lutealEarly',    'A progesterona sobe com a formação do corpo lúteo. A temperatura corporal eleva-se.'),
+    energy:      t('womensHealth.phaseEnergy.lutealEarly',  'Estável — esforço sustentado'),
+    workout:     t('womensHealth.phaseWorkout.lutealEarly', 'Musculação moderada, Pilates, ciclismo'),
+    nutrition:   t('womensHealth.phaseNutrition.lutealEarly','Magnésio (chocolate negro, nozes), B6 para o humor'),
+    mood:        t('womensHealth.phaseMood.lutealEarly',    'Focada, orientada para detalhes, algum inchaço'),
+    color: '#d97706', bg: '#fffbeb',
+    gradient: ['#d97706', '#b45309'],
+    hormone:     t('womensHealth.phaseHormone.lutealEarly', 'Progesterona a subir'),
+    tip:         t('womensHealth.phaseTip.lutealEarly',     'Esta é a melhor fase para trabalho administrativo detalhado e foco profundo.'),
   };
   return {
-    name: 'Luteal (Late)', day: cycleDay,
-    description: 'PMS window. Progesterone drops if no fertilisation. Cortisol sensitivity rises.',
-    energy: 'Low-moderate — wind down', workout: 'Light cardio, yoga, walking',
-    nutrition: 'Reduce salt + sugar. Tryptophan foods (turkey, eggs) for serotonin.',
-    mood: 'Sensitive, irritable, craving comfort', color: '#7c3aed', bg: '#f5f3ff',
-    gradient: ['#7c3aed', '#6d28d9'], hormone: 'Dropping progesterone + oestrogen',
-    tip: 'Reduce alcohol and processed foods. Track your PMS symptoms to spot patterns.',
+    id: 'luteal_late', day: cycleDay,
+    name:        t('womensHealth.phaseName.lutealLate',    'Luteal (Final)'),
+    description: t('womensHealth.phaseDesc.lutealLate',    'Janela de SPM. A progesterona cai se não houver fertilização. A sensibilidade ao cortisol aumenta.'),
+    energy:      t('womensHealth.phaseEnergy.lutealLate',  'Baixa a moderada — abranda'),
+    workout:     t('womensHealth.phaseWorkout.lutealLate', 'Cardio leve, yoga, caminhada'),
+    nutrition:   t('womensHealth.phaseNutrition.lutealLate','Reduz sal + açúcar. Alimentos com triptofano (peru, ovos) para serotonina.'),
+    mood:        t('womensHealth.phaseMood.lutealLate',    'Sensível, irritável, a precisar de conforto'),
+    color: '#7c3aed', bg: '#f5f3ff',
+    gradient: ['#7c3aed', '#6d28d9'],
+    hormone:     t('womensHealth.phaseHormone.lutealLate', 'Progesterona + estrogénio a cair'),
+    tip:         t('womensHealth.phaseTip.lutealLate',     'Reduz álcool e alimentos processados. Regista os teus sintomas de SPM para identificar padrões.'),
   };
 }
 
-function getPregnancyStats(startDate: number) {
+function getPregnancyStats(startDate: number, t: Function) {
   const days     = Math.floor((Date.now() - startDate) / (1000 * 60 * 60 * 24));
   const weeks    = Math.floor(days / 7);
   const trimester = weeks < 14 ? 1 : weeks < 28 ? 2 : 3;
   const sizes     = ['🌱','🫘','🫘','🫐','🫘','🍇','🍊','🟣','🍋','🍋','🍎','🥑','🥔','🫑','🥒','🟠','🍆','🎃','🍍','🍈','🍈','🍉','🎃'];
   const milestones = [
-    'Heart is beating','Fingers forming','First kicks possible','Hearing develops',
-    'Baby can dream','Lungs maturing','Practice breathing','Full term approaching',
+    t('womensHealth.milestone.0','Coração a bater'),
+    t('womensHealth.milestone.1','Dedos a formar-se'),
+    t('womensHealth.milestone.2','Primeiros pontapés possíveis'),
+    t('womensHealth.milestone.3','Audição a desenvolver-se'),
+    t('womensHealth.milestone.4','O bebé já pode sonhar'),
+    t('womensHealth.milestone.5','Pulmões a maturar'),
+    t('womensHealth.milestone.6','A praticar a respiração'),
+    t('womensHealth.milestone.7','A aproximar-se do termo'),
   ];
   return {
     weeks, trimester, progress: Math.min(weeks / 40, 1),
     emoji: sizes[Math.min(weeks, sizes.length - 1)],
-    milestone: milestones[Math.floor(weeks / 5)] ?? 'Growing strong',
+    milestone: milestones[Math.floor(weeks / 5)] ?? t('womensHealth.milestone.default','A crescer forte'),
   };
 }
 
@@ -195,6 +223,7 @@ function buildInsights(
   convexUser: any,
   profile: WomensProfile | null,
   phase: CyclePhase | null,
+  t: Function,
 ) {
   const insights: { title: string; body: string; icon: string; priority: 'high'|'medium'|'low'; link?: string }[] = [];
 
@@ -207,56 +236,56 @@ function buildInsights(
 
   // Phase-specific insights
   if (phase) {
-    if (phase.name === 'Luteal (Late)') {
-      insights.push({ title: 'PMS Window Active', body: 'Magnesium glycinate (300mg) taken before bed has strong clinical evidence for reducing cramps, bloating and mood swings.', icon: '💊', priority: 'high' });
+    if (phase.id === 'luteal_late') {
+      insights.push({ title: t('womensHealth.insight.pmsTitle','Janela de SPM Ativa'), body: t('womensHealth.insight.pmsBody','O glicinato de magnésio (300mg) tomado antes de dormir tem forte evidência clínica para reduzir cólicas, inchafo e alterações de humor.'), icon: '💊', priority: 'high' });
       if (stress === 'high' || stress === 'very_high') {
-        insights.push({ title: 'High Stress + Late Luteal = Risk', body: 'Your reported stress level combined with the PMS window can amplify cortisol and worsen symptoms. Prioritise a cortisol-lowering practice today.', icon: '⚠️', priority: 'high', link: '/wellness' });
+        insights.push({ title: t('womensHealth.insight.stressLutealTitle','Stress Alto + Luteal Final = Risco'), body: t('womensHealth.insight.stressLutealBody','O teu nível de stress combinado com a janela de SPM pode amplificar o cortisol e piorar os sintomas. Prioriza uma prática de redução de cortisol hoje.'), icon: '⚠️', priority: 'high', link: '/wellness' });
       }
     }
-    if (phase.name === 'Ovulation') {
-      insights.push({ title: 'Fertility Window Open', body: 'You are in your peak fertility window. If you are actively trying to conceive, this is the optimal time. If not, be aware.', icon: '🌸', priority: 'high' });
+    if (phase.id === 'ovulation') {
+      insights.push({ title: t('womensHealth.insight.fertilityTitle','Janela de Fertilidade Aberta'), body: t('womensHealth.insight.fertilityBody','Estás na tua janela de fertilidade máxima. Se estás ativamente a tentar conceber, este é o momento ótimo. Se não, fica ciente.'), icon: '🌸', priority: 'high' });
     }
-    if (phase.name === 'Follicular') {
-      insights.push({ title: 'Oestrogen Rising = Brain Power', body: 'Serotonin and dopamine are elevated this phase. A great window to schedule hard conversations, presentations, or creative projects.', icon: '🧠', priority: 'medium' });
+    if (phase.id === 'follicular') {
+      insights.push({ title: t('womensHealth.insight.estrogenTitle','Estrogénio a Subir = Poder Mental'), body: t('womensHealth.insight.estrogenBody','A serotonina e a dopamina estão elevadas nesta fase. Uma ótima janela para agendar conversas difíceis, apresentações ou projetos criativos.'), icon: '🧠', priority: 'medium' });
     }
   }
 
   // Sleep-hormone link
   if (sleep && sleep < 7) {
-    insights.push({ title: 'Sleep Debt Disrupts Hormones', body: 'Under 7 hours of sleep raises cortisol, suppresses progesterone, and can cause cycle irregularities. You\'re currently averaging less than the minimum.', icon: '😴', priority: 'high', link: '/wellness' });
+    insights.push({ title: t('womensHealth.insight.sleepTitle','Défice de Sono Perturba Hormónios'), body: t('womensHealth.insight.sleepBody','Menos de 7 horas de sono aumenta o cortisol, suprime a progesterona e pode causar irregularidades no ciclo. Estás atualmente abaixo do mínimo.'), icon: '😴', priority: 'high', link: '/wellness' });
   }
 
   // Nutrition insights
   if (diet === 'low_carb' || diet === 'high_protein') {
-    insights.push({ title: 'Low Carb + Hormones', body: 'Very low carb diets can suppress LH and FSH, causing irregular or absent periods. If your cycle is irregular, consider a cyclical carb approach.', icon: '🥗', priority: 'medium' });
+    insights.push({ title: t('womensHealth.insight.lowCarbTitle','Low Carb + Hormónios'), body: t('womensHealth.insight.lowCarbBody','Dietas muito baixas em hidratos podem suprimir LH e FSH, causando períodos irregulares ou ausentes. Se o teu ciclo é irregular, considera uma abordagem cíclica de hidratos.'), icon: '🥗', priority: 'medium' });
   }
 
   // Pain level insight
   if (profile?.periodPain === 'severe') {
-    insights.push({ title: 'Severe Pain Needs Investigation', body: 'Severe period pain is not normal and may indicate endometriosis, fibroids or adenomyosis. We strongly recommend speaking to a GP or gynaecologist.', icon: '🏥', priority: 'high' });
+    insights.push({ title: t('womensHealth.insight.painTitle','Dor Severa Requer Investigação'), body: t('womensHealth.insight.painBody','Dor menstrual severa não é normal e pode indicar endometriose, miomas ou adenomiose. Recomendamos fortemente falar com um médico ou ginecologista.'), icon: '🏥', priority: 'high' });
   }
 
   // Birth control insight
   if (profile?.birthControl === 'pill') {
-    insights.push({ title: 'Pill & Nutrient Depletion', body: 'The combined pill can deplete B6, B12, folate, magnesium and zinc. Consider a B-complex supplement and regular blood tests.', icon: '💊', priority: 'medium' });
+    insights.push({ title: t('womensHealth.insight.pillTitle','Pílula & Depleção de Nutrientes'), body: t('womensHealth.insight.pillBody','A pílula combinada pode deplecionar B6, B12, folato, magnésio e zinco. Considera um suplemento de complexo B e análises regulares.'), icon: '💊', priority: 'medium' });
   }
 
   // Activity vs cycle
   if (activity === 'very_active' || activity === 'extremely_active') {
-    insights.push({ title: 'Athletic Triad Awareness', body: 'High-intensity training can suppress oestrogen and disrupt your cycle (RED-S). Monitor your period — any disruption is your body\'s warning signal.', icon: '🏃', priority: 'medium', link: '/move' });
+    insights.push({ title: t('womensHealth.insight.athleticTitle','Atenção à Tríade Atlética'), body: t('womensHealth.insight.athleticBody','Treino de alta intensidade pode suprimir o estrogénio e perturbar o teu ciclo (RED-S). Monitoriza o teu período — qualquer perturbação é um sinal de aviso do teu corpo.'), icon: '🏃', priority: 'medium', link: '/move' });
   }
 
   // Age-based
   if (age && age >= 35 && age <= 45) {
-    insights.push({ title: 'Perimenopause May Begin', body: 'Hormonal fluctuations often start in the mid-to-late 30s, even with regular periods. Track mood, sleep and cycle changes closely.', icon: '🌡️', priority: 'medium' });
+    insights.push({ title: t('womensHealth.insight.periTitle','Perimenopausa Pode Começar'), body: t('womensHealth.insight.periBody','Flutuações hormonais começam frequentemente nos 30 e tal anos, mesmo com períodos regulares. Acompanha de perto as alterações de humor, sono e ciclo.'), icon: '🌡️', priority: 'medium' });
   }
 
   // Weight goal + hormones
   if (goal === 'lose_weight') {
-    insights.push({ title: 'Calorie Restriction & Hormones', body: 'Aggressive calorie deficits suppress leptin and thyroid hormones, potentially stalling weight loss and disrupting cycles. Cycle-sync your training intensity instead.', icon: '⚖️', priority: 'medium' });
+    insights.push({ title: t('womensHealth.insight.calorieTitle','Restrição Calórica & Hormónios'), body: t('womensHealth.insight.calorieBody','Défices calóricos agressivos suprimem a leptina e as hormonas da tiroide, podendo travar a perda de peso e perturbar ciclos. Sincroniza a intensidade do treino com o ciclo.'), icon: '⚖️', priority: 'medium' });
   }
 
-  return insights.slice(0, 6); // Max 6
+  return insights.slice(0, 6);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -280,6 +309,7 @@ function getSupplementStack(
   profile: WomensProfile | null,
   phase: CyclePhase | null,
   convexUser: any,
+  t: any
 ): { name: string; dose: string; reason: string; evidence: string; timing: string }[] {
   const stack: any[] = [];
   const pain    = profile?.periodPain;
@@ -291,48 +321,48 @@ function getSupplementStack(
 
   // Phase-based
   if (phase?.name === 'Menstrual' || phase?.name === 'Luteal (Late)') {
-    stack.push({ name: 'Magnesium Glycinate', dose: '300mg', reason: 'Reduces cramps, PMS mood symptoms and improves sleep', evidence: 'Grade A', timing: 'Before bed' });
+    stack.push({ name: t('womensHealth.supps.magnesium.name', 'Magnesium Glycinate'), dose: '300mg', reason: t('womensHealth.supps.magnesium.reason', 'Reduces cramps, PMS mood symptoms and improves sleep'), evidence: 'Grade A', timing: t('womensHealth.supps.magnesium.timing', 'Before bed') });
   }
   if (phase?.name === 'Follicular' || phase?.name === 'Ovulation') {
-    stack.push({ name: 'Iron + Vitamin C', dose: '18mg + 500mg', reason: 'Replenish iron lost during menstruation; C enhances absorption', evidence: 'Grade A', timing: 'With breakfast, away from coffee' });
+    stack.push({ name: t('womensHealth.supps.iron.name', 'Iron + Vitamin C'), dose: '18mg + 500mg', reason: t('womensHealth.supps.iron.reason', 'Replenish iron lost during menstruation; C enhances absorption'), evidence: 'Grade A', timing: t('womensHealth.supps.iron.timing', 'With breakfast, away from coffee') });
   }
 
   // Pain-based
   if (pain === 'moderate' || pain === 'severe') {
-    stack.push({ name: 'Omega-3 (EPA/DHA)', dose: '2000mg', reason: 'Anti-inflammatory; reduces prostaglandin-driven cramps. As effective as ibuprofen in trials', evidence: 'Grade A', timing: 'With meals' });
-    stack.push({ name: 'Vitamin D3', dose: '2000 IU', reason: 'Deficiency linked to severe dysmenorrhoea', evidence: 'Grade B', timing: 'With a fatty meal' });
+    stack.push({ name: t('womensHealth.supps.omega3.name', 'Omega-3 (EPA/DHA)'), dose: '2000mg', reason: t('womensHealth.supps.omega3.reason', 'Anti-inflammatory; reduces prostaglandin-driven cramps. As effective as ibuprofen in trials'), evidence: 'Grade A', timing: t('womensHealth.supps.omega3.timing', 'With meals') });
+    stack.push({ name: t('womensHealth.supps.vitD3.name', 'Vitamin D3'), dose: '2000 IU', reason: t('womensHealth.supps.vitD3.reason', 'Deficiency linked to severe dysmenorrhoea'), evidence: 'Grade B', timing: t('womensHealth.supps.vitD3.timing', 'With a fatty meal') });
   }
 
   // Pill-related
   if (bc === 'pill') {
-    stack.push({ name: 'B-Complex (B6, B12, Folate)', dose: '1 capsule', reason: 'Oral contraceptives deplete B vitamins — critical for mood and methylation', evidence: 'Grade A', timing: 'Morning with food' });
-    stack.push({ name: 'Zinc', dose: '15mg', reason: 'Contraceptive pill depletes zinc, affecting immunity and skin', evidence: 'Grade B', timing: 'With dinner' });
+    stack.push({ name: t('womensHealth.supps.bComplex.name', 'B-Complex (B6, B12, Folate)'), dose: '1 capsule', reason: t('womensHealth.supps.bComplex.reason', 'Oral contraceptives deplete B vitamins — critical for mood and methylation'), evidence: 'Grade A', timing: t('womensHealth.supps.bComplex.timing', 'Morning with food') });
+    stack.push({ name: t('womensHealth.supps.zinc.name', 'Zinc'), dose: '15mg', reason: t('womensHealth.supps.zinc.reason', 'Contraceptive pill depletes zinc, affecting immunity and skin'), evidence: 'Grade B', timing: t('womensHealth.supps.zinc.timing', 'With dinner') });
   }
 
   // Stress
   if (stress === 'high' || stress === 'very_high') {
-    stack.push({ name: 'Ashwagandha KSM-66', dose: '600mg', reason: 'Clinically proven adaptogen for cortisol reduction and hormonal balance', evidence: 'Grade A', timing: 'With dinner or before bed' });
+    stack.push({ name: t('womensHealth.supps.ashwagandha.name', 'Ashwagandha KSM-66'), dose: '600mg', reason: t('womensHealth.supps.ashwagandha.reason', 'Clinically proven adaptogen for cortisol reduction and hormonal balance'), evidence: 'Grade A', timing: t('womensHealth.supps.ashwagandha.timing', 'With dinner or before bed') });
   }
 
   // Sleep
   if (sleep && sleep < 7) {
-    stack.push({ name: 'Magnesium L-Threonate', dose: '140mg', reason: 'Crosses blood-brain barrier; improves deep sleep and reduces night anxiety', evidence: 'Grade B', timing: '30 mins before bed' });
+    stack.push({ name: t('womensHealth.supps.magLThreonate.name', 'Magnesium L-Threonate'), dose: '140mg', reason: t('womensHealth.supps.magLThreonate.reason', 'Crosses blood-brain barrier; improves deep sleep and reduces night anxiety'), evidence: 'Grade B', timing: t('womensHealth.supps.magLThreonate.timing', '30 mins before bed') });
   }
 
   // Fertility focus
   if (focus === 'fertility') {
-    stack.push({ name: 'Myo-Inositol', dose: '4000mg', reason: 'Supports egg quality, ovulation regularity and insulin sensitivity', evidence: 'Grade A', timing: 'Split morning and night with food' });
-    stack.push({ name: 'CoQ10 (Ubiquinol)', dose: '200–400mg', reason: 'Improves mitochondrial energy in eggs; important over 35', evidence: 'Grade A', timing: 'With meals' });
+    stack.push({ name: t('womensHealth.supps.myoInositol.name', 'Myo-Inositol'), dose: '4000mg', reason: t('womensHealth.supps.myoInositol.reason', 'Supports egg quality, ovulation regularity and insulin sensitivity'), evidence: 'Grade A', timing: t('womensHealth.supps.myoInositol.timing', 'Split morning and night with food') });
+    stack.push({ name: t('womensHealth.supps.coQ10.name', 'CoQ10 (Ubiquinol)'), dose: '200–400mg', reason: t('womensHealth.supps.coQ10.reason', 'Improves mitochondrial energy in eggs; important over 35'), evidence: 'Grade A', timing: t('womensHealth.supps.coQ10.timing', 'With meals') });
   }
 
   // Perimenopause
   if (focus === 'perimenopause' || (age && age >= 40)) {
-    stack.push({ name: 'Black Cohosh', dose: '20–40mg', reason: 'Hot flash and mood symptom relief; best evidence in early menopause', evidence: 'Grade B', timing: 'Morning and evening' });
-    stack.push({ name: 'Calcium + D3', dose: '1000mg + 2000IU', reason: 'Bone density protection during oestrogen decline', evidence: 'Grade A', timing: 'Split morning and night' });
+    stack.push({ name: t('womensHealth.supps.blackCohosh.name', 'Black Cohosh'), dose: '20–40mg', reason: t('womensHealth.supps.blackCohosh.reason', 'Hot flash and mood symptom relief; best evidence in early menopause'), evidence: 'Grade B', timing: t('womensHealth.supps.blackCohosh.timing', 'Morning and evening') });
+    stack.push({ name: t('womensHealth.supps.calcium.name', 'Calcium + D3'), dose: '1000mg + 2000IU', reason: t('womensHealth.supps.calcium.reason', 'Bone density protection during oestrogen decline'), evidence: 'Grade A', timing: t('womensHealth.supps.calcium.timing', 'Split morning and night') });
   }
 
   // Universal
-  stack.push({ name: 'Vitamin D3 + K2', dose: '2000 IU + 100mcg', reason: 'Most women are deficient; critical for immune function, mood and bone health', evidence: 'Grade A', timing: 'Morning with a fatty meal' });
+  stack.push({ name: t('womensHealth.supps.vitD3K2.name', 'Vitamin D3 + K2'), dose: '2000 IU + 100mcg', reason: t('womensHealth.supps.vitD3K2.reason', 'Most women are deficient; critical for immune function, mood and bone health'), evidence: 'Grade A', timing: t('womensHealth.supps.vitD3K2.timing', 'Morning with a fatty meal') });
 
   // Deduplicate by name
   const seen = new Set<string>();
@@ -357,6 +387,7 @@ export default function WomensHealthScreen() {
   const insets   = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
   const { isPro, promptUpgrade } = useAccessControl();
+  const { t } = useTranslation();
 
   const convexUser = useQuery(api.users.getUserByClerkId, clerkUser?.id ? { clerkId: clerkUser.id } : 'skip');
   const updateUser = useMutation(api.users.updateUser);
@@ -449,16 +480,16 @@ export default function WomensHealthScreen() {
   // ── Derived ──
   const phase = useMemo(() => {
     if (lifeStage !== 'cycle' || !convexUser?.lastPeriodDate) return null;
-    return getCyclePhase(convexUser.lastPeriodDate);
-  }, [lifeStage, convexUser?.lastPeriodDate]);
+    return getCyclePhase(convexUser.lastPeriodDate, t);
+  }, [lifeStage, convexUser?.lastPeriodDate, t]);
 
   const pregnancyStats = useMemo(() => {
     if (lifeStage !== 'pregnancy' || !convexUser?.pregnancyStartDate) return null;
-    return getPregnancyStats(convexUser.pregnancyStartDate);
-  }, [lifeStage, convexUser?.pregnancyStartDate]);
+    return getPregnancyStats(convexUser.pregnancyStartDate, t);
+  }, [lifeStage, convexUser?.pregnancyStartDate, t]);
 
-  const insights    = useMemo(() => buildInsights(convexUser, profile, phase), [convexUser, profile, phase]);
-  const suppStack   = useMemo(() => getSupplementStack(profile, phase, convexUser), [profile, phase, convexUser]);
+  const insights    = useMemo(() => buildInsights(convexUser, profile, phase, t), [convexUser, profile, phase, t]);
+  const suppStack   = useMemo(() => getSupplementStack(profile, phase, convexUser, t), [profile, phase, convexUser, t]);
 
   const needsSetup  = lifeStage === 'cycle' && !convexUser?.lastPeriodDate
     || lifeStage === 'pregnancy' && !convexUser?.pregnancyStartDate;
@@ -494,9 +525,9 @@ export default function WomensHealthScreen() {
         babyMovement: lifeStage === 'pregnancy' ? babyMovement : undefined,
         hotFlashSeverity: lifeStage === 'menopause' ? hotFlash : undefined,
       });
-      Alert.alert('Logged ✓', 'Your daily bio-markers are saved.');
+      Alert.alert(t('womensHealth.loggedTitle','Registado ✓'), t('womensHealth.loggedMsg','Os teus bio-marcadores diários foram guardados.'));
       setShowBioModal(false);
-    } catch { Alert.alert('Error', 'Could not save. Try again.'); }
+    } catch { Alert.alert(t('common.error','Erro'), t('womensHealth.saveError','Não foi possível guardar. Tenta novamente.')); }
   };
 
   // ── Setup date save ──
@@ -532,19 +563,19 @@ export default function WomensHealthScreen() {
           <View style={s.quizHero}>
             <LinearGradient colors={['#fdf2f8', '#fff']} style={s.quizHeroBg}>
               <Text style={s.quizHeroEmoji}>🌸</Text>
-              <Text style={s.quizHeroTitle}>Your Hormonal Blueprint</Text>
+              <Text style={s.quizHeroTitle}>{t('womensHealth.blueprintTitle', 'O Teu Blueprint Hormonal')}</Text>
               <Text style={s.quizHeroSub}>
-                4 questions to personalise your cycle insights, supplement stack and hormonal guidance — layered on top of what we already know about you.
+                {t('womensHealth.blueprintSub', '4 perguntas para personalizar as tuas informações sobre ciclo, suplementos e orientação hormonal.')}
               </Text>
               {/* Show onboarding data we already have */}
               {convexUser && (
                 <View style={s.quizKnowBox}>
-                  <Text style={s.quizKnowTitle}>✦ Already personalised from your profile</Text>
-                  {convexUser.fitnessGoal && <Text style={s.quizKnowItem}>🎯 Goal: {convexUser.fitnessGoal.replace(/_/g, ' ')}</Text>}
-                  {convexUser.stressLevel  && <Text style={s.quizKnowItem}>🧠 Stress: {convexUser.stressLevel}</Text>}
-                  {convexUser.sleepHours   && <Text style={s.quizKnowItem}>😴 Sleep: {convexUser.sleepHours}h avg</Text>}
-                  {convexUser.age          && <Text style={s.quizKnowItem}>📅 Age: {convexUser.age}</Text>}
-                  {convexUser.activityLevel && <Text style={s.quizKnowItem}>💪 Activity: {convexUser.activityLevel.replace(/_/g, ' ')}</Text>}
+                  <Text style={s.quizKnowTitle}>{t('womensHealth.alreadyPersonalised', '✦ Já personalizado do teu perfil')}</Text>
+                  {convexUser.fitnessGoal  && <Text style={s.quizKnowItem}>🎯 {t('common.goal','Objetivo')}: {convexUser.fitnessGoal.replace(/_/g, ' ')}</Text>}
+                  {convexUser.stressLevel  && <Text style={s.quizKnowItem}>🧠 {t('common.stress','Stress')}: {convexUser.stressLevel}</Text>}
+                  {convexUser.sleepHours   && <Text style={s.quizKnowItem}>😴 {t('common.sleep','Sono')}: {convexUser.sleepHours}h avg</Text>}
+                  {convexUser.age          && <Text style={s.quizKnowItem}>📅 {t('common.age','Idade')}: {convexUser.age}</Text>}
+                  {convexUser.activityLevel && <Text style={s.quizKnowItem}>💪 {t('common.activity','Atividade')}: {convexUser.activityLevel.replace(/_/g, ' ')}</Text>}
                 </View>
               )}
             </LinearGradient>
@@ -553,12 +584,12 @@ export default function WomensHealthScreen() {
 
         <ScrollView contentContainerStyle={s.quizBody} keyboardShouldPersistTaps="handled">
           <Text style={s.quizEmoji}>{step.emoji}</Text>
-          <Text style={s.quizQuestion}>{step.question}</Text>
+          <Text style={s.quizQuestion}>{t(`womensHealth.quiz.${step.id}.question`, step.question)}</Text>
           <View style={s.quizOptions}>
             {'options' in step && step.options.map((opt) => (
               <TouchableOpacity key={opt.value} style={s.quizOption} onPress={() => handleQuizOption(opt.value)} activeOpacity={0.8}>
                 <Text style={s.quizOptionIcon}>{opt.icon}</Text>
-                <Text style={s.quizOptionLabel}>{opt.label}</Text>
+                <Text style={s.quizOptionLabel}>{t(`womensHealth.quiz.${step.id}.${opt.value}`, opt.label)}</Text>
                 <Ionicons name="chevron-forward" size={16} color="#94a3b8" />
               </TouchableOpacity>
             ))}
@@ -592,7 +623,7 @@ export default function WomensHealthScreen() {
               <Text style={s.articleBody}>{showArticle.body}</Text>
               <View style={s.articleDisclaimer}>
                 <Ionicons name="information-circle-outline" size={16} color="#94a3b8" />
-                <Text style={s.articleDisclaimerTxt}>This is educational content, not medical advice. Consult a healthcare provider for personal guidance.</Text>
+                <Text style={s.articleDisclaimerTxt}>{t('womensHealth.articleDisclaimer', 'Este é conteúdo educativo, não aconselhamento médico. Consulta um profissional de saúde para orientação personalizada.')}</Text>
               </View>
             </ScrollView>
           </SafeAreaView>
@@ -603,7 +634,7 @@ export default function WomensHealthScreen() {
       <Modal visible={showBioModal} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['top']}>
           <View style={s.modalHeader}>
-            <Text style={s.modalTitle}>Daily Bio-Log</Text>
+            <Text style={s.modalTitle}>{t('womensHealth.dailyBioLog', 'Registo Bio Diário')}</Text>
             <TouchableOpacity onPress={() => setShowBioModal(false)} style={s.modalClose}>
               <Ionicons name="close" size={20} color="#1e293b" />
             </TouchableOpacity>
@@ -612,11 +643,11 @@ export default function WomensHealthScreen() {
             {/* Mood sync */}
             <View style={s.moodSync}>
               <Ionicons name="sync" size={16} color="#7e22ce" />
-              <Text style={s.moodSyncTxt}>Mood synced from Wellness: {wellnessLog?.moodEmoji ?? '—'}</Text>
+              <Text style={s.moodSyncTxt}>{t('womensHealth.moodSynced', 'Humor sincronizado do Wellness')}: {wellnessLog?.moodEmoji ?? '—'}</Text>
             </View>
 
             {/* Energy */}
-            <Text style={s.bioLabel}>Energy today (1–10)</Text>
+            <Text style={s.bioLabel}>{t('womensHealth.energyToday', 'Energia hoje (1–10)')}</Text>
             <View style={s.dotRow}>
               {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
                 <TouchableOpacity key={n} style={[s.dot, energy >= n && s.dotActive]} onPress={() => setEnergy(n)}>
@@ -626,14 +657,14 @@ export default function WomensHealthScreen() {
             </View>
 
             {/* Symptoms */}
-            <Text style={s.bioLabel}>Symptoms</Text>
+            <Text style={s.bioLabel}>{t('womensHealth.symptoms', 'Sintomas')}</Text>
             <View style={s.symptomGrid}>
               {SYMPTOMS.map(sym => {
                 const active = symptoms.includes(sym);
                 return (
                   <TouchableOpacity key={sym} style={[s.symChip, active && s.symChipActive]}
                     onPress={() => setSymptoms(active ? symptoms.filter(x => x !== sym) : [...symptoms, sym])}>
-                    <Text style={[s.symChipTxt, active && s.symChipTxtActive]}>{sym}</Text>
+                    <Text style={[s.symChipTxt, active && s.symChipTxtActive]}>{t(`womensHealth.sym.${sym.toLowerCase().replace(/ /g,'_')}`, sym)}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -642,11 +673,11 @@ export default function WomensHealthScreen() {
             {/* Stage-specific */}
             {lifeStage === 'cycle' && (
               <>
-                <Text style={s.bioLabel}>Flow</Text>
+                <Text style={s.bioLabel}>{t('womensHealth.flow', 'Fluxo')}</Text>
                 <View style={s.flowRow}>
-                  {['None', 'Spotting', 'Light', 'Medium', 'Heavy'].map(f => (
+                  {(['None', 'Spotting', 'Light', 'Medium', 'Heavy'] as const).map(f => (
                     <TouchableOpacity key={f} style={[s.flowChip, flow === f && s.flowChipActive]} onPress={() => setFlow(f)}>
-                      <Text style={[s.flowTxt, flow === f && { color: '#fff' }]}>{f}</Text>
+                      <Text style={[s.flowTxt, flow === f && { color: '#fff' }]}>{t(`womensHealth.flowOpt.${f.toLowerCase()}`, f)}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -654,7 +685,7 @@ export default function WomensHealthScreen() {
             )}
             {lifeStage === 'pregnancy' && (
               <>
-                <Text style={s.bioLabel}>Baby movement today (1–10)</Text>
+                <Text style={s.bioLabel}>{t('womensHealth.babyMovement', 'Movimento do bebé hoje (1–10)')}</Text>
                 <View style={s.dotRow}>
                   {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
                     <TouchableOpacity key={n} style={[s.dot, babyMovement >= n && { backgroundColor: '#e11d48', borderColor: '#e11d48' }]} onPress={() => setBabyMovement(n)}>
@@ -666,7 +697,7 @@ export default function WomensHealthScreen() {
             )}
             {lifeStage === 'menopause' && (
               <>
-                <Text style={s.bioLabel}>Hot flash severity (1–10)</Text>
+                <Text style={s.bioLabel}>{t('womensHealth.hotFlash', 'Intensidade das afrontamentos (1–10)')}</Text>
                 <View style={s.dotRow}>
                   {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
                     <TouchableOpacity key={n} style={[s.dot, hotFlash >= n && { backgroundColor: '#f97316', borderColor: '#f97316' }]} onPress={() => setHotFlash(n)}>
@@ -678,7 +709,7 @@ export default function WomensHealthScreen() {
             )}
 
             <TouchableOpacity style={s.saveBtn} onPress={handleSaveBio}>
-              <Text style={s.saveBtnTxt}>Save Bio-Log</Text>
+              <Text style={s.saveBtnTxt}>{t('womensHealth.saveBioLog', 'Guardar Bio-Registo')}</Text>
             </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>
@@ -688,14 +719,14 @@ export default function WomensHealthScreen() {
       <Modal visible={showSupps} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['top']}>
           <View style={s.modalHeader}>
-            <Text style={s.modalTitle}>Your Vitality Stack</Text>
+            <Text style={s.modalTitle}>{t('womensHealth.vitalityStack', 'O Teu Stack de Vitalidade')}</Text>
             <TouchableOpacity onPress={() => setShowSupps(false)} style={s.modalClose}>
               <Ionicons name="close" size={20} color="#1e293b" />
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
             <Text style={s.suppIntro}>
-              Personalised based on your cycle phase, stress level, birth control method, health focus and age.
+              {t('womensHealth.suppIntro', 'Personalizado com base na tua fase do ciclo, nível de stress, método contracetivo, foco de saúde e idade.')}
             </Text>
 
             <TouchableOpacity style={s.actionTile} onPress={() => { setShowSupps(false); router.push('/pill-reminder' as any); }} activeOpacity={0.8}>
@@ -703,8 +734,8 @@ export default function WomensHealthScreen() {
                 <Ionicons name="medical-outline" size={22} color="#e11d48" />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={s.actionLabel}>Birth Control & Pill Reminder</Text>
-                <Text style={s.actionSub}>Track your medications and supplements safely</Text>
+                <Text style={s.actionLabel}>{t('womensHealth.pillReminder', 'Contraceção & Lembrete de Comprimido')}</Text>
+                <Text style={s.actionSub}>{t('womensHealth.pillReminderSub', 'Acompanha os teus medicamentos e suplementos com segurança')}</Text>
               </View>
               <Ionicons name="chevron-forward" size={16} color="#94a3b8" />
             </TouchableOpacity>
@@ -714,11 +745,11 @@ export default function WomensHealthScreen() {
                 <View style={{ marginBottom: 16, padding: 16, borderRadius: 16, backgroundColor: '#fdf2f8', flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                   <Ionicons name="lock-closed" size={24} color="#e11d48" />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 15, fontWeight: '800', color: '#0f172a' }}>Unlock Your Vitamin Stack</Text>
-                    <Text style={{ fontSize: 13, color: '#475569', marginTop: 2 }}>See your personalised supplement recommendations tailored to your cycle phase.</Text>
+                    <Text style={{ fontSize: 15, fontWeight: '800', color: '#0f172a' }}>{t('womensHealth.unlockStack', 'Desbloqueia o Teu Stack de Vitaminas')}</Text>
+                    <Text style={{ fontSize: 13, color: '#475569', marginTop: 2 }}>{t('womensHealth.unlockStackSub', 'Vê as tuas recomendações de suplementos personalizadas para a tua fase do ciclo.')}</Text>
                   </View>
                   <TouchableOpacity onPress={() => { setShowSupps(false); router.push('/premium' as any); }}>
-                    <Text style={{ color: '#e11d48', fontWeight: '700' }}>Upgrade</Text>
+                    <Text style={{ color: '#e11d48', fontWeight: '700' }}>{t('common.upgrade', 'Atualizar')}</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -732,14 +763,14 @@ export default function WomensHealthScreen() {
                     </View>
                   </View>
                   <Text style={s.suppDose}>💊 {isPro ? supp.dose : '•••'} · ⏰ {isPro ? supp.timing : '••••'}</Text>
-                  <Text style={s.suppReason}>{isPro ? supp.reason : 'Personalisation locked for free users.'}</Text>
+                  <Text style={s.suppReason}>{isPro ? supp.reason : t('womensHealth.suppLocked', 'Personalização bloqueada para utilizadores gratuitos.')}</Text>
                 </View>
               ))}
             </View>
 
             <View style={s.suppDisclaimer}>
               <Ionicons name="shield-checkmark-outline" size={16} color="#94a3b8" />
-              <Text style={s.suppDisclaimerTxt}>Always consult a healthcare provider before starting new supplements, especially during pregnancy.</Text>
+              <Text style={s.suppDisclaimerTxt}>{t('womensHealth.suppDisclaimer', 'Consulta sempre um profissional de saúde antes de iniciar novos suplementos, especialmente durante a gravidez.')}</Text>
             </View>
           </ScrollView>
         </SafeAreaView>
@@ -748,18 +779,18 @@ export default function WomensHealthScreen() {
       {/* Pelvic Modal */}
       <Modal visible={showPelvicModal} animationType="slide" presentationStyle="pageSheet">
         <View style={{ flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <Text style={s.pelvicTitle}>Pelvic Power Protocol</Text>
-          <Text style={s.pelvicSub}>Strengthens pelvic floor, reduces cramps & supports core</Text>
+          <Text style={s.pelvicTitle}>{t('womensHealth.pelvicTitle', 'Protocolo de Poder Pélvico')}</Text>
+          <Text style={s.pelvicSub}>{t('womensHealth.pelvicSub', 'Fortalece o pavimento pélvico, reduz cólicas e apoia o core')}</Text>
           <Animated.View style={[s.timerCircle, { transform: [{ scale: pulseAnim }], borderColor: kegelActive ? '#e11d48' : '#e2e8f0', backgroundColor: kegelActive ? '#fef2f2' : '#f8fafc' }]}>
             <Text style={s.timerTime}>{String(Math.floor(kegelSecs / 60)).padStart(2,'0')}:{String(kegelSecs % 60).padStart(2,'0')}</Text>
             <Text style={s.timerMsg}>{kegelMsg}</Text>
           </Animated.View>
-          <Text style={s.pelvicInstructions}>Hold 5s → Relax 5s → Repeat. Aim for 10 cycles per session.</Text>
+          <Text style={s.pelvicInstructions}>{t('womensHealth.pelvicInstructions', 'Contrai 5s → Relaxa 5s → Repete. Faz 10 ciclos por sessão.')}</Text>
           <TouchableOpacity style={[s.pelvicBtn, { backgroundColor: kegelActive ? '#1e293b' : '#e11d48' }]} onPress={() => setKegelActive(p => !p)}>
-            <Text style={s.pelvicBtnTxt}>{kegelActive ? 'Stop Session' : 'Start Timer'}</Text>
+            <Text style={s.pelvicBtnTxt}>{kegelActive ? t('womensHealth.stopSession', 'Parar Sessão') : t('womensHealth.startTimer', 'Iniciar Timer')}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => { setKegelActive(false); setShowPelvicModal(false); }} style={{ marginTop: 16 }}>
-            <Text style={{ color: '#94a3b8', fontWeight: '600' }}>Close</Text>
+            <Text style={{ color: '#94a3b8', fontWeight: '600' }}>{t('common.close', 'Fechar')}</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -768,7 +799,7 @@ export default function WomensHealthScreen() {
       <Modal visible={showStageSelect} transparent animationType="fade">
         <View style={s.stageOverlay}>
           <View style={s.stageCard}>
-            <Text style={s.stageTitle}>Life Stage</Text>
+            <Text style={s.stageTitle}>{t('womensHealth.lifeStage', 'Fase de Vida')}</Text>
             {(['cycle', 'pregnancy', 'menopause'] as LifeStage[]).map(stage => (
               <TouchableOpacity key={stage}
                 style={[s.stageOption, lifeStage === stage && s.stageOptionActive]}
@@ -779,13 +810,13 @@ export default function WomensHealthScreen() {
                 }}>
                 <Text style={s.stageEmoji}>{stage === 'cycle' ? '🔄' : stage === 'pregnancy' ? '🤰' : '🌡️'}</Text>
                 <Text style={[s.stageLabel, lifeStage === stage && { color: '#e11d48', fontWeight: '800' }]}>
-                  {stage === 'cycle' ? 'Menstrual Cycle' : stage === 'pregnancy' ? 'Pregnancy' : 'Menopause'}
+                  {stage === 'cycle' ? t('womensHealth.menstrualCycle', 'Ciclo Menstrual') : stage === 'pregnancy' ? t('womensHealth.pregnancy', 'Gravidez') : t('womensHealth.menopause', 'Menopausa')}
                 </Text>
                 {lifeStage === stage && <Ionicons name="checkmark-circle" size={20} color="#e11d48" />}
               </TouchableOpacity>
             ))}
             <TouchableOpacity onPress={() => setShowStageSelect(false)} style={s.stageCancelBtn}>
-              <Text style={{ color: '#64748b', fontWeight: '700' }}>Cancel</Text>
+              <Text style={{ color: '#64748b', fontWeight: '700' }}>{t('common.cancel', 'Cancelar')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -797,8 +828,8 @@ export default function WomensHealthScreen() {
           <Ionicons name="arrow-back" size={20} color="#e11d48" />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <Text style={s.headerTitle}>Women's Health</Text>
-          <Text style={s.headerSub}>Hormonal intelligence · {lifeStage}</Text>
+          <Text style={s.headerTitle}>{t('womensHealth.title', 'Saúde Feminina')}</Text>
+          <Text style={s.headerSub}>{t('womensHealth.headerSub', 'Inteligência hormonal')} · {t(`womensHealth.stage.${lifeStage}`, lifeStage)}</Text>
         </View>
         <TouchableOpacity style={s.stageBtn} onPress={() => setShowStageSelect(true)}>
           <Text style={s.stageBtnEmoji}>{lifeStage === 'cycle' ? '🔄' : lifeStage === 'pregnancy' ? '🤰' : '🌡️'}</Text>
@@ -812,10 +843,10 @@ export default function WomensHealthScreen() {
       {/* ── TAB BAR ── */}
       <View style={s.tabBar}>
         {[
-          { id: 'today',    label: 'Today',    emoji: '☀️' },
-          { id: 'cycle',    label: lifeStage === 'pregnancy' ? 'Baby' : lifeStage === 'menopause' ? 'Tracker' : 'Cycle', emoji: lifeStage === 'pregnancy' ? '👶' : '📅' },
-          { id: 'insights', label: 'Insights', emoji: '✦' },
-          { id: 'learn',    label: 'Learn',    emoji: '📚' },
+          { id: 'today',    label: t('womensHealth.tabToday', 'Hoje'),    emoji: '☀️' },
+          { id: 'cycle',    label: lifeStage === 'pregnancy' ? t('womensHealth.tabBaby', 'Bebé') : lifeStage === 'menopause' ? t('womensHealth.tabTracker', 'Tracker') : t('womensHealth.tabCycle', 'Ciclo'), emoji: lifeStage === 'pregnancy' ? '👶' : '📅' },
+          { id: 'insights', label: t('womensHealth.tabInsights', 'Insights'), emoji: '✦' },
+          { id: 'learn',    label: t('womensHealth.tabLearn', 'Aprender'),    emoji: '📚' },
         ].map(tab => (
           <TouchableOpacity key={tab.id} style={[s.tab, activeTab === tab.id && s.tabActive]} onPress={() => setActiveTab(tab.id as any)}>
             <Text style={s.tabEmoji}>{tab.emoji}</Text>
@@ -835,12 +866,12 @@ export default function WomensHealthScreen() {
             {/* Setup banner */}
             {needsSetup && (
               <View style={s.setupBanner}>
-                <Text style={s.setupTitle}>{lifeStage === 'pregnancy' ? '👶 Track your pregnancy' : '🌸 Unlock your cycle insights'}</Text>
-                <Text style={s.setupSub}>{lifeStage === 'pregnancy' ? 'When was your conception date?' : 'When did your last period start?'}</Text>
+                <Text style={s.setupTitle}>{lifeStage === 'pregnancy' ? t('womensHealth.setupTitlePreg','👶 Acompanha a tua gravidez') : t('womensHealth.setupTitleCycle','🌸 Desbloqueia os teus insights do ciclo')}</Text>
+                <Text style={s.setupSub}>{lifeStage === 'pregnancy' ? t('womensHealth.setupSubPreg','Quando foi a tua data de conceção?') : t('womensHealth.setupSubCycle','Quando começou o teu último período?')}</Text>
                 <View style={s.setupInputRow}>
                   <TextInput style={s.setupInput} value={setupDate} onChangeText={setSetupDate} placeholder="YYYY-MM-DD" />
                   <TouchableOpacity style={s.setupSaveBtn} onPress={handleSetupSave}>
-                    <Text style={s.setupSaveTxt}>Save</Text>
+                    <Text style={s.setupSaveTxt}>{t('common.save','Guardar')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -851,13 +882,13 @@ export default function WomensHealthScreen() {
               <LinearGradient colors={phase.gradient} style={s.phaseHero}>
                 <View style={s.phaseHeroTop}>
                   <View>
-                    <Text style={s.phaseDay}>Day {phase.day} of cycle</Text>
+                    <Text style={s.phaseDay}>{t('womensHealth.day','Dia')} {phase.day} {t('womensHealth.ofCycle','do ciclo')}</Text>
                     <Text style={s.phaseName}>{phase.name}</Text>
                     <Text style={s.phaseHormone}>{phase.hormone}</Text>
                   </View>
                   <View style={s.scoreCircle}>
                     <Text style={s.scoreVal}>{score}%</Text>
-                    <Text style={s.scoreLbl}>today</Text>
+                    <Text style={s.scoreLbl}>{t('womensHealth.today','hoje')}</Text>
                   </View>
                 </View>
                 <Text style={s.phaseDesc}>{phase.description}</Text>
@@ -873,8 +904,8 @@ export default function WomensHealthScreen() {
               <LinearGradient colors={['#be185d', '#9d174d']} style={s.phaseHero}>
                 <View style={s.phaseHeroTop}>
                   <View>
-                    <Text style={s.phaseDay}>Trimester {pregnancyStats.trimester}</Text>
-                    <Text style={s.phaseName}>Week {pregnancyStats.weeks}</Text>
+                    <Text style={s.phaseDay}>{t('womensHealth.trimester','Trimestre')} {pregnancyStats.trimester}</Text>
+                    <Text style={s.phaseName}>{t('womensHealth.week','Semana')} {pregnancyStats.weeks}</Text>
                     <Text style={s.phaseHormone}>{pregnancyStats.milestone}</Text>
                   </View>
                   <Text style={{ fontSize: 52 }}>{pregnancyStats.emoji}</Text>
@@ -882,33 +913,33 @@ export default function WomensHealthScreen() {
                 <View style={s.pregnancyBar}>
                   <View style={[s.pregnancyBarFill, { width: `${pregnancyStats.progress * 100}%` as any }]} />
                 </View>
-                <Text style={s.pregnancyBarLbl}>{40 - pregnancyStats.weeks} weeks to go</Text>
+                <Text style={s.pregnancyBarLbl}>{40 - pregnancyStats.weeks} {t('womensHealth.weeksToGo','semanas restantes')}</Text>
               </LinearGradient>
             )}
 
             {/* Menopause hero */}
             {lifeStage === 'menopause' && (
               <LinearGradient colors={['#7c3aed', '#5b21b6']} style={s.phaseHero}>
-                <Text style={s.phaseName}>Menopause Tracker</Text>
-                <Text style={s.phaseDesc}>Track hot flashes, mood and sleep changes. Your hormonal picture matters.</Text>
+                <Text style={s.phaseName}>{t('womensHealth.menopauseTracker','Monitor de Menopausa')}</Text>
+                <Text style={s.phaseDesc}>{t('womensHealth.menopauseDesc','Regista afrontamentos, humor e alterações de sono. O teu quadro hormonal importa.')}</Text>
                 <View style={s.scoreCircle}>
                   <Text style={s.scoreVal}>{score}%</Text>
-                  <Text style={s.scoreLbl}>adherence</Text>
+                  <Text style={s.scoreLbl}>{t('womensHealth.adherence','aderência')}</Text>
                 </View>
               </LinearGradient>
             )}
 
             {/* Today's actions */}
-            <Text style={s.sectionTitle}>Daily Protocols</Text>
+            <Text style={s.sectionTitle}>{t('womensHealth.dailyProtocols','Protocolos Diários')}</Text>
 
             {/* Cycle sync cards */}
             {phase && (
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.syncScroll}>
                 {[
-                  { title: '🏋️ Move', body: phase.workout,   color: '#eff6ff', border: '#bfdbfe' },
-                  { title: '🥗 Fuel', body: phase.nutrition,  color: '#f0fdf4', border: '#bbf7d0' },
-                  { title: '😌 Mood', body: phase.mood,       color: '#f5f3ff', border: '#ddd6fe' },
-                  { title: '⚡ Energy', body: phase.energy,   color: '#fffbeb', border: '#fde68a' },
+                  { title: t('womensHealth.workout', '🏋️ Treino'), body: phase.workout,   color: '#eff6ff', border: '#bfdbfe' },
+                  { title: t('womensHealth.nutrition', '🥗 Nutrição'), body: phase.nutrition,  color: '#f0fdf4', border: '#bbf7d0' },
+                  { title: t('womensHealth.mood', '😌 Humor'), body: phase.mood,       color: '#f5f3ff', border: '#ddd6fe' },
+                  { title: t('womensHealth.energy', '⚡ Energia'), body: phase.energy,   color: '#fffbeb', border: '#fde68a' },
                 ].map((c, i) => (
                   <View key={i} style={[s.syncCard, { backgroundColor: c.color, borderColor: c.border }]}>
                     <Text style={s.syncCardTitle}>{c.title}</Text>
@@ -920,9 +951,9 @@ export default function WomensHealthScreen() {
 
             {/* Action tiles */}
             {[
-              { icon: 'pulse-outline', label: 'Daily Bio-Log', sub: `Mood, energy, symptoms${lifeStage === 'cycle' ? ', flow' : ''}`, onPress: () => setShowBioModal(true), color: '#fdf2f8' },
-              { icon: 'fitness-outline', label: 'Pelvic Power Protocol', sub: 'Core, floor & posture', onPress: () => setShowPelvicModal(true), color: '#fdf2f8' },
-              { icon: 'flask-outline', label: 'Vitality Stack', sub: `${suppStack.length} personalised supplements`, onPress: () => setShowSupps(true), color: '#fdf2f8' },
+              { icon: 'pulse-outline',   label: t('womensHealth.biolog','Bio-Registo Diário'),       sub: `${t('womensHealth.biologSub','Humor, energia, sintomas')}${lifeStage === 'cycle' ? ', '+t('womensHealth.flowLow','fluxo') : ''}`, onPress: () => setShowBioModal(true),   color: '#fdf2f8' },
+              { icon: 'fitness-outline', label: t('womensHealth.pelvic','Protocolo Pélvico'),          sub: t('womensHealth.pelvicSub2','Core, pavimento & postura'),                                                                                 onPress: () => setShowPelvicModal(true), color: '#fdf2f8' },
+              { icon: 'flask-outline',   label: t('womensHealth.vitStack','Stack de Vitalidade'),      sub: `${suppStack.length} ${t('womensHealth.personalisedSupps','suplementos personalizados')}`,                                              onPress: () => setShowSupps(true),       color: '#fdf2f8' },
             ].map((a, i) => (
               <TouchableOpacity key={i} style={s.actionTile} onPress={a.onPress} activeOpacity={0.8}>
                 <View style={[s.actionIcon, { backgroundColor: a.color }]}>
@@ -945,7 +976,7 @@ export default function WomensHealthScreen() {
             {/* 28-day ring tracker */}
             {lifeStage === 'cycle' && phase && (
               <>
-                <Text style={s.sectionTitle}>28-Day Calendar</Text>
+                <Text style={s.sectionTitle}>{t('womensHealth.calendar','Calendário 28 Dias')}</Text>
                 <View style={s.calendarGrid}>
                   {Array.from({ length: 28 }, (_, i) => {
                     const d = i + 1;
@@ -981,14 +1012,14 @@ export default function WomensHealthScreen() {
 
                 {/* Phase deep dive */}
                 <View style={[s.phaseDiveCard, { borderLeftColor: phase.color }]}>
-                  <Text style={[s.phaseDiveName, { color: phase.color }]}>{phase.name} Phase — Day {phase.day}</Text>
+                  <Text style={[s.phaseDiveName, { color: phase.color }]}>{phase.name} — {t('womensHealth.day','Dia')} {phase.day}</Text>
                   <Text style={s.phaseDiveBody}>{phase.description}</Text>
                   <View style={s.phaseDiveGrid}>
                     {[
-                      { emoji: '💪', label: 'Workout', val: phase.workout },
-                      { emoji: '🥗', label: 'Nutrition', val: phase.nutrition },
-                      { emoji: '😌', label: 'Mood', val: phase.mood },
-                      { emoji: '⚡', label: 'Energy', val: phase.energy },
+                      { emoji: '💪', label: t('womensHealth.workoutLabel','Treino'),    val: phase.workout },
+                      { emoji: '🥗', label: t('womensHealth.nutritionLabel','Nutrição'), val: phase.nutrition },
+                      { emoji: '😌', label: t('womensHealth.moodLabel','Humor'),        val: phase.mood },
+                      { emoji: '⚡', label: t('womensHealth.energyLabel','Energia'),    val: phase.energy },
                     ].map(item => (
                       <View key={item.label} style={s.phaseDiveItem}>
                         <Text style={s.phaseDiveEmoji}>{item.emoji}</Text>
@@ -1004,15 +1035,15 @@ export default function WomensHealthScreen() {
             {/* Pregnancy tracker */}
             {lifeStage === 'pregnancy' && pregnancyStats && (
               <>
-                <Text style={s.sectionTitle}>Pregnancy Timeline</Text>
+                <Text style={s.sectionTitle}>{t('womensHealth.pregnancyTimeline','Linha do Tempo da Gravidez')}</Text>
                 {/* Week-by-week */}
                 {[1,2,3].map(tri => (
                   <View key={tri} style={s.trimesterBlock}>
-                    <Text style={s.trimesterTitle}>Trimester {tri} {tri === pregnancyStats.trimester ? '← you are here' : ''}</Text>
+                    <Text style={s.trimesterTitle}>{t('womensHealth.trimester','Trimestre')} {tri} {tri === pregnancyStats.trimester ? t('womensHealth.youAreHere','← estás aqui') : ''}</Text>
                     <Text style={s.trimesterRange}>
-                      {tri === 1 ? 'Weeks 1–13 · Organ formation, nausea, fatigue' :
-                       tri === 2 ? 'Weeks 14–27 · Energy returns, baby moves, anatomy scan' :
-                                   'Weeks 28–40 · Growth, preparation, birth planning'}
+                      {tri === 1 ? t('womensHealth.tri1','Semanas 1–13 · Formação dos órgãos, náuseas, fadiga') :
+                       tri === 2 ? t('womensHealth.tri2','Semanas 14–27 · Energia de volta, bebé mexe, ecografia anatómica') :
+                                   t('womensHealth.tri3','Semanas 28–40 · Crescimento, preparação, planeamento do parto')}
                     </Text>
                   </View>
                 ))}
@@ -1022,19 +1053,19 @@ export default function WomensHealthScreen() {
             {/* Menopause tracker */}
             {lifeStage === 'menopause' && (
               <>
-                <Text style={s.sectionTitle}>Symptom History</Text>
+                <Text style={s.sectionTitle}>{t('womensHealth.symptomHistory','Histórico de Sintomas')}</Text>
                 {vitalityHistory && vitalityHistory.length > 0 ? (
                   vitalityHistory.slice(-7).map((log: any, i: number) => (
                     <View key={i} style={s.historyRow}>
                       <Text style={s.historyDate}>{log.date}</Text>
                       <View style={s.historyStats}>
-                        <Text style={s.historyStat}>Energy: {log.energy ?? '—'}/10</Text>
-                        <Text style={s.historyStat}>Hot Flash: {log.hotFlashSeverity ?? '—'}/10</Text>
+                        <Text style={s.historyStat}>{t('womensHealth.energy','Energia')}: {log.energy ?? '—'}/10</Text>
+                        <Text style={s.historyStat}>{t('womensHealth.hotFlashShort','Afrontamento')}: {log.hotFlashSeverity ?? '—'}/10</Text>
                       </View>
                     </View>
                   ))
                 ) : (
-                  <Text style={s.emptyTxt}>Start logging your Bio-Log daily to see patterns here.</Text>
+                  <Text style={s.emptyTxt}>{t('womensHealth.startLogging','Começa a registar o teu Bio-Registo diariamente para veres padrões aqui.')}</Text>
                 )}
               </>
             )}
@@ -1044,11 +1075,11 @@ export default function WomensHealthScreen() {
         {/* ═══════════════ INSIGHTS TAB ═══════════════ */}
         {activeTab === 'insights' && (
           <>
-            <Text style={s.sectionTitle}>Your Hormonal Insights</Text>
-            <Text style={s.insightsSub}>Personalised from your profile, cycle phase, stress level, sleep and health focus.</Text>
+            <Text style={s.sectionTitle}>{t('womensHealth.yourInsights','Os Teus Insights Hormonais')}</Text>
+            <Text style={s.insightsSub}>{t('womensHealth.insightsSub','Personalizados a partir do teu perfil, fase do ciclo, nível de stress, sono e foco de saúde.')}</Text>
 
             {insights.length === 0 && (
-              <Text style={s.emptyTxt}>Complete your bio-log to generate personalised insights.</Text>
+              <Text style={s.emptyTxt}>{t('womensHealth.insightsEmpty','Completa o teu bio-registo para gerar insights personalizados.')}</Text>
             )}
 
             {insights.map((insight, i) => (
@@ -1059,7 +1090,7 @@ export default function WomensHealthScreen() {
                     <Text style={s.insightTitle}>{insight.title}</Text>
                     <View style={[s.priorityBadge, { backgroundColor: insight.priority === 'high' ? '#fef2f2' : '#fffbeb' }]}>
                       <Text style={[s.priorityTxt, { color: insight.priority === 'high' ? '#dc2626' : '#d97706' }]}>
-                        {insight.priority === 'high' ? '⚠️ Priority' : '💡 Note'}
+                        {insight.priority === 'high' ? t('womensHealth.priorityHigh','⚠️ Prioridade') : t('womensHealth.priorityNote','💡 Nota')}
                       </Text>
                     </View>
                   </View>
@@ -1067,7 +1098,7 @@ export default function WomensHealthScreen() {
                 <Text style={s.insightBody}>{insight.body}</Text>
                 {insight.link && (
                   <TouchableOpacity onPress={() => router.push(insight.link as any)} style={s.insightLink}>
-                    <Text style={s.insightLinkTxt}>Take action →</Text>
+                    <Text style={s.insightLinkTxt}>{t('womensHealth.takeAction','Tomar ação')} →</Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -1078,10 +1109,10 @@ export default function WomensHealthScreen() {
               <View style={s.proBlurWrap}>
                 <BlurView intensity={12} tint="light" style={StyleSheet.absoluteFill} />
                 <View style={s.proBlurContent}>
-                  <Text style={s.proBlurTitle}>Unlock Deep Hormonal Analysis</Text>
-                  <Text style={s.proBlurSub}>AI-powered insights that adapt to your cycle history, lab patterns and logged symptoms over time.</Text>
+                  <Text style={s.proBlurTitle}>{t('womensHealth.proBlurTitle','Desbloqueia Análise Hormonal Profunda')}</Text>
+                  <Text style={s.proBlurSub}>{t('womensHealth.proBlurSub','Insights com IA que se adaptam ao teu histórico de ciclo, padrões e sintomas registados ao longo do tempo.')}</Text>
                   <TouchableOpacity style={s.proBlurBtn} onPress={() => router.push('/premium' as any)}>
-                    <Text style={s.proBlurBtnTxt}>Upgrade to Pro</Text>
+                    <Text style={s.proBlurBtnTxt}>{t('premium.upgrade','Atualizar para Pro')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1092,8 +1123,8 @@ export default function WomensHealthScreen() {
         {/* ═══════════════ LEARN TAB ═══════════════ */}
         {activeTab === 'learn' && (
           <>
-            <Text style={s.sectionTitle}>Hormonal Intelligence Library</Text>
-            <Text style={s.insightsSub}>Science-backed guides curated for women's hormonal health.</Text>
+            <Text style={s.sectionTitle}>{t('womensHealth.library','Biblioteca de Inteligência Hormonal')}</Text>
+            <Text style={s.insightsSub}>{t('womensHealth.librarySub','Guias baseados em ciência para a saúde hormonal da mulher.')}</Text>
             {LEARN_ARTICLES.map(article => (
               <TouchableOpacity key={article.id} style={s.articleCard} onPress={() => setShowArticle(article)} activeOpacity={0.85}>
                 <View style={s.articleCardLeft}>
@@ -1111,15 +1142,15 @@ export default function WomensHealthScreen() {
             <TouchableOpacity style={s.privacyRow} onPress={() => setShowPrivacy(true)}>
               <Ionicons name="shield-checkmark" size={18} color="#10b981" />
               <View style={{ flex: 1 }}>
-                <Text style={s.privacyTitle}>Your data stays yours</Text>
-                <Text style={s.privacySub}>We never sell your intimate health data. Tap to read our commitment.</Text>
+                <Text style={s.privacyTitle}>{t('womensHealth.privacyTitle','Os teus dados são teus')}</Text>
+                <Text style={s.privacySub}>{t('womensHealth.privacySub','Nunca vendemos os teus dados de saúde íntima. Toca para ler o nosso compromisso.')}</Text>
               </View>
             </TouchableOpacity>
 
             {/* Re-take quiz */}
             <TouchableOpacity style={s.retakeBtn} onPress={() => { SecureStore.deleteItemAsync(QUIZ_KEY); setQuizDone(false); setQuizStep(0); setQuizAnswers({}); }}>
               <Ionicons name="refresh-outline" size={16} color="#e11d48" />
-              <Text style={s.retakeTxt}>Update my hormonal profile</Text>
+              <Text style={s.retakeTxt}>{t('womensHealth.retake','Atualizar o meu perfil hormonal')}</Text>
             </TouchableOpacity>
           </>
         )}
@@ -1128,11 +1159,11 @@ export default function WomensHealthScreen() {
       {/* Privacy modal */}
       <Modal visible={showPrivacy} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={{ flex: 1, backgroundColor: '#fff', padding: 24 }} edges={['top']}>
-          <Text style={{ fontSize: 26, fontWeight: '900', color: '#0f172a', marginBottom: 20 }}>Your Privacy First</Text>
+          <Text style={{ fontSize: 26, fontWeight: '900', color: '#0f172a', marginBottom: 20 }}>{t('womensHealth.privacyFirst','A Tua Privacidade em Primeiro')}</Text>
           {[
-            { icon: 'shield-checkmark', color: '#10b981', title: 'Zero Third-Party Sales', body: 'Your intimate health data — cycle, hormones, symptoms — is never sold to advertisers, insurers or data brokers.' },
-            { icon: 'lock-closed', color: '#2563eb', title: 'End-to-End Encrypted', body: 'All sensitive health data is encrypted at rest and in transit. Only you can access your history.' },
-            { icon: 'eye-off', color: '#7c3aed', title: 'No profiling', body: 'We do not use your health data to build advertising profiles. Period.' },
+            { icon: 'shield-checkmark', color: '#10b981', title: t('womensHealth.priv1Title','Zero Venda a Terceiros'), body: t('womensHealth.priv1Body','Os teus dados de saúde íntima não são vendidos a anunciantes, seguradoras ou corretores de dados.') },
+            { icon: 'lock-closed',      color: '#2563eb', title: t('womensHealth.priv2Title','Encriptado de Ponta a Ponta'), body: t('womensHealth.priv2Body','Todos os dados de saúde sensíveis estão encriptados em repouso e em trânsito. Só tu tens acesso ao teu histórico.') },
+            { icon: 'eye-off',          color: '#7c3aed', title: t('womensHealth.priv3Title','Sem Perfis'), body: t('womensHealth.priv3Body','Não utilizamos os teus dados de saúde para criar perfis publicitários. Ponto.') },
           ].map((item, i) => (
             <View key={i} style={{ flexDirection: 'row', gap: 14, marginBottom: 20 }}>
               <Ionicons name={item.icon as any} size={28} color={item.color} />
@@ -1143,7 +1174,7 @@ export default function WomensHealthScreen() {
             </View>
           ))}
           <TouchableOpacity style={[s.saveBtn, { marginTop: 'auto' as any }]} onPress={() => setShowPrivacy(false)}>
-            <Text style={s.saveBtnTxt}>Close</Text>
+            <Text style={s.saveBtnTxt}>{t('common.close','Fechar')}</Text>
           </TouchableOpacity>
         </SafeAreaView>
       </Modal>

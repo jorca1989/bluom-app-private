@@ -8,6 +8,7 @@ import { getBottomContentPadding } from '@/utils/layout';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
+import { useTranslation } from 'react-i18next';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import { FREE_4_WEEK_PLAN, getWeekRoutineDays } from '@/utils/fourWeekPlanData';
 
@@ -76,6 +77,7 @@ export default function FourWeekPlanWeekScreen() {
   const params = useLocalSearchParams<{ week?: string }>();
   const { user: clerkUser } = useUser();
   const { isPro } = useAccessControl();
+  const { t } = useTranslation();
 
   const activePlans = useQuery(api.plans.getActivePlans, clerkUser?.id ? {} : 'skip');
 
@@ -89,18 +91,29 @@ export default function FourWeekPlanWeekScreen() {
     // If Pro and we have an AI plan, we use the AI split for ALL weeks in this view
     // (In a more advanced version, we'd have 4 different AI weeks)
     if (isPro && activePlans?.fitnessPlan?.workouts) {
+      const split = activePlans.fitnessPlan.workoutSplit || 'Personalised Plan';
       return {
-        title: `Week ${weekIndex + 1}`,
-        subtitle: activePlans.fitnessPlan.workoutSplit || 'Personalised Plan',
+        title: t('common.weekNum', 'Week {{num}}', { num: weekIndex + 1 }),
+        subtitle: t(`db.${split.replace(/\s+/g, '')}`, split),
         colors: WEEK_TEMPLATES[weekIndex].colors,
         days: activePlans.fitnessPlan.workouts.map((w: any, idx: number) => ({
           dayNum: idx + 1,
-          dayTitle: w.focus || w.day || `Workout ${idx + 1}`,
-          muscleGroups: w.muscleGroups || w.focus || 'Full Body',
+          dayTitle: t(`db.${(w.focus || w.day || `Workout ${idx + 1}`).replace(/\s+/g, '')}`, w.focus || w.day || `Workout ${idx + 1}`),
+          muscleGroups: t(`workouts.muscles.${w.focus || w.day || 'Full Body'}`, w.muscleGroups || w.focus || 'Full Body'),
         })),
       };
     }
-    return WEEK_TEMPLATES[weekIndex];
+    const template = WEEK_TEMPLATES[weekIndex];
+    return {
+      ...template,
+      title: t('common.weekNum', 'Week {{num}}', { num: weekIndex + 1 }),
+      subtitle: t(`db.${template.subtitle.toLowerCase()}`, template.subtitle),
+      days: template.days.map((d: any) => ({
+        ...d,
+        dayTitle: t(`db.${d.dayTitle.replace(/\s+/g, '').toLowerCase()}`, d.dayTitle),
+        muscleGroups: t(`db.${d.muscleGroups.replace(/[\s,\/]+/g, '').toLowerCase()}`, d.muscleGroups),
+      }))
+    };
   }, [isPro, activePlans, weekIndex]);
 
   const bottomPad = useMemo(() => getBottomContentPadding(insets.bottom, 18), [insets.bottom]);
@@ -120,8 +133,8 @@ export default function FourWeekPlanWeekScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomPad }}>
         <View style={s.body}>
           <LinearGradient colors={week.colors} style={s.hero}>
-            <Text style={s.heroTitle}>Your week overview</Text>
-            <Text style={s.heroSub}>Use this as a simple guide. Pro gets a personalised plan that adapts and swaps exercises.</Text>
+            <Text style={s.heroTitle}>{t('move.yourWeekOverview', 'Your week overview')}</Text>
+            <Text style={s.heroSub}>{t('move.weekOverviewDesc', 'Use this as a simple guide. Pro gets a personalised plan that adapts and swaps exercises.')}</Text>
           </LinearGradient>
 
           <View style={s.dayList}>
@@ -129,7 +142,7 @@ export default function FourWeekPlanWeekScreen() {
               <View key={d.dayNum} style={s.dayCard}>
                 <View style={s.dayHeader}>
                   <View style={s.dayBadge}>
-                    <Text style={s.dayBadgeText}>Day {d.dayNum}</Text>
+                    <Text style={s.dayBadgeText}>{t('move.dayNum', 'Day {{num}}', { num: d.dayNum })}</Text>
                   </View>
                   <Text style={s.dayFocus}>{d.dayTitle}</Text>
                 </View>
@@ -140,7 +153,7 @@ export default function FourWeekPlanWeekScreen() {
 
           <TouchableOpacity activeOpacity={0.92} onPress={() => router.push('/(tabs)/move')} style={s.openMoveBtn}>
             <LinearGradient colors={['#0ea5e9', '#6366f1']} style={s.openMoveCard}>
-              <Text style={s.openMoveText}>Open Move</Text>
+              <Text style={s.openMoveText}>{t('move.openMove', 'Open Move')}</Text>
               <Ionicons name="arrow-forward" size={18} color="#ffffff" />
             </LinearGradient>
           </TouchableOpacity>

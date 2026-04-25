@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import WorkoutDayCard from './WorkoutDayCard';
 
 interface ExerciseThumb {
@@ -55,6 +56,7 @@ export default function ProgramWorkoutWidget({
   onStartWorkout,
   onViewWorkout
 }: ProgramWorkoutWidgetProps) {
+  const { t } = useTranslation();
   return (
     <View style={styles.card}>
       {/* Top Header - Program Info */}
@@ -64,9 +66,9 @@ export default function ProgramWorkoutWidget({
              <Ionicons name="fitness" size={24} color="#3b82f6" />
           </View>
           <View style={styles.titleBox}>
-             <Text style={styles.programTitle} numberOfLines={1}>{programName}</Text>
+             <Text style={styles.programTitle} numberOfLines={1}>{programName === 'Your 4-Week Program' ? t('move.your4WeekProgram', 'Your 4-Week Program') : programName}</Text>
              <Text style={styles.programSubtitle}>
-               {level} • {daysPerWeek} days/week
+               {level === 'Beginner' ? t('common.beginner', 'Beginner') : (level === 'Intermediate' ? t('common.intermediate', 'Intermediate') : (level === 'Advanced' ? t('common.advanced', 'Advanced') : (level === 'Veteran' ? t('common.veteran', 'Veteran') : level)))} • {t('move.daysPerWeekText', '{{days}} days/week', { days: daysPerWeek })}
              </Text>
           </View>
         </View>
@@ -74,7 +76,7 @@ export default function ProgramWorkoutWidget({
         <View style={styles.progressContainer}>
           <View style={styles.progressRow}>
             <Text style={styles.progressText}>
-              Week {currentWeek} of {totalWeeks}
+              {t('move.weekProgress', 'Week {{currentWeek}} of {{totalWeeks}}', { currentWeek, totalWeeks })}
             </Text>
             <Text style={styles.progressPercent}>{progressPercent}%</Text>
           </View>

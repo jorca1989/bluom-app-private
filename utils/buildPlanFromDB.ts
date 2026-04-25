@@ -68,7 +68,8 @@ export function buildPlanFromDBWorkouts(
   dbWorkouts: DBWorkoutDoc[],
   weekIndex = 0,
   daysPerWeek = 4,
-  userSex: string = 'male'
+  userSex: string = 'male',
+  t?: (key: string, defaultText: string) => string
 ): RoutineDay[] {
   if (!dbWorkouts || dbWorkouts.length === 0) return [];
 
@@ -118,30 +119,75 @@ export function buildPlanFromDBWorkouts(
 
   if (allExercises.length === 0) return [];
 
-  // 2. Group into proper days (e.g., 4 exercises per day)
+  // 2. Classify exercises into broad categories
+  const upperBody = [];
+  const lowerBody = [];
+  const core = [];
+  const fullBody = []; // anything else or mixed
+
+  for (const ex of allExercises) {
+    const muscles = [...(ex.primaryMuscle ? [ex.primaryMuscle] : []), ...(ex.secondaryMuscles || [])].map(m => m.toLowerCase());
+    if (muscles.some(m => ['chest', 'back', 'shoulders', 'biceps', 'triceps', 'pectoralis', 'latissimus', 'deltoids', 'trapezius', 'rhomboids', 'serratus'].some(t => m.includes(t)))) {
+      upperBody.push(ex);
+    } else if (muscles.some(m => ['quadriceps', 'hamstrings', 'glutes', 'calves', 'legs', 'adductors', 'abductors'].some(t => m.includes(t)))) {
+      lowerBody.push(ex);
+    } else if (muscles.some(m => ['core', 'abs', 'abdominis', 'obliques', 'pelvic'].some(t => m.includes(t)))) {
+      core.push(ex);
+    } else {
+      fullBody.push(ex);
+    }
+  }
+
+  // Shuffle array helper using a simple deterministic seed based on weekIndex
+  const seededShuffle = (arr: any[], seed: number) => {
+    const result = [...arr];
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.abs(Math.sin(seed + i) * 10000)) % (i + 1);
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+  };
+
+  const shuffledUpper = seededShuffle(upperBody, weekIndex + 1);
+  const shuffledLower = seededShuffle(lowerBody, weekIndex + 2);
+  const shuffledCore = seededShuffle(core, weekIndex + 3);
+  const shuffledFull = seededShuffle(fullBody, weekIndex + 4);
+  const shuffledAll = seededShuffle(allExercises, weekIndex + 5); // fallback pool
+
   const EXERCISES_PER_DAY = Math.min(4, allExercises.length);
   const days: RoutineDay[] = [];
 
-  // To allow for seamless cycling if there are fewer exercises than required for the week:
-  let exerciseIndex = (weekIndex * daysPerWeek * EXERCISES_PER_DAY) % allExercises.length;
+  // Define ideal target for each day (e.g. Day 1: Upper, Day 2: Lower, Day 3: Core, Day 4: Full Body)
+  const dayTargets = [
+    { title: t ? t('move.upperBodyFocus', 'Upper Body Focus') : 'Upper Body Focus', pool: shuffledUpper },
+    { title: t ? t('move.lowerBodyFocus', 'Lower Body Focus') : 'Lower Body Focus', pool: shuffledLower },
+    { title: t ? t('move.coreFocus', 'Core & Mobility') : 'Core & Mobility', pool: shuffledCore },
+    { title: t ? t('move.fullBodyFocus', 'Full Body / Mixed') : 'Full Body / Mixed', pool: shuffledFull },
+  ];
 
-  // 3. Construct exactly `daysPerWeek` days so the UI isn't flooded with 20+ tabs
+  let allFallbackIndex = 0;
+
+  // 3. Construct exactly `daysPerWeek` days
   for (let dayOffset = 0; dayOffset < daysPerWeek; dayOffset++) {
+    const target = dayTargets[dayOffset % dayTargets.length];
     const dayExercises = [];
+    
+    // Attempt to pull EXERCISES_PER_DAY from the targeted pool
     for (let i = 0; i < EXERCISES_PER_DAY; i++) {
-        dayExercises.push(allExercises[exerciseIndex]);
-        exerciseIndex = (exerciseIndex + 1) % allExercises.length;
+      if (target.pool.length > 0) {
+        dayExercises.push(target.pool.pop());
+      } else {
+        // Fallback to the mixed pool of all exercises
+        dayExercises.push(shuffledAll[allFallbackIndex % shuffledAll.length]);
+        allFallbackIndex++;
+      }
     }
     
-    // Group day title by primary muscles
     const muscles = [...new Set(dayExercises.map(e => e.primaryMuscle))];
-    const dayTitle = muscles.length <= 2 
-      ? muscles.join(' & ') + ' Focus' 
-      : 'Full Body Workout';
 
     days.push({
       dayNum: dayOffset + 1,
-      dayTitle,
+      dayTitle: target.title,
       muscleGroups: muscles.slice(0, 3).join(', '),
       exercises: dayExercises
     });
@@ -157,7 +203,8 @@ export function buildWeekFromDBWorkouts(
   dbWorkouts: DBWorkoutDoc[],
   _weekIndex = 0,
   daysPerWeek = 4,
-  userSex: string = 'male'
+  userSex: string = 'male',
+  t?: (key: string, defaultText: string) => string
 ): RoutineDay[] {
-  return buildPlanFromDBWorkouts(dbWorkouts, _weekIndex, daysPerWeek, userSex);
+  return buildPlanFromDBWorkouts(dbWorkouts, _weekIndex, daysPerWeek, userSex, t);
 }

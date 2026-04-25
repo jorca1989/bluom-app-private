@@ -5,6 +5,8 @@ import { Video, ResizeMode } from 'expo-av';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedExerciseName } from '@/utils/localize';
 
 interface ExerciseDetailModalProps {
   visible: boolean;
@@ -23,14 +25,12 @@ export default function ExerciseDetailModal({
   onClose,
   onUpgradePress
 }: ExerciseDetailModalProps) {
+  const { t, i18n } = useTranslation();
   if (!visible || !exercise) return null;
   // 4-week plan exercises are always unlocked
   const canSeeDetails = isPro || freeAccess;
 
-  const exerciseName =
-    typeof exercise.name === 'object'
-      ? (exercise.name as any).en || (exercise.name as any).name
-      : exercise.name;
+  const exerciseName = getLocalizedExerciseName(exercise.name, i18n.language);
 
   const exerciseType = exercise.type || exercise.exerciseType || exercise.category || 'Strength';
   const difficulty = exercise.difficulty || exercise.level || null;
@@ -47,25 +47,25 @@ export default function ExerciseDetailModal({
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
             <Ionicons name="close" size={24} color="#0f172a" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle} numberOfLines={1}>{exerciseName}</Text>
+          <Text style={styles.headerTitle} numberOfLines={1}>{exerciseName as string}</Text>
           <View style={{ width: 40 }} />
         </View>
 
         <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
 
           {/* ── FREE TIER: always visible ── */}
-          <Text style={styles.exTitle}>{exerciseName}</Text>
+          <Text style={styles.exTitle}>{exerciseName as string}</Text>
 
           {/* Type & Difficulty chips */}
           <View style={styles.chipRow}>
             <View style={styles.chip}>
               <Ionicons name="barbell-outline" size={13} color="#10b981" style={{ marginRight: 4 }} />
-              <Text style={styles.chipText}>{exerciseType}</Text>
+              <Text style={styles.chipText}>{t(`workouts.categories.${exerciseType}`, exerciseType) as string}</Text>
             </View>
             {difficulty && (
               <View style={styles.diffChip}>
                 <Ionicons name="stats-chart" size={12} color="#f59e0b" style={{ marginRight: 4 }} />
-                <Text style={styles.diffChipText}>{difficulty}</Text>
+                <Text style={styles.diffChipText}>{t(`workouts.levels.${difficulty}`, difficulty) as string}</Text>
               </View>
             )}
           </View>
@@ -104,39 +104,39 @@ export default function ExerciseDetailModal({
               ) : (
                 <View style={styles.mediaBox}>
                   <Ionicons name="play-circle" size={64} color="#cbd5e1" />
-                  <Text style={styles.mediaPlaceholderText}>No video available</Text>
+                  <Text style={styles.mediaPlaceholderText}>{t('move.noVideoAvailable', 'No video available') as string}</Text>
                 </View>
               )}
 
               {/* Instructions */}
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Instructions</Text>
+                <Text style={styles.sectionTitle}>{t('move.instructions', 'Instructions') as string}</Text>
                 {instructions.length > 0 ? (
                   instructions.map((step, i) => (
                     <View key={i} style={styles.instructionRow}>
                       <View style={styles.stepBadge}>
                         <Text style={styles.stepBadgeText}>{i + 1}</Text>
                       </View>
-                      <Text style={styles.instructionText}>{step}</Text>
+                      <Text style={styles.instructionText}>{t(`db.${step.replace(/\s+/g, '')}`, step) as string}</Text>
                     </View>
                   ))
                 ) : (
                   <>
                     <View style={styles.instructionRow}>
                       <View style={styles.stepBadge}><Text style={styles.stepBadgeText}>1</Text></View>
-                      <Text style={styles.instructionText}>Set up the equipment to the appropriate height or weight.</Text>
+                      <Text style={styles.instructionText}>{t('move.defaultStep1', 'Set up the equipment to the appropriate height or weight.') as string}</Text>
                     </View>
                     <View style={styles.instructionRow}>
                       <View style={styles.stepBadge}><Text style={styles.stepBadgeText}>2</Text></View>
-                      <Text style={styles.instructionText}>Keep your core tight and maintain a neutral spine.</Text>
+                      <Text style={styles.instructionText}>{t('move.defaultStep2', 'Keep your core tight and maintain a neutral spine.') as string}</Text>
                     </View>
                     <View style={styles.instructionRow}>
                       <View style={styles.stepBadge}><Text style={styles.stepBadgeText}>3</Text></View>
-                      <Text style={styles.instructionText}>Perform the movement with a controlled tempo, pausing briefly at peak contraction.</Text>
+                      <Text style={styles.instructionText}>{t('move.defaultStep3', 'Perform the movement with a controlled tempo, pausing briefly at peak contraction.') as string}</Text>
                     </View>
                     <View style={styles.instructionRow}>
                       <View style={styles.stepBadge}><Text style={styles.stepBadgeText}>4</Text></View>
-                      <Text style={styles.instructionText}>Return to the starting position slowly.</Text>
+                      <Text style={styles.instructionText}>{t('move.defaultStep4', 'Return to the starting position slowly.') as string}</Text>
                     </View>
                   </>
                 )}
@@ -145,21 +145,21 @@ export default function ExerciseDetailModal({
               {/* Muscles */}
               {(primaryMuscles.length > 0 || secondaryMuscles.length > 0) && (
                 <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Muscles</Text>
+                  <Text style={styles.sectionTitle}>{t('move.muscles', 'Muscles') as string}</Text>
                   <View style={styles.muscleRow}>
                     {primaryMuscles.length > 0 && (
                       <View style={styles.muscleGroup}>
-                        <Text style={styles.muscleGroupLabel}>Primary</Text>
+                        <Text style={styles.muscleGroupLabel}>{t('move.primary', 'Primary') as string}</Text>
                         {primaryMuscles.map((m, i) => (
-                          <Text key={i} style={styles.muscleItem}>• {m}</Text>
+                          <Text key={i} style={styles.muscleItem}>• {t(`workouts.muscles.${m}`, m) as string}</Text>
                         ))}
                       </View>
                     )}
                     {secondaryMuscles.length > 0 && (
                       <View style={styles.muscleGroupSecondary}>
-                        <Text style={[styles.muscleGroupLabel, { color: '#15803d' }]}>Secondary</Text>
+                        <Text style={[styles.muscleGroupLabel, { color: '#15803d' }]}>{t('move.secondary', 'Secondary') as string}</Text>
                         {secondaryMuscles.map((m, i) => (
-                          <Text key={i} style={styles.muscleItemSecondary}>• {m}</Text>
+                          <Text key={i} style={styles.muscleItemSecondary}>• {t(`workouts.muscles.${m}`, m) as string}</Text>
                         ))}
                       </View>
                     )}
@@ -174,9 +174,9 @@ export default function ExerciseDetailModal({
               <View style={styles.lockOverlay}>
                 <View style={styles.lockCard}>
                   <Ionicons name="lock-closed" size={32} color="#3b82f6" />
-                  <Text style={styles.lockTitle}>Pro Details Locked</Text>
+                  <Text style={styles.lockTitle}>{t('move.proDetailsLocked', 'Pro Details Locked') as string}</Text>
                   <Text style={styles.lockSub}>
-                    Upgrade to Pro to unlock full instructions, muscle breakdown, and video demonstration.
+                    {t('move.proDetailsLockedDesc', 'Upgrade to Pro to unlock full instructions, muscle breakdown, and video demonstration.') as string}
                   </Text>
                   <TouchableOpacity style={styles.lockBtn} onPress={onUpgradePress}>
                     <LinearGradient
@@ -185,7 +185,7 @@ export default function ExerciseDetailModal({
                       end={{ x: 1, y: 1 }}
                       style={styles.lockBtnGradient}
                     >
-                      <Text style={styles.lockBtnText}>Upgrade to Unlock</Text>
+                      <Text style={styles.lockBtnText}>{t('move.upgradeToUnlock', 'Upgrade to Unlock') as string}</Text>
                     </LinearGradient>
                   </TouchableOpacity>
                 </View>

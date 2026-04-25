@@ -16,12 +16,23 @@ const exerciseValidator = v.object({
     exerciseTypes: v.optional(v.array(v.string())), // multi-type support
 });
 
+// ─── Shared localization validator ───────────────────────────────────────────
+const localizationsValidator = v.optional(v.object({
+    pt: v.optional(v.string()),
+    es: v.optional(v.string()),
+    fr: v.optional(v.string()),
+    de: v.optional(v.string()),
+    nl: v.optional(v.string()),
+}));
+
 // ─── Admin Mutations ──────────────────────────────────────────────────────────
 
 export const createWorkout = mutation({
     args: {
         title: v.string(),
         description: v.string(),
+        titleLocalizations: localizationsValidator,
+        descriptionLocalizations: localizationsValidator,
         thumbnail: v.string(),
         thumbnailMale: v.optional(v.string()),
         thumbnailFemale: v.optional(v.string()),
@@ -60,6 +71,8 @@ export const updateWorkout = mutation({
         updates: v.object({
             title: v.optional(v.string()),
             description: v.optional(v.string()),
+            titleLocalizations: localizationsValidator,
+            descriptionLocalizations: localizationsValidator,
             thumbnail: v.optional(v.string()),
             thumbnailMale: v.optional(v.string()),
             thumbnailFemale: v.optional(v.string()),

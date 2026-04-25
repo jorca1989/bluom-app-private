@@ -10,6 +10,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQuery } from 'convex/react';
+import { useTranslation } from 'react-i18next';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import {
@@ -43,7 +44,9 @@ function BadgeIcon({ badgeId, unlocked }: { badgeId: string; unlocked: boolean }
 function BadgeWithLabel({ badgeId, unlocked }: { badgeId: string; unlocked: boolean }) {
   const def = ALL_ACHIEVEMENTS.find(a => a.id === badgeId);
   if (!def) return null;
+  const { t } = useTranslation();
   const rc = RARITY_CONFIG[def.rarity];
+  const title = t(`achievements.${def.id}.title`, def.title);
   return (
     <View style={ac.badgeItem}>
       <View style={[ac.badgeCircle, { backgroundColor: unlocked ? rc.bg : '#f1f5f9' }]}>
@@ -55,7 +58,7 @@ function BadgeWithLabel({ badgeId, unlocked }: { badgeId: string; unlocked: bool
         )}
       </View>
       <Text style={[ac.badgeLabel, !unlocked && { color: '#cbd5e1' }]} numberOfLines={1}>
-        {def.title}
+        {title}
       </Text>
     </View>
   );
@@ -67,6 +70,7 @@ interface Props {
 
 export default function AchievementsCard({ userId }: Props) {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const dbAchievements = useQuery(
     api.achievements.getUserAchievements,
@@ -107,16 +111,16 @@ export default function AchievementsCard({ userId }: Props) {
       {/* Header: count + level | See all */}
       <View style={ac.headerRow}>
         <Text style={ac.headerText}>
-          <Text style={ac.headerCount}>{unlockedCount} unlocked</Text>
+          <Text style={ac.headerCount}>{unlockedCount} {t('home.achievements.unlocked', 'unlocked')}</Text>
           {'  ·  '}
-          <Text style={ac.headerLevel}>Level {level}</Text>
+          <Text style={ac.headerLevel}>{t('home.achievements.level', 'Level')} {level}</Text>
         </Text>
         <TouchableOpacity
           onPress={() => router.push('/achievements' as any)}
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={ac.seeAll}>See all</Text>
+          <Text style={ac.seeAll}>{t('home.achievements.seeAll', 'See all')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -133,7 +137,7 @@ export default function AchievementsCard({ userId }: Props) {
           <Text style={ac.xpText}>
             <Text style={ac.xpVal}>{xp.toLocaleString()} XP</Text>
           </Text>
-          <Text style={ac.xpGoal}>Lvl {level + 1} at {xpForNext.toLocaleString()}</Text>
+          <Text style={ac.xpGoal}>{t('home.achievements.lvl', 'Lvl')} {level + 1} {t('home.achievements.at', 'at')} {xpForNext.toLocaleString()}</Text>
         </View>
         <View style={ac.xpBar}>
           <View style={[ac.xpBarFill, { width: `${xpPct}%` as any }]} />

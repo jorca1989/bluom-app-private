@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+import { useTranslation } from 'react-i18next';
 
 interface CalorieSummaryProps {
   consumed: number;
@@ -8,6 +9,7 @@ interface CalorieSummaryProps {
 }
 
 const CalorieSummary = ({ consumed, goal }: CalorieSummaryProps) => {
+  const { t } = useTranslation();
   const remaining = goal - consumed;
   const progress = Math.min(Math.max(consumed / (goal || 1), 0), 1); // Clamp to 0-1
 
@@ -47,7 +49,7 @@ const CalorieSummary = ({ consumed, goal }: CalorieSummaryProps) => {
             {Math.round(Math.abs(remaining))}
           </Text>
           <Text style={styles.kcalLeftText}>
-            {remaining < 0 ? 'kcal over' : 'kcal left'}
+            {remaining < 0 ? t('fuel.summary.kcalOver', 'kcal over') : t('fuel.summary.kcalLeft', 'kcal left')}
           </Text>
         </View>
       </View>
@@ -58,7 +60,7 @@ const CalorieSummary = ({ consumed, goal }: CalorieSummaryProps) => {
         <View style={styles.legendRow}>
           <View style={[styles.dot, { backgroundColor: '#10b981' }]} />
           <View>
-            <Text style={styles.legendLabel}>Consumed</Text>
+            <Text style={styles.legendLabel}>{t('fuel.summary.consumed', 'Consumed')}</Text>
             <Text style={styles.legendValue}>{Math.round(consumed)} kcal</Text>
           </View>
         </View>
@@ -66,7 +68,7 @@ const CalorieSummary = ({ consumed, goal }: CalorieSummaryProps) => {
         <View style={[styles.legendRow, { marginTop: 16 }]}>
           <View style={[styles.dot, { backgroundColor: '#e2e8f0' }]} />
           <View>
-            <Text style={styles.legendLabel}>Goal</Text>
+            <Text style={styles.legendLabel}>{t('fuel.summary.goal', 'Goal')}</Text>
             <Text style={styles.legendValue}>{Math.round(goal)} kcal</Text>
           </View>
         </View>

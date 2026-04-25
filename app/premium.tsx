@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -35,17 +36,19 @@ const { width, height } = Dimensions.get('window');
 
 const HERO_IMAGE_URL = 'https://pub-df4415ed308d4c5c9617037ae2ddcbe9.r2.dev/Premiun.tsx%20hero.png';
 
-// ─── Feature list ────────────────────────────────────────────────────────────
-const FEATURES = [
-  { icon: '🧠', title: 'AI Biological Coach', desc: '24/7 personalized guidance built around your metabolism, cycle & sleep data' },
-  { icon: '👁️', title: 'AI Vision Tracking', desc: 'Point your camera at any meal for instant macro analysis' },
-  { icon: '🎬', title: 'Guided Video Workouts', desc: 'Pro-led sessions from HIIT to Yoga, tailored to your goal' },
-  { icon: '📊', title: 'Advanced Bio-Analytics', desc: 'Deep recovery, metabolic trends & readiness scoring' },
-  { icon: '🌸', title: 'Hormonal Optimization', desc: 'Full Women\'s & Men\'s Health Hubs with cycle-based recommendations' },
-  { icon: '⚡', title: 'Fasting Intelligence', desc: 'Live autophagy tracking and fat-burning phase alerts' },
-  { icon: '🏠', title: 'Household Assistant', desc: 'Shared grocery lists, family schedules & everyone\'s health in one place' },
-  { icon: '🧪', title: 'Cognitive Lab', desc: 'Unlimited brain training & stress-reduction protocols' },
-];
+// ─── Feature list (translated) ──────────────────────────────────────────────
+function getFeatures(t: any) {
+  return [
+    { icon: '🧠', title: t('premium.featAiCoachTitle'), desc: t('premium.featAiCoachDesc') },
+    { icon: '👁️', title: t('premium.featVisionTitle'), desc: t('premium.featVisionDesc') },
+    { icon: '🎬', title: t('premium.featWorkoutsTitle'), desc: t('premium.featWorkoutsDesc') },
+    { icon: '📊', title: t('premium.featAnalyticsTitle'), desc: t('premium.featAnalyticsDesc') },
+    { icon: '🌸', title: t('premium.featHormonesTitle'), desc: t('premium.featHormonesDesc') },
+    { icon: '⚡', title: t('premium.featFastingTitle'), desc: t('premium.featFastingDesc') },
+    { icon: '🏠', title: t('premium.featHouseholdTitle'), desc: t('premium.featHouseholdDesc') },
+    { icon: '🧪', title: t('premium.featCogLabTitle'), desc: t('premium.featCogLabDesc') },
+  ];
+}
 
 // ─── Currency helpers ─────────────────────────────────────────────────────────
 function getTreatItems(code: string | null) {
@@ -67,6 +70,7 @@ function PlanCard({ title, subtitle, price, priceNote, popular, disabled, onPres
   title: string; subtitle: string; price: string; priceNote: string | null;
   popular: boolean; disabled: boolean; onPress: () => void;
 }) {
+  const { t } = useTranslation();
   const scale = useRef(new Animated.Value(1)).current;
   const press = () => { Animated.sequence([Animated.timing(scale, { toValue: 0.97, duration: 80, useNativeDriver: true }), Animated.timing(scale, { toValue: 1, duration: 120, useNativeDriver: true })]).start(); onPress(); };
 
@@ -75,7 +79,7 @@ function PlanCard({ title, subtitle, price, priceNote, popular, disabled, onPres
       <TouchableOpacity onPress={press} disabled={disabled} activeOpacity={1} style={styles.planInner}>
         {popular && (
           <View style={styles.bestBadge}>
-            <Text style={styles.bestBadgeText}>✦ BEST VALUE</Text>
+            <Text style={styles.bestBadgeText}>{t('premium.bestValue', '✦ BEST VALUE')}</Text>
           </View>
         )}
         <View style={styles.planRow}>
@@ -90,7 +94,7 @@ function PlanCard({ title, subtitle, price, priceNote, popular, disabled, onPres
         </View>
         <View style={[styles.planCta, popular && styles.planCtaGold]}>
           <Text style={[styles.planCtaText, popular && styles.planCtaTextDark]}>
-            {popular ? '✦ Start Annual Pro' : 'Start Monthly'}
+            {popular ? t('premium.startAnnual', '✦ Start Annual Pro') : t('premium.startMonthly', 'Start Monthly')}
           </Text>
         </View>
       </TouchableOpacity>
@@ -128,6 +132,8 @@ function FeatureRow({ icon, title, desc, index }: { icon: string; title: string;
 
 // ─── Main screen ──────────────────────────────────────────────────────────────
 export default function PremiumScreen() {
+  const { t } = useTranslation();
+  const FEATURES = useMemo(() => getFeatures(t), [t]);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser, isLoaded: isClerkLoaded } = useUser();
@@ -233,8 +239,8 @@ export default function PremiumScreen() {
           {/* Hero text overlay */}
           <View style={styles.heroTextWrap}>
             <Text style={styles.heroEyebrow}>✦ BLUOM PRO</Text>
-            <Text style={styles.heroHeadline}>Your Biology,{'\n'}Fully Unlocked.</Text>
-            <Text style={styles.heroSub}>The complete system for peak human performance.</Text>
+            <Text style={styles.heroHeadline}>{t('premium.heroTitle', 'A Tua Biologia,')}{`\n`}{t('premium.heroTitle2', 'Totalmente Desbloqueada.')}</Text>
+            <Text style={styles.heroSub}>{t('premium.heroSub', 'O sistema completo para o máximo desempenho humano.')}</Text>
           </View>
         </View>
 
@@ -243,18 +249,18 @@ export default function PremiumScreen() {
 
           {isPro ? (
             <View style={styles.proAlready}>
-              <Text style={styles.proAlreadyTitle}>✦ You're already Pro</Text>
-              <Text style={styles.proAlreadySub}>Full access is active. Keep optimizing.</Text>
+              <Text style={styles.proAlreadyTitle}>{t('premium.alreadyPro', '✦ Já és Pro')}</Text>
+              <Text style={styles.proAlreadySub}>{t('premium.alreadyProSub', 'Acesso completo ativo. Continua a otimizar.')}</Text>
               <TouchableOpacity style={styles.goldBtn} onPress={handleDismiss}>
-                <Text style={styles.goldBtnText}>Continue</Text>
+                <Text style={styles.goldBtnText}>{t('premium.continue', 'Continuar')}</Text>
               </TouchableOpacity>
             </View>
           ) : (
             <>
               {/* ── Value comparison ── */}
               <View style={styles.section}>
-                <Text style={styles.sectionEyebrow}>THE MATH</Text>
-                <Text style={styles.sectionTitle}>Less than your daily treat</Text>
+                <Text style={styles.sectionEyebrow}>{t('premium.mathLabel', 'A CONTA')}</Text>
+                <Text style={styles.sectionTitle}>{t('premium.mathTitle', 'Menos do que o teu prazer diário')}</Text>
                 <View style={styles.compareRow}>
                   <View style={styles.compareItem}>
                     <Text style={styles.compareEmoji}>{treats.a.icon}</Text>
@@ -275,7 +281,7 @@ export default function PremiumScreen() {
                   <View style={[styles.compareItem, styles.compareHighlight]}>
                     <Text style={styles.compareEmoji}>💎</Text>
                     <Text style={[styles.compareAmount, { color: '#d4af37' }]}>Pro</Text>
-                    <Text style={[styles.compareLabel, { color: '#d4af37' }]}>Forever</Text>
+                    <Text style={[styles.compareLabel, { color: '#d4af37' }]}>{t('premium.forever', 'Para Sempre')}</Text>
                   </View>
                 </View>
               </View>
@@ -285,19 +291,19 @@ export default function PremiumScreen() {
 
               {/* ── Pricing plans ── */}
               <View style={styles.section}>
-                <Text style={styles.sectionEyebrow}>CHOOSE YOUR PLAN</Text>
+                <Text style={styles.sectionEyebrow}>{t('premium.choosePlan', 'ESCOLHE O TEU PLANO')}</Text>
                 <PlanCard
-                  title="Annual Pro"
-                  subtitle={annualWeeklyNote ? `Only ${annualWeeklyNote}/week — save 50%` : 'Best value, cancel anytime'}
+                  title={t('premium.annualTitle', 'Pro Anual')}
+                  subtitle={annualWeeklyNote ? t('premium.annualSub', `Apenas ${annualWeeklyNote}/sem — poupa 50%`) : t('premium.annualSubAlt', 'Melhor valor, cancela quando quiseres')}
                   price={pkgs?.annual?.product?.priceString ?? '—'}
-                  priceNote={annualMonthlyNote ? `${annualMonthlyNote} / month` : null}
+                  priceNote={annualMonthlyNote ? `${annualMonthlyNote} / ${t('premium.month', 'mês')}` : null}
                   popular={true}
                   disabled={upgrading || !pkgs?.annual}
                   onPress={() => purchase('annual')}
                 />
                 <PlanCard
-                  title="Monthly Pro"
-                  subtitle="Full access, billed monthly"
+                  title={t('premium.monthlyTitle', 'Pro Mensal')}
+                  subtitle={t('premium.monthlySub', 'Acesso completo, faturado mensalmente')}
                   price={pkgs?.monthly?.product?.priceString ?? '—'}
                   priceNote={null}
                   popular={false}
@@ -307,14 +313,14 @@ export default function PremiumScreen() {
                 {upgrading && (
                   <View style={styles.upgradingRow}>
                     <ActivityIndicator color="#d4af37" size="small" />
-                    <Text style={styles.upgradingText}>Processing…</Text>
+                    <Text style={styles.upgradingText}>{t('premium.processing', 'A processar…')}</Text>
                   </View>
                 )}
               </View>
 
               {/* ── Social proof ── */}
               <View style={styles.socialProof}>
-                <Text style={styles.socialProofText}>🔥 10,000+ humans already optimizing their biology</Text>
+                <Text style={styles.socialProofText}>{t('premium.socialProof', '🔥 +10.000 humanos já a otimizar a sua biologia')}</Text>
               </View>
 
               {/* ── Divider ── */}
@@ -322,8 +328,8 @@ export default function PremiumScreen() {
 
               {/* ── Features ── */}
               <View style={styles.section}>
-                <Text style={styles.sectionEyebrow}>EVERYTHING INCLUDED</Text>
-                <Text style={styles.sectionTitle}>The Pro edge</Text>
+                <Text style={styles.sectionEyebrow}>{t('premium.everythingLabel', 'TUDO INCLUÍDO')}</Text>
+                <Text style={styles.sectionTitle}>{t('premium.featuresTitle', 'A vantagem Pro')}</Text>
                 {FEATURES.map((f, i) => <FeatureRow key={f.title} {...f} index={i} />)}
               </View>
 
@@ -332,7 +338,7 @@ export default function PremiumScreen() {
 
               {/* ── Secondary actions ── */}
               <TouchableOpacity style={styles.ghostBtn} onPress={handleDismiss} activeOpacity={0.7}>
-                <Text style={styles.ghostBtnText}>Continue with free version</Text>
+                <Text style={styles.ghostBtnText}>{t('premium.continueFree', 'Continuar com a versão gratuita')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -358,7 +364,7 @@ export default function PremiumScreen() {
                 }}
               >
                 <Text style={[styles.ghostBtnText, { color: '#d4af37' }]}>
-                  {restoring ? 'Restoring…' : 'Restore purchases'}
+                  {restoring ? t('premium.restoring', 'A restaurar…') : t('premium.restore', 'Restaurar compras')}
                 </Text>
               </TouchableOpacity>
 

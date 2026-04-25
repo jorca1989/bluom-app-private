@@ -11,6 +11,7 @@ import {
     ActivityIndicator,
     Alert,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Image } from 'expo-image';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
@@ -39,6 +40,7 @@ const PAGE_SIZE = 50;
 
 const EMPTY_FORM = {
     name: '',
+    name_pt: '', name_es: '', name_fr: '', name_de: '', name_nl: '',
     categories: ['Strength'] as string[],  // multi-select
     met: '6.0',
     caloriesPerMinute: '0',
@@ -131,6 +133,7 @@ const mgStyles = StyleSheet.create({
 
 // ── Main component ─────────────────────────────────────────────────────────────
 export default function ExerciseLibraryManager() {
+    const { t } = useTranslation();
     const [search, setSearch] = useState('');
     const [filterCategory, setFilterCategory] = useState('All');
     const [filterMuscle, setFilterMuscle] = useState('All');
@@ -161,13 +164,19 @@ export default function ExerciseLibraryManager() {
 
     const handleSave = async () => {
         if (!form.name.trim() || !form.met) {
-            Alert.alert('Error', 'Exercise name and MET value are required');
+            Alert.alert(t('common.error', 'Error'), t('admin.errorRequired', 'Exercise name and MET value are required'));
             return;
         }
         try {
             const cats = form.categories.length ? form.categories : ['Strength'];
+            const nameObj: Record<string, string> = { en: form.name.trim() };
+            if (form.name_pt.trim()) nameObj.pt = form.name_pt.trim();
+            if (form.name_es.trim()) nameObj.es = form.name_es.trim();
+            if (form.name_fr.trim()) nameObj.fr = form.name_fr.trim();
+            if (form.name_de.trim()) nameObj.de = form.name_de.trim();
+            if (form.name_nl.trim()) nameObj.nl = form.name_nl.trim();
             const payload: any = {
-                name: { en: form.name.trim() },
+                name: nameObj,
                 category: cats[0],            // primary category (backward-compat)
                 categories: cats,             // full list
                 met: parseFloat(form.met),
@@ -184,21 +193,21 @@ export default function ExerciseLibraryManager() {
             setEditingExercise(null);
             setForm({ ...EMPTY_FORM });
         } catch (error: any) {
-            Alert.alert('Error', error?.message ?? 'Failed to save exercise');
+            Alert.alert(t('common.error', 'Error'), error?.message ?? t('admin.errorSave', 'Failed to save exercise'));
         }
     };
 
     const handleDelete = (id: any, name: string) => {
-        Alert.alert('Delete Exercise', `Delete "${name}"?`, [
-            { text: 'Cancel', style: 'cancel' },
+        Alert.alert(t('admin.deleteTitle', 'Delete Exercise'), t('admin.deleteConfirm', 'Delete "{{title}}"?', { title: name }), [
+            { text: t('common.cancel', 'Cancel'), style: 'cancel' },
             {
-                text: 'Delete',
+                text: t('admin.delete', 'Delete'),
                 style: 'destructive',
                 onPress: async () => {
                     try {
                         await deleteExercise({ id });
                     } catch (err: any) {
-                        Alert.alert('Error', err?.message || 'Failed to delete exercise.');
+                        Alert.alert(t('common.error', 'Error'), err?.message || t('admin.errorDelete', 'Failed to delete exercise.'));
                     }
                 }
             },
@@ -231,8 +240,10 @@ export default function ExerciseLibraryManager() {
     const openEdit = (ex: any) => {
         setEditingExercise(ex);
         const existingMuscles: string[] = Array.isArray(ex.muscleGroups) ? ex.muscleGroups : [];
+        const nameObj = typeof ex.name === 'object' ? ex.name : { en: ex.name ?? '' };
         setForm({
-            name: typeof ex.name === 'object' ? ex.name.en : (ex.name ?? ''),
+            name: nameObj.en ?? '',
+            name_pt: nameObj.pt ?? '', name_es: nameObj.es ?? '', name_fr: nameObj.fr ?? '', name_de: nameObj.de ?? '', name_nl: nameObj.nl ?? '',
             categories: ex.categories ?? (ex.category ? [ex.category] : ['Strength']),
             met: String(ex.met ?? '6.0'),
             caloriesPerMinute: String(ex.caloriesPerMinute ?? '0'),
@@ -249,7 +260,8 @@ export default function ExerciseLibraryManager() {
     };
 
     const renderItem = ({ item }: { item: any }) => {
-        const name = typeof item.name === 'object' ? item.name.en : item.name;
+        const rawName = typeof item.name === 'object' ? item.name.en : item.name;
+        const name = t(`db.${rawName?.replace(/\s+/g, '')}`, rawName) as string;
         return (
             <View style={styles.card}>
                 {item.thumbnailUrl ? (
@@ -262,10 +274,10 @@ export default function ExerciseLibraryManager() {
                 <View style={styles.cardInfo}>
                     <Text style={styles.exName} numberOfLines={1}>{name}</Text>
                     <View style={styles.badgeRow}>
-                        <View style={styles.catBadge}><Text style={styles.catBadgeTxt}>{item.category}</Text></View>
+                        <View style={styles.catBadge}><Text style={styles.catBadgeTxt}>{t(`admin.${item.category?.toLowerCase()}`, item.category) as string}</Text></View>
                         <View style={styles.metBadge}><Text style={styles.metBadgeTxt}>MET {item.met}</Text></View>
                     </View>
-                    <Text style={styles.muscles} numberOfLines={1}>{(item.muscleGroups ?? []).join(' • ') || '—'}</Text>
+                    <Text style={styles.muscles} numberOfLines={1}>{(item.muscleGroups ?? []).map((m: string) => t(`admin.${m.replace(/[\s/]/g, '').toLowerCase()}`, m) as string).join(' • ') || '—'}</Text>
                 </View>
                 <View style={styles.actions}>
                     <TouchableOpacity onPress={() => openEdit(item)} style={styles.actionBtn}><Edit3 size={16} color="#64748b" /></TouchableOpacity>
@@ -280,8 +292,8 @@ export default function ExerciseLibraryManager() {
             {/* Header */}
             <View style={styles.header}>
                 <View>
-                    <Text style={styles.title}>Exercise Library</Text>
-                    <Text style={styles.subtitle}>{allExercises === undefined ? 'Loading…' : `${total} exercises`}</Text>
+                    <Text style={styles.title}>{t('admin.library', 'Exercise Library')}</Text>
+                    <Text style={styles.subtitle}>{allExercises === undefined ? t('home.loading', 'Loading…') : `${total} ${t('admin.results', 'exercises')}`}</Text>
                 </View>
                 <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
                     <TouchableOpacity onPress={() => setShowSearch(!showSearch)} style={{ padding: 6 }}>
@@ -292,7 +304,7 @@ export default function ExerciseLibraryManager() {
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.addBtn} onPress={openNew}>
                         <Plus color="#fff" size={18} />
-                        <Text style={styles.addBtnTxt}>Add Exercise</Text>
+                        <Text style={styles.addBtnTxt}>{t('admin.new', 'Add Exercise')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -303,7 +315,7 @@ export default function ExerciseLibraryManager() {
                     <Search size={17} color="#94a3b8" />
                     <TextInput
                         style={styles.searchInput}
-                        placeholder="Search name or muscle…"
+                        placeholder={t('admin.searchLibrary', 'Search library...')}
                         value={search}
                         onChangeText={t => { setSearch(t); setPage(0); }}
                         clearButtonMode="while-editing"
@@ -321,14 +333,14 @@ export default function ExerciseLibraryManager() {
             {showFilters && (
                 <View style={{ backgroundColor: '#fff', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
                     <FilterPills
-                        label="Category"
+                        label={t('admin.type', 'Category')}
                         options={EXERCISE_CATEGORIES}
                         value={filterCategory}
                         onChange={v => { setFilterCategory(v); setPage(0); }}
                         color="#2563eb"
                     />
                     <FilterPills
-                        label="Muscle Group"
+                        label={t('admin.muscleGroup', 'Muscle Group')}
                         options={ALL_MUSCLE_GROUPS}
                         value={filterMuscle}
                         onChange={v => { setFilterMuscle(v); setPage(0); }}
@@ -350,7 +362,7 @@ export default function ExerciseLibraryManager() {
                         ListEmptyComponent={
                             <View style={styles.empty}>
                                 <Dumbbell size={44} color="#cbd5e1" />
-                                <Text style={styles.emptyTxt}>{total === 0 ? 'Library is empty — add your first exercise' : 'No matches'}</Text>
+                                <Text style={styles.emptyTxt}>{total === 0 ? t('admin.noExercisesYet', 'Library is empty — add your first exercise') : t('admin.noResults', 'No matches')}</Text>
                             </View>
                         }
                     />
@@ -373,15 +385,25 @@ export default function ExerciseLibraryManager() {
                 <View style={styles.modal}>
                     <View style={styles.modalHeader}>
                         <TouchableOpacity onPress={() => setIsModalOpen(false)}><X size={22} color="#64748b" /></TouchableOpacity>
-                        <Text style={styles.modalTitle}>{editingExercise ? 'Edit Exercise' : 'New Exercise'}</Text>
-                        <TouchableOpacity onPress={handleSave}><Text style={styles.saveBtn}>Save</Text></TouchableOpacity>
+                        <Text style={styles.modalTitle}>{editingExercise ? t('admin.editExercise', 'Edit Exercise') : t('admin.newExercise', 'New Exercise')}</Text>
+                        <TouchableOpacity onPress={handleSave}><Text style={styles.saveBtn}>{t('admin.save', 'Save')}</Text></TouchableOpacity>
                     </View>
 
                     <ScrollView style={styles.form} keyboardShouldPersistTaps="handled">
-                        <Text style={styles.label}>Exercise Name *</Text>
-                        <TextInput style={styles.input} value={form.name} onChangeText={t => setForm(f => ({ ...f, name: t }))} placeholder="e.g. Barbell Squat" />
+                        <Text style={styles.label}>{t('admin.exerciseName', 'Exercise Name *')} (EN)</Text>
+                        <TextInput style={styles.input} value={form.name} onChangeText={t => setForm(f => ({ ...f, name: t }))} placeholder={t('admin.exerciseNamePlaceholder', 'e.g. Barbell Squat')} />
+                        <Text style={styles.label}>Name (PT)</Text>
+                        <TextInput style={styles.input} placeholder="ex. Agachamento com Barra" value={form.name_pt} onChangeText={v => setForm(f => ({ ...f, name_pt: v }))} />
+                        <Text style={styles.label}>Name (ES)</Text>
+                        <TextInput style={styles.input} placeholder="ej. Sentadilla con Barra" value={form.name_es} onChangeText={v => setForm(f => ({ ...f, name_es: v }))} />
+                        <Text style={styles.label}>Name (FR)</Text>
+                        <TextInput style={styles.input} placeholder="ex. Squat avec Barre" value={form.name_fr} onChangeText={v => setForm(f => ({ ...f, name_fr: v }))} />
+                        <Text style={styles.label}>Name (DE)</Text>
+                        <TextInput style={styles.input} placeholder="z.B. Kniebeuge mit Stange" value={form.name_de} onChangeText={v => setForm(f => ({ ...f, name_de: v }))} />
+                        <Text style={styles.label}>Name (NL)</Text>
+                        <TextInput style={styles.input} placeholder="bijv. Squat met Stang" value={form.name_nl} onChangeText={v => setForm(f => ({ ...f, name_nl: v }))} />
 
-                        <Text style={styles.label}>Thumbnail URL (R2)</Text>
+                        <Text style={styles.label}>{t('admin.thumbnailUrl', 'Thumbnail URL (R2)')}</Text>
                         {!!form.thumbnailUrl && (
                             <Image source={{ uri: form.thumbnailUrl }} style={styles.thumbPreview} contentFit="cover" transition={300} />
                         )}
@@ -394,7 +416,7 @@ export default function ExerciseLibraryManager() {
                             keyboardType="url"
                         />
 
-                        <Text style={styles.label}>Category (select all that apply)</Text>
+                        <Text style={styles.label}>{t('admin.exerciseTypeLabel', 'Category (select all that apply)')}</Text>
                         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
                             {EXERCISE_CATEGORIES.map(c => {
                                 const active = form.categories.includes(c);
@@ -409,7 +431,7 @@ export default function ExerciseLibraryManager() {
                                         }}
                                         style={[styles.pill, active && styles.pillActive]}
                                     >
-                                        <Text style={[styles.pillTxt, active && styles.pillTxtActive]}>{c}</Text>
+                                        <Text style={[styles.pillTxt, active && styles.pillTxtActive]}>{t(`admin.${c.replace(/[\s/]/g, '').toLowerCase()}`, c)}</Text>
                                     </TouchableOpacity>
                                 );
                             })}
@@ -431,8 +453,8 @@ export default function ExerciseLibraryManager() {
                             </View>
                         </View>
 
-                        <Text style={styles.label}>Muscle Groups</Text>
-                        <Text style={{ fontSize: 11, color: '#94a3b8', marginBottom: 8 }}>Tap to select — avoid typos</Text>
+                        <Text style={styles.label}>{t('admin.muscleGroup', 'Muscle Groups')}</Text>
+                        <Text style={{ fontSize: 11, color: '#94a3b8', marginBottom: 8 }}>{t('admin.muscleGroupFilterHint', 'Tap to select — avoid typos')}</Text>
                         {form.muscleGroups.length > 0 && (
                             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
                                 {form.muscleGroups.map(m => (

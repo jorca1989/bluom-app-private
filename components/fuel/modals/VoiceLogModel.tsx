@@ -28,6 +28,7 @@ import { useMutation, useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
@@ -76,6 +77,7 @@ export default function VoiceLogModal({
 }: Props) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   // Convex
   const logFoodEntry   = useMutation(api.food.logFoodEntry);
@@ -248,7 +250,7 @@ export default function VoiceLogModal({
           <TouchableOpacity onPress={handleClose} style={s.closeBtn}>
             <Ionicons name="close" size={22} color="#64748b" />
           </TouchableOpacity>
-          <Text style={s.headerTitle}>Voice Log</Text>
+          <Text style={s.headerTitle}>{t('modals.voice.title', 'Voice Log')}</Text>
           <View style={{ width: 36 }} />
         </View>
 
@@ -266,8 +268,8 @@ export default function VoiceLogModal({
               >
                 <Text style={s.micHint}>
                   {stage === 'idle'
-                    ? 'Tap and describe what you ate'
-                    : 'Listening… tap to stop'}
+                    ? t('modals.voice.tapHint', 'Tap and describe what you ate')
+                    : t('modals.voice.listening', 'Listening… tap to stop')}
                 </Text>
 
                 {stage === 'idle' ? (
@@ -291,7 +293,7 @@ export default function VoiceLogModal({
 
                 <Text style={s.micExample}>
                   {stage === 'idle'
-                    ? '"2 scrambled eggs, oatmeal with blueberries and a black coffee"'
+                    ? t('modals.voice.example', '"2 scrambled eggs, oatmeal with blueberries and a black coffee"')
                     : ''}
                 </Text>
               </LinearGradient>
@@ -302,8 +304,8 @@ export default function VoiceLogModal({
           {stage === 'processing' && (
             <View style={s.processingSection}>
               <ActivityIndicator size="large" color="#2563eb" />
-              <Text style={s.processingTitle}>Analysing your food…</Text>
-              <Text style={s.processingSub}>Our AI is identifying nutrients</Text>
+              <Text style={s.processingTitle}>{t('modals.voice.processing', 'Analysing your food…')}</Text>
+              <Text style={s.processingSub}>{t('modals.voice.identifying', 'Our AI is identifying nutrients')}</Text>
             </View>
           )}
 
@@ -320,14 +322,14 @@ export default function VoiceLogModal({
               ) : null}
 
               {/* Parsed items list */}
-              <Text style={s.reviewHeading}>Parsed Items ({parsedItems.length})</Text>
+              <Text style={s.reviewHeading}>{t('modals.voice.parsed', 'Parsed Items')} ({parsedItems.length})</Text>
 
               {parsedItems.length === 0 ? (
                 <View style={s.emptyParsed}>
                   <Ionicons name="alert-circle-outline" size={32} color="#ef4444" />
-                  <Text style={s.emptyParsedText}>Nothing recognised. Please try again.</Text>
+                  <Text style={s.emptyParsedText}>{t('modals.voice.nothing', 'Nothing recognised. Please try again.')}</Text>
                   <TouchableOpacity style={s.retryBtn} onPress={handleRetry}>
-                    <Text style={s.retryBtnText}>Retry</Text>
+                    <Text style={s.retryBtnText}>{t('modals.voice.retry', 'Retry')}</Text>
                   </TouchableOpacity>
                 </View>
               ) : (
@@ -354,12 +356,12 @@ export default function VoiceLogModal({
                 <>
                   {/* Total */}
                   <View style={s.totalRow}>
-                    <Text style={s.totalLabel}>Total</Text>
+                    <Text style={s.totalLabel}>{t('modals.voice.total', 'Total')}</Text>
                     <Text style={s.totalCal}>{Math.round(totalCals)} kcal</Text>
                   </View>
 
                   {/* Meal selector */}
-                  <Text style={s.mealSelectorLabel}>Log to meal</Text>
+                  <Text style={s.mealSelectorLabel}>{t('modals.voice.logTo', 'Log to meal')}</Text>
                   <View style={s.mealSelector}>
                     {MEAL_OPTIONS.map(m => (
                       <TouchableOpacity
@@ -385,7 +387,7 @@ export default function VoiceLogModal({
                   <View style={s.actionRow}>
                     <TouchableOpacity style={s.retrySmall} onPress={handleRetry}>
                       <Ionicons name="refresh" size={16} color="#64748b" />
-                      <Text style={s.retrySmallText}>Redo</Text>
+                      <Text style={s.retrySmallText}>{t('modals.voice.redo', 'Redo')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[s.confirmBtn, saving && { opacity: 0.6 }]}
@@ -395,7 +397,7 @@ export default function VoiceLogModal({
                     >
                       {saving
                         ? <ActivityIndicator size="small" color="#fff" />
-                        : <Text style={s.confirmBtnText}>Log to {selectedMeal}</Text>
+                        : <Text style={s.confirmBtnText}>{t('modals.voice.logToMeal', 'Log to')} {selectedMeal}</Text>
                       }
                     </TouchableOpacity>
                   </View>
@@ -413,8 +415,8 @@ export default function VoiceLogModal({
             onClose();
             router.push('/(tabs)/profile');
           }}
-          title="AI Voice Log"
-          message="Experience the future of food logging. Upgrade to Pro for instant voice-to-macros parsing."
+          title={t('modals.voice.upsellTitle', 'AI Voice Log')}
+          message={t('modals.voice.upsellMessage', 'Experience the future of food logging. Upgrade to Pro for instant voice-to-macros parsing.')}
         />
       </SafeAreaView>
     </Modal>

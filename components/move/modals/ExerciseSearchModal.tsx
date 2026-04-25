@@ -13,13 +13,15 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useUser as useClerkUser } from '@clerk/clerk-expo';
+import { getLocalizedExerciseName, getLocalizedField } from '@/utils/localize';
 
 export interface ExerciseLibraryItem {
   _id: string;
-  name: string;
+  name: string | { en: string; pt?: string; nl?: string; es?: string; de?: string; fr?: string };
   category: string;
   muscleGroups: string[];
   thumbnailUrl?: string;
@@ -65,6 +67,8 @@ export default function ExerciseSearchModal({
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const { user: clerkUser } = useClerkUser();
   const insets = useSafeAreaInsets();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
 
   // Look up the Convex user so we can query saved workouts
   const convexUser = useQuery(
@@ -84,8 +88,10 @@ export default function ExerciseSearchModal({
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       results = results.filter(ex => {
-        const name = typeof ex.name === 'object' ? (ex.name as any).en ?? (ex.name as any).name : ex.name;
-        if (name && typeof name === 'string' && name.toLowerCase().includes(q)) return true;
+        const name = getLocalizedExerciseName(ex.name, lang);
+        // Also check the English name so searches work regardless of UI language
+        const nameEn = typeof ex.name === 'object' ? (ex.name as any).en ?? '' : (ex.name as string);
+        if ((name && name.toLowerCase().includes(q)) || nameEn.toLowerCase().includes(q)) return true;
         if (ex.category && ex.category.toLowerCase().includes(q)) return true;
         if (ex.muscleGroups && ex.muscleGroups.some(m => m.toLowerCase().includes(q))) return true;
         return false;
@@ -124,7 +130,7 @@ export default function ExerciseSearchModal({
           <TouchableOpacity onPress={onClose} style={styles.iconBtn} hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
             <Ionicons name="chevron-back" size={28} color="#0f172a" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Exercise Library</Text>
+          <Text style={styles.headerTitle}>{t('move.exerciseLibrary', 'Exercise Library')}</Text>
           <View style={{ width: 44 }} />
         </View>
 
@@ -134,7 +140,7 @@ export default function ExerciseSearchModal({
             <Ionicons name="search" size={20} color="#0f172a" />
             <TextInput
               style={styles.searchInput}
-              placeholder="Search (e.g. Push Up)"
+              placeholder={t('move.searchPlaceholder', 'Search (e.g. Push Up)')}
               placeholderTextColor="#94a3b8"
               value={searchQuery}
               onChangeText={onSearchChange}
@@ -155,7 +161,7 @@ export default function ExerciseSearchModal({
             onPress={() => setActiveTab('search')}
           >
             <Ionicons name="search" size={15} color={activeTab === 'search' ? '#06b6d4' : '#94a3b8'} />
-            <Text style={[styles.tabText, activeTab === 'search' && styles.tabTextActive]}>Search</Text>
+            <Text style={[styles.tabText, activeTab === 'search' && styles.tabTextActive]}>{t('common.search', 'Search') as string}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -164,7 +170,7 @@ export default function ExerciseSearchModal({
           >
             <Ionicons name="bookmark" size={15} color={activeTab === 'saved' ? '#06b6d4' : '#94a3b8'} />
             <Text style={[styles.tabText, activeTab === 'saved' && styles.tabTextActive]}>
-              Saved{savedWorkouts && savedWorkouts.length > 0 ? ` (${savedWorkouts.length})` : ''}
+              {t('workouts.saved', 'Saved') as string}{savedWorkouts && savedWorkouts.length > 0 ? ` (${savedWorkouts.length})` : ''}
             </Text>
           </TouchableOpacity>
 
@@ -173,14 +179,14 @@ export default function ExerciseSearchModal({
             onPress={() => setActiveTab('muscleGroups')}
           >
             <Ionicons name="barbell" size={15} color={activeTab === 'muscleGroups' ? '#06b6d4' : '#94a3b8'} />
-            <Text style={[styles.tabText, activeTab === 'muscleGroups' && styles.tabTextActive]}>Muscles</Text>
+            <Text style={[styles.tabText, activeTab === 'muscleGroups' && styles.tabTextActive]}>{t('workouts.musclesTab', 'Muscles') as string}</Text>
           </TouchableOpacity>
         </View>
 
         {/* ── SAVED WORKOUTS TAB ── */}
         {activeTab === 'saved' && (
           <View style={styles.content}>
-            <Text style={styles.sectionHeader}>Saved Workouts</Text>
+            <Text style={styles.sectionHeader}>{t('workouts.savedWorkouts', 'Saved Workouts')}</Text>
             {savedWorkouts === undefined ? (
               <View style={styles.centerBox}>
                 <ActivityIndicator size="large" color="#06b6d4" />
@@ -188,9 +194,9 @@ export default function ExerciseSearchModal({
             ) : savedWorkouts.length === 0 ? (
               <View style={styles.centerBox}>
                 <Ionicons name="bookmark-outline" size={48} color="#e2e8f0" />
-                <Text style={styles.emptyText}>No saved workouts yet</Text>
+                <Text style={styles.emptyText}>{t('workouts.noSavedWorkouts', 'No saved workouts yet')}</Text>
                 <Text style={styles.emptySubText}>
-                  Tap the bookmark icon on any workout to save it here
+                  {t('workouts.noSavedSub', 'Tap the bookmark icon on any workout to save it here')}
                 </Text>
               </View>
             ) : (
@@ -220,16 +226,16 @@ export default function ExerciseSearchModal({
                     <View style={styles.savedWorkoutBody}>
                       <View style={styles.savedWorkoutTitleRow}>
                         <Text style={styles.savedWorkoutTitle} numberOfLines={1}>
-                          {item.title}
+                          {getLocalizedField(item, 'title', lang) || item.title}
                         </Text>
                         <Ionicons name="bookmark" size={16} color="#06b6d4" />
                       </View>
-                      <Text style={styles.savedWorkoutSub}>
-                        {item.category} • {item.difficulty}
+                        <Text style={styles.savedWorkoutSub}>
+                        {t(`workouts.categories.${item.category}`, item.category) as string} • {t(`workouts.levels.${item.difficulty}`, item.difficulty) as string}
                       </Text>
                       {item.exercises?.[0]?.name && (
                         <Text style={styles.savedWorkoutExercise} numberOfLines={1}>
-                          Main: {item.exercises[0].name}
+                          {t('workouts.mainEx', 'Main') as string}: {getLocalizedExerciseName(item.exercises[0].name, lang)}
                         </Text>
                       )}
                     </View>
@@ -243,7 +249,7 @@ export default function ExerciseSearchModal({
         {/* ── MUSCLE GROUPS TAB ── */}
         {activeTab === 'muscleGroups' && (
           <View style={styles.content}>
-            <Text style={styles.sectionHeader}>Browse by Muscle</Text>
+            <Text style={styles.sectionHeader}>{t('move.browseByMuscle', 'Browse by Muscle')}</Text>
             <FlatList
               horizontal={false}
               numColumns={3}
@@ -265,7 +271,7 @@ export default function ExerciseSearchModal({
                     resizeMode="cover"
                   />
                   <View style={styles.muscleCardOverlay} />
-                  <Text style={styles.muscleCardTitle}>{item.title}</Text>
+                  <Text style={styles.muscleCardTitle}>{t(`workouts.muscles.${item.title}`, item.title) as string}</Text>
                 </TouchableOpacity>
               )}
             />
@@ -282,22 +288,22 @@ export default function ExerciseSearchModal({
                   style={[styles.typePill, !selectedType && styles.typePillActive]}
                   onPress={() => setSelectedType(null)}
                 >
-                  <Text style={[styles.typePillText, !selectedType && styles.typePillTextActive]}>All</Text>
+                  <Text style={[styles.typePillText, !selectedType && styles.typePillTextActive]}>{t('common.all', 'All') as string}</Text>
                 </TouchableOpacity>
-                {EXERCISE_TYPES.map(t => (
+                {EXERCISE_TYPES.map(type => (
                   <TouchableOpacity
-                    key={t}
-                    style={[styles.typePill, selectedType === t && styles.typePillActive]}
-                    onPress={() => setSelectedType(selectedType === t ? null : t)}
+                    key={type}
+                    style={[styles.typePill, selectedType === type && styles.typePillActive]}
+                    onPress={() => setSelectedType(selectedType === type ? null : type)}
                   >
-                    <Text style={[styles.typePillText, selectedType === t && styles.typePillTextActive]}>{t}</Text>
+                    <Text style={[styles.typePillText, selectedType === type && styles.typePillTextActive]}>{t(`workouts.categories.${type}`, type) as string}</Text>
                   </TouchableOpacity>
                 ))}
               </ScrollView>
             </View>
 
             <Text style={styles.sectionHeader}>
-              {searchQuery ? `Results for "${searchQuery}"` : selectedType ? `${selectedType} Exercises` : 'All Exercises'}
+              {searchQuery ? t('move.resultsFor', 'Results for "{{query}}"', { query: searchQuery }) as string : selectedType ? t('move.categoryExercises', '{{category}} Exercises', { category: t(`workouts.categories.${selectedType}`, selectedType) as string }) as string : t('move.allExercises', 'All Exercises') as string}
               {filteredSearchResults.length > 0 && ` (${filteredSearchResults.length})`}
             </Text>
 
@@ -308,9 +314,9 @@ export default function ExerciseSearchModal({
             ) : filteredSearchResults.length === 0 ? (
               <View style={styles.centerBox}>
                 <Ionicons name="barbell-outline" size={48} color="#e2e8f0" />
-                <Text style={styles.emptyText}>No exercises found</Text>
+                <Text style={styles.emptyText}>{t('move.noExercisesFound', 'No exercises found') as string}</Text>
                 <Text style={styles.emptySubText}>
-                  {selectedType ? `No ${selectedType} exercises match your search` : 'Try a different search term or browse by muscle group'}
+                  {selectedType ? t('move.noCategoryExercisesMatch', 'No {{category}} exercises match your search', { category: t(`workouts.categories.${selectedType}`, selectedType) as string }) as string : t('move.noExercisesMatch', 'Try a different search term or browse by muscle group') as string}
                 </Text>
               </View>
             ) : (
@@ -333,17 +339,15 @@ export default function ExerciseSearchModal({
                     </View>
                     <View style={styles.listBody}>
                       <Text style={styles.listTitle}>
-                        {typeof item.name === 'object'
-                          ? (item.name as any).en ?? (item.name as any).name ?? 'Exercise'
-                          : item.name}
+                        {getLocalizedExerciseName(item.name, lang) || 'Exercise'}
                       </Text>
                       <View style={styles.listMetaRow}>
                         <Text style={styles.listSub}>
-                          {item.muscleGroups?.[0] ?? item.category ?? 'Various'}
+                          {item.muscleGroups?.[0] ? t(`workouts.muscles.${item.muscleGroups[0]}`, item.muscleGroups[0]) as string : item.category ? t(`workouts.categories.${item.category}`, item.category) as string : t('common.various', 'Various') as string}
                         </Text>
                         {item.category && (
                           <View style={styles.typeChip}>
-                            <Text style={styles.typeChipText}>{item.category}</Text>
+                            <Text style={styles.typeChipText}>{t(`workouts.categories.${item.category}`, item.category) as string}</Text>
                           </View>
                         )}
                       </View>

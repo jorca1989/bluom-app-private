@@ -29,6 +29,7 @@ import { useUser } from '@clerk/clerk-expo';
 import { Platform } from 'react-native';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useAccessControl } from '@/hooks/useAccessControl';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
@@ -97,13 +98,14 @@ function getRecipeImage(query: string): string {
 export default function AiMealMakerScreen() {
   const router   = useRouter();
   const insets   = useSafeAreaInsets();
+  const { t } = useTranslation();
   const { user: clerkUser } = useUser();
 
   const { isPro, promptUpgrade, convexUser } = useAccessControl();
   const platform = Platform.OS === 'ios' ? 'ios' : 'android';
 
   const [showUpgrade, setShowUpgrade] = useState(false);
-  const [upgradeMessage, setUpgradeMessage] = useState('This feature is available on Pro.');
+  const [upgradeMessage, setUpgradeMessage] = useState(t('aiChef.proRequired', 'This feature is available on Pro.'));
 
   // Convex actions
   const scanIngredients   = useAction(api.ai.recognizeFoodFromImage);
@@ -150,7 +152,7 @@ export default function AiMealMakerScreen() {
       });
 
       if (result.status === 'maintenance') {
-        Alert.alert('AI Unavailable', 'Image scanning is temporarily offline.');
+        Alert.alert(t('aiChef.aiOfflineTitle', 'AI Unavailable'), t('aiChef.aiOfflineMsg', 'Image scanning is temporarily offline.'));
         return;
       }
 
@@ -164,7 +166,7 @@ export default function AiMealMakerScreen() {
       setDetectedIngredients(detected);
       setMode('options');
     } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'Could not scan image. Please try again.');
+      Alert.alert(t('common.error', 'Error'), e?.message ?? t('aiChef.scanError', 'Could not scan image. Please try again.'));
     } finally {
       setScanningPhoto(false);
     }
@@ -180,7 +182,7 @@ export default function AiMealMakerScreen() {
       .map(l => l.trim())
       .filter(Boolean);
     if (!lines.length) {
-      Alert.alert('No ingredients', 'Please enter at least one ingredient.');
+      Alert.alert(t('aiChef.noIngredientsTitle', 'No ingredients'), t('aiChef.noIngredientsMsg', 'Please enter at least one ingredient.'));
       return;
     }
     setDetectedIngredients(lines);
@@ -207,7 +209,7 @@ export default function AiMealMakerScreen() {
       setGeneratedRecipe(result as GeneratedRecipe);
       setMode('result');
     } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'Failed to generate recipe. Please try again.');
+      Alert.alert(t('common.error', 'Error'), e?.message ?? t('aiChef.generateError', 'Failed to generate recipe. Please try again.'));
       setMode('options');
     }
   };
@@ -254,7 +256,7 @@ export default function AiMealMakerScreen() {
       setShowSaveSuccess(true);
       setTimeout(() => setShowSaveSuccess(false), 2500);
     } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'Could not save recipe.');
+      Alert.alert(t('common.error', 'Error'), e?.message ?? t('aiChef.saveError', 'Could not save recipe.'));
     } finally {
       setSavingRecipe(false);
     }
@@ -280,12 +282,12 @@ export default function AiMealMakerScreen() {
         mealType: 'lunch',
         date: today,
       });
-      Alert.alert('Logged!', `${generatedRecipe.title} added to Lunch for today.`, [
-        { text: 'View Fuel', onPress: () => { router.push('/(tabs)/fuel'); } },
-        { text: 'Stay here', style: 'cancel' },
+      Alert.alert(t('aiChef.loggedTitle', 'Logged!'), t('aiChef.loggedMsg', { title: generatedRecipe.title, defaultValue: `${generatedRecipe.title} added to Lunch for today.` }), [
+        { text: t('aiChef.viewFuel', 'View Fuel'), onPress: () => { router.push('/(tabs)/fuel'); } },
+        { text: t('aiChef.stayHere', 'Stay here'), style: 'cancel' },
       ]);
     } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'Could not log meal.');
+      Alert.alert(t('common.error', 'Error'), e?.message ?? t('aiChef.logError', 'Could not log meal.'));
     } finally {
       setLoggingMeal(false);
     }
@@ -311,7 +313,7 @@ export default function AiMealMakerScreen() {
           setShowUpgrade(false);
           router.push('/(tabs)/profile');
         }}
-        title="AI Chef Pro"
+        title={t('aiChef.proTitle', 'AI Chef Pro')}
         message={upgradeMessage}
       />
 
@@ -325,12 +327,12 @@ export default function AiMealMakerScreen() {
           <Ionicons name="chevron-back" size={22} color="#0f172a" />
         </TouchableOpacity>
         <View>
-          <Text style={st.headerTitle}>AI Meal Maker</Text>
-          <Text style={st.headerSub}>Generate recipes from your ingredients</Text>
+          <Text style={st.headerTitle}>{t('aiChef.headerTitle', 'AI Meal Maker')}</Text>
+          <Text style={st.headerSub}>{t('aiChef.headerSub', 'Generate recipes from your ingredients')}</Text>
         </View>
         {mode === 'result' && (
           <TouchableOpacity onPress={handleReset} style={st.newBtn}>
-            <Text style={st.newBtnText}>New</Text>
+            <Text style={st.newBtnText}>{t('aiChef.newBtn', 'New')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -341,8 +343,8 @@ export default function AiMealMakerScreen() {
           <LinearGradient colors={['#1e1b4b', '#312e81', '#4c1d95']} style={st.heroBanner}>
             <View style={[st.blob, { top: -30, right: -20, width: 130, height: 130 }]} />
             <Ionicons name="sparkles" size={28} color="#a78bfa" style={{ marginBottom: 12 }} />
-            <Text style={st.heroTitle}>What's in your fridge?</Text>
-            <Text style={st.heroSub}>Snap a photo or type your ingredients and let AI craft the perfect meal for your goals.</Text>
+            <Text style={st.heroTitle}>{t('aiChef.heroTitle', "What's in your fridge?")}</Text>
+            <Text style={st.heroSub}>{t('aiChef.heroSub', 'Snap a photo or type your ingredients and let AI craft the perfect meal for your goals.')}</Text>
           </LinearGradient>
 
           <TouchableOpacity
@@ -362,8 +364,8 @@ export default function AiMealMakerScreen() {
               <Ionicons name="camera" size={26} color="#2563eb" />
             </View>
             <View style={st.modeText}>
-              <Text style={st.modeTitle}>Scan Ingredients</Text>
-              <Text style={st.modeSub}>Take a photo of your fridge, pantry, or meal prep</Text>
+              <Text style={st.modeTitle}>{t('aiChef.scanModeTitle', 'Scan Ingredients')}</Text>
+              <Text style={st.modeSub}>{t('aiChef.scanModeSub', 'Take a photo of your fridge, pantry, or meal prep')}</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
           </TouchableOpacity>
@@ -384,8 +386,8 @@ export default function AiMealMakerScreen() {
               <Ionicons name="create-outline" size={26} color="#059669" />
             </View>
             <View style={st.modeText}>
-              <Text style={st.modeTitle}>Type Ingredients</Text>
-              <Text style={st.modeSub}>Enter what you have and AI will build around it</Text>
+              <Text style={st.modeTitle}>{t('aiChef.typeModeTitle', 'Type Ingredients')}</Text>
+              <Text style={st.modeSub}>{t('aiChef.typeModeSub', 'Enter what you have and AI will build around it')}</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
           </TouchableOpacity>
@@ -400,7 +402,7 @@ export default function AiMealMakerScreen() {
               <CameraView ref={cameraRef} style={{ flex: 1 }} facing="back">
                 <View style={st.cameraOverlay}>
                   <View style={st.cameraFrame} />
-                  <Text style={st.cameraHint}>Point at your ingredients or fridge</Text>
+                  <Text style={st.cameraHint}>{t('aiChef.cameraHint', 'Point at your ingredients or fridge')}</Text>
                 </View>
               </CameraView>
               <View style={[st.cameraControls, { paddingBottom: Math.max(insets.bottom, 16) + 16 }]}>
@@ -417,9 +419,9 @@ export default function AiMealMakerScreen() {
           ) : (
             <View style={st.permissionWrap}>
               <Ionicons name="camera-outline" size={48} color="#94a3b8" />
-              <Text style={st.permissionText}>Camera access needed</Text>
+              <Text style={st.permissionText}>{t('aiChef.cameraAccessNeeded', 'Camera access needed')}</Text>
               <TouchableOpacity style={st.permissionBtn} onPress={requestCameraPermission}>
-                <Text style={st.permissionBtnText}>Grant Access</Text>
+                <Text style={st.permissionBtnText}>{t('aiChef.grantAccess', 'Grant Access')}</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -429,10 +431,10 @@ export default function AiMealMakerScreen() {
       {/* ── TEXT MODE ── */}
       {mode === 'text' && (
         <ScrollView contentContainerStyle={st.body} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-          <Text style={st.inputLabel}>Your ingredients</Text>
+          <Text style={st.inputLabel}>{t('aiChef.yourIngredients', 'Your ingredients')}</Text>
           <TextInput
             style={st.textarea}
-            placeholder={"chicken breast, broccoli, garlic, olive oil, lemon…"}
+            placeholder={t('aiChef.ingredientsPlaceholder', "chicken breast, broccoli, garlic, olive oil, lemon…")}
             placeholderTextColor="#94a3b8"
             value={textIngredients}
             onChangeText={setTextIngredients}
@@ -441,14 +443,14 @@ export default function AiMealMakerScreen() {
             textAlignVertical="top"
             autoFocus
           />
-          <Text style={st.inputHint}>Separate with commas or new lines</Text>
+          <Text style={st.inputHint}>{t('aiChef.inputHint', 'Separate with commas or new lines')}</Text>
           <TouchableOpacity
             style={[st.primaryBtn, !textIngredients.trim() && { opacity: 0.5 }]}
             onPress={handleTextSubmit}
             disabled={!textIngredients.trim()}
             activeOpacity={0.88}
           >
-            <Text style={st.primaryBtnText}>Next: Choose Style</Text>
+            <Text style={st.primaryBtnText}>{t('aiChef.nextChooseStyle', 'Next: Choose Style')}</Text>
             <Ionicons name="arrow-forward" size={18} color="#fff" />
           </TouchableOpacity>
         </ScrollView>
@@ -459,7 +461,7 @@ export default function AiMealMakerScreen() {
         <ScrollView contentContainerStyle={st.body} showsVerticalScrollIndicator={false}>
           {/* Detected ingredients */}
           <View style={st.detectedBox}>
-            <Text style={st.detectedLabel}>Ingredients detected ({detectedIngredients.length})</Text>
+            <Text style={st.detectedLabel}>{t('aiChef.ingredientsDetected', { count: detectedIngredients.length, defaultValue: `Ingredients detected (${detectedIngredients.length})` })}</Text>
             <View style={st.chips}>
               {detectedIngredients.map((ing, i) => (
                 <View key={i} style={st.chip}>
@@ -473,7 +475,7 @@ export default function AiMealMakerScreen() {
           </View>
 
           {/* Cuisine */}
-          <Text style={st.sectionLabel}>Cuisine</Text>
+          <Text style={st.sectionLabel}>{t('aiChef.cuisine', 'Cuisine')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 20 }}>
             <View style={{ flexDirection: 'row', gap: 10, paddingVertical: 4 }}>
               {CUISINE_OPTIONS.map(c => (
@@ -485,7 +487,7 @@ export default function AiMealMakerScreen() {
                 >
                   <Text style={st.optionChipIcon}>{c.icon}</Text>
                   <Text style={[st.optionChipText, selectedCuisine === c.label && st.optionChipTextActive]}>
-                    {c.label}
+                    {t(`aiChef.cuisines.${c.label.replace(' ', '')}`, c.label)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -493,7 +495,7 @@ export default function AiMealMakerScreen() {
           </ScrollView>
 
           {/* Goal */}
-          <Text style={st.sectionLabel}>Goal</Text>
+          <Text style={st.sectionLabel}>{t('aiChef.goal', 'Goal')}</Text>
           <View style={st.goalGrid}>
             {GOAL_OPTIONS.map(g => (
               <TouchableOpacity
@@ -503,14 +505,14 @@ export default function AiMealMakerScreen() {
                 activeOpacity={0.8}
               >
                 <Text style={st.goalIcon}>{g.icon}</Text>
-                <Text style={[st.goalText, selectedGoal === g.value && st.goalTextActive]}>{g.label}</Text>
+                <Text style={[st.goalText, selectedGoal === g.value && st.goalTextActive]}>{t(`aiChef.goals.${g.value}`, g.label)}</Text>
               </TouchableOpacity>
             ))}
           </View>
 
           <TouchableOpacity style={st.primaryBtn} onPress={handleGenerate} activeOpacity={0.88}>
             <Ionicons name="sparkles" size={18} color="#fff" />
-            <Text style={st.primaryBtnText}>Generate Recipe</Text>
+            <Text style={st.primaryBtnText}>{t('aiChef.generateRecipe', 'Generate Recipe')}</Text>
           </TouchableOpacity>
         </ScrollView>
       )}
@@ -520,10 +522,10 @@ export default function AiMealMakerScreen() {
         <View style={st.generatingWrap}>
           <LinearGradient colors={['#1e1b4b', '#312e81']} style={st.generatingCard}>
             <ActivityIndicator size="large" color="#a78bfa" />
-            <Text style={st.generatingTitle}>Crafting your recipe…</Text>
+            <Text style={st.generatingTitle}>{t('aiChef.craftingRecipe', 'Crafting your recipe…')}</Text>
             <Text style={st.generatingSub}>
-              Using {selectedCuisine !== 'Any' ? selectedCuisine : 'global'} flavours · {
-                GOAL_OPTIONS.find(g => g.value === selectedGoal)?.label ?? 'Balanced'
+              {t('aiChef.usingFlavours', 'Using')} {selectedCuisine !== 'Any' ? t(`aiChef.cuisines.${selectedCuisine.replace(' ', '')}`, selectedCuisine) : t('aiChef.global', 'global')} {t('aiChef.flavours', 'flavours')} · {
+                t(`aiChef.goals.${selectedGoal}`, GOAL_OPTIONS.find(g => g.value === selectedGoal)?.label ?? 'Balanced')
               }
             </Text>
             <View style={st.generatingIngredients}>
@@ -571,21 +573,21 @@ export default function AiMealMakerScreen() {
             <View style={st.recipeMeta}>
               <View style={st.recipeMetaItem}>
                 <Ionicons name="time-outline" size={14} color="#64748b" />
-                <Text style={st.recipeMetaText}>{generatedRecipe.cookingTime} min</Text>
+                <Text style={st.recipeMetaText}>{generatedRecipe.cookingTime} {t('common.min', 'min')}</Text>
               </View>
               <View style={st.recipeMetaItem}>
                 <Ionicons name="people-outline" size={14} color="#64748b" />
-                <Text style={st.recipeMetaText}>{generatedRecipe.servings} servings</Text>
+                <Text style={st.recipeMetaText}>{generatedRecipe.servings} {t('common.servings', 'servings')}</Text>
               </View>
             </View>
 
             {/* Macros */}
             <View style={st.macroRow}>
               {[
-                { label: 'Calories', value: `${Math.round(generatedRecipe.calories)}`, color: '#2563eb' },
-                { label: 'Protein',  value: `${Math.round(generatedRecipe.protein)}g`,  color: '#ef4444' },
-                { label: 'Carbs',    value: `${Math.round(generatedRecipe.carbs)}g`,    color: '#10b981' },
-                { label: 'Fat',      value: `${Math.round(generatedRecipe.fat)}g`,      color: '#f59e0b' },
+                { label: t('common.calories', 'Calories'), value: `${Math.round(generatedRecipe.calories)}`, color: '#2563eb' },
+                { label: t('common.protein', 'Protein'),  value: `${Math.round(generatedRecipe.protein)}g`,  color: '#ef4444' },
+                { label: t('common.carbs', 'Carbs'),    value: `${Math.round(generatedRecipe.carbs)}g`,    color: '#10b981' },
+                { label: t('common.fat', 'Fat'),      value: `${Math.round(generatedRecipe.fat)}g`,      color: '#f59e0b' },
               ].map(m => (
                 <View key={m.label} style={st.macroCard}>
                   <Text style={[st.macroVal, { color: m.color }]}>{m.value}</Text>
@@ -595,7 +597,7 @@ export default function AiMealMakerScreen() {
             </View>
 
             {/* Ingredients */}
-            <Text style={st.sectionTitle}>Ingredients</Text>
+            <Text style={st.sectionTitle}>{t('aiChef.ingredientsLabel', 'Ingredients')}</Text>
             <View style={st.ingredientList}>
               {generatedRecipe.ingredients.map((ing, i) => (
                 <View key={i} style={st.ingredientRow}>
@@ -606,7 +608,7 @@ export default function AiMealMakerScreen() {
             </View>
 
             {/* Steps */}
-            <Text style={st.sectionTitle}>Instructions</Text>
+            <Text style={st.sectionTitle}>{t('aiChef.instructionsLabel', 'Instructions')}</Text>
             {generatedRecipe.steps.map((step, i) => (
               <View key={i} style={st.stepRow}>
                 <View style={st.stepNum}>
@@ -616,7 +618,6 @@ export default function AiMealMakerScreen() {
               </View>
             ))}
 
-            {/* CTAs */}
             <View style={st.ctaRow}>
               <TouchableOpacity
                 style={[st.ctaSecondary, savingRecipe && { opacity: 0.6 }]}
@@ -628,7 +629,7 @@ export default function AiMealMakerScreen() {
                   ? <ActivityIndicator size="small" color="#2563eb" />
                   : <>
                       <Ionicons name="bookmark-outline" size={18} color="#2563eb" />
-                      <Text style={st.ctaSecondaryText}>Save Recipe</Text>
+                      <Text style={st.ctaSecondaryText}>{t('aiChef.saveRecipeBtn', 'Save Recipe')}</Text>
                     </>
                 }
               </TouchableOpacity>
@@ -643,7 +644,7 @@ export default function AiMealMakerScreen() {
                   ? <ActivityIndicator size="small" color="#fff" />
                   : <>
                       <Ionicons name="restaurant-outline" size={18} color="#fff" />
-                      <Text style={st.ctaPrimaryText}>Log as Meal</Text>
+                      <Text style={st.ctaPrimaryText}>{t('aiChef.logAsMealBtn', 'Log as Meal')}</Text>
                     </>
                 }
               </TouchableOpacity>
@@ -653,7 +654,7 @@ export default function AiMealMakerScreen() {
             {showSaveSuccess && (
               <View style={st.toast}>
                 <Ionicons name="checkmark-circle" size={18} color="#10b981" />
-                <Text style={st.toastText}>Saved to My Recipes!</Text>
+                <Text style={st.toastText}>{t('aiChef.savedToMyRecipes', 'Saved to My Recipes!')}</Text>
               </View>
             )}
           </View>

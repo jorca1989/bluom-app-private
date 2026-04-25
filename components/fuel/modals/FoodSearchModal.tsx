@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, FlatList, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useAction, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
+import { useTranslation } from 'react-i18next';
+import { useAction, useQuery } from 'convex/react';
 
 type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 
@@ -40,6 +41,7 @@ export default function FoodSearchModal({
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const myRecipes = useQuery(api.recipes.getMyRecipes, { userId });
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     if (visible) setActiveTab(initialTab);
@@ -69,7 +71,8 @@ export default function FoodSearchModal({
 
     const handle = setTimeout(async () => {
       try {
-        const results = await searchFoods({ userId, query: q, limit: 30 });
+        const targetLang = i18n.language === 'pt' ? 'Portuguese' : 'English';
+        const results = await searchFoods({ userId, query: q, limit: 30, targetLang });
         if (!cancelled) setSearchResults(Array.isArray(results) ? results : []);
       } catch (e: any) {
         if (!cancelled) {
@@ -85,7 +88,7 @@ export default function FoodSearchModal({
       cancelled = true;
       clearTimeout(handle);
     };
-  }, [activeTab, searchFoods, searchQuery, userId, visible]);
+  }, [activeTab, searchFoods, searchQuery, userId, visible, i18n.language]);
 
   const handleSearchSubmit = () => {
     // Queries are reactive, so we don't strictly *need* to submit unless handling local state
@@ -126,7 +129,9 @@ export default function FoodSearchModal({
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <SafeAreaView style={styles.modalContainer} edges={['top']}>
         <View style={styles.header}>
-          <Text style={styles.title}>Add to {meal}</Text>
+          <Text style={styles.title}>
+            {t('modals.search.addTo', 'Add to')} {t(`fuel.meals.${meal.toLowerCase()}`, meal)}
+          </Text>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
             <Ionicons name="close" size={24} color="#64748b" />
           </TouchableOpacity>
@@ -134,13 +139,13 @@ export default function FoodSearchModal({
 
         <View style={styles.tabsRow}>
           <TouchableOpacity style={[styles.tab, activeTab === 'search' && styles.tabActive]} onPress={() => setActiveTab('search')}>
-            <Text style={[styles.tabText, activeTab === 'search' && styles.tabTextActive]}>Search Food</Text>
+            <Text style={[styles.tabText, activeTab === 'search' && styles.tabTextActive]}>{t('modals.search.searchTab', 'Search Food')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.tab, activeTab === 'recipes' && styles.tabActive]} onPress={() => setActiveTab('recipes')}>
-            <Text style={[styles.tabText, activeTab === 'recipes' && styles.tabTextActive]}>My Recipes</Text>
+            <Text style={[styles.tabText, activeTab === 'recipes' && styles.tabTextActive]}>{t('modals.search.recipesTab', 'My Recipes')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.tab, activeTab === 'create' && styles.tabActive]} onPress={() => setActiveTab('create')}>
-            <Text style={[styles.tabText, activeTab === 'create' && styles.tabTextActive]}>Create</Text>
+            <Text style={[styles.tabText, activeTab === 'create' && styles.tabTextActive]}>{t('modals.search.createTab', 'Create')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -151,7 +156,7 @@ export default function FoodSearchModal({
                 <Ionicons name="search" size={20} color="#94a3b8" />
                 <TextInput
                   style={styles.searchInput}
-                  placeholder="Search for food..."
+                  placeholder={t('modals.search.placeholder', 'Search for food...')}
                   value={searchQuery}
                   onChangeText={setSearchQuery}
                   onSubmitEditing={handleSearchSubmit}
@@ -173,17 +178,14 @@ export default function FoodSearchModal({
               ) : searchError ? (
                 <View style={styles.emptyState}>
                   <Ionicons name="alert-circle-outline" size={48} color="#e2e8f0" />
-                  <Text style={styles.emptyText}>Search failed</Text>
+                  <Text style={styles.emptyText}>{t('modals.search.searchFailed', 'Search failed')}</Text>
                   <Text style={styles.emptySub}>{searchError}</Text>
                 </View>
               ) : searchResults.length === 0 ? (
                 <View style={styles.emptyState}>
                   <Ionicons name="search-outline" size={48} color="#e2e8f0" />
-                  <Text style={styles.emptyText}>No foods found</Text>
-                  <Text style={styles.emptySub}>Try searching for something else or create a custom food.</Text>
-                  <TouchableOpacity style={styles.inlineCreateBtn} onPress={onOpenAddFood}>
-                     <Text style={styles.inlineCreateBtnTxt}>+ Add Custom Food</Text>
-                  </TouchableOpacity>
+                  <Text style={styles.emptyText}>{t('modals.search.noFoods', 'No foods found')}</Text>
+                  <Text style={styles.emptySub}>{t('modals.search.trySearch', 'Try searching for something else or create a custom food.')}</Text>
                 </View>
               ) : (
                 <FlatList
@@ -213,7 +215,7 @@ export default function FoodSearchModal({
                           <Text style={styles.sourceText}>
                             {item?.kind === 'external'
                               ? String(item.source ?? '').toUpperCase()
-                              : 'SAVED'}
+                              : t('modals.search.saved', 'SAVED')}
                           </Text>
                         </View>
                       </View>
@@ -233,11 +235,8 @@ export default function FoodSearchModal({
               ) : myRecipes.length === 0 ? (
                 <View style={styles.emptyState}>
                   <Ionicons name="restaurant-outline" size={48} color="#e2e8f0" />
-                  <Text style={styles.emptyText}>No recipes yet</Text>
-                  <Text style={styles.emptySub}>Create your own recipes for quick logging.</Text>
-                  <TouchableOpacity style={styles.inlineCreateBtn} onPress={onOpenCreateRecipe}>
-                     <Text style={styles.inlineCreateBtnTxt}>+ Create Recipe</Text>
-                  </TouchableOpacity>
+                  <Text style={styles.emptyText}>{t('modals.search.noRecipes', 'No recipes yet')}</Text>
+                  <Text style={styles.emptySub}>{t('modals.search.createQuick', 'Create your own recipes for quick logging.')}</Text>
                 </View>
               ) : (
                 <FlatList
@@ -255,7 +254,7 @@ export default function FoodSearchModal({
                          <View style={styles.listBody}>
                            <Text style={styles.listTitle} numberOfLines={1}>{item.name}</Text>
                            <Text style={styles.listSub} numberOfLines={1}>
-                              {item.servings} Servings
+                              {item.servings} {t('modals.search.servings', 'Servings')}
                            </Text>
                          </View>
                          <View style={styles.listRight}>
@@ -277,8 +276,8 @@ export default function FoodSearchModal({
                     <Text style={{ fontSize: 24 }}>🥑</Text>
                  </View>
                  <View style={styles.actionTextWrap}>
-                    <Text style={styles.actionTitle}>Add Custom Food</Text>
-                    <Text style={styles.actionSub}>Quickly add an ingredient or food that isn't in our database.</Text>
+                    <Text style={styles.actionTitle}>{t('modals.search.addCustomTitle', 'Add Custom Food')}</Text>
+                    <Text style={styles.actionSub}>{t('modals.search.addCustomSub', 'Quickly add an ingredient or food that isn\'t in our database.')}</Text>
                  </View>
                  <Ionicons name="chevron-forward" size={20} color="#cbd5e1" />
                </TouchableOpacity>
@@ -288,8 +287,8 @@ export default function FoodSearchModal({
                     <Text style={{ fontSize: 24 }}>🍳</Text>
                  </View>
                  <View style={styles.actionTextWrap}>
-                    <Text style={styles.actionTitle}>Create a Recipe</Text>
-                    <Text style={styles.actionSub}>Combine multiple ingredients into one saved meal for easy tracking.</Text>
+                    <Text style={styles.actionTitle}>{t('modals.search.createRecipeTitle', 'Create a Recipe')}</Text>
+                    <Text style={styles.actionSub}>{t('modals.search.createRecipeSub', 'Combine multiple ingredients into one saved meal for easy tracking.')}</Text>
                  </View>
                  <Ionicons name="chevron-forward" size={20} color="#cbd5e1" />
                </TouchableOpacity>

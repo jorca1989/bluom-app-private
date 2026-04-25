@@ -31,6 +31,7 @@ import { useMutation, useQuery, useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
@@ -301,12 +302,12 @@ function build30DayPlan(dietKey: DietKey): DayTemplate[] {
 
 // ─── Diet + goal colour themes ────────────────────────────────────────────────
 
-const DIET_META: Record<DietKey, { label: string; color: string; bg: string; icon: string }> = {
-  high_protein: { label: 'High Protein',  color: '#ef4444', bg: '#fee2e2', icon: 'barbell-outline' },
-  low_carb:     { label: 'Low Carb',      color: '#d97706', bg: '#fef3c7', icon: 'leaf-outline' },
-  balanced:     { label: 'Balanced',      color: '#2563eb', bg: '#dbeafe', icon: 'nutrition-outline' },
-  plant_based:  { label: 'Plant-Based',   color: '#16a34a', bg: '#dcfce7', icon: 'flower-outline' },
-  flexible:     { label: 'Flexible',      color: '#8b5cf6', bg: '#ede9fe', icon: 'shuffle-outline' },
+const DIET_META: Record<DietKey, { label: string; labelKey: string; color: string; bg: string; icon: string }> = {
+  high_protein: { label: 'Alta Proteína',  labelKey: 'meals.diet.high_protein',  color: '#ef4444', bg: '#fee2e2', icon: 'barbell-outline' },
+  low_carb:     { label: 'Baixo Carb',      labelKey: 'meals.diet.low_carb',      color: '#d97706', bg: '#fef3c7', icon: 'leaf-outline' },
+  balanced:     { label: 'Equilibrado',      labelKey: 'meals.diet.balanced',      color: '#2563eb', bg: '#dbeafe', icon: 'nutrition-outline' },
+  plant_based:  { label: 'Base Vegetal',     labelKey: 'meals.diet.plant_based',   color: '#16a34a', bg: '#dcfce7', icon: 'flower-outline' },
+  flexible:     { label: 'Flexível',         labelKey: 'meals.diet.flexible',      color: '#8b5cf6', bg: '#ede9fe', icon: 'shuffle-outline' },
 };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -333,6 +334,7 @@ function MealCard({
   const logFoodEntry = useMutation(api.food.logFoodEntry);
   const today = new Date().toISOString().split('T')[0];
   const [logging, setLogging] = useState(false);
+  const { t } = useTranslation();
 
   const spinValue = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -370,13 +372,21 @@ function MealCard({
         mealType: meal.mealType.toLowerCase() as MealTypeLower,
         date: today,
       });
-      Alert.alert('Logged!', `${meal.mealType} added to today's fuel.`);
+      Alert.alert(t('meals.loggedTitle', 'Logged!'), t('meals.loggedMsg', { mealType: meal.mealType, defaultValue: `${meal.mealType} added to today's fuel.` }));
     } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'Could not log meal.');
+      Alert.alert(t('common.error', 'Error'), e?.message ?? t('meals.logError', 'Could not log meal.'));
     } finally {
       setLogging(false);
     }
   };
+
+  const MEAL_LABEL: Record<string, string> = {
+    Breakfast: t('meals.breakfast', 'Pequeno-Almoço'),
+    Lunch:     t('meals.lunch',     'Almoço'),
+    Dinner:    t('meals.dinner',    'Jantar'),
+    Snack:     t('meals.snack',     'Lanche'),
+  };
+  const mealLabel = MEAL_LABEL[meal.mealType] ?? meal.mealType;
 
   const MEAL_ACCENT: Record<string, string> = {
     Breakfast: '#f59e0b', Lunch: '#10b981', Dinner: '#8b5cf6', Snack: '#ef4444',
@@ -387,16 +397,16 @@ function MealCard({
     <View style={mcS.card}>
       <View style={mcS.header}>
         <View style={[mcS.typeBadge, { backgroundColor: accent + '22' }]}>
-          <Text style={[mcS.typeText, { color: accent }]}>{meal.mealType}</Text>
+          <Text style={[mcS.typeText, { color: accent }]}>{mealLabel}</Text>
         </View>
         <Text style={mcS.cals}>{meal.calories} kcal</Text>
       </View>
 
       <View style={mcS.macroRow}>
         {[
-          { label: 'P', val: meal.protein, color: '#ef4444' },
-          { label: 'C', val: meal.carbs,   color: '#2563eb' },
-          { label: 'F', val: meal.fat,     color: '#f59e0b' },
+          { label: t('common.proteinShort', 'P'), val: meal.protein, color: '#ef4444' },
+          { label: t('common.carbsShort', 'C'), val: meal.carbs,   color: '#2563eb' },
+          { label: t('common.fatShort', 'F'), val: meal.fat,     color: '#f59e0b' },
         ].map(m => (
           <View key={m.label} style={mcS.macroItem}>
             <Text style={[mcS.macroVal, { color: m.color }]}>{m.val}g</Text>
@@ -417,10 +427,10 @@ function MealCard({
           onPress={() => onSwapPress(dayIndex, mealIndex, meal.mealType)}
           onLongPress={() => {
             Alert.alert(
-              'Swap meal',
+              t('meals.swapTitle', 'Swap meal'),
               isPro
-                ? 'Tell our AI what you’re craving, and we’ll swap this meal.'
-                : 'Upgrade to Pro to swap meals.'
+                ? t('meals.swapProMsg', 'Tell our AI what you’re craving, and we’ll swap this meal.')
+                : t('meals.swapFreeMsg', 'Upgrade to Pro to swap meals.')
             );
           }}
           activeOpacity={0.85}
@@ -430,7 +440,7 @@ function MealCard({
             <Ionicons name="refresh" size={14} color={canSwap ? '#d97706' : '#94a3b8'} />
           </Animated.View>
           <Text style={[mcS.swapBtnText, !canSwap && { color: '#94a3b8' }]}>
-            {swapLoading ? 'Swapping…' : 'Swap'}
+            {swapLoading ? t('meals.swapping', 'Swapping…') : t('meals.swap', 'Swap')}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -441,7 +451,7 @@ function MealCard({
         >
           {logging
             ? <ActivityIndicator size="small" color="#fff" />
-            : <Text style={mcS.logBtnText}>Log</Text>
+            : <Text style={mcS.logBtnText}>{t('meals.logBtn', 'Log')}</Text>
           }
         </TouchableOpacity>
       </View>
@@ -486,6 +496,7 @@ const mcS = StyleSheet.create({
 export default function MealHubScreen() {
   const router  = useRouter();
   const insets  = useSafeAreaInsets();
+  const { t } = useTranslation();
   const { user: clerkUser } = useUser();
 
   const convexUser  = useQuery(api.users.getUserByClerkId, clerkUser?.id ? { clerkId: clerkUser.id } : 'skip');
@@ -542,7 +553,7 @@ export default function MealHubScreen() {
         preference,
       } as any);
     } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'Could not swap meal.');
+      Alert.alert(t('common.error', 'Error'), e?.message ?? t('meals.swapError', 'Could not swap meal.'));
     } finally {
       setRegenLoading(null);
     }
@@ -571,8 +582,8 @@ export default function MealHubScreen() {
     <SafeAreaView style={ms.container} edges={['top']}>
       <ProUpgradeModal
         visible={showSwapUpgrade}
-        title="Upgrade to Pro"
-        message="Swap meals with one tap — tailored by our AI."
+        title={t('meals.upgradeTitle', 'Upgrade to Pro')}
+        message={t('meals.upgradeMsg', 'Swap meals with one tap — tailored by our AI.')}
         onClose={() => setShowSwapUpgrade(false)}
         onUpgrade={() => {
           setShowSwapUpgrade(false);
@@ -584,22 +595,22 @@ export default function MealHubScreen() {
         <View style={ms.prefOverlay}>
           <View style={ms.prefCard}>
             <View style={ms.prefHeader}>
-              <Text style={ms.prefTitle}>Swap preferences</Text>
+              <Text style={ms.prefTitle}>{t('meals.prefsTitle', 'Swap preferences')}</Text>
               <TouchableOpacity onPress={() => setSwapPrefsOpen(false)} style={ms.prefClose} activeOpacity={0.85}>
                 <Ionicons name="close" size={18} color="#64748b" />
               </TouchableOpacity>
             </View>
-            <Text style={ms.prefSub}>Pick a vibe — we’ll swap this meal to match.</Text>
+            <Text style={ms.prefSub}>{t('meals.prefsSub', 'Pick a vibe — we’ll swap this meal to match.')}</Text>
 
-            <Text style={ms.prefLabel}>What are you craving?</Text>
+            <Text style={ms.prefLabel}>{t('meals.cravingLabel', 'What are you craving?')}</Text>
             <View style={ms.chipRow}>
               {[
-                { k: 'none', label: 'No preference' },
-                { k: 'light', label: 'Light' },
-                { k: 'high_protein', label: 'Extra protein' },
-                { k: 'spicy', label: 'Spicy' },
-                { k: 'quick', label: 'Quick' },
-                { k: 'surprise', label: 'Surprise me' },
+                { k: 'none', label: t('meals.craving.none', 'No preference') },
+                { k: 'light', label: t('meals.craving.light', 'Light') },
+                { k: 'high_protein', label: t('meals.craving.high_protein', 'Extra protein') },
+                { k: 'spicy', label: t('meals.craving.spicy', 'Spicy') },
+                { k: 'quick', label: t('meals.craving.quick', 'Quick') },
+                { k: 'surprise', label: t('meals.craving.surprise', 'Surprise me') },
               ].map((c: any) => (
                 <TouchableOpacity
                   key={c.k}
@@ -612,13 +623,13 @@ export default function MealHubScreen() {
               ))}
             </View>
 
-            <Text style={[ms.prefLabel, { marginTop: 12 }]}>Anything to avoid?</Text>
+            <Text style={[ms.prefLabel, { marginTop: 12 }]}>{t('meals.avoidLabel', 'Anything to avoid?')}</Text>
             <View style={ms.chipRow}>
               {[
-                { k: 'none', label: 'None' },
-                { k: 'dairy', label: 'Dairy' },
-                { k: 'gluten', label: 'Gluten' },
-                { k: 'nuts', label: 'Nuts' },
+                { k: 'none', label: t('meals.avoid.none', 'None') },
+                { k: 'dairy', label: t('meals.avoid.dairy', 'Dairy') },
+                { k: 'gluten', label: t('meals.avoid.gluten', 'Gluten') },
+                { k: 'nuts', label: t('meals.avoid.nuts', 'Nuts') },
               ].map((c: any) => (
                 <TouchableOpacity
                   key={c.k}
@@ -642,7 +653,7 @@ export default function MealHubScreen() {
               }}
             >
               <Ionicons name="refresh" size={16} color="#fff" />
-              <Text style={ms.prefPrimaryText}>Swap meal</Text>
+              <Text style={ms.prefPrimaryText}>{t('meals.swapConfirmBtn', 'Swap meal')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -654,8 +665,8 @@ export default function MealHubScreen() {
           <Ionicons name="chevron-back" size={22} color="#0f172a" />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <Text style={ms.headerTitle}>Meal Hub</Text>
-          <Text style={ms.headerSub}>30-day personalised nutrition</Text>
+          <Text style={ms.headerTitle}>{t('meals.hubTitle', 'Meal Hub')}</Text>
+          <Text style={ms.headerSub}>{t('meals.hubSub', '30-day personalised nutrition')}</Text>
         </View>
         {isPro && (
           <View style={ms.proBadge}>
@@ -680,22 +691,22 @@ export default function MealHubScreen() {
             <View style={ms.heroLeft}>
               <View style={[ms.dietBadge, { backgroundColor: dietMeta.bg }]}>
                 <Ionicons name={dietMeta.icon as any} size={12} color={dietMeta.color} />
-                <Text style={[ms.dietBadgeText, { color: dietMeta.color }]}>{dietMeta.label}</Text>
+                <Text style={[ms.dietBadgeText, { color: dietMeta.color }]}>{t(dietMeta.labelKey, dietMeta.label)}</Text>
               </View>
               <Text style={ms.heroTitle}>
-                {isPro ? 'AI-Personalised Plan' : '28-Day Meal Plan'}
+                {isPro ? t('meals.heroTitlePro', 'Plano Personalizado IA') : t('meals.heroTitleFree', 'Plano de Refeições 28 Dias')}
               </Text>
               <Text style={ms.heroSub}>
                 {isPro
-                  ? 'Rotating monthly · tap any meal to swap it'
-                  : 'Generic template · upgrade Pro for AI personalisation'}
+                  ? t('meals.heroSubPro', 'Renova mensalmente · toca numa refeição para trocar')
+                  : t('meals.heroSubFree', 'Template genérico · atualiza para Pro para personalização por IA')}
               </Text>
               {/* Progress bar */}
               <View style={ms.progressWrap}>
                 <View style={ms.progressTrack}>
                   <View style={[ms.progressFill, { width: `${progressPct}%`, backgroundColor: dietMeta.color }]} />
                 </View>
-                <Text style={ms.progressText}>Day {daysCompleted} of 30 · {progressPct}%</Text>
+                <Text style={ms.progressText}>{t('meals.dayProgress', { current: daysCompleted, total: 30, defaultValue: `Day ${daysCompleted} of 30` })} · {progressPct}%</Text>
               </View>
             </View>
           </LinearGradient>
@@ -736,12 +747,12 @@ export default function MealHubScreen() {
         {/* ── Day Summary ── */}
         <View style={ms.daySummary}>
           <View style={ms.daySummaryLeft}>
-            <Text style={ms.daySummaryTitle}>Day {selectedDay}</Text>
-            <Text style={ms.daySummarySub}>{totalDayCals} kcal · {activeDayPlan?.meals.length} meals</Text>
+            <Text style={ms.daySummaryTitle}>{t('meals.day', 'Dia')} {selectedDay}</Text>
+            <Text style={ms.daySummarySub}>{totalDayCals} kcal · {activeDayPlan?.meals.length} {t('meals.meals', 'refeições')}</Text>
           </View>
           {selectedDay === todayDayNum && (
             <View style={ms.todayTag}>
-              <Text style={ms.todayTagText}>Today</Text>
+              <Text style={ms.todayTagText}>{t('common.today', 'Hoje')}</Text>
             </View>
           )}
         </View>
@@ -764,7 +775,7 @@ export default function MealHubScreen() {
           {!activeDayPlan && (
             <View style={ms.emptyDay}>
               <Ionicons name="restaurant-outline" size={36} color="#94a3b8" />
-              <Text style={ms.emptyDayText}>No meals for this day yet.</Text>
+              <Text style={ms.emptyDayText}>{t('meals.noMeals', 'No meals for this day yet.')}</Text>
             </View>
           )}
         </View>
@@ -782,12 +793,12 @@ export default function MealHubScreen() {
               >
                 <View style={[ms.blob, { top: -20, right: 0, width: 100, height: 100, backgroundColor: 'rgba(139,92,246,0.2)' }]} />
                 <Ionicons name="sparkles" size={22} color="#a78bfa" style={{ marginBottom: 10 }} />
-                <Text style={ms.upsellTitle}>Continue Your Journey</Text>
+                <Text style={ms.upsellTitle}>{t('meals.upsellTitle', 'Continua a Tua Jornada')}</Text>
                 <Text style={ms.upsellSub}>
-                  Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.
+                  {t('meals.upsellSub', 'Utilizadores gratuitos recebem um plano completo de 28 dias. Quando terminares, atualiza para Pro para continuares a tua transformação com um plano gerado por IA.')}
                 </Text>
                 <View style={ms.upsellCta}>
-                  <Text style={ms.upsellCtaText}>Upgrade to Pro →</Text>
+                  <Text style={ms.upsellCtaText}>{t('meals.upsellCta', 'Atualizar para Pro')} →</Text>
                 </View>
               </LinearGradient>
             </TouchableOpacity>

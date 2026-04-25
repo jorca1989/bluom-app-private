@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     View,
     Text,
@@ -26,13 +27,13 @@ const { width } = Dimensions.get('window');
 // --- Types & Constants for Build Tab ---
 const habitCategories = ['health', 'fitness', 'mindfulness', 'social', 'learning'] as const;
 type HabitCategory = (typeof habitCategories)[number];
-const categoryLabels: Record<string, string> = {
-    health: 'Health',
-    fitness: 'Fitness',
-    mindfulness: 'Mindfulness',
-    social: 'Social',
-    learning: 'Learning',
-};
+const getCategoryLabels = (t: any): Record<string, string> => ({
+    health: t('wellness.habits.catHealth', 'Health'),
+    fitness: t('wellness.habits.catFitness', 'Fitness'),
+    mindfulness: t('wellness.habits.catMindfulness', 'Mindfulness'),
+    social: t('wellness.habits.catSocial', 'Social'),
+    learning: t('wellness.habits.catLearning', 'Learning'),
+});
 
 function toDisplayCategory(cat: string): HabitCategory {
     if (cat === 'routine') return 'health';
@@ -68,26 +69,47 @@ const iconOptions = [
     { name: 'Moon', iconName: 'moon' }
 ];
 
-const DEFAULT_HABITS: Array<{
-    name: string;
-    icon: string;
-    displayCategory: HabitCategory;
-    backendCategory: 'routine' | 'physical' | 'mental';
-    targetDaysPerWeek: number;
-}> = [
-        { name: 'Drink 8 glasses of water', icon: 'Droplets', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
-        { name: 'Take daily vitamins', icon: 'Pill', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
-        { name: 'Spend time in nature', icon: 'Leaf', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 5 },
-        { name: 'Get 8 hours of sleep', icon: 'Moon', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
-        { name: 'Limit screen time', icon: 'Phone', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
-        { name: 'Exercise for 30 minutes', icon: 'Dumbbell', displayCategory: 'fitness', backendCategory: 'physical', targetDaysPerWeek: 4 },
-        { name: 'Meditate for 10 minutes', icon: 'Brain', displayCategory: 'mindfulness', backendCategory: 'mental', targetDaysPerWeek: 5 },
-        { name: 'Practice gratitude', icon: 'Heart', displayCategory: 'mindfulness', backendCategory: 'mental', targetDaysPerWeek: 5 },
-        { name: 'Connect with friends/family', icon: 'Users', displayCategory: 'social', backendCategory: 'mental', targetDaysPerWeek: 3 },
-        { name: 'Read for 30 minutes', icon: 'Book', displayCategory: 'learning', backendCategory: 'mental', targetDaysPerWeek: 4 },
+const getDefaultHabits = (t: any): Array<{name: string; icon: string; displayCategory: HabitCategory; backendCategory: 'routine' | 'physical' | 'mental'; targetDaysPerWeek: number;}> => [
+        { name: t('wellness.habits.defWater', 'Drink 8 glasses of water'), icon: 'Droplets', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
+        { name: t('wellness.habits.defVitamins', 'Take daily vitamins'), icon: 'Pill', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
+        { name: t('wellness.habits.defNature', 'Spend time in nature'), icon: 'Leaf', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 5 },
+        { name: t('wellness.habits.defSleep', 'Get 8 hours of sleep'), icon: 'Moon', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
+        { name: t('wellness.habits.defScreen', 'Limit screen time'), icon: 'Phone', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
+        { name: t('wellness.habits.defExercise', 'Exercise for 30 minutes'), icon: 'Dumbbell', displayCategory: 'fitness', backendCategory: 'physical', targetDaysPerWeek: 4 },
+        { name: t('wellness.habits.defMeditate', 'Meditate for 10 minutes'), icon: 'Brain', displayCategory: 'mindfulness', backendCategory: 'mental', targetDaysPerWeek: 5 },
+        { name: t('wellness.habits.defGratitude', 'Practice gratitude'), icon: 'Heart', displayCategory: 'mindfulness', backendCategory: 'mental', targetDaysPerWeek: 5 },
+        { name: t('wellness.habits.defSocial', 'Connect with friends/family'), icon: 'Users', displayCategory: 'social', backendCategory: 'mental', targetDaysPerWeek: 3 },
+        { name: t('wellness.habits.defRead', 'Read for 30 minutes'), icon: 'Book', displayCategory: 'learning', backendCategory: 'mental', targetDaysPerWeek: 4 },
     ];
 
+// Maps the default habit's English seed-name → its i18n key, so habits
+// stored in the DB in ANY language are displayed in the current UI language.
+const DEFAULT_HABIT_NAME_MAP: Record<string, string> = {
+    'Drink 8 glasses of water':   'wellness.habits.defWater',
+    'Take daily vitamins':         'wellness.habits.defVitamins',
+    'Spend time in nature':        'wellness.habits.defNature',
+    'Get 8 hours of sleep':        'wellness.habits.defSleep',
+    'Limit screen time':           'wellness.habits.defScreen',
+    'Exercise for 30 minutes':     'wellness.habits.defExercise',
+    'Meditate for 10 minutes':     'wellness.habits.defMeditate',
+    'Practice gratitude':          'wellness.habits.defGratitude',
+    'Connect with friends/family': 'wellness.habits.defSocial',
+    'Read for 30 minutes':         'wellness.habits.defRead',
+    // PT seeds (in case habits were first created in Portuguese)
+    'Beber 8 copos de água':       'wellness.habits.defWater',
+    'Tomar vitaminas diárias':     'wellness.habits.defVitamins',
+    'Passar tempo na natureza':    'wellness.habits.defNature',
+    'Dormir 8 horas':              'wellness.habits.defSleep',
+    'Limitar tempo de ecrã':       'wellness.habits.defScreen',
+    'Fazer 30 minutos de exercício': 'wellness.habits.defExercise',
+    'Meditar 10 minutos':          'wellness.habits.defMeditate',
+    'Praticar gratidão':           'wellness.habits.defGratitude',
+    'Ligar a amigos/família':      'wellness.habits.defSocial',
+    'Ler 30 minutos':              'wellness.habits.defRead',
+};
+
 export default function HabitHubScreen() {
+    const { t } = useTranslation();
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const { user: clerkUser } = useUser();
@@ -125,7 +147,7 @@ export default function HabitHubScreen() {
 
         (async () => {
             try {
-                for (const h of DEFAULT_HABITS) {
+                for (const h of getDefaultHabits(t)) {
                     await createHabit({
                         userId: user._id,
                         name: h.name,
@@ -151,7 +173,7 @@ export default function HabitHubScreen() {
                 triggerSound(SoundEffect.WELLNESS_LOG);
             }
         } catch (e) {
-            Alert.alert('Error', 'Failed to toggle habit');
+            Alert.alert(t('wellness.common.error', 'Error'), t('wellness.habits.errorToggle', 'Failed to toggle habit'));
         }
     };
 
@@ -167,9 +189,9 @@ export default function HabitHubScreen() {
             });
             setNewHabit({ name: '', icon: 'Target', category: 'health', targetDays: 7 });
             setShowHabitModal(false);
-            Alert.alert('Success', 'Habit added!');
+            Alert.alert(t('wellness.common.success', 'Success'), t('wellness.habits.successAdd', 'Habit added!'));
         } catch (e) {
-            Alert.alert('Error', 'Failed to add habit');
+            Alert.alert(t('wellness.common.error', 'Error'), t('wellness.habits.errorAdd', 'Failed to add habit'));
         }
     };
 
@@ -177,7 +199,7 @@ export default function HabitHubScreen() {
         if (!user || !newBreakHabit.name.trim()) return;
         const cost = parseFloat(newBreakHabit.costPerDay);
         if (isNaN(cost) || cost < 0) {
-            Alert.alert('Error', 'Please enter a valid cost per day');
+            Alert.alert(t('wellness.common.error', 'Error'), t('wellness.habits.errorValidCost', 'Please enter a valid cost per day'));
             return;
         }
         try {
@@ -189,16 +211,16 @@ export default function HabitHubScreen() {
             });
             setNewBreakHabit({ name: '', costPerDay: '', icon: '🚭' });
             setShowBreakHabitModal(false);
-            Alert.alert('Success', 'Habit to break added!');
+            Alert.alert(t('wellness.common.success', 'Success'), t('wellness.habits.successBreakAdd', 'Habit to break added!'));
         } catch (e) {
-            Alert.alert('Error', 'Failed to add habit to break');
+            Alert.alert(t('wellness.common.error', 'Error'), t('wellness.habits.errorBreakAdd', 'Failed to add habit to break'));
         }
     };
 
     const handleDeleteHabit = (habitId: Id<"habits">) => {
-        Alert.alert('Delete Habit', 'Are you sure?', [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => deleteHabitMutation({ habitId }) }
+        Alert.alert(t('wellness.habits.deleteTitle', 'Delete Habit'), t('wellness.habits.deletePrompt', 'Are you sure?'), [
+            { text: t('wellness.common.cancel', 'Cancel'), style: 'cancel' },
+            { text: t('wellness.common.delete', 'Delete'), style: 'destructive', onPress: () => deleteHabitMutation({ habitId }) }
         ]);
     };
 
@@ -233,13 +255,11 @@ export default function HabitHubScreen() {
     };
 
     const handleRelapse = (habitId: Id<"quittingHabits">, name: string) => {
-        Alert.alert(
-            'Reset Timer?',
-            `Are you sure you want to reset your progress for ${name}?`,
+        Alert.alert(t('wellness.habits.resetTimerTitle', 'Reset Timer?'), t('wellness.habits.resetTimerPrompt', 'Are you sure you want to reset your progress for {{name}}?', { name }),
             [
-                { text: 'Cancel', style: 'cancel' },
+                { text: t('wellness.common.cancel', 'Cancel'), style: 'cancel' },
                 {
-                    text: 'Relapse',
+                    text: t('wellness.habits.relapseAction', 'Relapse'),
                     style: 'destructive',
                     onPress: async () => {
                         await relapseHabit({ habitId });
@@ -273,7 +293,7 @@ export default function HabitHubScreen() {
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color="#1e293b" />
                 </TouchableOpacity>
-                <Text style={styles.title}>Behavioral Hub</Text>
+                <Text style={styles.title}>{t('wellness.habits.title', 'Behavioral Hub')}</Text>
                 <View style={{ width: 40 }} />
             </View>
 
@@ -282,13 +302,13 @@ export default function HabitHubScreen() {
                     style={[styles.segment, activeTab === 'build' && styles.activeSegment]}
                     onPress={() => setActiveTab('build')}
                 >
-                    <Text style={[styles.segmentText, activeTab === 'build' && styles.activeSegmentText]}>Build Habits</Text>
+                    <Text style={[styles.segmentText, activeTab === 'build' && styles.activeSegmentText]}>{t('wellness.habits.buildHabits', 'Build Habits')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.segment, activeTab === 'break' && styles.activeSegment]}
                     onPress={() => setActiveTab('break')}
                 >
-                    <Text style={[styles.segmentText, activeTab === 'break' && styles.activeSegmentText]}>Break Habits</Text>
+                    <Text style={[styles.segmentText, activeTab === 'break' && styles.activeSegmentText]}>{t('wellness.habits.breakHabits', 'Break Habits')}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -297,8 +317,8 @@ export default function HabitHubScreen() {
                     <View>
                         <View style={styles.cardHeader}>
                             <View>
-                                <Text style={styles.cardTitle}>Daily Habits</Text>
-                                <Text style={styles.habitsSubtitle}>{completedHabitsToday} of {totalHabits} completed</Text>
+                                <Text style={styles.cardTitle}>{t('wellness.habits.dailyHabits', 'Daily Habits')}</Text>
+                                <Text style={styles.habitsSubtitle}>{t('wellness.habits.completedCount', '{{completed}} of {{total}} completed', { completed: completedHabitsToday, total: totalHabits })}</Text>
                             </View>
                             <TouchableOpacity style={styles.addHabitButton} onPress={() => setShowHabitModal(true)}>
                                 <Ionicons name="add" size={20} color="#ffffff" />
@@ -307,7 +327,7 @@ export default function HabitHubScreen() {
 
                         <View style={styles.progressBarContainer}>
                             <View style={styles.progressBarLabel}>
-                                <Text style={styles.progressBarText}>Today's Progress</Text>
+                                <Text style={styles.progressBarText}>{t('wellness.habits.todaysProgress', 'Today\'s Progress')}</Text>
                                 <Text style={styles.progressBarText}>{completionPercentage}%</Text>
                             </View>
                             <View style={styles.progressBar}>
@@ -322,7 +342,7 @@ export default function HabitHubScreen() {
 
                                 return (
                                     <View key={category} style={styles.categorySection}>
-                                        <Text style={styles.categoryTitle}>{categoryLabels[category].toUpperCase()}</Text>
+                                        <Text style={styles.categoryTitle}>{getCategoryLabels(t)[category].toUpperCase()}</Text>
                                         {categoryHabits.map((habit) => (
                                             <View key={habit._id} style={styles.habitItem}>
                                                 <View style={styles.habitLeft}>
@@ -337,8 +357,12 @@ export default function HabitHubScreen() {
                                                         <Ionicons name={getIconName(habit.icon) as any} size={16} color="#2563eb" />
                                                     </View>
                                                     <View style={styles.habitInfo}>
-                                                        <Text style={styles.habitName}>{habit.name}</Text>
-                                                        <Text style={styles.habitStreak}>{habit.streak} day streak</Text>
+                                                        <Text style={styles.habitName}>
+                                            {DEFAULT_HABIT_NAME_MAP[habit.name]
+                                                ? t(DEFAULT_HABIT_NAME_MAP[habit.name], habit.name)
+                                                : habit.name}
+                                        </Text>
+                                                        <Text style={styles.habitStreak}>{t('wellness.habits.dayStreak', '{{streak}} day streak', { streak: habit.streak })}</Text>
                                                     </View>
                                                 </View>
                                                 <TouchableOpacity onPress={() => handleDeleteHabit(habit._id)}>
@@ -368,33 +392,33 @@ export default function HabitHubScreen() {
                                         </View>
                                         <View style={styles.statusBadge}>
                                             <View style={[styles.statusDot, { backgroundColor: habit.status === 'relapsed' ? '#ef4444' : '#22c55e' }]} />
-                                            <Text style={styles.statusText}>{habit.status === 'active' ? 'Free' : 'Relapsed'}</Text>
+                                            <Text style={styles.statusText}>{habit.status === 'active' ? t('wellness.habits.statusFree', 'Livre') : t('wellness.habits.statusRelapsed', 'Recaída')}</Text>
                                         </View>
                                     </View>
 
                                     <View style={styles.freedomClockContainer}>
-                                        <Text style={styles.freedomLabel}>FREEDOM CLOCK</Text>
+                                        <Text style={styles.freedomLabel}>{t('wellness.habits.freedomClock', 'FREEDOM CLOCK')}</Text>
                                         <View style={styles.clockRow}>
                                             <View style={styles.clockItem}>
                                                 <Text style={styles.clockValue}>{time.days}</Text>
-                                                <Text style={styles.clockUnit}>DAYS</Text>
+                                                <Text style={styles.clockUnit}>{t('wellness.habits.daysUnit', 'DAYS')}</Text>
                                             </View>
                                             <Text style={styles.clockSeparator}>:</Text>
                                             <View style={styles.clockItem}>
                                                 <Text style={styles.clockValue}>{time.hours}</Text>
-                                                <Text style={styles.clockUnit}>HRS</Text>
+                                                <Text style={styles.clockUnit}>{t('wellness.habits.hrsUnit', 'HRS')}</Text>
                                             </View>
                                             <Text style={styles.clockSeparator}>:</Text>
                                             <View style={styles.clockItem}>
                                                 <Text style={styles.clockValue}>{time.minutes}</Text>
-                                                <Text style={styles.clockUnit}>MINS</Text>
+                                                <Text style={styles.clockUnit}>{t('wellness.habits.minsUnit', 'MINS')}</Text>
                                             </View>
                                         </View>
                                     </View>
 
                                     <View style={styles.impactRow}>
                                         <View style={styles.impactItem}>
-                                            <Text style={styles.impactLabel}>Money Saved</Text>
+                                            <Text style={styles.impactLabel}>{t('wellness.habits.moneySaved', 'Money Saved')}</Text>
                                             <Text style={styles.impactValue}>${saved}</Text>
                                         </View>
                                         <TouchableOpacity
@@ -402,7 +426,7 @@ export default function HabitHubScreen() {
                                             onPress={() => handleEmergency(habit.name)}
                                         >
                                             <Ionicons name="warning" size={16} color="#fff" />
-                                            <Text style={styles.emergencyText}>SOS Help</Text>
+                                            <Text style={styles.emergencyText}>{t('wellness.habits.sosHelp', 'SOS Help')}</Text>
                                         </TouchableOpacity>
                                     </View>
 
@@ -410,7 +434,7 @@ export default function HabitHubScreen() {
                                         style={styles.relapseButton}
                                         onPress={() => handleRelapse(habit._id, habit.name)}
                                     >
-                                        <Text style={styles.relapseText}>I Relapsed</Text>
+                                        <Text style={styles.relapseText}>{t('wellness.habits.iRelapsed', 'I Relapsed')}</Text>
                                     </TouchableOpacity>
                                 </View>
                             );
@@ -419,9 +443,9 @@ export default function HabitHubScreen() {
                         {(!quittingHabits || quittingHabits.length === 0) && (
                             <View style={styles.emptyState}>
                                 <Ionicons name="shield-checkmark" size={48} color="#cbd5e1" />
-                                <Text style={styles.emptyStateText}>No bad habits tracked yet.</Text>
+                                <Text style={styles.emptyStateText}>{t('wellness.habits.noBadHabits', 'No bad habits tracked yet.')}</Text>
                                 <TouchableOpacity style={styles.addBreakHabitButton} onPress={() => setShowBreakHabitModal(true)}>
-                                    <Text style={styles.addBreakHabitText}>Add Habit to Break</Text>
+                                    <Text style={styles.addBreakHabitText}>{t('wellness.habits.addBreakHabit', 'Add Habit to Break')}</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -433,23 +457,23 @@ export default function HabitHubScreen() {
             <Modal visible={showHabitModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowHabitModal(false)}>
                 <SafeAreaView style={styles.modalContent} edges={['top']}>
                     <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>Add New Habit</Text>
+                        <Text style={styles.modalTitle}>{t('wellness.habits.addNewHabit', 'Add New Habit')}</Text>
                         <TouchableOpacity onPress={() => setShowHabitModal(false)}>
                             <Ionicons name="close" size={24} color="#1e293b" />
                         </TouchableOpacity>
                     </View>
                     <View style={styles.modalScroll}>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>Habit Name</Text>
+                            <Text style={styles.inputLabel}>{t('wellness.habits.habitName', 'Habit Name')}</Text>
                             <TextInput
                                 style={styles.input}
-                                placeholder="e.g., Drink water"
+                                placeholder={t('wellness.habits.habitPlaceholder', 'e.g., Drink water')}
                                 value={newHabit.name}
                                 onChangeText={(t) => setNewHabit({ ...newHabit, name: t })}
                             />
                         </View>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>Target Days per Week</Text>
+                            <Text style={styles.inputLabel}>{t('wellness.habits.targetDays', 'Target Days per Week')}</Text>
                             <View style={styles.daysSelector}>
                                 {[1, 2, 3, 4, 5, 6, 7].map((d) => (
                                     <TouchableOpacity
@@ -463,7 +487,7 @@ export default function HabitHubScreen() {
                             </View>
                         </View>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>Category</Text>
+                            <Text style={styles.inputLabel}>{t('wellness.habits.category', 'Category')}</Text>
                             <View style={styles.categorySelector}>
                                 {habitCategories.map((c) => (
                                     <TouchableOpacity
@@ -471,14 +495,14 @@ export default function HabitHubScreen() {
                                         style={[styles.categoryOption, newHabit.category === c && styles.categoryOptionSelected]}
                                         onPress={() => setNewHabit({ ...newHabit, category: c })}
                                     >
-                                        <Text style={[styles.categoryOptionText, newHabit.category === c && styles.categoryOptionTextSelected]}>{categoryLabels[c]}</Text>
+                                        <Text style={[styles.categoryOptionText, newHabit.category === c && styles.categoryOptionTextSelected]}>{getCategoryLabels(t)[c]}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>
                         </View>
 
                         <TouchableOpacity style={[styles.modalButton, { backgroundColor: '#3b82f6', marginTop: 20 }]} onPress={handleAddCustomHabit}>
-                            <Text style={styles.modalButtonText}>Create Habit</Text>
+                            <Text style={styles.modalButtonText}>{t('wellness.habits.createHabit', 'Create Habit')}</Text>
                         </TouchableOpacity>
                     </View>
                 </SafeAreaView>
@@ -488,23 +512,23 @@ export default function HabitHubScreen() {
             <Modal visible={showBreakHabitModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowBreakHabitModal(false)}>
                 <SafeAreaView style={styles.modalContent} edges={['top']}>
                     <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>Add Habit to Break</Text>
+                        <Text style={styles.modalTitle}>{t('wellness.habits.addBreakHabit', 'Add Habit to Break')}</Text>
                         <TouchableOpacity onPress={() => setShowBreakHabitModal(false)}>
                             <Ionicons name="close" size={24} color="#1e293b" />
                         </TouchableOpacity>
                     </View>
                     <View style={styles.modalScroll}>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>Habit Name</Text>
+                            <Text style={styles.inputLabel}>{t('wellness.habits.habitName', 'Habit Name')}</Text>
                             <TextInput
                                 style={styles.input}
-                                placeholder="e.g., Smoking, Junk Food"
+                                placeholder={t('wellness.habits.breakPlaceholder', 'e.g., Smoking, Junk Food')}
                                 value={newBreakHabit.name}
                                 onChangeText={(t) => setNewBreakHabit({ ...newBreakHabit, name: t })}
                             />
                         </View>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>Cost Per Day ($)</Text>
+                            <Text style={styles.inputLabel}>{t('wellness.habits.costPerDay', 'Cost Per Day ($)')}</Text>
                             <TextInput
                                 style={styles.input}
                                 placeholder="e.g., 5.50"
@@ -512,10 +536,10 @@ export default function HabitHubScreen() {
                                 onChangeText={(t) => setNewBreakHabit({ ...newBreakHabit, costPerDay: t })}
                                 keyboardType="numeric"
                             />
-                            <Text style={styles.helperText}>How much you spend on this habit daily</Text>
+                            <Text style={styles.helperText}>{t('wellness.habits.costHelper', 'How much you spend on this habit daily')}</Text>
                         </View>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>Icon/Emoji</Text>
+                            <Text style={styles.inputLabel}>{t('wellness.habits.iconEmoji', 'Icon/Emoji')}</Text>
                             <View style={styles.iconSelector}>
                                 {['🚭', '🍔', '🍺', '📱', '🎰', '☕', '🍬', '🚗'].map((icon) => (
                                     <TouchableOpacity
@@ -530,7 +554,7 @@ export default function HabitHubScreen() {
                         </View>
 
                         <TouchableOpacity style={[styles.modalButton, { backgroundColor: '#ef4444', marginTop: 20 }]} onPress={handleAddBreakHabit}>
-                            <Text style={styles.modalButtonText}>Start Breaking This Habit</Text>
+                            <Text style={styles.modalButtonText}>{t('wellness.habits.startBreaking', 'Start Breaking This Habit')}</Text>
                         </TouchableOpacity>
                     </View>
                 </SafeAreaView>

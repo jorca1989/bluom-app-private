@@ -13,6 +13,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -216,6 +217,7 @@ export default function MeditationPlayerScreen({
   sessionTitle, coverImage, duration, logId,
 }: MeditationPlayerProps) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
 
@@ -461,8 +463,8 @@ export default function MeditationPlayerScreen({
 
   const isBreathCategory = (title?: string) => {
     if (!title) return false;
-    const t = title.toLowerCase();
-    return t.includes('sleep') || t.includes('anxiety') || t.includes('focus') || t.includes('breath');
+    const lower = title.toLowerCase();
+    return lower.includes('sleep') || lower.includes('anxiety') || lower.includes('focus') || lower.includes('breath');
   };
   const showAnimation = (isBreathCategory(sessionTitle) || (soundscape && ['sleep', 'focus', 'anxiety'].includes(soundscape.category))) && !isVideoSession;
   const showSeekBar = durationMs > 0 && !isSoundscape;
@@ -527,11 +529,11 @@ export default function MeditationPlayerScreen({
             isPlaying={isPlaying}
           />
           <Text style={playerStyles.breathingText}>
-            {isPlaying ? (breathingPhase === 'inhale' ? 'Breathe In' : 'Breathe Out') : 'Paused'}
+            {isPlaying ? (breathingPhase === 'inhale' ? t('wellness.meditationHub.breatheIn', 'Breathe In') : t('wellness.meditationHub.breatheOut', 'Breathe Out')) : t('wellness.meditationHub.paused', 'Paused')}
           </Text>
           {!isLandscape && (
             <Text style={playerStyles.instructionsText}>
-              {isPlaying ? "Follow the circle's rhythm." : 'Press Play to start.'}
+              {isPlaying ? t('wellness.meditationHub.followCircle', "Follow the circle's rhythm.") : t('wellness.meditationHub.pressPlayToStart', 'Press Play to start.')}
             </Text>
           )}
         </View>
@@ -553,7 +555,7 @@ export default function MeditationPlayerScreen({
         ) : (
           <>
             <Ionicons name="musical-notes" size={64} color="#cbd5e1" />
-            <Text style={playerStyles.coverFallbackText}>Audio Session</Text>
+            <Text style={playerStyles.coverFallbackText}>{t('wellness.meditationHub.audioSession', 'Audio Session')}</Text>
           </>
         )}
       </View>
@@ -594,9 +596,9 @@ export default function MeditationPlayerScreen({
           <Text style={playerStyles.skipLabel}>15s</Text>
         </TouchableOpacity>
       </View>
-      {loadState === 'buffering' && <Text style={playerStyles.bufferingLabel}>Buffering…</Text>}
+      {loadState === 'buffering' && <Text style={playerStyles.bufferingLabel}>{t('wellness.meditationHub.buffering', 'Buffering…')}</Text>}
       <TouchableOpacity style={playerStyles.completeButton} onPress={handleComplete}>
-        <Text style={playerStyles.completeButtonText}>Complete Session</Text>
+        <Text style={playerStyles.completeButtonText}>{t('wellness.meditationHub.playerCompleteBtn', 'Complete Session')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -612,7 +614,7 @@ export default function MeditationPlayerScreen({
           </TouchableOpacity>
           <View style={playerStyles.headerTitleContainer}>
             <Text style={playerStyles.headerTitle} numberOfLines={1}>
-              {sessionTitle || soundscape?.name || 'Meditation'}
+              {sessionTitle || soundscape?.name || t('wellness.meditationHub.meditation', 'Meditation')}
             </Text>
           </View>
           <View style={{ width: 40 }} />

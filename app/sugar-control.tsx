@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -10,10 +11,10 @@ import { getBottomContentPadding } from '@/utils/layout';
 import { triggerSound, SoundEffect } from '@/utils/soundEffects';
 
 const MOODS = [
-  { label: 'Great', value: 'great', emoji: '😄' },
-  { label: 'Okay', value: 'okay', emoji: '🙂' },
-  { label: 'Meh', value: 'meh', emoji: '😐' },
-  { label: 'Struggling', value: 'struggling', emoji: '😣' },
+  { label: 'sugarControl.moodOpts.great', value: 'great', emoji: '😄' },
+  { label: 'sugarControl.moodOpts.okay', value: 'okay', emoji: '🙂' },
+  { label: 'sugarControl.moodOpts.meh', value: 'meh', emoji: '😐' },
+  { label: 'sugarControl.moodOpts.struggling', value: 'struggling', emoji: '😣' },
 ] as const;
 
 function moodKeyFromWellnessMood(mood: number | null | undefined): (typeof MOODS)[number]['value'] | '' {
@@ -37,6 +38,7 @@ export default function SugarControlScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
+  const { t } = useTranslation();
 
   const convexUser = useQuery(
     api.users.getUserByClerkId,
@@ -107,16 +109,16 @@ export default function SugarControlScreen() {
     try {
       triggerSound(SoundEffect.UI_TAP);
       await startChallenge({ userId: convexUser._id, type: '90-day-reset' });
-      Alert.alert('Started', 'Your 90‑day reset has started. One day at a time.');
+      Alert.alert(t('sugarControl.startedTitle', 'Started'), t('sugarControl.startedBody', 'Your 90‑day reset has started. One day at a time.'));
     } catch (e: any) {
-      Alert.alert('Error', e?.message ? String(e.message) : 'Could not start challenge.');
+      Alert.alert(t('common.error', 'Error'), e?.message ? String(e.message) : t('sugarControl.errorStart', 'Could not start challenge.'));
     }
   }
 
   async function handleSave() {
     if (!convexUser?._id) return;
     if (isSugarFree === null) {
-      Alert.alert('Check-in needed', 'Tap “Sugar‑free” or “Had sugar” for today.');
+      Alert.alert(t('sugarControl.checkinNeeded', 'Check-in needed'), t('sugarControl.checkinNeededBody', 'Tap “Sugar‑free” or “Had sugar” for today.'));
       return;
     }
     setSaving(true);
@@ -140,9 +142,9 @@ export default function SugarControlScreen() {
         notes: notes.trim() || undefined,
       });
       triggerSound(SoundEffect.WELLNESS_LOG);
-      Alert.alert('Saved', 'Daily check‑in saved.');
+      Alert.alert(t('sugarControl.savedTitle', 'Saved'), t('sugarControl.savedBody', 'Daily check‑in saved.'));
     } catch (e: any) {
-      Alert.alert('Error', e?.message ? String(e.message) : 'Could not save.');
+      Alert.alert(t('common.error', 'Error'), e?.message ? String(e.message) : t('common.couldNotSave', 'Could not save.'));
     } finally {
       setSaving(false);
     }
@@ -158,8 +160,8 @@ export default function SugarControlScreen() {
           <Ionicons name="arrow-back" size={22} color="#1e293b" />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle}>Sugar Control</Text>
-          <Text style={styles.headerSub}>90‑day reset • daily check‑ins</Text>
+          <Text style={styles.headerTitle}>{t('sugarControl.title', 'Sugar Control')}</Text>
+          <Text style={styles.headerSub}>{t('sugarControl.subtitle', '90‑day reset • daily check‑ins')}</Text>
         </View>
         <View style={{ width: 40 }} />
       </View>
@@ -175,53 +177,53 @@ export default function SugarControlScreen() {
               <Ionicons name="leaf" size={20} color="#059669" />
             </View>
             <View className="flex-1">
-              <Text className="text-emerald-900 font-black text-sm">Glucose Stability Bonus Active</Text>
-              <Text className="text-emerald-700 text-xs font-medium">You've crossed 12h of fasting. Insulin is dropping.</Text>
+              <Text className="text-emerald-900 font-black text-sm">{t('sugarControl.bonusActive', 'Glucose Stability Bonus Active')}</Text>
+              <Text className="text-emerald-700 text-xs font-medium">{t('sugarControl.bonusBody', "You've crossed 12h of fasting. Insulin is dropping.")}</Text>
             </View>
           </View>
         )}
 
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Brain Rewiring Meter</Text>
-            <Text style={styles.pill}>{streak}d streak</Text>
+            <Text style={styles.cardTitle}>{t('sugarControl.meterTitle', 'Brain Rewiring Meter')}</Text>
+            <Text style={styles.pill}>{streak}{t('sugarControl.dStreak', 'd streak')}</Text>
           </View>
           <Text style={styles.cardSub}>
-            Consecutive days logged as sugar‑free. Keep it going.
+            {t('sugarControl.meterSub', 'Consecutive days logged as sugar‑free. Keep it going.')}
           </Text>
           <View style={styles.progressTrack}>
             <View style={[styles.progressFill, { width: `${pct}%` }]} />
           </View>
           <View style={styles.progressRow}>
             <Text style={styles.progressLeft}>{pct}%</Text>
-            <Text style={styles.progressRight}>{streak}/90 days</Text>
+            <Text style={styles.progressRight}>{streak}/90 {t('sugarControl.days', 'days')}</Text>
           </View>
           <TouchableOpacity style={styles.secondaryBtn} onPress={handleStart90} activeOpacity={0.85}>
             <Ionicons name="flag" size={16} color="#2563eb" />
-            <Text style={styles.secondaryText}>Start / Restart 90‑day reset</Text>
+            <Text style={styles.secondaryText}>{t('sugarControl.startReset', 'Start / Restart 90‑day reset')}</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Daily check‑in</Text>
-          <Text style={styles.cardSub}>How did today go?</Text>
+          <Text style={styles.cardTitle}>{t('sugarControl.dailyCheckin', 'Daily check‑in')}</Text>
+          <Text style={styles.cardSub}>{t('sugarControl.howDidTodayGo', 'How did today go?')}</Text>
 
           <View style={styles.choiceRow}>
             <Choice
-              label="Sugar‑free"
+              label={t('sugarControl.sugarFree', 'Sugar‑free')}
               active={isSugarFree === true}
               color="#16a34a"
               onPress={() => setIsSugarFree(true)}
             />
             <Choice
-              label="Had sugar"
+              label={t('sugarControl.hadSugar', 'Had sugar')}
               active={isSugarFree === false}
               color="#ef4444"
               onPress={() => setIsSugarFree(false)}
             />
           </View>
 
-          <Text style={[styles.smallLabel, { marginTop: 10 }]}>Mood</Text>
+          <Text style={[styles.smallLabel, { marginTop: 10 }]}>{t('sugarControl.mood', 'Mood')}</Text>
           <View style={styles.moodRow}>
             {MOODS.map((m) => (
               <TouchableOpacity
@@ -231,16 +233,18 @@ export default function SugarControlScreen() {
                 activeOpacity={0.85}
               >
                 <Text style={styles.moodEmoji}>{m.emoji}</Text>
-                <Text style={[styles.moodText, mood === m.value && styles.moodTextActive]}>{m.label}</Text>
+                <Text style={[styles.moodText, mood === m.value && styles.moodTextActive]}>
+                  {t(m.label)}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
 
-          <Text style={[styles.smallLabel, { marginTop: 12 }]}>Notes (optional)</Text>
+          <Text style={[styles.smallLabel, { marginTop: 12 }]}>{t('sugarControl.notes', 'Notes (optional)')}</Text>
           <TextInput
             value={notes}
             onChangeText={setNotes}
-            placeholder="What triggered cravings? What helped?"
+            placeholder={t('sugarControl.notesPlaceholder', 'What triggered cravings? What helped?')}
             style={styles.textArea}
             multiline
             textAlignVertical="top"
@@ -253,7 +257,7 @@ export default function SugarControlScreen() {
             disabled={saving}
           >
             <Ionicons name="checkmark-circle" size={18} color="#fff" />
-            <Text style={styles.primaryText}>{saving ? 'Saving…' : 'Save check‑in'}</Text>
+            <Text style={styles.primaryText}>{saving ? t('sugarControl.saving', 'Saving…') : t('sugarControl.saveCheckin', 'Save check‑in')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -317,7 +321,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
-  cardTitle: { fontSize: 14, fontWeight: '900', color: '#0f172a' },
+  cardTitle: { flex: 1, fontSize: 14, fontWeight: '900', color: '#0f172a' },
   cardSub: { marginTop: 8, color: '#64748b', fontWeight: '600', lineHeight: 18 },
   pill: {
     backgroundColor: '#eef2ff',

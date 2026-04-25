@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 export interface LogSetData {
   id: string;
@@ -33,6 +34,7 @@ export default function SingleExerciseLogModal({
   onClose,
   onSave
 }: SingleExerciseLogModalProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [sets, setSets] = useState<LogSetData[]>([]);
   const [durationStr, setDurationStr] = useState('');
@@ -137,7 +139,7 @@ export default function SingleExerciseLogModal({
           <TouchableOpacity onPress={onClose} style={styles.iconBtn}>
             <Ionicons name="chevron-down" size={28} color="#0f172a" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Log {mode === 'duration' ? 'Activity' : 'Workout'}</Text>
+          <Text style={styles.headerTitle}>{mode === 'duration' ? t('move.logActivity', 'Log Activity') : t('move.logWorkout', 'Log Workout')}</Text>
           <TouchableOpacity 
             style={[styles.finishBtn, !canSave && styles.finishBtnDisabled]} 
             onPress={() => onSave(
@@ -153,7 +155,7 @@ export default function SingleExerciseLogModal({
             )}
             disabled={!canSave}
           >
-            <Text style={[styles.finishBtnText, !canSave && styles.finishBtnTextDisabled]}>Save</Text>
+            <Text style={[styles.finishBtnText, !canSave && styles.finishBtnTextDisabled]}>{t('common.save', 'Save')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -166,9 +168,9 @@ export default function SingleExerciseLogModal({
                   <Text style={styles.exThumbText}>1</Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.exName}>{exercise.name}</Text>
+                  <Text style={styles.exName}>{t(`db.${exercise.name.replace(/\s+/g, '')}`, exercise.name)}</Text>
                   <Text style={styles.exTypePill}>
-                    {isStrength ? 'Strength' : isCardioLike ? 'Cardio' : isMindBody ? 'Mind & Body' : 'Activity'}
+                    {isStrength ? t('workouts.categories.strength', 'Strength') : isCardioLike ? t('workouts.categories.cardio', 'Cardio') : isMindBody ? t('workouts.categories.mindbody', 'Mind & Body') : t('move.activity', 'Activity')}
                   </Text>
                 </View>
               </View>
@@ -178,7 +180,7 @@ export default function SingleExerciseLogModal({
 
                 {mode === 'duration' ? (
                   <View style={styles.cardioContainer}>
-                    <Text style={styles.cardioLabel}>Duration (Minutes)</Text>
+                    <Text style={styles.cardioLabel}>{t('move.durationMinutes', 'Duration (Minutes)')}</Text>
                     <TextInput 
                       style={styles.cardioInput}
                       keyboardType="number-pad"
@@ -189,7 +191,7 @@ export default function SingleExerciseLogModal({
 
                     {isCardioLike && (
                       <>
-                        <Text style={[styles.cardioLabel, { marginTop: 16 }]}>Distance (km)</Text>
+                        <Text style={[styles.cardioLabel, { marginTop: 16 }]}>{t('move.distanceKm', 'Distance (km)')}</Text>
                         <TextInput
                           style={styles.cardioInput}
                           keyboardType="decimal-pad"
@@ -198,12 +200,12 @@ export default function SingleExerciseLogModal({
                           onChangeText={setDistanceStr}
                         />
                         {!!derivedPace && (
-                          <Text style={styles.paceText}>Pace: {derivedPace} min/km</Text>
+                          <Text style={styles.paceText}>{t('move.pace', 'Pace')}: {derivedPace} {t('common.units.minKm', 'min/km')}</Text>
                         )}
                       </>
                     )}
 
-                    <Text style={[styles.cardioLabel, { marginTop: 16 }]}>Intensity</Text>
+                    <Text style={[styles.cardioLabel, { marginTop: 16 }]}>{t('move.intensity', 'Intensity')}</Text>
                     <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
                       {['Low', 'Medium', 'High'].map((lvl) => (
                          <TouchableOpacity
@@ -214,23 +216,23 @@ export default function SingleExerciseLogModal({
                             }}
                             onPress={() => setIntensity(lvl as any)}
                          >
-                            <Text style={{ fontWeight: '600', color: intensity === lvl ? '#1d4ed8' : '#64748b' }}>{lvl}</Text>
+                            <Text style={{ fontWeight: '600', color: intensity === lvl ? '#1d4ed8' : '#64748b' }}>{t(`move.${lvl.toLowerCase()}`, lvl)}</Text>
                          </TouchableOpacity>
                       ))}
                     </View>
 
                     <View style={styles.caloriesRow}>
                       <Ionicons name="flame" size={20} color="#f97316" />
-                      <Text style={styles.caloriesText}>Estimated burn: {estimatedCalories} kcal</Text>
+                      <Text style={styles.caloriesText}>{t('move.estimatedBurn', 'Estimated burn')}: {estimatedCalories} kcal</Text>
                     </View>
                   </View>
                 ) : (
                   <>
                     {/* Sets Header */}
                     <View style={styles.setsHeader}>
-                      <Text style={[styles.setsColHead, { width: 40 }]}>SET</Text>
-                      <Text style={[styles.setsColHead, { flex: 1, textAlign: 'center' }]}>KG / +KG</Text>
-                      <Text style={[styles.setsColHead, { flex: 1, textAlign: 'center' }]}>REPS</Text>
+                      <Text style={[styles.setsColHead, { width: 40 }]}>{t('move.setShort', 'SET')}</Text>
+                      <Text style={[styles.setsColHead, { flex: 1, textAlign: 'center' }]}>{t('move.kgShort', 'KG')} / +{t('move.kgShort', 'KG')}</Text>
+                      <Text style={[styles.setsColHead, { flex: 1, textAlign: 'center' }]}>{t('move.repsShort', 'REPS')}</Text>
                       <View style={{ width: 34 }} />
                     </View>
 
@@ -276,15 +278,15 @@ export default function SingleExerciseLogModal({
                     ))}
 
                     <TouchableOpacity style={styles.addSetBtn} onPress={handleAddSet}>
-                      <Text style={styles.addSetBtnText}>+ Add set</Text>
+                      <Text style={styles.addSetBtnText}>{t('move.addSet', '+ Add set')}</Text>
                     </TouchableOpacity>
 
                     {/* Total Volume Summary */}
                     {totalVolume > 0 && (
                       <View style={styles.volumeSummary}>
                         <Ionicons name="barbell-outline" size={18} color="#3b82f6" />
-                        <Text style={styles.volumeLabel}>Total Volume</Text>
-                        <Text style={styles.volumeValue}>{totalVolume} kg</Text>
+                        <Text style={styles.volumeLabel}>{t('move.totalVolume', 'Total Volume')}</Text>
+                        <Text style={styles.volumeValue}>{totalVolume} {t('common.units.kg', 'kg')}</Text>
                       </View>
                     )}
                   </>

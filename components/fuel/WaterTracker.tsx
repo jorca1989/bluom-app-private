@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 interface WaterTrackerProps {
   currentOz: number;
@@ -12,6 +13,7 @@ interface WaterTrackerProps {
 const TOTAL_GLASSES = 8;
 
 const WaterTracker = ({ currentOz, goalOz, onAddWater, isMetric }: WaterTrackerProps) => {
+  const { t } = useTranslation();
   // Assume each glass is goalOz / 8. Or just use 8 glasses for the standard ~64oz.
   // For simplicity, keeping the logic from screenshot: 8 glasses total.
   const glassOz = goalOz / TOTAL_GLASSES; 
@@ -22,9 +24,9 @@ const WaterTracker = ({ currentOz, goalOz, onAddWater, isMetric }: WaterTrackerP
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.emoji}>💧</Text>
-          <Text style={styles.title}>Water</Text>
+          <Text style={styles.title}>{t('fuel.waterTracker.water', 'Water')}</Text>
         </View>
-        <Text style={styles.subtitle}>{filledGlasses}/{TOTAL_GLASSES} glasses</Text>
+        <Text style={styles.subtitle}>{filledGlasses}/{TOTAL_GLASSES} {t('fuel.waterTracker.glasses', 'glasses')}</Text>
       </View>
 
       <View style={styles.glassesContainer}>

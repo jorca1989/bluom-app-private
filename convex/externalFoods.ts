@@ -209,11 +209,30 @@ export const searchFoods = action({
     userId: v.id("users"),
     query: v.string(),
     limit: v.optional(v.float64()),
+    targetLang: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const q = args.query.trim();
     if (!q) return [];
     const limit = Math.max(1, Math.min(100, Math.floor(args.limit ?? 50)));
+    const targetLang = args.targetLang || "English";
+
+    // 1) Translate query if it looks non-English
+    let englishQuery = q;
+
+    try {
+      if (targetLang !== "English") {
+        const translated = await ctx.runAction(api.ai.translateText, {
+          text: q,
+          targetLang: "English",
+        });
+        if (translated && translated.toLowerCase() !== q.toLowerCase()) {
+          englishQuery = translated;
+        }
+      }
+    } catch {
+      // fallback to original
+    }
 
     const local = (await ctx.runQuery(api.foodCatalog.searchFoods, {
       userId: args.userId,
@@ -236,19 +255,19 @@ export const searchFoods = action({
     let fs: ExternalFood[] = [];
     let usda: ExternalFood[] = [];
     try {
-      fs = await searchFatSecret(q);
+      fs = await searchFatSecret(englishQuery);
     } catch {
       fs = [];
     }
     try {
-      usda = await searchUSDA(q);
+      usda = await searchUSDA(englishQuery);
     } catch {
       usda = [];
     }
 
-    // Dedup by lowercased name + brand (more precise than name only)
+    // Dedup by lowercased name + brand
     const seen = new Set<string>();
-    const out: Array<LocalFood | ExternalFood> = [];
+    const merged: Array<LocalFood | ExternalFood> = [];
 
     for (const f of [...localFoods, ...fs, ...usda]) {
       const nameKey = (f.name ?? "").toLowerCase().trim();
@@ -257,11 +276,41 @@ export const searchFoods = action({
       if (!key) continue;
       if (seen.has(key)) continue;
       seen.add(key);
-      out.push(f);
-      if (out.length >= limit) break;
+      merged.push(f);
+      if (merged.length >= limit) break;
     }
 
-    return out;
+    // 2) Translate results back to targetLang if not English
+    if (targetLang !== "English" && merged.length > 0) {
+      try {
+        const namesToTranslate = merged
+          .filter(f => f.kind === "external")
+          .map(f => f.name)
+          .join("\n");
+        
+        if (namesToTranslate) {
+          const translatedNames = await ctx.runAction(api.ai.translateText, {
+            text: namesToTranslate,
+            targetLang: targetLang,
+          });
+
+          if (translatedNames) {
+            const translatedArray = translatedNames.split("\n");
+            let transIdx = 0;
+            merged.forEach(f => {
+              if (f.kind === "external" && transIdx < translatedArray.length) {
+                f.name = translatedArray[transIdx].trim() || f.name;
+                transIdx++;
+              }
+            });
+          }
+        }
+      } catch (e) {
+        console.error("Result translation failed", e);
+      }
+    }
+
+    return merged;
   },
 });
 

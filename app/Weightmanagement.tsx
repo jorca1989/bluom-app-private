@@ -18,6 +18,7 @@
  */
 
 import React, { useMemo, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   TextInput, Modal, Alert, ActivityIndicator,
@@ -36,36 +37,7 @@ const { width } = Dimensions.get('window');
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const BMI_RANGES = [
-  { label: 'Underweight', max: 18.5, color: '#60a5fa' },
-  { label: 'Normal', max: 24.9, color: '#34d399' },
-  { label: 'Overweight', max: 29.9, color: '#fbbf24' },
-  { label: 'Obese', max: Infinity, color: '#f87171' },
-];
-
-const MEASUREMENT_FIELDS: Array<{ key: string; label: string; icon: string }> = [
-  { key: 'chest', label: 'Chest', icon: 'expand-outline' },
-  { key: 'waist', label: 'Waist', icon: 'resize-outline' },
-  { key: 'hips', label: 'Hips', icon: 'ellipse-outline' },
-  { key: 'shoulders', label: 'Shoulders', icon: 'arrow-back-outline' },
-  { key: 'neck', label: 'Neck', icon: 'bandage-outline' },
-  { key: 'leftArm', label: 'Left Arm', icon: 'fitness-outline' },
-  { key: 'rightArm', label: 'Right Arm', icon: 'fitness-outline' },
-  { key: 'leftThigh', label: 'Left Thigh', icon: 'walk-outline' },
-  { key: 'rightThigh', label: 'Right Thigh', icon: 'walk-outline' },
-  { key: 'leftCalf', label: 'Left Calf', icon: 'footsteps-outline' },
-  { key: 'rightCalf', label: 'Right Calf', icon: 'footsteps-outline' },
-];
-
-const SCAN_FIELDS: Array<{ key: string; label: string; unit: string; icon: string }> = [
-  { key: 'bodyFatPercent', label: 'Body Fat', unit: '%', icon: 'water-outline' },
-  { key: 'muscleMassKg', label: 'Muscle Mass', unit: 'kg', icon: 'barbell-outline' },
-  { key: 'boneMassKg', label: 'Bone Mass', unit: 'kg', icon: 'cube-outline' },
-  { key: 'waterPercent', label: 'Water', unit: '%', icon: 'rainy-outline' },
-  { key: 'visceralFatLevel', label: 'Visceral Fat', unit: 'lvl', icon: 'alert-circle-outline' },
-  { key: 'bmr', label: 'BMR', unit: 'kcal', icon: 'flame-outline' },
-  { key: 'metabolicAge', label: 'Metabolic Age', unit: 'yrs', icon: 'hourglass-outline' },
-];
+// Moved inside component — see useMemo below for translated versions
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -75,8 +47,15 @@ function getBMI(weightKg: number, heightCm: number): number {
   return Math.round((weightKg / (hM * hM)) * 10) / 10;
 }
 
+// Static ranges for logic only (labels come from the translated useMemo version in the component)
+const BMI_RANGES_STATIC = [
+  { max: 18.5, color: '#60a5fa' },
+  { max: 24.9, color: '#34d399' },
+  { max: 29.9, color: '#fbbf24' },
+  { max: Infinity, color: '#f87171' },
+];
 function getBMICategory(bmi: number) {
-  return BMI_RANGES.find(r => bmi < r.max) ?? BMI_RANGES[3];
+  return BMI_RANGES_STATIC.find(r => bmi < r.max) ?? BMI_RANGES_STATIC[3];
 }
 
 function getBMIBarWidth(bmi: number): number {
@@ -197,15 +176,16 @@ const gc = StyleSheet.create({
 
 /** Pro-locked overlay */
 function ProLock({ onUpgrade }: { onUpgrade: () => void }) {
+  const { t } = useTranslation();
   return (
     <TouchableOpacity style={pl.overlay} onPress={onUpgrade} activeOpacity={0.9}>
       <View style={pl.inner}>
         <Ionicons name="lock-closed" size={24} color="#f59e0b" />
-        <Text style={pl.title}>Pro Feature</Text>
-        <Text style={pl.sub}>Unlock full history, body scans & before/after photos</Text>
+        <Text style={pl.title}>{t('weightMgmt.proFeature', 'Pro Feature')}</Text>
+        <Text style={pl.sub}>{t('weightMgmt.proFeatureSub', 'Unlock full history, body scans & before/after photos')}</Text>
         <View style={pl.btn}>
           <Ionicons name="sparkles" size={14} color="#ffffff" />
-          <Text style={pl.btnText}>Upgrade to Pro</Text>
+          <Text style={pl.btnText}>{t('weightMgmt.upgradeToPro', 'Upgrade to Pro')}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -239,6 +219,39 @@ export default function WeightManagementScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { convexUser, isPro, promptUpgrade } = useAccessControl();
+  const { t } = useTranslation();
+
+  // ── Translated static arrays (must be inside component to access t()) ──────
+  const BMI_RANGES = useMemo(() => [
+    { label: t('weightMgmt.bmiUnderweight', 'Underweight'), max: 18.5, color: '#60a5fa' },
+    { label: t('weightMgmt.bmiNormal', 'Normal'), max: 24.9, color: '#34d399' },
+    { label: t('weightMgmt.bmiOverweight', 'Overweight'), max: 29.9, color: '#fbbf24' },
+    { label: t('weightMgmt.bmiObese', 'Obese'), max: Infinity, color: '#f87171' },
+  ], [t]);
+
+  const MEASUREMENT_FIELDS = useMemo(() => [
+    { key: 'chest', label: t('weightMgmt.mChest', 'Chest'), icon: 'expand-outline' },
+    { key: 'waist', label: t('weightMgmt.mWaist', 'Waist'), icon: 'resize-outline' },
+    { key: 'hips', label: t('weightMgmt.mHips', 'Hips'), icon: 'ellipse-outline' },
+    { key: 'shoulders', label: t('weightMgmt.mShoulders', 'Shoulders'), icon: 'arrow-back-outline' },
+    { key: 'neck', label: t('weightMgmt.mNeck', 'Neck'), icon: 'bandage-outline' },
+    { key: 'leftArm', label: t('weightMgmt.mLeftArm', 'Left Arm'), icon: 'fitness-outline' },
+    { key: 'rightArm', label: t('weightMgmt.mRightArm', 'Right Arm'), icon: 'fitness-outline' },
+    { key: 'leftThigh', label: t('weightMgmt.mLeftThigh', 'Left Thigh'), icon: 'walk-outline' },
+    { key: 'rightThigh', label: t('weightMgmt.mRightThigh', 'Right Thigh'), icon: 'walk-outline' },
+    { key: 'leftCalf', label: t('weightMgmt.mLeftCalf', 'Left Calf'), icon: 'footsteps-outline' },
+    { key: 'rightCalf', label: t('weightMgmt.mRightCalf', 'Right Calf'), icon: 'footsteps-outline' },
+  ], [t]);
+
+  const SCAN_FIELDS = useMemo(() => [
+    { key: 'bodyFatPercent', label: t('weightMgmt.sBodyFat', 'Body Fat'), unit: '%', icon: 'water-outline' },
+    { key: 'muscleMassKg', label: t('weightMgmt.sMuscleMass', 'Muscle Mass'), unit: 'kg', icon: 'barbell-outline' },
+    { key: 'boneMassKg', label: t('weightMgmt.sBoneMass', 'Bone Mass'), unit: 'kg', icon: 'cube-outline' },
+    { key: 'waterPercent', label: t('weightMgmt.sWater', 'Water'), unit: '%', icon: 'rainy-outline' },
+    { key: 'visceralFatLevel', label: t('weightMgmt.sVisceralFat', 'Visceral Fat'), unit: 'lvl', icon: 'alert-circle-outline' },
+    { key: 'bmr', label: t('weightMgmt.sBMR', 'BMR'), unit: 'kcal', icon: 'flame-outline' },
+    { key: 'metabolicAge', label: t('weightMgmt.sMetabolicAge', 'Metabolic Age'), unit: 'yrs', icon: 'hourglass-outline' },
+  ], [t]);
 
   // Convex mutations
   const updateUser = useMutation(api.users.updateUser);
@@ -338,9 +351,9 @@ export default function WeightManagementScreen() {
       await updateUser({ userId: convexUser._id, updates: { weight: Math.round(kg * 100) / 100 } });
 
       setWeightInput(''); setWeightNote(''); setActiveModal(null);
-      Alert.alert('Logged!', `Weight saved: ${entered} ${unitLabel}`);
+      Alert.alert(t('weightMgmt.logged', 'Registado!'), `${t('weightMgmt.weightSaved', 'Peso guardado')}: ${entered} ${unitLabel}`);
     } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'Could not save weight.');
+      Alert.alert(t('weightMgmt.error', 'Erro'), e?.message ?? t('weightMgmt.couldNotSave', 'Não foi possível guardar o peso.'));
     } finally {
       setSaving(false);
     }
@@ -357,7 +370,7 @@ export default function WeightManagementScreen() {
       if (!Object.keys(parsed).length) throw new Error('Enter at least one measurement.');
       await logMeasurements({ userId: convexUser._id, date: today(), ...parsed });
       setMeasureForm({}); setActiveModal(null);
-      Alert.alert('Saved!', 'Measurements recorded.');
+      Alert.alert(t('weightMgmt.saved', 'Guardado!'), t('weightMgmt.measurementsRecorded', 'Medidas registadas.'));
     } catch (e: any) {
       Alert.alert('Error', e?.message);
     } finally {
@@ -376,7 +389,7 @@ export default function WeightManagementScreen() {
       }
       await logBodyScan({ userId: convexUser._id, date: today(), source: scanSource, ...parsed });
       setScanForm({}); setActiveModal(null);
-      Alert.alert('Saved!', 'Body scan data recorded.');
+      Alert.alert(t('weightMgmt.saved', 'Guardado!'), t('weightMgmt.scanRecorded', 'Dados da composição corporal registados.'));
     } catch (e: any) {
       Alert.alert('Error', e?.message);
     } finally {
@@ -498,7 +511,7 @@ export default function WeightManagementScreen() {
   };
 
   const handleDeleteMeasurement = (id: any) => {
-    Alert.alert('Delete Measurement', 'Are you sure you want to delete this log?', [
+    Alert.alert('Delete Measurement', t('weightMgmt.confirmDelete', 'Tens a certeza que queres eliminar este registo?'), [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Delete', style: 'destructive', onPress: async () => {
           try {
@@ -552,8 +565,8 @@ export default function WeightManagementScreen() {
           <Ionicons name="chevron-back" size={22} color="#0f172a" />
         </TouchableOpacity>
         <View>
-          <Text style={s.headerTitle}>Body Metrics</Text>
-          <Text style={s.headerSub}>Your complete physique dashboard</Text>
+          <Text style={s.headerTitle}>{t('weightMgmt.title', 'Métricas Corporais')}</Text>
+          <Text style={s.headerSub}>{t('weightMgmt.subtitle', 'O teu painel completo de físico')}</Text>
         </View>
         {isPro && (
           <View style={s.proChip}>
@@ -573,7 +586,7 @@ export default function WeightManagementScreen() {
           <View style={s.heroRow}>
             {/* Start */}
             <View style={s.heroCol}>
-              <Text style={s.heroColLabel}>START</Text>
+              <Text style={s.heroColLabel}>{t('weightMgmt.start', 'INÍCIO')}</Text>
               <Text style={s.heroColValue}>{startWeightKg ? toDisplay(startWeightKg) : '--'}</Text>
               <Text style={s.heroColUnit}>{unitLabel}</Text>
             </View>
@@ -583,18 +596,18 @@ export default function WeightManagementScreen() {
               <View style={s.arcOuter}>
                 <View style={[s.arcFill, { width: `${progressToGoal}%` }]} />
                 <Text style={s.arcPct}>{progressToGoal}%</Text>
-                <Text style={s.arcLabel}>to goal</Text>
+                <Text style={s.arcLabel}>{t('weightMgmt.toGoal', 'para objetivo')}</Text>
               </View>
             </View>
 
             {/* Goal */}
             <View style={[s.heroCol, { alignItems: 'flex-end' }]}>
-              <Text style={s.heroColLabel}>GOAL</Text>
+              <Text style={s.heroColLabel}>{t('weightMgmt.goalLabel', 'OBJETIVO')}</Text>
               <Text style={s.heroColValue}>{goalWeightKg ? toDisplay(goalWeightKg) : '--'}</Text>
               <Text style={s.heroColUnit}>{unitLabel}</Text>
               <TouchableOpacity onPress={() => setShowGoalModal(true)} style={s.editGoalBtn}>
                 <Ionicons name="pencil" size={10} color="#60a5fa" />
-                <Text style={s.editGoalText}>edit</Text>
+                <Text style={s.editGoalText}>{t('weightMgmt.edit', 'editar')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -602,7 +615,7 @@ export default function WeightManagementScreen() {
           {/* Current weight + trend */}
           <View style={s.currentRow}>
             <View>
-              <Text style={s.currentLabel}>CURRENT</Text>
+              <Text style={s.currentLabel}>{t('weightMgmt.current', 'ATUAL')}</Text>
               <Text style={s.currentValue}>
                 {currentWeightKg ? toDisplay(currentWeightKg) : '--'}
                 <Text style={s.currentUnit}> {unitLabel}</Text>
@@ -621,17 +634,17 @@ export default function WeightManagementScreen() {
           {/* Log weight CTA */}
           <TouchableOpacity style={s.logWeightBtn} onPress={() => setActiveModal('weight')} activeOpacity={0.88}>
             <Ionicons name="add-circle" size={18} color="#fff" />
-            <Text style={s.logWeightBtnText}>Log Today's Weight</Text>
+            <Text style={s.logWeightBtnText}>{t('weightMgmt.logWeight', 'Registar Peso de Hoje')}</Text>
           </TouchableOpacity>
         </GlassCard>
 
         {/* ── BMI (Free) ── */}
         <GlassCard>
-          <SectionHeader icon="stats-chart-outline" title="BMI Calculator" sub="Body Mass Index · always free" />
+          <SectionHeader icon="stats-chart-outline" title={t('weightMgmt.bmi', 'Calculadora de IMC')} sub={t('weightMgmt.bmiSub', 'Índice de Massa Corporal · sempre gratuito')} />
           <View style={s.bmiRow}>
             <View>
               <Text style={s.bmiNum}>{bmi || '--'}</Text>
-              <Text style={[s.bmiCat, { color: bmiCategory.color }]}>{bmi ? bmiCategory.label : 'No data'}</Text>
+              <Text style={[s.bmiCat, { color: bmiCategory.color }]}>{bmi ? (BMI_RANGES.find(r => r.color === bmiCategory.color)?.label ?? '') : t('weightMgmt.noData', 'No data')}</Text>
             </View>
             <View style={s.bmiChart}>
               {/* Segmented bar */}
@@ -665,7 +678,7 @@ export default function WeightManagementScreen() {
           {/* Ideal weight range */}
           {heightCm > 0 && (
             <View style={s.idealBox}>
-              <Text style={s.idealLabel}>Ideal weight range for your height</Text>
+              <Text style={s.idealLabel}>{t('weightMgmt.idealWeight', 'Intervalo de peso ideal para a tua altura')}</Text>
               <Text style={s.idealValue}>
                 {Math.round(18.5 * (heightCm / 100) ** 2 * 10) / 10}–{Math.round(24.9 * (heightCm / 100) ** 2 * 10) / 10} kg
                 {useLbs ? ` · ${kgToLbs(18.5 * (heightCm / 100) ** 2)}–${kgToLbs(24.9 * (heightCm / 100) ** 2)} lb` : ''}
@@ -677,9 +690,9 @@ export default function WeightManagementScreen() {
         {/* ── KPI Strip ── */}
         <View style={s.kpiStrip}>
           {[
-            { label: 'Lost / Gained', value: `${useLbs ? kgToLbs(totalLost) : totalLost}`, unit: unitLabel, icon: 'scale-outline', color: currentWeightKg <= startWeightKg ? '#4ade80' : '#f87171' },
-            { label: 'Remaining', value: `${useLbs ? kgToLbs(remaining) : remaining}`, unit: unitLabel, icon: 'flag-outline', color: '#60a5fa' },
-            { label: 'Logs', value: `${(weightHistory ?? []).length}`, unit: 'entries', icon: 'list-outline', color: '#a78bfa' },
+            { label: t('weightMgmt.kpiLostGained', 'Lost / Gained'), value: `${useLbs ? kgToLbs(totalLost) : totalLost}`, unit: unitLabel, icon: 'scale-outline', color: currentWeightKg <= startWeightKg ? '#4ade80' : '#f87171' },
+            { label: t('weightMgmt.kpiRemaining', 'Remaining'), value: `${useLbs ? kgToLbs(remaining) : remaining}`, unit: unitLabel, icon: 'flag-outline', color: '#60a5fa' },
+            { label: t('weightMgmt.kpiLogs', 'Logs'), value: `${(weightHistory ?? []).length}`, unit: t('weightMgmt.kpiEntries', 'entries'), icon: 'list-outline', color: '#a78bfa' },
           ].map(k => (
             <View key={k.label} style={s.kpiCard}>
               <Ionicons name={k.icon as any} size={16} color={k.color} />
@@ -692,14 +705,14 @@ export default function WeightManagementScreen() {
 
         {/* ── Weight History Chart (Pro) ── */}
         <GlassCard style={{ position: 'relative', overflow: 'hidden' }}>
-          <SectionHeader icon="analytics-outline" title="Weight Trend" sub="90-day history" proLocked />
+          <SectionHeader icon="analytics-outline" title={t('weightMgmt.weightTrend', 'Tendência de Peso')} sub={t('weightMgmt.history90', 'Histórico de 90 dias')} proLocked />
           {isPro ? (
             (weightHistory ?? []).length > 1 ? (
               <WeightSparkline data={weightHistory ?? []} useLbs={useLbs} />
             ) : (
               <View style={s.emptyChart}>
                 <Ionicons name="analytics-outline" size={28} color="#94a3b8" />
-                <Text style={s.emptyText}>Log more weights to see your trend</Text>
+                <Text style={s.emptyText}>{t('weightMgmt.logMore', 'Regista mais pesos para ver a tua tendência')}</Text>
               </View>
             )
           ) : (
@@ -711,7 +724,7 @@ export default function WeightManagementScreen() {
 
         {/* ── Body Measurements ── */}
         <GlassCard style={{ position: 'relative', overflow: 'hidden' }}>
-          <SectionHeader icon="body-outline" title="Body Measurements" sub="All measurements in cm" />
+          <SectionHeader icon="body-outline" title={t('weightMgmt.measurements', 'Medidas Corporais')} sub={t('weightMgmt.measurementsSub', 'Todas as medidas em cm')} />
 
           {/* Latest snapshot */}
           {latestMeasurement ? (
@@ -725,7 +738,7 @@ export default function WeightManagementScreen() {
             </View>
           ) : (
             <View style={s.emptyChart}>
-              <Text style={s.emptyText}>No measurements yet. Log your first set.</Text>
+              <Text style={s.emptyText}>{t('weightMgmt.noMeasurements', 'Sem medidas ainda. Regista o teu primeiro conjunto.')}</Text>
             </View>
           )}
 
@@ -738,7 +751,7 @@ export default function WeightManagementScreen() {
             )}
             <TouchableOpacity style={[s.secondaryBtn, { flex: 2 }]} onPress={() => setActiveModal('measurements')} activeOpacity={0.88}>
               <Ionicons name="add" size={16} color="#2563eb" />
-              <Text style={s.secondaryBtnText}>Log Measurements</Text>
+              <Text style={s.secondaryBtnText}>{t('weightMgmt.logMeasurements', 'Registar Medidas')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -750,7 +763,7 @@ export default function WeightManagementScreen() {
 
         {/* ── Body Scan / Composition (Pro) ── */}
         <GlassCard style={{ position: 'relative', overflow: 'hidden' }}>
-          <SectionHeader icon="scan-circle-outline" title="Body Scan" sub="Composition data from scale, DEXA, InBody" proLocked />
+          <SectionHeader icon="scan-circle-outline" title={t('weightMgmt.bodyScan', 'Composição Corporal')} sub={t('weightMgmt.bodyScanSub', 'Dados de balança, DEXA, InBody')} proLocked />
 
           {isPro ? (
             <>
@@ -820,20 +833,20 @@ export default function WeightManagementScreen() {
                 </ScrollView>
               ) : (
                 <View style={s.emptyChart}>
-                  <Text style={s.emptyText}>Start your visual journey. Add your first photo.</Text>
+                  <Text style={s.emptyText}>{t('weightMgmt.addFirstPhoto', 'Start your visual journey. Add your first photo.')}</Text>
                 </View>
               )}
 
               <View style={s.photoActions}>
-                {(['before', 'after', 'progress'] as const).map(t => (
+                {(['before', 'after', 'progress'] as const).map(photoType => (
                   <TouchableOpacity
-                    key={t}
+                    key={photoType}
                     style={s.photoBtn}
-                    onPress={() => handlePickPhoto(t)}
+                    onPress={() => handlePickPhoto(photoType)}
                     activeOpacity={0.85}
                   >
                     <Ionicons name="camera-outline" size={14} color="#94a3b8" />
-                    <Text style={s.photoBtnText}>{t.charAt(0).toUpperCase() + t.slice(1)}</Text>
+                    <Text style={s.photoBtnText}>{t(`weightMgmt.photo_${photoType}`, photoType.charAt(0).toUpperCase() + photoType.slice(1))}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -855,10 +868,10 @@ export default function WeightManagementScreen() {
       <Modal visible={showGoalModal} animationType="slide" presentationStyle="pageSheet" transparent>
         <View style={m.backdrop}>
           <View style={m.sheet}>
-            <Text style={m.sheetTitle}>Set Goal Weight</Text>
+            <Text style={m.sheetTitle}>{t('weightMgmt.setGoalWeight', 'Set Goal Weight')}</Text>
             <TextInput
               style={m.input}
-              placeholder={`Target weight (${unitLabel})`}
+              placeholder={t('weightMgmt.targetWeightPh', 'Target weight ({{unit}})', { unit: unitLabel })}
               placeholderTextColor="#475569"
               keyboardType="numeric"
               value={goalInput}
@@ -866,10 +879,10 @@ export default function WeightManagementScreen() {
             />
             <View style={m.btnRow}>
               <TouchableOpacity style={m.cancel} onPress={() => setShowGoalModal(false)}>
-                <Text style={m.cancelText}>Cancel</Text>
+                <Text style={m.cancelText}>{t('common.cancel', 'Cancel')}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={m.confirm} onPress={handleSaveGoal}>
-                <Text style={m.confirmText}>Save</Text>
+                <Text style={m.confirmText}>{t('common.save', 'Save')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -880,13 +893,13 @@ export default function WeightManagementScreen() {
       <Modal visible={activeModal === 'weight'} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={m.container} edges={['top']}>
           <View style={m.modalHeader}>
-            <Text style={m.modalTitle}>Log Weight</Text>
+            <Text style={m.modalTitle}>{t('weightMgmt.logWeight', 'Log Weight')}</Text>
             <TouchableOpacity onPress={() => setActiveModal(null)}>
               <Ionicons name="close" size={24} color="#64748b" />
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={m.body}>
-            <Text style={m.label}>Weight ({unitLabel})</Text>
+            <Text style={m.label}>{t('weightMgmt.weightUnit', 'Weight ({{unit}})', { unit: unitLabel })}</Text>
             <TextInput
               style={m.input}
               placeholder={`e.g. ${useLbs ? '175' : '80'}`}
@@ -896,10 +909,10 @@ export default function WeightManagementScreen() {
               onChangeText={setWeightInput}
               autoFocus
             />
-            <Text style={m.label}>Note (optional)</Text>
+            <Text style={m.label}>{t('weightMgmt.noteOptional', 'Note (optional)')}</Text>
             <TextInput
               style={[m.input, { height: 80, textAlignVertical: 'top' }]}
-              placeholder="Post-workout, morning, etc."
+              placeholder={t('weightMgmt.notePh', 'Post-workout, morning, etc.')}
               placeholderTextColor="#475569"
               value={weightNote}
               onChangeText={setWeightNote}
@@ -910,7 +923,7 @@ export default function WeightManagementScreen() {
               onPress={handleLogWeight}
               disabled={!weightInput || saving}
             >
-              {saving ? <ActivityIndicator color="#fff" /> : <Text style={m.saveBtnText}>Save Weight</Text>}
+              {saving ? <ActivityIndicator color="#fff" /> : <Text style={m.saveBtnText}>{t('weightMgmt.saveWeight', 'Save Weight')}</Text>}
             </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>
@@ -920,13 +933,13 @@ export default function WeightManagementScreen() {
       <Modal visible={activeModal === 'measurements'} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={m.container} edges={['top']}>
           <View style={m.modalHeader}>
-            <Text style={m.modalTitle}>Log Measurements</Text>
+            <Text style={m.modalTitle}>{t('weightMgmt.logMeasurements', 'Log Measurements')}</Text>
             <TouchableOpacity onPress={() => setActiveModal(null)}>
               <Ionicons name="close" size={24} color="#64748b" />
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={m.body}>
-            <Text style={m.hint}>All measurements in centimetres. Leave blank to skip.</Text>
+            <Text style={m.hint}>{t('weightMgmt.measureHint', 'All measurements in centimetres. Leave blank to skip.')}</Text>
             <View style={s.measureFormGrid}>
               {MEASUREMENT_FIELDS.map(f => (
                 <View key={f.key} style={m.measureFieldWrap}>
@@ -947,7 +960,7 @@ export default function WeightManagementScreen() {
               onPress={handleSaveMeasurements}
               disabled={saving}
             >
-              {saving ? <ActivityIndicator color="#fff" /> : <Text style={m.saveBtnText}>Save Measurements</Text>}
+              {saving ? <ActivityIndicator color="#fff" /> : <Text style={m.saveBtnText}>{t('weightMgmt.saveMeasurements', 'Save Measurements')}</Text>}
             </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>
@@ -957,7 +970,7 @@ export default function WeightManagementScreen() {
       <Modal visible={activeModal === 'scan'} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={m.container} edges={['top']}>
           <View style={m.modalHeader}>
-            <Text style={m.modalTitle}>AI Body Analysis</Text>
+            <Text style={m.modalTitle}>{t('weightMgmt.aiBodyAnalysis', 'AI Body Analysis')}</Text>
             <TouchableOpacity onPress={() => { setActiveModal(null); setScanForm({}); setIsScanning(false); setScanStage('prompt'); }}>
               <Ionicons name="close" size={24} color="#64748b" />
             </TouchableOpacity>
@@ -968,30 +981,30 @@ export default function WeightManagementScreen() {
                 <LinearGradient colors={['#eff6ff', '#ffffff']} style={s.aiIconCircle}>
                   <Ionicons name="scan-outline" size={40} color="#2563eb" />
                 </LinearGradient>
-                <Text style={s.aiTitle}>Visual Composition Scan</Text>
+                <Text style={s.aiTitle}>{t('weightMgmt.aiScanTitle', 'Visual Composition Scan')}</Text>
                 <Text style={s.aiSub}>
-                  Our AI analyzes your latest body measurements and photo to estimate body composition.
+                  {t('weightMgmt.aiScanSub', 'Our AI analyzes your latest body measurements and photo to estimate body composition.')}
                 </Text>
                 <TouchableOpacity style={s.aiStartBtn} onPress={handleAiScan} activeOpacity={0.9}>
-                  <Text style={s.aiStartBtnText}>Start AI Scan</Text>
+                  <Text style={s.aiStartBtnText}>{t('weightMgmt.startAiScan', 'Start AI Scan')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => { setScanStage('manual'); setScanSource('manual'); }}
                   style={{ marginTop: 14 }}
                   activeOpacity={0.85}
                 >
-                  <Text style={{ color: '#94a3b8', fontWeight: '800' }}>Enter manually instead</Text>
+                  <Text style={{ color: '#94a3b8', fontWeight: '800' }}>{t('weightMgmt.enterManually', 'Enter manually instead')}</Text>
                 </TouchableOpacity>
               </View>
             ) : isScanning ? (
               <View style={s.scanningState}>
                 <ActivityIndicator size="large" color="#60a5fa" />
-                <Text style={s.scanningText}>Scanning Bio‑Signifiers...</Text>
-                <Text style={s.scanningSub}>Detecting metabolic markers</Text>
+                <Text style={s.scanningText}>{t('weightMgmt.scanning', 'Scanning Bio‑Signifiers...')}</Text>
+                <Text style={s.scanningSub}>{t('weightMgmt.detectingMarkers', 'Detecting metabolic markers')}</Text>
               </View>
             ) : (
               <>
-                <Text style={m.label}>{scanSource === 'ai_scan' ? 'AI Estimated Results' : 'Enter Results'}</Text>
+                <Text style={m.label}>{scanSource === 'ai_scan' ? t('weightMgmt.aiEstimatedResults', 'AI Estimated Results') : t('weightMgmt.enterResults', 'Enter Results')}</Text>
                 <View style={s.measureFormGrid}>
                   {SCAN_FIELDS.map(f => (
                     <View key={f.key} style={m.measureFieldWrap}>
@@ -1012,7 +1025,7 @@ export default function WeightManagementScreen() {
                   onPress={handleSaveScan}
                   disabled={saving}
                 >
-                  {saving ? <ActivityIndicator color="#fff" /> : <Text style={m.saveBtnText}>Confirm & Save Results</Text>}
+                  {saving ? <ActivityIndicator color="#fff" /> : <Text style={m.saveBtnText}>{t('weightMgmt.confirmSaveResults', 'Confirm & Save Results')}</Text>}
                 </TouchableOpacity>
               </>
             )}
@@ -1024,7 +1037,7 @@ export default function WeightManagementScreen() {
       <Modal visible={activeModal === 'history_measurements'} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={m.container} edges={['top']}>
           <View style={m.modalHeader}>
-            <Text style={m.modalTitle}>Measurement History</Text>
+            <Text style={m.modalTitle}>{t('weightMgmt.measurementHistory', 'Measurement History')}</Text>
             <TouchableOpacity onPress={() => setActiveModal(null)}>
               <Ionicons name="close" size={24} color="#64748b" />
             </TouchableOpacity>
@@ -1056,7 +1069,7 @@ export default function WeightManagementScreen() {
       <Modal visible={activeModal === 'history_scans'} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={m.container} edges={['top']}>
           <View style={m.modalHeader}>
-            <Text style={m.modalTitle}>Body Scan History</Text>
+            <Text style={m.modalTitle}>{t('weightMgmt.bodyScanHistory', 'Body Scan History')}</Text>
             <TouchableOpacity onPress={() => setActiveModal(null)}>
               <Ionicons name="close" size={24} color="#64748b" />
             </TouchableOpacity>

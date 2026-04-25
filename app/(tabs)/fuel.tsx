@@ -23,6 +23,7 @@ import { getCurrentWeekRange, getTodayISO } from '@/utils/dates';
 import { getBottomContentPadding } from '@/utils/layout';
 import { SoundEffect, triggerSound } from '@/utils/soundEffects';
 import { useCelebration } from '@/context/CelebrationContext';
+import { useTranslation } from 'react-i18next';
 import { useUser as useAppUser } from '@/context/UserContext';
 import { sendHydrationReminder, sendMealReminder } from '@/utils/notifications';
 import { useAccessControl } from '@/hooks/useAccessControl';
@@ -64,6 +65,7 @@ function titleFromMealType(mealType: MealTypeLower): MealName {
 
 export default function FuelScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const params = useLocalSearchParams();
   const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();
@@ -161,7 +163,15 @@ export default function FuelScreen() {
       d.setDate(monday.getDate() + i);
       const fullDate = d.toISOString().split('T')[0];
       arr.push({
-        short: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i],
+        short: [
+          t('fuel.days.mon', 'Mon'), 
+          t('fuel.days.tue', 'Tue'), 
+          t('fuel.days.wed', 'Wed'), 
+          t('fuel.days.thu', 'Thu'), 
+          t('fuel.days.fri', 'Fri'), 
+          t('fuel.days.sat', 'Sat'), 
+          t('fuel.days.sun', 'Sun')
+        ][i],
         date: d.getDate(),
         fullDate,
       });
@@ -190,11 +200,11 @@ export default function FuelScreen() {
       const uniqueMeals = new Set((dateEntries ?? []).map((e) => titleFromMealType(e.mealType)));
       if (uniqueMeals.size >= 4 && !uniqueMeals.has(meal)) {
         Alert.alert(
-          "Limit Reached",
-          "You strictly need to upgrade to scan more than 4 unique meals/day.",
+          t('fuel.limitReached', 'Limit Reached'),
+          t('fuel.limitDesc', 'You strictly need to upgrade to scan more than 4 unique meals/day.'),
           [
-            { text: "Cancel", style: 'cancel' },
-            { text: "Upgrade", onPress: () => router.push('/premium') },
+            { text: t('fuel.cancel', 'Cancel'), style: 'cancel' },
+            { text: t('fuel.upgrade', 'Upgrade'), onPress: () => router.push('/premium') },
           ]
         );
         return;
@@ -268,21 +278,21 @@ export default function FuelScreen() {
   if (!clerkUser || !convexUser) {
     return (
       <SafeAreaView style={styles.loadingContainer} edges={['top']}>
-        <Text style={{ color: '#64748b' }}>Profile not found or loading...</Text>
+        <Text style={{ color: '#64748b' }}>{t('fuel.loadingProfile', 'Profile not found or loading...')}</Text>
       </SafeAreaView>
     );
   }
 
   const mealConfigs = [
-    { name: 'Breakfast' as MealName, icon: 'partly-sunny-outline' as const },
-    { name: 'Lunch' as MealName, icon: 'sunny-outline' as const },
-    { name: 'Dinner' as MealName, icon: 'moon-outline' as const },
-    { name: 'Snack' as MealName, icon: 'nutrition-outline' as const },
+    { name: 'Breakfast' as MealName, label: t('fuel.meals.breakfast', 'Breakfast'), icon: 'partly-sunny-outline' as const, key: 'Breakfast' },
+    { name: 'Lunch' as MealName, label: t('fuel.meals.lunch', 'Lunch'), icon: 'sunny-outline' as const, key: 'Lunch' },
+    { name: 'Dinner' as MealName, label: t('fuel.meals.dinner', 'Dinner'), icon: 'moon-outline' as const, key: 'Dinner' },
+    { name: 'Snack' as MealName, label: t('fuel.meals.snack', 'Snack'), icon: 'nutrition-outline' as const, key: 'Snack' },
   ];
 
   const macroCardsData = [
     {
-      name: 'Protein',
+      name: t('fuel.macros.protein', 'Protein'),
       emoji: '🥩',
       current: todayTotals.protein,
       goal: daily?.target?.protein ?? 150,
@@ -290,7 +300,7 @@ export default function FuelScreen() {
       trackColor: 'rgba(239, 68, 68, 0.15)',
     },
     {
-      name: 'Carbs',
+      name: t('fuel.macros.carbs', 'Carbs'),
       emoji: '🥖',
       current: todayTotals.carbs,
       goal: daily?.target?.carbs ?? 225,
@@ -298,7 +308,7 @@ export default function FuelScreen() {
       trackColor: 'rgba(59, 130, 246, 0.15)',
     },
     {
-      name: 'Fat',
+      name: t('fuel.macros.fat', 'Fat'),
       emoji: '🥑',
       current: todayTotals.fat,
       goal: daily?.target?.fat ?? 67,
@@ -326,10 +336,10 @@ export default function FuelScreen() {
         <View style={isTablet ? { width: '100%', maxWidth: tabletMaxWidth, alignSelf: 'center' } : undefined}>
           
           <View style={styles.header}>
-            <Text style={styles.title}>Fuel</Text>
+            <Text style={styles.title}>{t('fuel.title', 'Fuel')}</Text>
             <CoachMark
               visible={showTooltip}
-              message="Snap a photo to track macros instantly."
+              message={t('fuel.coachMark', 'Snap a photo to track macros instantly.')}
               onClose={() => { setShowTooltip(false); SecureStore.deleteItemAsync('bluom_show_coach_marks'); }}
               position="bottom"
             />
@@ -368,7 +378,7 @@ export default function FuelScreen() {
               <View style={styles.fastingBlob} />
               <View style={styles.fastingHeader}>
                 <Ionicons name="hourglass" size={20} color="#60a5fa" />
-                <Text style={styles.fastingTitle}>Fasting In Progress</Text>
+                <Text style={styles.fastingTitle}>{t('fuel.fasting.title', 'Fasting In Progress')}</Text>
               </View>
               <Text style={styles.fastingTime}>
                   {(() => {
@@ -379,10 +389,10 @@ export default function FuelScreen() {
                     const remainingMs = Math.max(0, endTime - Date.now());
                     const hours = Math.floor(remainingMs / (1000 * 60 * 60));
                     const mins = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-                    return remainingMs > 0 ? `${hours}h ${mins}m until feeding` : "Window Open";
+                    return remainingMs > 0 ? `${hours}h ${mins}m ${t('fuel.fasting.untilFeeding', 'until feeding')}` : t('fuel.fasting.windowOpen', 'Window Open');
                   })()}
               </Text>
-              <Text style={styles.fastingSubtitle}>Don't break your fast! Keep going!</Text>
+              <Text style={styles.fastingSubtitle}>{t('fuel.fasting.subtitle', "Don't break your fast! Keep going!")}</Text>
             </View>
           ) : (
             <View style={styles.mealsSection}>
@@ -400,8 +410,8 @@ export default function FuelScreen() {
 
                  return (
                    <MealCard
-                     key={m.name}
-                     title={m.name}
+                     key={m.key}
+                     title={m.label}
                      icon={m.icon}
                      foods={foods}
                      onAddPress={() => {
@@ -419,7 +429,7 @@ export default function FuelScreen() {
                 activeOpacity={0.8}
                 onPress={() => {
                   if (!isPro) {
-                    setProGateMessage('Add unlimited extra meals and snacks with Bluom Pro. Upgrade to unlock full nutrition tracking.');
+                    setProGateMessage(t('fuel.proGate', 'This feature is available on Pro.'));
                     setShowProUpgrade(true);
                   } else {
                     setSelectedMeal('Snack');
@@ -434,12 +444,12 @@ export default function FuelScreen() {
                       : <Ionicons name="lock-closed" size={18} color="#94a3b8" />
                     }
                   </View>
-                  <View>
+                  <View style={{ flex: 1, paddingRight: 8 }}>
                     <Text style={[styles.extraMealTitle, !isPro && styles.extraMealTitleLocked]}>
-                      Add Extra Meal
+                      {t('fuel.extraMeal.title', 'Add Extra Meal')}
                     </Text>
                     <Text style={styles.extraMealSub}>
-                      {isPro ? 'Log another snack or custom meal' : 'Upgrade to Pro for unlimited meals'}
+                      {isPro ? t('fuel.extraMeal.subPro', 'Log another snack or custom meal') : t('fuel.extraMeal.subLocked', 'Upgrade to Pro for unlimited meals')}
                     </Text>
                   </View>
                 </View>
@@ -457,7 +467,7 @@ export default function FuelScreen() {
           )}
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Quick Actions</Text>
+            <Text style={styles.sectionTitle}>{t('fuel.sections.quickActions', 'Quick Actions')}</Text>
             <QuickActions 
               onPhoto={() => {
                 setShowPhotoCapture(true);
@@ -469,7 +479,7 @@ export default function FuelScreen() {
               onManual={() => setShowAddFoodModal(true)}
             />
             
-            <Text style={styles.sectionTitle}>Utilities</Text>
+            <Text style={styles.sectionTitle}>{t('fuel.sections.utilities', 'Utilities')}</Text>
             <UtilityCards 
               onLibrary={() => router.push('/recipes')} 
               onMyRecipes={() => {
@@ -495,7 +505,14 @@ export default function FuelScreen() {
         initialTab={foodSearchInitialTab}
         onClose={() => setShowFoodSearch(false)}
         userId={convexUser._id}
-        onLogFood={(food) => addFoodFromCatalog(food, selectedMeal)}
+        onLogFood={(food) => {
+           setLogRecipe(food);
+           setShowFoodSearch(false);
+           setLogMeal(selectedMeal);
+           setLogQuantity(1);
+           setLogSuccess(false);
+           setShowLogRecipeModal(true);
+        }}
         onLogRecipe={(recipe) => {
            setLogRecipe(recipe);
            setShowFoodSearch(false);
@@ -541,11 +558,16 @@ export default function FuelScreen() {
         onSave={async () => {
           if (!logRecipe || !convexUser?._id) return;
           const perServing = logRecipe?.nutrition?.perServing ?? logRecipe?.nutrition ?? {
-            calories: 0, protein: 0, carbs: 0, fat: 0,
+            calories: logRecipe.calories ?? 0, 
+            protein: logRecipe.protein ?? 0, 
+            carbs: logRecipe.carbs ?? 0, 
+            fat: logRecipe.fat ?? 0,
           };
+          const isRecipe = 'nutrition' in logRecipe || 'ingredients' in logRecipe;
 
           await logFoodEntry({
             userId: convexUser._id,
+            foodId: isRecipe ? undefined : logRecipe._id || logRecipe.externalId,
             foodName: logRecipe.name || logRecipe.title,
             calories: (perServing.calories ?? 0) * logQuantity,
             protein: (perServing.protein ?? 0) * logQuantity,

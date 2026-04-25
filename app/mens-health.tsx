@@ -34,6 +34,7 @@ import { BlurView } from 'expo-blur';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
+import { useTranslation } from 'react-i18next';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import * as SecureStore from 'expo-secure-store';
 
@@ -108,51 +109,51 @@ const MENS_QUIZ = [
 // ─────────────────────────────────────────────────────────────
 // MODE CONFIG
 // ─────────────────────────────────────────────────────────────
-const MODE_CONFIG: Record<TrainingMode, {
+const getModeConfig = (t: any): Record<TrainingMode, {
   label: string; emoji: string; tagline: string;
   gradient: [string, string]; accent: string; bg: string;
-}> = {
-  natural: { label: 'Natural', emoji: '🌿', tagline: 'Testosterone Optimised', gradient: ['#15803d', '#166534'], accent: '#4ade80', bg: '#f0fdf4' },
-  enhanced: { label: 'Enhanced', emoji: '💉', tagline: 'Cycle Intelligence', gradient: ['#1d4ed8', '#1e3a8a'], accent: '#60a5fa', bg: '#eff6ff' },
-  athlete: { label: 'Athlete', emoji: '🏆', tagline: 'Competition Mode Active', gradient: ['#92400e', '#78350f'], accent: '#fcd34d', bg: '#fffbeb' },
-};
+}> => ({
+  natural: { label: t('mensHealth.modeNatural', 'Natural'), emoji: '🌿', tagline: t('mensHealth.taglineNatural', 'Testosterone Optimised'), gradient: ['#15803d', '#166534'], accent: '#4ade80', bg: '#f0fdf4' },
+  enhanced: { label: t('mensHealth.modeEnhanced', 'Enhanced'), emoji: '💉', tagline: t('mensHealth.taglineEnhanced', 'Cycle Intelligence'), gradient: ['#1d4ed8', '#1e3a8a'], accent: '#60a5fa', bg: '#eff6ff' },
+  athlete: { label: t('mensHealth.modeAthlete', 'Athlete'), emoji: '🏆', tagline: t('mensHealth.taglineAthlete', 'Competition Mode Active'), gradient: ['#92400e', '#78350f'], accent: '#fcd34d', bg: '#fffbeb' },
+});
 
 // ─────────────────────────────────────────────────────────────
 // TESTOSTERONE OPTIMISATION SCORE (Natural)
 // ─────────────────────────────────────────────────────────────
-function getTOptScore(convexUser: any, drive: number, recovery: number, focus: number, sleep: number): {
+function getTOptScore(convexUser: any, drive: number, recovery: number, focus: number, sleep: number, t: any): {
   score: number; pillars: { name: string; score: number; tip: string; icon: string }[];
 } {
   const pillars = [
     {
-      name: 'Sleep', icon: '😴',
+      name: t('mensHealth.pillarSleep', 'Sleep'), icon: '😴',
       score: sleep >= 8 ? 100 : sleep >= 7 ? 80 : sleep >= 6 ? 50 : 25,
-      tip: sleep < 7 ? 'Under 7h sleep reduces testosterone by up to 15%. Prioritise 8h.' : 'Sleep is optimal for testosterone production.',
+      tip: sleep < 7 ? t('mensHealth.tipSleepLow', 'Under 7h sleep reduces testosterone by up to 15%. Prioritise 8h.') : t('mensHealth.tipSleepOk', 'Sleep is optimal for testosterone production.'),
     },
     {
-      name: 'Stress', icon: '🧠',
+      name: t('mensHealth.pillarStress', 'Stress'), icon: '🧠',
       score: convexUser?.stressLevel === 'low' ? 100 : convexUser?.stressLevel === 'moderate' ? 70 : 30,
-      tip: convexUser?.stressLevel === 'high' || convexUser?.stressLevel === 'very_high' ? 'High cortisol directly suppresses testosterone. Ashwagandha + meditation.' : 'Stress well managed.',
+      tip: convexUser?.stressLevel === 'high' || convexUser?.stressLevel === 'very_high' ? t('mensHealth.tipStressHigh', 'High cortisol directly suppresses testosterone. Ashwagandha + meditation.') : t('mensHealth.tipStressOk', 'Stress well managed.'),
     },
     {
-      name: 'Drive', icon: '🔥',
+      name: t('mensHealth.pillarDrive', 'Drive'), icon: '🔥',
       score: drive * 10,
-      tip: drive <= 4 ? 'Low libido is an early signal of suboptimal testosterone or elevated prolactin.' : 'Drive levels healthy.',
+      tip: drive <= 4 ? t('mensHealth.tipDriveLow', 'Low libido is an early signal of suboptimal testosterone or elevated prolactin.') : t('mensHealth.tipDriveOk', 'Drive levels healthy.'),
     },
     {
-      name: 'Recovery', icon: '⚡',
+      name: t('mensHealth.pillarRecovery', 'Recovery'), icon: '⚡',
       score: recovery * 10,
-      tip: recovery <= 4 ? 'Poor recovery elevates cortisol and impairs testosterone synthesis. Check sleep + zinc.' : 'Recovery tracking well.',
+      tip: recovery <= 4 ? t('mensHealth.tipRecoveryLow', 'Poor recovery elevates cortisol and impairs testosterone synthesis. Check sleep + zinc.') : t('mensHealth.tipRecoveryOk', 'Recovery tracking well.'),
     },
     {
-      name: 'Focus', icon: '🎯',
+      name: t('mensHealth.pillarFocus', 'Focus'), icon: '🎯',
       score: focus * 10,
-      tip: focus <= 4 ? 'Low mental clarity is linked to suboptimal testosterone and high cortisol.' : 'Cognitive function healthy.',
+      tip: focus <= 4 ? t('mensHealth.tipFocusLow', 'Low mental clarity is linked to suboptimal testosterone and high cortisol.') : t('mensHealth.tipFocusOk', 'Cognitive function healthy.'),
     },
     {
-      name: 'Activity', icon: '💪',
+      name: t('mensHealth.pillarActivity', 'Activity'), icon: '💪',
       score: convexUser?.activityLevel === 'very_active' || convexUser?.activityLevel === 'extremely_active' ? 90 : convexUser?.activityLevel === 'moderately_active' ? 70 : 40,
-      tip: 'Resistance training 3–4x/week is the most evidence-based testosterone booster.',
+      tip: t('mensHealth.tipActivity', 'Resistance training 3–4x/week is the most evidence-based testosterone booster.'),
     },
   ];
   const score = Math.round(pillars.reduce((s, p) => s + p.score, 0) / pillars.length);
@@ -162,11 +163,11 @@ function getTOptScore(convexUser: any, drive: number, recovery: number, focus: n
 // ─────────────────────────────────────────────────────────────
 // CYCLE STATUS (Enhanced)
 // ─────────────────────────────────────────────────────────────
-const CYCLE_PHASES = [
-  { id: 'off', label: 'Off Cycle', color: '#64748b', desc: 'Natural hormone production recovering. Focus on health markers and natural optimisation.' },
-  { id: 'blast', label: 'On Blast', color: '#dc2626', desc: 'Peak anabolic phase. Maximise training stimulus, track blood pressure and organ stress markers.' },
-  { id: 'cruise', label: 'Cruising', color: '#2563eb', desc: 'Maintenance dose. Bridge between blasts. Monitor haematocrit and lipids regularly.' },
-  { id: 'pct', label: 'PCT', color: '#d97706', desc: 'Post-cycle therapy. HPTA restart in progress. Prioritise recovery, sleep, and health markers.' },
+const getCyclePhases = (t: any) => [
+  { id: 'off', label: t('mensHealth.phaseOff', 'Off Cycle'), color: '#64748b', desc: t('mensHealth.phaseOffDesc', 'Natural hormone production recovering. Focus on health markers and natural optimisation.') },
+  { id: 'blast', label: t('mensHealth.phaseBlast', 'On Blast'), color: '#dc2626', desc: t('mensHealth.phaseBlastDesc', 'Peak anabolic phase. Maximise training stimulus, track blood pressure and organ stress markers.') },
+  { id: 'cruise', label: t('mensHealth.phaseCruise', 'Cruising'), color: '#2563eb', desc: t('mensHealth.phaseCruiseDesc', 'Maintenance dose. Bridge between blasts. Monitor haematocrit and lipids regularly.') },
+  { id: 'pct', label: t('mensHealth.phasePCT', 'PCT'), color: '#d97706', desc: t('mensHealth.phasePCTDesc', 'Post-cycle therapy. HPTA restart in progress. Prioritise recovery, sleep, and health markers.') },
 ];
 
 // ─────────────────────────────────────────────────────────────
@@ -175,7 +176,8 @@ const CYCLE_PHASES = [
 function getSupplementStack(
   profile: MensProfile | null,
   convexUser: any,
-  cyclePhase?: string,
+  cyclePhase: string | undefined,
+  t: any
 ): { name: string; dose: string; reason: string; evidence: string; timing: string; priority: 'core' | 'optional' | 'critical' }[] {
   if (!profile) return [];
   const stack: any[] = [];
@@ -186,54 +188,208 @@ function getSupplementStack(
   const age = convexUser?.age;
 
   // ── Universal ──
-  stack.push({ name: 'Vitamin D3 + K2', dose: '5000 IU + 200mcg', reason: 'Critical for testosterone synthesis; 80% of men are deficient', evidence: 'Grade A', timing: 'Morning with fat', priority: 'core' });
-  stack.push({ name: 'Magnesium Glycinate', dose: '400mg', reason: 'Increases free testosterone by up to 24%; improves deep sleep', evidence: 'Grade A', timing: 'Before bed', priority: 'core' });
-  stack.push({ name: 'Zinc (Bisglycinate)', dose: '30mg', reason: 'Rate-limiting mineral for testosterone production and sperm health', evidence: 'Grade A', timing: 'With dinner', priority: 'core' });
-  stack.push({ name: 'Omega-3 (EPA/DHA)', dose: '3000mg', reason: 'Anti-inflammatory; supports cardiovascular health and testosterone', evidence: 'Grade A', timing: 'With meals', priority: 'core' });
+  stack.push({ 
+      name: t(`mensHealth.supps.${'Vitamin D3 + K2'}.name`, 'Vitamin D3 + K2'), 
+      dose: '5000 IU + 200mcg', 
+      reason: t(`mensHealth.supps.${'Vitamin D3 + K2'}.reason`, 'Critical for testosterone synthesis; 80% of men are deficient'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'Vitamin D3 + K2'}.timing`, 'Morning with fat'), 
+      priority: 'core' 
+    });
+  stack.push({ 
+      name: t(`mensHealth.supps.${'Magnesium Glycinate'}.name`, 'Magnesium Glycinate'), 
+      dose: '400mg', 
+      reason: t(`mensHealth.supps.${'Magnesium Glycinate'}.reason`, 'Increases free testosterone by up to 24%; improves deep sleep'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'Magnesium Glycinate'}.timing`, 'Before bed'), 
+      priority: 'core' 
+    });
+  stack.push({ 
+      name: t(`mensHealth.supps.${'Zinc (Bisglycinate)'}.name`, 'Zinc (Bisglycinate)'), 
+      dose: '30mg', 
+      reason: t(`mensHealth.supps.${'Zinc (Bisglycinate)'}.reason`, 'Rate-limiting mineral for testosterone production and sperm health'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'Zinc (Bisglycinate)'}.timing`, 'With dinner'), 
+      priority: 'core' 
+    });
+  stack.push({ 
+      name: t(`mensHealth.supps.${'Omega-3 (EPA/DHA)'}.name`, 'Omega-3 (EPA/DHA)'), 
+      dose: '3000mg', 
+      reason: t(`mensHealth.supps.${'Omega-3 (EPA/DHA)'}.reason`, 'Anti-inflammatory; supports cardiovascular health and testosterone'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'Omega-3 (EPA/DHA)'}.timing`, 'With meals'), 
+      priority: 'core' 
+    });
 
   // ── Natural specific ──
   if (mode === 'natural') {
     if (stress === 'high' || stress === 'very_high') {
-      stack.push({ name: 'Ashwagandha KSM-66', dose: '600mg', reason: 'Reduces cortisol 30%; increases testosterone 17% in stressed men', evidence: 'Grade A', timing: 'With dinner or bed', priority: 'core' });
+      stack.push({ 
+      name: t(`mensHealth.supps.${'Ashwagandha KSM-66'}.name`, 'Ashwagandha KSM-66'), 
+      dose: '600mg', 
+      reason: t(`mensHealth.supps.${'Ashwagandha KSM-66'}.reason`, 'Reduces cortisol 30%; increases testosterone 17% in stressed men'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'Ashwagandha KSM-66'}.timing`, 'With dinner or bed'), 
+      priority: 'core' 
+    });
     }
     if (goal === 'muscle' || goal === 'strength') {
-      stack.push({ name: 'Creatine Monohydrate', dose: '5g', reason: 'Most evidence-based ergogenic; increases strength, muscle, cognition', evidence: 'Grade A', timing: 'Any time (consistency matters)', priority: 'core' });
+      stack.push({ 
+      name: t(`mensHealth.supps.${'Creatine Monohydrate'}.name`, 'Creatine Monohydrate'), 
+      dose: '5g', 
+      reason: t(`mensHealth.supps.${'Creatine Monohydrate'}.reason`, 'Most evidence-based ergogenic; increases strength, muscle, cognition'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'Creatine Monohydrate'}.timing`, 'Any time (consistency matters)'), 
+      priority: 'core' 
+    });
     }
     if (goal === 'fat_loss') {
-      stack.push({ name: 'L-Carnitine L-Tartrate', dose: '2000mg', reason: 'Increases androgen receptor density; supports fat metabolism', evidence: 'Grade B', timing: 'Pre-workout or morning', priority: 'optional' });
+      stack.push({ 
+      name: t(`mensHealth.supps.${'L-Carnitine L-Tartrate'}.name`, 'L-Carnitine L-Tartrate'), 
+      dose: '2000mg', 
+      reason: t(`mensHealth.supps.${'L-Carnitine L-Tartrate'}.reason`, 'Increases androgen receptor density; supports fat metabolism'), 
+      evidence: 'Grade B', 
+      timing: t(`mensHealth.supps.${'L-Carnitine L-Tartrate'}.timing`, 'Pre-workout or morning'), 
+      priority: 'optional' 
+    });
     }
     if (age && age >= 35) {
-      stack.push({ name: 'Tongkat Ali (200:1 extract)', dose: '200–400mg', reason: 'Increases free testosterone by reducing SHBG; evidence-backed for men 35+', evidence: 'Grade B', timing: 'Morning', priority: 'optional' });
-      stack.push({ name: 'CoQ10 (Ubiquinol)', dose: '200mg', reason: 'Mitochondrial support; critical for energy and cardiovascular health over 35', evidence: 'Grade A', timing: 'With a fatty meal', priority: 'core' });
+      stack.push({ 
+      name: t(`mensHealth.supps.${'Tongkat Ali (200:1 extract)'}.name`, 'Tongkat Ali (200:1 extract)'), 
+      dose: '200–400mg', 
+      reason: t(`mensHealth.supps.${'Tongkat Ali (200:1 extract)'}.reason`, 'Increases free testosterone by reducing SHBG; evidence-backed for men 35+'), 
+      evidence: 'Grade B', 
+      timing: t(`mensHealth.supps.${'Tongkat Ali (200:1 extract)'}.timing`, 'Morning'), 
+      priority: 'optional' 
+    });
+      stack.push({ 
+      name: t(`mensHealth.supps.${'CoQ10 (Ubiquinol)'}.name`, 'CoQ10 (Ubiquinol)'), 
+      dose: '200mg', 
+      reason: t(`mensHealth.supps.${'CoQ10 (Ubiquinol)'}.reason`, 'Mitochondrial support; critical for energy and cardiovascular health over 35'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'CoQ10 (Ubiquinol)'}.timing`, 'With a fatty meal'), 
+      priority: 'core' 
+    });
     }
     if (sleep && sleep < 7) {
-      stack.push({ name: 'Apigenin', dose: '50mg', reason: 'Natural anxiolytic; binds GABA-A; improves sleep onset without dependency', evidence: 'Grade B', timing: '30 min before bed', priority: 'optional' });
+      stack.push({ 
+      name: t(`mensHealth.supps.${'Apigenin'}.name`, 'Apigenin'), 
+      dose: '50mg', 
+      reason: t(`mensHealth.supps.${'Apigenin'}.reason`, 'Natural anxiolytic; binds GABA-A; improves sleep onset without dependency'), 
+      evidence: 'Grade B', 
+      timing: t(`mensHealth.supps.${'Apigenin'}.timing`, '30 min before bed'), 
+      priority: 'optional' 
+    });
     }
   }
 
   // ── Enhanced specific ──
   if (mode === 'enhanced') {
-    stack.push({ name: 'TUDCA (Bile Acid)', dose: '500mg', reason: 'CRITICAL: Hepatoprotective agent; protects liver during oral compound use', evidence: 'Grade A', timing: 'With each oral dose', priority: 'critical' });
-    stack.push({ name: 'NAC (N-Acetyl Cysteine)', dose: '1200mg', reason: 'Liver + cardiovascular protection; reduces oxidative stress from androgens', evidence: 'Grade A', timing: 'Morning and night', priority: 'critical' });
-    stack.push({ name: 'Hawthorn Berry', dose: '1000mg', reason: 'Cardiovascular support; helps manage blood pressure elevation', evidence: 'Grade B', timing: 'Morning', priority: 'critical' });
-    stack.push({ name: 'Celery Seed Extract', dose: '75mg', reason: 'Natural aromatase modulator; helps manage oestrogen', evidence: 'Grade B', timing: 'Morning', priority: 'optional' });
+    stack.push({ 
+      name: t(`mensHealth.supps.${'TUDCA (Bile Acid)'}.name`, 'TUDCA (Bile Acid)'), 
+      dose: '500mg', 
+      reason: t(`mensHealth.supps.${'TUDCA (Bile Acid)'}.reason`, 'CRITICAL: Hepatoprotective agent; protects liver during oral compound use'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'TUDCA (Bile Acid)'}.timing`, 'With each oral dose'), 
+      priority: 'critical' 
+    });
+    stack.push({ 
+      name: t(`mensHealth.supps.${'NAC (N-Acetyl Cysteine)'}.name`, 'NAC (N-Acetyl Cysteine)'), 
+      dose: '1200mg', 
+      reason: t(`mensHealth.supps.${'NAC (N-Acetyl Cysteine)'}.reason`, 'Liver + cardiovascular protection; reduces oxidative stress from androgens'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'NAC (N-Acetyl Cysteine)'}.timing`, 'Morning and night'), 
+      priority: 'critical' 
+    });
+    stack.push({ 
+      name: t(`mensHealth.supps.${'Hawthorn Berry'}.name`, 'Hawthorn Berry'), 
+      dose: '1000mg', 
+      reason: t(`mensHealth.supps.${'Hawthorn Berry'}.reason`, 'Cardiovascular support; helps manage blood pressure elevation'), 
+      evidence: 'Grade B', 
+      timing: t(`mensHealth.supps.${'Hawthorn Berry'}.timing`, 'Morning'), 
+      priority: 'critical' 
+    });
+    stack.push({ 
+      name: t(`mensHealth.supps.${'Celery Seed Extract'}.name`, 'Celery Seed Extract'), 
+      dose: '75mg', 
+      reason: t(`mensHealth.supps.${'Celery Seed Extract'}.reason`, 'Natural aromatase modulator; helps manage oestrogen'), 
+      evidence: 'Grade B', 
+      timing: t(`mensHealth.supps.${'Celery Seed Extract'}.timing`, 'Morning'), 
+      priority: 'optional' 
+    });
     if (cyclePhase === 'pct') {
-      stack.push({ name: 'Clomiphene / Enclomiphene', dose: 'Per protocol', reason: 'HPTA restart; stimulates LH/FSH — consult a doctor', evidence: 'Prescription', timing: 'Per doctor protocol', priority: 'critical' });
-      stack.push({ name: 'HCG (if used)', dose: 'Per protocol', reason: 'Maintains testicular volume and function during cycle', evidence: 'Grade A', timing: 'Per protocol', priority: 'critical' });
+      stack.push({ 
+      name: t(`mensHealth.supps.${'Clomiphene / Enclomiphene'}.name`, 'Clomiphene / Enclomiphene'), 
+      dose: 'Per protocol', 
+      reason: t(`mensHealth.supps.${'Clomiphene / Enclomiphene'}.reason`, 'HPTA restart; stimulates LH/FSH — consult a doctor'), 
+      evidence: 'Prescription', 
+      timing: t(`mensHealth.supps.${'Clomiphene / Enclomiphene'}.timing`, 'Per doctor protocol'), 
+      priority: 'critical' 
+    });
+      stack.push({ 
+      name: t(`mensHealth.supps.${'HCG (if used)'}.name`, 'HCG (if used)'), 
+      dose: 'Per protocol', 
+      reason: t(`mensHealth.supps.${'HCG (if used)'}.reason`, 'Maintains testicular volume and function during cycle'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'HCG (if used)'}.timing`, 'Per protocol'), 
+      priority: 'critical' 
+    });
     }
-    stack.push({ name: 'Creatine Monohydrate', dose: '5g', reason: 'Amplifies anabolic signalling; synergistic with AAS', evidence: 'Grade A', timing: 'Any time', priority: 'core' });
+    stack.push({ 
+      name: t(`mensHealth.supps.${'Creatine Monohydrate'}.name`, 'Creatine Monohydrate'), 
+      dose: '5g', 
+      reason: t(`mensHealth.supps.${'Creatine Monohydrate'}.reason`, 'Amplifies anabolic signalling; synergistic with AAS'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'Creatine Monohydrate'}.timing`, 'Any time'), 
+      priority: 'core' 
+    });
   }
 
   // ── Athlete/Competition ──
   if (mode === 'athlete') {
-    stack.push({ name: 'Beta-Alanine', dose: '3.2g', reason: 'Increases carnosine; delays muscular fatigue; improves training volume', evidence: 'Grade A', timing: 'Pre-workout', priority: 'core' });
-    stack.push({ name: 'Citrulline Malate', dose: '8g', reason: 'Increases blood flow, pump and endurance; reduces soreness', evidence: 'Grade A', timing: '60 min pre-workout', priority: 'core' });
-    stack.push({ name: 'Creatine Monohydrate', dose: '5g', reason: 'Non-negotiable for strength and power athletes', evidence: 'Grade A', timing: 'Post-workout or morning', priority: 'core' });
+    stack.push({ 
+      name: t(`mensHealth.supps.${'Beta-Alanine'}.name`, 'Beta-Alanine'), 
+      dose: '3.2g', 
+      reason: t(`mensHealth.supps.${'Beta-Alanine'}.reason`, 'Increases carnosine; delays muscular fatigue; improves training volume'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'Beta-Alanine'}.timing`, 'Pre-workout'), 
+      priority: 'core' 
+    });
+    stack.push({ 
+      name: t(`mensHealth.supps.${'Citrulline Malate'}.name`, 'Citrulline Malate'), 
+      dose: '8g', 
+      reason: t(`mensHealth.supps.${'Citrulline Malate'}.reason`, 'Increases blood flow, pump and endurance; reduces soreness'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'Citrulline Malate'}.timing`, '60 min pre-workout'), 
+      priority: 'core' 
+    });
+    stack.push({ 
+      name: t(`mensHealth.supps.${'Creatine Monohydrate'}.name`, 'Creatine Monohydrate'), 
+      dose: '5g', 
+      reason: t(`mensHealth.supps.${'Creatine Monohydrate'}.reason`, 'Non-negotiable for strength and power athletes'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'Creatine Monohydrate'}.timing`, 'Post-workout or morning'), 
+      priority: 'core' 
+    });
     if (profile.competitionFocus === 'bodybuilding') {
-      stack.push({ name: 'Digestive Enzymes', dose: '2 caps', reason: 'High protein intake (300g+) requires enzyme support to avoid GI distress', evidence: 'Grade B', timing: 'With each protein meal', priority: 'optional' });
+      stack.push({ 
+      name: t(`mensHealth.supps.${'Digestive Enzymes'}.name`, 'Digestive Enzymes'), 
+      dose: '2 caps', 
+      reason: t(`mensHealth.supps.${'Digestive Enzymes'}.reason`, 'High protein intake (300g+) requires enzyme support to avoid GI distress'), 
+      evidence: 'Grade B', 
+      timing: t(`mensHealth.supps.${'Digestive Enzymes'}.timing`, 'With each protein meal'), 
+      priority: 'optional' 
+    });
     }
     if (profile.competitionFocus === 'powerlifting') {
-      stack.push({ name: 'Caffeine', dose: '3–6mg/kg', reason: 'Improves peak strength output by 2–5% on competition day', evidence: 'Grade A', timing: '45–60 min pre-lift', priority: 'optional' });
+      stack.push({ 
+      name: t(`mensHealth.supps.${'Caffeine'}.name`, 'Caffeine'), 
+      dose: '3–6mg/kg', 
+      reason: t(`mensHealth.supps.${'Caffeine'}.reason`, 'Improves peak strength output by 2–5% on competition day'), 
+      evidence: 'Grade A', 
+      timing: t(`mensHealth.supps.${'Caffeine'}.timing`, '45–60 min pre-lift'), 
+      priority: 'optional' 
+    });
     }
   }
 
@@ -246,14 +402,14 @@ function getSupplementStack(
 // LEARN ARTICLES
 // ─────────────────────────────────────────────────────────────
 const LEARN_ARTICLES = [
-  { id: '1', emoji: '🧬', category: 'Hormones', time: '6 min', title: 'The Testosterone Blueprint', body: 'Testosterone peaks at 6–8am and is lowest at night. Sleep is the single biggest lever — one week of 5h sleep reduces testosterone to castrate levels in young men. The protocol: 8h sleep, resistance training 4x/week, zinc 30mg, vitamin D3 5000IU, and cortisol management. These four levers alone can raise total testosterone 20–30% in deficient men.' },
-  { id: '2', emoji: '💤', category: 'Recovery', time: '5 min', title: 'Sleep & Testosterone: The Hard Science', body: 'REM sleep is when 95% of daily testosterone is produced. Every hour below 8 reduces output proportionally. Alcohol at night suppresses GH release by 70%. The magnesium-sleep-testosterone triangle: magnesium deficiency impairs sleep quality, which impairs testosterone, which reduces magnesium uptake. Fix all three simultaneously.' },
-  { id: '3', emoji: '🏋️', category: 'Training', time: '7 min', title: 'Training for Maximum Testosterone Response', body: 'Compound lifts (squat, deadlift, bench, row) with high intensity (75–90% 1RM) produce the greatest testosterone response. Keep sessions under 60 minutes — cortisol rises sharply after. Rest 90–120 seconds between sets for hormonal response. Overtraining suppresses testosterone; under-recovery does too. Periodise: 3 weeks hard, 1 week deload.' },
-  { id: '4', emoji: '🥩', category: 'Nutrition', time: '5 min', title: 'Eating for Testosterone', body: 'Fat is the raw material of testosterone — dropping below 20% dietary fat crashes testosterone. Cholesterol from eggs and red meat is not the enemy; it\'s the precursor. Zinc from red meat and oysters, selenium from Brazil nuts (2/day), and saturated fat from whole food sources are the dietary cornerstones. Avoid chronic calorie restriction — it\'s the fastest way to suppress hormonal output.' },
-  { id: '5', emoji: '🧠', category: 'Cognition', time: '4 min', title: 'Cortisol: Testosterone\'s Arch Enemy', body: 'Cortisol and testosterone are directly antagonistic. Every cortisol spike suppresses Leydig cell function and reduces testosterone synthesis. The most effective cortisol management tools: consistent sleep schedule, ashwagandha KSM-66 (600mg), B-complex supplementation, removing chronic stressors, and limiting caffeine after 12pm.' },
-  { id: '6', emoji: '💉', category: 'Enhanced', time: '8 min', title: 'Harm Reduction for PED Users', body: 'The greatest risk for enhanced athletes is cardiovascular: left ventricular hypertrophy, elevated haematocrit, and dyslipidaemia. Non-negotiables: blood tests every 8 weeks (lipids, CBC, liver enzymes, hormones, PSA over 40), cardiovascular exercise 4x/week, TUDCA + NAC for organ protection, BP monitoring, and minimum 1:1 cycle-to-off ratio. Never blast without a health baseline.' },
-  { id: '7', emoji: '🏆', category: 'Compete', time: '6 min', title: 'Peak Week: The Science of Coming In Dry', body: 'Peak week for bodybuilding is about glycogen supercompensation, not extreme dehydration. Protocol: 4 days moderate carb depletion, 3 days carb load (600–800g/day), water manipulation (not elimination) in final 24 hours. Sodium manipulation: reduce 2 days out, not eliminate. Potassium-rich foods (banana, avocado) in final days improve definition. Diuretics: only with medical supervision.' },
-  { id: '8', emoji: '🧪', category: 'Labs', time: '5 min', title: 'Which Blood Tests Every Man Should Track', body: 'Baseline panel: Total Testosterone, Free Testosterone, SHBG, LH, FSH, Oestradiol, DHEA-S, Prolactin, CBC, CMP (liver/kidney), lipid panel (LDL, HDL, triglycerides), Vitamin D, ferritin, HbA1c. Enhanced users add: haematocrit, PSA (over 40), thyroid panel (TSH, T3, T4). Test in the morning (7–9am) in a fasted state for accurate baseline.' },
+  { id: 'tBlueprint', emoji: '🧬', category: 'Hormones', time: '6 min', title: 'The Testosterone Blueprint', body: 'Testosterone peaks at 6–8am and is lowest at night. Sleep is the single biggest lever — one week of 5h sleep reduces testosterone to castrate levels in young men. The protocol: 8h sleep, resistance training 4x/week, zinc 30mg, vitamin D3 5000IU, and cortisol management. These four levers alone can raise total testosterone 20–30% in deficient men.' },
+  { id: 'sleepTesto', emoji: '💤', category: 'Recovery', time: '5 min', title: 'Sleep & Testosterone: The Hard Science', body: 'REM sleep is when 95% of daily testosterone is produced. Every hour below 8 reduces output proportionally. Alcohol at night suppresses GH release by 70%. The magnesium-sleep-testosterone triangle: magnesium deficiency impairs sleep quality, which impairs testosterone, which reduces magnesium uptake. Fix all three simultaneously.' },
+  { id: 'trainingMax', emoji: '🏋️', category: 'Training', time: '7 min', title: 'Training for Maximum Testosterone Response', body: 'Compound lifts (squat, deadlift, bench, row) with high intensity (75–90% 1RM) produce the greatest testosterone response. Keep sessions under 60 minutes — cortisol rises sharply after. Rest 90–120 seconds between sets for hormonal response. Overtraining suppresses testosterone; under-recovery does too. Periodise: 3 weeks hard, 1 week deload.' },
+  { id: 'eatingTesto', emoji: '🥩', category: 'Nutrition', time: '5 min', title: 'Eating for Testosterone', body: 'Fat is the raw material of testosterone — dropping below 20% dietary fat crashes testosterone. Cholesterol from eggs and red meat is not the enemy; it\'s the precursor. Zinc from red meat and oysters, selenium from Brazil nuts (2/day), and saturated fat from whole food sources are the dietary cornerstones. Avoid chronic calorie restriction — it\'s the fastest way to suppress hormonal output.' },
+  { id: 'cortisolEnemy', emoji: '🧠', category: 'Cognition', time: '4 min', title: 'Cortisol: Testosterone\'s Arch Enemy', body: 'Cortisol and testosterone are directly antagonistic. Every cortisol spike suppresses Leydig cell function and reduces testosterone synthesis. The most effective cortisol management tools: consistent sleep schedule, ashwagandha KSM-66 (600mg), B-complex supplementation, removing chronic stressors, and limiting caffeine after 12pm.' },
+  { id: 'harmReduction', emoji: '💉', category: 'Enhanced', time: '8 min', title: 'Harm Reduction for PED Users', body: 'The greatest risk for enhanced athletes is cardiovascular: left ventricular hypertrophy, elevated haematocrit, and dyslipidaemia. Non-negotiables: blood tests every 8 weeks (lipids, CBC, liver enzymes, hormones, PSA over 40), cardiovascular exercise 4x/week, TUDCA + NAC for organ protection, BP monitoring, and minimum 1:1 cycle-to-off ratio. Never blast without a health baseline.' },
+  { id: 'peakWeek', emoji: '🏆', category: 'Compete', time: '6 min', title: 'Peak Week: The Science of Coming In Dry', body: 'Peak week for bodybuilding is about glycogen supercompensation, not extreme dehydration. Protocol: 4 days moderate carb depletion, 3 days carb load (600–800g/day), water manipulation (not elimination) in final 24 hours. Sodium manipulation: reduce 2 days out, not eliminate. Potassium-rich foods (banana, avocado) in final days improve definition. Diuretics: only with medical supervision.' },
+  { id: 'bloodTests', emoji: '🧪', category: 'Labs', time: '5 min', title: 'Which Blood Tests Every Man Should Track', body: 'Baseline panel: Total Testosterone, Free Testosterone, SHBG, LH, FSH, Oestradiol, DHEA-S, Prolactin, CBC, CMP (liver/kidney), lipid panel (LDL, HDL, triglycerides), Vitamin D, ferritin, HbA1c. Enhanced users add: haematocrit, PSA (over 40), thyroid panel (TSH, T3, T4). Test in the morning (7–9am) in a fasted state for accurate baseline.' },
 ];
 
 // ─────────────────────────────────────────────────────────────
@@ -271,6 +427,7 @@ const HEALTH_MARKERS = [
 // MAIN COMPONENT
 // ─────────────────────────────────────────────────────────────
 export default function MensHealthScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
@@ -378,11 +535,16 @@ export default function MensHealthScreen() {
   }, [kegelActive]);
 
   // ── Derived ──
-  const mc = profile ? MODE_CONFIG[profile.trainingMode] : MODE_CONFIG.natural;
-  const tOpt = useMemo(() => getTOptScore(convexUser, drive, recovery, focus, sleep), [convexUser, drive, recovery, focus, sleep]);
-  const supps = useMemo(() => getSupplementStack(profile, convexUser, cyclePhase), [profile, convexUser, cyclePhase]);
+  const mc = useMemo(() => {
+    const config = getModeConfig(t);
+    return profile ? config[profile.trainingMode] : config.natural;
+  }, [profile, t]);
 
-  const currentPhaseConfig = CYCLE_PHASES.find(p => p.id === cyclePhase) ?? CYCLE_PHASES[0];
+  const tOpt = useMemo(() => getTOptScore(convexUser, drive, recovery, focus, sleep, t), [convexUser, drive, recovery, focus, sleep, t]);
+  const supps = useMemo(() => getSupplementStack(profile, convexUser, cyclePhase, t), [profile, convexUser, cyclePhase, t]);
+
+  const phases = getCyclePhases(t);
+  const currentPhaseConfig = phases.find((p: any) => p.id === cyclePhase) ?? phases[0];
 
   // ── Quiz ──
   const handleQuizOption = async (value: string) => {
@@ -404,9 +566,9 @@ export default function MensHealthScreen() {
     if (!convexUser?._id) return;
     try {
       await logSession({ userId: convexUser._id, date: today, duration: 0, drive, recovery, focus });
-      Alert.alert('System Status Updated', `T-Opt Score: ${tOpt.score}%`);
+      Alert.alert(t('common.success', 'Success'), `${t('mensHealth.tOptScore', 'T-OPT SCORE')}: ${tOpt.score}%`);
       setShowVitality(false);
-    } catch { Alert.alert('Error', 'Could not save.'); }
+    } catch { Alert.alert(t('common.error', 'Error'), t('common.couldNotSave', 'Could not save.')); }
   };
 
   // ── Save pelvic ──
@@ -415,7 +577,7 @@ export default function MensHealthScreen() {
     setKegelActive(false);
     try {
       await logSession({ userId: convexUser._id, date: today, duration: kegelSecs, drive, recovery, focus });
-      Alert.alert('Protocol Complete', `${Math.floor(kegelSecs / 60)}:${String(kegelSecs % 60).padStart(2, '0')} logged.`);
+      Alert.alert(t('mensHealth.protocolComplete', 'Protocol Complete'), `${Math.floor(kegelSecs / 60)}:${String(kegelSecs % 60).padStart(2, '0')} ${t('common.logged', 'logged')}.`);
       setShowPelvic(false);
     } catch { }
   };
@@ -425,7 +587,7 @@ export default function MensHealthScreen() {
     if (!convexUser?._id) return;
     try {
       await logSupps({ userId: convexUser._id, date: today, items: supps.map(s => ({ name: s.name, dosage: s.dose, taken: true })), cyclePhase });
-      Alert.alert('Stack Logged', 'Supplement intake recorded.');
+      Alert.alert(t('mensHealth.stackLogged', 'Stack Logged'), t('mensHealth.stackLoggedMsg', 'Supplement intake recorded.'));
       setShowSupps(false);
     } catch { }
   };
@@ -452,13 +614,13 @@ export default function MensHealthScreen() {
         {quizStep === 0 && (
           <LinearGradient colors={['#0f172a', '#1e293b']} style={s.quizHero}>
             <Text style={s.quizHeroEmoji}>⚡</Text>
-            <Text style={s.quizHeroTitle}>Men's Optimization Hub</Text>
+            <Text style={s.quizHeroTitle}>{t('mensHealth.optimizationHub', 'Optimization Hub')}</Text>
             <Text style={s.quizHeroSub}>
-              4 questions to build your protocol — from natural testosterone optimisation to enhanced athlete management. All data is private and used only to personalise your guidance.
+              {t('mensHealth.quizHeroSub', '4 perguntas para construir o teu protocolo — desde otimização natural de testosterona até gestão de atletas avançados. Todos os dados são privados.')}
             </Text>
             {convexUser && (
               <View style={s.quizKnowBox}>
-                <Text style={s.quizKnowTitle}>✦ Already loaded from your profile</Text>
+                <Text style={s.quizKnowTitle}>✦ {t('mensHealth.alreadyLoaded', 'Já carregado do teu perfil')}</Text>
                 {convexUser.fitnessGoal && <Text style={s.quizKnowItem}>🎯 Goal: {convexUser.fitnessGoal.replace(/_/g, ' ')}</Text>}
                 {convexUser.activityLevel && <Text style={s.quizKnowItem}>⚡ Activity: {convexUser.activityLevel.replace(/_/g, ' ')}</Text>}
                 {convexUser.stressLevel && <Text style={s.quizKnowItem}>🧠 Stress: {convexUser.stressLevel}</Text>}
@@ -472,15 +634,15 @@ export default function MensHealthScreen() {
 
         <ScrollView contentContainerStyle={s.quizBody} keyboardShouldPersistTaps="handled">
           <Text style={s.quizEmoji}>{step.emoji}</Text>
-          <Text style={s.quizQuestion}>{step.question}</Text>
-          {'hint' in step && step.hint && <Text style={s.quizHint}>{step.hint}</Text>}
+          <Text style={s.quizQuestion}>{t(`mensHealth.quiz.q.${step.id}`, step.question)}</Text>
+          {'hint' in step && step.hint && <Text style={s.quizHint}>{t(`mensHealth.quiz.hint.${step.id}`, step.hint)}</Text>}
           <View style={s.quizOptions}>
             {'options' in step && step.options.map((opt: any) => (
               <TouchableOpacity key={opt.value} style={s.quizOption} onPress={() => handleQuizOption(opt.value)} activeOpacity={0.8}>
                 <Text style={s.quizOptionIcon}>{opt.icon}</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.quizOptionLabel}>{opt.label}</Text>
-                  {'desc' in opt && <Text style={s.quizOptionDesc}>{opt.desc}</Text>}
+                  <Text style={s.quizOptionLabel}>{t(`mensHealth.quiz.${opt.value}`, opt.label) as string}</Text>
+                  {('desc' in opt && opt.desc) ? <Text style={s.quizOptionDesc}>{t(`mensHealth.quiz.${opt.value}Desc`, opt.desc) as string}</Text> : null}
                 </View>
                 <Ionicons name="chevron-forward" size={16} color="#475569" />
               </TouchableOpacity>
@@ -504,47 +666,47 @@ export default function MensHealthScreen() {
           <View style={{ flex: 1, backgroundColor: '#0f172a' }}>
             <View style={[s.articleHeader, { paddingTop: insets.top + 16 }]}>
               <View style={{ flex: 1 }}>
-                <Text style={s.articleCategory}>{showArticle.emoji} {showArticle.category} · {showArticle.time}</Text>
-                <Text style={s.articleTitle}>{showArticle.title}</Text>
+                <Text style={s.articleCategory}>{showArticle.emoji} {t(`mensHealth.categories.${showArticle.category}`, showArticle.category)} · {showArticle.time}</Text>
+                <Text style={s.articleTitle}>{t(`mensHealth.articles.${showArticle.id}.title`, showArticle.title)}</Text>
               </View>
               <TouchableOpacity onPress={() => setShowArticle(null)} style={s.articleClose}>
                 <Ionicons name="close" size={20} color="#e2e8f0" />
               </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
-              <Text style={s.articleBody}>{showArticle.body}</Text>
+              <Text style={s.articleBody}>{t(`mensHealth.articles.${showArticle.id}.body`, showArticle.body)}</Text>
               <View style={s.articleDisclaimer}>
                 <Ionicons name="information-circle-outline" size={16} color="#64748b" />
-                <Text style={s.articleDisclaimerTxt}>Educational content, not medical advice. Always consult a physician for personalised guidance.</Text>
+                <Text style={s.articleDisclaimerTxt}>{t('mensHealth.articleDisclaimer','Conteúdo educativo, não aconselhamento médico. Consulta sempre um médico para orientação personalizada.')}</Text>
               </View>
             </ScrollView>
           </View>
         </Modal>
       )}
 
-      {/* Vitality Check-In Modal */}
+      {/* Vitality Check-in Modal */}
       <Modal visible={showVitality} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['top']}>
           <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 60 }} showsVerticalScrollIndicator={false}>
             <View style={s.modalHeader}>
-              <Text style={s.modalTitle}>Vitality Check-In</Text>
+              <Text style={s.modalTitle}>{t('mensHealth.vitalityCheckin','Registo de Vitalidade')}</Text>
               <TouchableOpacity onPress={() => setShowVitality(false)} style={s.modalClose}>
                 <Ionicons name="close" size={20} color="#e2e8f0" />
               </TouchableOpacity>
             </View>
 
-            <Text style={s.modalSub}>Rate each pillar honestly. Your T-Opt score updates in real time.</Text>
+            <Text style={s.modalSub}>{t('mensHealth.vitalitySub','Avalia cada pilar honestamente. O teu T-Opt score atualiza em tempo real.')}</Text>
 
             {/* T-Opt live score */}
             <View style={s.tOptLive}>
-              <Text style={s.tOptLiveLabel}>T-OPT SCORE</Text>
+              <Text style={s.tOptLiveLabel}>{t('mensHealth.tOptScore', 'T-OPT SCORE')}</Text>
               <Text style={[s.tOptLiveVal, { color: tOpt.score >= 70 ? '#4ade80' : tOpt.score >= 50 ? '#fcd34d' : '#f87171' }]}>{tOpt.score}%</Text>
             </View>
             {[
-              { label: 'Drive / Libido', value: drive, onChange: setDrive, icon: 'flame-outline', color: '#ef4444' },
-              { label: 'Recovery Status', value: recovery, onChange: setRecovery, icon: 'battery-charging-outline', color: '#4ade80' },
-              { label: 'Mental Focus', value: focus, onChange: setFocus, icon: 'eye-outline', color: '#60a5fa' },
-              { label: 'Sleep Quality', value: sleep, onChange: setSleep, icon: 'moon-outline', color: '#a78bfa' },
+              { label: t('mensHealth.drivePillar','Vitalidade / Líbido'), value: drive, onChange: setDrive, icon: 'flame-outline', color: '#ef4444' },
+              { label: t('mensHealth.recoveryPillar','Estado de Recuperação'), value: recovery, onChange: setRecovery, icon: 'battery-charging-outline', color: '#4ade80' },
+              { label: t('mensHealth.focusPillar','Foco Mental'), value: focus, onChange: setFocus, icon: 'eye-outline', color: '#60a5fa' },
+              { label: t('mensHealth.sleepPillar','Qualidade do Sono'), value: sleep, onChange: setSleep, icon: 'moon-outline', color: '#a78bfa' },
             ].map(item => (
               <View key={item.label} style={s.sliderWrap}>
                 <View style={s.sliderHeader}>
@@ -570,11 +732,11 @@ export default function MensHealthScreen() {
             {/* Mood sync */}
             <View style={s.moodSync}>
               <Ionicons name="sync" size={14} color="#a78bfa" />
-              <Text style={s.moodSyncTxt}>Mood synced from Wellness: {wellnessLog?.moodEmoji ?? '—'}</Text>
+              <Text style={s.moodSyncTxt}>{t('mensHealth.moodSynced','Humor sincronizado do Wellness')}: {wellnessLog?.moodEmoji ?? '—'}</Text>
             </View>
 
               <TouchableOpacity style={[s.saveBtn, { backgroundColor: mc.gradient[0] }]} onPress={handleSaveVitality}>
-                <Text style={s.saveBtnTxt}>Update System Status</Text>
+                <Text style={s.saveBtnTxt}>{t('mensHealth.updateStatus','Atualizar Estado do Sistema')}</Text>
               </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>
@@ -583,25 +745,25 @@ export default function MensHealthScreen() {
       {/* Pelvic Protocol Modal */}
       <Modal visible={showPelvic} animationType="slide" presentationStyle="pageSheet">
         <View style={{ flex: 1, backgroundColor: '#0f172a', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <Text style={s.pelvicTitle}>Pelvic Power Protocol</Text>
-          <Text style={s.pelvicSub}>Improves erectile function, urinary control, sexual performance and core stability.</Text>
+          <Text style={s.pelvicTitle}>{t('mensHealth.pelvicTitle','Protocolo de Poder Pélvico')}</Text>
+          <Text style={s.pelvicSub}>{t('mensHealth.pelvicSub','Melhora a função erétil, controlo urinário, desempenho sexual e estabilidade do core.')}</Text>
           <Animated.View style={[s.timerCircle, { transform: [{ scale: pulseAnim }], borderColor: kegelActive ? '#60a5fa' : '#334155', backgroundColor: kegelActive ? 'rgba(96,165,250,0.1)' : '#1e293b' }]}>
             <Text style={s.timerTime}>{String(Math.floor(kegelSecs / 60)).padStart(2, '0')}:{String(kegelSecs % 60).padStart(2, '0')}</Text>
             <Text style={[s.timerMsg, { color: kegelActive ? '#60a5fa' : '#64748b' }]}>{kegelMsg}</Text>
           </Animated.View>
-          <Text style={s.pelvicInstructions}>Squeeze 5s → Relax 5s → Repeat. Target 10–15 cycles. Daily practice shows results in 4–6 weeks.</Text>
+          <Text style={s.pelvicInstructions}>{t('mensHealth.pelvicInstructions','Contrai 5s → Relaxa 5s → Repete. 10–15 ciclos. Prática diária dá resultados em 4–6 semanas.')}</Text>
           <View style={s.pelvicActions}>
             {!kegelActive ? (
               <TouchableOpacity style={s.pelvicStartBtn} onPress={() => setKegelActive(true)}>
-                <Text style={s.pelvicStartTxt}>Start Protocol</Text>
+                <Text style={s.pelvicStartTxt}>{t('mensHealth.startProtocol','Iniciar Protocolo')}</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity style={s.pelvicFinishBtn} onPress={handleFinishPelvic}>
-                <Text style={s.pelvicFinishTxt}>Finish & Log</Text>
+                <Text style={s.pelvicFinishTxt}>{t('mensHealth.finishLog','Terminar & Registar')}</Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity onPress={() => { setKegelActive(false); setShowPelvic(false); }} style={{ marginTop: 16 }}>
-              <Text style={{ color: '#64748b', fontWeight: '600' }}>Cancel</Text>
+              <Text style={{ color: '#64748b', fontWeight: '600' }}>{t('common.cancel', 'Cancel')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -612,8 +774,8 @@ export default function MensHealthScreen() {
         <View style={{ flex: 1, backgroundColor: '#0f172a' }}>
           <View style={[s.modalHeader, { paddingTop: insets.top + 16, paddingHorizontal: 20, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: '#1e293b' }]}>
             <View style={{ flex: 1 }}>
-              <Text style={s.modalTitle}>Your Stack</Text>
-              <Text style={[s.modalSub, { marginTop: 2 }]}>{mc.emoji} {mc.label} protocol · {supps.length} compounds</Text>
+              <Text style={s.modalTitle}>{t('mensHealth.yourStack', 'Your Stack')}</Text>
+              <Text style={[s.modalSub, { marginTop: 2 }]}>{mc.emoji} {t(`mensHealth.${profile?.trainingMode || 'natural'}`, mc.label)} {t('mensHealth.protocolShort', 'protocol')} · {supps.length} {t('mensHealth.compounds', 'compounds')}</Text>
             </View>
             <TouchableOpacity onPress={() => setShowSupps(false)} style={s.modalClose}>
               <Ionicons name="close" size={20} color="#e2e8f0" />
@@ -626,11 +788,11 @@ export default function MensHealthScreen() {
                 <View style={{ marginBottom: 16, padding: 16, borderRadius: 16, backgroundColor: '#1e293b', flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                   <Ionicons name="lock-closed" size={24} color="#fcd34d" />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 15, fontWeight: '800', color: '#fff' }}>Unlock Your Stack</Text>
-                    <Text style={{ fontSize: 13, color: '#94a3b8', marginTop: 2 }}>Upgrade to Pro to see personalised recommendations tailored to your goals.</Text>
+                    <Text style={{ fontSize: 15, fontWeight: '800', color: '#fff' }}>{t('mensHealth.unlockStack','Desbloqueia o Teu Stack')}</Text>
+                    <Text style={{ fontSize: 13, color: '#94a3b8', marginTop: 2 }}>{t('mensHealth.upgradeToPro','Atualizar para Pro')} to see personalised recommendations tailored to your goals.</Text>
                   </View>
                   <TouchableOpacity onPress={() => { setShowSupps(false); router.push('/premium' as any); }}>
-                    <Text style={{ color: mc.accent, fontWeight: '700' }}>Upgrade</Text>
+                    <Text style={{ color: mc.accent, fontWeight: '700' }}>{t('common.upgrade', 'Upgrade')}</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -643,7 +805,7 @@ export default function MensHealthScreen() {
                   <View key={priority} style={{ marginBottom: 20 }}>
                     <View style={s.suppGroupHeader}>
                       <View style={[s.suppGroupDot, { backgroundColor: priority === 'critical' ? '#ef4444' : priority === 'core' ? '#4ade80' : '#64748b' }]} />
-                      <Text style={s.suppGroupLabel}>{priority === 'critical' ? '⚠️ Critical' : priority === 'core' ? '✅ Core Stack' : '💡 Optional'}</Text>
+                      <Text style={s.suppGroupLabel}>{priority === 'critical' ? t('mensHealth.suppCritical', '⚠️ Critical') : priority === 'core' ? t('mensHealth.suppCore', '✅ Core Stack') : t('mensHealth.suppOptional', '💡 Optional')}</Text>
                     </View>
                     {group.map((supp, i) => (
                       <View key={i} style={s.suppCard}>
@@ -654,7 +816,7 @@ export default function MensHealthScreen() {
                           </View>
                         </View>
                         <Text style={s.suppDose}>💊 {isPro ? supp.dose : '•••'} · ⏰ {isPro ? supp.timing : '••••'}</Text>
-                        <Text style={s.suppReason}>{isPro ? supp.reason : 'Personalisation locked for free users.'}</Text>
+                        <Text style={s.suppReason}>{isPro ? supp.reason : t('mensHealth.suppLocked', 'Personalisation locked for free users.')}</Text>
                       </View>
                     ))}
                   </View>
@@ -662,11 +824,11 @@ export default function MensHealthScreen() {
               })}
             </View>
             <TouchableOpacity style={[s.saveBtn, { backgroundColor: mc.gradient[0] }]} onPress={handleSaveSupps}>
-              <Text style={s.saveBtnTxt}>Log Today's Stack</Text>
+              <Text style={s.saveBtnTxt}>{t('mensHealth.logStack','Registar Stack de Hoje')}</Text>
             </TouchableOpacity>
             <View style={s.suppDisclaimer}>
               <Ionicons name="shield-checkmark-outline" size={16} color="#475569" />
-              <Text style={s.suppDisclaimerTxt}>Always consult a doctor before starting supplements, especially if using medications or on cycle.</Text>
+              <Text style={s.suppDisclaimerTxt}>{t('mensHealth.suppDisclaimer', 'Always consult a doctor before starting supplements, especially if using medications or on cycle.')}</Text>
             </View>
           </ScrollView>
         </View>
@@ -676,37 +838,37 @@ export default function MensHealthScreen() {
       <Modal visible={showMarkers} animationType="slide" presentationStyle="pageSheet">
         <View style={{ flex: 1, backgroundColor: '#0f172a' }}>
           <View style={[s.modalHeader, { paddingTop: insets.top + 16, paddingHorizontal: 20, paddingBottom: 16 }]}>
-            <Text style={s.modalTitle}>Health Markers</Text>
+            <Text style={s.modalTitle}>{t('mensHealth.healthMarkers', 'Health Markers')}</Text>
             <TouchableOpacity onPress={() => setShowMarkers(false)} style={s.modalClose}>
               <Ionicons name="close" size={20} color="#e2e8f0" />
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
             <Text style={[s.modalSub, { marginBottom: 20 }]}>
-              Log your most recent lab values and blood pressure readings. Track trends over time.
+              {t('mensHealth.healthMarkersSub', 'Log your most recent lab values and blood pressure readings. Track trends over time.')}
             </Text>
             {HEALTH_MARKERS.map(marker => (
               <View key={marker.id} style={s.markerCard}>
                 <View style={s.markerTop}>
                   <Text style={s.markerIcon}>{marker.icon}</Text>
                   <View style={{ flex: 1 }}>
-                    <Text style={s.markerName}>{marker.label}</Text>
-                    <Text style={s.markerNormal}>Normal: {marker.normal} · Warning: {marker.warning}</Text>
+                    <Text style={s.markerName}>{t(`mensHealth.markers.${marker.id}.label`, marker.label)}</Text>
+                    <Text style={s.markerNormal}>{t('mensHealth.normal', 'Normal')}: {marker.normal} · {t('mensHealth.warning', 'Warning')}: {marker.warning}</Text>
                   </View>
                 </View>
                 <TextInput
                   style={s.markerInput}
-                  placeholder={`Enter ${marker.unit}...`}
+                  placeholder={t('mensHealth.markerPlaceholder', { unit: marker.unit, defaultValue: `Enter ${marker.unit}...` })}
                   placeholderTextColor="#475569"
                   value={markerValues[marker.id] ?? ''}
                   onChangeText={val => setMarkerValues(p => ({ ...p, [marker.id]: val }))}
                   keyboardType="numbers-and-punctuation"
                 />
-                <Text style={s.markerTip}>💡 {marker.tip}</Text>
+                <Text style={s.markerTip}>💡 {t(`mensHealth.markers.${marker.id}.tip`, marker.tip)}</Text>
               </View>
             ))}
-            <TouchableOpacity style={[s.saveBtn, { backgroundColor: mc.gradient[0] }]} onPress={() => { Alert.alert('Saved', 'Health markers logged.'); setShowMarkers(false); }}>
-              <Text style={s.saveBtnTxt}>Save Markers</Text>
+            <TouchableOpacity style={[s.saveBtn, { backgroundColor: mc.gradient[0] }]} onPress={() => { Alert.alert(t('common.saved', 'Saved'), t('mensHealth.markersLogged', 'Health markers logged.')); setShowMarkers(false); }}>
+              <Text style={s.saveBtnTxt}>{t('mensHealth.saveMarkers','Guardar Marcadores')}</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -716,13 +878,13 @@ export default function MensHealthScreen() {
       <Modal visible={showPeakWeek} animationType="slide" presentationStyle="pageSheet">
         <View style={{ flex: 1, backgroundColor: '#0f172a' }}>
           <View style={[s.modalHeader, { paddingTop: insets.top + 16, paddingHorizontal: 20, paddingBottom: 16 }]}>
-            <Text style={s.modalTitle}>Peak Week Protocol</Text>
+            <Text style={s.modalTitle}>{t('mensHealth.peakWeekProtocol', 'Peak Week Protocol')}</Text>
             <TouchableOpacity onPress={() => setShowPeakWeek(false)} style={s.modalClose}>
               <Ionicons name="close" size={20} color="#e2e8f0" />
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
-            <Text style={s.modalSub}>Days to show: {peakWeekDay}</Text>
+            <Text style={s.modalSub}>{t('mensHealth.daysToShow', 'Days to show')}: {peakWeekDay}</Text>
             <View style={s.peakDayRow}>
               {[7, 6, 5, 4, 3, 2, 1].map(d => (
                 <TouchableOpacity key={d} style={[s.peakDayBtn, peakWeekDay === d && { backgroundColor: '#d97706', borderColor: '#d97706' }]} onPress={() => setPeakWeekDay(d)}>
@@ -732,13 +894,13 @@ export default function MensHealthScreen() {
             </View>
 
             {[
-              { day: 7, title: 'D-7: Last heavy session', body: 'Deplete glycogen. Carbs: 1.5g/kg. Moderate sodium. Normal water intake.' },
-              { day: 6, title: 'D-6: Depletion continues', body: 'Low carb (1g/kg). High protein. Begin monitoring daily weight fluctuation.' },
-              { day: 5, title: 'D-5: Muscle belly check', body: 'Note muscle fullness and vascularity. Adjust carbs up if looking flat.' },
-              { day: 4, title: 'D-4: Begin carb load', body: 'Carbs: 4–6g/kg. Low-GI sources: sweet potato, rice, oats. Keep fat low.' },
-              { day: 3, title: 'D-3: Peak carb load', body: 'Carbs: 6–8g/kg. Watch for spill-over (blurring definition). Reduce if needed.' },
-              { day: 2, title: 'D-2: Water management', body: 'Reduce water slightly (not eliminate). Increase potassium foods. Last sodium manipulation.' },
-              { day: 1, title: 'Show Day', body: 'Sip water. Carb up backstage (rice cakes + honey). Pump up 20 min before stage. Trust your prep.' },
+              { day: 7, title: t('mensHealth.peakDay7Title', 'D-7: Last heavy session'), body: t('mensHealth.peakDay7Body', 'Deplete glycogen. Carbs: 1.5g/kg. Moderate sodium. Normal water intake.') },
+              { day: 6, title: t('mensHealth.peakDay6Title', 'D-6: Depletion continues'), body: t('mensHealth.peakDay6Body', 'Low carb (1g/kg). High protein. Begin monitoring daily weight fluctuation.') },
+              { day: 5, title: t('mensHealth.peakDay5Title', 'D-5: Muscle belly check'), body: t('mensHealth.peakDay5Body', 'Note muscle fullness and vascularity. Adjust carbs up if looking flat.') },
+              { day: 4, title: t('mensHealth.peakDay4Title', 'D-4: Begin carb load'), body: t('mensHealth.peakDay4Body', 'Carbs: 4–6g/kg. Low-GI sources: sweet potato, rice, oats. Keep fat low.') },
+              { day: 3, title: t('mensHealth.peakDay3Title', 'D-3: Peak carb load'), body: t('mensHealth.peakDay3Body', 'Carbs: 6–8g/kg. Watch for spill-over (blurring definition). Reduce if needed.') },
+              { day: 2, title: t('mensHealth.peakDay2Title', 'D-2: Water management'), body: t('mensHealth.peakDay2Body', 'Reduce water slightly (not eliminate). Increase potassium foods. Last sodium manipulation.') },
+              { day: 1, title: t('mensHealth.peakDay1Title', 'Show Day'), body: t('mensHealth.peakDay1Body', 'Sip water. Carb up backstage (rice cakes + honey). Pump up 20 min before stage. Trust your prep.') },
             ].filter(item => item.day >= peakWeekDay).slice(0, 1).map(item => (
               <View key={item.day} style={s.peakDayCard}>
                 <Text style={s.peakDayCardTitle}>{item.title}</Text>
@@ -747,7 +909,7 @@ export default function MensHealthScreen() {
             ))}
 
             <View style={s.carbLoadToggle}>
-              <Text style={s.carbLoadLabel}>Carb load active</Text>
+              <Text style={s.carbLoadLabel}>{t('mensHealth.carbLoadActive', 'Carb load active')}</Text>
               <Switch value={carbLoad} onValueChange={setCarbLoad} trackColor={{ false: '#334155', true: '#d97706' }} thumbColor="#fff" />
             </View>
           </ScrollView>
@@ -760,12 +922,12 @@ export default function MensHealthScreen() {
           <Ionicons name="arrow-back" size={20} color="#94a3b8" />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <Text style={s.headerTitle}>Optimization Hub</Text>
+          <Text style={s.headerTitle}>{t('mensHealth.optimizationHub', 'Optimization Hub')}</Text>
           <Text style={[s.headerSub, { color: mc.accent }]}>{mc.emoji} {mc.label} · {mc.tagline}</Text>
         </View>
         <View style={[s.scoreChip, { borderColor: mc.accent + '40' }]}>
           <Text style={[s.scoreChipVal, { color: mc.accent }]}>{status?.score ?? 0}%</Text>
-          <Text style={s.scoreChipLbl}>Today</Text>
+          <Text style={s.scoreChipLbl}>{t('mensHealth.tabToday','Hoje')}</Text>
         </View>
         <TouchableOpacity onPress={() => { SecureStore.deleteItemAsync(QUIZ_KEY); setQuizDone(false); setQuizStep(0); setQuizAnswers({}); }} style={s.retakeBtn}>
           <Ionicons name="settings-outline" size={18} color="#64748b" />
@@ -775,10 +937,10 @@ export default function MensHealthScreen() {
       {/* ── TAB BAR ── */}
       <View style={s.tabBar}>
         {[
-          { id: 'today', label: 'Today', emoji: '⚡' },
-          { id: 'track', label: 'Track', emoji: '📊' },
-          { id: 'insights', label: 'Insights', emoji: '🧠' },
-          { id: 'learn', label: 'Learn', emoji: '📚' },
+          { id: 'today', label: t('mensHealth.tabToday','Hoje'), emoji: '⚡' },
+          { id: 'track', label: t('mensHealth.tabTrack','Análise'), emoji: '📈' },
+          { id: 'insights', label: t('mensHealth.tabInsights','Insights'), emoji: '💡' },
+          { id: 'learn', label: t('mensHealth.tabLearn','Aprender'), emoji: '📚' },
         ].map(tab => (
           <TouchableOpacity key={tab.id} style={[s.tab, activeTab === tab.id && [s.tabActive, { borderBottomColor: mc.accent }]]} onPress={() => setActiveTab(tab.id as any)}>
             <Text style={s.tabEmoji}>{tab.emoji}</Text>
@@ -799,8 +961,8 @@ export default function MensHealthScreen() {
             <LinearGradient colors={mc.gradient} style={s.modeHero}>
               <View style={s.modeHeroTop}>
                 <View>
-                  <Text style={s.modeHeroMode}>{mc.emoji} {mc.label} Protocol</Text>
-                  <Text style={s.modeHeroGoal}>{profile?.primaryGoal?.replace(/_/g, ' ')} · {profile?.yearsTraining?.replace(/_/g, ' ')}</Text>
+                  <Text style={s.modeHeroMode}>{mc.emoji} {mc.label} {t('mensHealth.protocol', 'Protocol') as string}</Text>
+                  <Text style={s.modeHeroGoal}>{t(`mensHealth.quiz.${profile?.primaryGoal}`, { defaultValue: profile?.primaryGoal?.replace(/_/g, ' ') }) as string} · {t(`mensHealth.quiz.${profile?.yearsTraining}`, { defaultValue: profile?.yearsTraining?.replace(/_/g, ' ') }) as string}</Text>
                   {profile?.competitionFocus && profile.competitionFocus !== 'none' && (
                     <Text style={s.modeHeroComp}>🏆 {profile.competitionFocus}</Text>
                   )}
@@ -821,7 +983,7 @@ export default function MensHealthScreen() {
               {/* Enhanced: Cycle phase */}
               {profile?.trainingMode === 'enhanced' && (
                 <View style={s.cyclePhaseRow}>
-                  {CYCLE_PHASES.map(p => (
+                  {phases.map((p: any) => (
                     <TouchableOpacity key={p.id} style={[s.cPhaseChip, cyclePhase === p.id && { backgroundColor: p.color + '33', borderColor: p.color }]} onPress={() => setCyclePhase(p.id)}>
                       <Text style={[s.cPhaseLabel, { color: cyclePhase === p.id ? p.color : '#64748b' }]}>{p.label}</Text>
                     </TouchableOpacity>
@@ -832,9 +994,9 @@ export default function MensHealthScreen() {
               {/* Athlete: Competition countdown */}
               {profile?.trainingMode === 'athlete' && (
                 <View style={s.compRow}>
-                  <Text style={s.compLabel}>Peak Week Tool</Text>
+                  <Text style={s.compLabel}>{t('mensHealth.peakWeekTool', 'Peak Week Tool')}</Text>
                   <TouchableOpacity style={s.compBtn} onPress={() => setShowPeakWeek(true)}>
-                    <Text style={s.compBtnTxt}>Open Protocol →</Text>
+                    <Text style={s.compBtnTxt}>{t('mensHealth.openProtocol', 'Open Protocol →')}</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -849,31 +1011,31 @@ export default function MensHealthScreen() {
             )}
 
             {/* Daily protocols */}
-            <Text style={s.sectionTitle}>Daily Protocols</Text>
+            <Text style={s.sectionTitle}>{t('mensHealth.dailyProtocols','Protocolos Diários')}</Text>
 
             {/* Action tiles — adapt by mode */}
             {[
               {
-                icon: 'stats-chart-outline', label: 'Vitality Check-In',
-                sub: profile?.trainingMode === 'natural' ? `T-Opt Score: ${tOpt.score}%` : 'Drive · Recovery · Focus',
+                icon: 'stats-chart-outline', label: t('mensHealth.vitalityCheckin','Registo de Vitalidade'),
+                sub: profile?.trainingMode === 'natural' ? `${t('mensHealth.tOptScore', 'T-OPT SCORE')}: ${tOpt.score}%` : t('mensHealth.vitalitySubline', 'Drive · Recovery · Focus'),
                 color: mc.accent, onPress: () => setShowVitality(true),
               },
               {
-                icon: 'fitness-outline', label: 'Pelvic Power Protocol',
-                sub: 'Core, erectile & urinary function', color: '#4ade80', onPress: () => setShowPelvic(true),
+                icon: 'fitness-outline', label: t('mensHealth.pelvicTitle','Protocolo de Poder Pélvico'),
+                sub: t('mensHealth.pelvicActionSub', 'Core, função erétil & urinária'), color: '#4ade80', onPress: () => setShowPelvic(true),
               },
               {
-                icon: 'flask-outline', label: 'Supplement Stack',
-                sub: `${supps.filter(s => s.priority === 'core').length} core · ${supps.filter(s => s.priority === 'critical').length} critical`,
+                icon: 'flask-outline', label: t('mensHealth.supplementStack', 'Supplement Stack'),
+                sub: `${supps.filter(s => s.priority === 'core').length} ${t('mensHealth.core', 'base')} · ${supps.filter(s => s.priority === 'critical').length} ${t('mensHealth.critical', 'crítico')}`,
                 color: '#a78bfa', onPress: () => setShowSupps(true),
               },
               ...(profile?.trainingMode === 'enhanced' ? [{
-                icon: 'heart-circle-outline', label: 'Health Markers',
+                icon: 'heart-circle-outline', label: t('mensHealth.healthMarkers', 'Health Markers'),
                 sub: 'BP · HCT · ALT · LDL · PSA', color: '#f87171', onPress: () => setShowMarkers(true),
               }] : []),
               ...(profile?.trainingMode === 'athlete' && profile.competitionFocus === 'bodybuilding' ? [{
-                icon: 'trophy-outline', label: 'Peak Week Protocol',
-                sub: 'Carb load · water · stage prep', color: '#fcd34d', onPress: () => setShowPeakWeek(true),
+                icon: 'trophy-outline', label: t('mensHealth.peakWeekProtocol', 'Peak Week Protocol'),
+                sub: t('mensHealth.peakWeekSub', 'Carb load · water · stage prep'), color: '#fcd34d', onPress: () => setShowPeakWeek(true),
               }] : []),
             ].map((a, i) => (
               <TouchableOpacity key={i} style={s.actionTile} onPress={(a as any).onPress} activeOpacity={0.8}>
@@ -894,7 +1056,7 @@ export default function MensHealthScreen() {
         {/* ═══════════════ TRACK TAB ═══════════════ */}
         {activeTab === 'track' && (
           <>
-            <Text style={s.sectionTitle}>7-Day Vitality Trend</Text>
+            <Text style={s.sectionTitle}>{t('mensHealth.sevenDayTrend','Tendência de Vitalidade 7 Dias')}</Text>
 
             {/* History chart (simple bar rows) */}
             {history && history.length > 0 ? (
@@ -904,9 +1066,9 @@ export default function MensHealthScreen() {
                     <Text style={s.historyDate}>{log.date?.slice(5)}</Text>
                     <View style={s.historyBars}>
                       {[
-                        { val: log.drive ?? 0, color: '#ef4444', label: 'D' },
-                        { val: log.recovery ?? 0, color: '#4ade80', label: 'R' },
-                        { val: log.focus ?? 0, color: '#60a5fa', label: 'F' },
+                        { val: log.drive ?? 0, color: '#ef4444', label: t('mensHealth.pillarDriveShort', 'V') },
+                        { val: log.recovery ?? 0, color: '#4ade80', label: t('mensHealth.pillarRecoveryShort', 'R') },
+                        { val: log.focus ?? 0, color: '#60a5fa', label: t('mensHealth.pillarFocusShort', 'F') },
                       ].map(bar => (
                         <View key={bar.label} style={s.historyBarWrap}>
                           <View style={[s.historyBar, { height: (bar.val / 10) * 48, backgroundColor: bar.color }]} />
@@ -919,13 +1081,13 @@ export default function MensHealthScreen() {
                 ))}
               </View>
             ) : (
-              <Text style={s.emptyTxt}>Log your vitality daily to see your trend here.</Text>
+              <Text style={s.emptyTxt}>{t('mensHealth.emptyTrack', 'Regista a tua vitalidade diariamente para ver a tua tendência aqui.')}</Text>
             )}
 
             {/* Natural: T-Opt pillars */}
             {profile?.trainingMode === 'natural' && (
               <>
-                <Text style={s.sectionTitle}>Testosterone Optimisation Pillars</Text>
+                <Text style={s.sectionTitle}>{t('mensHealth.tOptPillars','Pilares de Otimização de Testosterona')}</Text>
                 {tOpt.pillars.map((p, i) => (
                   <View key={i} style={s.pillarCard}>
                     <View style={s.pillarTop}>
@@ -945,18 +1107,18 @@ export default function MensHealthScreen() {
             {/* Enhanced: cycle tracker */}
             {profile?.trainingMode === 'enhanced' && (
               <>
-                <Text style={s.sectionTitle}>Cycle Tracker</Text>
+                <Text style={s.sectionTitle}>{t('mensHealth.cycleTracker','Rastreador de Ciclo')}</Text>
                 <View style={s.cycleTracker}>
-                  <Text style={s.cycleTrackerLabel}>Current Phase</Text>
+                  <Text style={s.cycleTrackerLabel}>{t('mensHealth.currentPhase', 'Current Phase')}</Text>
                   <View style={s.cyclePhaseRow}>
-                    {CYCLE_PHASES.map(p => (
+                    {phases.map((p: any) => (
                       <TouchableOpacity key={p.id} style={[s.cPhaseChipLarge, cyclePhase === p.id && { backgroundColor: p.color + '22', borderColor: p.color }]} onPress={() => setCyclePhase(p.id)}>
                         <Text style={[s.cPhaseChipLargeTxt, { color: cyclePhase === p.id ? p.color : '#64748b' }]}>{p.label}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
                   <View style={s.cycleWeekRow}>
-                    <Text style={s.cycleWeekLabel}>Week {cycleWeek} of {cycleLength}</Text>
+                    <Text style={s.cycleWeekLabel}>{t('mensHealth.weekOfCycle', { week: cycleWeek, total: cycleLength, defaultValue: `Week ${cycleWeek} of ${cycleLength}` })}</Text>
                     <View style={s.cycleWeekBtns}>
                       <TouchableOpacity onPress={() => setCycleWeek(w => Math.max(1, w - 1))} style={s.cycleWeekBtn}><Text style={s.cycleWeekBtnTxt}>−</Text></TouchableOpacity>
                       <TouchableOpacity onPress={() => setCycleWeek(w => Math.min(cycleLength, w + 1))} style={s.cycleWeekBtn}><Text style={s.cycleWeekBtnTxt}>+</Text></TouchableOpacity>
@@ -967,13 +1129,13 @@ export default function MensHealthScreen() {
                   </View>
                 </View>
 
-                <Text style={s.sectionTitle}>Health Markers to Monitor</Text>
+                <Text style={s.sectionTitle}>{t('mensHealth.healthMarkersMonitor','Marcadores de Saúde a Monitorizar')}</Text>
                 {HEALTH_MARKERS.map(m => (
                   <View key={m.id} style={s.markerChip}>
                     <Text style={s.markerChipIcon}>{m.icon}</Text>
                     <View style={{ flex: 1 }}>
-                      <Text style={s.markerChipName}>{m.label}</Text>
-                      <Text style={s.markerChipNormal}>Normal: {m.normal}</Text>
+                      <Text style={s.markerChipName}>{t(`mensHealth.markers.${m.id}.label`, m.label)}</Text>
+                      <Text style={s.markerChipNormal}>{t('mensHealth.normal', 'Normal')}: {m.normal}</Text>
                     </View>
                     <Text style={markerValues[m.id] ? s.markerChipLogged : s.markerChipEmpty}>
                       {markerValues[m.id] ? markerValues[m.id] : '—'}
@@ -981,7 +1143,7 @@ export default function MensHealthScreen() {
                   </View>
                 ))}
                 <TouchableOpacity style={[s.secondaryBtn, { borderColor: mc.accent + '40' }]} onPress={() => setShowMarkers(true)}>
-                  <Text style={[s.secondaryBtnTxt, { color: mc.accent }]}>Log Health Markers</Text>
+                  <Text style={[s.secondaryBtnTxt, { color: mc.accent }]}>{t('mensHealth.logMarkers','Registar Marcadores de Saúde')}</Text>
                 </TouchableOpacity>
               </>
             )}
@@ -989,11 +1151,11 @@ export default function MensHealthScreen() {
             {/* Athlete: competition prep */}
             {profile?.trainingMode === 'athlete' && (
               <>
-                <Text style={s.sectionTitle}>Competition Prep</Text>
+                <Text style={s.sectionTitle}>{t('mensHealth.compPrep','Preparação para Competição')}</Text>
                 <TouchableOpacity style={s.peakWeekCard} onPress={() => setShowPeakWeek(true)} activeOpacity={0.85}>
-                  <Text style={s.peakWeekTitle}>🏆 Peak Week Protocol</Text>
-                  <Text style={s.peakWeekSub}>Day-by-day carb load, water manipulation and staging guidance</Text>
-                  <Text style={s.peakWeekCta}>Open Protocol →</Text>
+                  <Text style={s.peakWeekTitle}>🏆 {t('mensHealth.peakWeekProtocol', 'Peak Week Protocol')}</Text>
+                  <Text style={s.peakWeekSub}>{t('mensHealth.peakWeekDetailedSub', 'Carb load dia a dia, manipulação de água e orientação para palco')}</Text>
+                  <Text style={s.peakWeekCta}>{t('mensHealth.openProtocol', 'Open Protocol →')}</Text>
                 </TouchableOpacity>
               </>
             )}
@@ -1003,14 +1165,14 @@ export default function MensHealthScreen() {
         {/* ═══════════════ INSIGHTS TAB ═══════════════ */}
         {activeTab === 'insights' && (
           <>
-            <Text style={s.sectionTitle}>Personalised Insights</Text>
+            <Text style={s.sectionTitle}>{t('mensHealth.personalisedInsights','Insights Personalizados')}</Text>
 
             {/* Natural insights */}
             {profile?.trainingMode === 'natural' && tOpt.pillars.filter(p => p.score < 70).map((p, i) => (
               <View key={i} style={[s.insightCard, { borderLeftColor: p.score < 50 ? '#ef4444' : '#fcd34d' }]}>
                 <Text style={s.insightEmoji}>{p.icon}</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.insightTitle}>{p.name} needs attention</Text>
+                  <Text style={s.insightTitle}>{p.name} {t('mensHealth.needsAttention', 'precisa de atenção')}</Text>
                   <Text style={s.insightBody}>{p.tip}</Text>
                 </View>
               </View>
@@ -1021,8 +1183,8 @@ export default function MensHealthScreen() {
               <View style={[s.insightCard, { borderLeftColor: '#60a5fa' }]}>
                 <Text style={s.insightEmoji}>📅</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.insightTitle}>Annual blood panel recommended</Text>
-                  <Text style={s.insightBody}>At {convexUser.age}, tracking total testosterone, free testosterone, SHBG, oestradiol, and thyroid annually gives you the data to optimise proactively rather than reactively.</Text>
+                  <Text style={s.insightTitle}>{t('mensHealth.annualPanel', 'Painel de sangue anual recomendado')}</Text>
+                  <Text style={s.insightBody}>{t('mensHealth.annualPanelBody', 'Aos {{age}} anos, acompanhar testosterona total, testosterona livre, SHBG, estradiol e tiroide anualmente dá-te os dados para otimizar proativamente.', { age: convexUser.age })}</Text>
                 </View>
               </View>
             )}
@@ -1032,8 +1194,8 @@ export default function MensHealthScreen() {
               <View style={[s.insightCard, { borderLeftColor: '#f97316' }]}>
                 <Text style={s.insightEmoji}>🔥</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.insightTitle}>Fat Loss & Testosterone</Text>
-                  <Text style={s.insightBody}>Aggressive calorie restriction below 15 kcal/kg/day suppresses testosterone. Aim for a 15–20% deficit maximum. Prioritise protein 2.2g/kg to preserve muscle while cutting.</Text>
+                  <Text style={s.insightTitle}>{t('mensHealth.fatLossTitle', 'Perda de Gordura & Testosterona')}</Text>
+                  <Text style={s.insightBody}>{t('mensHealth.fatLossBody', 'Restrição calórica agressiva abaixo de 15 kcal/kg/dia suprime a testosterona. Visa um défice máximo de 15–20%. Prioriza proteína 2,2g/kg para preservar músculo.')}</Text>
                 </View>
               </View>
             )}
@@ -1042,8 +1204,8 @@ export default function MensHealthScreen() {
               <View style={[s.insightCard, { borderLeftColor: '#4ade80' }]}>
                 <Text style={s.insightEmoji}>💪</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.insightTitle}>Progressive Overload Protocol</Text>
-                  <Text style={s.insightBody}>Add 2.5kg to compound lifts weekly, or increase reps before increasing load. Train each muscle group 2x/week minimum for hypertrophy. Deload every 4–6 weeks.</Text>
+                  <Text style={s.insightTitle}>{t('mensHealth.progressiveTitle', 'Protocolo de Sobrecarga Progressiva')}</Text>
+                  <Text style={s.insightBody}>{t('mensHealth.progressiveBody', 'Aumenta o peso, repetições ou densidade em cada sessão. O treino pesado é o sinal anabólico primário.')}</Text>
                 </View>
               </View>
             ) : null}
@@ -1054,15 +1216,15 @@ export default function MensHealthScreen() {
                 <View style={[s.insightCard, { borderLeftColor: '#ef4444' }]}>
                   <Text style={s.insightEmoji}>⚠️</Text>
                   <View style={{ flex: 1 }}>
-                    <Text style={s.insightTitle}>Blood Work Every 8 Weeks</Text>
-                    <Text style={s.insightBody}>Enhanced athletes must monitor lipids, liver enzymes, haematocrit, and hormones every 8 weeks minimum. These values change rapidly with AAS use. Get bloods before, during and after each cycle.</Text>
+                    <Text style={s.insightTitle}>{t('mensHealth.bloodWorkTitle', 'Análises ao Sangue Periódicas')}</Text>
+                    <Text style={s.insightBody}>{t('mensHealth.bloodWorkBody', 'Atletas enhanced devem monitorizar lipídeos, hematócrito e enzimas hepáticas a cada 8 semanas.')}</Text>
                   </View>
                 </View>
                 <View style={[s.insightCard, { borderLeftColor: '#f97316' }]}>
                   <Text style={s.insightEmoji}>❤️</Text>
                   <View style={{ flex: 1 }}>
-                    <Text style={s.insightTitle}>Cardiovascular Health is Priority #1</Text>
-                    <Text style={s.insightBody}>The #1 cause of premature death in enhanced athletes is cardiovascular disease from LV hypertrophy, elevated haematocrit and dyslipidaemia. 4x/week cardio (zone 2) is non-negotiable, not optional.</Text>
+                    <Text style={s.insightTitle}>{t('mensHealth.cardioTitle', 'Saúde Cardiovascular é Prioridade #1')}</Text>
+                    <Text style={s.insightBody}>{t('mensHealth.cardioBody', 'O cardio LISS 4x/semana é obrigatório para gerir a pressão arterial e hematócrito.')}</Text>
                   </View>
                 </View>
               </>
@@ -1073,10 +1235,10 @@ export default function MensHealthScreen() {
               <View style={s.proBlurWrap}>
                 <BlurView intensity={15} tint="dark" style={StyleSheet.absoluteFill} />
                 <View style={s.proBlurContent}>
-                  <Text style={s.proBlurTitle}>Unlock Deep Analytics</Text>
-                  <Text style={s.proBlurSub}>AI-powered hormonal pattern analysis, training periodisation recommendations and enhanced athlete protocols.</Text>
+                  <Text style={s.proBlurTitle}>{t('mensHealth.unlockDeepAnalytics', 'Desbloqueia Análise Hormonal Profunda')}</Text>
+                  <Text style={s.proBlurSub}>{t('mensHealth.unlockDeepAnalyticsSub', 'Insights com IA que se adaptam ao teu histórico, padrões e sintomas registados.')}</Text>
                   <TouchableOpacity style={[s.proBlurBtn, { backgroundColor: mc.gradient[0] }]} onPress={() => router.push('/premium' as any)}>
-                    <Text style={s.proBlurBtnTxt}>Upgrade to Pro</Text>
+                    <Text style={s.proBlurBtnTxt}>{t('mensHealth.upgradeToPro','Atualizar para Pro')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1087,7 +1249,7 @@ export default function MensHealthScreen() {
         {/* ═══════════════ LEARN TAB ═══════════════ */}
         {activeTab === 'learn' && (
           <>
-            <Text style={s.sectionTitle}>Men's Performance Library</Text>
+            <Text style={s.sectionTitle}>Men's {t('mensHealth.performanceLib','Biblioteca de Performance Masculina')}</Text>
             {/* Filter relevant articles to mode */}
             {LEARN_ARTICLES.filter(a => {
               if (profile?.trainingMode === 'enhanced') return true;
@@ -1099,8 +1261,8 @@ export default function MensHealthScreen() {
                 <View style={s.articleCardLeft}>
                   <Text style={s.articleCardEmoji}>{article.emoji}</Text>
                   <View style={{ flex: 1 }}>
-                    <Text style={s.articleCardCategory}>{article.category} · {article.time}</Text>
-                    <Text style={s.articleCardTitle}>{article.title}</Text>
+                    <Text style={s.articleCardCategory}>{t(`mensHealth.categories.${article.category}`, article.category)} · {article.time}</Text>
+                    <Text style={s.articleCardTitle}>{t(`mensHealth.articles.${article.id}.title`, article.title)}</Text>
                   </View>
                 </View>
                 <Ionicons name="chevron-forward" size={16} color="#475569" />

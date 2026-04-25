@@ -22,6 +22,7 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { getTodayISO } from '@/utils/dates';
 import { sendStepReminder } from '@/utils/notifications';
+import { useTranslation } from 'react-i18next';
 import {
   Dumbbell,
   Utensils,
@@ -76,23 +77,23 @@ type WidgetId =
 
 interface WidgetMeta {
   id: WidgetId;
-  label: string;
-  description: string;
+  labelKey: string;
+  descKey: string;
   emoji: string;
   defaultEnabled: boolean;
 }
 
 const WIDGET_REGISTRY: WidgetMeta[] = [
-  { id: 'weather', label: 'Local Weather', description: 'Real-time temperature & conditions', emoji: '☁️', defaultEnabled: true },
-  { id: 'greeting', label: 'Morning Briefing', description: 'Personalised greeting & daily tone-setter', emoji: '☀️', defaultEnabled: true },
-  { id: 'vitality', label: 'Vitality Score', description: 'Sleep · Fuel · Active performance snapshot', emoji: '⚡', defaultEnabled: true },
-  { id: 'balance', label: 'Calorie Balance', description: 'Goal − Food + Active = Remaining', emoji: '🔥', defaultEnabled: true },
-  { id: 'kpis', label: 'Health KPIs', description: 'Steps · Water · Mood · Weight cards', emoji: '📊', defaultEnabled: true },
-  { id: 'achievements', label: 'Achievements', description: 'Your XP, tokens & latest unlocks', emoji: '🏆', defaultEnabled: true },
-  { id: 'quick_actions', label: 'Quick Log', description: 'One-tap shortcuts to log anything fast', emoji: '⚡', defaultEnabled: true },
-  { id: 'trends', label: 'Weekly Trends', description: '7-day activity overview', emoji: '📈', defaultEnabled: true },
-  { id: 'discover', label: 'Discover Hub', description: 'All features in one glance', emoji: '🧭', defaultEnabled: true },
-  { id: 'north_star', label: 'North Star Goal', description: 'Your 12-month milestone reminder', emoji: '🌟', defaultEnabled: true },
+  { id: 'weather', labelKey: 'home.weather.label', descKey: 'home.weather.desc', emoji: '☁️', defaultEnabled: true },
+  { id: 'greeting', labelKey: 'home.greeting.label', descKey: 'home.greeting.desc', emoji: '☀️', defaultEnabled: true },
+  { id: 'vitality', labelKey: 'home.vitality.label', descKey: 'home.vitality.desc', emoji: '⚡', defaultEnabled: true },
+  { id: 'balance', labelKey: 'home.balance.label', descKey: 'home.balance.desc', emoji: '🔥', defaultEnabled: true },
+  { id: 'kpis', labelKey: 'home.kpis.label', descKey: 'home.kpis.desc', emoji: '📊', defaultEnabled: true },
+  { id: 'achievements', labelKey: 'home.achievements.label', descKey: 'home.achievements.desc', emoji: '🏆', defaultEnabled: true },
+  { id: 'quick_actions', labelKey: 'home.quick.label', descKey: 'home.quick.desc', emoji: '⚡', defaultEnabled: true },
+  { id: 'trends', labelKey: 'home.trends.label', descKey: 'home.trends.desc', emoji: '📈', defaultEnabled: true },
+  { id: 'discover', labelKey: 'home.discover.label', descKey: 'home.discover.desc', emoji: '🧭', defaultEnabled: true },
+  { id: 'north_star', labelKey: 'home.northStar.label', descKey: 'home.northStar.desc', emoji: '🌟', defaultEnabled: true },
 ];
 
 const STORAGE_KEY = 'bluom_home_widgets_v2';
@@ -100,18 +101,19 @@ const STORAGE_KEY = 'bluom_home_widgets_v2';
 // ─────────────────────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────────────────────
-function getGreeting(name: string, hour: number) {
-  if (hour < 5) return { line1: `Still at it, ${name}?`, line2: 'Make it count.', accent: '#6366f1' };
-  if (hour < 12) return { line1: `Good morning, ${name}.`, line2: 'Set the tone for today.', accent: '#f59e0b' };
-  if (hour < 17) return { line1: `Afternoon, ${name}.`, line2: 'Stay sharp, stay focused.', accent: '#2563eb' };
-  if (hour < 21) return { line1: `Evening, ${name}.`, line2: 'Wind down with intention.', accent: '#8b5cf6' };
-  return { line1: `Night mode, ${name}.`, line2: 'Recovery is part of the grind.', accent: '#0ea5e9' };
+function getGreeting(t: any, name: string, hour: number) {
+  if (hour < 5) return { line1: t('home.greeting.still', { name, defaultValue: `Still at it, ${name}?` }), line2: t('home.greeting.stillDesc', 'Make it count.'), accent: '#6366f1' };
+  if (hour < 12) return { line1: t('home.greeting.morning', { name, defaultValue: `Good morning, ${name}.` }), line2: t('home.greeting.morningDesc', 'Set the tone for today.'), accent: '#f59e0b' };
+  if (hour < 17) return { line1: t('home.greeting.afternoon', { name, defaultValue: `Afternoon, ${name}.` }), line2: t('home.greeting.afternoonDesc', 'Stay sharp, stay focused.'), accent: '#2563eb' };
+  if (hour < 21) return { line1: t('home.greeting.evening', { name, defaultValue: `Evening, ${name}.` }), line2: t('home.greeting.eveningDesc', 'Wind down with intention.'), accent: '#8b5cf6' };
+  return { line1: t('home.greeting.night', { name, defaultValue: `Night mode, ${name}.` }), line2: t('home.greeting.nightDesc', 'Recovery is part of the grind.'), accent: '#0ea5e9' };
 }
 
 // ─────────────────────────────────────────────────────────────
 // COMPONENT
 // ─────────────────────────────────────────────────────────────
 export default function HomeScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
@@ -193,7 +195,7 @@ export default function HomeScreen() {
   const vitalityLabel = vitalityScore > 70 ? 'Excellent' : vitalityScore > 40 ? 'On Track' : 'Needs Work';
 
   const firstName = convexUser?.name?.split(' ')[0] ?? clerkUser?.firstName ?? 'there';
-  const greeting = getGreeting(firstName, hour);
+  const greeting = getGreeting(t, firstName, hour);
 
   // Avatar (used in greeting card, replaces duplicate logo)
   const AVATAR_CONFIG_KEY = 'bluom_avatar_config_v2';
@@ -381,7 +383,7 @@ export default function HomeScreen() {
     return (
       <SafeAreaView style={s.loadWrap} edges={['top']}>
         <ActivityIndicator size="large" color="#2563eb" />
-        <Text style={s.loadText}>Loading your dashboard…</Text>
+        <Text style={s.loadText}>{t('home.loading', 'Loading your dashboard…')}</Text>
       </SafeAreaView>
     );
   }
@@ -390,12 +392,12 @@ export default function HomeScreen() {
     return (
       <SafeAreaView style={s.loadWrap} edges={['top']}>
         <Sparkles size={40} color="#cbd5e1" />
-        <Text style={s.errorText}>Complete onboarding to unlock your dashboard.</Text>
+        <Text style={s.errorText}>{t('home.onboarding.complete', 'Complete onboarding to unlock your dashboard.')}</Text>
         <TouchableOpacity style={s.resetBtn} onPress={async () => {
-          Alert.alert('Reset', 'This will restart onboarding.', [
-            { text: 'Cancel', style: 'cancel' },
+          Alert.alert(t('home.onboarding.reset', 'Reset'), t('home.onboarding.restartDesc', 'This will restart onboarding.'), [
+            { text: t('home.onboarding.cancel', 'Cancel'), style: 'cancel' },
             {
-              text: 'Reset', style: 'destructive', onPress: async () => {
+              text: t('home.onboarding.reset', 'Reset'), style: 'destructive', onPress: async () => {
                 await resetOnboarding({ userId: convexUser._id });
                 router.replace('/onboarding');
               }
@@ -403,7 +405,7 @@ export default function HomeScreen() {
           ]);
         }}>
           <RefreshCcw size={15} color="#f97316" />
-          <Text style={s.resetBtnTxt}>Restart Onboarding</Text>
+          <Text style={s.resetBtnTxt}>{t('home.onboarding.restart', 'Restart Onboarding')}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -449,10 +451,10 @@ export default function HomeScreen() {
           {weatherPerm !== 'granted' ? (
             <>
               <Text style={{ color: '#ffffff', fontSize: 18, fontWeight: '900', marginBottom: 6 }}>
-                Enable location for weather
+                {t('home.weather.enable', 'Enable location for weather')}
               </Text>
               <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 12, fontWeight: '600', lineHeight: 17 }}>
-                We use your approximate location to show today’s conditions.
+                {t('home.weather.enableDesc', 'We use your approximate location to show today’s conditions.')}
               </Text>
             </>
           ) : (
@@ -461,7 +463,7 @@ export default function HomeScreen() {
                 {weatherLoading && !weather ? '—' : `${weather?.tempC ?? '—'}°`}
               </Text>
               <Text style={{ color: '#fff', fontSize: 14, fontWeight: '800' }}>
-                {weather?.condition ?? (weatherLoading ? 'Updating…' : '—')}
+                {weather?.condition ?? (weatherLoading ? t('home.weather.updating', 'Updating…') : '—')}
               </Text>
             </>
           )}
@@ -492,7 +494,7 @@ export default function HomeScreen() {
               <Ionicons name={weatherPerm === 'granted' ? 'refresh' : 'navigate'} size={14} color="#ffffff" />
             )}
             <Text style={{ color: '#ffffff', fontSize: 12, fontWeight: '800' }}>
-              {weatherPerm === 'granted' ? 'Refresh' : 'Enable'}
+              {weatherPerm === 'granted' ? t('home.weather.refresh', 'Refresh') : t('home.weather.enableBtn', 'Enable')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -500,15 +502,17 @@ export default function HomeScreen() {
     </View>
   );
 
-  const wVitality = () => (
+  const wVitality = () => {
+    const vLabelTr = vitalityScore > 70 ? t('home.vitality.excellent', 'Excellent') : vitalityScore > 40 ? t('home.vitality.onTrack', 'On Track') : t('home.vitality.needsWork', 'Needs Work');
+    return (
     <View style={s.card}>
       <View style={s.cardHead}>
         <View>
-          <Text style={s.cardTitle}>Vitality Score</Text>
-          <Text style={s.cardSub}>Sleep · Fuel · Active</Text>
+          <Text style={s.cardTitle}>{t('home.vitality.label', 'Vitality Score')}</Text>
+          <Text style={s.cardSub}>{t('home.vitality.sub', 'Sleep · Fuel · Active')}</Text>
         </View>
         <View style={[s.badge, { backgroundColor: vitalityColor + '18' }]}>
-          <Text style={[s.badgeTxt, { color: vitalityColor }]}>{vitalityLabel}</Text>
+          <Text style={[s.badgeTxt, { color: vitalityColor }]}>{vLabelTr}</Text>
         </View>
       </View>
 
@@ -530,34 +534,34 @@ export default function HomeScreen() {
 
         {/* Breakdown bars */}
         <View style={{ flex: 1 }}>
-          <MiniBar label="Sleep" pct={stepsScore} color="#6366f1" />
-          <MiniBar label="Fuel" pct={fuelScore} color="#10b981" />
-          <MiniBar label="Active" pct={moodScore} color="#f97316" />
+          <MiniBar label={t('home.vitality.sleep', 'Sleep')} pct={stepsScore} color="#6366f1" />
+          <MiniBar label={t('home.vitality.fuel', 'Fuel')} pct={fuelScore} color="#10b981" />
+          <MiniBar label={t('home.vitality.active', 'Active')} pct={moodScore} color="#f97316" />
         </View>
       </View>
 
       {dataMissing && (
-        <Text style={s.vHint}>Log your meals, steps or mood to activate your score.</Text>
+        <Text style={s.vHint}>{t('home.vitality.hint', 'Log your meals, steps or mood to activate your score.')}</Text>
       )}
     </View>
-  );
+  )};
 
   const wBalance = () => (
     <View style={s.card}>
       <View style={s.cardHead}>
-        <Text style={s.cardTitle}>Calorie Balance</Text>
+        <Text style={s.cardTitle}>{t('home.balance.label', 'Calorie Balance')}</Text>
         <Flame size={17} color="#f97316" />
       </View>
 
       <View style={s.balRow}>
-        <BalStat label="Goal" val={Math.round(goalCalories)} color="#1e293b" />
+        <BalStat label={t('home.balance.goal', 'Goal')} val={Math.round(goalCalories)} color="#1e293b" />
         <Text style={s.balOp}>−</Text>
-        <BalStat label="Food" val={Math.round(todayFood)} color="#16a34a" />
+        <BalStat label={t('home.balance.food', 'Food')} val={Math.round(todayFood)} color="#16a34a" />
         <Text style={s.balOp}>+</Text>
-        <BalStat label="Active" val={Math.round(burned)} color="#f97316" />
+        <BalStat label={t('home.balance.active', 'Active')} val={Math.round(burned)} color="#f97316" />
         <Text style={s.balOp}>=</Text>
         <BalStat
-          label={overBudget ? 'Over' : 'Left'}
+          label={overBudget ? t('home.balance.over', 'Over') : t('home.balance.left', 'Left')}
           val={Math.round(Math.abs(remaining))}
           color={overBudget ? '#dc2626' : '#2563eb'}
         />
@@ -571,7 +575,7 @@ export default function HomeScreen() {
         }]} />
       </View>
       <Text style={s.progLbl}>
-        {Math.round((todayFood / goalCalories) * 100)}% of daily goal consumed
+        {t('home.balance.consumed', { pct: Math.round((todayFood / goalCalories) * 100), defaultValue: `${Math.round((todayFood / goalCalories) * 100)}% of daily goal consumed` })}
       </Text>
     </View>
   );
@@ -581,7 +585,7 @@ export default function HomeScreen() {
       <KPICard
         bg="#ffffff" iconColor="#2563eb" labelColor="#1e40af"
         icon={<Footprints size={17} color="#2563eb" />}
-        label="Steps" value={steps.toLocaleString()} sub="/ 10,000"
+        label={t('home.kpis.steps', 'Steps')} value={steps.toLocaleString()} sub="/ 10,000"
         progress={steps / 100} barColor="#2563eb"
         tag={syncedMetrics?.lastSync ? (
           <View style={{
@@ -599,14 +603,14 @@ export default function HomeScreen() {
               size={12}
               color={Platform.OS === 'ios' ? '#ef4444' : '#4285F4'}
             />
-            <Text style={{ fontSize: 11, fontWeight: '800', color: '#0f172a' }}>Synced</Text>
+            <Text style={{ fontSize: 11, fontWeight: '800', color: '#0f172a' }}>{t('home.kpis.synced', 'Synced')}</Text>
           </View>
         ) : null}
       />
       <KPICard
         bg="#ffffff" iconColor="#06b6d4" labelColor="#0e7490"
         icon={<Droplets size={17} color="#06b6d4" />}
-        label="Water" value={`${waterDisplay}`} unit={waterUnit} sub={`/ ${waterGoalDisplay}${waterUnit}`}
+        label={t('home.kpis.water', 'Water')} value={`${waterDisplay}`} unit={waterUnit} sub={`/ ${waterGoalDisplay}${waterUnit}`}
         progress={(waterOz / waterGoalOz) * 100} barColor="#06b6d4"
       />
       <TouchableOpacity
@@ -615,10 +619,10 @@ export default function HomeScreen() {
       >
         <View style={s.kpiHead}>
           <Smile size={17} color="#8b5cf6" />
-          <Text style={[s.kpiLbl, { color: '#5b21b6' }]}>Mood</Text>
+          <Text style={[s.kpiLbl, { color: '#5b21b6' }]}>{t('home.kpis.mood', 'Mood')}</Text>
         </View>
         <Text style={[s.kpiVal, { fontSize: 28, marginBottom: 6 }]}>{moodLog?.moodEmoji ?? '—'}</Text>
-        <Text style={s.kpiSub}>{moodLog ? 'Logged' : 'Tap to log'}</Text>
+        <Text style={s.kpiSub}>{moodLog ? t('home.kpis.logged', 'Logged') : t('home.kpis.tapToLog', 'Tap to log')}</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[s.kpiCard, { backgroundColor: '#ffffff' }]}
@@ -626,25 +630,25 @@ export default function HomeScreen() {
       >
         <View style={s.kpiHead}>
           <Scale size={17} color="#475569" />
-          <Text style={[s.kpiLbl, { color: '#334155' }]}>Weight</Text>
+          <Text style={[s.kpiLbl, { color: '#334155' }]}>{t('home.kpis.weight', 'Weight')}</Text>
         </View>
         <Text style={s.kpiVal}>{weightDisplay}<Text style={s.kpiUnit}> {weightUnit}</Text></Text>
-        <Text style={s.kpiSub}>Tap to update</Text>
+        <Text style={s.kpiSub}>{t('home.kpis.tapToUpdate', 'Tap to update')}</Text>
       </TouchableOpacity>
     </View>
   );
 
   const wQuickActions = () => (
     <View style={s.card}>
-      <Text style={s.cardTitle}>Quick Log</Text>
+      <Text style={s.cardTitle}>{t('home.quick.label', 'Quick Log')}</Text>
       <View style={s.qaRow}>
         {[
-          { icon: Utensils, label: 'Meal', path: '/fuel', color: '#16a34a', bg: '#f0fdf4' },
-          { icon: Dumbbell, label: 'Workout', path: '/move', color: '#2563eb', bg: '#eff6ff' },
-          { icon: Droplets, label: 'Water', path: '/fuel', color: '#06b6d4', bg: '#ecfeff' },
-          { icon: Moon, label: 'Sleep', path: '/wellness', color: '#8b5cf6', bg: '#f5f3ff' },
-          { icon: Smile, label: 'Mood', path: '/wellness', color: '#f59e0b', bg: '#fffbeb' },
-          { icon: Footprints, label: 'Steps', path: '/move', color: '#f97316', bg: '#fff7ed' },
+          { icon: Utensils, label: t('home.quick.meal', 'Meal'), path: '/fuel', color: '#16a34a', bg: '#f0fdf4' },
+          { icon: Dumbbell, label: t('home.quick.workout', 'Workout'), path: '/move', color: '#2563eb', bg: '#eff6ff' },
+          { icon: Droplets, label: t('home.quick.water', 'Water'), path: '/fuel', color: '#06b6d4', bg: '#ecfeff' },
+          { icon: Moon, label: t('home.quick.sleep', 'Sleep'), path: '/wellness', color: '#8b5cf6', bg: '#f5f3ff' },
+          { icon: Smile, label: t('home.quick.mood', 'Mood'), path: '/wellness', color: '#f59e0b', bg: '#fffbeb' },
+          { icon: Footprints, label: t('home.quick.steps', 'Steps'), path: '/move', color: '#f97316', bg: '#fff7ed' },
         ].map(a => (
           <TouchableOpacity key={a.label} style={s.qaItem} onPress={() => router.push(a.path as any)} activeOpacity={0.75}>
             <View style={[s.qaIcon, { backgroundColor: a.bg }]}>
@@ -659,14 +663,22 @@ export default function HomeScreen() {
 
   const wTrends = () => {
     const data = [1, 3, 2, 4, 3, 5, 4];
-    const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    const days = [
+      t('home.trends.mon', 'M'),
+      t('home.trends.tue', 'T'),
+      t('home.trends.wed', 'W'),
+      t('home.trends.thu', 'T'),
+      t('home.trends.fri', 'F'),
+      t('home.trends.sat', 'S'),
+      t('home.trends.sun', 'S')
+    ];
     const max = Math.max(...data);
     return (
       <View style={s.card}>
         <View style={s.cardHead}>
           <View>
-            <Text style={s.cardTitle}>Weekly Trends</Text>
-            <Text style={s.cardSub}>Activity overview</Text>
+            <Text style={s.cardTitle}>{t('home.trends.label', 'Weekly Trends')}</Text>
+            <Text style={s.cardSub}>{t('home.trends.overview', 'Activity overview')}</Text>
           </View>
           <TrendingUp size={17} color="#10b981" />
         </View>
@@ -684,33 +696,33 @@ export default function HomeScreen() {
     );
   };
 
-  const discoverItems = [
-    { icon: MessageSquare, label: 'AI Coach', path: '/ai-coach', color: '#2563eb', bg: '#eff6ff' },
-    {
-      icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♀</Text>,
-      label: 'Women', path: '/womens-health', color: '#db2777', bg: '#fdf2f8'
-    },
-    {
-      icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♂</Text>,
-      label: 'Men', path: '/mens-health', color: '#3b82f6', bg: '#eff6ff'
-    },
-    { icon: Clock, label: 'Fasting', path: '/fasting', color: '#f59e0b', bg: '#fffbeb' },
-    { icon: BookOpen, label: 'Library', path: '/library', color: '#10b981', bg: '#ecfdf5' },
-    { icon: CheckCircle, label: 'Tasks', path: '/todo', color: '#8b5cf6', bg: '#f5f3ff' },
-    { icon: Timer, label: 'Focus', path: '/focus-mode', color: '#3b82f6', bg: '#eff6ff' },
-    { icon: Utensils, label: 'Recipes', path: '/recipes', color: '#f97316', bg: '#fff7ed' },
-    { icon: Play, label: 'Workouts', path: '/workouts', color: '#16a34a', bg: '#f0fdf4' },
-    { icon: TrendingDown, label: 'Metabolic', path: '/sugar-dashboard', color: '#ef4444', bg: '#fee2e2' },
-  ];
-
   const wDiscover = () => {
+    const discoverItems = [
+      { icon: MessageSquare, label: t('home.discover.aiCoach', 'AI Coach'), path: '/ai-coach', color: '#2563eb', bg: '#eff6ff' },
+      {
+        icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♀</Text>,
+        label: t('home.discover.women', 'Women'), path: '/womens-health', color: '#db2777', bg: '#fdf2f8'
+      },
+      {
+        icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♂</Text>,
+        label: t('home.discover.men', 'Men'), path: '/mens-health', color: '#3b82f6', bg: '#eff6ff'
+      },
+      { icon: Clock, label: t('home.discover.fasting', 'Fasting'), path: '/fasting', color: '#f59e0b', bg: '#fffbeb' },
+      { icon: BookOpen, label: t('home.discover.library', 'Library'), path: '/library', color: '#10b981', bg: '#ecfdf5' },
+      { icon: CheckCircle, label: t('home.discover.tasks', 'Tasks'), path: '/todo', color: '#8b5cf6', bg: '#f5f3ff' },
+      { icon: Timer, label: t('home.discover.focus', 'Focus'), path: '/focus-mode', color: '#3b82f6', bg: '#eff6ff' },
+      { icon: Utensils, label: t('home.discover.recipes', 'Recipes'), path: '/recipes', color: '#f97316', bg: '#fff7ed' },
+      { icon: Play, label: t('home.discover.workouts', 'Workouts'), path: '/workouts', color: '#16a34a', bg: '#f0fdf4' },
+      { icon: TrendingDown, label: t('home.discover.metabolic', 'Metabolic'), path: '/sugar-dashboard', color: '#ef4444', bg: '#fee2e2' },
+    ];
+
     const shown = showAllDiscover ? discoverItems : discoverItems.slice(0, 6);
     const cols = discoveryColumns ?? 4;
     return (
       <View style={s.card}>
         <View style={s.cardHead}>
-          <Text style={s.cardTitle}>Discover</Text>
-          <Text style={s.cardSub}>Everything in one place</Text>
+          <Text style={s.cardTitle}>{t('home.discover.title', 'Discover')}</Text>
+          <Text style={s.cardSub}>{t('home.discover.sub', 'Everything in one place')}</Text>
         </View>
         <View style={s.discGrid}>
           {shown.map(item => {
@@ -733,7 +745,7 @@ export default function HomeScreen() {
           })}
         </View>
         <TouchableOpacity style={s.showMore} onPress={() => setShowAllDiscover(p => !p)}>
-          <Text style={s.showMoreTxt}>{showAllDiscover ? 'Show Less' : 'View All'}</Text>
+          <Text style={s.showMoreTxt}>{showAllDiscover ? t('home.discover.showLess', 'Show Less') : t('home.discover.viewAll', 'View All')}</Text>
           {showAllDiscover ? <ChevronUp size={13} color="#2563eb" /> : <ChevronDown size={13} color="#2563eb" />}
         </TouchableOpacity>
       </View>
@@ -747,20 +759,20 @@ export default function HomeScreen() {
     <Modal visible={showCustomize} animationType="slide" presentationStyle="pageSheet">
       <SafeAreaView style={s.modWrap} edges={['top']}>
         <View style={s.modHeader}>
-          <Text style={s.modTitle}>Customize Dashboard</Text>
+          <Text style={s.modTitle}>{t('home.customize.title', 'Customize Dashboard')}</Text>
           <TouchableOpacity onPress={() => setShowCustomize(false)} style={s.modClose}>
             <X size={19} color="#1e293b" />
           </TouchableOpacity>
         </View>
-        <Text style={s.modSub}>Toggle cards to personalize your home screen.</Text>
+        <Text style={s.modSub}>{t('home.customize.sub', 'Toggle cards to personalize your home screen.')}</Text>
         <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
           {WIDGET_REGISTRY.map(w => (
             <View key={w.id} style={s.wRow}>
               <View style={s.wLeft}>
                 <Text style={s.wEmoji}>{w.emoji}</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.wName}>{w.label}</Text>
-                  <Text style={s.wDesc}>{w.description}</Text>
+                  <Text style={s.wName}>{t(w.labelKey, 'Widget')}</Text>
+                  <Text style={s.wDesc}>{t(w.descKey, 'Description')}</Text>
                 </View>
               </View>
               <Switch
@@ -828,8 +840,8 @@ export default function HomeScreen() {
           {enabledWidgets.size === 0 && (
             <View style={s.empty}>
               <Sparkles size={44} color="#cbd5e1" />
-              <Text style={s.emptyTitle}>Your dashboard is empty</Text>
-              <Text style={s.emptySub}>Tap the ⚙ icon above to add widgets.</Text>
+              <Text style={s.emptyTitle}>{t('home.empty.title', 'Your dashboard is empty')}</Text>
+              <Text style={s.emptySub}>{t('home.empty.sub', 'Tap the ⚙ icon above to add widgets.')}</Text>
             </View>
           )}
         </View>
@@ -855,7 +867,7 @@ function MiniBar({ label, pct, color }: { label: string; pct: number; color: str
 }
 const mb = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', marginBottom: 9, gap: 8 },
-  lbl: { width: 38, fontSize: 11, fontWeight: '700', color: '#64748b' },
+  lbl: { width: 60, fontSize: 11, fontWeight: '700', color: '#64748b' },
   track: { flex: 1, height: 6, backgroundColor: '#f1f5f9', borderRadius: 3, overflow: 'hidden' },
   fill: { height: '100%', borderRadius: 3 },
   pct: { width: 34, fontSize: 11, fontWeight: '700', textAlign: 'right' },

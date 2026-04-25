@@ -23,11 +23,13 @@ import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { getSoundSettings, setSoundSettings, triggerSound, SoundEffect } from '@/utils/soundEffects';
 import { getBottomContentPadding } from '@/utils/layout';
+import { useTranslation } from 'react-i18next';
 
 
 export default function SettingsScreen() {
 
     const router = useRouter();
+    const { i18n, t } = useTranslation();
     const insets = useSafeAreaInsets();
     const { user: clerkUser } = useUser();
     const { signOut } = useAuth();
@@ -266,7 +268,21 @@ export default function SettingsScreen() {
                     </View>
                     <View style={styles.itemsList}>
                         <TouchableOpacity style={styles.item} activeOpacity={0.7} onPress={() => {
-                            Alert.alert('Language', 'Bluom is currently available in English.');
+                            Alert.alert('Language', 'Select your preferred language', [
+                                { text: 'English', onPress: async () => {
+                                    i18n.changeLanguage('en');
+                                    if (convexUser) {
+                                        await updateUser({ userId: convexUser._id, updates: { preferredLanguage: 'en' } });
+                                    }
+                                }},
+                                { text: 'Português', onPress: async () => {
+                                    i18n.changeLanguage('pt');
+                                    if (convexUser) {
+                                        await updateUser({ userId: convexUser._id, updates: { preferredLanguage: 'pt' } });
+                                    }
+                                }},
+                                { text: 'Cancel', style: 'cancel' }
+                            ]);
                         }}>
                             <View style={styles.itemLeft}>
                                 <Text style={styles.itemLabel}>Language</Text>

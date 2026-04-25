@@ -14,6 +14,7 @@ import {
   Platform,
   StatusBar,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -25,6 +26,7 @@ import { triggerSound, SoundEffect } from '@/utils/soundEffects';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useUser as useAppUser } from '@/context/UserContext';
 import { getTodayISO } from '@/utils/dates'; // ← ADD THIS IMPORT
+import { getLocalizedField } from '@/utils/localize';
 
 const { width } = Dimensions.get('window');
 const isSmallScreen = width < 380;
@@ -74,6 +76,8 @@ function LogMealModal({
   onClose: () => void;
   onLogged: (meal: MealName) => void;
 }) {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
   const [selectedMeal, setSelectedMeal] = useState<MealName>('Lunch');
   const [saving, setSaving] = useState(false);
 
@@ -91,34 +95,34 @@ function LogMealModal({
           {/* Handle bar */}
           <View style={lmStyles.handle} />
 
-          <Text style={lmStyles.title}>Log to Meal</Text>
-          <Text style={lmStyles.subtitle} numberOfLines={2}>{recipe.title}</Text>
+          <Text style={lmStyles.title}>{t('recipes.logToMeal', 'Log to Meal') as string}</Text>
+          <Text style={lmStyles.subtitle} numberOfLines={2}>{getLocalizedField(recipe, 'title', lang)}</Text>
 
           {/* Macro summary */}
           <View style={lmStyles.macroRow}>
             <View style={lmStyles.macroItem}>
               <Text style={[lmStyles.macroVal, { color: '#2563eb' }]}>{Math.round(n(recipe.calories))}</Text>
-              <Text style={lmStyles.macroLabel}>cal</Text>
+              <Text style={lmStyles.macroLabel}>{t('fuel.caloriesShort', 'cal')}</Text>
             </View>
             <View style={lmStyles.macroDivider} />
             <View style={lmStyles.macroItem}>
               <Text style={[lmStyles.macroVal, { color: '#dc2626' }]}>{Math.round(n(recipe.protein))}g</Text>
-              <Text style={lmStyles.macroLabel}>protein</Text>
+              <Text style={lmStyles.macroLabel}>{t('fuel.protein', 'protein')}</Text>
             </View>
             <View style={lmStyles.macroDivider} />
             <View style={lmStyles.macroItem}>
               <Text style={[lmStyles.macroVal, { color: '#16a34a' }]}>{Math.round(n(recipe.carbs))}g</Text>
-              <Text style={lmStyles.macroLabel}>carbs</Text>
+              <Text style={lmStyles.macroLabel}>{t('fuel.carbs', 'carbs')}</Text>
             </View>
             <View style={lmStyles.macroDivider} />
             <View style={lmStyles.macroItem}>
               <Text style={[lmStyles.macroVal, { color: '#d97706' }]}>{Math.round(n(recipe.fat))}g</Text>
-              <Text style={lmStyles.macroLabel}>fat</Text>
+              <Text style={lmStyles.macroLabel}>{t('fuel.fat', 'fat')}</Text>
             </View>
           </View>
 
           {/* Meal picker */}
-          <Text style={lmStyles.pickerLabel}>Choose a meal</Text>
+          <Text style={lmStyles.pickerLabel}>{t('recipes.chooseAMeal', 'Choose a meal')}</Text>
           <View style={lmStyles.mealGrid}>
             {MEAL_NAMES.map((meal) => {
               const cfg = MEAL_CONFIGS[meal];
@@ -133,7 +137,7 @@ function LogMealModal({
                   <View style={[lmStyles.mealIcon, { backgroundColor: cfg.color }]}>
                     <Ionicons name={cfg.icon as any} size={20} color={cfg.iconColor} />
                   </View>
-                  <Text style={[lmStyles.mealName, active && lmStyles.mealNameActive]}>{meal}</Text>
+                  <Text style={[lmStyles.mealName, active && lmStyles.mealNameActive]}>{t(`common.${meal.toLowerCase()}`, meal)}</Text>
                 </TouchableOpacity>
               );
             })}
@@ -142,7 +146,7 @@ function LogMealModal({
           {/* Actions */}
           <View style={lmStyles.actions}>
             <TouchableOpacity style={lmStyles.cancelBtn} onPress={onClose} activeOpacity={0.7}>
-              <Text style={lmStyles.cancelText}>Cancel</Text>
+              <Text style={lmStyles.cancelText}>{t('common.cancel', 'Cancel')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[lmStyles.logBtn, saving && { opacity: 0.6 }]}
@@ -160,7 +164,7 @@ function LogMealModal({
             >
               {saving
                 ? <ActivityIndicator size="small" color="#fff" />
-                : <Text style={lmStyles.logText}>Log to {selectedMeal}</Text>
+                : <Text style={lmStyles.logText}>{t('recipes.logToMealBtn', 'Log to {{meal}}', { meal: t(`common.${selectedMeal.toLowerCase()}`, selectedMeal) })}</Text>
               }
             </TouchableOpacity>
           </View>
@@ -289,6 +293,8 @@ export default function RecipesScreen() {
   const insets = useSafeAreaInsets();
   const { user: clerkUser, isLoaded: isClerkLoaded } = useClerkUser();
   const appUser = useAppUser();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
 
   const convexUser = useQuery(
     api.users.getUserByClerkId,
@@ -357,12 +363,12 @@ export default function RecipesScreen() {
       setShowLogModal(false);
 
       Alert.alert(
-        '✅ Logged!',
-        `${selectedRecipe.title} added to ${meal} for today.`,
+        t('recipes.loggedTitle', '✅ Logged!'),
+        t('recipes.loggedMsg', '{{title}} added to {{meal}} for today.', { title: selectedRecipe.title, meal: t(`common.${meal.toLowerCase()}`, meal) }),
         [
-          { text: 'Stay here', style: 'cancel' },
+          { text: t('recipes.stayHere', 'Stay here'), style: 'cancel' },
           {
-            text: 'View Fuel',
+            text: t('recipes.viewFuel', 'View Fuel'),
             onPress: () => {
               setSelectedRecipe(null);
               router.push('/(tabs)/fuel');
@@ -371,8 +377,8 @@ export default function RecipesScreen() {
         ]
       );
     } catch (e: any) {
-      const msg = e?.message ?? 'Could not log recipe. Please try again.';
-      Alert.alert('Error', msg);
+      const msg = e?.message ?? t('recipes.logError', 'Could not log recipe. Please try again.');
+      Alert.alert(t('common.error', 'Error'), msg);
     }
   };
 
@@ -391,9 +397,9 @@ export default function RecipesScreen() {
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton} activeOpacity={0.7}>
             <Ionicons name="arrow-back" size={24} color="#1e293b" />
-            <Text style={styles.backText}>Back</Text>
+            <Text style={styles.backText}>{t('common.back', 'Back')}</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>Recipes</Text>
+          <Text style={styles.title}>{t('recipes.title', 'Recipes')}</Text>
           <View style={{ width: 60 }} />
         </View>
 
@@ -402,7 +408,7 @@ export default function RecipesScreen() {
             <Ionicons name="search" size={20} color="#94a3b8" style={styles.searchIcon} />
             <TextInput
               style={styles.searchInput}
-              placeholder="Search recipes..."
+              placeholder={t('recipes.searchPlaceholder', 'Search recipes...')}
               value={searchQuery}
               onChangeText={setSearchQuery}
               placeholderTextColor="#94a3b8"
@@ -417,7 +423,7 @@ export default function RecipesScreen() {
                 activeOpacity={0.7}
               >
                 <Text style={[styles.categoryChipText, selectedCategory === category && styles.categoryChipTextActive]}>
-                  {category}
+                  {t(`recipes.categories.${category}`, category) as string}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -427,16 +433,16 @@ export default function RecipesScreen() {
         {loading && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#3b82f6" />
-            <Text style={styles.loadingText}>Loading recipes...</Text>
+            <Text style={styles.loadingText}>{t('recipes.loadingRecipes', 'Loading recipes...') as string}</Text>
           </View>
         )}
 
         {!loading && (!recipes || recipes.length === 0) && (
           <View style={styles.emptyContainer}>
             <Ionicons name="restaurant-outline" size={48} color="#94a3b8" />
-            <Text style={styles.emptyText}>No recipes yet</Text>
+            <Text style={styles.emptyText}>{t('recipes.noRecipes', 'No recipes yet') as string}</Text>
             <Text style={styles.emptySubtext}>
-              Admin recipes will appear here once they are added.
+              {t('recipes.noRecipesDesc', 'Admin recipes will appear here once they are added.') as string}
             </Text>
           </View>
         )}
@@ -466,10 +472,10 @@ export default function RecipesScreen() {
                     )}
                   </View>
                   <View style={styles.recipeCardContent}>
-                    <Text style={styles.recipeCardTitle} numberOfLines={2}>{recipe.title}</Text>
+                    <Text style={styles.recipeCardTitle} numberOfLines={2}>{getLocalizedField(recipe, 'title', lang)}</Text>
                     <View style={styles.recipeCardMacros}>
-                      <Text style={styles.macro}>{Math.round(n(recipe.calories))} cal</Text>
-                      <Text style={styles.macro}>{Math.round(n(recipe.protein))}g P</Text>
+                      <Text style={styles.macro}>{Math.round(n(recipe.calories))} {t('recipes.kcal', 'cal')}</Text>
+                      <Text style={styles.macro}>{Math.round(n(recipe.protein))}g {t('fuel.mealCard.p', 'P')}</Text>
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -496,7 +502,7 @@ export default function RecipesScreen() {
               <View style={styles.detailHeader}>
                 <TouchableOpacity onPress={() => setSelectedRecipe(null)} style={styles.backButton} activeOpacity={0.7}>
                   <Ionicons name="arrow-back" size={24} color="#1e293b" />
-                  <Text style={styles.backText}>Back to Recipes</Text>
+                  <Text style={styles.backText}>{t('recipes.backToList', 'Back to Recipes')}</Text>
                 </TouchableOpacity>
               </View>
 
@@ -514,21 +520,19 @@ export default function RecipesScreen() {
               </View>
 
               <View style={styles.card}>
-                <Text style={styles.recipeTitle}>{selectedRecipe.title ?? 'Recipe'}</Text>
-                {selectedRecipe.description ? (
-                  <Text style={styles.recipeDescription}>{String(selectedRecipe.description)}</Text>
-                ) : null}
+                <Text style={styles.recipeTitle}>{getLocalizedField(selectedRecipe, 'title', lang) || selectedRecipe.title}</Text>
+                  <Text style={styles.recipeDescription}>{getLocalizedField(selectedRecipe, 'description', lang) || String(selectedRecipe.description ?? '')}</Text>
 
                 <View style={styles.metaRow}>
                   {selectedRecipe.cookTimeMinutes ? (
                     <View style={styles.metaItem}>
                       <Ionicons name="time-outline" size={16} color="#64748b" />
-                      <Text style={styles.metaText}>{Math.round(n(selectedRecipe.cookTimeMinutes))} min</Text>
+                      <Text style={styles.metaText}>{Math.round(n(selectedRecipe.cookTimeMinutes))} {t('recipes.min', 'min')}</Text>
                     </View>
                   ) : null}
                   <View style={styles.metaItem}>
                     <Ionicons name="people-outline" size={16} color="#64748b" />
-                    <Text style={styles.metaText}>{Math.max(1, Math.round(n(selectedRecipe.servings, 1)))} servings</Text>
+                    <Text style={styles.metaText}>{Math.max(1, Math.round(n(selectedRecipe.servings, 1)))} {t('recipes.servings', 'servings')}</Text>
                   </View>
                 </View>
 
@@ -539,7 +543,7 @@ export default function RecipesScreen() {
                     style={styles.logMealButton}
                     onPress={() => {
                       if (!convexUser?._id) {
-                        Alert.alert('Not ready', 'Please complete onboarding first.');
+                        Alert.alert(t('common.notReady', 'Not ready'), t('onboarding.completePrompt', 'Please complete onboarding first.'));
                         return;
                       }
                       setShowLogModal(true);
@@ -547,7 +551,7 @@ export default function RecipesScreen() {
                     activeOpacity={0.85}
                   >
                     <Ionicons name="restaurant-outline" size={18} color="#ffffff" />
-                    <Text style={styles.logMealButtonText}>Log as Meal</Text>
+                    <Text style={styles.logMealButtonText}>{t('recipes.logAsMeal', 'Log as Meal')}</Text>
                   </TouchableOpacity>
 
                   {/* Add to Shopping List – pro only */}
@@ -555,7 +559,7 @@ export default function RecipesScreen() {
                     style={styles.addToListButton}
                     onPress={async () => {
                       if (!convexUser?._id) {
-                        Alert.alert('Not ready', 'Please complete onboarding to use Shopping List.');
+                        Alert.alert(t('common.notReady', 'Not ready'), t('onboarding.completePromptShopping', 'Please complete onboarding to use Shopping List.'));
                         return;
                       }
                       if (!isPro) { setShowUpgrade(true); return; }
@@ -573,44 +577,44 @@ export default function RecipesScreen() {
                           ingredients,
                         });
                         Alert.alert(
-                          'Added to Shopping List',
-                          `Added ${res?.created ?? 0} new item(s) and merged ${res?.merged ?? 0} item(s).`,
+                          t('shopping.addedTitle', 'Added to Shopping List'),
+                          t('shopping.addedMsg', 'Added {{created}} new item(s) and merged {{merged}} item(s).', { created: res?.created ?? 0, merged: res?.merged ?? 0 }),
                           [
-                            { text: 'Keep browsing', style: 'cancel' },
-                            { text: 'View list', onPress: () => { setSelectedRecipe(null); router.push('/shopping-list'); } },
+                            { text: t('recipes.keepBrowsing', 'Keep browsing'), style: 'cancel' },
+                            { text: t('recipes.viewList', 'View list'), onPress: () => { setSelectedRecipe(null); router.push('/shopping-list'); } },
                           ]
                         );
                       } catch {
-                        Alert.alert('Error', 'Could not add ingredients. Please try again.');
+                        Alert.alert(t('common.error', 'Error'), t('shopping.errorAdd', 'Could not add ingredients. Please try again.'));
                       }
                     }}
                     activeOpacity={0.85}
                   >
                     <Ionicons name="cart-outline" size={18} color="#3b82f6" />
-                    <Text style={styles.addToListText}>Shopping List</Text>
+                    <Text style={styles.addToListText}>{t('recipes.shoppingList', 'Shopping List')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
 
               {/* Nutrition facts */}
               <View style={styles.card}>
-                <Text style={styles.cardTitle}>Nutrition Facts (per serving)</Text>
+                <Text style={styles.cardTitle}>{t('recipes.nutritionFacts', 'Nutrition Facts (per serving)')}</Text>
                 <View style={styles.nutritionGrid}>
                   <View style={styles.nutritionItem}>
                     <Text style={[styles.nutritionValue, { color: '#2563eb' }]}>{Math.round(n(selectedRecipe.calories))}</Text>
-                    <Text style={styles.nutritionLabel}>Calories</Text>
+                    <Text style={styles.nutritionLabel}>{t('recipes.calories', 'Calories')}</Text>
                   </View>
                   <View style={styles.nutritionItem}>
                     <Text style={[styles.nutritionValue, { color: '#dc2626' }]}>{Math.round(n(selectedRecipe.protein))}g</Text>
-                    <Text style={styles.nutritionLabel}>Protein</Text>
+                    <Text style={styles.nutritionLabel}>{t('recipes.protein', 'Protein')}</Text>
                   </View>
                   <View style={styles.nutritionItem}>
                     <Text style={[styles.nutritionValue, { color: '#16a34a' }]}>{Math.round(n(selectedRecipe.carbs))}g</Text>
-                    <Text style={styles.nutritionLabel}>Carbs</Text>
+                    <Text style={styles.nutritionLabel}>{t('recipes.carbs', 'Carbs')}</Text>
                   </View>
                   <View style={styles.nutritionItem}>
                     <Text style={[styles.nutritionValue, { color: '#d97706' }]}>{Math.round(n(selectedRecipe.fat))}g</Text>
-                    <Text style={styles.nutritionLabel}>Fat</Text>
+                    <Text style={styles.nutritionLabel}>{t('recipes.fat', 'Fat')}</Text>
                   </View>
                 </View>
               </View>
@@ -618,12 +622,12 @@ export default function RecipesScreen() {
               {/* Ingredients – pro gated */}
               {!!selectedRecipe.ingredients?.length && (
                 <View style={styles.card}>
-                  <Text style={styles.cardTitle}>Ingredients</Text>
+                  <Text style={styles.cardTitle}>{t('recipes.ingredients', 'Ingredients')}</Text>
                   <View style={!isPro ? { opacity: 0.25 } : undefined}>
                     {selectedRecipe.ingredients.map((ingredient: string, idx: number) => (
                       <View key={`${ingredient}-${idx}`} style={styles.ingredientItem}>
                         <View style={styles.ingredientDot} />
-                        <Text style={styles.ingredientText}>{ingredient}</Text>
+                        <Text style={styles.ingredientText}>{t(`db.${ingredient.replace(/\s+/g, '')}`, ingredient)}</Text>
                       </View>
                     ))}
                   </View>
@@ -632,11 +636,11 @@ export default function RecipesScreen() {
                       <View style={[StyleSheet.absoluteFill, { backgroundColor: '#ffffff' }]} />
                       <View style={styles.lockedOverlay}>
                         <Ionicons name="lock-closed" size={18} color="#f59e0b" />
-                        <Text style={styles.lockedTitle}>Ingredients locked</Text>
-                        <Text style={styles.lockedText}>Upgrade to Pro to unlock ingredients and shopping list.</Text>
+                        <Text style={styles.lockedTitle}>{t('recipes.ingredientsLocked', 'Ingredients locked')}</Text>
+                        <Text style={styles.lockedText}>{t('recipes.ingredientsLockedDesc', 'Upgrade to Pro to unlock ingredients and shopping list.')}</Text>
                         <TouchableOpacity style={styles.lockedBtn} onPress={() => setShowUpgrade(true)} activeOpacity={0.85}>
                           <Ionicons name="sparkles" size={18} color="#ffffff" />
-                          <Text style={styles.lockedBtnText}>View Pro Plans</Text>
+                          <Text style={styles.lockedBtnText}>{t('modals.pro.goPro', 'View Pro Plans')}</Text>
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -647,14 +651,14 @@ export default function RecipesScreen() {
               {/* Instructions – pro gated */}
               {!!selectedRecipe.instructions?.length && (
                 <View style={styles.card}>
-                  <Text style={styles.cardTitle}>Instructions</Text>
+                  <Text style={styles.cardTitle}>{t('recipes.instructions', 'Instructions')}</Text>
                   <View style={!isPro ? { opacity: 0.25 } : undefined}>
                     {selectedRecipe.instructions.map((instruction: string, idx: number) => (
                       <View key={`${idx}`} style={styles.instructionItem}>
                         <View style={styles.instructionNumber}>
                           <Text style={styles.instructionNumberText}>{idx + 1}</Text>
                         </View>
-                        <Text style={styles.instructionText}>{instruction}</Text>
+                        <Text style={styles.instructionText}>{t(`db.${instruction.replace(/\s+/g, '')}`, instruction)}</Text>
                       </View>
                     ))}
                   </View>
@@ -663,11 +667,11 @@ export default function RecipesScreen() {
                       <View style={[StyleSheet.absoluteFill, { backgroundColor: '#ffffff' }]} />
                       <View style={styles.lockedOverlay}>
                         <Ionicons name="lock-closed" size={18} color="#f59e0b" />
-                        <Text style={styles.lockedTitle}>Instructions locked</Text>
-                        <Text style={styles.lockedText}>Upgrade to Pro to unlock cooking steps.</Text>
+                        <Text style={styles.lockedTitle}>{t('recipes.instructionsLocked', 'Instructions locked')}</Text>
+                        <Text style={styles.lockedText}>{t('recipes.instructionsLockedDesc', 'Upgrade to Pro to unlock cooking steps.')}</Text>
                         <TouchableOpacity style={styles.lockedBtn} onPress={() => setShowUpgrade(true)} activeOpacity={0.85}>
                           <Ionicons name="sparkles" size={18} color="#ffffff" />
-                          <Text style={styles.lockedBtnText}>View Pro Plans</Text>
+                          <Text style={styles.lockedBtnText}>{t('modals.pro.goPro', 'View Pro Plans')}</Text>
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -695,9 +699,9 @@ export default function RecipesScreen() {
           setSelectedRecipe(null);
           router.push('/premium');
         }}
-        title="Upgrade to Pro"
-        message="Upgrade to Pro to unlock recipe ingredients, instructions, and Shopping List."
-        upgradeLabel="View Pro Plans"
+        title={t('modals.pro.title', 'Upgrade to Pro')}
+        message={t('recipes.proUpsell', 'Upgrade to Pro to unlock recipe ingredients, instructions, and Shopping List.')}
+        upgradeLabel={t('modals.pro.goPro', 'View Pro Plans')}
       />
     </SafeAreaView>
   );

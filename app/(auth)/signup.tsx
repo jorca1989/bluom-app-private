@@ -18,8 +18,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, UserPlus, Eye, EyeOff } from 'lucide-react-native';
 import GoogleSignInButton from '@/components/GoogleSignInButton';
 import AppleSignInButton from '@/components/AppleSignInButton';
+import { useTranslation } from 'react-i18next';
 
 export default function SignupScreen() {
+  const { t } = useTranslation();
   const { signUp, setActive, isLoaded } = useSignUp();
   const router = useRouter();
 
@@ -38,38 +40,25 @@ export default function SignupScreen() {
   const getFriendlyErrorMessage = (error: any): string => {
     const err = error?.errors?.[0];
     const msg = err?.longMessage || err?.message || error?.message || '';
-
-    // Specifically handle length errors
     if (msg.toLowerCase().includes('8 characters') || msg.toLowerCase().includes('too short')) {
-      return 'Password must be at least 8 characters long.';
+      return t('auth.signup.pwMinLength', 'Password must be at least 8 characters long.');
     }
-
-    // For other password errors (weak, pwned, complexity), verify we aren't masking them with a length error
-    // Return the actual message from Clerk which is usually descriptive (e.g., "Password is too common" or "found in a breach")
     if (msg) return msg;
-
-    return 'Something went wrong. Please try again.';
+    return t('common.genericError', 'Something went wrong. Please try again.');
   };
 
   const handleEmailSignup = async () => {
     if (!isLoaded || submitLockRef.current || loading) return;
-
     submitLockRef.current = true;
     setLoading(true);
     setError('');
 
     try {
       if (!firstName || !lastName || !email || !password) {
-        setError('Please fill in all fields');
+        setError(t('auth.signup.errFillFields', 'Please fill in all fields'));
         return;
       }
-
-      const result = await signUp.create({
-        emailAddress: email,
-        password,
-        firstName,
-        lastName
-      });
+      const result = await signUp.create({ emailAddress: email, password, firstName, lastName });
       await result.prepareEmailAddressVerification({ strategy: 'email_code' });
       setPendingVerification(true);
     } catch (err: any) {
@@ -82,7 +71,6 @@ export default function SignupScreen() {
 
   const handleVerifyCode = async () => {
     if (!isLoaded || !signUp || submitLockRef.current || loading) return;
-
     submitLockRef.current = true;
     setLoading(true);
 
@@ -94,7 +82,7 @@ export default function SignupScreen() {
         setError(`Verification incomplete: ${result.status}`);
       }
     } catch (err: any) {
-      setError('Invalid code. Please try again.');
+      setError(t('auth.signup.errInvalidCode', 'Invalid code. Please try again.'));
     } finally {
       setLoading(false);
       submitLockRef.current = false;
@@ -105,27 +93,23 @@ export default function SignupScreen() {
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardView}>
         <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            { paddingTop: Math.max(insets.top, 20), paddingBottom: Math.max(insets.bottom, 40) }
-          ]}
+          contentContainerStyle={[styles.scrollContent, { paddingTop: Math.max(insets.top, 20), paddingBottom: Math.max(insets.bottom, 40) }]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <Text style={styles.title}>{pendingVerification ? 'Verify Your Email' : 'Create Account'}</Text>
+            <Text style={styles.title}>{pendingVerification ? t('auth.signup.titleVerify', 'Verify Your Email') : t('auth.signup.title', 'Create Account')}</Text>
             <Text style={styles.subtitle}>
-              {pendingVerification ? `Enter the code sent to ${email}` : 'Start your personalized wellness journey today'}
+              {pendingVerification
+                ? t('auth.signup.subtitleVerify', 'Enter the code sent to {{email}}', { email })
+                : t('auth.signup.subtitle', 'Start your personalized wellness journey today')}
             </Text>
           </View>
 
-          {error ? (
-            <View style={styles.errorContainer}><Text style={styles.errorText}>{error}</Text></View>
-          ) : null}
+          {error ? <View style={styles.errorContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
 
           <View style={styles.form}>
             {pendingVerification ? (
-              // ... code input ...
               <>
                 <TextInput
                   style={[styles.input, styles.codeInput]}
@@ -137,7 +121,7 @@ export default function SignupScreen() {
                 />
                 <TouchableOpacity style={styles.primaryButton} onPress={handleVerifyCode} disabled={loading}>
                   <LinearGradient colors={['#2563eb', '#1d4ed8']} style={styles.gradientButton}>
-                    {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Verify Email</Text>}
+                    {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>{t('auth.signup.verifyBtn', 'Verify Email')}</Text>}
                   </LinearGradient>
                 </TouchableOpacity>
               </>
@@ -148,7 +132,7 @@ export default function SignupScreen() {
                     <UserPlus size={20} color="#64748b" style={{ marginRight: 12 }} />
                     <TextInput
                       style={styles.input}
-                      placeholder="First Name"
+                      placeholder={t('auth.signup.firstNamePlaceholder', 'First Name')}
                       value={firstName}
                       onChangeText={setFirstName}
                       autoCapitalize="words"
@@ -157,7 +141,7 @@ export default function SignupScreen() {
                   <View style={[styles.inputContainer, { flex: 1, marginBottom: 0 }]}>
                     <TextInput
                       style={[styles.input, { marginLeft: 0 }]}
-                      placeholder="Last Name"
+                      placeholder={t('auth.signup.lastNamePlaceholder', 'Last Name')}
                       value={lastName}
                       onChangeText={setLastName}
                       autoCapitalize="words"
@@ -165,12 +149,11 @@ export default function SignupScreen() {
                   </View>
                 </View>
 
-
                 <View style={styles.inputContainer}>
                   <Mail size={20} color="#64748b" style={{ marginRight: 12 }} />
                   <TextInput
                     style={styles.input}
-                    placeholder="Email"
+                    placeholder={t('auth.signup.emailPlaceholder', 'Email')}
                     value={email}
                     onChangeText={setEmail}
                     autoCapitalize="none"
@@ -182,7 +165,7 @@ export default function SignupScreen() {
                   <Lock size={20} color="#64748b" style={{ marginRight: 12 }} />
                   <TextInput
                     style={styles.input}
-                    placeholder="Password"
+                    placeholder={t('auth.signup.passwordPlaceholder', 'Password')}
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry={!showPassword}
@@ -195,19 +178,14 @@ export default function SignupScreen() {
 
                 <TouchableOpacity style={styles.primaryButton} onPress={handleEmailSignup} disabled={loading}>
                   <LinearGradient colors={['#2563eb', '#1d4ed8']} style={styles.gradientButton}>
-                    {loading ? <ActivityIndicator color="#fff" /> : <><UserPlus size={20} color="#fff" /><Text style={styles.primaryButtonText}>Create Account</Text></>}
+                    {loading ? <ActivityIndicator color="#fff" /> : <><UserPlus size={20} color="#fff" /><Text style={styles.primaryButtonText}>{t('auth.signup.createBtn', 'Create Account')}</Text></>}
                   </LinearGradient>
                 </TouchableOpacity>
 
                 {Platform.OS !== 'web' && (
                   <>
-                    {/* <View style={styles.divider}>
-                      <View style={styles.dividerLine} />
-                      <Text style={styles.dividerText}>or</Text>
-                      <View style={styles.dividerLine} />
-                    </View> */}
                     {/* Social Logins - Hidden for Lite Build */}
-                    {/* 
+                    {/*
                     <GoogleSignInButton disabled={loading} />
                     <View style={{ height: 12 }} />
                     <AppleSignInButton disabled={loading} />
@@ -216,14 +194,13 @@ export default function SignupScreen() {
                 )}
 
                 <View style={styles.footer}>
-                  <Text style={styles.footerText}>Already have an account? </Text>
+                  <Text style={styles.footerText}>{t('auth.signup.alreadyAccount', 'Already have an account? ')}</Text>
                   <TouchableOpacity onPress={() => router.push('/login')}>
-                    <Text style={styles.footerLink}>Login</Text>
+                    <Text style={styles.footerLink}>{t('auth.signup.loginLink', 'Login')}</Text>
                   </TouchableOpacity>
                 </View>
               </>
             )}
-            {/* ... */}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -250,20 +227,7 @@ const styles = StyleSheet.create({
   divider: { flexDirection: 'row', alignItems: 'center', marginTop: 14, marginBottom: 14 },
   dividerLine: { flex: 1, height: 1, backgroundColor: '#e2e8f0' },
   dividerText: { paddingHorizontal: 16, color: '#94a3b8', fontSize: 14, fontWeight: '600' },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-    paddingBottom: 40,
-  },
-  footerText: {
-    fontSize: 14,
-    color: '#64748b',
-  },
-  footerLink: {
-    fontSize: 14,
-    color: '#2563eb',
-    fontWeight: '600',
-  },
+  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 20, paddingBottom: 40 },
+  footerText: { fontSize: 14, color: '#64748b' },
+  footerLink: { fontSize: 14, color: '#2563eb', fontWeight: '600' },
 });

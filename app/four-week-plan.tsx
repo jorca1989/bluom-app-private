@@ -9,8 +9,9 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import { useUser as useClerkUser } from '@clerk/clerk-expo';
+import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
@@ -27,6 +28,7 @@ export default function FourWeekPlanScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useClerkUser();
+  const { t } = useTranslation();
 
   const convexUser = useQuery(
     api.users.getUserByClerkId,
@@ -61,10 +63,10 @@ export default function FourWeekPlanScreen() {
       if (aiWorkouts && aiWorkouts.length > 0) {
         return aiWorkouts.map((w: any, i: number) => ({
           dayNum: i + 1,
-          dayTitle: w.focus || w.day || `Workout ${i + 1}`,
+          dayTitle: t(`db.${(w.focus || w.day || `Workout ${i + 1}`).replace(/\s+/g, '')}`, w.focus || w.day || `Workout ${i + 1}`),
           muscleGroups: Array.isArray(w.muscleGroups)
             ? w.muscleGroups.join(', ')
-            : (w.muscleGroups || w.focus || 'Full Body'),
+            : t(`db.${(w.muscleGroups || w.focus || 'FullBody').replace(/\s+/g, '')}`, w.muscleGroups || w.focus || 'Full Body'),
           exercises: (w.exercises || []).map((ex: any, j: number) => ({
             id: `ai-w${weekIdx + 1}-d${i + 1}-e${j}`,
             name: ex.name || 'Exercise',
@@ -80,19 +82,25 @@ export default function FourWeekPlanScreen() {
       // 2. DB workouts
       if (dbWorkouts && dbWorkouts.length > 0) {
         const dbDaysPerWeek = Number(convexUser?.weeklyWorkoutTime) || 4;
-        return buildWeekFromDBWorkouts(dbWorkouts, weekIdx, dbDaysPerWeek, convexUser?.biologicalSex || 'male');
+        return buildWeekFromDBWorkouts(dbWorkouts, weekIdx, dbDaysPerWeek, convexUser?.biologicalSex || 'male', t);
       }
       // 3. Static fallback
-      return getWeekRoutineDays(weekIdx);
+      return getWeekRoutineDays(weekIdx).map(day => ({
+        ...day,
+        dayTitle: t(`db.${day.dayTitle.replace(/\s+/g, '').toLowerCase()}`, day.dayTitle),
+        muscleGroups: t(`db.${day.muscleGroups.replace(/[\s,\/]+/g, '').toLowerCase()}`, day.muscleGroups),
+      }));
     };
   }, [aiWorkouts, dbWorkouts, convexUser]);
 
   // For week card theme — use AI plan split name or static theme
   const getWeekTheme = (weekIdx: number): string => {
     if (aiWorkouts && aiWorkouts.length > 0) {
-      return activePlans?.fitnessPlan?.workoutSplit || `Week ${weekIdx + 1}`;
+      const split = activePlans?.fitnessPlan?.workoutSplit || `Week ${weekIdx + 1}`;
+      return t(`db.${split.replace(/\s+/g, '')}`, split);
     }
-    return FREE_4_WEEK_PLAN[weekIdx]?.theme || 'Phase';
+    const theme = FREE_4_WEEK_PLAN[weekIdx]?.theme || 'Phase';
+    return t(`db.${theme.toLowerCase()}`, theme);
   };
 
   const handleViewWeek = (weekIndex: number) => {
@@ -129,8 +137,8 @@ export default function FourWeekPlanScreen() {
           <Ionicons name="chevron-back" size={26} color="#0f172a" />
         </TouchableOpacity>
         <View>
-          <Text style={styles.headerTitle}>4-Week Plan</Text>
-          <Text style={styles.headerSub}>A free template to get you moving.</Text>
+          <Text style={styles.headerTitle}>{t('move.fourWeekPlan', '4-Week Plan')}</Text>
+          <Text style={styles.headerSub}>{t('move.fourWeekPlanDesc', 'A free template to get you moving.')}</Text>
         </View>
         <View style={{ width: 44 }} />
       </View>
@@ -143,14 +151,14 @@ export default function FourWeekPlanScreen() {
         <View style={styles.heroCard}>
           <View style={styles.heroBadge}>
             <Ionicons name="calendar-outline" size={14} color="#a5b4fc" />
-            <Text style={styles.heroBadgeText}>FREE TEMPLATE</Text>
+            <Text style={styles.heroBadgeText}>{t('move.freeTemplate', 'FREE TEMPLATE')}</Text>
           </View>
-          <Text style={styles.heroTitle}>Start with structure.</Text>
+          <Text style={styles.heroTitle}>{t('move.startWithStructure', 'Start with structure.')}</Text>
           <Text style={styles.heroSub}>
-            Follow this 4-week routine to build momentum.{' '}
+            {t('move.followRoutine', 'Follow this 4-week routine to build momentum.')}{' '}
             {isPro
-              ? 'Your personalised plan adapts as you progress.'
-              : 'Free users get a full 28-day blueprint. Upgrade to Pro to continue your journey.'}
+              ? t('move.proPlanAdapts', 'Your personalised plan adapts as you progress.')
+              : t('move.freeUsers28Days', 'Free users get a full 28-day blueprint. Upgrade to Pro to continue your journey.')}
           </Text>
         </View>
 
@@ -167,7 +175,7 @@ export default function FourWeekPlanScreen() {
                 onPress={() => handleViewWeek(idx)}
                 activeOpacity={0.85}
               >
-                <Text style={styles.weekLabel}>Week {idx + 1}</Text>
+                <Text style={styles.weekLabel}>{t('common.weekNum', 'Week {{num}}', { num: idx + 1 })}</Text>
                 <Text style={styles.weekTheme} numberOfLines={1}>{theme}</Text>
 
                 <View style={styles.daysSummary}>
@@ -179,7 +187,7 @@ export default function FourWeekPlanScreen() {
                 </View>
 
                 <View style={styles.viewWeekBtn}>
-                  <Text style={styles.viewWeekBtnText}>View week</Text>
+                  <Text style={styles.viewWeekBtnText}>{t('move.viewWeek', 'View week')}</Text>
                   <Ionicons name="chevron-forward" size={14} color="#ffffff" />
                 </View>
               </TouchableOpacity>
@@ -192,28 +200,28 @@ export default function FourWeekPlanScreen() {
           <View style={styles.proCard}>
             <View style={styles.proCardHeader}>
               <Ionicons name="star" size={18} color="#f59e0b" />
-              <Text style={styles.proCardTitle}>Your Pro Rotating Plan</Text>
+              <Text style={styles.proCardTitle}>{t('move.yourProRotatingPlan', 'Your Pro Rotating Plan')}</Text>
             </View>
             <Text style={styles.proCardSub}>
-              Your AI plan in Move adapts each week based on your progress. Use the 4-week template above as a baseline, or let your plan guide you automatically.
+              {t('move.proPlanDesc', 'Your AI plan in Move adapts each week based on your progress. Use the 4-week template above as a baseline, or let your plan guide you automatically.')}
             </Text>
             <TouchableOpacity
               style={styles.proCardBtn}
               onPress={() => router.push('/(tabs)/move' as any)}
             >
-              <Text style={styles.proCardBtnText}>Go to Move tab →</Text>
+              <Text style={styles.proCardBtnText}>{t('move.goToMoveTab', 'Go to Move tab →')}</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <TouchableOpacity style={styles.unlockBanner} onPress={() => setShowUpgrade(true)} activeOpacity={0.9}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.unlockTitle}>Continue Your Journey</Text>
+              <Text style={styles.unlockTitle}>{t('move.continueJourney', 'Continue Your Journey')}</Text>
               <Text style={styles.unlockSub}>
-                Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.
+                {t('move.freeUsers28DaysFull', 'Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.')}
               </Text>
             </View>
             <View style={styles.goProBtn}>
-              <Text style={styles.goProText}>Go Pro</Text>
+              <Text style={styles.goProText}>{t('move.goPro', 'Go Pro')}</Text>
               <Ionicons name="arrow-forward" size={16} color="#ffffff" />
             </View>
           </TouchableOpacity>
@@ -277,9 +285,9 @@ export default function FourWeekPlanScreen() {
         visible={showUpgrade}
         onClose={() => setShowUpgrade(false)}
         onUpgrade={() => { setShowUpgrade(false); router.push('/premium'); }}
-        title="Unlock Pro Plan"
-        message="Get a personalised routine, exercise swaps, and progressive guidance."
-        upgradeLabel="Go Pro"
+        title={t('modals.pro.unlockPlan', 'Unlock Pro Plan')}
+        message={t('move.proUpsellDesc', 'Get a personalised routine, exercise swaps, and progressive guidance.')}
+        upgradeLabel={t('modals.pro.goPro', 'Go Pro')}
       />
     </SafeAreaView>
   );

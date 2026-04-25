@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery, useMutation } from 'convex/react';
@@ -128,6 +129,7 @@ function SectionHeader({ title, sub }: { title: string; sub?: string }) {
 
 // ─── Main Screen ───────────────────────────────────────────────────────────────
 export default function WellnessScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams();
   const insets = useSafeAreaInsets();
@@ -162,11 +164,11 @@ export default function WellnessScreen() {
   const [sleepInput, setSleepInput] = useState('');
 
   const MOODS = [
-    { label: 'Excellent', value: 5, color: '#22c55e', emoji: '😄' },
-    { label: 'Good', value: 4, color: '#3b82f6', emoji: '🙂' },
-    { label: 'Okay', value: 3, color: '#eab308', emoji: '😐' },
-    { label: 'Low', value: 2, color: '#f97316', emoji: '😟' },
-    { label: 'Poor', value: 1, color: '#ef4444', emoji: '😢' },
+    { label: t('wellness.moods.excellent', 'Excellent'), value: 5, color: '#22c55e', emoji: '😄' },
+    { label: t('wellness.moods.good', 'Good'), value: 4, color: '#3b82f6', emoji: '🙂' },
+    { label: t('wellness.moods.okay', 'Okay'), value: 3, color: '#eab308', emoji: '😐' },
+    { label: t('wellness.moods.low', 'Low'), value: 2, color: '#f97316', emoji: '😟' },
+    { label: t('wellness.moods.poor', 'Poor'), value: 1, color: '#ef4444', emoji: '😢' },
   ];
 
   const todaySleep = useMemo(() => sleepLogs?.find(l => l.date === today), [sleepLogs, today]);
@@ -222,8 +224,8 @@ export default function WellnessScreen() {
         {/* ── Header ── */}
         <View style={s.header}>
           <View>
-            <Text style={s.title}>Wellness</Text>
-            <Text style={s.subtitle}>Mental health & optimisation</Text>
+            <Text style={s.title}>{t('wellness.title', 'Wellness')}</Text>
+            <Text style={s.subtitle}>{t('wellness.subtitle', 'Mental health & optimisation')}</Text>
           </View>
         </View>
 
@@ -231,50 +233,50 @@ export default function WellnessScreen() {
         <View style={s.kpiGrid}>
           <KpiCard
             icon="moon" iconBg="#ede9fe" iconColor="#7c3aed"
-            label="Sleep"
+            label={t('wellness.sleep', 'Sleep')}
             value={todaySleep ? `${todaySleep.hours}h` : '--'}
-            sub="Last night"
+            sub={t('wellness.lastNight', 'Last night')}
           />
           <KpiCard
             icon="happy"
             iconBg={moodConfig ? moodConfig.color + '25' : '#f1f5f9'}
             iconColor={moodConfig?.color ?? '#64748b'}
-            label="Mood"
+            label={t('wellness.mood', 'Mood')}
             value={moodConfig ? moodConfig.emoji : '--'}
-            sub={moodConfig?.label ?? 'Not logged'}
+            sub={moodConfig?.label ? t(`wellness.moods.${moodConfig.label.toLowerCase()}`, moodConfig.label) : t('wellness.notLogged', 'Not logged')}
           />
           <KpiCard
             icon="checkmark-circle" iconBg="#dcfce7" iconColor="#16a34a"
-            label="Habits"
+            label={t('wellness.habitsLabel', 'Habits')}
             value={`${completedHabits}/${totalHabits}`}
-            sub="Done today"
+            sub={t('wellness.doneToday', 'Done today')}
           />
           <KpiCard
             icon="leaf" iconBg="#d1fae5" iconColor="#059669"
-            label="Meditation"
+            label={t('wellness.meditation', 'Meditation')}
             value={`${meditationMins7d}m`}
-            sub="This week"
+            sub={t('wellness.thisWeek', 'This week')}
           />
         </View>
 
         {/* ── Quick Actions (replaces old + dropdown) ── */}
         <View style={s.section}>
-          <SectionHeader title="Quick Log" sub="Track your daily wellness" />
+          <SectionHeader title={t('wellness.quickLog', 'Quick Log')} sub={t('wellness.trackDaily', 'Track your daily wellness')} />
           <View style={s.quickActions}>
             <QuickActionBtn
-              icon="moon-outline" label="Sleep" color="#7c3aed" bg="#ede9fe"
+              icon="moon-outline" label={t('wellness.sleep', 'Sleep')} color="#7c3aed" bg="#ede9fe"
               onPress={() => setShowSleepModal(true)}
             />
             <QuickActionBtn
-              icon="happy-outline" label="Mood" color="#eab308" bg="#fef9c3"
+              icon="happy-outline" label={t('wellness.mood', 'Mood')} color="#eab308" bg="#fef9c3"
               onPress={() => setShowMoodModal(true)}
             />
             <QuickActionBtn
-              icon="stats-chart" label="Insights" color="#0891b2" bg="#cffafe"
+              icon="stats-chart" label={t('wellness.insights', 'Insights')} color="#0891b2" bg="#cffafe"
               onPress={() => setShowInsightsModal(true)}
             />
             <QuickActionBtn
-              icon="leaf-outline" label="Meditate" color="#059669" bg="#d1fae5"
+              icon="leaf-outline" label={t('wellness.meditate', 'Meditate')} color="#059669" bg="#d1fae5"
               onPress={() => { triggerSound(SoundEffect.UI_TAP); setShowMeditationHub(true); }}
             />
           </View>
@@ -299,20 +301,20 @@ export default function WellnessScreen() {
               <View style={s.planBannerLeft}>
                 <View style={s.planBannerBadge}>
                   <Text style={s.planBannerBadgeText}>
-                    {isPro ? '✦ PRO · AI-Powered · Refreshes Monthly' : '28-Day Blueprint · Free'}
+                    {isPro ? t('wellness.proBannerBadge', '✦ PRO · AI-Powered · Refreshes Monthly') : t('wellness.freeBannerBadge', '28-Day Blueprint · Free')}
                   </Text>
                 </View>
                 <Text style={s.planBannerTitle}>
-                  {isPro ? 'Your Personalised\nMental Blueprint' : 'Your Mental\nHealth Blueprint'}
+                  {isPro ? t('wellness.proBannerTitle', 'Your Personalised\nMental Blueprint') : t('wellness.freeBannerTitle', 'Your Mental\nHealth Blueprint')}
                 </Text>
                 <Text style={s.planBannerSub}>
                   {isPro
-                    ? 'AI plan tailored to your stress, sleep & goals — rotates every 30 days'
-                    : 'Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue.'}
+                    ? t('wellness.proPlanTailored', 'AI plan tailored to your stress, sleep & goals — rotates every 30 days')
+                    : t('wellness.freeUsers28DaysSub', 'Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue.')}
                 </Text>
 
                 <View style={s.planBannerCta}>
-                  <Text style={s.planBannerCtaText}>View plan →</Text>
+                  <Text style={s.planBannerCtaText}>{t('wellness.viewPlan', 'View plan →')}</Text>
                 </View>
               </View>
 
@@ -327,30 +329,30 @@ export default function WellnessScreen() {
 
         {/* ── Wellness Hubs Grid ── */}
         <View style={s.section}>
-          <SectionHeader title="Wellness Hubs" sub="Your mental toolbox" />
+          <SectionHeader title={t('wellness.wellnessHubs', 'Wellness Hubs')} sub={t('wellness.mentalToolbox', 'Your mental toolbox')} />
           <View style={s.hubGrid}>
             <HubCard
-              icon="journal" label="Reflections" sub="Journal & gratitude"
+              icon="journal" label={t('wellness.reflectionsLabel', 'Reflections')} sub={t('wellness.journalGratitude', 'Journal & gratitude')}
               gradient={['#db2777', '#9d174d']}
               onPress={() => router.push('/reflections-hub' as any)}
             />
             <HubCard
-              icon="game-controller" label="Brain Games" sub="Sharpen your mind"
+              icon="game-controller" label={t('wellness.brainGames', 'Brain Games')} sub={t('wellness.sharpenMind', 'Sharpen your mind')}
               gradient={['#7c3aed', '#5b21b6']}
               onPress={() => { triggerSound(SoundEffect.UI_TAP); setShowGamesHub(true); }}
             />
             <HubCard
-              icon="locate" label="Habits" sub="Daily streaks"
+              icon="locate" label={t('wellness.habitsLabel', 'Habits')} sub={t('wellness.dailyStreaks', 'Daily streaks')}
               gradient={['#059669', '#065f46']}
               onPress={() => router.push('/habit-hub' as any)}
             />
             <HubCard
-              icon="flag" label="Life Goals" sub="Dream & achieve"
+              icon="flag" label={t('wellness.lifeGoals', 'Life Goals')} sub={t('wellness.dreamAchieve', 'Dream & achieve')}
               gradient={['#d97706', '#92400e']}
               onPress={() => setShowLifeGoals(true)}
             />
             <HubCard
-              icon="library" label="Library" sub="Curated knowledge"
+              icon="library" label={t('wellness.libraryLabel', 'Library')} sub={t('wellness.curatedKnowledge', 'Curated knowledge')}
               gradient={['#2563eb', '#1e3a8a']}
               onPress={() => router.push('/library' as any)}
             />
@@ -360,14 +362,14 @@ export default function WellnessScreen() {
         {/* ── 7-Day Mood Chart ── */}
         {moodLogs && moodLogs.length > 0 && (
           <View style={s.section}>
-            <SectionHeader title="7-Day Mood Trend" />
+            <SectionHeader title={t('wellness.moodTrend', '7-Day Mood Trend')} />
             <View style={s.moodChart}>
               {last7Days.map((date) => {
                 const log = moodLogs.find(l => l.date === date);
                 const mood = log?.mood ?? 0;
                 const cfg = MOODS.find(m => m.value === mood);
                 const dow = new Date(date + 'T12:00:00').getDay();
-                const dayLabel = ['Su', 'M', 'T', 'W', 'Th', 'F', 'Sa'][dow];
+                const dayLabel = [t('common.days.sun', 'Su'), t('common.days.mon', 'M'), t('common.days.tue', 'T'), t('common.days.wed', 'W'), t('common.days.thu', 'Th'), t('common.days.fri', 'F'), t('common.days.sat', 'Sa')][dow];
                 return (
                   <View key={date} style={s.moodBar}>
                     <View style={s.moodBarTrack}>
@@ -391,17 +393,17 @@ export default function WellnessScreen() {
       <Modal visible={showInsightsModal} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={s.modalWrap} edges={['bottom']}>
           <View style={[s.modalHeader, { paddingTop: Math.max(insets.top, 16) }]}>
-            <Text style={s.modalTitle}>Wellness Analytics</Text>
+            <Text style={s.modalTitle}>{t('wellness.analyticsTitle', 'Wellness Analytics')}</Text>
             <TouchableOpacity onPress={() => setShowInsightsModal(false)} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Ionicons name="close" size={28} color="#0f172a" />
             </TouchableOpacity>
           </View>
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 24 }}>
             {[
-              { label: 'Habit Completion', value: totalHabits > 0 ? `${Math.round((completedHabits / totalHabits) * 100)}%` : '0%', locked: false },
-              { label: '7-Day Sleep Avg', value: `${sleepAvg}h`, locked: false },
-              { label: 'Meditation (Week)', value: `${meditationMins7d}m`, locked: false },
-              { label: 'Mood Stability', value: isPro ? 'Stable' : '🔒 Pro', locked: !isPro },
+              { label: t('wellness.habitCompletion', 'Habit Completion'), value: totalHabits > 0 ? `${Math.round((completedHabits / totalHabits) * 100)}%` : '0%', locked: false },
+              { label: t('wellness.sleepAvg', '7-Day Sleep Avg'), value: `${sleepAvg}h`, locked: false },
+              { label: t('wellness.meditationWeek', 'Meditation (Week)'), value: `${meditationMins7d}m`, locked: false },
+              { label: t('wellness.moodStability', 'Mood Stability'), value: isPro ? t('wellness.stable', 'Stable') : `🔒 ${t('wellness.pro', 'Pro')}`, locked: !isPro },
             ].map(item => (
               <View key={item.label} style={[s.metricRow, item.locked && { opacity: 0.5 }]}>
                 <Text style={s.metricLabel}>{item.label}</Text>
@@ -416,19 +418,19 @@ export default function WellnessScreen() {
       <Modal visible={showSleepModal} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={s.modalWrap} edges={['bottom']}>
           <View style={[s.modalHeader, { paddingTop: Math.max(insets.top, 16) }]}>
-            <Text style={s.modalTitle}>Log Sleep</Text>
+            <Text style={s.modalTitle}>{t('wellness.logSleepTitle', 'Log Sleep')}</Text>
             <TouchableOpacity onPress={() => setShowSleepModal(false)} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Ionicons name="close" size={28} color="#0f172a" />
             </TouchableOpacity>
           </View>
           <View style={{ padding: 24 }}>
-            <Text style={s.inputLabel}>Hours slept</Text>
+            <Text style={s.inputLabel}>{t('wellness.hoursSlept', 'Hours slept')}</Text>
             <TextInput
-              style={s.input} placeholder="e.g. 7.5" keyboardType="numeric"
+              style={s.input} placeholder={t('wellness.sleepPlaceholder', 'e.g. 7.5')} keyboardType="numeric"
               value={sleepInput} onChangeText={setSleepInput} placeholderTextColor="#94a3b8"
             />
             <TouchableOpacity style={s.saveBtn} onPress={handleLogSleep}>
-              <Text style={s.saveBtnText}>Save</Text>
+              <Text style={s.saveBtnText}>{t('wellness.save', 'Save')}</Text>
             </TouchableOpacity>
           </View>
         </SafeAreaView>
@@ -438,7 +440,7 @@ export default function WellnessScreen() {
       <Modal visible={showMoodModal} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={s.modalWrap} edges={['bottom']}>
           <View style={[s.modalHeader, { paddingTop: Math.max(insets.top, 16) }]}>
-            <Text style={s.modalTitle}>How are you feeling?</Text>
+            <Text style={s.modalTitle}>{t('wellness.howFeeling', 'How are you feeling?')}</Text>
             <TouchableOpacity onPress={() => setShowMoodModal(false)} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Ionicons name="close" size={28} color="#0f172a" />
             </TouchableOpacity>

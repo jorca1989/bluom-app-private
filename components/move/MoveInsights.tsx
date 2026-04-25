@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useUser as useClerkUser } from '@clerk/clerk-expo';
+import { useTranslation } from 'react-i18next';
 
 interface MoveInsightsProps {
   isPro: boolean;
@@ -17,6 +18,7 @@ function addDays(d: Date, n: number) { const x = new Date(d); x.setDate(x.getDat
 export default function MoveInsights({ isPro, onUpgradePress }: MoveInsightsProps) {
   const router = useRouter();
   const { user: clerkUser } = useClerkUser();
+  const { t } = useTranslation();
 
   const convexUser = useQuery(
     api.users.getUserByClerkId,
@@ -60,11 +62,11 @@ export default function MoveInsights({ isPro, onUpgradePress }: MoveInsightsProp
             <Ionicons name="analytics" size={22} color="#2563eb" />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.title}>Workout Insights</Text>
+            <Text style={styles.title}>{t('move.insightsTitle', 'Workout Insights')}</Text>
             <Text style={styles.sub} numberOfLines={1}>
               {isPro
-                ? (streak > 0 ? `🔥 ${streak}-day streak • Tap to view trends` : 'Tap to view weekly trends')
-                : 'Upgrade to unlock weekly trends & more'}
+                ? (streak > 0 ? t('move.streakTrends', '🔥 {{streak}}-day streak • Tap to view trends', { streak }) : t('move.tapWeeklyTrends', 'Tap to view weekly trends'))
+                : t('move.upgradeTrends', 'Upgrade to unlock weekly trends & more')}
             </Text>
           </View>
         </View>

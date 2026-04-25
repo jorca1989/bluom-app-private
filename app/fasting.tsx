@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, TouchableOpacity, ScrollView, Alert, StyleSheet, Dimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -13,23 +14,23 @@ import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 
 const { width } = Dimensions.get('window');
 
-const FASTING_PROTOCOLS = [
-  { id: '16:8', name: '16:8', proRequired: false, description: 'Standard intermittent fasting' },
-  { id: '18:6', name: '18:6', proRequired: true, description: 'Advanced fat burning' },
-  { id: '20:4', name: '20:4', proRequired: true, description: 'Extreme ketosis protocol' },
-  { id: 'OMAD', name: 'OMAD', proRequired: true, description: 'One meal a day' },
+const getFastingProtocols = (t: any) => [
+  { id: '16:8', name: '16:8', proRequired: false, description: t('fasting.protocols.168', 'Standard intermittent fasting') },
+  { id: '18:6', name: '18:6', proRequired: true, description: t('fasting.protocols.186', 'Advanced fat burning') },
+  { id: '20:4', name: '20:4', proRequired: true, description: t('fasting.protocols.204', 'Extreme ketosis protocol') },
+  { id: 'OMAD', name: 'OMAD', proRequired: true, description: t('fasting.protocols.omad', 'One meal a day') },
 ];
 
-const METABOLIC_PHASES = [
-  { label: 'Sugar Drop', time: '0-12h', color: '#3b82f6', description: 'Blood sugar stabilizing', slug: 'sugar-drop' },
-  { label: 'Fat Burn', time: '12-18h', color: '#f59e0b', description: 'Entering ketosis state', slug: 'fat-burn' },
-  { label: 'Autophagy', time: '18h+', color: '#10b981', description: 'Cellular cleanup active', slug: 'autophagy' },
+const getMetabolicPhases = (t: any) => [
+  { label: t('fasting.phases.sugarDrop', 'Sugar Drop'), time: '0-12h', color: '#3b82f6', description: t('fasting.phases.sugarDropDesc', 'Blood sugar stabilizing'), slug: 'sugar-drop' },
+  { label: t('fasting.phases.fatBurn', 'Fat Burn'), time: '12-18h', color: '#f59e0b', description: t('fasting.phases.fatBurnDesc', 'Entering ketosis state'), slug: 'fat-burn' },
+  { label: t('fasting.phases.autophagy', 'Autophagy'), time: '18h+', color: '#10b981', description: t('fasting.phases.autophagyDesc', 'Cellular cleanup active'), slug: 'autophagy' },
 ];
 
-const EDUCATION_CARDS = [
-  { title: 'What is Autophagy?', icon: '🔬', content: 'Your body\'s cellular recycling process that removes damaged cells and generates new ones.', slug: 'autophagy' },
-  { title: 'Fasting & Muscle Mass', icon: '💪', content: 'Proper fasting preserves muscle while burning fat, especially with adequate protein.', slug: 'fat-burn' },
-  { title: 'Electrolytes 101', icon: '⚡', content: 'Stay hydrated with sodium, potassium, and magnesium during extended fasts.', slug: 'sugar-drop' },
+const getEducationCards = (t: any) => [
+  { title: t('fasting.edu.autophagy', 'What is Autophagy?'), icon: '🔬', content: t('fasting.edu.autophagyDesc', 'Your body\'s cellular recycling process that removes damaged cells and generates new ones.'), slug: 'autophagy' },
+  { title: t('fasting.edu.muscle', 'Fasting & Muscle Mass'), icon: '💪', content: t('fasting.edu.muscleDesc', 'Proper fasting preserves muscle while burning fat, especially with adequate protein.'), slug: 'fat-burn' },
+  { title: t('fasting.edu.electrolytes', 'Electrolytes 101'), icon: '⚡', content: t('fasting.edu.electrolytesDesc', 'Stay hydrated with sodium, potassium, and magnesium during extended fasts.'), slug: 'sugar-drop' },
 ];
 
 export default function FastingScreen() {
@@ -37,6 +38,7 @@ export default function FastingScreen() {
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
   const { isPro, isLoading, promptUpgrade } = useAccessControl();
+  const { t } = useTranslation();
 
   const convexUser = useQuery(
     api.users.getUserByClerkId,
@@ -55,6 +57,10 @@ export default function FastingScreen() {
   const [selectedProtocol, setSelectedProtocol] = useState('16:8');
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showProtocolUpgrade, setShowProtocolUpgrade] = useState(false);
+
+  const protocols = useMemo(() => getFastingProtocols(t), [t]);
+  const metabolicPhases = useMemo(() => getMetabolicPhases(t), [t]);
+  const educationCards = useMemo(() => getEducationCards(t), [t]);
 
   // Background timer - always running
   useEffect(() => {
@@ -79,15 +85,15 @@ export default function FastingScreen() {
 
   const currentPhase = useMemo(() => {
     if (!activeLog) return null;
-    if (elapsedHours < 12) return METABOLIC_PHASES[0];
-    if (elapsedHours < 18) return METABOLIC_PHASES[1];
-    return METABOLIC_PHASES[2];
-  }, [activeLog, elapsedHours]);
+    if (elapsedHours < 12) return metabolicPhases[0];
+    if (elapsedHours < 18) return metabolicPhases[1];
+    return metabolicPhases[2];
+  }, [activeLog, elapsedHours, metabolicPhases]);
 
   async function handleStart() {
     if (!convexUser?._id) return;
 
-    const protocol = FASTING_PROTOCOLS.find(p => p.id === selectedProtocol);
+    const protocol = protocols.find(p => p.id === selectedProtocol);
     if (protocol?.proRequired && !isPro) {
       setShowProtocolUpgrade(true);
       return;
@@ -106,11 +112,11 @@ export default function FastingScreen() {
       userId: convexUser._id,
       endTime: Date.now()
     });
-    Alert.alert('Fast Ended', `Total time: ${Math.floor(elapsedHours)}h ${Math.floor((elapsedHours % 1) * 60)}m`);
+    Alert.alert(t('fasting.fastEnded', 'Jejum Terminado'), `${t('fasting.totalTime', 'Tempo total')}: ${Math.floor(elapsedHours)}h ${Math.floor((elapsedHours % 1) * 60)}m`);
   }
 
   function handleProtocolSelect(protocolId: string) {
-    const protocol = FASTING_PROTOCOLS.find(p => p.id === protocolId);
+    const protocol = protocols.find(p => p.id === protocolId);
     if (protocol?.proRequired && !isPro) {
       setShowProtocolUpgrade(true);
       return;
@@ -132,8 +138,8 @@ export default function FastingScreen() {
           <Ionicons name="arrow-back" size={20} color="#0f172a" />
         </TouchableOpacity>
         <View className="flex-1">
-          <Text className="text-slate-900 font-black text-lg">Metabolic Tracker</Text>
-          <Text className="text-slate-500 font-bold text-xs">Precision fasting intelligence</Text>
+          <Text className="text-slate-900 font-black text-lg">{t('fasting.title', 'Rastreador Metabólico')}</Text>
+          <Text className="text-slate-500 font-bold text-xs">{t('fasting.subtitle', 'Inteligência de jejum de precisão')}</Text>
         </View>
       </View>
 
@@ -151,9 +157,9 @@ export default function FastingScreen() {
               trackColor="#f1f5f9"
             />
             <View className="absolute items-center">
-              <Text className="text-slate-400 font-black uppercase tracking-widest text-[10px] mb-1">Elapsed Time</Text>
+              <Text className="text-slate-400 font-black uppercase tracking-widest text-[10px] mb-1">{t('fasting.elapsed', 'Tempo Decorrido')}</Text>
               <Text className="text-slate-900 font-black text-4xl tabular-nums">{formatTime(elapsedMs)}</Text>
-              <Text className="text-slate-500 font-bold mt-1">Goal: {targetHours}h</Text>
+              <Text className="text-slate-500 font-bold mt-1">{t('fasting.goal', 'Objetivo')}: {targetHours}h</Text>
             </View>
           </View>
 
@@ -173,7 +179,7 @@ export default function FastingScreen() {
             className={`mt-10 w-full py-5 rounded-3xl items-center shadow-xl ${activeLog ? 'bg-slate-900' : 'bg-blue-600'}`}
           >
             <Text className="text-white font-black text-lg">
-              {activeLog ? 'End Fasting' : 'Start Fasting'}
+              {activeLog ? t('fasting.endFasting', 'Terminar Jejum') : t('fasting.startFasting', 'Iniciar Jejum')}
             </Text>
           </TouchableOpacity>
 
@@ -182,7 +188,7 @@ export default function FastingScreen() {
           {activeLog && (
             <View className="flex-row items-center gap-2 mt-4 opacity-80">
               <Ionicons name="sync" size={14} color="#94a3b8" />
-              <Text className="text-slate-400 font-bold text-xs uppercase tracking-wider">Syncing Metabolic Data</Text>
+              <Text className="text-slate-400 font-bold text-xs uppercase tracking-wider">{t('fasting.syncing', 'A sincronizar dados metabólicos')}</Text>
             </View>
           )}
         </View>
@@ -190,9 +196,9 @@ export default function FastingScreen() {
         {/* Protocol Selector */}
         {!activeLog && (
           <View className="mt-6">
-            <Text className="text-slate-900 font-black text-lg mb-3 px-2">Choose Protocol</Text>
+            <Text className="text-slate-900 font-black text-lg mb-3 px-2">{t('fasting.chooseProtocol', 'Escolher Protocolo')}</Text>
             <View className="space-y-2">
-              {FASTING_PROTOCOLS.map((protocol) => (
+              {protocols.map((protocol) => (
                 <TouchableOpacity
                   key={protocol.id}
                   onPress={() => handleProtocolSelect(protocol.id)}
@@ -221,12 +227,12 @@ export default function FastingScreen() {
         {/* Metabolic Phases */}
         <View className="mt-8 bg-white rounded-3xl overflow-hidden relative border border-slate-200">
           <View className="p-6 pb-2">
-            <Text className="text-slate-900 font-black text-lg">Metabolic Phases</Text>
-            <Text className="text-slate-400 font-medium text-xs mb-4">Tap to learn what's happening inside</Text>
+            <Text className="text-slate-900 font-black text-lg">{t('fasting.metabolicPhases', 'Fases Metabólicas')}</Text>
+            <Text className="text-slate-400 font-medium text-xs mb-4">{t('fasting.tapToLearn', 'Toca para aprender o que acontece dentro de ti')}</Text>
           </View>
 
           <View className="px-4 pb-6 space-y-3">
-            {METABOLIC_PHASES.map((phase, index) => (
+            {metabolicPhases.map((phase, index) => (
               <TouchableOpacity
                 key={index}
                 onPress={() => router.push(`/library/${phase.slug}`)}
@@ -257,10 +263,10 @@ export default function FastingScreen() {
             <View className="absolute inset-0 items-center justify-center z-50" style={{ backgroundColor: '#ffffff' }}>
               <View className="bg-white p-6 rounded-3xl items-center shadow-lg w-[85%] border border-slate-200">
                 <Ionicons name="lock-closed" size={32} color="#3b82f6" className="mb-4" />
-                <Text className="text-slate-900 font-black text-lg text-center mb-2">Unlock Metabolic Vision</Text>
-                <Text className="text-slate-500 text-center text-sm mb-6">See which fat-burning phase you are in and track your body's hidden changes.</Text>
-                <TouchableOpacity onPress={() => promptUpgrade('See your metabolic state in real-time.')} className="bg-blue-600 px-6 py-3 rounded-full shadow-blue-200">
-                  <Text className="font-bold text-white uppercase tracking-wider text-xs">Upgrade to Unlock</Text>
+                <Text className="text-slate-900 font-black text-lg text-center mb-2">{t('fasting.unlockVision', 'Desbloquear Visão Metabólica')}</Text>
+                <Text className="text-slate-500 text-center text-sm mb-6">{t('fasting.unlockVisionDesc', 'Veja em que fase de queima de gordura se encontra.')}</Text>
+                <TouchableOpacity onPress={() => promptUpgrade(t('fasting.seeMetabolicState', 'See your metabolic state in real-time.'))} className="bg-blue-600 px-6 py-3 rounded-full shadow-blue-200">
+                  <Text className="font-bold text-white uppercase tracking-wider text-xs">{t('fasting.upgradeUnlock', 'Atualizar para Desbloquear')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -269,9 +275,9 @@ export default function FastingScreen() {
 
         {/* Educational Resources */}
         <View className="mt-8 mb-4">
-          <Text className="text-slate-900 font-black text-lg mb-4 px-2">Fasting Science</Text>
+          <Text className="text-slate-900 font-black text-lg mb-4 px-2">{t('fasting.fastingScience', 'Ciência do Jejum')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="gap-3" contentContainerStyle={{ paddingHorizontal: 4 }}>
-            {EDUCATION_CARDS.map((card, index) => (
+            {educationCards.map((card, index) => (
               <TouchableOpacity
                 key={index}
                 onPress={() => router.push(`/library/${card.slug}`)}
@@ -296,8 +302,8 @@ export default function FastingScreen() {
         visible={showProtocolUpgrade}
         onClose={() => setShowProtocolUpgrade(false)}
         onUpgrade={() => { setShowProtocolUpgrade(false); router.push('/premium'); }}
-        title="Advanced Protocols"
-        message="Unlock 18:6, 20:4, and OMAD protocols for maximum metabolic benefits."
+        title={t('fasting.advancedProtocols', 'Advanced Protocols')}
+        message={t('fasting.advancedDesc', 'Unlock 18:6, 20:4, and OMAD protocols for maximum metabolic benefits.')}
       />
 
       {/* Standard Upgrade Modal */}
@@ -305,8 +311,8 @@ export default function FastingScreen() {
         visible={showUpgrade}
         onClose={() => setShowUpgrade(false)}
         onUpgrade={() => { setShowUpgrade(false); router.push('/premium'); }}
-        title="Metabolic Insights Pro"
-        message="Unlock real-time metabolic phase tracking and advanced fasting analytics."
+        title={t('fasting.proTitle', 'Metabolic Insights Pro')}
+        message={t('fasting.proDesc', 'Unlock real-time metabolic phase tracking and advanced fasting analytics.')}
       />
     </SafeAreaView>
   );

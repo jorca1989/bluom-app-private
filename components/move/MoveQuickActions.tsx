@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 interface MoveQuickActionsProps {
   onAddWorkout: () => void;
@@ -15,30 +16,31 @@ export default function MoveQuickActions({
   onCustomExercise,
   onViewPlan,
 }: MoveQuickActionsProps) {
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>Quick Actions</Text>
+      <Text style={styles.sectionTitle}>{t('move.quickActions', 'Quick Actions')}</Text>
       
       <View style={styles.row}>
         <TouchableOpacity style={styles.actionItem} onPress={onAddWorkout} activeOpacity={0.7}>
           <View style={[styles.iconCircle, { backgroundColor: '#eff6ff' }]}>
             <Ionicons name="library" size={24} color="#3b82f6" />
           </View>
-          <Text style={styles.actionTitle}>Exercise Library</Text>
+          <Text style={styles.actionTitle}>{t('move.exerciseLibrary', 'Exercise Library')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionItem} onPress={onAddSteps} activeOpacity={0.7}>
           <View style={[styles.iconCircle, { backgroundColor: '#ecfdf5' }]}>
             <Ionicons name="footsteps" size={24} color="#10b981" />
           </View>
-          <Text style={styles.actionTitle}>Add Steps</Text>
+          <Text style={styles.actionTitle}>{t('move.addStepsAction', 'Add Steps')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionItem} onPress={onCustomExercise} activeOpacity={0.7}>
           <View style={[styles.iconCircle, { backgroundColor: '#fff7ed' }]}>
             <Ionicons name="add-circle" size={24} color="#f97316" />
           </View>
-          <Text style={styles.actionTitle}>Custom Exercise</Text>
+          <Text style={styles.actionTitle}>{t('move.customExercise', 'Criar Exercicio')}</Text>
         </TouchableOpacity>
 
         {onViewPlan && (
@@ -46,7 +48,7 @@ export default function MoveQuickActions({
             <View style={[styles.iconCircle, { backgroundColor: '#f3e8ff' }]}>
               <Ionicons name="calendar-outline" size={24} color="#a855f7" />
             </View>
-            <Text style={styles.actionTitle}>AI Plan</Text>
+            <Text style={styles.actionTitle}>{t('move.aiPlan', 'AI Plan')}</Text>
           </TouchableOpacity>
         )}
       </View>

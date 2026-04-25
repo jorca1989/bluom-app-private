@@ -3,6 +3,7 @@ import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { SoundEffect, triggerSound } from '@/utils/soundEffects';
+import { useTranslation } from 'react-i18next';
 
 export function ProUpgradeModal(props: {
   visible: boolean;
@@ -15,6 +16,7 @@ export function ProUpgradeModal(props: {
 }) {
   const { visible, title, message, onClose, onUpgrade, upgradeLabel, soundEffect } = props;
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const prevVisibleRef = useRef<boolean>(false);
   useEffect(() => {
@@ -33,7 +35,7 @@ export function ProUpgradeModal(props: {
             <View style={styles.iconWrap}>
               <Ionicons name="lock-closed" size={18} color="#f59e0b" />
             </View>
-            <Text style={styles.title}>{title ?? 'Upgrade to Pro'}</Text>
+            <Text style={styles.title}>{title ?? t('modals.pro.title', 'Upgrade to Pro')}</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeIcon} activeOpacity={0.8}>
               <Ionicons name="close" size={18} color="#64748b" />
             </TouchableOpacity>
@@ -43,11 +45,11 @@ export function ProUpgradeModal(props: {
 
           <TouchableOpacity style={styles.upgradeBtn} onPress={onUpgrade} activeOpacity={0.85}>
             <Ionicons name="sparkles" size={18} color="#fff" />
-            <Text style={styles.upgradeText}>{upgradeLabel ?? 'Go Pro'}</Text>
+            <Text style={styles.upgradeText}>{upgradeLabel ?? t('modals.pro.goPro', 'Go Pro')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={onClose} style={styles.closeLink} activeOpacity={0.8}>
-            <Text style={styles.closeLinkText}>Not now</Text>
+            <Text style={styles.closeLinkText}>{t('modals.pro.notNow', 'Not now')}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>

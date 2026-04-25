@@ -14,6 +14,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
@@ -31,6 +32,8 @@ interface MeditationHubProps {
 }
 
 export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language?.split('-')[0] || 'en';
   const insets = useSafeAreaInsets();
   
   useEffect(() => {
@@ -55,12 +58,30 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
   }, [allSessions, selectedCategory]);
 
   // Fallback data
+  
+  const getLocalizedField = (item: any, field: string) => {
+    if (!item) return '';
+    const localizations = item[field + 'Localizations'];
+    if (localizations && localizations[currentLang]) {
+      return localizations[currentLang];
+    }
+    return item[field] || '';
+  };
+
+  const getLocalizedAudio = (item: any) => {
+    if (!item) return '';
+    if (item.audioUrls && item.audioUrls[currentLang]) {
+      return item.audioUrls[currentLang];
+    }
+    return item.audioUrl || '';
+  };
+
   const fallbackSessions = useMemo(() => [
-    { _id: '1', title: 'Deep Sleep Journey', category: 'sleep', duration: 15, description: 'A calming guided session to drift into deep sleep.', tags: ['sleep', 'Rest'], coverImage: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
-    { _id: '2', title: 'Morning Clarity', category: 'morning', duration: 5, description: 'Start your day with a clear mind and focused energy.', tags: ['morning', 'Focus'], coverImage: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
-    { _id: '3', title: 'Quick Reset', category: 'focus', duration: 3, description: 'A short reset to recenter during a busy day.', tags: ['focus', 'Quick'], coverImage: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
-    { _id: '4', title: 'Anxiety Release', category: 'anxiety', duration: 12, description: 'Let go of tension and find your inner calm.', tags: ['anxiety', 'Calm'], coverImage: 'https://images.unsplash.com/photo-1593811167562-9cef47bfc4d7?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
-    { _id: '5', title: 'Self-Love Pause', category: 'self-love', duration: 8, description: 'Practice compassion and gratitude.', tags: ['self-love', 'Compassion'], coverImage: 'https://images.unsplash.com/photo-1499209974431-9dddcece097a?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
+    { _id: '1', title: t('wellness.fallbackSessions.deepSleepTitle', 'Deep Sleep Journey'), category: 'sleep', duration: 15, description: t('wellness.fallbackSessions.deepSleepDesc', 'A calming guided session to drift into deep sleep.'), tags: ['sleep', 'Rest'], coverImage: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
+    { _id: '2', title: t('wellness.fallbackSessions.morningClarityTitle', 'Morning Clarity'), category: 'morning', duration: 5, description: t('wellness.fallbackSessions.morningClarityDesc', 'Start your day with a clear mind and focused energy.'), tags: ['morning', 'Focus'], coverImage: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
+    { _id: '3', title: t('wellness.fallbackSessions.quickResetTitle', 'Quick Reset'), category: 'focus', duration: 3, description: t('wellness.fallbackSessions.quickResetDesc', 'A short reset to recenter during a busy day.'), tags: ['focus', 'Quick'], coverImage: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
+    { _id: '4', title: t('wellness.fallbackSessions.anxietyReleaseTitle', 'Anxiety Release'), category: 'anxiety', duration: 12, description: t('wellness.fallbackSessions.anxietyReleaseDesc', 'Let go of tension and find your inner calm.'), tags: ['anxiety', 'Calm'], coverImage: 'https://images.unsplash.com/photo-1593811167562-9cef47bfc4d7?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
+    { _id: '5', title: t('wellness.fallbackSessions.selfLoveTitle', 'Self-Love Pause'), category: 'self-love', duration: 8, description: t('wellness.fallbackSessions.selfLoveDesc', 'Practice compassion and gratitude.'), tags: ['self-love', 'Compassion'], coverImage: 'https://images.unsplash.com/photo-1499209974431-9dddcece097a?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
   ].filter(s => !selectedCategory || s.category === selectedCategory || s.tags.includes(selectedCategory)), [selectedCategory]);
 
   const displaySessions = rawSessions ?? fallbackSessions;
@@ -105,9 +126,9 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return t('wellness.meditationHub.goodMorning', 'Good morning');
+    if (hour < 17) return t('wellness.meditationHub.goodAfternoon', 'Good afternoon');
+    return t('wellness.meditationHub.goodEvening', 'Good evening');
   };
 
   return (
@@ -118,7 +139,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
         <View style={[styles.header, { paddingTop: Math.max(insets.top, 44) }]}>
           <View>
             <Text style={styles.headerGreeting}>{getGreeting()}</Text>
-            <Text style={styles.headerTitle}>Ready to unwind?</Text>
+            <Text style={styles.headerTitle}>{t('wellness.meditationHub.readyToUnwind', 'Ready to unwind?')}</Text>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Ionicons name="close" size={24} color="#64748b" />
@@ -139,7 +160,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
               style={[styles.categoryPill, selectedCategory === null && styles.categoryPillActive]}
               onPress={() => setSelectedCategory(null)}
             >
-              <Text style={[styles.categoryPillText, selectedCategory === null && styles.categoryPillTextActive]}>All Filters</Text>
+              <Text style={[styles.categoryPillText, selectedCategory === null && styles.categoryPillTextActive]}>{t('wellness.meditationHub.allFilters', 'All Filters')}</Text>
             </TouchableOpacity>
             {MEDITATION_FILTERS.map(cat => (
               <TouchableOpacity
@@ -148,7 +169,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
                 onPress={() => setSelectedCategory(cat.id)}
               >
                 <Text style={{ fontSize: 13, marginRight: 4 }}>{cat.emoji}</Text>
-                <Text style={[styles.categoryPillText, selectedCategory === cat.id && styles.categoryPillTextActive]}>{cat.name}</Text>
+                <Text style={[styles.categoryPillText, selectedCategory === cat.id && styles.categoryPillTextActive]}>{t(`wellness.meditationFilters.${cat.id}`, cat.name)}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -156,7 +177,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
           {/* Featured Sessions — swipable carousel driven by admin isFeatured toggle */}
           {!selectedCategory && featuredSessions.length > 0 && (
             <View style={{ marginBottom: 28 }}>
-              <Text style={styles.sectionTitle}>Featured</Text>
+              <Text style={styles.sectionTitle}>{t('wellness.meditationHub.featured', 'Featured')}</Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -180,11 +201,11 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
                     <LinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={StyleSheet.absoluteFillObject} />
                     <View style={styles.heroContent}>
                       <View style={styles.heroBadge}>
-                        <Text style={styles.heroBadgeText}>✦ FEATURED</Text>
+                        <Text style={styles.heroBadgeText}>{t('wellness.meditationHub.featuredBadge', '✦ FEATURED')}</Text>
                       </View>
-                      <Text style={styles.heroTitle}>{session.title}</Text>
+                      <Text style={styles.heroTitle}>{getLocalizedField(session, 'title')}</Text>
                       <Text style={styles.heroDuration}>
-                        {session.duration} min · {MEDITATION_FILTERS.find((c: any) => c.id === session.category)?.name || 'Session'}
+                        {session.duration} min · {(() => { const cat = MEDITATION_FILTERS.find((c: any) => c.id === session.category); return cat ? t(`wellness.meditationFilters.${cat.id}`, cat.name) : 'Session'; })() || 'Session'}
                       </Text>
                     </View>
                     <View style={styles.heroPlay}>
@@ -199,13 +220,13 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
           {/* Section: Trending Right Now */}
           {trendingSessions.length > 0 && !selectedCategory && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Trending Right Now</Text>
+              <Text style={styles.sectionTitle}>{t('wellness.meditationHub.trending', 'Trending Right Now')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScroll}>
                 {trendingSessions.map(session => (
                    <TouchableOpacity key={session._id} style={styles.squareCard} onPress={() => handleStartSession(session)}>
                      <Image source={{ uri: session.coverImage }} style={styles.squareCardImg} />
                      <View style={styles.squarePlay}><Ionicons name="play" size={16} color="#fff" /></View>
-                     <Text style={styles.squareCardTitle} numberOfLines={2}>{session.title}</Text>
+                     <Text style={styles.squareCardTitle} numberOfLines={2}>{getLocalizedField(session, 'title')}</Text>
                      <Text style={styles.squareCardSub}>{session.duration} min</Text>
                    </TouchableOpacity>
                 ))}
@@ -216,7 +237,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
           {/* Soundscapes */}
           {!selectedCategory && combinedSoundscapes.length > 0 && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Soundscapes</Text>
+              <Text style={styles.sectionTitle}>{t('wellness.meditationHub.soundscapes', 'Soundscapes')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScroll}>
                 {combinedSoundscapes.map((ss: any) => (
                   <TouchableOpacity 
@@ -234,7 +255,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
                       )}
                     </View>
                     {/* Play button below icon, NOT overlapping */}
-                    <Text style={styles.soundscapeTitle}>{ss.title}</Text>
+                    <Text style={styles.soundscapeTitle}>{ss.isLocal ? t(`wellness.soundscapes.${ss.localRef.id}`, ss.title) : getLocalizedField(ss, 'title')}</Text>
                     <View style={styles.soundscapePlay}>
                       <Ionicons name="play" size={12} color="#2563eb" />
                     </View>
@@ -246,7 +267,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
 
           {/* Standard List (Rendered below if filtered, or as "Recently Added" if not) */}
           <View style={[styles.section, { paddingHorizontal: 20 }]}>
-            <Text style={styles.sectionTitle}>{selectedCategory ? 'All Sessions' : 'Recently Added'}</Text>
+            <Text style={styles.sectionTitle}>{selectedCategory ? t('wellness.meditationHub.allSessions', 'All Sessions') : t('wellness.meditationHub.recentlyAdded', 'Recently Added')}</Text>
             
             {!rawSessions && !fallbackSessions ? (
               <ActivityIndicator size="small" color="#2563eb" style={{marginTop: 20}} />
@@ -255,8 +276,8 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
                 <TouchableOpacity key={session._id} style={styles.listCard} onPress={() => handleStartSession(session)}>
                   <Image source={{ uri: session.coverImage }} style={styles.listCardImg} />
                   <View style={styles.listCardInfo}>
-                    <Text style={styles.listCardTitle}>{session.title}</Text>
-                    <Text style={styles.listCardSub} numberOfLines={1}>{session.description}</Text>
+                    <Text style={styles.listCardTitle}>{getLocalizedField(session, 'title')}</Text>
+                    <Text style={styles.listCardSub} numberOfLines={1}>{getLocalizedField(session, 'description')}</Text>
                     <Text style={styles.listCardDuration}>{session.duration} min</Text>
                   </View>
                   <View style={styles.listCardPlay}>
@@ -280,7 +301,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
             setActiveSession(null);
           }}
           soundscape={selectedSoundscape}
-          audioUrl={activeSession?.audioUrl}
+          audioUrl={getLocalizedAudio(activeSession)}
           sessionTitle={activeSession?.title}
           coverImage={activeSession?.coverImage}
           duration={activeSession?.duration}

@@ -24,6 +24,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { useUser as useClerkUser } from '@clerk/clerk-expo';
+import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { getBottomContentPadding } from '@/utils/layout';
@@ -83,6 +84,7 @@ export default function MoveScreen() {
   const params = useLocalSearchParams<{ openWorkouts?: string }>();
   const insets = useSafeAreaInsets();
   const { width, isTablet, isSmallPhone: isSmallScreen, contentMaxWidth, kpiCardWidth } = useResponsive();
+  const { t } = useTranslation();
 
   const { user: clerkUser, isLoaded: isClerkLoaded } = useClerkUser();
 
@@ -134,8 +136,8 @@ export default function MoveScreen() {
   const achievementDefinitions = [
     {
       id: 'first_workout',
-      title: 'First Steps',
-      description: 'Complete your first workout! 🎯',
+      title: t('achievements.first_workout.title', 'First Steps'),
+      description: t('achievements.first_workout.description', 'Complete your first workout! 🎯'),
       icon: 'star',
       color: '#f59e0b',
       bgColor: '#fef3c7',
@@ -143,8 +145,8 @@ export default function MoveScreen() {
     },
     {
       id: 'step_goal',
-      title: 'Step Master',
-      description: 'Reach 1000+ steps in a day! 🚶',
+      title: t('achievements.step_goal.title', 'Step Master'),
+      description: t('achievements.step_goal.description', 'Reach 1000+ steps in a day! 🚶'),
       icon: 'locate',
       color: '#2563eb',
       bgColor: '#dbeafe',
@@ -152,8 +154,8 @@ export default function MoveScreen() {
     },
     {
       id: 'calorie_burner',
-      title: 'Calorie Crusher',
-      description: 'Burn 500+ calories in a day! 🔥',
+      title: t('achievements.calorie_burner.title', 'Calorie Crusher'),
+      description: t('achievements.calorie_burner.description', 'Burn 500+ calories in a day! 🔥'),
       icon: 'flash',
       color: '#dc2626',
       bgColor: '#fee2e2',
@@ -161,8 +163,8 @@ export default function MoveScreen() {
     },
     {
       id: 'workout_streak_3',
-      title: '3-Day Streak',
-      description: 'Workout for 3 consecutive days! 💪',
+      title: t('achievements.workout_streak_3.title', '3-Day Streak'),
+      description: t('achievements.workout_streak_3.description', 'Workout for 3 consecutive days! 💪'),
       icon: 'trending-up',
       color: '#16a34a',
       bgColor: '#dcfce7',
@@ -181,8 +183,8 @@ export default function MoveScreen() {
     },
     {
       id: 'workout_warrior',
-      title: 'Workout Warrior',
-      description: 'Complete 5 workouts in a single day! ⚔️',
+      title: t('achievements.workout_warrior.title', 'Workout Warrior'),
+      description: t('achievements.workout_warrior.description', 'Complete 5 workouts in a single day! ⚔️'),
       icon: 'barbell',
       color: '#8b5cf6',
       bgColor: '#ede9fe',
@@ -190,8 +192,8 @@ export default function MoveScreen() {
     },
     {
       id: 'time_champion',
-      title: 'Time Champion',
-      description: 'Exercise for 60+ minutes in a day! ⏰',
+      title: t('achievements.time_champion.title', 'Time Champion'),
+      description: t('achievements.time_champion.description', 'Exercise for 60+ minutes in a day! ⏰'),
       icon: 'time',
       color: '#ea580c',
       bgColor: '#fed7aa',
@@ -199,8 +201,8 @@ export default function MoveScreen() {
     },
     {
       id: 'week_warrior',
-      title: 'Week Warrior',
-      description: 'Workout 5+ times this week! 🏆',
+      title: t('achievements.week_warrior.title', 'Week Warrior'),
+      description: t('achievements.week_warrior.description', 'Workout 5+ times this week! 🏆'),
       icon: 'trophy',
       color: '#0891b2',
       bgColor: '#cffafe',
@@ -208,8 +210,8 @@ export default function MoveScreen() {
     },
     {
       id: 'variety_master',
-      title: 'Variety Master',
-      description: 'Try 3 different workout types! 🌈',
+      title: t('achievements.variety_master.title', 'Variety Master'),
+      description: t('achievements.variety_master.description', 'Try 3 different workout types! 🌈'),
       icon: 'fitness',
       color: '#be185d',
       bgColor: '#fce7f3',
@@ -400,17 +402,17 @@ export default function MoveScreen() {
     if (aiWorkouts && aiWorkouts.length > 0) {
       return aiWorkouts.map((w: any, idx: number) => ({
         dayNum: idx + 1,
-        dayTitle: w.focus || w.day || `Workout ${idx + 1}`,
-        muscleGroups: Array.isArray(w.muscleGroups)
+        dayTitle: t(`db.${(w.focus || w.day || '').replace(/\s+/g, '')}`, w.focus || w.day || `Workout ${idx + 1}`),
+        muscleGroups: t(`db.${(Array.isArray(w.muscleGroups) ? w.muscleGroups.join('') : (w.muscleGroups || w.focus || 'FullBody')).replace(/\s+/g, '')}`, Array.isArray(w.muscleGroups)
           ? w.muscleGroups.join(', ')
-          : (w.muscleGroups || w.focus || 'Full Body'),
+          : (w.muscleGroups || w.focus || 'Full Body')),
         exercises: (w.exercises || []).map((ex: any, j: number) => ({
           id: `ai-d${idx + 1}-e${j}`,
-          name: ex.name || 'Exercise',
+          name: t(`db.${(ex.name || '').replace(/\s+/g, '')}`, ex.name || 'Exercise'),
           thumbnailUrl: ex.thumbnailUrl || '',
           videoUrl: ex.videoUrl || '',
-          primaryMuscle: Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || 'Various'),
-          equipment: ex.equipment || 'Various',
+          primaryMuscle: t(`db.${(Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || 'Various')).replace(/\s+/g, '')}`, Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || 'Various')),
+          equipment: t(`db.${(ex.equipment || '').replace(/\s+/g, '')}`, ex.equipment || 'Various'),
           sets: typeof ex.sets === 'number' ? ex.sets : (parseInt(String(ex.sets)) || 3),
           reps: ex.reps !== undefined ? String(ex.reps) : '10',
         })),
@@ -419,11 +421,11 @@ export default function MoveScreen() {
     // 2. Try DB workouts (api.videoWorkouts.list) — undefined means still loading
     if (dbWorkouts !== undefined && dbWorkouts.length > 0) {
       const dbDaysPerWeek = Number(convexUser?.weeklyWorkoutTime) || 4;
-      return buildPlanFromDBWorkouts(dbWorkouts, currentWeekIndex, dbDaysPerWeek, convexUser?.biologicalSex || 'male');
+      return buildPlanFromDBWorkouts(dbWorkouts, currentWeekIndex, dbDaysPerWeek, convexUser?.biologicalSex || 'male', t);
     }
     // 3. Fall back to the static free template
     return getWeekRoutineDays(currentWeekIndex);
-  }, [currentWeekIndex, activePlans?.fitnessPlan, dbWorkouts, convexUser]);
+  }, [currentWeekIndex, activePlans?.fitnessPlan, dbWorkouts, convexUser, t]);
 
 
   const [workouts, setWorkouts] = useState<any[]>(initialWorkouts as any);
@@ -773,8 +775,8 @@ export default function MoveScreen() {
           <View style={[styles.header, { paddingTop: 12 }]}>
             <View style={styles.headerContent}>
               <View style={styles.headerTextContainer}>
-                <Text style={styles.title}>Move</Text>
-                <Text style={styles.subtitle}>Track your workouts and activity</Text>
+                <Text style={styles.title}>{t('move.title', 'Move')}</Text>
+                <Text style={styles.subtitle}>{t('move.subtitle', 'Track your workouts and activity')}</Text>
               </View>
             </View>
           </View>
@@ -795,13 +797,13 @@ export default function MoveScreen() {
                 <Ionicons name="barbell" size={24} color="#2563eb" />
               </View>
               <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
-                Workouts
+                {t('move.workouts', 'Workouts')}
               </Text>
               <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
                 {todayTotals.workouts}
               </Text>
               <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
-                Today
+                {t('common.today', 'Today')}
               </Text>
             </View>
 
@@ -819,13 +821,13 @@ export default function MoveScreen() {
                 <Ionicons name="time" size={24} color="#2563eb" />
               </View>
               <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
-                Minutes
+                {t('move.minutes', 'Minutes')}
               </Text>
               <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
                 {todayTotals.minutes}
               </Text>
               <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
-                Active Time
+                {t('move.activeTime', 'Active Time')}
               </Text>
             </View>
 
@@ -843,13 +845,13 @@ export default function MoveScreen() {
                 <Ionicons name="flash" size={24} color="#2563eb" />
               </View>
               <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
-                Calories
+                {t('common.calories', 'Calories')}
               </Text>
               <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
                 {todayTotals.calories}
               </Text>
               <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
-                Burned Today
+                {t('move.burnedToday', 'Burned Today')}
               </Text>
             </View>
 
@@ -867,13 +869,13 @@ export default function MoveScreen() {
                 <Ionicons name="locate" size={24} color="#8b5cf6" />
               </View>
               <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
-                Steps
+                {t('move.steps', 'Steps')}
               </Text>
               <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
                 {todayTotals.syncedSteps > todayTotals.steps ? todayTotals.syncedSteps.toLocaleString() : todayTotals.steps.toLocaleString()}
               </Text>
               <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
-                {todayTotals.syncedSteps > 0 && todayTotals.syncedSteps > todayTotals.steps ? "Synced from Health" : "Today"}
+                {todayTotals.syncedSteps > 0 && todayTotals.syncedSteps > todayTotals.steps ? t('move.syncedFromHealth', 'Synced from Health') : t('common.today', 'Today')}
               </Text>
               {todayTotals.syncedSteps > 0 && todayTotals.syncedSteps > todayTotals.steps && (
                 <View style={{ position: 'absolute', top: 12, right: 12 }}>
@@ -887,19 +889,19 @@ export default function MoveScreen() {
           {freePlanExpired ? (
             <TouchableOpacity
               style={[styles.card, { marginHorizontal: 24, marginTop: 24, backgroundColor: '#1e293b', borderWidth: 0, alignItems: 'center', padding: 32 }]}
-              onPress={() => handleProFeature('Continue Your Journey', 'Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.')}
+              onPress={() => handleProFeature(t('move.continueJourney', 'Continue Your Journey'), t('move.freeUsers28DaysFull', 'Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.'))}
               activeOpacity={0.85}
             >
               <Ionicons name="lock-closed" size={32} color="#f59e0b" style={{ marginBottom: 12 }} />
-              <Text style={{ fontSize: 18, fontWeight: '900', color: '#ffffff', marginBottom: 8, textAlign: 'center' }}>Your 28-Day Blueprint is Complete!</Text>
-              <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', textAlign: 'center', lineHeight: 20, marginBottom: 16 }}>Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.</Text>
+              <Text style={{ fontSize: 18, fontWeight: '900', color: '#ffffff', marginBottom: 8, textAlign: 'center' }}>{t('move.freePlanComplete', 'Your 28-Day Blueprint is Complete!')}</Text>
+              <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', textAlign: 'center', lineHeight: 20, marginBottom: 16 }}>{t('move.freePlanCompleteDesc', 'Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.')}</Text>
               <View style={{ backgroundColor: '#3b82f6', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 14 }}>
-                <Text style={{ color: '#ffffff', fontWeight: '800', fontSize: 15 }}>Upgrade to Pro →</Text>
+                <Text style={{ color: '#ffffff', fontWeight: '800', fontSize: 15 }}>{t('move.upgradeToPro', 'Upgrade to Pro →')}</Text>
               </View>
             </TouchableOpacity>
           ) : (
             <ProgramWorkoutWidget
-              programName={`Week ${currentWeekIndex + 1}: ${freePlanCurrentWeek?.theme ?? 'Foundation'}`}
+              programName={`${t('common.weekNum', 'Week {{num}}', { num: currentWeekIndex + 1 })}: ${freePlanCurrentWeek?.theme ? t(`db.${freePlanCurrentWeek.theme.toLowerCase()}`, freePlanCurrentWeek.theme) : t('db.foundation', 'Foundation')}`}
               level={isPro ? 'Pro' : 'Beginner'}
               daysPerWeek={totalWorkoutsPerWeek}
               currentWeek={currentWeekIndex + 1}
@@ -945,7 +947,7 @@ export default function MoveScreen() {
           <View style={styles.card}>
             <View style={styles.cardHeader}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
-                <Text style={styles.cardTitle}>Today's Activities</Text>
+                <Text style={styles.cardTitle}>{t('move.todaysActivities', "Today's Activities")}</Text>
                 {!!syncedMetrics?.lastSync && (
                   <View style={{
                     flexDirection: 'row',
@@ -961,7 +963,7 @@ export default function MoveScreen() {
                       size={12}
                       color={Platform.OS === 'ios' ? '#ef4444' : '#4285F4'}
                     />
-                    <Text style={{ fontSize: 11, fontWeight: '800', color: '#0f172a' }}>Synced</Text>
+                    <Text style={{ fontSize: 11, fontWeight: '800', color: '#0f172a' }}>{t('common.synced', 'Synced')}</Text>
                   </View>
                 )}
               </View>
@@ -971,7 +973,7 @@ export default function MoveScreen() {
             {loading ? (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#2563eb" />
-                <Text style={styles.loadingText}>Loading...</Text>
+                <Text style={styles.loadingText}>{t('common.loading', 'Loading...')}</Text>
               </View>
             ) : todayActivities.length > 0 ? (
               <View style={styles.activitiesList}>
@@ -1014,9 +1016,9 @@ export default function MoveScreen() {
                         </Text>
                         <Text style={styles.activityDetails}>
                           {activity.activityType === 'exercise' && activity.duration > 0
-                            ? `${Math.round(activity.duration)} min • `
+                            ? `${Math.round(activity.duration)} ${t('common.min', 'min')} • `
                             : ''}
-                          {Math.round(activity.calories)} cal
+                          {Math.round(activity.calories)} {t('common.cal', 'cal')}
                           {activity.activityType === 'exercise' && activity.entry.sets && activity.entry.reps
                             ? ` • ${Math.round(activity.entry.sets)}x${Math.round(activity.entry.reps)}`
                             : ''}
@@ -1035,10 +1037,10 @@ export default function MoveScreen() {
                         !((activity as any).origin === 'apple' || (activity as any).origin === 'google')) ? (
                         <TouchableOpacity
                           onPress={() => {
-                            Alert.alert("Delete Activity", "Are you sure you want to delete this activity?", [
-                              { text: "Cancel", style: 'cancel' },
+                            Alert.alert(t('move.deleteActivity', "Delete Activity"), t('move.deleteConfirm', "Are you sure you want to delete this activity?"), [
+                              { text: t('common.cancel', "Cancel"), style: 'cancel' },
                               {
-                                text: "Delete",
+                                text: t('common.delete', "Delete"),
                                 style: 'destructive',
                                 onPress: () => handleDeleteActivity(activity),
                               },
@@ -1059,7 +1061,7 @@ export default function MoveScreen() {
                     onPress={() => setShowAllActivities((s) => !s)}
                   >
                     <Text style={styles.viewMoreText}>
-                      {showAllActivities ? 'Show Less' : `View ${todayActivities.length - 2} more activities`}
+                      {showAllActivities ? t('common.showLess', 'Show Less') : t('move.viewMore', 'View {{count}} more activities', { count: todayActivities.length - 2 })}
                     </Text>
                     <Ionicons
                       name={showAllActivities ? 'chevron-up' : 'chevron-down'}
@@ -1074,8 +1076,8 @@ export default function MoveScreen() {
                 <View style={styles.emptyIconContainer}>
                   <Ionicons name="barbell" size={32} color="#94a3b8" />
                 </View>
-                <Text style={styles.emptyStateText}>No activities yet</Text>
-                <Text style={styles.emptyStateSubtext}>Log a workout or sync steps to get started</Text>
+                <Text style={styles.emptyStateText}>{t('move.noActivities', 'No activities yet')}</Text>
+                <Text style={styles.emptyStateSubtext}>{t('move.logToStart', 'Log a workout or sync steps to get started')}</Text>
               </View>
             )}
           </View>
@@ -1108,15 +1110,15 @@ export default function MoveScreen() {
           }
           setShowActiveWorkout(false);
           setCompletedWorkoutsThisWeek(prev => Math.min(prev + 1, workouts.length * 4));
-          Alert.alert("Workout Completed!", `Great job! Your activity was saved.`);
+          Alert.alert(t('move.workoutCompleted', "Workout Completed!"), t('move.workoutSaved', "Great job! Your activity was saved."));
         }}
         onAddExercise={() => {
-          if (!isPro) return handleProFeature('Add Exercise', 'Upgrade to Pro to add exercises mid-workout.');
+          if (!isPro) return handleProFeature(t('move.addExercise', 'Add Exercise'), t('move.proAddExerciseDesc', 'Upgrade to Pro to add exercises mid-workout.'));
           setExerciseSearchTarget('active_add');
           setShowExerciseSearch(true);
         }}
         onDeleteExercise={(exIdx) => {
-          if (!isPro) return handleProFeature('Remove Exercise', 'Upgrade to Pro to remove exercises mid-workout.');
+          if (!isPro) return handleProFeature(t('move.removeExercise', 'Remove Exercise'), t('move.proRemoveExerciseDesc', 'Upgrade to Pro to remove exercises mid-workout.'));
           setActiveWorkoutExercises((prev) => prev.filter((_, i) => i !== exIdx));
         }}
       />
@@ -1148,14 +1150,14 @@ export default function MoveScreen() {
         }}
         onClose={() => setShowWorkoutDetail(false)}
         onAddExercise={(dayIdx) => {
-          if (!isPro) return handleProFeature('Add Exercise', 'Upgrade to Pro to add exercises to your plan.');
+          if (!isPro) return handleProFeature(t('move.addExercise', 'Add Exercise'), t('move.proAddExerciseDesc', 'Upgrade to Pro to add exercises to your plan.'));
           setPlanEditDayIndex(dayIdx);
           setExerciseSearchTarget('plan_add');
           setShowWorkoutDetail(false);
           setTimeout(() => setShowExerciseSearch(true), 100);
         }}
         onDeleteExercise={(id, dayIdx) => {
-          if (!isPro) return handleProFeature('Remove Exercise', 'Upgrade to Pro to customize your routine.');
+          if (!isPro) return handleProFeature(t('move.removeExercise', 'Remove Exercise'), t('move.proRemoveExerciseDesc', 'Upgrade to Pro to customize your routine.'));
           setWorkouts((prev) => {
             const next = [...prev];
             const day = next[dayIdx];
@@ -1275,7 +1277,7 @@ export default function MoveScreen() {
 
             // Assuming logExerciseEntry is defined elsewhere and handles Convex mutation
             if (!convexUser?._id) {
-              Alert.alert("Error", "User profile not loaded. Cannot log workout.");
+              Alert.alert(t('common.error', 'Error'), t('move.errorProfile', 'User profile not loaded. Cannot log workout.'));
               return;
             }
 
@@ -1283,7 +1285,7 @@ export default function MoveScreen() {
             const etype = (src?.type ?? 'strength') as 'strength' | 'cardio' | 'yoga' | 'hiit';
             const eName = typeof src?.name === 'string'
               ? src.name
-              : (src?.name as any)?.en || 'Manual Workout';
+              : (src?.name as any)?.en || t('move.manualWorkout', 'Manual Workout');
 
             await logExerciseEntry({
               userId: convexUser._id,
@@ -1298,10 +1300,10 @@ export default function MoveScreen() {
               pace: data.pace,
               date: new Date().toISOString().split('T')[0]
             });
-            Alert.alert("Workout Logged", "Your exercise was successfully saved!");
+            Alert.alert(t('move.workoutLogged', 'Workout Logged'), t('move.exerciseSaved', 'Your exercise was successfully saved!'));
           } catch (e) {
             console.error("Failed to log entry", e);
-            Alert.alert("Error", "Could not log exercise");
+            Alert.alert(t('common.error', 'Error'), t('move.errorLog', 'Could not log exercise'));
           }
         }}
       />
@@ -1327,7 +1329,7 @@ export default function MoveScreen() {
       >
         <SafeAreaView style={styles.modalContent} edges={['top', 'bottom']}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{showCustomExercise ? "Create Custom Exercise" : "Log Workout"}</Text>
+            <Text style={styles.modalTitle}>{showCustomExercise ? t('move.createCustomExercise', 'Create Custom Exercise') : t('move.logWorkout', 'Log Workout')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setShowWorkoutModal(false);
@@ -1343,20 +1345,20 @@ export default function MoveScreen() {
             {showCustomExercise && (
               <>
                 <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Exercise Name</Text>
+                  <Text style={styles.inputLabel}>{t('move.exerciseName', 'Exercise Name')}</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Exercise Name"
+                    placeholder={t('move.exerciseName', 'Exercise Name')}
                     value={customExerciseForm.name}
                     onChangeText={(text) => setCustomExerciseForm({ ...customExerciseForm, name: text })}
                     placeholderTextColor="#94a3b8"
                   />
                 </View>
                 <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Description (Optional)</Text>
+                  <Text style={styles.inputLabel}>{t('move.descriptionOpt', 'Description (Optional)')}</Text>
                   <TextInput
                     style={[styles.input, styles.textArea]}
-                    placeholder="Description (Optional)"
+                    placeholder={t('move.descriptionOpt', 'Description (Optional)')}
                     value={customExerciseForm.description}
                     onChangeText={(text) => setCustomExerciseForm({ ...customExerciseForm, description: text })}
                     placeholderTextColor="#94a3b8"
@@ -1364,10 +1366,10 @@ export default function MoveScreen() {
                   />
                 </View>
                 <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Duration (minutes)</Text>
+                  <Text style={styles.inputLabel}>{t('move.durationMin', 'Duration (minutes)')}</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Duration (minutes)"
+                    placeholder={t('move.durationMin', 'Duration (minutes)')}
                     value={customExerciseForm.duration}
                     onChangeText={(text) => setCustomExerciseForm({ ...customExerciseForm, duration: text })}
                     placeholderTextColor="#94a3b8"
@@ -1375,10 +1377,10 @@ export default function MoveScreen() {
                   />
                 </View>
                 <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Calories Burned</Text>
+                  <Text style={styles.inputLabel}>{t('move.caloriesBurned', 'Calories Burned')}</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Calories Burned"
+                    placeholder={t('move.caloriesBurned', 'Calories Burned')}
                     value={customExerciseForm.calories}
                     onChangeText={(text) => setCustomExerciseForm({ ...customExerciseForm, calories: text })}
                     placeholderTextColor="#94a3b8"
@@ -1393,7 +1395,7 @@ export default function MoveScreen() {
                       setShowWorkoutModal(false);
                     }}
                   >
-                    <Text style={styles.modalButtonSecondaryText}>Cancel</Text>
+                    <Text style={styles.modalButtonSecondaryText}>{t('common.cancel', 'Cancel')}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[
@@ -1403,7 +1405,7 @@ export default function MoveScreen() {
                     onPress={logCustomExercise}
                     disabled={!customExerciseForm.name || !customExerciseForm.duration || !customExerciseForm.calories}
                   >
-                    <Text style={styles.modalButtonText}>Log Exercise</Text>
+                    <Text style={styles.modalButtonText}>{t('move.logExercise', 'Log Exercise')}</Text>
                   </TouchableOpacity>
                 </View>
               </>
@@ -1420,17 +1422,17 @@ export default function MoveScreen() {
       >
         <SafeAreaView style={styles.modalContent} edges={['top', 'bottom']}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Add Steps</Text>
+            <Text style={styles.modalTitle}>{t('move.addSteps', 'Add Steps')}</Text>
             <TouchableOpacity onPress={() => setShowStepsModal(false)} activeOpacity={0.7}>
               <Ionicons name="close" size={24} color="#1e293b" />
             </TouchableOpacity>
           </View>
           <View style={[styles.modalScroll]}>
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Enter steps count</Text>
+              <Text style={styles.inputLabel}>{t('move.enterStepsCount', 'Enter steps count')}</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Enter steps count"
+                placeholder={t('move.enterStepsCount', 'Enter steps count')}
                 value={stepsInput}
                 onChangeText={setStepsInput}
                 placeholderTextColor="#94a3b8"
@@ -1440,7 +1442,7 @@ export default function MoveScreen() {
 
             <View style={styles.modalButtons}>
               <TouchableOpacity style={styles.modalButtonSecondary} onPress={() => setShowStepsModal(false)}>
-                <Text style={styles.modalButtonSecondaryText}>Cancel</Text>
+                <Text style={styles.modalButtonSecondaryText}>{t('common.cancel', 'Cancel')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, (!stepsInput || isSubmittingSteps) && styles.modalButtonDisabled]}
@@ -1450,7 +1452,7 @@ export default function MoveScreen() {
                 {isSubmittingSteps ? (
                   <ActivityIndicator color="#ffffff" />
                 ) : (
-                  <Text style={styles.modalButtonText}>Add Steps</Text>
+                  <Text style={styles.modalButtonText}>{t('move.addSteps', 'Add Steps')}</Text>
                 )}
               </TouchableOpacity>
             </View>

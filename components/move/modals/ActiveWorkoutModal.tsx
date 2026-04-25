@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput,
 import { Image } from 'expo-image';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Video, ResizeMode } from 'expo-av';
 
 export interface SetData {
@@ -41,6 +42,7 @@ export default function ActiveWorkoutModal({
   onDeleteExercise
 }: ActiveWorkoutModalProps) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const [timeSpent, setTimeSpent] = useState(0);
   const [exercises, setExercises] = useState<ActiveExercise[]>([]);
   const [restTimer, setRestTimer] = useState(0);
@@ -150,7 +152,7 @@ export default function ActiveWorkoutModal({
             onPress={() => onFinishWorkout(timeSpent, calcVolume(), calcCompletedSets(), exercises)}
             disabled={!canFinish}
           >
-            <Text style={[styles.finishBtnText, !canFinish && styles.finishBtnTextDisabled]}>Finish</Text>
+            <Text style={[styles.finishBtnText, !canFinish && styles.finishBtnTextDisabled]}>{t('move.finish', 'Finish')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -160,15 +162,15 @@ export default function ActiveWorkoutModal({
             {/* Top Stats Banner */}
             <View style={styles.statsBanner}>
               <View style={styles.statCol}>
-                <Text style={styles.statLabel}>Duration</Text>
+                <Text style={styles.statLabel}>{t('move.duration', 'Duration')}</Text>
                 <Text style={styles.statValueBlue}>{formatTime(timeSpent)}</Text>
               </View>
               <View style={styles.statCol}>
-                <Text style={styles.statLabel}>Volume</Text>
-                <Text style={styles.statValue}>{calcVolume()} kg</Text>
+                <Text style={styles.statLabel}>{t('move.volume', 'Volume')}</Text>
+                <Text style={styles.statValue}>{calcVolume()} {t('common.units.kg', 'kg')}</Text>
               </View>
               <View style={styles.statCol}>
-                <Text style={styles.statLabel}>Sets</Text>
+                <Text style={styles.statLabel}>{t('move.sets', 'Sets')}</Text>
                 <Text style={styles.statValue}>{calcCompletedSets()}</Text>
               </View>
             </View>
@@ -188,7 +190,7 @@ export default function ActiveWorkoutModal({
                     <View style={styles.exNumBadge}>
                       <Text style={styles.exNumBadgeText}>{exIdx + 1}</Text>
                     </View>
-                    <Text style={styles.exName}>{ex.name}</Text>
+                    <Text style={styles.exName}>{t(`db.${ex.name.replace(/\s+/g, '')}`, ex.name)}</Text>
 
                     {onDeleteExercise && (
                       <TouchableOpacity 
@@ -247,10 +249,10 @@ export default function ActiveWorkoutModal({
 
                       {/* Sets Header */}
                       <View style={styles.setsHeader}>
-                        <Text style={[styles.setsColHead, { width: 40 }]}>SET</Text>
-                        <Text style={[styles.setsColHead, { flex: 1 }]}>PREVIOUS</Text>
-                        <Text style={[styles.setsColHead, { width: 70, textAlign: 'center' }]}>KG</Text>
-                        <Text style={[styles.setsColHead, { width: 70, textAlign: 'center' }]}>REPS</Text>
+                        <Text style={[styles.setsColHead, { width: 40 }]}>{t('move.setShort', 'SET')}</Text>
+                        <Text style={[styles.setsColHead, { flex: 1 }]}>{t('move.previousShort', 'PREVIOUS')}</Text>
+                        <Text style={[styles.setsColHead, { width: 70, textAlign: 'center' }]}>{t('move.kgShort', 'KG')}</Text>
+                        <Text style={[styles.setsColHead, { width: 70, textAlign: 'center' }]}>{t('move.repsShort', 'REPS')}</Text>
                         <View style={{ width: 44 }} />
                       </View>
 
@@ -260,7 +262,7 @@ export default function ActiveWorkoutModal({
                           <Text style={[styles.setNum, set.completed && { color: '#0f172a' }]}>{setIdx + 1}</Text>
                           <Text style={styles.setPrev}>
                             {set.previousWeight && set.previousReps 
-                              ? `${set.previousWeight}kg x ${set.previousReps}` 
+                              ? `${set.previousWeight}${t('common.units.kg', 'kg')} x ${set.previousReps}` 
                               : '-'}
                           </Text>
                           
@@ -290,7 +292,7 @@ export default function ActiveWorkoutModal({
                       ))}
 
                       <TouchableOpacity style={styles.addSetBtn} onPress={() => handleAddSet(exIdx)}>
-                        <Text style={styles.addSetBtnText}>+ Add set</Text>
+                        <Text style={styles.addSetBtnText}>{t('move.addSet', '+ Add set')}</Text>
                       </TouchableOpacity>
 
                       {/* Per-exercise volume summary */}
@@ -304,14 +306,14 @@ export default function ActiveWorkoutModal({
                         return exVol > 0 ? (
                           <View style={styles.exVolumeRow}>
                             <Ionicons name="barbell-outline" size={15} color="#3b82f6" />
-                            <Text style={styles.exVolumeText}>Exercise Volume: <Text style={styles.exVolumeVal}>{exVol} kg</Text></Text>
+                            <Text style={styles.exVolumeText}>{t('move.exerciseVolume', 'Exercise Volume')}: <Text style={styles.exVolumeVal}>{exVol} {t('common.units.kg', 'kg')}</Text></Text>
                           </View>
                         ) : null;
                       })()}
 
                       {allSetsCompleted && exIdx < exercises.length - 1 && (
                         <TouchableOpacity style={styles.nextExBtn} onPress={() => setExpandedIndex(exIdx + 1)}>
-                           <Text style={styles.nextExBtnText}>Next Exercise</Text>
+                           <Text style={styles.nextExBtnText}>{t('move.nextExercise', 'Next Exercise')}</Text>
                            <Ionicons name="arrow-down" size={20} color="#ffffff" />
                         </TouchableOpacity>
                       )}
@@ -324,7 +326,7 @@ export default function ActiveWorkoutModal({
             {onAddExercise && (
                <TouchableOpacity style={styles.addExWrapBtn} onPress={onAddExercise}>
                  <Ionicons name="add" size={20} color="#3b82f6" />
-                 <Text style={styles.addExWrapBtnText}>Add Exercise</Text>
+                 <Text style={styles.addExWrapBtnText}>{t('move.addExercise', 'Add Exercise')}</Text>
                </TouchableOpacity>
             )}
 
@@ -335,7 +337,7 @@ export default function ActiveWorkoutModal({
         {showRestPopup && (
           <View style={styles.restOverlay}>
             <View style={styles.restCard}>
-              <Text style={styles.restTitle}>Rest Timer</Text>
+              <Text style={styles.restTitle}>{t('move.restTimer', 'Rest Timer')}</Text>
               <Text style={styles.restTimeBig}>{formatTime(restTimer)}</Text>
               
               <View style={styles.restControls}>
@@ -343,7 +345,7 @@ export default function ActiveWorkoutModal({
                   <Text style={styles.restAdjustNum}>- 15s</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.restReadyBtn} onPress={() => setShowRestPopup(false)}>
-                  <Text style={styles.restReadyText}>I am ready</Text>
+                  <Text style={styles.restReadyText}>{t('move.iAmReady', 'I am ready')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.restAdjustBtn} onPress={() => setRestTimer(restTimer + 15)}>
                   <Text style={styles.restAdjustNum}>+ 15s</Text>
@@ -351,7 +353,7 @@ export default function ActiveWorkoutModal({
               </View>
 
               <TouchableOpacity style={{ marginTop: 24, padding: 8 }} onPress={() => { setShowRestPopup(false); setRestTimer(0); }}>
-                <Text style={styles.restTurnOffText}>Turn off</Text>
+                <Text style={styles.restTurnOffText}>{t('move.turnOff', 'Turn off')}</Text>
               </TouchableOpacity>
             </View>
           </View>

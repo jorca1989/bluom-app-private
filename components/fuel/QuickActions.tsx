@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 interface QuickActionsProps {
   onPhoto: () => void;
@@ -10,32 +11,33 @@ interface QuickActionsProps {
 }
 
 export const QuickActions = ({ onPhoto, onVoice, onSearch, onManual }: QuickActionsProps) => {
+  const { t } = useTranslation();
   return (
     <View style={styles.gridContainer}>
       <ActionCard 
         icon="camera" 
-        label="Photo Log" 
+        label={t('fuel.quickActions.photoLog', 'Photo Log')} 
         color="#10b981" 
         bgColor="rgba(16, 185, 129, 0.15)" 
         onPress={onPhoto} 
       />
       <ActionCard 
         icon="mic" 
-        label="Voice Log" 
+        label={t('fuel.quickActions.voiceLog', 'Voice Log')} 
         color="#a855f7" 
         bgColor="rgba(168, 85, 247, 0.15)" 
         onPress={onVoice} 
       />
       <ActionCard 
         icon="search" 
-        label="Search" 
+        label={t('fuel.quickActions.search', 'Search')} 
         color="#3b82f6" 
         bgColor="rgba(59, 130, 246, 0.15)" 
         onPress={onSearch} 
       />
       <ActionCard 
         icon="create" 
-        label="Manual" 
+        label={t('fuel.quickActions.manual', 'Manual')} 
         color="#eab308" 
         bgColor="rgba(234, 179, 8, 0.15)" 
         onPress={onManual} 
@@ -53,40 +55,41 @@ interface UtilityCardsProps {
 }
 
 export const UtilityCards = ({ onLibrary, onMyRecipes, onShoppingList, onAiChef, onMonthlyPlan }: UtilityCardsProps) => {
+  const { t } = useTranslation();
   return (
     <View style={styles.utilGridContainer}>
       <UtilCard 
         icon="book" 
-        label="Recipe Library" 
-        desc="Guided recipes" 
+        label={t('fuel.quickActions.recipeLib', 'Recipe Library')} 
+        desc={t('fuel.quickActions.recipeLibDesc', 'Guided recipes')} 
         bgColor="#ff4b4b" 
         onPress={onLibrary} 
       />
       <UtilCard 
         icon="restaurant" 
-        label="My Recipes" 
-        desc="Create & save" 
+        label={t('fuel.quickActions.myRecipes', 'My Recipes')} 
+        desc={t('fuel.quickActions.myRecipesDesc', 'Create & save')} 
         bgColor="#2563eb" 
         onPress={onMyRecipes} 
       />
       <UtilCard 
         icon="cart" 
-        label="Shopping List" 
-        desc="Plan your week" 
+        label={t('fuel.quickActions.shoppingList', 'Shopping List')} 
+        desc={t('fuel.quickActions.shoppingListDesc', 'Plan your week')} 
         bgColor="#8b5cf6" 
         onPress={onShoppingList} 
       />
       <UtilCard 
         icon="sparkles" 
-        label="AI Chef" 
-        desc="Scan & create" 
+        label={t('fuel.quickActions.aiChef', 'AI Chef')} 
+        desc={t('fuel.quickActions.aiChefDesc', 'Scan & create')} 
         bgColor="#eab308" 
         onPress={onAiChef} 
       />
       <UtilCard 
         icon="calendar" 
-        label="My Personalized Plan" 
-        desc="30-Day AI routine" 
+        label={t('fuel.quickActions.personalPlan', 'My Personalized Plan')} 
+        desc={t('fuel.quickActions.personalPlanDesc', '30-Day AI routine')} 
         bgColor="#10b981" 
         onPress={onMonthlyPlan} 
         fullWidth
@@ -127,8 +130,8 @@ const UtilCard = ({ icon, label, desc, bgColor, onPress, fullWidth }: UtilCardPr
       <Ionicons name={icon} size={20} color="#ffffff" />
     </View>
     <View style={styles.utilTextContainer}>
-      <Text style={styles.utilLabel}>{label}</Text>
-      <Text style={styles.utilDesc}>{desc}</Text>
+      <Text style={styles.utilLabel} adjustsFontSizeToFit numberOfLines={1}>{label}</Text>
+      <Text style={styles.utilDesc} adjustsFontSizeToFit numberOfLines={1}>{desc}</Text>
     </View>
   </TouchableOpacity>
 );
@@ -167,9 +170,9 @@ const styles = StyleSheet.create({
     width: '48%', // roughly half
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    padding: 12,
-    borderRadius: 24,
+    gap: 8,
+    padding: 10,
+    borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -186,6 +189,7 @@ const styles = StyleSheet.create({
   },
   utilTextContainer: {
     flex: 1,
+    flexShrink: 1,
   },
   utilLabel: {
     fontSize: 13,

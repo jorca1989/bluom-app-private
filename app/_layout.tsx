@@ -1,4 +1,5 @@
 import '../global.css';
+import i18n from '../i18n';
 import React, { useEffect, useRef, useState } from 'react';
 import { Stack, useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -100,6 +101,12 @@ function InitialLayout() {
     api.users.getUserByClerkId,
     user?.id ? { clerkId: user.id } : 'skip'
   );
+
+  useEffect(() => {
+    if (convexUser?.preferredLanguage && i18n.language !== convexUser.preferredLanguage) {
+      i18n.changeLanguage(convexUser.preferredLanguage);
+    }
+  }, [convexUser?.preferredLanguage]);
 
   const showAuthLoading = isLoaded && isSignedIn && !convexAuthenticated;
   const showConvexUserLoading = isLoaded && isSignedIn && convexAuthenticated && convexUser === undefined;

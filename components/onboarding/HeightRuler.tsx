@@ -3,7 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
+  ScrollView,
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
@@ -47,9 +47,8 @@ export default function HeightRuler({ units, initialValue, onValueChange }: Heig
     }
   }, [units, initialValue, values]);
 
-  const listRef = useRef<FlatList>(null);
+  const scrollRef = useRef<ScrollView>(null);
   const [selectedIndex, setSelectedIndex] = useState(getInitialIndex());
-  // Prevent onValueChange during programmatic scrolls (unit change, initial mount)
   const suppressCallbackRef = useRef(true);
 
   const formatValue = (val: number): string => {
@@ -71,13 +70,12 @@ export default function HeightRuler({ units, initialValue, onValueChange }: Heig
     suppressCallbackRef.current = true;
     onValueChange(getOutputValue(values[idx]));
     setTimeout(() => {
-      listRef.current?.scrollToIndex({ index: idx, animated: false, viewPosition: 0.5 });
+      scrollRef.current?.scrollTo({ y: idx * ITEM_HEIGHT, animated: false });
       setTimeout(() => { suppressCallbackRef.current = false; }, 300);
     }, 100);
   }, [units]);
 
-  // Handle momentum scroll end — this is the ONLY place we commit the value
-  const handleMomentumEnd = useCallback((event: any) => {
+  const handleScrollEnd = useCallback((event: any) => {
     const y = event.nativeEvent.contentOffset.y;
     const index = Math.round(y / ITEM_HEIGHT);
     const clampedIndex = Math.max(0, Math.min(index, values.length - 1));
@@ -87,55 +85,13 @@ export default function HeightRuler({ units, initialValue, onValueChange }: Heig
     }
   }, [values, onValueChange, getOutputValue]);
 
-  // Tap to select
   const handleTapItem = useCallback((index: number) => {
-    listRef.current?.scrollToIndex({ index, animated: true, viewPosition: 0.5 });
+    scrollRef.current?.scrollTo({ y: index * ITEM_HEIGHT, animated: true });
     setSelectedIndex(index);
     onValueChange(getOutputValue(values[index]));
   }, [values, onValueChange, getOutputValue]);
 
   const paddingItems = Math.floor(VISIBLE_ITEMS / 2);
-
-  const renderItem = useCallback(({ item, index }: { item: number; index: number }) => {
-    const distance = Math.abs(index - selectedIndex);
-    const isSelected = distance === 0;
-    const opacity = isSelected ? 1 : distance === 1 ? 0.6 : 0.3;
-    const scale = isSelected ? 1.15 : distance === 1 ? 1 : 0.85;
-
-    return (
-      <TouchableOpacity
-        style={[styles.rulerItem, { height: ITEM_HEIGHT }]}
-        onPress={() => handleTapItem(index)}
-        activeOpacity={0.6}
-      >
-        <Text
-          style={[
-            styles.rulerText,
-            {
-              opacity,
-              fontSize: 18 * scale,
-              fontWeight: isSelected ? '800' : '400',
-              color: isSelected ? '#2563eb' : '#94a3b8',
-            },
-          ]}
-        >
-          {formatValue(item)}
-        </Text>
-        <View style={styles.tickContainer}>
-          <View
-            style={[
-              styles.tick,
-              {
-                width: isSelected ? 40 : item % 5 === 0 ? 24 : 12,
-                backgroundColor: isSelected ? '#2563eb' : '#cbd5e1',
-                height: isSelected ? 3 : 2,
-              },
-            ]}
-          />
-        </View>
-      </TouchableOpacity>
-    );
-  }, [selectedIndex, handleTapItem]);
 
   return (
     <View style={styles.container}>
@@ -144,83 +100,81 @@ export default function HeightRuler({ units, initialValue, onValueChange }: Heig
       <View style={styles.rulerContainer}>
         <View style={styles.centerLine} />
 
-        <FlatList
-          ref={listRef}
-          data={values}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.toString()}
+        <ScrollView
+          ref={scrollRef}
           showsVerticalScrollIndicator={false}
           snapToInterval={ITEM_HEIGHT}
           decelerationRate="fast"
-          onMomentumScrollEnd={handleMomentumEnd}
+          onMomentumScrollEnd={handleScrollEnd}
+          onScrollEndDrag={handleScrollEnd}
           nestedScrollEnabled={true}
-          getItemLayout={(_, index) => ({
-            length: ITEM_HEIGHT,
-            offset: ITEM_HEIGHT * index,
-            index,
+          contentContainerStyle={{ paddingVertical: paddingItems * ITEM_HEIGHT }}
+        >
+          {values.map((item, index) => {
+            const distance = Math.abs(index - selectedIndex);
+            const isSelected = distance === 0;
+            const opacity = isSelected ? 1 : distance === 1 ? 0.6 : 0.3;
+            const scale = isSelected ? 1.15 : distance === 1 ? 1 : 0.85;
+
+            return (
+              <TouchableOpacity
+                key={item}
+                style={[styles.rulerItem, { height: ITEM_HEIGHT }]}
+                onPress={() => handleTapItem(index)}
+                activeOpacity={0.6}
+              >
+                <Text
+                  style={[
+                    styles.rulerText,
+                    {
+                      opacity,
+                      fontSize: 18 * scale,
+                      fontWeight: isSelected ? '800' : '400',
+                      color: isSelected ? '#2563eb' : '#94a3b8',
+                    },
+                  ]}
+                >
+                  {formatValue(item)}
+                </Text>
+                <View style={styles.tickContainer}>
+                  <View
+                    style={[
+                      styles.tick,
+                      {
+                        width: isSelected ? 40 : item % 5 === 0 ? 24 : 12,
+                        backgroundColor: isSelected ? '#2563eb' : '#cbd5e1',
+                        height: isSelected ? 3 : 2,
+                      },
+                    ]}
+                  />
+                </View>
+              </TouchableOpacity>
+            );
           })}
-          // Padding via header/footer keeps the list snappable without content offset issues
-          ListHeaderComponent={<View style={{ height: paddingItems * ITEM_HEIGHT }} />}
-          ListFooterComponent={<View style={{ height: paddingItems * ITEM_HEIGHT }} />}
-          initialScrollIndex={getInitialIndex()}
-        />
+        </ScrollView>
       </View>
 
-      <Text style={styles.helperText}>Tap or scroll to select</Text>
+      <Text style={styles.helperText}>Desliza ou toca para selecionar</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  currentValue: {
-    fontSize: 36,
-    fontWeight: '900',
-    color: '#1e293b',
-    marginBottom: 12,
-  },
-  rulerContainer: {
-    height: RULER_HEIGHT,
-    width: width * 0.75,
-    overflow: 'hidden',
-    position: 'relative',
-  },
+  container: { alignItems: 'center', paddingVertical: 12 },
+  currentValue: { fontSize: 36, fontWeight: '900', color: '#1e293b', marginBottom: 12 },
+  rulerContainer: { height: RULER_HEIGHT, width: width * 0.75, overflow: 'hidden', position: 'relative' },
   centerLine: {
     position: 'absolute',
     top: (RULER_HEIGHT - ITEM_HEIGHT) / 2,
-    left: 0,
-    right: 0,
+    left: 0, right: 0,
     height: ITEM_HEIGHT,
     backgroundColor: '#eff6ff',
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#2563eb',
+    borderRadius: 12, borderWidth: 2, borderColor: '#2563eb',
     zIndex: -1,
   },
-  rulerItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-  },
-  rulerText: {
-    flex: 1,
-    textAlign: 'center',
-  },
-  tickContainer: {
-    width: 50,
-    alignItems: 'flex-end',
-  },
-  tick: {
-    borderRadius: 2,
-  },
-  helperText: {
-    marginTop: 8,
-    fontSize: 13,
-    color: '#94a3b8',
-    fontWeight: '500',
-  },
+  rulerItem: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
+  rulerText: { flex: 1, textAlign: 'center' },
+  tickContainer: { width: 50, alignItems: 'flex-end' },
+  tick: { borderRadius: 2 },
+  helperText: { marginTop: 8, fontSize: 13, color: '#94a3b8', fontWeight: '500' },
 });
