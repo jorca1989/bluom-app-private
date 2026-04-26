@@ -484,6 +484,7 @@
     "upgradeToPro": "Atualizar para Pro",
     "viewProPlans": "Ver Planos Pro",
     "weekNum": "Semana {{num}}",
+    "dayNum": "Dia {{num}}",
     "beginner": "Iniciante",
     "intermediate": "Intermédio",
     "advanced": "Avançado",

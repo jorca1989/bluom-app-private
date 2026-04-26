@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     emptyCard: { backgroundColor: '#ffffff', borderRadius: 20, padding: 40, alignItems: 'center', borderWidth: 1, borderColor: '#f1f5f9' },
     emptyTitle: { fontSize: 15, fontWeight: '700', color: '#475569', marginTop: 16, marginBottom: 8 },
     emptySub: { fontSize: 12, color: '#94a3b8', textAlign: 'center', lineHeight: 18 },
-    proLockOverlay: { position: 'absolute', top: 0, left: -10, right: -10, bottom: -10, backgroundColor: 'rgba(255,255,255,0.7)', borderRadius: 20, justifyContent: 'center', alignItems: 'center', zIndex: 10 },
+    proLockOverlay: { position: 'absolute', top: 0, left: -10, right: -10, bottom: -10, backgroundColor: '#f8fafc', borderRadius: 20, justifyContent: 'center', alignItems: 'center', zIndex: 10 },
     lockContent: { alignItems: 'center', backgroundColor: '#ffffff', borderRadius: 30, padding: 30, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 20, elevation: 10, borderWidth: 1, borderColor: '#f1f5f9', width: '90%' },
     lockIconCircle: { width: 64, height: 64, borderRadius: 32, backgroundColor: '#eff6ff', justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
     lockTitle: { fontSize: 19, fontWeight: '900', color: '#0f172a', marginBottom: 8, textAlign: 'center' },

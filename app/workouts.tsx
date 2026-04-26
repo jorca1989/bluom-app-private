@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     View,
@@ -10,7 +10,9 @@ import {
     ActivityIndicator,
     Modal,
     Dimensions,
-    Alert
+    Alert,
+    Animated,
+    Platform,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Stack, useRouter } from 'expo-router';
@@ -25,6 +27,7 @@ import {
     Bookmark,
     ArrowLeft,
     Dumbbell,
+    Wrench,
     X,
     ChevronRight,
     AlertCircle,
@@ -40,7 +43,6 @@ import { BlurView } from 'expo-blur';
 import { useUser as useAppUser } from '@/context/UserContext';
 import SingleExerciseLogModal from '@/components/move/modals/SingleExerciseLogModal';
 import { getLocalizedField, getLocalizedExerciseName } from '@/utils/localize';
-// expo-av for real video playback
 import { Video, ResizeMode } from 'expo-av';
 
 const { width } = Dimensions.get('window');
@@ -69,7 +71,6 @@ export default function WorkoutsScreen() {
     const appUser = useAppUser();
     const isPro = appUser.isPro || appUser.isAdmin;
 
-    // User's biological sex — used for gender-aware video selection
     const userSex = (convexUser as any)?.biologicalSex as 'male' | 'female' | undefined;
 
     const workouts = useQuery(api.videoWorkouts.list, {
@@ -77,7 +78,6 @@ export default function WorkoutsScreen() {
         category: selectedCategory === 'All' ? undefined : selectedCategory
     });
 
-    // Muscle group images from DB (admin-managed via admin/media.tsx)
     const muscleGroupImagesDb = useQuery(api.muscleGroupImages.listAll);
 
     const FALLBACK_MUSCLE_CARDS = [
@@ -106,7 +106,6 @@ export default function WorkoutsScreen() {
         'Neck', 'Serratus'
     ];
 
-    // Merge DB images with fallbacks — must be before any early return (Rules of Hooks)
     const MUSCLE_CARDS = useMemo(() => {
         return FALLBACK_MUSCLE_CARDS.map(fc => {
             const dbEntry = muscleGroupImagesDb?.find(r => r.name === fc.title);
@@ -114,17 +113,14 @@ export default function WorkoutsScreen() {
         });
     }, [muscleGroupImagesDb]);
 
-    // Client-side muscle group filter — uses muscleGroupTags when set, falls back to exercises[].primaryMuscles
     const filteredWorkouts = useMemo(() => {
         if (!workouts) return [];
         if (selectedMuscle === 'All') return workouts;
         const m = selectedMuscle.toLowerCase();
         return workouts.filter((w: any) => {
-            // Prefer the explicit tag array set in admin
             if (w.muscleGroupTags?.length > 0) {
                 return w.muscleGroupTags.some((t: string) => t.toLowerCase() === m);
             }
-            // Fallback: scan exercise muscles
             return w.exercises?.some((ex: any) =>
                 ex.primaryMuscles?.some((pm: string) => pm.toLowerCase().includes(m)) ||
                 ex.secondaryMuscles?.some((sm: string) => sm.toLowerCase().includes(m))
@@ -132,7 +128,6 @@ export default function WorkoutsScreen() {
         });
     }, [workouts, selectedMuscle]);
 
-    // All saved workouts — used for the Saved tab and per-card bookmark state
     const savedWorkouts = useQuery(
         api.savedWorkouts.getSavedWorkouts,
         convexUser?._id ? { userId: convexUser._id } : 'skip'
@@ -167,6 +162,18 @@ export default function WorkoutsScreen() {
     const logExercise = useMutation(api.workoutExerciseLogs.logExercise);
     const logExerciseEntry = useMutation(api.exercise.logExerciseEntry);
 
+    // ── Animated slide panel for detail view ─────────────────────────────────
+    const slideAnim = useRef(new Animated.Value(width)).current;
+    useEffect(() => {
+        Animated.spring(slideAnim, {
+            toValue: selectedWorkout ? 0 : width,
+            useNativeDriver: true,
+            tension: 120,
+            friction: 16,
+            overshootClamping: true,
+        }).start();
+    }, [selectedWorkout]);
+
     const handleToggleSave = async () => {
         if (!convexUser?._id || !selectedWorkout?._id) return;
         try {
@@ -176,7 +183,6 @@ export default function WorkoutsScreen() {
         }
     };
 
-    // Toggle save directly from a card (without opening the workout)
     const handleCardToggleSave = async (workoutId: any) => {
         if (!convexUser?._id) return;
         try {
@@ -211,13 +217,12 @@ export default function WorkoutsScreen() {
                 notes: undefined,
             });
 
-            // Double log to the main exercise entries so it shows up in "Today's Activities" and KPI counters!
             await logExerciseEntry({
                 userId: convexUser._id,
                 exerciseName: selectedExerciseForLog.name,
                 exerciseType: (selectedExerciseForLog.exerciseType || 'strength') as "strength" | "cardio" | "hiit" | "yoga",
-                duration: data.duration || 30, // fallback average 30m if not provided
-                met: selectedExerciseForLog.exerciseType === 'cardio' ? 7.0 : 5.0, // base average MET
+                duration: data.duration || 30,
+                met: selectedExerciseForLog.exerciseType === 'cardio' ? 7.0 : 5.0,
                 sets: data.sets?.length || 0,
                 date: today,
             });
@@ -230,530 +235,211 @@ export default function WorkoutsScreen() {
         }
     };
 
-    // ─── DETAIL VIEW ──────────────────────────────────────────────────────────
-    if (selectedWorkout) {
-        const locked = !!selectedWorkout.isPremium && !isPro;
-        const hasExercises = selectedWorkout.exercises && selectedWorkout.exercises.length > 0;
+    // Derived detail-view values (always computed so hooks stay stable)
+    const locked = !!selectedWorkout?.isPremium && !isPro;
+    const hasExercises = !!(selectedWorkout?.exercises && selectedWorkout.exercises.length > 0);
 
-        return (
-            <SafeAreaView style={styles.detailContainer} edges={['top', 'bottom']}>
-                <Stack.Screen options={{ headerShown: false }} />
-
-                <ScrollView contentContainerStyle={styles.detailContent}>
-                    {/* Hero */}
-                    <View style={styles.detailHero}>
-                        <Image
-                            source={{ uri: (userSex === 'male' ? selectedWorkout.thumbnailMale : userSex === 'female' ? selectedWorkout.thumbnailFemale : null) || selectedWorkout.thumbnail }}
-                            style={styles.heroImage}
-                        />
-                        <LinearGradient
-                            colors={['rgba(0,0,0,0.6)', 'transparent', 'rgba(0,0,0,0.4)']}
-                            style={StyleSheet.absoluteFill}
-                        />
-                        <TouchableOpacity
-                            style={[styles.backButton, { top: insets.top + 10 }]}
-                            onPress={() => setSelectedWorkout(null)}
-                        >
-                            <ArrowLeft size={24} color="#ffffff" />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.playButtonLarge}
-                            onPress={() => {
-                                if (locked) { setShowUpgrade(true); return; }
-                                setShowVideoModal(true);
-                            }}
-                        >
-                            <Play size={32} color="#ffffff" fill="#ffffff" style={{ marginLeft: 4 }} />
-                        </TouchableOpacity>
-
-                        {selectedWorkout.isPremium && (
-                            <View style={styles.premiumDetailBadge}>
-                                <Text style={styles.premiumDetailText}>{t('workouts.premium', 'PREMIUM')}</Text>
-                            </View>
-                        )}
-                    </View>
-
-                    {/* Body */}
-                    <View style={styles.detailBody}>
-                        {locked && (
-                            <View style={styles.lockNotice}>
-                                <Text style={styles.lockNoticeText}>{t('workouts.proRequired', 'Pro required — preview only') as string}</Text>
-                            </View>
-                        )}
-
-                        <View style={styles.titleRow}>
-                            <Text style={styles.detailTitle}>{getLocalizedField(selectedWorkout, 'title', lang)}</Text>
-                            <TouchableOpacity onPress={handleToggleSave}>
-                                {isSaved
-                                    ? <Bookmark size={24} color="#2563eb" fill="#2563eb" />
-                                    : <Bookmark size={24} color="#64748b" />}
-                            </TouchableOpacity>
-                        </View>
-
-                        <Text style={styles.detailDescription}>{getLocalizedField(selectedWorkout, 'description', lang)}</Text>
-
-                        <View style={styles.statsStrip}>
-                            <View style={styles.statBox}>
-                                <Star size={16} color="#f59e0b" fill="#f59e0b" />
-                                <Text style={styles.statVal}>{selectedWorkout.rating}</Text>
-                                <Text style={styles.statLab}>{t('workouts.rating', 'Rating') as string}</Text>
-                            </View>
-                            <View style={styles.statBox}>
-                                <Dumbbell size={16} color="#2563eb" />
-                                <Text style={styles.statVal} numberOfLines={1} adjustsFontSizeToFit>{t(`workouts.levels.${selectedWorkout.difficulty}`, selectedWorkout.difficulty) as string}</Text>
-                                <Text style={styles.statLab}>{t('workouts.level', 'Level') as string}</Text>
-                            </View>
-                            <View style={styles.statBox}>
-                                <Text style={styles.statVal}>{selectedWorkout.equipment?.length ?? 0}</Text>
-                                <Text style={styles.statLab}>{t('workouts.equipment', 'Equipment') as string}</Text>
-                            </View>
-                        </View>
-
-
-                        {/* Equipment */}
-                        {(selectedWorkout.equipment?.length > 0 || selectedWorkout.optionalEquipment?.length > 0) && (
-                            <View style={styles.infoSection}>
-                                <Text style={styles.sectionTitle}>{t('workouts.equipment', 'Equipment')}</Text>
-                                <View style={styles.equipmentList}>
-                                    {selectedWorkout.equipment?.map((eq: string, i: number) => (
-                                        <View key={i} style={styles.equipmentItem}>
-                                            <View style={styles.equipmentDot} />
-                                            <Text style={styles.equipmentText}>{t(`workouts.equip.${eq}`, eq) as string}</Text>
-                                        </View>
-                                    ))}
-                                    {selectedWorkout.optionalEquipment?.length > 0 && (
-                                        <>
-                                            <Text style={styles.equipmentOrLabel}>{t('workouts.orAlternatively', 'or alternatively:')}</Text>
-                                            {selectedWorkout.optionalEquipment.map((eq: string, i: number) => (
-                                                <View key={`opt-${i}`} style={styles.equipmentItem}>
-                                                    <View style={[styles.equipmentDot, styles.equipmentDotOptional]} />
-                                                    <Text style={[styles.equipmentText, styles.equipmentTextOptional]}>{t(`workouts.equip.${eq}`, eq) as string}</Text>
-                                                </View>
-                                            ))}
-                                        </>
-                                    )}
-                                </View>
-                            </View>
-                        )}
-
-                        {/* ── Exercise Details ── */}
-                        {hasExercises && (
-                            <View style={styles.infoSection}>
-                                <Text style={styles.sectionTitle}>{t('workouts.exerciseDetails', 'Exercise Details')}</Text>
-                                {selectedWorkout.exercises.map((ex: any, idx: number) => (
-                                    <View key={idx} style={styles.exerciseDetailCard}>
-                                        {/* Instructions — Pro only */}
-                                        {isPro && ex.instructions && ex.instructions.length > 0 && (
-                                            <View style={styles.instructionsBox}>
-                                                <Text style={styles.instructionsTitle}>{t('workouts.instructions', 'Instructions')}</Text>
-                                                {ex.instructions.map((step: string, i: number) => (
-                                                    <View key={i} style={styles.instructionRow}>
-                                                        <View style={styles.instructionNumWrap}>
-                                                            <Text style={styles.instructionNum}>{i + 1}</Text>
-                                                            <View style={styles.instructionNumUnderline} />
-                                                        </View>
-                                                        <Text style={styles.instructionItem}>{t(`db.${step.replace(/\s+/g, '')}`, step)}</Text>
-                                                    </View>
-                                                ))}
-                                            </View>
-                                        )}
-
-                                        {/* Muscles */}
-                                        {(ex.primaryMuscles?.length > 0 || (isPro && ex.secondaryMuscles?.length > 0)) && (
-                                            <View style={styles.musclesBox}>
-                                                {ex.primaryMuscles?.length > 0 && (
-                                                    <View style={styles.muscleGroup}>
-                                                        <Text style={styles.muscleGroupTitle}>{t('workouts.primaryMuscles', 'Primary Muscles')}</Text>
-                                                        {ex.primaryMuscles.map((m: string, i: number) => (
-                                                            <Text key={i} style={styles.muscleItem}>• {t(`workouts.muscles.${m}`, m) as string}</Text>
-                                                        ))}
-                                                    </View>
-                                                )}
-                                                {isPro && ex.secondaryMuscles?.length > 0 && (
-                                                    <View style={styles.muscleGroup}>
-                                                        <Text style={styles.muscleGroupTitle}>{t('workouts.secondaryMuscles', 'Secondary Muscles')}</Text>
-                                                        {ex.secondaryMuscles.map((m: string, i: number) => (
-                                                            <Text key={i} style={styles.muscleItem}>• {t(`workouts.muscles.${m}`, m) as string}</Text>
-                                                        ))}
-                                                    </View>
-                                                )}
-                                            </View>
-                                        )}
-                                    </View>
-                                ))}
-                            </View>
-                        )}
-
-                        {/* Workout Progress */}
-                        {exerciseProgress && (
-                            <View style={styles.infoSection}>
-                                <Text style={styles.sectionTitle}>{t('workouts.workoutProgress', 'Workout Progress')}</Text>
-                                <View style={styles.progressGrid}>
-                                    <View style={styles.progressCard}>
-                                        <Text style={styles.progressValue}>{exerciseProgress.maxWeight} kg</Text>
-                                        <Text style={styles.progressLabel}>{t('workouts.maxWeight', 'Max Weight')}</Text>
-                                    </View>
-                                    <View style={styles.progressCard}>
-                                        <Text style={styles.progressValue}>{exerciseProgress.maxVolume} kg</Text>
-                                        <Text style={styles.progressLabel}>{t('workouts.maxVolume', 'Max Volume')}</Text>
-                                    </View>
-                                    <View style={styles.progressCard}>
-                                        <Text style={styles.progressValue}>{exerciseProgress.totalSessions}</Text>
-                                        <Text style={styles.progressLabel}>{t('workouts.sessions', 'Sessions')}</Text>
-                                    </View>
-                                </View>
-                            </View>
-                        )}
-
-                        {/* Workout History — collapsible */}
-                        {exerciseHistory && exerciseHistory.length > 0 && (
-                            <View style={styles.infoSection}>
-                                <TouchableOpacity
-                                    style={styles.historySectionHeader}
-                                    onPress={() => setShowHistory(v => !v)}
-                                >
-                                    <Text style={styles.sectionTitle}>
-                                        {t('workouts.workoutHistory', 'Workout History')} ({exerciseHistory.length})
-                                    </Text>
-                                    {showHistory
-                                        ? <ChevronUp size={20} color="#64748b" />
-                                        : <ChevronDown size={20} color="#64748b" />}
-                                </TouchableOpacity>
-
-                                {showHistory && exerciseHistory.slice(0, 10).map((log: any, idx: number) => (
-                                    <View key={idx} style={styles.historyRow}>
-                                        <Text style={styles.historyDate}>{log.date}</Text>
-                                        <View style={styles.historyDetails}>
-                                            {log.sets && (
-                                                <Text style={styles.historyText}>
-                                                    {log.sets.length} {t('workouts.sets', 'sets')} • {log.sets.reduce((s: number, x: any) => s + x.reps, 0)} {t('workouts.reps', 'reps')}
-                                                </Text>
-                                            )}
-                                            {log.duration && (
-                                                <Text style={styles.historyText}>{log.duration} {t('workouts.min', 'min')}</Text>
-                                            )}
-                                        </View>
-                                    </View>
-                                ))}
-                            </View>
-                        )}
-
-                        {locked && (
-                            <View style={styles.blurBlock}>
-                                <BlurView intensity={35} tint="light" style={StyleSheet.absoluteFill} />
-                                <View style={styles.blurOverlay}>
-                                    <Text style={styles.blurTitle}>{t('workouts.upgradeToPro', 'Upgrade to Pro')}</Text>
-                                    <Text style={styles.blurText}>{t('workouts.unlockVideoDesc', 'Unlock the full workout video + breakdown.')}</Text>
-                                    <TouchableOpacity style={styles.blurBtn} onPress={() => setShowUpgrade(true)}>
-                                        <Text style={styles.blurBtnText}>{t('common.viewProPlans', 'View Pro Plans')}</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        )}
-                    </View>
-                </ScrollView>
-
-                {/* Bottom action — log the first/only exercise */}
-                {hasExercises && (
-                    <View style={[styles.bottomAction, { paddingBottom: insets.bottom + 16 }]}>
-                        <TouchableOpacity
-                            style={styles.startButton}
-                            onPress={() => handleLogExercise(selectedWorkout.exercises[0])}
-                        >
-                            <Dumbbell size={22} color="#ffffff" />
-                            <Text style={styles.startButtonText}>{t('workouts.logExercise', 'Log Exercise')}</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-
-                {/* ── VIDEO MODAL with expo-av ── */}
-                <Modal visible={showVideoModal} animationType="fade" transparent>
-                    <View style={styles.videoModalContainer}>
-                        {/* Dismiss on backdrop tap */}
-                        <TouchableOpacity
-                            style={StyleSheet.absoluteFill}
-                            activeOpacity={1}
-                            onPress={() => setShowVideoModal(false)}
-                        />
-                        <View style={styles.videoModal}>
-                            <View style={styles.videoHeader}>
-                                <Text style={styles.videoTitle} numberOfLines={1}>
-                                    {getLocalizedField(selectedWorkout, 'title', lang)}
-                                </Text>
-                                <TouchableOpacity onPress={() => setShowVideoModal(false)}>
-                                    <X size={24} color="#ffffff" />
-                                </TouchableOpacity>
-                            </View>
-
-                            {(() => {
-                                // Gender-aware video selection:
-                                // 1. Prefer gender-specific variant based on user's biologicalSex
-                                // 2. Fall back to the universal videoUrl
-                                const genderUrl = userSex === 'male'
-                                    ? selectedWorkout.videoUrlMale
-                                    : userSex === 'female'
-                                        ? selectedWorkout.videoUrlFemale
-                                        : undefined;
-                                const resolvedUrl = genderUrl || selectedWorkout.videoUrl;
-                                return resolvedUrl ? (
-                                    resolvedUrl.toLowerCase().endsWith('.gif') ? (
-                                        <Image
-                                            source={{ uri: resolvedUrl }}
-                                            style={styles.videoPlayer}
-                                            contentFit="cover"
-                                        />
-                                    ) : (
-                                        <Video
-                                            source={{ uri: resolvedUrl }}
-                                            style={styles.videoPlayer}
-                                            useNativeControls
-                                            resizeMode={ResizeMode.COVER}
-                                            isLooping
-                                            shouldPlay
-                                        />
-                                    )
-                                ) : (
-                                    <View style={styles.videoPlayerPlaceholder}>
-                                        <Play size={48} color="rgba(255,255,255,0.5)" />
-                                        <Text style={styles.videoPlaceholderText}>{t('workouts.noVideo', 'No video URL configured')}</Text>
-                                        <Text style={styles.videoPlaceholderSub}>{t('workouts.addVideo', 'Add a Video URL in the admin panel')}</Text>
-                                    </View>
-                                );
-                            })()}
-                        </View>
-                    </View>
-                </Modal>
-
-                <ProUpgradeModal
-                    visible={showUpgrade}
-                    onClose={() => setShowUpgrade(false)}
-                    onUpgrade={() => {
-                        setShowUpgrade(false);
-                        setSelectedWorkout(null);
-                        router.push('/premium');
-                    }}
-                    title={t('common.upgradeToPro', 'Upgrade to Pro')}
-                    message={t('workouts.proMessage', 'This workout is locked. Upgrade to Pro to access premium workout videos and full breakdowns.')}
-                    upgradeLabel={t('common.viewProPlans', 'View Pro Plans')}
-                />
-
-                <SingleExerciseLogModal
-                    visible={showLogModal}
-                    exercise={selectedExerciseForLog ? {
-                        id: selectedExerciseForLog.name,
-                        name: selectedExerciseForLog.name,
-                        type: selectedExerciseForLog.exerciseType || 'strength',
-                    } : null}
-                    onClose={() => { setShowLogModal(false); setSelectedExerciseForLog(null); }}
-                    onSave={handleSaveLog}
-                />
-            </SafeAreaView>
-        );
-    }
-
-    // ─── LIST VIEW ────────────────────────────────────────────────────────────
-
+    // ─── UNIFIED RENDER ───────────────────────────────────────────────────────
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={{ flex: 1 }}>
             <Stack.Screen options={{ headerShown: false }} />
 
-            {/* ── Header ── */}
-            <View style={styles.header}>
-                <View>
-                    <Text style={styles.title}>{t('workouts.title', 'Workouts')}</Text>
-                    <Text style={styles.subtitle}>{t('workouts.subtitle', 'Guided video routines')}</Text>
-                </View>
-                <TouchableOpacity onPress={() => router.back()} style={styles.headerCircle}>
-                    <X size={20} color="#1e293b" />
-                </TouchableOpacity>
-            </View>
+            {/* ══ LIST VIEW — always mounted ══ */}
+            <SafeAreaView style={styles.container} edges={['top']}>
 
-            {/* ── Search Bar ── */}
-            <View style={styles.searchContainer}>
-                <View style={styles.searchBar}>
-                    <Search size={20} color="#94a3b8" />
-                    <TextInput
-                        placeholder={t('workouts.searchPlaceholder', 'Search workouts...')}
-                        style={styles.searchInput}
-                        value={search}
-                        onChangeText={setSearch}
-                        returnKeyType="search"
-                    />
-                    {search.length > 0 && (
-                        <TouchableOpacity onPress={() => setSearch('')}>
-                            <X size={18} color="#cbd5e1" />
-                        </TouchableOpacity>
-                    )}
-                </View>
-            </View>
-
-            {/* ── Tabs: Browse / Muscles / Saved ── */}
-            <View style={styles.tabsRow}>
-                <TouchableOpacity
-                    style={[styles.tabItem, listTab === 'browse' && styles.tabItemActive]}
-                    onPress={() => setListTab('browse')}
-                >
-                    <Dumbbell size={15} color={listTab === 'browse' ? '#2563eb' : '#94a3b8'} />
-                    <Text style={[styles.tabText, listTab === 'browse' && styles.tabTextActive]}>{t('workouts.browse', 'Browse')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.tabItem, listTab === 'muscles' && styles.tabItemActive]}
-                    onPress={() => setListTab('muscles')}
-                >
-                    <Zap size={15} color={listTab === 'muscles' ? '#2563eb' : '#94a3b8'} />
-                    <Text style={[styles.tabText, listTab === 'muscles' && styles.tabTextActive]}>
-                        {t('workouts.musclesTab', 'Muscles')}{selectedMuscle !== 'All' ? ` · ${t(`workouts.muscles.${selectedMuscle}`, selectedMuscle)}` : ''}
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.tabItem, listTab === 'saved' && styles.tabItemActive]}
-                    onPress={() => setListTab('saved')}
-                >
-                    <Bookmark
-                        size={15}
-                        color={listTab === 'saved' ? '#2563eb' : '#94a3b8'}
-                        fill={listTab === 'saved' ? '#2563eb' : 'transparent'}
-                    />
-                    <Text style={[styles.tabText, listTab === 'saved' && styles.tabTextActive]}>
-                        {t('workouts.saved', 'Saved')}{savedWorkouts?.length ? ` · ${savedWorkouts.length}` : ''}
-                    </Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* ══ BROWSE TAB ══ */}
-            {listTab === 'browse' && (
-                <>
-                    {/* Type filter chips */}
-                    <View style={styles.filterRow}>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll}>
-                            {categories.map(c => (
-                                <TouchableOpacity
-                                    key={c}
-                                    style={[styles.filterPill, selectedCategory === c && styles.filterPillActive]}
-                                    onPress={() => setSelectedCategory(c)}
-                                >
-                                    <Text style={[styles.filterPillText, selectedCategory === c && styles.filterPillTextActive]}>{t(`workouts.categories.${c}`, c) as string}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
+                {/* ── Header ── */}
+                <View style={styles.header}>
+                    <View>
+                        <Text style={styles.title}>{t('workouts.title', 'Workouts')}</Text>
+                        <Text style={styles.subtitle}>{t('workouts.subtitle', 'Guided video routines')}</Text>
                     </View>
+                    <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : null} style={styles.headerCircle}>
+                        <X size={20} color="#1e293b" />
+                    </TouchableOpacity>
+                </View>
 
-                    {!workouts ? (
-                        <View style={styles.loading}><ActivityIndicator size="large" color="#2563eb" /></View>
-                    ) : (
-                        <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
-                            {filteredWorkouts.map(item => {
-                                const isItemSaved = savedIds.has(item._id);
-                                return (
+                {/* ── Search Bar ── */}
+                <View style={styles.searchContainer}>
+                    <View style={styles.searchBar}>
+                        <Search size={20} color="#94a3b8" />
+                        <TextInput
+                            placeholder={t('workouts.searchPlaceholder', 'Search workouts...')}
+                            style={styles.searchInput}
+                            value={search}
+                            onChangeText={setSearch}
+                            returnKeyType="search"
+                        />
+                        {search.length > 0 && (
+                            <TouchableOpacity onPress={() => setSearch('')}>
+                                <X size={18} color="#cbd5e1" />
+                            </TouchableOpacity>
+                        )}
+                    </View>
+                </View>
+
+                {/* ── Tabs: Browse / Muscles / Saved ── */}
+                <View style={styles.tabsRow}>
+                    <TouchableOpacity
+                        style={[styles.tabItem, listTab === 'browse' && styles.tabItemActive]}
+                        onPress={() => setListTab('browse')}
+                    >
+                        <Dumbbell size={15} color={listTab === 'browse' ? '#2563eb' : '#94a3b8'} />
+                        <Text style={[styles.tabText, listTab === 'browse' && styles.tabTextActive]}>{t('workouts.browse', 'Browse')}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.tabItem, listTab === 'muscles' && styles.tabItemActive]}
+                        onPress={() => setListTab('muscles')}
+                    >
+                        <Zap size={15} color={listTab === 'muscles' ? '#2563eb' : '#94a3b8'} />
+                        <Text style={[styles.tabText, listTab === 'muscles' && styles.tabTextActive]}>
+                            {t('workouts.musclesTab', 'Muscles')}{selectedMuscle !== 'All' ? ` · ${t(`workouts.muscles.${selectedMuscle}`, selectedMuscle)}` : ''}
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.tabItem, listTab === 'saved' && styles.tabItemActive]}
+                        onPress={() => setListTab('saved')}
+                    >
+                        <Bookmark
+                            size={15}
+                            color={listTab === 'saved' ? '#2563eb' : '#94a3b8'}
+                            fill={listTab === 'saved' ? '#2563eb' : 'transparent'}
+                        />
+                        <Text style={[styles.tabText, listTab === 'saved' && styles.tabTextActive]}>
+                            {t('workouts.saved', 'Saved')}{savedWorkouts?.length ? ` · ${savedWorkouts.length}` : ''}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* ══ BROWSE TAB ══ */}
+                {listTab === 'browse' && (
+                    <>
+                        <View style={styles.filterRow}>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll}>
+                                {categories.map(c => (
                                     <TouchableOpacity
-                                        key={item._id}
-                                        style={styles.workoutCard}
-                                        activeOpacity={0.9}
-                                        onPress={() => setSelectedWorkout(item)}
+                                        key={c}
+                                        style={[styles.filterPill, selectedCategory === c && styles.filterPillActive]}
+                                        onPress={() => setSelectedCategory(c)}
                                     >
-                                        <Image
-                                            source={{ uri: (userSex === 'male' ? item.thumbnailMale : userSex === 'female' ? item.thumbnailFemale : null) || item.thumbnail }}
-                                            style={styles.cardImage}
-                                        />
-                                        <LinearGradient colors={['transparent', 'rgba(0,0,0,0.75)']} style={styles.cardGradient} />
-                                        {/* Save icon — top right */}
+                                        <Text style={[styles.filterPillText, selectedCategory === c && styles.filterPillTextActive]}>{t(`workouts.categories.${c}`, c) as string}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
+                        </View>
+
+                        {!workouts ? (
+                            <View style={styles.loading}><ActivityIndicator size="large" color="#2563eb" /></View>
+                        ) : (
+                            <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
+                                {filteredWorkouts.map(item => {
+                                    const isItemSaved = savedIds.has(item._id);
+                                    return (
                                         <TouchableOpacity
-                                            style={styles.cardSaveBtn}
-                                            onPress={() => handleCardToggleSave(item._id)}
-                                            hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+                                            key={item._id}
+                                            style={styles.workoutCard}
+                                            activeOpacity={0.9}
+                                            onPress={() => setSelectedWorkout(item)}
                                         >
-                                            <Bookmark
-                                                size={18}
-                                                color="#ffffff"
-                                                fill={isItemSaved ? '#ffffff' : 'transparent'}
+                                            <Image
+                                                source={{ uri: (userSex === 'male' ? item.thumbnailMale : userSex === 'female' ? item.thumbnailFemale : null) || item.thumbnail }}
+                                                style={styles.cardImage}
+                                                cachePolicy="memory-disk"
+                                                recyclingKey={item._id}
                                             />
-                                        </TouchableOpacity>
-                                        <View style={styles.cardContent}>
-                                            <View style={styles.cardBottom}>
-                                                <Text style={styles.cardTitle}>{getLocalizedField(item, 'title', lang)}</Text>
-                                                <View style={styles.cardStats}>
-                                                    <View style={styles.cardStat}>
-                                                        <Dumbbell size={12} color="#ffffff" />
-                                                        <Text style={styles.cardStatText}>{t(`workouts.categories.${item.category}`, item.category) as string}</Text>
+                                            <LinearGradient colors={['transparent', 'rgba(0,0,0,0.75)']} style={styles.cardGradient} />
+                                            <TouchableOpacity
+                                                style={styles.cardSaveBtn}
+                                                onPress={() => handleCardToggleSave(item._id)}
+                                                hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+                                            >
+                                                <Bookmark
+                                                    size={18}
+                                                    color="#ffffff"
+                                                    fill={isItemSaved ? '#ffffff' : 'transparent'}
+                                                />
+                                            </TouchableOpacity>
+                                            <View style={styles.cardContent}>
+                                                <View style={styles.cardBottom}>
+                                                    <Text style={styles.cardTitle}>{getLocalizedField(item, 'title', lang)}</Text>
+                                                    <View style={styles.cardStats}>
+                                                        <View style={styles.cardStat}>
+                                                            <Dumbbell size={12} color="#ffffff" />
+                                                            <Text style={styles.cardStatText}>{t(`workouts.categories.${item.category}`, item.category) as string}</Text>
+                                                        </View>
                                                     </View>
                                                 </View>
                                             </View>
-                                        </View>
+                                        </TouchableOpacity>
+                                    );
+                                })}
+
+                                {filteredWorkouts.length === 0 && (
+                                    <View style={styles.empty}>
+                                        <Dumbbell size={64} color="#e2e8f0" />
+                                        <Text style={styles.emptyText}>{t('workouts.noRoutines', 'No routines found')}</Text>
+                                        <Text style={styles.emptySubText}>{t('workouts.noRoutinesSub', 'Try a different type or clear the muscle filter')}</Text>
+                                    </View>
+                                )}
+                            </ScrollView>
+                        )}
+                    </>
+                )}
+
+                {/* ══ MUSCLES TAB ══ */}
+                {listTab === 'muscles' && (
+                    <ScrollView contentContainerStyle={styles.muscleGridContent} showsVerticalScrollIndicator={false}>
+                        <Text style={styles.muscleSectionHeader}>{t('workouts.browseByMuscle', 'Browse by Muscle Group')}</Text>
+                        <View style={styles.muscleImageGrid}>
+                            {MUSCLE_CARDS.map(mc => {
+                                const isActive = selectedMuscle === mc.title;
+                                return (
+                                    <TouchableOpacity
+                                        key={mc.title}
+                                        style={[styles.muscleImageCard, isActive && styles.muscleImageCardActive]}
+                                        activeOpacity={0.85}
+                                        onPress={() => {
+                                            setSelectedMuscle(isActive ? 'All' : mc.title);
+                                            setListTab('browse');
+                                        }}
+                                    >
+                                        <Image source={{ uri: mc.image }} style={styles.muscleCardImage} cachePolicy="memory-disk" />
+                                        <LinearGradient
+                                            colors={isActive ? ['rgba(37,99,235,0.7)', 'rgba(37,99,235,0.9)'] : ['transparent', 'rgba(0,0,0,0.65)']}
+                                            style={StyleSheet.absoluteFill}
+                                        />
+                                        {isActive && (
+                                            <View style={styles.muscleCheckBadge}>
+                                                <ChevronRight size={14} color="#ffffff" />
+                                            </View>
+                                        )}
+                                        <Text style={styles.muscleCardLabel}>{t(`workouts.muscles.${mc.title}`, mc.title) as string}</Text>
                                     </TouchableOpacity>
                                 );
                             })}
-
-                            {filteredWorkouts.length === 0 && (
-                                <View style={styles.empty}>
-                                    <Dumbbell size={64} color="#e2e8f0" />
-                                    <Text style={styles.emptyText}>{t('workouts.noRoutines', 'No routines found')}</Text>
-                                    <Text style={styles.emptySubText}>{t('workouts.noRoutinesSub', 'Try a different type or clear the muscle filter')}</Text>
-                                </View>
-                            )}
-                        </ScrollView>
-                    )}
-                </>
-            )}
-
-            {/* ══ MUSCLES TAB ══ */}
-            {listTab === 'muscles' && (
-                <ScrollView contentContainerStyle={styles.muscleGridContent} showsVerticalScrollIndicator={false}>
-                    <Text style={styles.muscleSectionHeader}>{t('workouts.browseByMuscle', 'Browse by Muscle Group')}</Text>
-                    <View style={styles.muscleImageGrid}>
-                        {MUSCLE_CARDS.map(mc => {
-                            const isActive = selectedMuscle === mc.title;
-                            return (
-                                <TouchableOpacity
-                                    key={mc.title}
-                                    style={[styles.muscleImageCard, isActive && styles.muscleImageCardActive]}
-                                    activeOpacity={0.85}
-                                    onPress={() => {
-                                        setSelectedMuscle(isActive ? 'All' : mc.title);
-                                        setListTab('browse');
-                                    }}
-                                >
-                                    <Image source={{ uri: mc.image }} style={styles.muscleCardImage} />
-                                    <LinearGradient
-                                        colors={isActive ? ['rgba(37,99,235,0.7)', 'rgba(37,99,235,0.9)'] : ['transparent', 'rgba(0,0,0,0.65)']}
-                                        style={StyleSheet.absoluteFill}
-                                    />
-                                    {isActive && (
-                                        <View style={styles.muscleCheckBadge}>
-                                            <ChevronRight size={14} color="#ffffff" />
-                                        </View>
-                                    )}
-                                    <Text style={styles.muscleCardLabel}>{t(`workouts.muscles.${mc.title}`, mc.title) as string}</Text>
-                                </TouchableOpacity>
-                            );
-                        })}
-                    </View>
-
-                    {/* All muscles reset */}
-                    {selectedMuscle !== 'All' && (
-                        <TouchableOpacity style={styles.clearMuscleBtn} onPress={() => setSelectedMuscle('All')}>
-                            <X size={14} color="#2563eb" />
-                            <Text style={styles.clearMuscleBtnText}>{t('workouts.clearFilter', 'Clear filter:')} {t(`workouts.muscles.${selectedMuscle}`, selectedMuscle) as string}</Text>
-                        </TouchableOpacity>
-                    )}
-                </ScrollView>
-            )}
-
-            {/* ══ SAVED TAB ══ */}
-            {listTab === 'saved' && (
-                <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
-                    {!savedWorkouts ? (
-                        <View style={styles.loading}><ActivityIndicator size="large" color="#2563eb" /></View>
-                    ) : savedWorkouts.length === 0 ? (
-                        <View style={styles.empty}>
-                            <Bookmark size={64} color="#e2e8f0" />
-                            <Text style={styles.emptyText}>{t('workouts.noSaved', 'No saved workouts yet')}</Text>
-                            <Text style={styles.emptySubText}>{t('workouts.noSavedSub', 'Tap the bookmark icon on any workout to save it here')}</Text>
                         </View>
-                    ) : (
-                        savedWorkouts.map((item: any) => {
-                            const isItemSaved = true; // always saved in this tab
-                            return (
+
+                        {selectedMuscle !== 'All' && (
+                            <TouchableOpacity style={styles.clearMuscleBtn} onPress={() => setSelectedMuscle('All')}>
+                                <X size={14} color="#2563eb" />
+                                <Text style={styles.clearMuscleBtnText}>{t('workouts.clearFilter', 'Clear filter:')} {t(`workouts.muscles.${selectedMuscle}`, selectedMuscle) as string}</Text>
+                            </TouchableOpacity>
+                        )}
+                    </ScrollView>
+                )}
+
+                {/* ══ SAVED TAB ══ */}
+                {listTab === 'saved' && (
+                    <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
+                        {!savedWorkouts ? (
+                            <View style={styles.loading}><ActivityIndicator size="large" color="#2563eb" /></View>
+                        ) : savedWorkouts.length === 0 ? (
+                            <View style={styles.empty}>
+                                <Bookmark size={64} color="#e2e8f0" />
+                                <Text style={styles.emptyText}>{t('workouts.noSaved', 'No saved workouts yet')}</Text>
+                                <Text style={styles.emptySubText}>{t('workouts.noSavedSub', 'Tap the bookmark icon on any workout to save it here')}</Text>
+                            </View>
+                        ) : (
+                            savedWorkouts.map((item: any) => (
                                 <TouchableOpacity
                                     key={item._id}
                                     style={styles.workoutCard}
@@ -763,6 +449,8 @@ export default function WorkoutsScreen() {
                                     <Image
                                         source={{ uri: (userSex === 'male' ? item.thumbnailMale : userSex === 'female' ? item.thumbnailFemale : null) || item.thumbnail }}
                                         style={styles.cardImage}
+                                        cachePolicy="memory-disk"
+                                        recyclingKey={item._id}
                                     />
                                     <LinearGradient colors={['transparent', 'rgba(0,0,0,0.75)']} style={styles.cardGradient} />
                                     <TouchableOpacity
@@ -784,12 +472,345 @@ export default function WorkoutsScreen() {
                                         </View>
                                     </View>
                                 </TouchableOpacity>
-                            );
-                        })
-                    )}
-                </ScrollView>
-            )}
-        </SafeAreaView>
+                            ))
+                        )}
+                    </ScrollView>
+                )}
+            </SafeAreaView>
+
+            {/* ══ DETAIL VIEW — slides in from right ══ */}
+            <Animated.View
+                style={[
+                    StyleSheet.absoluteFill,
+                    { transform: [{ translateX: slideAnim }], zIndex: 50 }
+                ]}
+                pointerEvents={selectedWorkout ? 'auto' : 'none'}
+            >
+                {selectedWorkout && (
+                    <SafeAreaView style={styles.detailContainer} edges={['top', 'bottom']}>
+
+                        <ScrollView contentContainerStyle={styles.detailContent}>
+                            {/* Hero */}
+                            <View style={styles.detailHero}>
+                                <Image
+                                    source={{ uri: (userSex === 'male' ? selectedWorkout.thumbnailMale : userSex === 'female' ? selectedWorkout.thumbnailFemale : null) || selectedWorkout.thumbnail }}
+                                    style={styles.heroImage}
+                                    cachePolicy="memory-disk"
+                                    recyclingKey={selectedWorkout._id}
+                                />
+                                <LinearGradient
+                                    colors={['rgba(0,0,0,0.6)', 'transparent', 'rgba(0,0,0,0.4)']}
+                                    style={StyleSheet.absoluteFill}
+                                />
+                                <TouchableOpacity
+                                    style={[styles.backButton, { top: insets.top + 10 }]}
+                                    onPress={() => setSelectedWorkout(null)}
+                                >
+                                    <ArrowLeft size={24} color="#ffffff" />
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={styles.playButtonLarge}
+                                    onPress={() => {
+                                        if (locked) { setShowUpgrade(true); return; }
+                                        setShowVideoModal(true);
+                                    }}
+                                >
+                                    <Play size={32} color="#ffffff" fill="#ffffff" style={{ marginLeft: 4 }} />
+                                </TouchableOpacity>
+
+                                {selectedWorkout.isPremium && (
+                                    <View style={styles.premiumDetailBadge}>
+                                        <Text style={styles.premiumDetailText}>{t('workouts.premium', 'PREMIUM')}</Text>
+                                    </View>
+                                )}
+                            </View>
+
+                            {/* Body */}
+                            <View style={styles.detailBody}>
+                                {locked && (
+                                    <View style={styles.lockNotice}>
+                                        <Text style={styles.lockNoticeText}>{t('workouts.proRequired', 'Pro required — preview only') as string}</Text>
+                                    </View>
+                                )}
+
+                                <View style={styles.titleRow}>
+                                    <Text style={styles.detailTitle}>{getLocalizedField(selectedWorkout, 'title', lang)}</Text>
+                                    <TouchableOpacity onPress={handleToggleSave}>
+                                        {isSaved
+                                            ? <Bookmark size={24} color="#2563eb" fill="#2563eb" />
+                                            : <Bookmark size={24} color="#64748b" />}
+                                    </TouchableOpacity>
+                                </View>
+
+                                <Text style={styles.detailDescription}>{getLocalizedField(selectedWorkout, 'description', lang)}</Text>
+
+                                {/* Stats strip — Rating / Level / Equipment */}
+                                <View style={styles.statsStrip}>
+                                    <View style={styles.statBox}>
+                                        <Star size={16} color="#f59e0b" fill="#f59e0b" />
+                                        <Text style={styles.statVal}>{selectedWorkout.rating}</Text>
+                                        <Text style={styles.statLab}>{t('workouts.rating', 'Rating') as string}</Text>
+                                    </View>
+                                    <View style={styles.statBox}>
+                                        <Dumbbell size={16} color="#2563eb" />
+                                        <Text style={styles.statVal} numberOfLines={1} adjustsFontSizeToFit>{t(`workouts.levels.${selectedWorkout.difficulty}`, selectedWorkout.difficulty) as string}</Text>
+                                        <Text style={styles.statLab}>{t('workouts.level', 'Level') as string}</Text>
+                                    </View>
+                                    <View style={styles.statBox}>
+                                        <Wrench size={16} color="#64748b" />
+                                        <Text style={[styles.statVal, { color: '#64748b' }]}>{selectedWorkout.equipment?.length ?? 0}</Text>
+                                        <Text style={styles.statLab}>{t('workouts.equipment', 'Equipment') as string}</Text>
+                                    </View>
+                                </View>
+
+                                {/* Equipment list */}
+                                {(selectedWorkout.equipment?.length > 0 || selectedWorkout.optionalEquipment?.length > 0) && (
+                                    <View style={styles.infoSection}>
+                                        <Text style={styles.sectionTitle}>{t('workouts.equipment', 'Equipment')}</Text>
+                                        <View style={styles.equipmentList}>
+                                            {selectedWorkout.equipment?.map((eq: string, i: number) => (
+                                                <View key={i} style={styles.equipmentItem}>
+                                                    <View style={styles.equipmentDot} />
+                                                    <Text style={styles.equipmentText}>{t(`workouts.equip.${eq}`, eq) as string}</Text>
+                                                </View>
+                                            ))}
+                                            {selectedWorkout.optionalEquipment?.length > 0 && (
+                                                <>
+                                                    <Text style={styles.equipmentOrLabel}>{t('workouts.orAlternatively', 'or alternatively:')}</Text>
+                                                    {selectedWorkout.optionalEquipment.map((eq: string, i: number) => (
+                                                        <View key={`opt-${i}`} style={styles.equipmentItem}>
+                                                            <View style={[styles.equipmentDot, styles.equipmentDotOptional]} />
+                                                            <Text style={[styles.equipmentText, styles.equipmentTextOptional]}>{t(`workouts.equip.${eq}`, eq) as string}</Text>
+                                                        </View>
+                                                    ))}
+                                                </>
+                                            )}
+                                        </View>
+                                    </View>
+                                )}
+
+                                {/* Exercise Details */}
+                                {hasExercises && (
+                                    <View style={styles.infoSection}>
+                                        <Text style={styles.sectionTitle}>{t('workouts.exerciseDetails', 'Exercise Details')}</Text>
+                                        {selectedWorkout.exercises.map((ex: any, idx: number) => {
+                                            // Use localized instructions if available, fallback to default
+                                            const localizedInstructions =
+                                                (ex.instructionsLocalizations as any)?.[lang] ?? ex.instructions;
+                                            return (
+                                                <View key={idx} style={styles.exerciseDetailCard}>
+                                                    {/* Instructions — Pro only */}
+                                                    {isPro && localizedInstructions && localizedInstructions.length > 0 && (
+                                                        <View style={styles.instructionsBox}>
+                                                            <Text style={styles.instructionsTitle}>{t('workouts.instructions', 'Instructions')}</Text>
+                                                            {localizedInstructions.map((step: string, i: number) => (
+                                                                <View key={i} style={styles.instructionRow}>
+                                                                    <View style={styles.instructionNumWrap}>
+                                                                        <Text style={styles.instructionNum}>{i + 1}</Text>
+                                                                        <View style={styles.instructionNumUnderline} />
+                                                                    </View>
+                                                                    <Text style={styles.instructionItem}>{step}</Text>
+                                                                </View>
+                                                            ))}
+                                                        </View>
+                                                    )}
+
+                                                    {/* Muscles */}
+                                                    {(ex.primaryMuscles?.length > 0 || (isPro && ex.secondaryMuscles?.length > 0)) && (
+                                                        <View style={styles.musclesBox}>
+                                                            {ex.primaryMuscles?.length > 0 && (
+                                                                <View style={styles.muscleGroup}>
+                                                                    <Text style={styles.muscleGroupTitle}>{t('workouts.primaryMuscles', 'Primary Muscles')}</Text>
+                                                                    {ex.primaryMuscles.map((m: string, i: number) => (
+                                                                        <Text key={i} style={styles.muscleItem}>• {t(`workouts.muscles.${m}`, m) as string}</Text>
+                                                                    ))}
+                                                                </View>
+                                                            )}
+                                                            {isPro && ex.secondaryMuscles?.length > 0 && (
+                                                                <View style={styles.muscleGroup}>
+                                                                    <Text style={styles.muscleGroupTitle}>{t('workouts.secondaryMuscles', 'Secondary Muscles')}</Text>
+                                                                    {ex.secondaryMuscles.map((m: string, i: number) => (
+                                                                        <Text key={i} style={styles.muscleItem}>• {t(`workouts.muscles.${m}`, m) as string}</Text>
+                                                                    ))}
+                                                                </View>
+                                                            )}
+                                                        </View>
+                                                    )}
+                                                </View>
+                                            );
+                                        })}
+                                    </View>
+                                )}
+
+                                {/* Workout Progress */}
+                                {exerciseProgress && (
+                                    <View style={styles.infoSection}>
+                                        <Text style={styles.sectionTitle}>{t('workouts.workoutProgress', 'Workout Progress')}</Text>
+                                        <View style={styles.progressGrid}>
+                                            <View style={styles.progressCard}>
+                                                <Text style={styles.progressValue}>{exerciseProgress.maxWeight} kg</Text>
+                                                <Text style={styles.progressLabel}>{t('workouts.maxWeight', 'Max Weight')}</Text>
+                                            </View>
+                                            <View style={styles.progressCard}>
+                                                <Text style={styles.progressValue}>{exerciseProgress.maxVolume} kg</Text>
+                                                <Text style={styles.progressLabel}>{t('workouts.maxVolume', 'Max Volume')}</Text>
+                                            </View>
+                                            <View style={styles.progressCard}>
+                                                <Text style={styles.progressValue}>{exerciseProgress.totalSessions}</Text>
+                                                <Text style={styles.progressLabel}>{t('workouts.sessions', 'Sessions')}</Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                )}
+
+                                {/* Workout History — collapsible */}
+                                {exerciseHistory && exerciseHistory.length > 0 && (
+                                    <View style={styles.infoSection}>
+                                        <TouchableOpacity
+                                            style={styles.historySectionHeader}
+                                            onPress={() => setShowHistory(v => !v)}
+                                        >
+                                            <Text style={styles.sectionTitle}>
+                                                {t('workouts.workoutHistory', 'Workout History')} ({exerciseHistory.length})
+                                            </Text>
+                                            {showHistory
+                                                ? <ChevronUp size={20} color="#64748b" />
+                                                : <ChevronDown size={20} color="#64748b" />}
+                                        </TouchableOpacity>
+
+                                        {showHistory && exerciseHistory.slice(0, 10).map((log: any, idx: number) => (
+                                            <View key={idx} style={styles.historyRow}>
+                                                <Text style={styles.historyDate}>{log.date}</Text>
+                                                <View style={styles.historyDetails}>
+                                                    {log.sets && (
+                                                        <Text style={styles.historyText}>
+                                                            {log.sets.length} {t('workouts.sets', 'sets')} • {log.sets.reduce((s: number, x: any) => s + x.reps, 0)} {t('workouts.reps', 'reps')}
+                                                        </Text>
+                                                    )}
+                                                    {log.duration && (
+                                                        <Text style={styles.historyText}>{log.duration} {t('workouts.min', 'min')}</Text>
+                                                    )}
+                                                </View>
+                                            </View>
+                                        ))}
+                                    </View>
+                                )}
+
+                                {locked && (
+                                    <View style={styles.blurBlock}>
+                                        <BlurView intensity={35} tint="light" style={StyleSheet.absoluteFill} />
+                                        <View style={styles.blurOverlay}>
+                                            <Text style={styles.blurTitle}>{t('workouts.upgradeToPro', 'Upgrade to Pro')}</Text>
+                                            <Text style={styles.blurText}>{t('workouts.unlockVideoDesc', 'Unlock the full workout video + breakdown.')}</Text>
+                                            <TouchableOpacity style={styles.blurBtn} onPress={() => setShowUpgrade(true)}>
+                                                <Text style={styles.blurBtnText}>{t('common.viewProPlans', 'View Pro Plans')}</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                )}
+                            </View>
+                        </ScrollView>
+
+                        {/* Bottom action — log exercise */}
+                        {hasExercises && (
+                            <View style={[styles.bottomAction, { paddingBottom: insets.bottom + 16 }]}>
+                                <TouchableOpacity
+                                    style={styles.startButton}
+                                    onPress={() => handleLogExercise(selectedWorkout.exercises[0])}
+                                >
+                                    <Dumbbell size={22} color="#ffffff" />
+                                    <Text style={styles.startButtonText}>{t('workouts.logExercise', 'Log Exercise')}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+
+                        {/* VIDEO MODAL */}
+                        <Modal
+                            visible={showVideoModal}
+                            animationType="fade"
+                            transparent
+                            presentationStyle="overFullScreen"
+                        >
+                            <View style={styles.videoModalContainer}>
+                                <TouchableOpacity
+                                    style={StyleSheet.absoluteFill}
+                                    activeOpacity={1}
+                                    onPress={() => setShowVideoModal(false)}
+                                />
+                                <View style={styles.videoModal}>
+                                    <View style={styles.videoHeader}>
+                                        <Text style={styles.videoTitle} numberOfLines={1}>
+                                            {getLocalizedField(selectedWorkout, 'title', lang)}
+                                        </Text>
+                                        <TouchableOpacity onPress={() => setShowVideoModal(false)}>
+                                            <X size={24} color="#ffffff" />
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    {(() => {
+                                        const genderUrl = userSex === 'male'
+                                            ? selectedWorkout.videoUrlMale
+                                            : userSex === 'female'
+                                                ? selectedWorkout.videoUrlFemale
+                                                : undefined;
+                                        const resolvedUrl = genderUrl || selectedWorkout.videoUrl;
+                                        return resolvedUrl ? (
+                                            resolvedUrl.toLowerCase().endsWith('.gif') ? (
+                                                <Image
+                                                    source={{ uri: resolvedUrl }}
+                                                    style={styles.videoPlayer}
+                                                    contentFit="cover"
+                                                />
+                                            ) : (
+                                                <Video
+                                                    source={{ uri: resolvedUrl }}
+                                                    style={styles.videoPlayer}
+                                                    useNativeControls
+                                                    resizeMode={ResizeMode.COVER}
+                                                    isLooping
+                                                    shouldPlay
+                                                />
+                                            )
+                                        ) : (
+                                            <View style={styles.videoPlayerPlaceholder}>
+                                                <Play size={48} color="rgba(255,255,255,0.5)" />
+                                                <Text style={styles.videoPlaceholderText}>{t('workouts.noVideo', 'No video URL configured')}</Text>
+                                                <Text style={styles.videoPlaceholderSub}>{t('workouts.addVideo', 'Add a Video URL in the admin panel')}</Text>
+                                            </View>
+                                        );
+                                    })()}
+                                </View>
+                            </View>
+                        </Modal>
+
+                        <ProUpgradeModal
+                            visible={showUpgrade}
+                            onClose={() => setShowUpgrade(false)}
+                            onUpgrade={() => {
+                                setShowUpgrade(false);
+                                setSelectedWorkout(null);
+                                router.push('/premium');
+                            }}
+                            title={t('common.upgradeToPro', 'Upgrade to Pro')}
+                            message={t('workouts.proMessage', 'This workout is locked. Upgrade to Pro to access premium workout videos and full breakdowns.')}
+                            upgradeLabel={t('common.viewProPlans', 'View Pro Plans')}
+                        />
+
+                        <SingleExerciseLogModal
+                            visible={showLogModal}
+                            exercise={selectedExerciseForLog ? {
+                                id: selectedExerciseForLog.name,
+                                name: selectedExerciseForLog.name,
+                                type: selectedExerciseForLog.exerciseType || 'strength',
+                            } : null}
+                            onClose={() => { setShowLogModal(false); setSelectedExerciseForLog(null); }}
+                            onSave={handleSaveLog}
+                        />
+                    </SafeAreaView>
+                )}
+            </Animated.View>
+        </View>
     );
 }
 
@@ -909,7 +930,6 @@ const styles = StyleSheet.create({
     infoLabel: { fontSize: 15, color: '#64748b', fontWeight: '600' },
     infoValue: { fontSize: 15, color: '#1e293b', fontWeight: '700' },
     exerciseDetailCard: { backgroundColor: '#f8fafc', padding: 16, borderRadius: 16, marginBottom: 16 },
-    // Log button with Dumbbell icon
     logButton: {
         backgroundColor: '#2563eb',
         paddingHorizontal: 16,
@@ -925,8 +945,8 @@ const styles = StyleSheet.create({
     equipmentItem: { flexDirection: 'row', alignItems: 'center', gap: 10 },
     equipmentDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#2563eb', flexShrink: 0 },
     equipmentDotOptional: { backgroundColor: '#94a3b8' },
-    equipmentText: { fontSize: 15, color: '#1e293b', fontWeight: '600', flex: 1 },
-    equipmentTextOptional: { color: '#64748b', fontWeight: '500' },
+    equipmentText: { fontSize: 15, color: '#64748b', fontWeight: '600', flex: 1 },
+    equipmentTextOptional: { color: '#94a3b8', fontWeight: '500' },
     equipmentOrLabel: { fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 4, marginBottom: 2 },
     // Instructions
     instructionsBox: { backgroundColor: '#ffffff', padding: 12, borderRadius: 12, marginTop: 8 },
@@ -959,7 +979,7 @@ const styles = StyleSheet.create({
     startButton: { backgroundColor: '#2563eb', height: 64, borderRadius: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, shadowColor: '#2563eb', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16 },
     startButtonText: { color: '#ffffff', fontSize: 18, fontWeight: '900' },
 
-    // Video modal — portrait (9 : 16) for exercisematic vertical videos
+    // Video modal
     videoModalContainer: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)', justifyContent: 'center', alignItems: 'center' },
     videoModal: { width: width * 0.72, alignItems: 'stretch' },
     videoHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
