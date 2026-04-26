@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     View,
@@ -54,6 +54,9 @@ export default function WorkoutsScreen() {
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [selectedWorkout, setSelectedWorkout] = useState<any>(null);
+    // mountedWorkout is what the detail panel actually renders — it lags selectedWorkout
+    // by one frame so the slide animation starts BEFORE the heavy JSX mounts.
+    const [mountedWorkout, setMountedWorkout] = useState<any>(null);
     const [showVideoModal, setShowVideoModal] = useState(false);
     const [showUpgrade, setShowUpgrade] = useState(false);
     const [showLogModal, setShowLogModal] = useState(false);
@@ -138,14 +141,16 @@ export default function WorkoutsScreen() {
     );
 
     const toggleSave = useMutation(api.savedWorkouts.toggleSaveWorkout);
+    // All detail-view queries use mountedWorkout (not selectedWorkout) so they don't
+    // fire until the detail panel is actually about to render.
     const isSaved = useQuery(
         api.savedWorkouts.isWorkoutSaved,
-        convexUser?._id && selectedWorkout?._id
-            ? { userId: convexUser._id, workoutId: selectedWorkout._id }
+        convexUser?._id && mountedWorkout?._id
+            ? { userId: convexUser._id, workoutId: mountedWorkout._id }
             : 'skip'
     );
 
-    const firstExerciseName = selectedWorkout?.exercises?.[0]?.name;
+    const firstExerciseName = mountedWorkout?.exercises?.[0]?.name;
     const exerciseProgress = useQuery(
         api.workoutExerciseLogs.getExerciseProgress,
         convexUser?._id && firstExerciseName
@@ -174,8 +179,22 @@ export default function WorkoutsScreen() {
         }).start();
     }, [selectedWorkout]);
 
+    // Open: animation starts immediately (JS thread light), content mounts 1 frame later
+    const openWorkout = useCallback((item: any) => {
+        setSelectedWorkout(item);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => setMountedWorkout(item));
+        });
+    }, []);
+
+    // Close: animation starts immediately, content unmounts after spring finishes
+    const closeWorkout = useCallback(() => {
+        setSelectedWorkout(null);
+        setTimeout(() => setMountedWorkout(null), 350);
+    }, []);
+
     const handleToggleSave = async () => {
-        if (!convexUser?._id || !selectedWorkout?._id) return;
+        if (!convexUser?._id || !mountedWorkout?._id) return;
         try {
             await toggleSave({ userId: convexUser._id, workoutId: selectedWorkout._id });
         } catch {
@@ -201,12 +220,12 @@ export default function WorkoutsScreen() {
         _exerciseId: string,
         data: { sets?: any[]; duration?: number; calories?: number; distanceKm?: number; pace?: number }
     ) => {
-        if (!convexUser?._id || !selectedWorkout?._id || !selectedExerciseForLog) return;
+        if (!convexUser?._id || !mountedWorkout?._id || !selectedExerciseForLog) return;
         const today = new Date().toISOString().split('T')[0];
         try {
             await logExercise({
                 userId: convexUser._id,
-                workoutId: selectedWorkout._id,
+                workoutId: mountedWorkout._id,
                 exerciseName: selectedExerciseForLog.name,
                 date: today,
                 sets: data.sets?.map(s => ({
@@ -235,9 +254,9 @@ export default function WorkoutsScreen() {
         }
     };
 
-    // Derived detail-view values (always computed so hooks stay stable)
-    const locked = !!selectedWorkout?.isPremium && !isPro;
-    const hasExercises = !!(selectedWorkout?.exercises && selectedWorkout.exercises.length > 0);
+    // Derived detail-view values (use mountedWorkout so they match what's rendered)
+    const locked = !!mountedWorkout?.isPremium && !isPro;
+    const hasExercises = !!(mountedWorkout?.exercises && mountedWorkout.exercises.length > 0);
 
     // ─── UNIFIED RENDER ───────────────────────────────────────────────────────
     return (
@@ -338,7 +357,7 @@ export default function WorkoutsScreen() {
                                             key={item._id}
                                             style={styles.workoutCard}
                                             activeOpacity={0.9}
-                                            onPress={() => setSelectedWorkout(item)}
+                                            onPress={() => openWorkout(item)}
                                         >
                                             <Image
                                                 source={{ uri: (userSex === 'male' ? item.thumbnailMale : userSex === 'female' ? item.thumbnailFemale : null) || item.thumbnail }}
@@ -486,17 +505,17 @@ export default function WorkoutsScreen() {
                 ]}
                 pointerEvents={selectedWorkout ? 'auto' : 'none'}
             >
-                {selectedWorkout && (
+                {mountedWorkout && (
                     <SafeAreaView style={styles.detailContainer} edges={['top', 'bottom']}>
 
                         <ScrollView contentContainerStyle={styles.detailContent}>
                             {/* Hero */}
                             <View style={styles.detailHero}>
                                 <Image
-                                    source={{ uri: (userSex === 'male' ? selectedWorkout.thumbnailMale : userSex === 'female' ? selectedWorkout.thumbnailFemale : null) || selectedWorkout.thumbnail }}
+                                    source={{ uri: (userSex === 'male' ? mountedWorkout.thumbnailMale : userSex === 'female' ? mountedWorkout.thumbnailFemale : null) || mountedWorkout.thumbnail }}
                                     style={styles.heroImage}
                                     cachePolicy="memory-disk"
-                                    recyclingKey={selectedWorkout._id}
+                                    recyclingKey={mountedWorkout._id}
                                 />
                                 <LinearGradient
                                     colors={['rgba(0,0,0,0.6)', 'transparent', 'rgba(0,0,0,0.4)']}
@@ -504,7 +523,7 @@ export default function WorkoutsScreen() {
                                 />
                                 <TouchableOpacity
                                     style={[styles.backButton, { top: insets.top + 10 }]}
-                                    onPress={() => setSelectedWorkout(null)}
+                                    onPress={() => closeWorkout()}
                                 >
                                     <ArrowLeft size={24} color="#ffffff" />
                                 </TouchableOpacity>
@@ -519,7 +538,7 @@ export default function WorkoutsScreen() {
                                     <Play size={32} color="#ffffff" fill="#ffffff" style={{ marginLeft: 4 }} />
                                 </TouchableOpacity>
 
-                                {selectedWorkout.isPremium && (
+                                {mountedWorkout.isPremium && (
                                     <View style={styles.premiumDetailBadge}>
                                         <Text style={styles.premiumDetailText}>{t('workouts.premium', 'PREMIUM')}</Text>
                                     </View>
@@ -535,7 +554,7 @@ export default function WorkoutsScreen() {
                                 )}
 
                                 <View style={styles.titleRow}>
-                                    <Text style={styles.detailTitle}>{getLocalizedField(selectedWorkout, 'title', lang)}</Text>
+                                    <Text style={styles.detailTitle}>{getLocalizedField(mountedWorkout, 'title', lang)}</Text>
                                     <TouchableOpacity onPress={handleToggleSave}>
                                         {isSaved
                                             ? <Bookmark size={24} color="#2563eb" fill="#2563eb" />
@@ -543,42 +562,42 @@ export default function WorkoutsScreen() {
                                     </TouchableOpacity>
                                 </View>
 
-                                <Text style={styles.detailDescription}>{getLocalizedField(selectedWorkout, 'description', lang)}</Text>
+                                <Text style={styles.detailDescription}>{getLocalizedField(mountedWorkout, 'description', lang)}</Text>
 
                                 {/* Stats strip — Rating / Level / Equipment */}
                                 <View style={styles.statsStrip}>
                                     <View style={styles.statBox}>
                                         <Star size={16} color="#f59e0b" fill="#f59e0b" />
-                                        <Text style={styles.statVal}>{selectedWorkout.rating}</Text>
+                                        <Text style={styles.statVal}>{mountedWorkout.rating}</Text>
                                         <Text style={styles.statLab}>{t('workouts.rating', 'Rating') as string}</Text>
                                     </View>
                                     <View style={styles.statBox}>
                                         <Dumbbell size={16} color="#2563eb" />
-                                        <Text style={styles.statVal} numberOfLines={1} adjustsFontSizeToFit>{t(`workouts.levels.${selectedWorkout.difficulty}`, selectedWorkout.difficulty) as string}</Text>
+                                        <Text style={styles.statVal} numberOfLines={1} adjustsFontSizeToFit>{t(`workouts.levels.${mountedWorkout.difficulty}`, mountedWorkout.difficulty) as string}</Text>
                                         <Text style={styles.statLab}>{t('workouts.level', 'Level') as string}</Text>
                                     </View>
                                     <View style={styles.statBox}>
                                         <Wrench size={16} color="#64748b" />
-                                        <Text style={[styles.statVal, { color: '#64748b' }]}>{selectedWorkout.equipment?.length ?? 0}</Text>
+                                        <Text style={[styles.statVal, { color: '#64748b' }]}>{mountedWorkout.equipment?.length ?? 0}</Text>
                                         <Text style={styles.statLab}>{t('workouts.equipment', 'Equipment') as string}</Text>
                                     </View>
                                 </View>
 
                                 {/* Equipment list */}
-                                {(selectedWorkout.equipment?.length > 0 || selectedWorkout.optionalEquipment?.length > 0) && (
+                                {(mountedWorkout.equipment?.length > 0 || mountedWorkout.optionalEquipment?.length > 0) && (
                                     <View style={styles.infoSection}>
                                         <Text style={styles.sectionTitle}>{t('workouts.equipment', 'Equipment')}</Text>
                                         <View style={styles.equipmentList}>
-                                            {selectedWorkout.equipment?.map((eq: string, i: number) => (
+                                            {mountedWorkout.equipment?.map((eq: string, i: number) => (
                                                 <View key={i} style={styles.equipmentItem}>
                                                     <View style={styles.equipmentDot} />
                                                     <Text style={styles.equipmentText}>{t(`workouts.equip.${eq}`, eq) as string}</Text>
                                                 </View>
                                             ))}
-                                            {selectedWorkout.optionalEquipment?.length > 0 && (
+                                            {mountedWorkout.optionalEquipment?.length > 0 && (
                                                 <>
                                                     <Text style={styles.equipmentOrLabel}>{t('workouts.orAlternatively', 'or alternatively:')}</Text>
-                                                    {selectedWorkout.optionalEquipment.map((eq: string, i: number) => (
+                                                    {mountedWorkout.optionalEquipment.map((eq: string, i: number) => (
                                                         <View key={`opt-${i}`} style={styles.equipmentItem}>
                                                             <View style={[styles.equipmentDot, styles.equipmentDotOptional]} />
                                                             <Text style={[styles.equipmentText, styles.equipmentTextOptional]}>{t(`workouts.equip.${eq}`, eq) as string}</Text>
@@ -594,7 +613,7 @@ export default function WorkoutsScreen() {
                                 {hasExercises && (
                                     <View style={styles.infoSection}>
                                         <Text style={styles.sectionTitle}>{t('workouts.exerciseDetails', 'Exercise Details')}</Text>
-                                        {selectedWorkout.exercises.map((ex: any, idx: number) => {
+                                        {mountedWorkout.exercises.map((ex: any, idx: number) => {
                                             // Use localized instructions if available, fallback to default
                                             const localizedInstructions =
                                                 (ex.instructionsLocalizations as any)?.[lang] ?? ex.instructions;
@@ -717,7 +736,7 @@ export default function WorkoutsScreen() {
                             <View style={[styles.bottomAction, { paddingBottom: insets.bottom + 16 }]}>
                                 <TouchableOpacity
                                     style={styles.startButton}
-                                    onPress={() => handleLogExercise(selectedWorkout.exercises[0])}
+                                    onPress={() => handleLogExercise(mountedWorkout.exercises[0])}
                                 >
                                     <Dumbbell size={22} color="#ffffff" />
                                     <Text style={styles.startButtonText}>{t('workouts.logExercise', 'Log Exercise')}</Text>
@@ -741,7 +760,7 @@ export default function WorkoutsScreen() {
                                 <View style={styles.videoModal}>
                                     <View style={styles.videoHeader}>
                                         <Text style={styles.videoTitle} numberOfLines={1}>
-                                            {getLocalizedField(selectedWorkout, 'title', lang)}
+                                            {getLocalizedField(mountedWorkout, 'title', lang)}
                                         </Text>
                                         <TouchableOpacity onPress={() => setShowVideoModal(false)}>
                                             <X size={24} color="#ffffff" />
@@ -750,11 +769,11 @@ export default function WorkoutsScreen() {
 
                                     {(() => {
                                         const genderUrl = userSex === 'male'
-                                            ? selectedWorkout.videoUrlMale
+                                            ? mountedWorkout.videoUrlMale
                                             : userSex === 'female'
-                                                ? selectedWorkout.videoUrlFemale
+                                                ? mountedWorkout.videoUrlFemale
                                                 : undefined;
-                                        const resolvedUrl = genderUrl || selectedWorkout.videoUrl;
+                                        const resolvedUrl = genderUrl || mountedWorkout.videoUrl;
                                         return resolvedUrl ? (
                                             resolvedUrl.toLowerCase().endsWith('.gif') ? (
                                                 <Image
@@ -789,7 +808,7 @@ export default function WorkoutsScreen() {
                             onClose={() => setShowUpgrade(false)}
                             onUpgrade={() => {
                                 setShowUpgrade(false);
-                                setSelectedWorkout(null);
+                                closeWorkout();
                                 router.push('/premium');
                             }}
                             title={t('common.upgradeToPro', 'Upgrade to Pro')}

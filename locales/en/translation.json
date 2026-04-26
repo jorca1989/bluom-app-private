@@ -115,7 +115,10 @@
     },
     "northStar": {
       "label": "North Star Goal",
-      "desc": "Your 12-month milestone reminder"
+      "desc": "Your 12-month milestone reminder",
+      "myLabel": "My North Star",
+      "setLabel": "Set Your North Star",
+      "placeholder": "Define your major 12-month milestone to stay focused."
     },
     "customize": {
       "title": "Customize Dashboard",
@@ -125,6 +128,13 @@
       "title": "Your dashboard is empty",
       "sub": "Tap the ⚙ icon above to add widgets."
     }
+  },
+  "tabs": {
+    "home": "Home",
+    "fuel": "Fuel",
+    "move": "Move",
+    "wellness": "Wellness",
+    "profile": "Profile"
   },
   "fuel": {
     "title": "Fuel",

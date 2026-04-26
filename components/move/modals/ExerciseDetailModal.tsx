@@ -30,11 +30,18 @@ export default function ExerciseDetailModal({
   // 4-week plan exercises are always unlocked
   const canSeeDetails = isPro || freeAccess;
 
-  const exerciseName = getLocalizedExerciseName(exercise.name, i18n.language);
+  const lang = i18n.language;
+  const exerciseName = getLocalizedExerciseName(exercise.name, lang);
 
-  const exerciseType = exercise.type || exercise.exerciseType || exercise.category || 'Strength';
+  // Support multi-type array (exerciseTypes) — fall back to single type
+  const exerciseTypes: string[] = exercise.exerciseTypes?.length
+    ? exercise.exerciseTypes
+    : [(exercise.type || exercise.exerciseType || exercise.category || 'Strength')];
+
   const difficulty = exercise.difficulty || exercise.level || null;
-  const instructions: string[] = exercise.instructions ?? [];
+  // Use localized instructions if available (set via admin), fall back to default
+  const instructions: string[] =
+    (exercise.instructionsLocalizations as any)?.[lang] ?? exercise.instructions ?? [];
   const primaryMuscles: string[] = exercise.primaryMuscles ?? exercise.muscleGroups ?? [];
   const secondaryMuscles: string[] = exercise.secondaryMuscles ?? [];
   const videoUrl: string | null = exercise.videoUrl ?? exercise.thumbnailUrl ?? null;
@@ -56,12 +63,14 @@ export default function ExerciseDetailModal({
           {/* ── FREE TIER: always visible ── */}
           <Text style={styles.exTitle}>{exerciseName as string}</Text>
 
-          {/* Type & Difficulty chips */}
+          {/* Type chips (one per type) + Difficulty chip */}
           <View style={styles.chipRow}>
-            <View style={styles.chip}>
-              <Ionicons name="barbell-outline" size={13} color="#10b981" style={{ marginRight: 4 }} />
-              <Text style={styles.chipText}>{t(`workouts.categories.${exerciseType}`, exerciseType) as string}</Text>
-            </View>
+            {exerciseTypes.map((etype, i) => (
+              <View key={i} style={styles.chip}>
+                <Ionicons name="barbell-outline" size={13} color="#10b981" style={{ marginRight: 4 }} />
+                <Text style={styles.chipText}>{t(`workouts.categories.${etype}`, etype) as string}</Text>
+              </View>
+            ))}
             {difficulty && (
               <View style={styles.diffChip}>
                 <Ionicons name="stats-chart" size={12} color="#f59e0b" style={{ marginRight: 4 }} />

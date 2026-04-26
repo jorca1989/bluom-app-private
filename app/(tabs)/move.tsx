@@ -781,100 +781,54 @@ export default function MoveScreen() {
             </View>
           </View>
 
-          {/* Activity Summary */}
+          {/* Activity Summary — 4 KPI cards matching home screen style */}
           <View style={[styles.activitySummary, isTablet && { justifyContent: 'space-between' }]}>
-            <View
-              style={[
-                styles.summaryCard,
-                {
-                  width: kpiCardWidth(48, 16),
-                  padding: isSmallScreen ? 12 : 16,
-                  ...(isTablet ? { minHeight: 140 } : null),
-                },
-              ]}
-            >
-              <View style={[styles.summaryIconContainer, { backgroundColor: '#dbeafe' }]}>
-                <Ionicons name="barbell" size={24} color="#2563eb" />
+            {/* Workouts */}
+            <View style={[styles.summaryCard, { width: kpiCardWidth(48, 16) }]}>
+              <View style={styles.kpiHead}>
+                <Ionicons name="barbell" size={16} color="#2563eb" />
+                <Text style={[styles.kpiLbl, { color: '#1e40af' }]} numberOfLines={1}>{t('move.workouts', 'Workouts')}</Text>
               </View>
-              <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
-                {t('move.workouts', 'Workouts')}
-              </Text>
-              <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
-                {todayTotals.workouts}
-              </Text>
-              <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
-                {t('common.today', 'Today')}
-              </Text>
+              <Text style={styles.kpiVal} numberOfLines={1} adjustsFontSizeToFit>{todayTotals.workouts}</Text>
+              <View style={styles.kpiBar}><View style={[styles.kpiFill, { width: `${Math.min((todayTotals.workouts / 3) * 100, 100)}%` as any, backgroundColor: '#2563eb' }]} /></View>
+              <Text style={styles.kpiSub} numberOfLines={1}>{t('common.today', 'Today')}</Text>
             </View>
 
-            <View
-              style={[
-                styles.summaryCard,
-                {
-                  width: kpiCardWidth(48, 16),
-                  padding: isSmallScreen ? 12 : 16,
-                  ...(isTablet ? { minHeight: 140 } : null),
-                },
-              ]}
-            >
-              <View style={[styles.summaryIconContainer, { backgroundColor: '#dbeafe' }]}>
-                <Ionicons name="time" size={24} color="#2563eb" />
+            {/* Minutes */}
+            <View style={[styles.summaryCard, { width: kpiCardWidth(48, 16) }]}>
+              <View style={styles.kpiHead}>
+                <Ionicons name="time" size={16} color="#0891b2" />
+                <Text style={[styles.kpiLbl, { color: '#0e7490' }]} numberOfLines={1}>{t('move.minutes', 'Minutes')}</Text>
               </View>
-              <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
-                {t('move.minutes', 'Minutes')}
-              </Text>
-              <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
-                {todayTotals.minutes}
-              </Text>
-              <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
-                {t('move.activeTime', 'Active Time')}
-              </Text>
+              <Text style={styles.kpiVal} numberOfLines={1} adjustsFontSizeToFit>{todayTotals.minutes}</Text>
+              <View style={styles.kpiBar}><View style={[styles.kpiFill, { width: `${Math.min((todayTotals.minutes / 60) * 100, 100)}%` as any, backgroundColor: '#0891b2' }]} /></View>
+              <Text style={styles.kpiSub} numberOfLines={1}>{t('move.activeTime', 'Active Time')}</Text>
             </View>
 
-            <View
-              style={[
-                styles.summaryCard,
-                {
-                  width: kpiCardWidth(48, 16),
-                  padding: isSmallScreen ? 12 : 16,
-                  ...(isTablet ? { minHeight: 140 } : null),
-                },
-              ]}
-            >
-              <View style={[styles.summaryIconContainer, { backgroundColor: '#dbeafe' }]}>
-                <Ionicons name="flash" size={24} color="#2563eb" />
+            {/* Calories */}
+            <View style={[styles.summaryCard, { width: kpiCardWidth(48, 16) }]}>
+              <View style={styles.kpiHead}>
+                <Ionicons name="flash" size={16} color="#f59e0b" />
+                <Text style={[styles.kpiLbl, { color: '#d97706' }]} numberOfLines={1}>{t('common.calories', 'Calories')}</Text>
               </View>
-              <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
-                {t('common.calories', 'Calories')}
-              </Text>
-              <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
-                {todayTotals.calories}
-              </Text>
-              <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
-                {t('move.burnedToday', 'Burned Today')}
-              </Text>
+              <Text style={styles.kpiVal} numberOfLines={1} adjustsFontSizeToFit>{todayTotals.calories}</Text>
+              <View style={styles.kpiBar}><View style={[styles.kpiFill, { width: `${Math.min((todayTotals.calories / 500) * 100, 100)}%` as any, backgroundColor: '#f59e0b' }]} /></View>
+              <Text style={styles.kpiSub} numberOfLines={1}>{t('move.burnedToday', 'Burned Today')}</Text>
             </View>
 
-            <View
-              style={[
-                styles.summaryCard,
-                {
-                  width: kpiCardWidth(48, 16),
-                  padding: isSmallScreen ? 12 : 16,
-                  ...(isTablet ? { minHeight: 140 } : null),
-                },
-              ]}
-            >
-              <View style={[styles.summaryIconContainer, { backgroundColor: '#ede9fe' }]}>
-                <Ionicons name="locate" size={24} color="#8b5cf6" />
+            {/* Steps */}
+            <View style={[styles.summaryCard, { width: kpiCardWidth(48, 16) }]}>
+              <View style={styles.kpiHead}>
+                <Ionicons name="locate" size={16} color="#8b5cf6" />
+                <Text style={[styles.kpiLbl, { color: '#6d28d9' }]} numberOfLines={1}>{t('move.steps', 'Steps')}</Text>
               </View>
-              <Text style={styles.summaryLabel} numberOfLines={1} adjustsFontSizeToFit>
-                {t('move.steps', 'Steps')}
-              </Text>
-              <Text style={styles.summaryValue} numberOfLines={1} adjustsFontSizeToFit>
+              <Text style={styles.kpiVal} numberOfLines={1} adjustsFontSizeToFit>
                 {todayTotals.syncedSteps > todayTotals.steps ? todayTotals.syncedSteps.toLocaleString() : todayTotals.steps.toLocaleString()}
               </Text>
-              <Text style={styles.summarySubtext} numberOfLines={1} adjustsFontSizeToFit>
+              <View style={styles.kpiBar}>
+                <View style={[styles.kpiFill, { width: `${Math.min(((todayTotals.syncedSteps > todayTotals.steps ? todayTotals.syncedSteps : todayTotals.steps) / 10000) * 100, 100)}%` as any, backgroundColor: '#8b5cf6' }]} />
+              </View>
+              <Text style={styles.kpiSub} numberOfLines={1}>
                 {todayTotals.syncedSteps > 0 && todayTotals.syncedSteps > todayTotals.steps ? t('move.syncedFromHealth', 'Synced from Health') : t('common.today', 'Today')}
               </Text>
               {todayTotals.syncedSteps > 0 && todayTotals.syncedSteps > todayTotals.steps && (
@@ -1544,15 +1498,49 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   summaryCard: {
-    // width and padding are now set dynamically
     backgroundColor: '#ffffff',
-    borderRadius: 16,
+    borderRadius: 18,
+    padding: 14,
     marginBottom: 16,
+    minHeight: 100,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
+  },
+  kpiHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 8,
+  },
+  kpiLbl: {
+    fontSize: 13,
+    fontWeight: '700',
+    flexShrink: 1,
+  },
+  kpiVal: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#0f172a',
+    marginBottom: 6,
+  },
+  kpiBar: {
+    height: 4,
+    backgroundColor: 'rgba(0,0,0,0.07)',
+    borderRadius: 2,
+    overflow: 'hidden',
+    marginBottom: 4,
+  },
+  kpiFill: {
+    height: '100%' as any,
+    borderRadius: 2,
+  },
+  kpiSub: {
+    fontSize: 11,
+    color: '#94a3b8',
+    fontWeight: '600',
   },
   summaryIconContainer: {
     width: 48,

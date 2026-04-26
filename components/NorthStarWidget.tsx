@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 
 interface NorthStarWidgetProps {
     goal?: string;
@@ -9,6 +10,7 @@ interface NorthStarWidgetProps {
 }
 
 export default function NorthStarWidget({ goal, onPress }: NorthStarWidgetProps) {
+    const { t } = useTranslation();
     return (
         <TouchableOpacity onPress={onPress} activeOpacity={0.9} style={styles.container}>
             <LinearGradient
@@ -23,10 +25,12 @@ export default function NorthStarWidget({ goal, onPress }: NorthStarWidgetProps)
                     </View>
                     <View style={{ flex: 1 }}>
                         <Text style={[styles.label, { color: goal ? '#94a3b8' : '#64748b' }]}>
-                            {goal ? "My North Star" : "Set Your North Star"}
+                            {goal
+                                ? t('home.northStar.myLabel', 'My North Star')
+                                : t('home.northStar.setLabel', 'Set Your North Star')}
                         </Text>
                         <Text style={[styles.title, { color: goal ? '#fff' : '#1e293b' }]} numberOfLines={2}>
-                            {goal || "Define your major 12-month milestone to stay focused."}
+                            {goal || t('home.northStar.placeholder', 'Define your major 12-month milestone to stay focused.')}
                         </Text>
                     </View>
                     <Ionicons name="chevron-forward" size={20} color={goal ? '#64748b' : '#94a3b8'} />

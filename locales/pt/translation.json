@@ -115,7 +115,10 @@
     },
     "northStar": {
       "label": "Meta Principal",
-      "desc": "O seu lembrete de marco de 12 meses"
+      "desc": "O seu lembrete de marco de 12 meses",
+      "myLabel": "A Minha Estrela do Norte",
+      "setLabel": "Definir Estrela do Norte",
+      "placeholder": "Defina o seu grande marco dos próximos 12 meses para se manter focado."
     },
     "customize": {
       "title": "Personalizar Painel",
@@ -125,6 +128,13 @@
       "title": "O seu painel está vazio",
       "sub": "Toque no ícone ⚙ acima para adicionar widgets."
     }
+  },
+  "tabs": {
+    "home": "Home",
+    "fuel": "Nutri",
+    "move": "Move-te",
+    "wellness": "Mente",
+    "profile": "Perfil"
   },
   "fuel": {
     "title": "Nutrição",

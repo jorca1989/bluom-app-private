@@ -22,6 +22,7 @@ import { useUser, useAuth } from '@clerk/clerk-expo';
 import { useMutation, useQuery, useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import {
@@ -397,6 +398,7 @@ export default function OnboardingScreen() {
   const handleLangChange = (code: string) => {
     setCurrentLang(code);
     i18n.changeLanguage(code);
+    SecureStore.setItemAsync('app_language', code).catch(() => null);
     setShowLangPicker(false);
   };
 
@@ -588,7 +590,7 @@ export default function OnboardingScreen() {
         coachingStyle: answers.coachingStyle,
         commitmentLevel: answers.commitmentLevel,
         preferredUnits: { weight: units.weight, height: units.height, volume: units.volume || 'ml' },
-        preferredLanguage: 'en',
+        preferredLanguage: currentLang,
         twelveMonthGoal: answers.goal,
       };
 

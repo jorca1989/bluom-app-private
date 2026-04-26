@@ -5,12 +5,14 @@ import { Home, Utensils, Dumbbell, Heart, User } from 'lucide-react-native';
 import { SoundEffect, triggerSound } from '@/utils/soundEffects';
 import { useConvexAuth } from 'convex/react';
 import { ActivityIndicator, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const bottom = Math.max(insets.bottom, 8);
   const { isLoading, isAuthenticated } = useConvexAuth();
+  const { t } = useTranslation();
 
   if (isLoading || !isAuthenticated) {
     return (
@@ -43,7 +45,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: t('tabs.home', 'Home'),
           tabBarIcon: ({ size, color }) => <Home size={size} color={color} />,
         }}
         listeners={{
@@ -53,7 +55,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="fuel"
         options={{
-          title: 'Fuel',
+          title: t('tabs.fuel', 'Nutri'),
           tabBarIcon: ({ size, color }) => <Utensils size={size} color={color} />,
         }}
         listeners={{
@@ -63,7 +65,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="move"
         options={{
-          title: 'Move',
+          title: t('tabs.move', 'Move'),
           tabBarIcon: ({ size, color }) => <Dumbbell size={size} color={color} />,
         }}
         listeners={{
@@ -73,7 +75,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="wellness"
         options={{
-          title: 'Wellness',
+          title: t('tabs.wellness', 'Mente'),
           tabBarIcon: ({ size, color }) => <Heart size={size} color={color} />,
         }}
         listeners={{
@@ -83,7 +85,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: t('tabs.profile', 'Perfil'),
           tabBarIcon: ({ size, color }) => <User size={size} color={color} />,
         }}
         listeners={{

@@ -22,19 +22,28 @@ const { width } = Dimensions.get('window');
 
 // ─── KPI Card ─────────────────────────────────────────────────────────────────
 function KpiCard({
-  icon, iconBg, iconColor, label, value, sub,
+  icon, iconBg, iconColor, label, labelColor, value, sub, progress, barColor,
 }: {
   icon: string; iconBg: string; iconColor: string;
-  label: string; value: string; sub: string;
+  label: string; labelColor?: string; value: string; sub: string;
+  progress?: number; barColor?: string;
 }) {
   return (
     <View style={kpiStyles.card}>
-      <View style={[kpiStyles.iconWrap, { backgroundColor: iconBg }]}>
-        <Ionicons name={icon as any} size={22} color={iconColor} />
+      <View style={kpiStyles.head}>
+        <View style={[kpiStyles.iconWrap, { backgroundColor: iconBg }]}>
+          <Ionicons name={icon as any} size={16} color={iconColor} />
+        </View>
+        <Text style={[kpiStyles.label, labelColor ? { color: labelColor } : {}]} numberOfLines={1}>{label}</Text>
       </View>
-      <Text style={kpiStyles.label} numberOfLines={1} adjustsFontSizeToFit>{label}</Text>
       <Text style={kpiStyles.value} numberOfLines={1} adjustsFontSizeToFit>{value}</Text>
-      <Text style={kpiStyles.sub} numberOfLines={1} adjustsFontSizeToFit>{sub}</Text>
+      <View style={kpiStyles.bar}>
+        <View style={[kpiStyles.fill, {
+          width: `${Math.min(progress ?? 0, 100)}%` as any,
+          backgroundColor: barColor ?? iconColor,
+        }]} />
+      </View>
+      <Text style={kpiStyles.sub} numberOfLines={1}>{sub}</Text>
     </View>
   );
 }
@@ -42,17 +51,23 @@ const kpiStyles = StyleSheet.create({
   card: {
     width: (width - 64) / 2,
     backgroundColor: '#ffffff',
-    borderRadius: 16, padding: 16, marginBottom: 16,
+    borderRadius: 18, padding: 14, marginBottom: 16,
+    minHeight: 100,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08, shadowRadius: 8, elevation: 3,
   },
-  iconWrap: {
-    width: 44, height: 44, borderRadius: 12,
-    justifyContent: 'center', alignItems: 'center', marginBottom: 10,
+  head: {
+    flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8,
   },
-  label: { fontSize: 12, color: '#64748b', marginBottom: 2 },
-  value: { fontSize: 22, fontWeight: '800', color: '#0f172a', marginBottom: 2 },
-  sub: { fontSize: 11, color: '#94a3b8' },
+  iconWrap: {
+    width: 28, height: 28, borderRadius: 8,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  label: { fontSize: 13, fontWeight: '700', color: '#64748b', flexShrink: 1 },
+  value: { fontSize: 22, fontWeight: '900', color: '#0f172a', marginBottom: 6 },
+  bar: { height: 4, backgroundColor: 'rgba(0,0,0,0.07)', borderRadius: 2, overflow: 'hidden', marginBottom: 4 },
+  fill: { height: '100%' as any, borderRadius: 2 },
+  sub: { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
 });
 
 // ─── Quick Action Button ───────────────────────────────────────────────────────
@@ -233,28 +248,37 @@ export default function WellnessScreen() {
         <View style={s.kpiGrid}>
           <KpiCard
             icon="moon" iconBg="#ede9fe" iconColor="#7c3aed"
-            label={t('wellness.sleep', 'Sleep')}
+            label={t('wellness.sleep', 'Sleep')} labelColor="#5b21b6"
             value={todaySleep ? `${todaySleep.hours}h` : '--'}
+            progress={todaySleep ? (todaySleep.hours / 8) * 100 : 0}
+            barColor="#7c3aed"
             sub={t('wellness.lastNight', 'Last night')}
           />
           <KpiCard
             icon="happy"
             iconBg={moodConfig ? moodConfig.color + '25' : '#f1f5f9'}
             iconColor={moodConfig?.color ?? '#64748b'}
+            labelColor={moodConfig?.color ?? '#64748b'}
             label={t('wellness.mood', 'Mood')}
             value={moodConfig ? moodConfig.emoji : '--'}
+            progress={moodConfig ? 100 : 0}
+            barColor={moodConfig?.color ?? '#eab308'}
             sub={moodConfig?.label ? t(`wellness.moods.${moodConfig.label.toLowerCase()}`, moodConfig.label) : t('wellness.notLogged', 'Not logged')}
           />
           <KpiCard
             icon="checkmark-circle" iconBg="#dcfce7" iconColor="#16a34a"
-            label={t('wellness.habitsLabel', 'Habits')}
+            label={t('wellness.habitsLabel', 'Habits')} labelColor="#15803d"
             value={`${completedHabits}/${totalHabits}`}
+            progress={totalHabits > 0 ? (completedHabits / totalHabits) * 100 : 0}
+            barColor="#16a34a"
             sub={t('wellness.doneToday', 'Done today')}
           />
           <KpiCard
             icon="leaf" iconBg="#d1fae5" iconColor="#059669"
-            label={t('wellness.meditation', 'Meditation')}
+            label={t('wellness.meditation', 'Meditation')} labelColor="#047857"
             value={`${meditationMins7d}m`}
+            progress={Math.min((meditationMins7d / 70) * 100, 100)}
+            barColor="#059669"
             sub={t('wellness.thisWeek', 'This week')}
           />
         </View>
