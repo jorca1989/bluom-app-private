@@ -180,7 +180,9 @@ export default function RecipesManager() {
         carbs: '0',
         fat: '0',
         ingredientsText: '',
+        ingr_pt: '', ingr_es: '', ingr_fr: '', ingr_de: '', ingr_nl: '',
         instructionsText: '',
+        instr_pt: '', instr_es: '', instr_fr: '', instr_de: '', instr_nl: '',
         tags: [] as string[],
         status: 'published',
     });
@@ -201,7 +203,9 @@ export default function RecipesManager() {
             carbs: '0',
             fat: '0',
             ingredientsText: '',
+            ingr_pt: '', ingr_es: '', ingr_fr: '', ingr_de: '', ingr_nl: '',
             instructionsText: '',
+            instr_pt: '', instr_es: '', instr_fr: '', instr_de: '', instr_nl: '',
             tags: [],
             status: 'published',
         });
@@ -227,7 +231,17 @@ export default function RecipesManager() {
             carbs: String(recipe.carbs || 0),
             fat: String(recipe.fat || 0),
             ingredientsText: (recipe.ingredients || []).join('\n'),
+            ingr_pt: (recipe.ingredientsLocalizations?.pt || []).join('\n'),
+            ingr_es: (recipe.ingredientsLocalizations?.es || []).join('\n'),
+            ingr_fr: (recipe.ingredientsLocalizations?.fr || []).join('\n'),
+            ingr_de: (recipe.ingredientsLocalizations?.de || []).join('\n'),
+            ingr_nl: (recipe.ingredientsLocalizations?.nl || []).join('\n'),
             instructionsText: (recipe.instructions || []).join('\n'),
+            instr_pt: (recipe.instructionsLocalizations?.pt || []).join('\n'),
+            instr_es: (recipe.instructionsLocalizations?.es || []).join('\n'),
+            instr_fr: (recipe.instructionsLocalizations?.fr || []).join('\n'),
+            instr_de: (recipe.instructionsLocalizations?.de || []).join('\n'),
+            instr_nl: (recipe.instructionsLocalizations?.nl || []).join('\n'),
             tags: recipe.tags || [],
             status: recipe.status || 'published',
         });
@@ -258,6 +272,16 @@ export default function RecipesManager() {
                 return Object.keys(obj).length > 0 ? obj : undefined;
             };
 
+            const buildListLocalizations = (pt: string, es: string, fr: string, de: string, nl: string) => {
+                const obj: Record<string, string[]> = {};
+                if (pt.trim()) obj.pt = parseLines(pt);
+                if (es.trim()) obj.es = parseLines(es);
+                if (fr.trim()) obj.fr = parseLines(fr);
+                if (de.trim()) obj.de = parseLines(de);
+                if (nl.trim()) obj.nl = parseLines(nl);
+                return Object.keys(obj).length > 0 ? obj : undefined;
+            };
+
             const commonArgs = {
                 title,
                 titleLocalizations: buildLocalizations(newRecipe.title_pt, newRecipe.title_es, newRecipe.title_fr, newRecipe.title_de, newRecipe.title_nl),
@@ -273,7 +297,9 @@ export default function RecipesManager() {
                 carbs: Number(newRecipe.carbs || 0) || 0,
                 fat: Number(newRecipe.fat || 0) || 0,
                 ingredients: parseLines(newRecipe.ingredientsText),
+                ingredientsLocalizations: buildListLocalizations(newRecipe.ingr_pt, newRecipe.ingr_es, newRecipe.ingr_fr, newRecipe.ingr_de, newRecipe.ingr_nl),
                 instructions: parseLines(newRecipe.instructionsText),
+                instructionsLocalizations: buildListLocalizations(newRecipe.instr_pt, newRecipe.instr_es, newRecipe.instr_fr, newRecipe.instr_de, newRecipe.instr_nl),
                 tags: newRecipe.tags,
                 status: newRecipe.status,
                 isPremium: false,
@@ -656,7 +682,7 @@ export default function RecipesManager() {
                             </View>
                         </View>
 
-                        <Text style={styles.label}>{t('admin.ingredientsList', 'Ingredients (one per line)')}</Text>
+                        <Text style={styles.label}>{t('admin.ingredientsList', 'Ingredients (one per line)')} (EN)</Text>
                         <TextInput
                             style={[styles.input, { height: 150 }]}
                             multiline
@@ -664,8 +690,18 @@ export default function RecipesManager() {
                             value={newRecipe.ingredientsText}
                             onChangeText={(t) => setNewRecipe((p) => ({ ...p, ingredientsText: t }))}
                         />
+                        <Text style={styles.label}>Ingredients (PT)</Text>
+                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Ovos\n1 Abacate\n...'} value={newRecipe.ingr_pt} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_pt: v }))} />
+                        <Text style={styles.label}>Ingredients (ES)</Text>
+                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Huevos\n1 Aguacate\n...'} value={newRecipe.ingr_es} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_es: v }))} />
+                        <Text style={styles.label}>Ingredients (FR)</Text>
+                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Œufs\n1 Avocat\n...'} value={newRecipe.ingr_fr} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_fr: v }))} />
+                        <Text style={styles.label}>Ingredients (DE)</Text>
+                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Eier\n1 Avocado\n...'} value={newRecipe.ingr_de} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_de: v }))} />
+                        <Text style={styles.label}>Ingredients (NL)</Text>
+                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Eieren\n1 Avocado\n...'} value={newRecipe.ingr_nl} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_nl: v }))} />
 
-                        <Text style={styles.label}>{t('admin.instructionsSteps', 'Instructions (one step per line)')}</Text>
+                        <Text style={styles.label}>{t('admin.instructionsSteps', 'Instructions (one step per line)')} (EN)</Text>
                         <TextInput
                             style={[styles.input, { height: 150 }]}
                             multiline
@@ -673,6 +709,16 @@ export default function RecipesManager() {
                             value={newRecipe.instructionsText}
                             onChangeText={(t) => setNewRecipe((p) => ({ ...p, instructionsText: t }))}
                         />
+                        <Text style={styles.label}>Instructions (PT)</Text>
+                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Pré-aquecer o forno...\n2) Temperar o salmão...'} value={newRecipe.instr_pt} onChangeText={v => setNewRecipe(p => ({ ...p, instr_pt: v }))} />
+                        <Text style={styles.label}>Instructions (ES)</Text>
+                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Precalentar el horno...\n2) Sazonar el salmón...'} value={newRecipe.instr_es} onChangeText={v => setNewRecipe(p => ({ ...p, instr_es: v }))} />
+                        <Text style={styles.label}>Instructions (FR)</Text>
+                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Préchauffer le four...\n2) Assaisonner le saumon...'} value={newRecipe.instr_fr} onChangeText={v => setNewRecipe(p => ({ ...p, instr_fr: v }))} />
+                        <Text style={styles.label}>Instructions (DE)</Text>
+                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Den Ofen vorheizen...\n2) Den Lachs würzen...'} value={newRecipe.instr_de} onChangeText={v => setNewRecipe(p => ({ ...p, instr_de: v }))} />
+                        <Text style={styles.label}>Instructions (NL)</Text>
+                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) De oven voorverwarmen...\n2) De zalm kruiden...'} value={newRecipe.instr_nl} onChangeText={v => setNewRecipe(p => ({ ...p, instr_nl: v }))} />
 
 
 

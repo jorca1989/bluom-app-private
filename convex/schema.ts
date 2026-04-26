@@ -407,6 +407,8 @@ export default defineSchema({
     descriptionLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
     ingredients: v.optional(v.array(v.string())),
     instructions: v.optional(v.array(v.string())),
+    ingredientsLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())) })),
+    instructionsLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())) })),
     createdAt: v.float64(),
     updatedAt: v.float64(),
   })
@@ -830,6 +832,7 @@ export default defineSchema({
         sets: v.optional(v.float64()),
         description: v.string(),
         instructions: v.optional(v.array(v.string())), // Numbered step-by-step instructions
+        instructionsLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())) })),
         primaryMuscles: v.optional(v.array(v.string())), // e.g. ["Chest", "Shoulders"]
         secondaryMuscles: v.optional(v.array(v.string())), // e.g. ["Triceps", "Core"]
         exerciseType: v.optional(v.string()), // e.g. "Strength", "Cardio", "HIIT"

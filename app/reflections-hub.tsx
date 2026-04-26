@@ -144,7 +144,7 @@ export default function ReflectionsHub() {
 
             setAiInsight(result);
         } catch (e) {
-            Alert.alert("AI Error", "Could not generate insight right now.");
+            Alert.alert(t('wellness.reflections.errorAI', 'AI Error'), t('wellness.reflections.errorAIMsg', 'Could not generate insight right now.'));
             setShowInsightModal(false);
         } finally {
             setIsGeneratingInsight(false);
@@ -164,7 +164,7 @@ export default function ReflectionsHub() {
             const unique = Array.from(new Set(payloads)).slice(0, 5);
 
             if (unique.length === 0) {
-                Alert.alert("Empty", "Please write something to be grateful for!");
+                Alert.alert(t('wellness.reflections.errorEmpty', 'Vazio'), t('wellness.reflections.errorEmptyGratitude', 'Por favor escreve algo de que és grato!'));
                 return;
             }
 
@@ -190,7 +190,7 @@ export default function ReflectionsHub() {
             // Alert.alert('Saved!', 'Your gratitude has been recorded.'); 
         } catch (e) {
             console.error(e);
-            Alert.alert('Error', 'Failed to save gratitude');
+            Alert.alert(t('wellness.common.error', 'Erro'), t('wellness.reflections.errorSaveGratitude', 'Erro ao guardar gratidão'));
         }
     };
 
@@ -204,7 +204,7 @@ export default function ReflectionsHub() {
         if (content) finalContent += `Entry:\n${content}`;
 
         if (!finalContent.trim()) {
-            Alert.alert("Empty", "Please write something in your journal!");
+            Alert.alert(t('wellness.reflections.errorEmpty', 'Vazio'), t('wellness.reflections.errorEmptyJournal', 'Por favor escreve algo no diário!'));
             return;
         }
 
@@ -264,7 +264,7 @@ export default function ReflectionsHub() {
 
         } catch (e) {
             console.error(e);
-            Alert.alert('Error', 'Failed to save journal');
+            Alert.alert(t('wellness.common.error', 'Erro'), t('wellness.reflections.errorSaveJournal', 'Erro ao guardar diário'));
         }
     };
 
@@ -425,10 +425,10 @@ export default function ReflectionsHub() {
                                     </View>
                                 ))}
 
-                                <Text style={[styles.label, { marginTop: 16 }]}>Deep Dive</Text>
+                                <Text style={[styles.label, { marginTop: 16 }]}>{t('wellness.reflections.deepDive', 'Deep Dive')}</Text>
                                 <TextInput
                                     style={styles.textArea}
-                                    placeholder="Elaborate on what you're feeling..."
+                                    placeholder={t('wellness.reflections.deepDivePh', "Elaborate on what you're feeling...")}
                                     multiline
                                     numberOfLines={4}
                                     value={gratitudeEntry}
@@ -437,13 +437,13 @@ export default function ReflectionsHub() {
                                 />
 
                                 <TouchableOpacity style={styles.saveButton} onPress={handleSaveGratitude}>
-                                    <Text style={styles.saveButtonText}>Save Gratitude</Text>
+                                    <Text style={styles.saveButtonText}>{t('wellness.reflections.saveGratitude', 'Save Gratitude')}</Text>
                                 </TouchableOpacity>
                             </View>
                         ) : (
                             <View style={[styles.card, { borderColor: '#fef3c7' }]}>
                                 <View style={styles.sectionHeader}>
-                                    <Text style={[styles.sectionTitle, { color: '#d97706' }]}>My Journal</Text>
+                                    <Text style={[styles.sectionTitle, { color: '#d97706' }]}>{t('wellness.reflections.myJournal', 'My Journal')}</Text>
                                     <SparkleEffect visible={triggerSparkle} />
                                 </View>
 
@@ -452,20 +452,20 @@ export default function ReflectionsHub() {
                                     {journalPrompt ? (
                                         <Text style={[styles.promptText, { color: '#92400e' }]}>{journalPrompt}</Text>
                                     ) : (
-                                        <Text style={[styles.promptText, { color: '#9ca3af', fontStyle: 'italic' }]}>Need inspiration?</Text>
+                                        <Text style={[styles.promptText, { color: '#9ca3af', fontStyle: 'italic' }]}>{t('wellness.reflections.needInspiration', 'Need inspiration?')}</Text>
                                     )}
                                     <TouchableOpacity onPress={generateJournalPrompt} style={[styles.shuffleButton, { backgroundColor: '#fef3c7' }]}>
                                         <Ionicons name="bulb" size={16} color="#d97706" />
-                                        <Text style={[styles.shuffleText, { color: '#d97706' }]}>Journal Prompt</Text>
+                                        <Text style={[styles.shuffleText, { color: '#d97706' }]}>{t('wellness.reflections.journalPrompt', 'Journal Prompt')}</Text>
                                     </TouchableOpacity>
                                 </View>
 
                                 {/* Quick Thoughts */}
-                                <Text style={styles.label}>Quick Thoughts</Text>
+                                <Text style={styles.label}>{t('wellness.reflections.quickThoughts', 'Quick Thoughts')}</Text>
                                 <View style={styles.quickInputContainer}>
                                     <TextInput
                                         style={[styles.lineInput, { flex: 1, marginBottom: 0 }]}
-                                        placeholder="Add a bullet point..."
+                                        placeholder={t('wellness.reflections.bulletPh', 'Add a bullet point...')}
                                         value={newQuickThought}
                                         onChangeText={setNewQuickThought}
                                         onSubmitEditing={addQuickThought}
@@ -488,10 +488,10 @@ export default function ReflectionsHub() {
                                 )}
 
                                 {/* Main Entry */}
-                                <Text style={[styles.label, { marginTop: 16 }]}>Journal Entry</Text>
+                                <Text style={[styles.label, { marginTop: 16 }]}>{t('wellness.reflections.journalEntry', 'Journal Entry')}</Text>
                                 <TextInput
                                     style={[styles.textArea, { height: 200 }]}
-                                    placeholder="Pour your heart out..."
+                                    placeholder={t('wellness.reflections.journalPh', 'Pour your heart out...')}
                                     multiline
                                     value={journalContent}
                                     onChangeText={setJournalContent}
@@ -499,7 +499,7 @@ export default function ReflectionsHub() {
                                 />
 
                                 <TouchableOpacity style={[styles.saveButton, { backgroundColor: '#f59e0b' }]} onPress={initiateJournalSave}>
-                                    <Text style={styles.saveButtonText}>Save Entry</Text>
+                                    <Text style={styles.saveButtonText}>{t('wellness.reflections.saveEntry', 'Save Entry')}</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -508,7 +508,7 @@ export default function ReflectionsHub() {
                     {/* Recent Entries from Unified Feed */}
                     {hubData && hubData.recentEntries.length > 0 && (
                         <View style={styles.recentSection}>
-                            <Text style={styles.recentHeader}>Recent Reflections</Text>
+                            <Text style={styles.recentHeader}>{t('wellness.reflections.recentReflections', 'Recent Reflections')}</Text>
                             {hubData.recentEntries.map((e, idx) => (
                                 <View key={idx} style={[styles.recentCard, { borderLeftColor: e.type === 'gratitude' ? '#f43f5e' : '#f59e0b' }]}>
                                     <Text style={styles.recentDate}>{e.date}</Text>

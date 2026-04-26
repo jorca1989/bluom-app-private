@@ -55,6 +55,7 @@ const EMPTY_FORM = {
     // Multi-select types — stored as array
     exerciseTypes: ['Strength'] as string[],
     instructions: '',
+    instr_pt: '', instr_es: '', instr_fr: '', instr_de: '', instr_nl: '',
     primaryMuscles: '',
     secondaryMuscles: '',
     // Muscle group filter tags for workouts.tsx Browse by Muscle Group
@@ -208,6 +209,28 @@ export default function WorkoutsManager() {
         const optionalEquipmentArray = form.optionalEquipment
             .split(',').map(e => e.trim()).filter(e => e.length > 0);
 
+        const buildLocalizations = (pt: string, es: string, fr: string, de: string, nl: string) => {
+            const obj: Record<string, string> = {};
+            if (pt.trim()) obj.pt = pt.trim();
+            if (es.trim()) obj.es = es.trim();
+            if (fr.trim()) obj.fr = fr.trim();
+            if (de.trim()) obj.de = de.trim();
+            if (nl.trim()) obj.nl = nl.trim();
+            return Object.keys(obj).length > 0 ? obj : undefined;
+        };
+
+        const parseLines = (s: string) => s.split('\n').map(l => l.trim()).filter(Boolean);
+
+        const buildListLocalizations = (pt: string, es: string, fr: string, de: string, nl: string) => {
+            const obj: Record<string, string[]> = {};
+            if (pt.trim()) obj.pt = parseLines(pt);
+            if (es.trim()) obj.es = parseLines(es);
+            if (fr.trim()) obj.fr = parseLines(fr);
+            if (de.trim()) obj.de = parseLines(de);
+            if (nl.trim()) obj.nl = parseLines(nl);
+            return Object.keys(obj).length > 0 ? obj : undefined;
+        };
+
         const exercises = form.exerciseName.trim()
             ? [{
                 name: form.exerciseName.trim(),
@@ -215,6 +238,7 @@ export default function WorkoutsManager() {
                 duration: 0,
                 instructions: form.instructions
                     .split('\n').map(i => i.trim()).filter(i => i.length > 0),
+                instructionsLocalizations: buildListLocalizations(form.instr_pt, form.instr_es, form.instr_fr, form.instr_de, form.instr_nl),
                 primaryMuscles: form.primaryMuscles
                     .split(',').map(m => m.trim()).filter(m => m.length > 0),
                 secondaryMuscles: form.secondaryMuscles
@@ -225,16 +249,6 @@ export default function WorkoutsManager() {
                 sets: undefined,
             }]
             : [];
-
-        const buildLocalizations = (pt: string, es: string, fr: string, de: string, nl: string) => {
-            const obj: Record<string, string> = {};
-            if (pt.trim()) obj.pt = pt.trim();
-            if (es.trim()) obj.es = es.trim();
-            if (fr.trim()) obj.fr = fr.trim();
-            if (de.trim()) obj.de = de.trim();
-            if (nl.trim()) obj.nl = nl.trim();
-            return Object.keys(obj).length > 0 ? obj : undefined;
-        };
 
         return {
             title: form.exerciseName.trim(),
@@ -321,6 +335,11 @@ export default function WorkoutsManager() {
             desc_pt: dl.pt || '', desc_es: dl.es || '', desc_fr: dl.fr || '', desc_de: dl.de || '', desc_nl: dl.nl || '',
             exerciseTypes: w.categories ?? (ex.exerciseTypes ?? (ex.exerciseType ? [ex.exerciseType] : ['Strength'])),
             instructions: (ex.instructions ?? []).join('\n'),
+            instr_pt: (ex.instructionsLocalizations?.pt ?? []).join('\n'),
+            instr_es: (ex.instructionsLocalizations?.es ?? []).join('\n'),
+            instr_fr: (ex.instructionsLocalizations?.fr ?? []).join('\n'),
+            instr_de: (ex.instructionsLocalizations?.de ?? []).join('\n'),
+            instr_nl: (ex.instructionsLocalizations?.nl ?? []).join('\n'),
             primaryMuscles: (ex.primaryMuscles ?? []).join(', '),
             secondaryMuscles: (ex.secondaryMuscles ?? []).join(', '),
             muscleGroupTags: w.muscleGroupTags ?? [],
@@ -571,7 +590,7 @@ export default function WorkoutsManager() {
                         )}
 
                         {/* Instructions */}
-                        <Text style={styles.label}>{t('admin.instructionsLabel', 'Instructions — one step per line')}</Text>
+                        <Text style={styles.label}>{t('admin.instructionsLabel', 'Instructions — one step per line')} (EN)</Text>
                         <Text style={styles.fieldHint}>{t('admin.instructionsHint', 'These appear as a numbered list in the app')}</Text>
                         <TextInput
                             style={[styles.input, { height: 130, marginTop: 6 }]}
@@ -580,6 +599,16 @@ export default function WorkoutsManager() {
                             onChangeText={t => setField('instructions', t)}
                             placeholder={t('admin.instructionsPlaceholder', "Kneel and grip the wheel shoulder-width\nBrace core and exhale\nRoll forward until hips extend\nPull back slowly to start")}
                         />
+                        <Text style={styles.label}>Instructions (PT)</Text>
+                        <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_pt} onChangeText={v => setField('instr_pt', v)} placeholder={"Ajoelhe e segure o volante...\nContraia o core...\n..."} />
+                        <Text style={styles.label}>Instructions (ES)</Text>
+                        <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_es} onChangeText={v => setField('instr_es', v)} placeholder={"Arrodíllate y sujeta la rueda...\nContraer el core...\n..."} />
+                        <Text style={styles.label}>Instructions (FR)</Text>
+                        <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_fr} onChangeText={v => setField('instr_fr', v)} placeholder={"Agenouillez-vous et saisissez la roue...\nContracter le core...\n..."} />
+                        <Text style={styles.label}>Instructions (DE)</Text>
+                        <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_de} onChangeText={v => setField('instr_de', v)} placeholder={"Knien Sie und greifen Sie das Rad...\nCore anspannen...\n..."} />
+                        <Text style={styles.label}>Instructions (NL)</Text>
+                        <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_nl} onChangeText={v => setField('instr_nl', v)} placeholder={"Kniel neer en grijp het wiel...\nCore aanspannen...\n..."} />
 
                         {/* Primary Muscles */}
                         <Text style={styles.label}>{t('admin.primaryMuscles', 'Primary Muscles (comma-separated)')}</Text>

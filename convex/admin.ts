@@ -157,6 +157,14 @@ const localizationsValidator = v.optional(v.object({
     nl: v.optional(v.string()),
 }));
 
+const listLocalizationsValidator = v.optional(v.object({
+    pt: v.optional(v.array(v.string())),
+    es: v.optional(v.array(v.string())),
+    fr: v.optional(v.array(v.string())),
+    de: v.optional(v.array(v.string())),
+    nl: v.optional(v.array(v.string())),
+}));
+
 export const createPublicRecipe = mutation({
     args: {
         title: v.string(),
@@ -176,6 +184,8 @@ export const createPublicRecipe = mutation({
         isPremium: v.optional(v.boolean()),
         ingredients: v.optional(v.array(v.string())),
         instructions: v.optional(v.array(v.string())),
+        ingredientsLocalizations: listLocalizationsValidator,
+        instructionsLocalizations: listLocalizationsValidator,
         status: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
@@ -201,6 +211,8 @@ export const createPublicRecipe = mutation({
             isPremium: args.isPremium,
             ingredients: args.ingredients,
             instructions: args.instructions,
+            ingredientsLocalizations: args.ingredientsLocalizations,
+            instructionsLocalizations: args.instructionsLocalizations,
             status: args.status ?? 'draft',
             createdAt: now,
             updatedAt: now,
@@ -329,6 +341,8 @@ export const updatePublicRecipe = mutation({
         isPremium: v.optional(v.boolean()),
         ingredients: v.optional(v.array(v.string())),
         instructions: v.optional(v.array(v.string())),
+        ingredientsLocalizations: listLocalizationsValidator,
+        instructionsLocalizations: listLocalizationsValidator,
         status: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
@@ -356,6 +370,8 @@ export const updatePublicRecipe = mutation({
         if (args.isPremium !== undefined) updateFields.isPremium = args.isPremium;
         if (args.ingredients) updateFields.ingredients = args.ingredients;
         if (args.instructions) updateFields.instructions = args.instructions;
+        if (args.ingredientsLocalizations !== undefined) updateFields.ingredientsLocalizations = args.ingredientsLocalizations;
+        if (args.instructionsLocalizations !== undefined) updateFields.instructionsLocalizations = args.instructionsLocalizations;
         if (args.status) updateFields.status = args.status;
 
         await ctx.db.patch(args.recipeId, updateFields);

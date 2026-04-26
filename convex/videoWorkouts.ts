@@ -3,6 +3,14 @@ import { v } from "convex/values";
 import { checkAdminPower } from "./functions";
 
 // ─── Exercise validator (full schema) ─────────────────────────────────────────
+const listLocalizationsValidator = v.optional(v.object({
+    pt: v.optional(v.array(v.string())),
+    es: v.optional(v.array(v.string())),
+    fr: v.optional(v.array(v.string())),
+    de: v.optional(v.array(v.string())),
+    nl: v.optional(v.array(v.string())),
+}));
+
 const exerciseValidator = v.object({
     name: v.string(),
     duration: v.float64(),           // seconds
@@ -10,6 +18,7 @@ const exerciseValidator = v.object({
     sets: v.optional(v.float64()),
     description: v.string(),
     instructions: v.optional(v.array(v.string())),
+    instructionsLocalizations: listLocalizationsValidator,
     primaryMuscles: v.optional(v.array(v.string())),
     secondaryMuscles: v.optional(v.array(v.string())),
     exerciseType: v.optional(v.string()),

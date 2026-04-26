@@ -310,20 +310,6 @@ export default function WorkoutsScreen() {
                             </View>
                         </View>
 
-                        {/* Details */}
-                        <View style={styles.infoSection}>
-                            <Text style={styles.sectionTitle}>{t('workouts.details', 'Details') as string}</Text>
-                            <View style={styles.infoGrid}>
-                                <View style={styles.infoItem}>
-                                    <Text style={styles.infoLabel}>{t('workouts.instructor', 'Instructor') as string}</Text>
-                                    <Text style={styles.infoValue}>{selectedWorkout.instructor || t('workouts.coach', 'Bluom Coach') as string}</Text>
-                                </View>
-                                <View style={styles.infoItem}>
-                                    <Text style={styles.infoLabel}>{t('workouts.difficulty', 'Difficulty') as string}</Text>
-                                    <Text style={styles.infoValue}>{t(`workouts.levels.${selectedWorkout.difficulty}`, selectedWorkout.difficulty) as string}</Text>
-                                </View>
-                            </View>
-                        </View>
 
                         {/* Equipment */}
                         {(selectedWorkout.equipment?.length > 0 || selectedWorkout.optionalEquipment?.length > 0) && (
