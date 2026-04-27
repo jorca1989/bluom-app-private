@@ -1,7 +1,0 @@
-﻿app/(tabs)/fuel.tsx(409,8): error TS2741: Property 'userId' is missing in type '{ visible: boolean; meal: MealName; onClose: () => void; onLogFood: (food: any) => Promise<void>; onLogRecipe: (recipe: any) => void; onOpenAddFood: () => void; onOpenCreateRecipe: () => void; }' but required in type 'FoodSearchModalProps'.
-components/fuel/modals/FoodSearchModal.tsx(36,63): error TS2345: Argument of type '{ query: string; }' is not assignable to parameter of type '{ limit?: number | undefined; userId: Id<"users">; query: string; } | "skip"'.
-  Property 'userId' is missing in type '{ query: string; }' but required in type '{ limit?: number | undefined; userId: Id<"users">; query: string; }'.
-components/PhotoRecognitionModal.tsx(2,89): error TS2300: Duplicate identifier 'Platform'.
-components/PhotoRecognitionModal.tsx(2,99): error TS2300: Duplicate identifier 'Alert'.
-components/PhotoRecognitionModal.tsx(9,10): error TS2300: Duplicate identifier 'Platform'.
-components/PhotoRecognitionModal.tsx(9,20): error TS2300: Duplicate identifier 'Alert'.

@@ -10,9 +10,12 @@ import {
   Alert,
   StatusBar,
   Platform,
+  Modal,
+  Switch,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { Settings2 } from 'lucide-react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { useUser as useClerkUser } from '@clerk/clerk-expo';
@@ -62,6 +65,21 @@ function titleFromMealType(mealType: MealTypeLower): MealName {
     default: return 'Snack';
   }
 }
+
+// ─── Fuel widget config ───────────────────────────────────────
+type FuelWidgetId = 'dayCalendar'|'calories'|'macros'|'water'|'fasting'|'meals'|'quickActions'|'utilities';
+const FUEL_WIDGETS: { id: FuelWidgetId; emoji: string; labelKey: string }[] = [
+  { id: 'dayCalendar',  emoji: '📅', labelKey: 'fuel.widgets.dayCalendar' },
+  { id: 'calories',     emoji: '🔥', labelKey: 'fuel.widgets.calories' },
+  { id: 'macros',       emoji: '🥩', labelKey: 'fuel.widgets.macros' },
+  { id: 'water',        emoji: '💧', labelKey: 'fuel.widgets.water' },
+  { id: 'fasting',      emoji: '⏳', labelKey: 'fuel.widgets.fasting' },
+  { id: 'meals',        emoji: '🍽️', labelKey: 'fuel.widgets.meals' },
+  { id: 'quickActions', emoji: '⚡', labelKey: 'fuel.widgets.quickActions' },
+  { id: 'utilities',    emoji: '🔧', labelKey: 'fuel.widgets.utilities' },
+];
+const FUEL_WIDGETS_KEY = 'bluom_fuel_widgets_v1';
+const fuelCBtn = { width: 36, height: 36, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center' as const, justifyContent: 'center' as const, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 };
 
 export default function FuelScreen() {
   const router = useRouter();
@@ -141,6 +159,26 @@ export default function FuelScreen() {
   const [logSuccess, setLogSuccess] = useState(false);
 
   const [showTooltip, setShowTooltip] = useState(false);
+
+  // ── Widget config ──
+  const [showFuelConfig, setShowFuelConfig] = useState(false);
+  const [fuelWidgets, setFuelWidgets] = useState<Set<FuelWidgetId>>(
+    new Set(FUEL_WIDGETS.map(w => w.id))
+  );
+  useEffect(() => {
+    SecureStore.getItemAsync(FUEL_WIDGETS_KEY).then(val => {
+      if (val) try { setFuelWidgets(new Set(JSON.parse(val) as FuelWidgetId[])); } catch {}
+    });
+  }, []);
+  const toggleFuelWidget = useCallback((id: FuelWidgetId) => {
+    setFuelWidgets(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      SecureStore.setItemAsync(FUEL_WIDGETS_KEY, JSON.stringify([...next]));
+      return next;
+    });
+  }, []);
+  const isFW = (id: FuelWidgetId) => fuelWidgets.has(id);
 
   // Loading
   const isLoading =
@@ -335,6 +373,40 @@ export default function FuelScreen() {
       >
         <View style={isTablet ? { width: '100%', maxWidth: tabletMaxWidth, alignSelf: 'center' } : undefined}>
           
+          {/* Widget Config Modal */}
+          <Modal visible={showFuelConfig} animationType="slide" presentationStyle="pageSheet">
+            <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['top']}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+                <Text style={{ fontSize: 18, fontWeight: '800', color: '#0f172a' }}>{t('fuel.widgets.title', 'Fuel Sections')}</Text>
+                <TouchableOpacity onPress={() => setShowFuelConfig(false)}>
+                  <Ionicons name="close" size={22} color="#475569" />
+                </TouchableOpacity>
+              </View>
+              <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+                {/* Dark mode placeholder */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#f8fafc' }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <Text style={{ fontSize: 20 }}>🌙</Text>
+                    <View>
+                      <Text style={{ fontSize: 15, fontWeight: '700', color: '#0f172a' }}>{t('common.darkMode', 'Dark Mode')}</Text>
+                      <Text style={{ fontSize: 12, color: '#94a3b8' }}>{t('common.comingSoon', 'Coming soon')}</Text>
+                    </View>
+                  </View>
+                  <Switch value={false} disabled trackColor={{ true: '#2563eb', false: '#e2e8f0' }} thumbColor="#fff" />
+                </View>
+                {FUEL_WIDGETS.map(w => (
+                  <View key={w.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f8fafc' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                      <Text style={{ fontSize: 20 }}>{w.emoji}</Text>
+                      <Text style={{ fontSize: 15, fontWeight: '600', color: '#1e293b' }}>{t(w.labelKey, w.id)}</Text>
+                    </View>
+                    <Switch value={isFW(w.id)} onValueChange={() => toggleFuelWidget(w.id)} trackColor={{ true: '#2563eb', false: '#e2e8f0' }} thumbColor="#fff" />
+                  </View>
+                ))}
+              </ScrollView>
+            </SafeAreaView>
+          </Modal>
+
           <View style={styles.header}>
             <Text style={styles.title}>{t('fuel.title', 'Fuel')}</Text>
             <CoachMark
@@ -343,8 +415,12 @@ export default function FuelScreen() {
               onClose={() => { setShowTooltip(false); SecureStore.deleteItemAsync('bluom_show_coach_marks'); }}
               position="bottom"
             />
+            <TouchableOpacity onPress={() => setShowFuelConfig(true)} style={fuelCBtn} activeOpacity={0.75}>
+              <Settings2 size={17} color="#475569" />
+            </TouchableOpacity>
           </View>
 
+          {isFW('dayCalendar') && (
           <DayStrip
             days={weekDates}
             selectedDate={selectedDate}
@@ -352,28 +428,35 @@ export default function FuelScreen() {
             fillFraction={fillFraction}
             fillMap={fillMap}
           />
+          )}
 
+          {isFW('calories') && (
           <View style={styles.section}>
-             <CalorieSummary 
-               consumed={todayTotals.calories} 
-               goal={daily?.target?.calories ?? 2000} 
+             <CalorieSummary
+               consumed={todayTotals.calories}
+               goal={daily?.target?.calories ?? 2000}
              />
           </View>
+          )}
 
+          {isFW('macros') && (
           <View style={styles.section}>
             <MacroCards macros={macroCardsData} />
           </View>
+          )}
 
+          {isFW('water') && (
           <View style={styles.section}>
-            <WaterTracker 
+            <WaterTracker
                currentOz={daily?.waterOz ?? 0}
                goalOz={64}
                isMetric={isMetric}
                onAddWater={handleAddWater}
             />
           </View>
+          )}
 
-          {activeFastingLog ? (
+          {isFW('fasting') && activeFastingLog ? (
             <View style={styles.fastingBanner}>
               <View style={styles.fastingBlob} />
               <View style={styles.fastingHeader}>
@@ -394,7 +477,7 @@ export default function FuelScreen() {
               </Text>
               <Text style={styles.fastingSubtitle}>{t('fuel.fasting.subtitle', "Don't break your fast! Keep going!")}</Text>
             </View>
-          ) : (
+          ) : isFW('meals') ? (
             <View style={styles.mealsSection}>
               {mealConfigs.map(m => {
                  const typeLower = toMealTypeLower(m.name);
@@ -464,36 +547,36 @@ export default function FuelScreen() {
                 )}
               </TouchableOpacity>
             </View>
-          )}
+          ) : null}
 
+          {isFW('quickActions') && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('fuel.sections.quickActions', 'Quick Actions')}</Text>
-            <QuickActions 
-              onPhoto={() => {
-                setShowPhotoCapture(true);
-              }}
-              onVoice={() => {
-                setShowVoiceLog(true);
-              }}
+            <QuickActions
+              onPhoto={() => { setShowPhotoCapture(true); }}
+              onVoice={() => { setShowVoiceLog(true); }}
               onSearch={() => { setSelectedMeal('Lunch'); setShowFoodSearch(true); }}
               onManual={() => setShowAddFoodModal(true)}
             />
-            
+          </View>
+          )}
+
+          {isFW('utilities') && (
+          <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('fuel.sections.utilities', 'Utilities')}</Text>
-            <UtilityCards 
-              onLibrary={() => router.push('/recipes')} 
+            <UtilityCards
+              onLibrary={() => router.push('/recipes')}
               onMyRecipes={() => {
                 setSelectedMeal('Lunch');
                 setFoodSearchInitialTab('recipes');
                 setShowFoodSearch(true);
               }}
               onShoppingList={() => router.push('/shopping-list')}
-              onAiChef={() => {
-                router.push('/ai-meal-maker');
-              }}
+              onAiChef={() => { router.push('/ai-meal-maker'); }}
               onMonthlyPlan={() => router.push('/meal-hub')}
             />
           </View>
+          )}
 
         </View>
       </ScrollView>

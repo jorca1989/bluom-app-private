@@ -835,6 +835,19 @@ export default function WomensHealthScreen() {
           <Text style={s.stageBtnEmoji}>{lifeStage === 'cycle' ? '🔄' : lifeStage === 'pregnancy' ? '🤰' : '🌡️'}</Text>
           <Ionicons name="chevron-down" size={13} color="#e11d48" />
         </TouchableOpacity>
+        <TouchableOpacity
+          style={s.infoBtn}
+          onPress={() => Alert.alert(
+            t('womensHealth.restartTitle', 'Restart Quiz'),
+            t('womensHealth.restartMsg', 'This will clear your current profile and restart the questionnaire. Continue?'),
+            [
+              { text: t('common.cancel', 'Cancel'), style: 'cancel' },
+              { text: t('womensHealth.restartConfirm', 'Restart'), style: 'destructive', onPress: () => { SecureStore.deleteItemAsync(QUIZ_KEY); setQuizDone(false); setQuizStep(0); setQuizAnswers({}); } },
+            ]
+          )}
+        >
+          <Ionicons name="pencil-outline" size={18} color="#e11d48" />
+        </TouchableOpacity>
         <TouchableOpacity style={s.infoBtn} onPress={() => setShowPrivacy(true)}>
           <Ionicons name="shield-checkmark-outline" size={20} color="#10b981" />
         </TouchableOpacity>
@@ -1126,7 +1139,12 @@ export default function WomensHealthScreen() {
             <Text style={s.sectionTitle}>{t('womensHealth.library','Biblioteca de Inteligência Hormonal')}</Text>
             <Text style={s.insightsSub}>{t('womensHealth.librarySub','Guias baseados em ciência para a saúde hormonal da mulher.')}</Text>
             {LEARN_ARTICLES.map(article => (
-              <TouchableOpacity key={article.id} style={s.articleCard} onPress={() => setShowArticle(article)} activeOpacity={0.85}>
+              <TouchableOpacity
+                key={article.id}
+                style={s.articleCard}
+                onPress={() => router.push({ pathname: '/library/[slug]' as any, params: { slug: `wh_${article.id}`, title: article.title, body: article.body, category: article.category, emoji: article.emoji, time: article.time } })}
+                activeOpacity={0.85}
+              >
                 <View style={s.articleCardLeft}>
                   <Text style={s.articleCardEmoji}>{article.emoji}</Text>
                   <View style={{ flex: 1 }}>
@@ -1148,7 +1166,17 @@ export default function WomensHealthScreen() {
             </TouchableOpacity>
 
             {/* Re-take quiz */}
-            <TouchableOpacity style={s.retakeBtn} onPress={() => { SecureStore.deleteItemAsync(QUIZ_KEY); setQuizDone(false); setQuizStep(0); setQuizAnswers({}); }}>
+            <TouchableOpacity
+              style={s.retakeBtn}
+              onPress={() => Alert.alert(
+                t('womensHealth.restartTitle', 'Restart Quiz'),
+                t('womensHealth.restartMsg', 'This will clear your current profile and restart the questionnaire. Continue?'),
+                [
+                  { text: t('common.cancel', 'Cancel'), style: 'cancel' },
+                  { text: t('womensHealth.restartConfirm', 'Restart'), style: 'destructive', onPress: () => { SecureStore.deleteItemAsync(QUIZ_KEY); setQuizDone(false); setQuizStep(0); setQuizAnswers({}); } },
+                ]
+              )}
+            >
               <Ionicons name="refresh-outline" size={16} color="#e11d48" />
               <Text style={s.retakeTxt}>{t('womensHealth.retake','Atualizar o meu perfil hormonal')}</Text>
             </TouchableOpacity>

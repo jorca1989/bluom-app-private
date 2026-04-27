@@ -27,7 +27,42 @@ import {
     Users,
     Tag,
     Filter,
+    ChevronDown,
+    ChevronUp,
 } from 'lucide-react-native';
+
+// ── Reusable accordion for multilanguage fields ──────────────
+function LangAccordion({ title, children }: { title: string; children: React.ReactNode }) {
+    const [open, setOpen] = React.useState(false);
+    return (
+        <View style={{ borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 12, marginBottom: 8, overflow: 'hidden' }}>
+            <TouchableOpacity
+                onPress={() => setOpen(o => !o)}
+                style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 12, backgroundColor: '#f8fafc' }}
+            >
+                <Text style={{ fontSize: 13, fontWeight: '700', color: '#1e293b' }}>{title}</Text>
+                {open ? <ChevronUp size={15} color="#64748b" /> : <ChevronDown size={15} color="#64748b" />}
+            </TouchableOpacity>
+            {open && <View style={{ padding: 12, backgroundColor: '#fff' }}>{children}</View>}
+        </View>
+    );
+}
+
+function FieldAccordion({ title, children }: { title: string; children: React.ReactNode }) {
+    const [open, setOpen] = React.useState(false);
+    return (
+        <View style={{ borderWidth: 1.5, borderColor: '#cbd5e1', borderRadius: 14, marginBottom: 12, overflow: 'hidden' }}>
+            <TouchableOpacity
+                onPress={() => setOpen(o => !o)}
+                style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 14, backgroundColor: '#f1f5f9' }}
+            >
+                <Text style={{ fontSize: 14, fontWeight: '800', color: '#1e293b' }}>{title}</Text>
+                {open ? <ChevronUp size={16} color="#475569" /> : <ChevronDown size={16} color="#475569" />}
+            </TouchableOpacity>
+            {open && <View style={{ padding: 14, gap: 8 }}>{children}</View>}
+        </View>
+    );
+}
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { R2_CONFIG } from '@/utils/r2Config';
@@ -536,44 +571,49 @@ export default function WorkoutsManager() {
 
                     <ScrollView style={styles.form} keyboardShouldPersistTaps="handled">
 
-                        {/* Exercise Name */}
-                        <Text style={styles.label}>{t('admin.exerciseName', 'Exercise Name *')} (EN)</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={form.exerciseName}
-                            onChangeText={t => setField('exerciseName', t)}
-                            placeholder={t('admin.exerciseNamePlaceholder', 'e.g. Ab Wheel Rollout, Barbell Squat')}
-                        />
-                        <Text style={styles.label}>Name (PT)</Text>
-                        <TextInput style={styles.input} placeholder="ex. Rolo Abdominal" value={form.title_pt} onChangeText={v => setField('title_pt', v)} />
-                        <Text style={styles.label}>Name (ES)</Text>
-                        <TextInput style={styles.input} placeholder="ej. Rodillo Abdominal" value={form.title_es} onChangeText={v => setField('title_es', v)} />
-                        <Text style={styles.label}>Name (FR)</Text>
-                        <TextInput style={styles.input} placeholder="ex. Rouleau Abdominal" value={form.title_fr} onChangeText={v => setField('title_fr', v)} />
-                        <Text style={styles.label}>Name (DE)</Text>
-                        <TextInput style={styles.input} placeholder="z.B. Bauchroller" value={form.title_de} onChangeText={v => setField('title_de', v)} />
-                        <Text style={styles.label}>Name (NL)</Text>
-                        <TextInput style={styles.input} placeholder="bijv. Buikrol" value={form.title_nl} onChangeText={v => setField('title_nl', v)} />
+                        {/* Exercise Name — Accordion */}
+                        <FieldAccordion title={`📝 ${t('admin.exerciseName', 'Exercise Name')} *`}>
+                            <LangAccordion title="🇬🇧 EN (required)">
+                                <TextInput style={styles.input} value={form.exerciseName} onChangeText={t => setField('exerciseName', t)} placeholder={t('admin.exerciseNamePlaceholder', 'e.g. Ab Wheel Rollout, Barbell Squat')} />
+                            </LangAccordion>
+                            <LangAccordion title="🇵🇹 PT">
+                                <TextInput style={styles.input} placeholder="ex. Rolo Abdominal" value={form.title_pt} onChangeText={v => setField('title_pt', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇪🇸 ES">
+                                <TextInput style={styles.input} placeholder="ej. Rodillo Abdominal" value={form.title_es} onChangeText={v => setField('title_es', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇫🇷 FR">
+                                <TextInput style={styles.input} placeholder="ex. Rouleau Abdominal" value={form.title_fr} onChangeText={v => setField('title_fr', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇩🇪 DE">
+                                <TextInput style={styles.input} placeholder="z.B. Bauchroller" value={form.title_de} onChangeText={v => setField('title_de', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇳🇱 NL">
+                                <TextInput style={styles.input} placeholder="bijv. Buikrol" value={form.title_nl} onChangeText={v => setField('title_nl', v)} />
+                            </LangAccordion>
+                        </FieldAccordion>
 
-                        {/* Exercise Description */}
-                        <Text style={styles.label}>{t('admin.exerciseDescription', 'Exercise Description')} (EN)</Text>
-                        <TextInput
-                            style={[styles.input, { height: 80 }]}
-                            multiline
-                            value={form.exerciseDescription}
-                            onChangeText={t => setField('exerciseDescription', t)}
-                            placeholder={t('admin.exerciseDescriptionPlaceholder', 'What does this exercise target? Brief description.')}
-                        />
-                        <Text style={styles.label}>Description (PT)</Text>
-                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descrição em português..." value={form.desc_pt} onChangeText={v => setField('desc_pt', v)} />
-                        <Text style={styles.label}>Description (ES)</Text>
-                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descripción en español..." value={form.desc_es} onChangeText={v => setField('desc_es', v)} />
-                        <Text style={styles.label}>Description (FR)</Text>
-                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Description en français..." value={form.desc_fr} onChangeText={v => setField('desc_fr', v)} />
-                        <Text style={styles.label}>Description (DE)</Text>
-                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschreibung auf Deutsch..." value={form.desc_de} onChangeText={v => setField('desc_de', v)} />
-                        <Text style={styles.label}>Description (NL)</Text>
-                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschrijving in het Nederlands..." value={form.desc_nl} onChangeText={v => setField('desc_nl', v)} />
+                        {/* Exercise Description — Accordion */}
+                        <FieldAccordion title={`📋 ${t('admin.exerciseDescription', 'Description')}`}>
+                            <LangAccordion title="🇬🇧 EN">
+                                <TextInput style={[styles.input, { height: 80 }]} multiline value={form.exerciseDescription} onChangeText={t => setField('exerciseDescription', t)} placeholder={t('admin.exerciseDescriptionPlaceholder', 'What does this exercise target?')} />
+                            </LangAccordion>
+                            <LangAccordion title="🇵🇹 PT">
+                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descrição em português..." value={form.desc_pt} onChangeText={v => setField('desc_pt', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇪🇸 ES">
+                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descripción en español..." value={form.desc_es} onChangeText={v => setField('desc_es', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇫🇷 FR">
+                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Description en français..." value={form.desc_fr} onChangeText={v => setField('desc_fr', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇩🇪 DE">
+                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschreibung auf Deutsch..." value={form.desc_de} onChangeText={v => setField('desc_de', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇳🇱 NL">
+                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschrijving in het Nederlands..." value={form.desc_nl} onChangeText={v => setField('desc_nl', v)} />
+                            </LangAccordion>
+                        </FieldAccordion>
 
                         {/* Exercise Type — multi-select */}
                         <DropdownField
@@ -589,26 +629,28 @@ export default function WorkoutsManager() {
                             </Text>
                         )}
 
-                        {/* Instructions */}
-                        <Text style={styles.label}>{t('admin.instructionsLabel', 'Instructions — one step per line')} (EN)</Text>
-                        <Text style={styles.fieldHint}>{t('admin.instructionsHint', 'These appear as a numbered list in the app')}</Text>
-                        <TextInput
-                            style={[styles.input, { height: 130, marginTop: 6 }]}
-                            multiline
-                            value={form.instructions}
-                            onChangeText={t => setField('instructions', t)}
-                            placeholder={t('admin.instructionsPlaceholder', "Kneel and grip the wheel shoulder-width\nBrace core and exhale\nRoll forward until hips extend\nPull back slowly to start")}
-                        />
-                        <Text style={styles.label}>Instructions (PT)</Text>
-                        <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_pt} onChangeText={v => setField('instr_pt', v)} placeholder={"Ajoelhe e segure o volante...\nContraia o core...\n..."} />
-                        <Text style={styles.label}>Instructions (ES)</Text>
-                        <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_es} onChangeText={v => setField('instr_es', v)} placeholder={"Arrodíllate y sujeta la rueda...\nContraer el core...\n..."} />
-                        <Text style={styles.label}>Instructions (FR)</Text>
-                        <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_fr} onChangeText={v => setField('instr_fr', v)} placeholder={"Agenouillez-vous et saisissez la roue...\nContracter le core...\n..."} />
-                        <Text style={styles.label}>Instructions (DE)</Text>
-                        <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_de} onChangeText={v => setField('instr_de', v)} placeholder={"Knien Sie und greifen Sie das Rad...\nCore anspannen...\n..."} />
-                        <Text style={styles.label}>Instructions (NL)</Text>
-                        <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_nl} onChangeText={v => setField('instr_nl', v)} placeholder={"Kniel neer en grijp het wiel...\nCore aanspannen...\n..."} />
+                        {/* Instructions — Accordion */}
+                        <FieldAccordion title={`📋 ${t('admin.instructionsLabel', 'Instructions')} — one step per line`}>
+                            <Text style={[styles.fieldHint, { marginBottom: 8 }]}>{t('admin.instructionsHint', 'These appear as a numbered list in the app')}</Text>
+                            <LangAccordion title="🇬🇧 EN (required)">
+                                <TextInput style={[styles.input, { height: 130 }]} multiline value={form.instructions} onChangeText={t => setField('instructions', t)} placeholder={t('admin.instructionsPlaceholder', "Kneel and grip the wheel shoulder-width\nBrace core and exhale\nRoll forward until hips extend\nPull back slowly to start")} />
+                            </LangAccordion>
+                            <LangAccordion title="🇵🇹 PT">
+                                <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_pt} onChangeText={v => setField('instr_pt', v)} placeholder={"Ajoelhe e segure o volante...\nContraia o core...\n..."} />
+                            </LangAccordion>
+                            <LangAccordion title="🇪🇸 ES">
+                                <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_es} onChangeText={v => setField('instr_es', v)} placeholder={"Arrodíllate y sujeta la rueda...\nContraer el core...\n..."} />
+                            </LangAccordion>
+                            <LangAccordion title="🇫🇷 FR">
+                                <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_fr} onChangeText={v => setField('instr_fr', v)} placeholder={"Agenouillez-vous et saisissez la roue...\nContracter le core...\n..."} />
+                            </LangAccordion>
+                            <LangAccordion title="🇩🇪 DE">
+                                <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_de} onChangeText={v => setField('instr_de', v)} placeholder={"Knien Sie und greifen Sie das Rad...\nCore anspannen...\n..."} />
+                            </LangAccordion>
+                            <LangAccordion title="🇳🇱 NL">
+                                <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_nl} onChangeText={v => setField('instr_nl', v)} placeholder={"Kniel neer en grijp het wiel...\nCore aanspannen...\n..."} />
+                            </LangAccordion>
+                        </FieldAccordion>
 
                         {/* Primary Muscles */}
                         <Text style={styles.label}>{t('admin.primaryMuscles', 'Primary Muscles (comma-separated)')}</Text>

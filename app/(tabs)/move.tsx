@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AIRoutineModal from '@/components/AIRoutineModal';
 import Tooltip from '@/components/Tooltip';
 import CoachMark from '@/components/CoachMark';
@@ -15,10 +15,12 @@ import {
   Alert,
   Platform,
   Linking,
+  Switch,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
+import { Settings2 } from 'lucide-react-native';
 
 
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -47,6 +49,19 @@ import { FREE_4_WEEK_PLAN, getWeekRoutineDays } from '@/utils/fourWeekPlanData';
 import { buildPlanFromDBWorkouts } from '@/utils/buildPlanFromDB';
 
 
+
+// ─────────────────────────────────────────────────────────────
+// WIDGET TOGGLE SYSTEM
+// ─────────────────────────────────────────────────────────────
+type MoveWidgetId = 'kpis' | 'swipeable' | 'quickActions' | 'todayActivities' | 'moveInsights';
+const MOVE_WIDGETS: { id: MoveWidgetId; emoji: string; labelKey: string }[] = [
+  { id: 'kpis',            emoji: '📊', labelKey: 'move.widgets.kpis' },
+  { id: 'swipeable',       emoji: '🗓️', labelKey: 'move.widgets.swipeable' },
+  { id: 'quickActions',    emoji: '⚡', labelKey: 'move.widgets.quickActions' },
+  { id: 'todayActivities', emoji: '🏃', labelKey: 'move.widgets.todayActivities' },
+  { id: 'moveInsights',    emoji: '📈', labelKey: 'move.widgets.moveInsights' },
+];
+const MOVE_WIDGETS_KEY = 'bluom_move_widgets_v1';
 
 const safeNumber = (val: string | number, fallback = 0) => {
   const parsed = typeof val === 'string' ? parseFloat(val) : val;
@@ -85,6 +100,34 @@ export default function MoveScreen() {
   const insets = useSafeAreaInsets();
   const { width, isTablet, isSmallPhone: isSmallScreen, contentMaxWidth, kpiCardWidth } = useResponsive();
   const { t } = useTranslation();
+
+  // ── Widget config ──
+  const allMoveWidgetIds = MOVE_WIDGETS.map(w => w.id);
+  const [visibleMoveWidgets, setVisibleMoveWidgets] = useState<Set<MoveWidgetId>>(new Set(allMoveWidgetIds));
+  const [showMoveWidgetConfig, setShowMoveWidgetConfig] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const raw = await SecureStore.getItemAsync(MOVE_WIDGETS_KEY);
+        if (raw) {
+          const parsed: MoveWidgetId[] = JSON.parse(raw);
+          setVisibleMoveWidgets(new Set(parsed));
+        }
+      } catch { /* ignore */ }
+    })();
+  }, []);
+
+  const toggleMoveWidget = useCallback(async (id: MoveWidgetId) => {
+    setVisibleMoveWidgets(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) { next.delete(id); } else { next.add(id); }
+      SecureStore.setItemAsync(MOVE_WIDGETS_KEY, JSON.stringify([...next])).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  const isMW = (id: MoveWidgetId) => visibleMoveWidgets.has(id);
 
   const { user: clerkUser, isLoaded: isClerkLoaded } = useClerkUser();
 
@@ -756,6 +799,44 @@ export default function MoveScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar style="dark" />
+
+      {/* ── WIDGET CONFIG MODAL ── */}
+      <Modal visible={showMoveWidgetConfig} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowMoveWidgetConfig(false)}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['top']}>
+          <View style={mwStyles.header}>
+            <Text style={mwStyles.title}>{t('move.widgets.title', 'Widget Config')}</Text>
+            <TouchableOpacity onPress={() => setShowMoveWidgetConfig(false)} style={mwStyles.close}>
+              <Ionicons name="close" size={20} color="#1e293b" />
+            </TouchableOpacity>
+          </View>
+          <ScrollView contentContainerStyle={{ padding: 20, gap: 0, paddingBottom: 40 }}>
+            <View style={mwStyles.darkRow}>
+              <View style={mwStyles.darkLeft}>
+                <Ionicons name="moon-outline" size={18} color="#6366f1" />
+                <Text style={mwStyles.darkLabel}>{t('common.darkMode', 'Dark Mode')}</Text>
+              </View>
+              <Switch value={false} onValueChange={() => {}} trackColor={{ true: '#6366f1', false: '#e2e8f0' }} thumbColor="#fff" />
+            </View>
+            <View style={mwStyles.divider} />
+            {MOVE_WIDGETS.map((w, i) => (
+              <View key={w.id}>
+                <View style={mwStyles.row}>
+                  <Text style={mwStyles.emoji}>{w.emoji}</Text>
+                  <Text style={mwStyles.label}>{t(w.labelKey, w.id)}</Text>
+                  <Switch
+                    value={isMW(w.id)}
+                    onValueChange={() => toggleMoveWidget(w.id)}
+                    trackColor={{ true: '#2563eb', false: '#e2e8f0' }}
+                    thumbColor="#fff"
+                  />
+                </View>
+                {i < MOVE_WIDGETS.length - 1 && <View style={mwStyles.divider} />}
+              </View>
+            ))}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[
@@ -773,16 +854,19 @@ export default function MoveScreen() {
 
           {/* Header */}
           <View style={[styles.header, { paddingTop: 12 }]}>
-            <View style={styles.headerContent}>
+            <View style={[styles.headerContent, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}>
               <View style={styles.headerTextContainer}>
                 <Text style={styles.title}>{t('move.title', 'Move')}</Text>
                 <Text style={styles.subtitle}>{t('move.subtitle', 'Track your workouts and activity')}</Text>
               </View>
+              <TouchableOpacity style={mwStyles.gearBtn} onPress={() => setShowMoveWidgetConfig(true)} activeOpacity={0.75}>
+                <Settings2 size={17} color="#475569" />
+              </TouchableOpacity>
             </View>
           </View>
 
           {/* Activity Summary — 4 KPI cards matching home screen style */}
-          <View style={[styles.activitySummary, isTablet && { justifyContent: 'space-between' }]}>
+          {isMW('kpis') && <View style={[styles.activitySummary, isTablet && { justifyContent: 'space-between' }]}>
             {/* Workouts */}
             <View style={[styles.summaryCard, { width: kpiCardWidth(48, 16) }]}>
               <View style={styles.kpiHead}>
@@ -837,10 +921,10 @@ export default function MoveScreen() {
                 </View>
               )}
             </View>
-          </View>
+          </View>}
 
           {/* Program and Workouts Widget — or Upgrade banner if free plan expired */}
-          {freePlanExpired ? (
+          {isMW('swipeable') && (freePlanExpired ? (
             <TouchableOpacity
               style={[styles.card, { marginHorizontal: 24, marginTop: 24, backgroundColor: '#1e293b', borderWidth: 0, alignItems: 'center', padding: 32 }]}
               onPress={() => handleProFeature(t('move.continueJourney', 'Continue Your Journey'), t('move.freeUsers28DaysFull', 'Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.'))}
@@ -875,11 +959,11 @@ export default function MoveScreen() {
                 setShowWorkoutDetail(true); 
               }}
             />
-          )}
+          ))}
 
 
           {/* Move Quick Actions & Insights */}
-          <MoveQuickActions
+          {isMW('quickActions') && <MoveQuickActions
             onAddWorkout={() => {
               setExerciseSearchTarget('log');
               setShowExerciseSearch(true);
@@ -892,13 +976,13 @@ export default function MoveScreen() {
             onViewPlan={() => {
               router.push('/four-week-plan');
             }}
-          />
+          />}
 
           {/* Outdoor Activity - Hidden for Lite Build */}
           {/* <OutdoorActivityBanner onStart={() => setShowOutdoor(true)} /> */}
 
           {/* Today's Activities */}
-          <View style={styles.card}>
+          {isMW('todayActivities') && <View style={styles.card}>
             <View style={styles.cardHeader}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
                 <Text style={styles.cardTitle}>{t('move.todaysActivities', "Today's Activities")}</Text>
@@ -1034,11 +1118,11 @@ export default function MoveScreen() {
                 <Text style={styles.emptyStateSubtext}>{t('move.logToStart', 'Log a workout or sync steps to get started')}</Text>
               </View>
             )}
-          </View>
+          </View>}
 
-          <MoveInsights isPro={!!isPro} onUpgradePress={() => {
+          {isMW('moveInsights') && <MoveInsights isPro={!!isPro} onUpgradePress={() => {
             router.push('/move-insights');
-          }} />
+          }} />}
 
         </View>{/* end tablet maxWidth wrapper */}
       </ScrollView>
@@ -1127,13 +1211,16 @@ export default function MoveScreen() {
             _id: ex.id,
             name: ex.name,
             category: ex.primaryMuscle,
-            type: 'strength',
+            type: ex.exerciseType ?? ex.exerciseTypes?.[0] ?? 'Strength',
+            exerciseType: ex.exerciseType,
+            exerciseTypes: ex.exerciseTypes,
             muscleGroups: [ex.primaryMuscle],
             primaryMuscles: [ex.primaryMuscle],
             secondaryMuscles: ex.secondaryMuscles ?? [],
             thumbnailUrl: ex.thumbnailUrl,
             videoUrl: ex.videoUrl,
             instructions: ex.instructions ?? [],
+            instructionsLocalizations: ex.instructionsLocalizations,
             equipment: ex.equipment,
             fromRoutine: true, // ← free users can see full details for plan exercises
           } as any);
@@ -2016,4 +2103,19 @@ const styles = StyleSheet.create({
     color: '#64748b',
     textAlign: 'center',
   },
+});
+
+// Widget config modal styles
+const mwStyles = StyleSheet.create({
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+  title: { fontSize: 20, fontWeight: '900', color: '#0f172a' },
+  close: { width: 34, height: 34, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14 },
+  emoji: { fontSize: 20 },
+  label: { flex: 1, fontSize: 15, fontWeight: '600', color: '#0f172a' },
+  divider: { height: 1, backgroundColor: '#f1f5f9' },
+  darkRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14 },
+  darkLeft: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  darkLabel: { fontSize: 15, fontWeight: '600', color: '#0f172a' },
+  gearBtn: { width: 36, height: 36, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
 });

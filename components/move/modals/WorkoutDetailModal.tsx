@@ -22,7 +22,10 @@ export interface PlannedExercise {
   primaryMuscle: string;
   secondaryMuscles?: string[];
   equipment?: string;
+  exerciseType?: string;
+  exerciseTypes?: string[];
   instructions?: string[];
+  instructionsLocalizations?: Record<string, string[]>;
   sets: number;
   reps: number | string;
 }

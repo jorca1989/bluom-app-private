@@ -111,9 +111,9 @@ export default function AchievementsCard({ userId }: Props) {
       {/* Header: count + level | See all */}
       <View style={ac.headerRow}>
         <Text style={ac.headerText}>
-          <Text style={ac.headerCount}>{unlockedCount} {t('home.achievements.unlocked', 'unlocked')}</Text>
+          <Text style={ac.headerCount}>{unlockedCount} {t('home.achievements.unlocked', 'desbloqueadas')}</Text>
           {'  ·  '}
-          <Text style={ac.headerLevel}>{t('home.achievements.level', 'Level')} {level}</Text>
+          <Text style={ac.headerLevel}>{t('home.achievements.level', 'Nível')} {level}</Text>
         </Text>
         <TouchableOpacity
           onPress={() => router.push('/achievements' as any)}

@@ -35,7 +35,9 @@ export interface DBWorkoutDoc {
     primaryMuscles?: string[];
     secondaryMuscles?: string[];
     exerciseType?: string;
+    exerciseTypes?: string[];
     instructions?: string[];
+    instructionsLocalizations?: Record<string, string[]>;
   }>;
 }
 
@@ -47,12 +49,16 @@ export interface RoutineDay {
     id: string;
     name: string;
     thumbnailUrl: string;
+    videoUrl?: string;
     primaryMuscle: string;
     secondaryMuscles?: string[];
     equipment: string;
     sets: number;
     reps: string;
+    exerciseType?: string;
+    exerciseTypes?: string[];
     instructions?: string[];
+    instructionsLocalizations?: Record<string, string[]>;
   }>;
 }
 
@@ -106,13 +112,16 @@ export function buildPlanFromDBWorkouts(
         thumbnailUrl: resolvedThumb,
         videoUrl: resolvedVideo,
         category: workout.category ?? primaryMuscleFallback,
-        type: workout.category ?? 'strength',
+        type: ex.exerciseType ?? ex.exerciseTypes?.[0] ?? workout.category ?? 'strength',
+        exerciseType: ex.exerciseType,
+        exerciseTypes: ex.exerciseTypes,
         primaryMuscle: ex.primaryMuscles?.[0] ?? primaryMuscleFallback,
         secondaryMuscles: ex.secondaryMuscles ?? [],
         equipment: workout.equipment?.[0] ?? 'Various',
         sets: typeof ex.sets === 'number' ? ex.sets : 3,
         reps: ex.reps !== undefined ? String(ex.reps) : '10',
         instructions: ex.instructions ?? [],
+        instructionsLocalizations: ex.instructionsLocalizations,
       });
     }
   }

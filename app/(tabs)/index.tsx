@@ -101,8 +101,11 @@ const STORAGE_KEY = 'bluom_home_widgets_v2';
 // ─────────────────────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────────────────────
-function getGreeting(t: any, name: string, hour: number) {
-  if (hour < 5) return { line1: t('home.greeting.still', { name, defaultValue: `Still at it, ${name}?` }), line2: t('home.greeting.stillDesc', 'Make it count.'), accent: '#6366f1' };
+function getGreeting(t: any, name: string, hour: number, gender?: string) {
+  if (hour < 5) {
+    const stillKey = gender === 'female' ? 'home.greeting.stillFemale' : 'home.greeting.still';
+    return { line1: t(stillKey, { name, defaultValue: `Still at it, ${name}?` }), line2: t('home.greeting.stillDesc', 'Make it count.'), accent: '#6366f1' };
+  }
   if (hour < 12) return { line1: t('home.greeting.morning', { name, defaultValue: `Good morning, ${name}.` }), line2: t('home.greeting.morningDesc', 'Set the tone for today.'), accent: '#f59e0b' };
   if (hour < 17) return { line1: t('home.greeting.afternoon', { name, defaultValue: `Afternoon, ${name}.` }), line2: t('home.greeting.afternoonDesc', 'Stay sharp, stay focused.'), accent: '#2563eb' };
   if (hour < 21) return { line1: t('home.greeting.evening', { name, defaultValue: `Evening, ${name}.` }), line2: t('home.greeting.eveningDesc', 'Wind down with intention.'), accent: '#8b5cf6' };
@@ -195,7 +198,8 @@ export default function HomeScreen() {
   const vitalityLabel = vitalityScore > 70 ? 'Excellent' : vitalityScore > 40 ? 'On Track' : 'Needs Work';
 
   const firstName = convexUser?.name?.split(' ')[0] ?? clerkUser?.firstName ?? 'there';
-  const greeting = getGreeting(t, firstName, hour);
+  const userGender = convexUser?.biologicalSex;
+  const greeting = getGreeting(t, firstName, hour, userGender);
 
   // Avatar (used in greeting card, replaces duplicate logo)
   const AVATAR_CONFIG_KEY = 'bluom_avatar_config_v2';
@@ -375,7 +379,7 @@ export default function HomeScreen() {
       Alert.alert('Maintenance', 'AI Coach is temporarily offline. Check back shortly.');
       return;
     }
-    router.push(path as any);
+    router.navigate(path as any);
   };
 
   // ── Loading / gate ──
@@ -505,46 +509,47 @@ export default function HomeScreen() {
   const wVitality = () => {
     const vLabelTr = vitalityScore > 70 ? t('home.vitality.excellent', 'Excellent') : vitalityScore > 40 ? t('home.vitality.onTrack', 'On Track') : t('home.vitality.needsWork', 'Needs Work');
     return (
-    <View style={s.card}>
-      <View style={s.cardHead}>
-        <View>
-          <Text style={s.cardTitle}>{t('home.vitality.label', 'Vitality Score')}</Text>
-          <Text style={s.cardSub}>{t('home.vitality.sub', 'Sleep · Fuel · Active')}</Text>
-        </View>
-        <View style={[s.badge, { backgroundColor: vitalityColor + '18' }]}>
-          <Text style={[s.badgeTxt, { color: vitalityColor }]}>{vLabelTr}</Text>
-        </View>
-      </View>
-
-      <View style={s.vRow}>
-        {/* Circle */}
-        <View style={s.circleWrap}>
-          <CircularProgress
-            progress={dataMissing ? 0 : vitalityScore / 100}
-            size={116}
-            strokeWidth={11}
-            trackColor="#f1f5f9"
-            progressColor={vitalityColor}
-          />
-          <View style={s.circleAbs}>
-            <Text style={[s.vNum, { color: vitalityColor }]}>{dataMissing ? '--' : vitalityScore}</Text>
-            <Text style={s.vSub}>/100</Text>
+      <View style={s.card}>
+        <View style={s.cardHead}>
+          <View>
+            <Text style={s.cardTitle}>{t('home.vitality.label', 'Vitality Score')}</Text>
+            <Text style={s.cardSub}>{t('home.vitality.sub', 'Sleep · Fuel · Active')}</Text>
+          </View>
+          <View style={[s.badge, { backgroundColor: vitalityColor + '18' }]}>
+            <Text style={[s.badgeTxt, { color: vitalityColor }]}>{vLabelTr}</Text>
           </View>
         </View>
 
-        {/* Breakdown bars */}
-        <View style={{ flex: 1 }}>
-          <MiniBar label={t('home.vitality.sleep', 'Sleep')} pct={stepsScore} color="#6366f1" />
-          <MiniBar label={t('home.vitality.fuel', 'Fuel')} pct={fuelScore} color="#10b981" />
-          <MiniBar label={t('home.vitality.active', 'Active')} pct={moodScore} color="#f97316" />
-        </View>
-      </View>
+        <View style={s.vRow}>
+          {/* Circle */}
+          <View style={s.circleWrap}>
+            <CircularProgress
+              progress={dataMissing ? 0 : vitalityScore / 100}
+              size={116}
+              strokeWidth={11}
+              trackColor="#f1f5f9"
+              progressColor={vitalityColor}
+            />
+            <View style={s.circleAbs}>
+              <Text style={[s.vNum, { color: vitalityColor }]}>{dataMissing ? '--' : vitalityScore}</Text>
+              <Text style={s.vSub}>/100</Text>
+            </View>
+          </View>
 
-      {dataMissing && (
-        <Text style={s.vHint}>{t('home.vitality.hint', 'Log your meals, steps or mood to activate your score.')}</Text>
-      )}
-    </View>
-  )};
+          {/* Breakdown bars */}
+          <View style={{ flex: 1 }}>
+            <MiniBar label={t('home.vitality.sleep', 'Sleep')} pct={stepsScore} color="#6366f1" />
+            <MiniBar label={t('home.vitality.fuel', 'Fuel')} pct={fuelScore} color="#10b981" />
+            <MiniBar label={t('home.vitality.active', 'Active')} pct={moodScore} color="#f97316" />
+          </View>
+        </View>
+
+        {dataMissing && (
+          <Text style={s.vHint}>{t('home.vitality.hint', 'Log your meals, steps or mood to activate your score.')}</Text>
+        )}
+      </View>
+    )
+  };
 
   const wBalance = () => (
     <View style={s.card}>

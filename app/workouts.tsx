@@ -13,6 +13,7 @@ import {
     Alert,
     Animated,
     Platform,
+    FlatList,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Stack, useRouter } from 'expo-router';
@@ -349,12 +350,19 @@ export default function WorkoutsScreen() {
                         {!workouts ? (
                             <View style={styles.loading}><ActivityIndicator size="large" color="#2563eb" /></View>
                         ) : (
-                            <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
-                                {filteredWorkouts.map(item => {
+                            <FlatList
+                                data={filteredWorkouts}
+                                keyExtractor={(item) => item._id}
+                                contentContainerStyle={styles.listContainer}
+                                showsVerticalScrollIndicator={false}
+                                initialNumToRender={6}
+                                windowSize={5}
+                                maxToRenderPerBatch={5}
+                                removeClippedSubviews={Platform.OS === 'android'}
+                                renderItem={({ item }) => {
                                     const isItemSaved = savedIds.has(item._id);
                                     return (
                                         <TouchableOpacity
-                                            key={item._id}
                                             style={styles.workoutCard}
                                             activeOpacity={0.9}
                                             onPress={() => openWorkout(item)}
@@ -390,16 +398,15 @@ export default function WorkoutsScreen() {
                                             </View>
                                         </TouchableOpacity>
                                     );
-                                })}
-
-                                {filteredWorkouts.length === 0 && (
+                                }}
+                                ListEmptyComponent={() => (
                                     <View style={styles.empty}>
                                         <Dumbbell size={64} color="#e2e8f0" />
                                         <Text style={styles.emptyText}>{t('workouts.noRoutines', 'No routines found')}</Text>
                                         <Text style={styles.emptySubText}>{t('workouts.noRoutinesSub', 'Try a different type or clear the muscle filter')}</Text>
                                     </View>
                                 )}
-                            </ScrollView>
+                            />
                         )}
                     </>
                 )}
@@ -448,52 +455,62 @@ export default function WorkoutsScreen() {
 
                 {/* ══ SAVED TAB ══ */}
                 {listTab === 'saved' && (
-                    <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
+                    <>
                         {!savedWorkouts ? (
                             <View style={styles.loading}><ActivityIndicator size="large" color="#2563eb" /></View>
-                        ) : savedWorkouts.length === 0 ? (
-                            <View style={styles.empty}>
-                                <Bookmark size={64} color="#e2e8f0" />
-                                <Text style={styles.emptyText}>{t('workouts.noSaved', 'No saved workouts yet')}</Text>
-                                <Text style={styles.emptySubText}>{t('workouts.noSavedSub', 'Tap the bookmark icon on any workout to save it here')}</Text>
-                            </View>
                         ) : (
-                            savedWorkouts.map((item: any) => (
-                                <TouchableOpacity
-                                    key={item._id}
-                                    style={styles.workoutCard}
-                                    activeOpacity={0.9}
-                                    onPress={() => setSelectedWorkout(item)}
-                                >
-                                    <Image
-                                        source={{ uri: (userSex === 'male' ? item.thumbnailMale : userSex === 'female' ? item.thumbnailFemale : null) || item.thumbnail }}
-                                        style={styles.cardImage}
-                                        cachePolicy="memory-disk"
-                                        recyclingKey={item._id}
-                                    />
-                                    <LinearGradient colors={['transparent', 'rgba(0,0,0,0.75)']} style={styles.cardGradient} />
+                            <FlatList
+                                data={savedWorkouts}
+                                keyExtractor={(item: any) => item._id}
+                                contentContainerStyle={styles.listContainer}
+                                showsVerticalScrollIndicator={false}
+                                initialNumToRender={6}
+                                windowSize={5}
+                                maxToRenderPerBatch={5}
+                                removeClippedSubviews={Platform.OS === 'android'}
+                                renderItem={({ item }) => (
                                     <TouchableOpacity
-                                        style={styles.cardSaveBtn}
-                                        onPress={() => handleCardToggleSave(item._id)}
-                                        hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+                                        style={styles.workoutCard}
+                                        activeOpacity={0.9}
+                                        onPress={() => openWorkout(item)}
                                     >
-                                        <Bookmark size={18} color="#ffffff" fill="#ffffff" />
-                                    </TouchableOpacity>
-                                    <View style={styles.cardContent}>
-                                        <View style={styles.cardBottom}>
-                                            <Text style={styles.cardTitle}>{getLocalizedField(item, 'title', lang)}</Text>
-                                            <View style={styles.cardStats}>
-                                                <View style={styles.cardStat}>
-                                                    <Dumbbell size={12} color="#ffffff" />
-                                                    <Text style={styles.cardStatText}>{t(`workouts.categories.${item.category}`, item.category) as string}</Text>
+                                        <Image
+                                            source={{ uri: (userSex === 'male' ? item.thumbnailMale : userSex === 'female' ? item.thumbnailFemale : null) || item.thumbnail }}
+                                            style={styles.cardImage}
+                                            cachePolicy="memory-disk"
+                                            recyclingKey={item._id}
+                                        />
+                                        <LinearGradient colors={['transparent', 'rgba(0,0,0,0.75)']} style={styles.cardGradient} />
+                                        <TouchableOpacity
+                                            style={styles.cardSaveBtn}
+                                            onPress={() => handleCardToggleSave(item._id)}
+                                            hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+                                        >
+                                            <Bookmark size={18} color="#ffffff" fill="#ffffff" />
+                                        </TouchableOpacity>
+                                        <View style={styles.cardContent}>
+                                            <View style={styles.cardBottom}>
+                                                <Text style={styles.cardTitle}>{getLocalizedField(item, 'title', lang)}</Text>
+                                                <View style={styles.cardStats}>
+                                                    <View style={styles.cardStat}>
+                                                        <Dumbbell size={12} color="#ffffff" />
+                                                        <Text style={styles.cardStatText}>{t(`workouts.categories.${item.category}`, item.category) as string}</Text>
+                                                    </View>
                                                 </View>
                                             </View>
                                         </View>
+                                    </TouchableOpacity>
+                                )}
+                                ListEmptyComponent={() => (
+                                    <View style={styles.empty}>
+                                        <Bookmark size={64} color="#e2e8f0" />
+                                        <Text style={styles.emptyText}>{t('workouts.noSaved', 'No saved workouts yet')}</Text>
+                                        <Text style={styles.emptySubText}>{t('workouts.noSavedSub', 'Tap the bookmark icon on any workout to save it here')}</Text>
                                     </View>
-                                </TouchableOpacity>
-                            ))
+                                )}
+                            />
                         )}
-                    </ScrollView>
+                    </>
                 )}
             </SafeAreaView>
 

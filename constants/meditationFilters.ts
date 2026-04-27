@@ -17,6 +17,5 @@ export const MEDITATION_FILTERS = [
     { id: 'frame-control', name: 'Frame Control', emoji: '🔳', color: '#0ea5e9' },
     { id: 'machiavelli', name: 'Machiavelli', emoji: '📜', color: '#9f1239' },
     { id: 'dark-psychology', name: 'Dark Psychology', emoji: '🖤', color: '#0f172a' },
-    { id: 'weight-loss', name: 'Weight Loss', emoji: '⚖️', color: '#84cc16' },
-    { id: 'muscle', name: 'Muscle Builder', emoji: '💪', color: '#ef4444' },
+    { id: 'gym-motivation', name: 'Gym Motivation', emoji: '🏋️', color: '#ef4444' },
 ];

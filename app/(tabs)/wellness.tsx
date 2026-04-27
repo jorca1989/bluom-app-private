@@ -1,12 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  Modal, ActivityIndicator, Dimensions, TextInput,
+  Modal, ActivityIndicator, Dimensions, TextInput, Switch,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { Settings2 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
@@ -17,8 +18,21 @@ import GamesHub from '../../components/GamesHub';
 import LifeGoalsHub from '../../components/LifeGoalsHub';
 import { triggerSound, SoundEffect } from '../../utils/soundEffects';
 import { getBottomContentPadding, TAB_BAR_HEIGHT } from '../../utils/layout';
+import * as SecureStore from 'expo-secure-store';
 
 const { width } = Dimensions.get('window');
+
+// ─── Wellness widget config ────────────────────────────────────
+type WellnessWidgetId = 'kpis'|'quickActions'|'mentalPlan'|'wellnessHubs'|'moodTrend';
+const WELLNESS_WIDGETS: { id: WellnessWidgetId; emoji: string; labelKey: string }[] = [
+  { id: 'kpis',         emoji: '📊', labelKey: 'wellness.widgets.kpis' },
+  { id: 'quickActions', emoji: '⚡', labelKey: 'wellness.widgets.quickActions' },
+  { id: 'mentalPlan',   emoji: '🧠', labelKey: 'wellness.widgets.mentalPlan' },
+  { id: 'wellnessHubs', emoji: '🌿', labelKey: 'wellness.widgets.wellnessHubs' },
+  { id: 'moodTrend',    emoji: '📈', labelKey: 'wellness.widgets.moodTrend' },
+];
+const WELLNESS_WIDGETS_KEY = 'bluom_wellness_widgets_v1';
+const wellCBtn = { width: 36, height: 36, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center' as const, justifyContent: 'center' as const, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 };
 
 // ─── KPI Card ─────────────────────────────────────────────────────────────────
 function KpiCard({
@@ -178,6 +192,26 @@ export default function WellnessScreen() {
   const [showLifeGoals, setShowLifeGoals] = useState(params.showLifeGoals === 'true');
   const [sleepInput, setSleepInput] = useState('');
 
+  // ── Widget config ──
+  const [showWellnessConfig, setShowWellnessConfig] = useState(false);
+  const [wellnessWidgets, setWellnessWidgets] = useState<Set<WellnessWidgetId>>(
+    new Set(WELLNESS_WIDGETS.map(w => w.id))
+  );
+  useEffect(() => {
+    SecureStore.getItemAsync(WELLNESS_WIDGETS_KEY).then(val => {
+      if (val) try { setWellnessWidgets(new Set(JSON.parse(val) as WellnessWidgetId[])); } catch {}
+    });
+  }, []);
+  const toggleWellnessWidget = useCallback((id: WellnessWidgetId) => {
+    setWellnessWidgets(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      SecureStore.setItemAsync(WELLNESS_WIDGETS_KEY, JSON.stringify([...next]));
+      return next;
+    });
+  }, []);
+  const isWW = (id: WellnessWidgetId) => wellnessWidgets.has(id);
+
   const MOODS = [
     { label: t('wellness.moods.excellent', 'Excellent'), value: 5, color: '#22c55e', emoji: '😄' },
     { label: t('wellness.moods.good', 'Good'), value: 4, color: '#3b82f6', emoji: '🙂' },
@@ -236,16 +270,52 @@ export default function WellnessScreen() {
     <SafeAreaView style={s.container} edges={['top']}>
       <ScrollView contentContainerStyle={{ paddingTop: 12, paddingBottom: bottomPad }} showsVerticalScrollIndicator={false}>
 
+        {/* Widget Config Modal */}
+        <Modal visible={showWellnessConfig} animationType="slide" presentationStyle="pageSheet">
+          <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['top']}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+              <Text style={{ fontSize: 18, fontWeight: '800', color: '#0f172a' }}>{t('wellness.widgets.title', 'Wellness Sections')}</Text>
+              <TouchableOpacity onPress={() => setShowWellnessConfig(false)}>
+                <Ionicons name="close" size={22} color="#475569" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#f8fafc' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                  <Text style={{ fontSize: 20 }}>🌙</Text>
+                  <View>
+                    <Text style={{ fontSize: 15, fontWeight: '700', color: '#0f172a' }}>{t('common.darkMode', 'Dark Mode')}</Text>
+                    <Text style={{ fontSize: 12, color: '#94a3b8' }}>{t('common.comingSoon', 'Coming soon')}</Text>
+                  </View>
+                </View>
+                <Switch value={false} disabled trackColor={{ true: '#059669', false: '#e2e8f0' }} thumbColor="#fff" />
+              </View>
+              {WELLNESS_WIDGETS.map(w => (
+                <View key={w.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f8fafc' }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <Text style={{ fontSize: 20 }}>{w.emoji}</Text>
+                    <Text style={{ fontSize: 15, fontWeight: '600', color: '#1e293b' }}>{t(w.labelKey, w.id)}</Text>
+                  </View>
+                  <Switch value={isWW(w.id)} onValueChange={() => toggleWellnessWidget(w.id)} trackColor={{ true: '#059669', false: '#e2e8f0' }} thumbColor="#fff" />
+                </View>
+              ))}
+            </ScrollView>
+          </SafeAreaView>
+        </Modal>
+
         {/* ── Header ── */}
         <View style={s.header}>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={s.title}>{t('wellness.title', 'Wellness')}</Text>
             <Text style={s.subtitle}>{t('wellness.subtitle', 'Mental health & optimisation')}</Text>
           </View>
+          <TouchableOpacity onPress={() => setShowWellnessConfig(true)} style={wellCBtn} activeOpacity={0.75}>
+            <Settings2 size={17} color="#475569" />
+          </TouchableOpacity>
         </View>
 
         {/* ── KPI 2×2 Grid ── */}
-        <View style={s.kpiGrid}>
+        {isWW('kpis') && <View style={s.kpiGrid}>
           <KpiCard
             icon="moon" iconBg="#ede9fe" iconColor="#7c3aed"
             label={t('wellness.sleep', 'Sleep')} labelColor="#5b21b6"
@@ -281,10 +351,10 @@ export default function WellnessScreen() {
             barColor="#059669"
             sub={t('wellness.thisWeek', 'This week')}
           />
-        </View>
+        </View>}
 
-        {/* ── Quick Actions (replaces old + dropdown) ── */}
-        <View style={s.section}>
+        {/* ── Quick Actions ── */}
+        {isWW('quickActions') && <View style={s.section}>
           <SectionHeader title={t('wellness.quickLog', 'Quick Log')} sub={t('wellness.trackDaily', 'Track your daily wellness')} />
           <View style={s.quickActions}>
             <QuickActionBtn
@@ -304,10 +374,10 @@ export default function WellnessScreen() {
               onPress={() => { triggerSound(SoundEffect.UI_TAP); setShowMeditationHub(true); }}
             />
           </View>
-        </View>
+        </View>}
 
         {/* ── AI Mental Health Plan Banner ── */}
-        <View style={s.section}>
+        {isWW('mentalPlan') && <View style={s.section}>
           <TouchableOpacity
             onPress={() => router.push('/mental-health-plan' as any)}
             activeOpacity={0.9}
@@ -349,10 +419,10 @@ export default function WellnessScreen() {
               </View>
             </LinearGradient>
           </TouchableOpacity>
-        </View>
+        </View>}
 
         {/* ── Wellness Hubs Grid ── */}
-        <View style={s.section}>
+        {isWW('wellnessHubs') && <View style={s.section}>
           <SectionHeader title={t('wellness.wellnessHubs', 'Wellness Hubs')} sub={t('wellness.mentalToolbox', 'Your mental toolbox')} />
           <View style={s.hubGrid}>
             <HubCard
@@ -381,10 +451,10 @@ export default function WellnessScreen() {
               onPress={() => router.push('/library' as any)}
             />
           </View>
-        </View>
+        </View>}
 
         {/* ── 7-Day Mood Chart ── */}
-        {moodLogs && moodLogs.length > 0 && (
+        {isWW('moodTrend') && moodLogs && moodLogs.length > 0 && (
           <View style={s.section}>
             <SectionHeader title={t('wellness.moodTrend', '7-Day Mood Trend')} />
             <View style={s.moodChart}>

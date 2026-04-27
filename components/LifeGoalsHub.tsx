@@ -149,7 +149,7 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
                             style={[styles.catChip, selectedCategory === cat && styles.catChipActive]}
                             onPress={() => setSelectedCategory(cat)}
                         >
-                            <Text style={[styles.catChipText, selectedCategory === cat && styles.catChipTextActive]}>{cat}</Text>
+                            <Text style={[styles.catChipText, selectedCategory === cat && styles.catChipTextActive]}>{t(`wellness.lifeGoalsHub.cat_${cat}`, cat)}</Text>
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
@@ -160,7 +160,7 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
                         <View key={goal._id} style={styles.goalCard}>
                             <View style={styles.cardHeader}>
                                 <View style={[styles.tag, { backgroundColor: getCategoryColor(goal.category) + '20' }]}>
-                                    <Text style={[styles.tagText, { color: getCategoryColor(goal.category) }]}>{goal.category}</Text>
+                                    <Text style={[styles.tagText, { color: getCategoryColor(goal.category) }]}>{t(`wellness.lifeGoalsHub.cat_${goal.category}`, goal.category)}</Text>
                                 </View>
                                 {goal.status !== 'achieved' && (
                                     <TouchableOpacity onPress={() => handleDelete(goal._id)}>
@@ -236,7 +236,7 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
                                             style={[styles.catChip, newCat === cat && styles.catChipActive]}
                                             onPress={() => setNewCat(cat)}
                                         >
-                                            <Text style={[styles.catChipText, newCat === cat && styles.catChipTextActive]}>{cat}</Text>
+                                            <Text style={[styles.catChipText, newCat === cat && styles.catChipTextActive]}>{t(`wellness.lifeGoalsHub.cat_${cat}`, cat)}</Text>
                                         </TouchableOpacity>
                                     ))}
                                 </View>

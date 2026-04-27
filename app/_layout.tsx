@@ -1,5 +1,5 @@
 import '../global.css';
-import i18n from '../i18n';
+import i18n, { restoreSavedLanguage } from '../i18n';
 import React, { useEffect, useRef, useState } from 'react';
 import { Stack, useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -102,6 +102,12 @@ function InitialLayout() {
     user?.id ? { clerkId: user.id } : 'skip'
   );
 
+  // Restore saved language from SecureStore as fast as possible (before DB loads)
+  useEffect(() => {
+    restoreSavedLanguage();
+  }, []);
+
+  // Once the DB user loads, sync language preference (source of truth)
   useEffect(() => {
     if (convexUser?.preferredLanguage && i18n.language !== convexUser.preferredLanguage) {
       i18n.changeLanguage(convexUser.preferredLanguage);

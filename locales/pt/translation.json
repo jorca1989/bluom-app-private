@@ -9,7 +9,7 @@
       "cancel": "Cancelar"
     },
     "greeting": {
-      "still": "Ainda nisso, {{name}}?",
+      "still": "Ainda Motivado, {{name}}?",
       "stillDesc": "Faça valer a pena.",
       "morning": "Bom dia, {{name}}.",
       "morningDesc": "Dite o ritmo para hoje.",
@@ -18,7 +18,8 @@
       "evening": "Boa noite, {{name}}.",
       "eveningDesc": "Relaxe com intenção.",
       "night": "Modo noturno, {{name}}.",
-      "nightDesc": "A recuperação faz parte do processo."
+      "nightDesc": "A recuperação faz parte do processo.",
+      "stillFemale": "Ainda Motivada, {{name}}?"
     },
     "weather": {
       "label": "Clima Local",
@@ -211,6 +212,17 @@
       "aiChefDesc": "Escanear e criar",
       "personalPlan": "O Meu Plano",
       "personalPlanDesc": "Rotina IA 30-Dias"
+    },
+    "widgets": {
+      "title": "Secções do Fuel",
+      "dayCalendar": "Calendário do Dia",
+      "calories": "Resumo de Calorias",
+      "macros": "Macros",
+      "water": "Rastreador de Água",
+      "fasting": "Banner de Jejum",
+      "meals": "Refeições",
+      "quickActions": "Ações Rápidas",
+      "utilities": "Utilidades"
     }
   },
   "modals": {
@@ -507,7 +519,9 @@
       "thu": "Q",
       "fri": "S",
       "sat": "S"
-    }
+    },
+    "darkMode": "Modo Escuro",
+    "comingSoon": "Em breve"
   },
   "move": {
     "title": "Treinar",
@@ -664,62 +678,15 @@
     "details": "Detalhes",
     "equipment": "Equipamento",
     "primaryMuscles": "Músculos Principais",
-    "secondaryMuscles": "Músculos Secundários"
-  },
-  "gamesHub": {
-    "title": "Centro de Jogos Mentais",
-    "subtitle": "Treino de foco e atenção",
-    "comingSoon": "Em breve",
-    "gamesImproved": "Jogos em melhoria contínua",
-    "activelyEnhancing": "Estamos a melhorar a qualidade dos jogos e a adicionar novos!",
-    "premiumUnlimited": "Premium: jogos ilimitados",
-    "freeLimit": "Gratuíto: {{plays}}/2 jogos hoje",
-    "backToGames": "← Voltar aos Jogos",
-    "upgradeToPro": "Atualizar para Pro",
-    "upgradeMessage": "Utilizadores gratuitos podem jogar 2 jogos por dia. Atualize para Pro para jogos ilimitados e acompanhamento de progresso.",
-    "viewProPlans": "Ver Planos Pro",
-    "game_reaction_name": "Esperar pelo Verde",
-    "game_reaction_desc": "Testa o tempo de reação",
-    "game_balance_name": "Equilíbrio",
-    "game_balance_desc": "Mantêm-te centrado",
-    "game_spot-difference_name": "Combinação Rápida",
-    "game_spot-difference_desc": "Combina a carta anterior",
-    "game_sequence-recall_name": "Memória de Sequência",
-    "game_sequence-recall_desc": "Memoriza números",
-    "game_focus-frenzy_name": "Frenesi de Foco",
-    "game_focus-frenzy_desc": "Clica nos alvos rapidamente",
-    "game_wave-rider_name": "Surfar nas Ondas",
-    "game_wave-rider_desc": "Respira com as ondas",
-    "game_focus-shift_name": "Mudança de Foco",
-    "game_focus-shift_desc": "Alterna entre tarefas",
-    "game_visual-filter_name": "Filtro Visual",
-    "game_visual-filter_desc": "Encontra o alvo escondido",
-    "game_task-switcher_name": "Troca de Tarefas",
-    "game_task-switcher_desc": "Troca rápida de contexto",
-    "game_attention-trainer_name": "Treino de Atenção",
-    "game_attention-trainer_desc": "Clica nos alvos",
-    "game_relaxing-ripples_name": "Ondulações Relaxantes",
-    "game_relaxing-ripples_desc": "Cria ondulações na água",
-    "game_calm-colors_name": "Cores Calmas",
-    "game_calm-colors_desc": "Respiração por cores",
-    "game_stroop-challenge_name": "Desafio de Stroop",
-    "game_stroop-challenge_desc": "Cor contra palavra",
-    "game_memory-matrix-2_name": "Matriz de Memória",
-    "game_memory-matrix-2_desc": "Memória em grelha",
-    "game_word-scramble_name": "Palavras Baralhadas",
-    "game_word-scramble_desc": "Descobre a palavra certa",
-    "game_math-bingo-2_name": "Bingo Matemático",
-    "game_math-bingo-2_desc": "Resolve equações",
-    "game_anagram-challenge_name": "Desafio de ónagramas",
-    "game_anagram-challenge_desc": "Resolve anagramas",
-    "game_finger-tapping_name": "Toque dos Dedos",
-    "game_finger-tapping_desc": "Toca na sequência certa",
-    "game_n-back_name": "Memória N-Back",
-    "game_n-back_desc": "Memória de trabalho",
-    "game_rhythm-tap-2_name": "Ritmo Tap",
-    "game_rhythm-tap-2_desc": "Toca ao ritmo",
-    "game_pattern-recognition_name": "Reconhecimento de Padrões",
-    "game_pattern-recognition_desc": "Completa as sequências"
+    "secondaryMuscles": "Músculos Secundários",
+    "widgets": {
+      "title": "Configuração de Widgets",
+      "kpis": "KPIs de Atividade",
+      "swipeable": "Plano de Treinos",
+      "quickActions": "Ações Rápidas",
+      "todayActivities": "Atividades de Hoje",
+      "moveInsights": "Insights de Movimento"
+    }
   },
   "habitsLabel": "Hábitos",
   "reflectionsLabel": "Reflexões",
@@ -1073,8 +1040,8 @@
   "achievements": {
     "title": "Conquistas",
     "first_workout": {
-      "title": "Primeiros Passos",
-      "description": "Conclui o teu primeiro treino! 🎯"
+      "title": "Primeira Repetição",
+      "description": "Registe o seu primeiro treino"
     },
     "step_goal": {
       "title": "Mestre dos Passos",
@@ -1103,6 +1070,422 @@
     "variety_master": {
       "title": "Mestre da Variedade",
       "description": "Experimenta 3 tipos diferentes de treino! 🌈"
+    },
+    "first_meal_log": {
+      "title": "Primeira Dentada",
+      "description": "Registe a sua primeira refeição"
+    },
+    "log_7_days_meals": {
+      "title": "Consistente",
+      "description": "Registe refeições 7 dias seguidos"
+    },
+    "log_30_days_meals": {
+      "title": "Mestre da Nutrição",
+      "description": "Registe refeições 30 dias seguidos"
+    },
+    "hit_protein_goal": {
+      "title": "Golpe de Proteína",
+      "description": "Atinja a sua meta de proteína"
+    },
+    "hit_protein_7days": {
+      "title": "Sequência Proteica",
+      "description": "Atinja a meta de proteína 7 dias seguidos"
+    },
+    "water_goal_day": {
+      "title": "Hidratado",
+      "description": "Atinja a sua meta de água"
+    },
+    "water_goal_7days": {
+      "title": "Fluxo de Rio",
+      "description": "Atinja a meta de água 7 dias seguidos"
+    },
+    "water_goal_30days": {
+      "title": "Mente Oceânica",
+      "description": "Atinja a meta de água 30 dias seguidos"
+    },
+    "ai_meal_scan": {
+      "title": "Detetive de Comida",
+      "description": "Analise uma refeição com a câmara IA"
+    },
+    "under_calorie_goal": {
+      "title": "Dia de Défice",
+      "description": "Mantenha-se na sua meta de calorias"
+    },
+    "calorie_goal_14days": {
+      "title": "Preciso",
+      "description": "Cumpra a meta calórica 14 dias seguidos"
+    },
+    "meal_plan_full_day": {
+      "title": "Seguidor de Planos",
+      "description": "Registe todas as refeições do seu plano de 30 dias"
+    },
+    "try_new_recipe": {
+      "title": "Explorador de Cozinha",
+      "description": "Cozinhe uma receita do Bluom"
+    },
+    "sugar_free_day": {
+      "title": "Sem Açúcar",
+      "description": "Complete um dia sem açúcar"
+    },
+    "sugar_free_7days": {
+      "title": "Detox Doce",
+      "description": "Fique 7 dias sem açúcar"
+    },
+    "sugar_free_30days": {
+      "title": "Campeão Sem Açúcar",
+      "description": "30 dias seguidos sem açúcar"
+    },
+    "workout_7days": {
+      "title": "Guerreiro da Semana",
+      "description": "Treine 7 dias seguidos"
+    },
+    "workout_30days": {
+      "title": "Disciplina de Ferro",
+      "description": "30 dias seguidos a treinar"
+    },
+    "steps_5k": {
+      "title": "5K Passos",
+      "description": "Ande 5.000 passos num dia"
+    },
+    "steps_10k": {
+      "title": "Clube 10K",
+      "description": "Ande 10.000 passos num dia"
+    },
+    "steps_10k_7days": {
+      "title": "Sequência de Passos",
+      "description": "10.000 passos durante 7 dias seguidos"
+    },
+    "steps_10k_30days": {
+      "title": "Espírito de Maratona",
+      "description": "10.000 passos todos os dias durante 30 dias"
+    },
+    "calories_burned_300": {
+      "title": "Queimador",
+      "description": "Queime 300+ calorias numa única sessão"
+    },
+    "calories_burned_500": {
+      "title": "Inferno",
+      "description": "Queime 500+ calorias numa única sessão"
+    },
+    "try_cardio": {
+      "title": "Curioso por Cardio",
+      "description": "Registe uma sessão de cardio"
+    },
+    "try_strength": {
+      "title": "Toque de Ferro",
+      "description": "Registe uma sessão de força"
+    },
+    "try_hiit": {
+      "title": "Iniciado no HIIT",
+      "description": "Complete um treino HIIT"
+    },
+    "try_yoga": {
+      "title": "Corpo Zen",
+      "description": "Registe uma sessão de yoga ou flexibilidade"
+    },
+    "complete_4week_plan": {
+      "title": "Plano Completo",
+      "description": "Termine o plano gratuito de 4 semanas"
+    },
+    "total_10_workouts": {
+      "title": "Dígitos Duplos",
+      "description": "Registe 10 treinos no total"
+    },
+    "total_50_workouts": {
+      "title": "Meio Século",
+      "description": "Registe 50 treinos no total"
+    },
+    "total_100_workouts": {
+      "title": "Clube Centenário",
+      "description": "Registe 100 treinos no total"
+    },
+    "first_mood_log": {
+      "title": "Verificação de Humor",
+      "description": "Registe o seu humor pela primeira vez"
+    },
+    "mood_log_7days": {
+      "title": "Rastreador de Humor",
+      "description": "Registe o seu humor 7 dias seguidos"
+    },
+    "mood_log_30days": {
+      "title": "Inteligência Emocional",
+      "description": "Registe o humor durante 30 dias seguidos"
+    },
+    "first_meditation": {
+      "title": "Primeira Respiração",
+      "description": "Complete a sua primeira sessão de meditação"
+    },
+    "meditate_7days": {
+      "title": "Semana Consciente",
+      "description": "Medite 7 dias seguidos"
+    },
+    "meditate_30days": {
+      "title": "Modo Monge",
+      "description": "Sequência de meditação de 30 dias"
+    },
+    "first_sleep_log": {
+      "title": "Rastreador de Sono",
+      "description": "Registe a sua qualidade de sono"
+    },
+    "sleep_8hrs": {
+      "title": "Sono Dourado",
+      "description": "Registe 8+ horas de sono de qualidade"
+    },
+    "sleep_8hrs_7days": {
+      "title": "Campeão do Sono",
+      "description": "8+ horas de sono durante 7 dias seguidos"
+    },
+    "perfect_vitality": {
+      "title": "Humano de Elite",
+      "description": "Pontue 90+ na Pontuação de Vitalidade"
+    },
+    "stress_low_week": {
+      "title": "Comandante Calmo",
+      "description": "Registe baixo stress durante 7 dias seguidos"
+    },
+    "first_journal": {
+      "title": "Primeira Página",
+      "description": "Escreva a sua primeira entrada no diário"
+    },
+    "journal_7days": {
+      "title": "Semana Reflexiva",
+      "description": "Escreva no diário durante 7 dias seguidos"
+    },
+    "journal_30days": {
+      "title": "Arquiteto Interior",
+      "description": "Escreva no diário todos os dias durante um mês"
+    },
+    "first_gratitude": {
+      "title": "Coração Grato",
+      "description": "Registe a sua primeira entrada de gratidão"
+    },
+    "gratitude_7days": {
+      "title": "Sequência de Gratidão",
+      "description": "Pratique a gratidão 7 dias seguidos"
+    },
+    "gratitude_30days": {
+      "title": "Mentalidade de Abundância",
+      "description": "Gratidão registada durante 30 dias seguidos"
+    },
+    "ai_reflection": {
+      "title": "Espelho Digital",
+      "description": "Gere a sua primeira reflexão mental com a IA"
+    },
+    "total_50_entries": {
+      "title": "Escritor Prolífico",
+      "description": "Escreva 50 entradas de diário ou gratidão"
+    },
+    "first_habit": {
+      "title": "Hábito Nascido",
+      "description": "Crie o seu primeiro hábito"
+    },
+    "habit_7day_streak": {
+      "title": "Hábito Fixo",
+      "description": "Mantenha um hábito durante 7 dias"
+    },
+    "habit_21day_streak": {
+      "title": "Conectado",
+      "description": "Sequência de 21 dias - já está enraizado"
+    },
+    "habit_66day_streak": {
+      "title": "Automático",
+      "description": "66 dias - a ciência diz que é permanente"
+    },
+    "all_habits_today": {
+      "title": "Limpeza Total",
+      "description": "Complete todos os hábitos num único dia"
+    },
+    "break_habit_7days": {
+      "title": "Libertação",
+      "description": "Passe 7 dias sem um mau hábito"
+    },
+    "break_habit_30days": {
+      "title": "Liberto",
+      "description": "30 dias livre de um mau hábito"
+    },
+    "break_habit_90days": {
+      "title": "Nova Identidade",
+      "description": "90 dias - o velho hábito desapareceu"
+    },
+    "habit_savings_100": {
+      "title": "Dinheiro Poupado",
+      "description": "Poupe 100 ao abandonar um mau hábito"
+    },
+    "first_task": {
+      "title": "A Começar",
+      "description": "Adicione a sua primeira tarefa"
+    },
+    "complete_10_tasks": {
+      "title": "Esmagador de Tarefas",
+      "description": "Complete 10 tarefas"
+    },
+    "complete_50_tasks": {
+      "title": "Máquina de Execução",
+      "description": "Complete 50 tarefas"
+    },
+    "complete_100_tasks": {
+      "title": "Operador",
+      "description": "Complete 100 tarefas"
+    },
+    "focus_first_session": {
+      "title": "Trabalho Profundo",
+      "description": "Complete a sua primeira sessão de Foco"
+    },
+    "focus_7_sessions": {
+      "title": "Frequente no Flow",
+      "description": "Complete 7 sessões de Foco"
+    },
+    "north_star_set": {
+      "title": "Estrela do Norte",
+      "description": "Defina o seu objetivo de vida de 12 meses"
+    },
+    "life_goal_achieved": {
+      "title": "Objetivo Alcançado",
+      "description": "Marque um objetivo de vida como alcançado"
+    },
+    "partner_linked": {
+      "title": "Casal Poderoso",
+      "description": "Vincule-se a um parceiro para listas partilhadas"
+    },
+    "weight_logged": {
+      "title": "Corpo Consciente",
+      "description": "Registe o seu peso pela primeira vez"
+    },
+    "weight_goal_reached": {
+      "title": "Meta Alcançada",
+      "description": "Alcance o seu peso corporal alvo"
+    },
+    "weight_log_30days": {
+      "title": "Cronista do Corpo",
+      "description": "Registe o peso todos os dias durante 30 dias"
+    },
+    "first_fast": {
+      "title": "Iniciado no Jejum",
+      "description": "Complete a sua primeira sessão de jejum"
+    },
+    "fast_16hrs": {
+      "title": "16:8 Iniciado",
+      "description": "Complete um jejum de 16 horas"
+    },
+    "fast_24hrs": {
+      "title": "Jejum de Um Dia",
+      "description": "Complete um jejum de 24 horas"
+    },
+    "fast_7streak": {
+      "title": "Praticante de Jejum",
+      "description": "7 dias consecutivos de jejum"
+    },
+    "bio_log_first": {
+      "title": "Bio Consciente",
+      "description": "Complete o seu primeiro Bio-Registo"
+    },
+    "bio_log_7days": {
+      "title": "Scanner Corporal",
+      "description": "Registe marcadores biológicos 7 dias seguidos"
+    },
+    "pelvic_first": {
+      "title": "Iniciador de Protocolo",
+      "description": "Complete a sua primeira sessão de Força Pélvica"
+    },
+    "supplements_7days": {
+      "title": "Pilha Consistente",
+      "description": "Registe suplementos 7 dias seguidos"
+    },
+    "sugar_scan_first": {
+      "title": "Detetive de Rótulos",
+      "description": "Analise o rótulo de um produto com a IA"
+    },
+    "cycle_logged": {
+      "title": "Ciclo Consciente",
+      "description": "Registe os dados do seu primeiro ciclo"
+    },
+    "pregnancy_milestone": {
+      "title": "Novo Capítulo",
+      "description": "Desbloqueie o acompanhamento da gravidez"
+    },
+    "ai_first_message": {
+      "title": "Coach Ativado",
+      "description": "Envie a sua primeira mensagem ao Treinador IA"
+    },
+    "ai_10_messages": {
+      "title": "Treinável",
+      "description": "Tenha 10 conversas com o Treinador IA"
+    },
+    "ai_plan_generated": {
+      "title": "Projeto Criado",
+      "description": "Gere o seu primeiro plano personalizado da IA"
+    },
+    "ai_meal_swapped": {
+      "title": "Arquiteto de Refeições",
+      "description": "Troque uma refeição usando a IA (Pro)"
+    },
+    "ai_recipe_generated": {
+      "title": "Chef IA",
+      "description": "Gere uma receita com a IA"
+    },
+    "ai_insight_generated": {
+      "title": "Espelho Digital",
+      "description": "Desbloqueie o seu relatório mental com a IA"
+    },
+    "whatsapp_shared": {
+      "title": "Post de Responsabilidade",
+      "description": "Partilhe a sua lista via WhatsApp"
+    },
+    "partner_synced_week": {
+      "title": "Jogador de Equipa",
+      "description": "Mantenha-se sincronizado com o parceiro durante uma semana"
+    },
+    "onboarding_complete": {
+      "title": "Projeto Desbloqueado",
+      "description": "Complete a introdução ao Bluom"
+    },
+    "pro_subscriber": {
+      "title": "Membro Pro",
+      "description": "Atualize para o Bluom Pro"
+    },
+    "all_tabs_used": {
+      "title": "Super Utilizador",
+      "description": "Use os separadores Nutrição, Treino, Bem-Estar e Mente"
+    },
+    "streak_30_days": {
+      "title": "Sequência de 30 Dias",
+      "description": "Use o Bluom todos os dias durante 30 dias"
+    },
+    "streak_90_days": {
+      "title": "Lenda dos 90 Dias",
+      "description": "Use o Bluom todos os dias durante 90 dias"
+    },
+    "streak_365_days": {
+      "title": "Ano Bluom",
+      "description": "Use o Bluom todos os dias durante um ano"
+    },
+    "xp_1000": {
+      "title": "Em Ascensão",
+      "description": "Ganhe 1.000 XP"
+    },
+    "xp_5000": {
+      "title": "Estabelecido",
+      "description": "Ganhe 5.000 XP"
+    },
+    "xp_10000": {
+      "title": "Elite",
+      "description": "Ganhe 10.000 XP"
+    },
+    "xp_50000": {
+      "title": "Lenda",
+      "description": "Ganhe 50.000 XP no total"
+    },
+    "total_5_achievements": {
+      "title": "Colecionador",
+      "description": "Desbloqueie 5 conquistas"
+    },
+    "total_20_achievements": {
+      "title": "Caixa de Troféus",
+      "description": "Desbloqueie 20 conquistas"
+    },
+    "total_50_achievements": {
+      "title": "Completista",
+      "description": "Desbloqueie 50 conquistas"
     }
   },
   "aiCoach": {
@@ -1231,7 +1614,18 @@
     "helpFeedback": "Ajuda e Feedback",
     "settings": "Definições",
     "settingsSub": "Unidades, objetivos, notificações",
-    "footer": "Vida Optimizada"
+    "footer": "Vida Optimizada",
+    "title": "Perfil",
+    "widgets": {
+      "title": "Configuração de Widgets",
+      "hero": "Cartão de Perfil",
+      "achievements": "Conquistas",
+      "stats": "Estatísticas",
+      "account": "Conta",
+      "health": "Saúde e Monitorização",
+      "tools": "Ferramentas",
+      "support": "Suporte"
+    }
   },
   "plan": {
     "title": "O Teu Plano",
@@ -1677,7 +2071,10 @@
         "reason": "Maioria das mulheres apresenta deficiência; essencial para a função imunitária, humor e saúde óssea",
         "timing": "De manhã, com uma refeição contendo gordura"
       }
-    }
+    },
+    "restartTitle": "Reiniciar Questionário",
+    "restartMsg": "Isto irá apagar o teu perfil atual e reiniciar o questionário. Continuar?",
+    "restartConfirm": "Reiniciar"
   },
   "lang": "pt",
   "mensHealth": {
@@ -1806,12 +2203,12 @@
     "markerPlaceholder": "Insere {{unit}}...",
     "personalisedInsights": "Insights Personalizados",
     "quiz": {
-      "muscle": "Construir Músculo",
+      "muscle": "Ganhar músculo",
       "strength": "Aumentar Força",
-      "fat_loss": "Secar & Definir",
+      "fat_loss": "\"Secar\"",
       "performance": "Performance Atlética",
       "longevity": "Longevidade & Saúde",
-      "recomp": "Recomposição Corporal",
+      "recomp": "Recomposição corporal",
       "beginner": "Menos de 1 ano",
       "intermediate": "1–3 anos",
       "advanced": "3–7 anos",
@@ -1851,7 +2248,24 @@
         "performance": "Velocidade, potência, condicionamento",
         "longevity": "Otimização a longo prazo",
         "recomp": "Construir músculo e perder gordura simultaneamente"
-      }
+      },
+      "natural": "Atleta Natural",
+      "enhanced": "\"Hormonizado\" / PED",
+      "athlete": "Atleta Competitivo",
+      "naturalDesc": "Sem substâncias de melhoria de desempenho",
+      "enhancedDesc": "A usar ou a considerar compostos anabólicos",
+      "athleteDesc": "A competir ou a preparar-se para competir",
+      "muscleDesc": "Hipertrofia e volume",
+      "strengthDesc": "Força bruta e 1RM",
+      "fat_lossDesc": "Perda de gordura, preservando o músculo",
+      "performanceDesc": "Velocidade, potência, preparação física",
+      "longevityDesc": "Otimização a longo prazo",
+      "recompDesc": "Ganhar músculo e perder gordura ao mesmo tempo",
+      "none": "Não — treino para mim mesmo",
+      "bodybuilding": "Bodybuilding / Physique",
+      "powerlifting": "Powerlifting / Strongman",
+      "crossfit": "CrossFit / Funcional",
+      "sport": "Desporto de Equipa / Combate"
     },
     "articles": {
       "1": {
@@ -1948,7 +2362,7 @@
     },
     "natural": "Natural",
     "naturalTagline": "Testosterona Optimizada",
-    "enhanced": "Enhanced",
+    "enhanced": "\"Hormonizado\"",
     "enhancedTagline": "Inteligência de Ciclo",
     "athlete": "Atleta",
     "athleteTagline": "Modo Competição Ativo",
@@ -1971,7 +2385,11 @@
     "cardioTitle": "Saúde Cardiovascular é Prioridade #1",
     "cardioBody": "A causa #1 de morte prematura em utilizadores de PEDs é cardiovascular. Cardio LISS 4x/semana é obrigatório.",
     "unlockDeepAnalytics": "Desbloquear Análises Profundas",
-    "unlockDeepAnalyticsSub": "Análise de padrões hormonais com IA, rastreamento avançado de biomarcadores e stack de suplementos personalizada."
+    "unlockDeepAnalyticsSub": "Análise de padrões hormonais com IA, rastreamento avançado de biomarcadores e stack de suplementos personalizada.",
+    "restartTitle": "Reiniciar Questionário",
+    "restartMsg": "Isto irá apagar o teu perfil atual e reiniciar o questionário. Continuar?",
+    "restartConfirm": "Reiniciar",
+    "modeProtocolBadge": "Protocolo {{mode}}"
   },
   "sugarControl": {
     "startedTitle": "Iniciado",
@@ -2799,138 +3217,28 @@
         "d12a1Why": "A escrita de autocompaixão reduz a vergonha e a autocrítica (Neff & Germer, 2013).",
         "d12a2Title": "Prática de Saboreio",
         "d12a2Desc": "Recorda uma memória positiva com vívidos detalhes durante 10 minutos. Escreve o que sentiste.",
-        "d12a2Why": "O saboreio aumenta o afeto positivo e prolonga os benefícios das boas experiências.",
-        "d13a1Title": "Auditoria de Energia",
-        "d13a1Desc": "Lista todas as pessoas/atividades da semana passada. Avalia cada uma com +/- na tua energia.",
-        "d13a1Why": "A gestão consciente da energia previne o esgotamento (Loehr & Schwartz, 2003).",
-        "d13a2Title": "Hora de Desintoxicação Digital",
-        "d13a2Desc": "Uma hora com todas as notificações desligadas. Esteja totalmente presente numa atividade analógica.",
-        "d13a2Why": "Períodos sem telemóvel reduzem os índices de ansiedade em 23% (Duke University, 2021).",
-        "d14a1Title": "Diário da Semana 2",
-        "d14a1Desc": "Vitórias → Desafios → Padrões observados → Um compromisso para a Semana 3.",
-        "d14a1Why": "A reflexão estruturada incorpora a aprendizagem e prepara o cérebro para a mudança na próxima fase.",
-        "d15a1Title": "Aprender durante 30 Minutos",
-        "d15a1Desc": "Escolhe um tema. Lê, vê ou ouve sem distrações durante 30 minutos.",
-        "d15a1Why": "A neuroplasticidade atinge o pico com aprendizagem focada e nova — 30 min é o ideal para a retenção.",
-        "d15a2Title": "Método de Ensino Reverso",
-        "d15a2Desc": "Explica o que acabaste de aprender em palavras simples, como se estivesses a falar com uma criança de 10 anos.",
-        "d15a2Why": "A Técnica Feynman revela lacunas na compreensão e aprofunda a codificação da memória.",
-        "d16a1Title": "Constrói a Tua Escada do Medo",
-        "d16a1Desc": "Identifica o teu medo. Divide-o em 10 passos do mais fácil ao mais difícil. Dá o passo 1 hoje.",
-        "d16a1Why": "A exposição gradual reduz sistematicamente a evitação e as respostas de ansiedade (TCC).",
-        "d17a1Title": "Atividade de Fluxo",
-        "d17a1Desc": "Faz uma atividade que te faz perder a noção do tempo. Remove todas as distrações.",
-        "d17a1Why": "O estado de fluxo ativa a dopamina, norepinefrina e endorfinas simultaneamente.",
-        "d18a1Title": "Mapeamento Ikigai",
-        "d18a1Desc": "Desenha o diagrama Ikigai: O que amas, em que és bom, o que o mundo precisa, pelo que podes ser pago.",
-        "d18a1Why": "O alinhamento Ikigai prevê a satisfação de vida e longevidade (investigação da Zona Azul de Okinawa).",
-        "d19a1Title": "Reflexão sobre Pontos Fortes VIA",
-        "d19a1Desc": "Lista os teus 5 principais pontos fortes de carácter. Escreve uma forma como usaste cada um esta semana.",
-        "d19a1Why": "Usar os pontos fortes diariamente reduz a depressão em 40% (Seligman, modelo PERMA).",
-        "d20a1Title": "Carta de Perdão",
-        "d20a1Desc": "Escreve uma carta de perdão — não tens de a enviar. Foca na tua própria libertação.",
-        "d20a1Why": "O perdão reduz significativamente a hostilidade, a pressão arterial e os índices de depressão.",
-        "d21a1Title": "Ritual de Celebração",
-        "d21a1Desc": "Relê o teu registo do Dia 1. Escreve: Quem eras → Quem és agora. Celebra a diferença.",
-        "d21a1Why": "Os rituais de conclusão ancoram os ganhos e motivam a continuação da mudança de comportamento.",
-        "d22a1Title": "Plano de Empilhamento de Hábitos",
-        "d22a1Desc": "Escreve 3 hábitos: Gatilho → Novo comportamento → Recompensa. Adiciona-os a rotinas existentes.",
-        "d22a1Why": "O empilhamento de hábitos tem uma taxa de sucesso de 91% vs. formação de hábito isolado (Fogg, BJ, 2020).",
-        "d23a1Title": "Escrita de Declaração de Identidade",
-        "d23a1Desc": "Escreve 5 afirmações 'Eu sou' que descrevem quem estás a tornar-te. Lê-as diariamente.",
-        "d23a1Why": "Os hábitos baseados na identidade são 2× mais duradouros do que os objetivos baseados em resultados (Clear, Hábitos Atómicos).",
-        "d24a1Title": "Mapa de Apoio",
-        "d24a1Desc": "Desenha o teu mapa de apoio: contactos emocionais, práticos, profissionais e sociais.",
-        "d24a1Why": "O apoio social é o maior preditor de resiliência (Southwick & Charney, 2012).",
-        "d25a1Title": "Carta do Eu Futuro",
-        "d25a1Desc": "Escreve a partir do teu eu futuro (12 meses à frente). O que fizeste? Quem és?",
-        "d25a1Why": "A visualização do eu futuro aumenta a autorregulação do eu presente em 30% (Hershfield, 2011).",
-        "d26a1Title": "Plano de Crise Pessoal",
-        "d26a1Desc": "Escreve o teu plano de crise de saúde mental: sinais de aviso, gatilhos, intervenções, pessoas a contactar.",
-        "d26a1Why": "Ter um plano escrito reduz a duração e o impacto das crises de saúde mental.",
-        "d26a2Title": "Ensaio Mental",
-        "d26a2Desc": "Representa mentalmente um dia difícil. O que fazes primeiro? Segundo? A quem ligas?",
-        "d26a2Why": "O ensaio mental prepara as vias neurais para executar respostas de coping automaticamente.",
-        "d27a1Title": "Notas de Agradecimento",
-        "d27a1Desc": "Escreve notas de agradecimento a pessoas que te apoiaram este mês. Envia pelo menos uma.",
-        "d27a1Why": "A gratidão expressa aprofunda os relacionamentos e aumenta os índices de bem-estar pessoal.",
-        "d28a1Title": "Reflexão e Reconexão",
-        "d28a1Desc": "Relê o teu registo do Dia 1. Escreve: Quem eras → Quem és → Quem estás a tornar-te. Define intenções para o Mês 2.",
-        "d28a1Why": "A continuidade narrativa apoia a integração de identidade e a mudança de comportamento sustentada."
+        "d12a2Why": "O saboreio aumenta o afeto positivo e prolonga os benefícios das boas experiências."
       }
     },
-    "habitCompletion": "Conclusão de Hábitos",
-    "sleepAvg": "Média de Sono (7 dias)",
-    "meditationWeek": "Meditação (Semana)",
-    "moodStability": "Estabilidade de Humor",
-    "stable": "Estável",
-    "pro": "Pro",
-    "logSleepTitle": "Registar Sono",
-    "hoursSlept": "Horas dormidas",
-    "sleepPlaceholder": "ex: 7.5",
-    "howFeeling": "Como te sentes?",
-    "reflections": {
-      "gPrompt1": "O que te fez sorrir hoje?",
-      "gPrompt2": "Por quem és grato?",
-      "gPrompt3": "Que desafio superaste recentemente?",
-      "gPrompt4": "Descreve uma pequena vitória desta semana.",
-      "gPrompt5": "Que elemento da natureza apreciaste?",
-      "gPrompt6": "Que competência tens e pela qual és grato?",
-      "jPrompt1": "O que aprendeste sobre ti mesmo hoje?",
-      "jPrompt2": "Descreve um momento de paz.",
-      "jPrompt3": "O que está a pesar na tua mente agora?",
-      "jPrompt4": "O que te entusiasma mais para amanhã?",
-      "jPrompt5": "Se pudesses mudar uma coisa no dia de hoje, o que seria?",
-      "jPrompt6": "Como seria o teu dia ideal?",
-      "jPrompt7": "Como cuidaste de ti mesmo hoje?",
-      "deepDive": "Mergulho Profundo",
-      "deepDivePh": "Elabora sobre o que estás a sentir...",
-      "saveGratitude": "Guardar Gratidão",
-      "myJournal": "O Meu Diário",
-      "needInspiration": "Precisas de inspiração?",
-      "journalPrompt": "Prompt do Diário",
-      "quickThoughts": "Pensamentos Rápidos",
-      "bulletPh": "Adiciona um ponto...",
-      "journalEntry": "Entrada do Diário",
-      "journalPh": "Desabafa aqui...",
-      "saveEntry": "Guardar Entrada",
-      "recentReflections": "Reflexões Recentes",
-      "errorAI": "Erro de IA",
-      "errorAIMsg": "Não foi possível gerar insight neste momento.",
-      "errorEmpty": "Vazio",
-      "errorEmptyGratitude": "Por favor escreve algo de que és grato!",
-      "errorEmptyJournal": "Por favor escreve algo no diário!",
-      "errorSaveGratitude": "Erro ao guardar gratidão",
-      "errorSaveJournal": "Erro ao guardar diário"
+    "common": {
+      "error": "Erro",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "success": "Sucesso"
     },
     "habits": {
-      "defWater": "Beber 8 copos de água",
-      "defVitamins": "Tomar vitaminas diárias",
-      "defNature": "Passar tempo na natureza",
-      "defSleep": "Dormir 8 horas",
-      "defScreen": "Limitar tempo de ecrã",
-      "defExercise": "Fazer 30 minutos de exercício",
-      "defMeditate": "Meditar 10 minutos",
-      "defGratitude": "Praticar gratidão",
-      "defSocial": "Ligar a amigos/família",
-      "defRead": "Ler 30 minutos",
-      "catHealth": "Saúde",
-      "catFitness": "Fitness",
-      "catMindfulness": "Mindfulness",
-      "catSocial": "Social",
-      "catLearning": "Aprendizagem",
       "title": "Hub Comportamental",
-      "buildHabits": "Criar Hábitos",
+      "buildHabits": "Construir Hábitos",
       "breakHabits": "Quebrar Hábitos",
       "dailyHabits": "Hábitos Diários",
       "completedCount": "{{completed}} de {{total}} concluídos",
       "todaysProgress": "Progresso de Hoje",
-      "dayStreak": "{{streak}} dias seguidos",
+      "dayStreak": "{{streak}} dias consecutivos",
       "statusFree": "Livre",
       "statusRelapsed": "Recaída",
       "freedomClock": "RELÓGIO DA LIBERDADE",
       "daysUnit": "DIAS",
-      "hrsUnit": "HRS",
+      "hrsUnit": "HORAS",
       "minsUnit": "MINS",
       "moneySaved": "Dinheiro Poupado",
       "sosHelp": "Ajuda SOS",
@@ -2939,104 +3247,376 @@
       "addBreakHabit": "Adicionar Hábito a Quebrar",
       "addNewHabit": "Adicionar Novo Hábito",
       "habitName": "Nome do Hábito",
-      "habitPlaceholder": "ex.: Beber água",
+      "habitPlaceholder": "ex., Beber água",
       "targetDays": "Dias Alvo por Semana",
       "category": "Categoria",
       "createHabit": "Criar Hábito",
-      "breakPlaceholder": "ex.: Fumar, Comida Lixo",
+      "startBreaking": "Começar a Quebrar Este Hábito",
+      "breakPlaceholder": "ex., Fumar, Junk Food",
       "costPerDay": "Custo Por Dia (€)",
       "costHelper": "Quanto gastas neste hábito diariamente",
       "iconEmoji": "Ícone/Emoji",
-      "startBreaking": "Começar a Quebrar Este Hábito",
-      "errorToggle": "Erro ao atualizar hábito",
+      "catHealth": "Saúde",
+      "catFitness": "Fitness",
+      "catMindfulness": "Mindfulness",
+      "catSocial": "Social",
+      "catLearning": "Aprendizagem",
+      "defWater": "Beber 1.5L de água",
+      "defVitamins": "Tomar suplementação diária",
+      "defNature": "Passar tempo na natureza",
+      "defSleep": "Dormir 8 horas",
+      "defScreen": "Limitar o tempo de ecrã",
+      "defExercise": "Exercitar 30 minutos",
+      "defMeditate": "Meditar 10 minutos",
+      "defGratitude": "Praticar gratidão",
+      "defSocial": "Conectar com amigos/família",
+      "defRead": "Ler 30 minutos",
+      "errorToggle": "Falha ao alternar hábito",
       "successAdd": "Hábito adicionado!",
-      "errorAdd": "Erro ao adicionar hábito",
-      "errorValidCost": "Por favor insere um custo válido por dia",
+      "errorAdd": "Falha ao adicionar hábito",
+      "errorValidCost": "Por favor insere um custo diário válido",
       "successBreakAdd": "Hábito a quebrar adicionado!",
-      "errorBreakAdd": "Erro ao adicionar hábito a quebrar",
+      "errorBreakAdd": "Falha ao adicionar hábito a quebrar",
       "deleteTitle": "Eliminar Hábito",
       "deletePrompt": "Tens a certeza?",
-      "resetTimerTitle": "Reiniciar Temporizador?",
-      "resetTimerPrompt": "Tens a certeza que queres reiniciar o progresso de {{name}}?",
+      "resetTimerTitle": "Repor Temporizador?",
+      "resetTimerPrompt": "Tens a certeza que queres repor o teu progresso para {{name}}?",
       "relapseAction": "Recaída"
+    },
+    "reflections": {
+      "gratitudeTab": "Gratidão",
+      "journalTab": "Diário",
+      "dailyGratitude": "Gratidão Diária",
+      "surpriseMe": "Surpreenda-me",
+      "quick3": "3 Rápidas (Opcional)",
+      "gratefulFor": "Sou grato por...",
+      "deepDive": "Descreva ao pormenor",
+      "deepDivePh": "Elabora o que estás a sentir...",
+      "saveGratitude": "Guardar Entrada",
+      "myJournal": "O Meu Diário",
+      "needInspiration": "Precisas de inspiração?",
+      "journalPrompt": "Sugestão de Diário",
+      "quickThoughts": "Pensamentos Rápidos",
+      "bulletPh": "Adicionar um ponto...",
+      "journalEntry": "Entrada de Diário",
+      "journalPh": "Desabafa o que sentes...",
+      "saveEntry": "Guardar Entrada",
+      "recentReflections": "Reflexões Recentes",
+      "skipMood": "Ignorar registo de humor",
+      "errorEmpty": "Vazio",
+      "errorEmptyGratitude": "Por favor escreve algo de que és grato!",
+      "errorEmptyJournal": "Por favor escreve algo no diário!",
+      "errorSaveGratitude": "Erro ao guardar gratidão",
+      "errorSaveJournal": "Erro ao guardar entrada de diário",
+      "errorAI": "Erro IA",
+      "errorAIMsg": "Não foi possível gerar insight agora.",
+      "gPrompt1": "O que te fez sorrir hoje?",
+      "gPrompt2": "Quem é alguém por quem és grato?",
+      "gPrompt3": "Que desafio superaste recentemente?",
+      "gPrompt4": "Descreve uma pequena vitória desta semana.",
+      "gPrompt5": "Que coisa na natureza apreciaste?",
+      "gPrompt6": "Que habilidade tens pela qual és grato?",
+      "jPrompt1": "O que aprendeste sobre ti mesmo hoje?",
+      "jPrompt2": "Descreve um momento de paz.",
+      "jPrompt3": "O que está a pesar na tua mente agora?",
+      "jPrompt4": "O que te entusiasma mais para amanhã?",
+      "jPrompt5": "Se pudesses mudar uma coisa sobre hoje, o que seria?",
+      "jPrompt6": "Como é o teu dia ideal?",
+      "jPrompt7": "Como praticaste o autocuidado hoje?"
     },
     "meditationHub": {
       "goodMorning": "Bom dia",
       "goodAfternoon": "Boa tarde",
       "goodEvening": "Boa noite",
       "readyToUnwind": "Pronto para relaxar?",
-      "featured": "Em destaque",
+      "allFilters": "Todos os Filtros",
+      "featured": "Em Destaque",
       "featuredBadge": "✦ DESTAQUE",
-      "trending": "Em alta agora",
-      "soundscapes": "Paisagens Sonoras",
-      "allFilters": "Todos os filtros",
-      "allSessions": "Todas as sessões",
-      "recentlyAdded": "Adicionados recentemente",
-      "playerCompleteBtn": "Completar sessão"
+      "trending": "Em Tendência Agora",
+      "soundscapes": "Sons da natureza",
+      "allSessions": "Todas as Sessões",
+      "recentlyAdded": "Adicionados Recentemente"
+    },
+    "fallbackSessions": {
+      "deepSleepTitle": "Viagem para o Sono Profundo",
+      "deepSleepDesc": "Uma sessão guiada calmante para adormecer profundamente.",
+      "morningClarityTitle": "Clareza Matinal",
+      "morningClarityDesc": "Começa o dia com uma mente clara e energia focada.",
+      "quickResetTitle": "Reset Rápido",
+      "quickResetDesc": "Um breve reset para recentrar durante um dia agitado.",
+      "anxietyReleaseTitle": "Libertação da Ansiedade",
+      "anxietyReleaseDesc": "Liberta a tensão e encontra a tua calma interior.",
+      "selfLoveTitle": "Pausa de Amor Próprio",
+      "selfLoveDesc": "Pratica compaixão e gratidão."
+    },
+    "widgets": {
+      "title": "Configuração de Widgets",
+      "kpis": "KPIs de Bem-estar",
+      "quickActions": "Ações Rápidas",
+      "mentalPlan": "Plano de Saúde Mental",
+      "wellnessHubs": "Hubs de Bem-estar",
+      "moodTrend": "Tendência de Humor"
+    },
+    "logSleepTitle": "Registar Sono",
+    "howFeeling": "Como está a sentir‑se?",
+    "hoursSlept": "Horas dormidas",
+    "sleepPlaceholder": "ex. 7.5",
+    "stable": "Estável",
+    "pro": "Pro",
+    "sleepAvg": "Média de Sono (7 dias)",
+    "moodStability": "Estabilidade de Humor",
+    "save": "Guardar",
+    "habitCompletion": "Conclusão de Hábitos",
+    "meditationWeek": "Meditação (semana)",
+    "meditationFilters": {
+      "sleep": "Melhor Sono",
+      "morning": "Energia Matinal",
+      "focus": "Foco",
+      "self-love": "Amor Próprio",
+      "anxiety": "Alívio da Ansiedade",
+      "sovereignty": "Soberania e Poder",
+      "strategic-mindset": "Mentalidade Estratégica",
+      "breathwork": "Respiração",
+      "biohacking": "Biohacking",
+      "stoicism": "Estoicismo",
+      "psychology": "Psicologia",
+      "charisma": "Carisma",
+      "modern-man": "Homem Moderno",
+      "modern-woman": "Mulher Moderna",
+      "shadow-work": "Trabalho de Sombra",
+      "frame-control": "Controlo do Frame",
+      "machiavelli": "Maquiavel",
+      "dark-psychology": "Psicologia Obscura",
+      "weight-loss": "Perda de Peso",
+      "muscle": "Construtor de Músculo",
+      "gym-motivation": "Motivação para Treinar"
+    },
+    "soundscapes": "Sons da natureza",
+    "gamesHub": {
+      "title": "Centro de Jogos Mentais",
+      "subtitle": "Treino de foco e atenção",
+      "comingSoon": "Em breve",
+      "gamesImproved": "Jogos em melhoria contínua",
+      "activelyEnhancing": "Estamos a melhorar a qualidade dos jogos e a adicionar novos!",
+      "premiumUnlimited": "Premium: jogos ilimitados",
+      "freeLimit": "Gratuíto: {{plays}}/2 jogos hoje",
+      "backToGames": "← Voltar aos Jogos",
+      "upgradeToPro": "Atualizar para Pro",
+      "upgradeMessage": "Utilizadores gratuitos podem jogar 2 jogos por dia. Atualize para Pro para jogos ilimitados e acompanhamento de progresso.",
+      "viewProPlans": "Ver Planos Pro",
+      "game_reaction_name": "Esperar pelo Verde",
+      "game_reaction_desc": "Testa o tempo de reação",
+      "game_balance_name": "Equilíbrio",
+      "game_balance_desc": "Mantêm-te centrado",
+      "game_spot-difference_name": "Combinação Rápida",
+      "game_spot-difference_desc": "Combina a carta anterior",
+      "game_sequence-recall_name": "Memória de Sequência",
+      "game_sequence-recall_desc": "Memoriza números",
+      "game_focus-frenzy_name": "Frenesi de Foco",
+      "game_focus-frenzy_desc": "Clica nos alvos rapidamente",
+      "game_wave-rider_name": "Surfar nas Ondas",
+      "game_wave-rider_desc": "Respira com as ondas",
+      "game_focus-shift_name": "Mudança de Foco",
+      "game_focus-shift_desc": "Alterna entre tarefas",
+      "game_visual-filter_name": "Filtro Visual",
+      "game_visual-filter_desc": "Encontra o alvo escondido",
+      "game_task-switcher_name": "Troca de Tarefas",
+      "game_task-switcher_desc": "Troca rápida de contexto",
+      "game_attention-trainer_name": "Treino de Atenção",
+      "game_attention-trainer_desc": "Clica nos alvos",
+      "game_relaxing-ripples_name": "Ondulações Relaxantes",
+      "game_relaxing-ripples_desc": "Cria ondulações na água",
+      "game_calm-colors_name": "Cores Calmas",
+      "game_calm-colors_desc": "Respiração por cores",
+      "game_stroop-challenge_name": "Desafio de Stroop",
+      "game_stroop-challenge_desc": "Cor contra palavra",
+      "game_memory-matrix-2_name": "Matriz de Memória",
+      "game_memory-matrix-2_desc": "Memória em grelha",
+      "game_word-scramble_name": "Palavras Baralhadas",
+      "game_word-scramble_desc": "Descobre a palavra certa",
+      "game_math-bingo-2_name": "Bingo Matemático",
+      "game_math-bingo-2_desc": "Resolve equações",
+      "game_anagram-challenge_name": "Desafio de ónagramas",
+      "game_anagram-challenge_desc": "Resolve anagramas",
+      "game_finger-tapping_name": "Toque dos Dedos",
+      "game_finger-tapping_desc": "Toca na sequência certa",
+      "game_n-back_name": "Memória N-Back",
+      "game_n-back_desc": "Memória de trabalho",
+      "game_rhythm-tap-2_name": "Ritmo Tap",
+      "game_rhythm-tap-2_desc": "Toca ao ritmo",
+      "game_pattern-recognition_name": "Reconhecimento de Padrões",
+      "game_pattern-recognition_desc": "Completa as sequências"
     },
     "lifeGoalsHub": {
       "title": "Objetivos de Vida",
-      "pending": "Em curso",
+      "pending": "Pendentes",
       "savings": "Poupanças",
-      "achieved": "Concluídos",
+      "achieved": "Conquistados",
+      "link": "Link",
+      "markAchieved": "Marcar como Conquistado",
+      "noGoals": "Sem objetivos. Adiciona um!",
       "newLifeGoal": "Novo Objetivo de Vida",
       "labelTitle": "Título",
+      "phVisitJapan": "ex. Visitar o Japão",
       "labelCategory": "Categoria",
       "labelType": "Tipo",
       "standardGoal": "Objetivo Padrão",
       "savingsGoal": "Objetivo de Poupança",
-      "targetCost": "Custo alvo (Opcional)",
-      "targetDate": "Data alvo (AAAA-MM-DD)",
+      "targetCost": "Custo Alvo (Opcional)",
+      "targetDate": "Data Alvo (AAAA-MM-DD)",
       "webLink": "Link Web (Opcional)",
       "description": "Descrição (Opcional)",
       "createGoal": "Criar Objetivo",
-      "markAchieved": "Marcar como Concluído",
-      "deleteGoal": "Eliminar Objetivo",
-      "areYouSure": "Tens a certeza?",
       "congrats": "Parabéns!",
-      "achievedMsg": "Concluíste um objetivo de vida! 🎉",
-      "noGoals": "Sem objetivos. Adiciona um!",
-      "link": "Link",
-      "errNoTitle": "Por favor introduz um título para o objetivo.",
+      "achievedMsg": "Conquistaste um objetivo de vida! 🎉",
+      "deleteGoal": "Apagar Objetivo",
+      "areYouSure": "Tens a certeza?",
+      "errNoTitle": "Por favor insere um título para o objetivo.",
       "successAdded": "Objetivo adicionado com sucesso!",
-      "errFailed": "Falha ao adicionar o objetivo.",
-      "phVisitJapan": "ex. Visitar o Japão"
-    },
-    "fallbackSessions": {
-      "deepSleepTitle": "Jornada de Sono Profundo",
-      "deepSleepDesc": "Uma sessão guiada calmante para adormecer profundamente.",
-      "morningClarityTitle": "Clareza Matinal",
-      "morningClarityDesc": "Comece o seu dia com a mente clara e energia focada.",
-      "quickResetTitle": "Pausa Rápida",
-      "quickResetDesc": "Um curto reset para se recentrar num dia agitado.",
-      "anxietyReleaseTitle": "Libertar a ónsiedade",
-      "anxietyReleaseDesc": "Liberte a tensão e encontre a sua calma interior.",
-      "selfLoveTitle": "Pausa para ómor-Próprio",
-      "selfLoveDesc": "Pratique a compaixão e gratidão."
-    },
-    "meditationFilters": {
-      "sleep": "Dormir",
-      "anxiety": "Ansiedade",
-      "focus": "Foco",
-      "morning": "Manhã",
-      "walking": "Caminhada",
-      "self-love": "Amor Próprio"
-    },
-    "soundscapes": {
-      "rain": "Chuva Calma",
-      "ocean": "Ondas do Oceano",
-      "forest": "Floresta Profunda",
-      "fire": "Fogueira óconchegante",
-      "river": "Rio Suave",
-      "wind": "Vento na Montanha",
-      "night": "Ruídos da Noite",
-      "bowl": "Taça Tibetana",
-      "pink": "Ruído Rosa",
-      "brown": "Ruído Castanho"
-    },
-    "common": {
-      "error": "Erro",
-      "success": "Sucesso"
+      "errFailed": "Falha ao adicionar objetivo.",
+      "cat_All": "Todos",
+      "cat_Work": "Trabalho",
+      "cat_Travel": "Viagens",
+      "cat_Health": "Saúde",
+      "cat_Personal": "Pessoal"
     }
+  },
+  "todo": {
+    "title": "Centro de Produtividade",
+    "open": "em aberto",
+    "done": "concluídas",
+    "urgent_count": "{{count}} urgente",
+    "newTask": "Nova Tarefa",
+    "whatToDo": "O que precisa de ser feito?",
+    "priority": {
+      "urgent": "Urgente",
+      "high": "Alta",
+      "medium": "Média",
+      "low": "Baixa",
+      "urgentLabel": "Prioridade Urgente",
+      "highLabel": "Prioridade Alta",
+      "mediumLabel": "Prioridade Média",
+      "lowLabel": "Prioridade Baixa"
+    },
+    "category": "Categoria",
+    "dueDate": "Data Limite (opcional)",
+    "timeEstimate": "Estimativa de tempo (min)",
+    "notes": "Notas",
+    "projectTag": "Tag de Projeto",
+    "addTask": "Adicionar Tarefa",
+    "noTasksYet": "Sem tarefas de {{category}} ainda.",
+    "addHint": "Toque em + para adicionar.",
+    "shareFailed": "Nada para partilhar!",
+    "nothingToShare": "Nada para partilhar!",
+    "quiz": {
+      "intelligentSetup": "CONFIGURAÇÃO INTELIGENTE",
+      "heroTitle": "O seu Centro de Produtividade\ncomeça aqui.",
+      "heroSub": "4 perguntas rápidas. Vamos personalizar as suas tarefas, dicas e integrações ao seu modo de trabalhar — usando o que já sabemos sobre os seus objetivos.",
+      "buildHub": "Criar o Meu Hub →",
+      "step": "{{current}}/{{total}}",
+      "knowTitle": "✦ Já sabemos sobre si",
+      "knowGoal": "Objetivo",
+      "knowStress": "Nível de stress",
+      "knowMotivated": "Motivado por",
+      "knowCoaching": "Estilo de coaching",
+      "knowSub": "As suas respostas abaixo acrescentam a camada de produtividade.",
+      "q1": "O que melhor descreve o seu dia?",
+      "q2": "O que mais prejudica a sua produtividade?",
+      "q3": "Como prefere trabalhar?",
+      "q4": "Qual é a UMA coisa que tem de entregar esta semana?",
+      "q4Placeholder": "ex: Fechar o negócio, lançar v1, correr 5km…",
+      "opt_entrepreneur": "Fundador / Criador",
+      "opt_executive": "Executivo / Gestor",
+      "opt_wfh": "Remoto / WFH",
+      "opt_healthcare": "Saúde / Clínico",
+      "opt_student": "Estudante / Aprendiz",
+      "opt_other": "Outra coisa",
+      "opt_focus": "Manter o foco",
+      "opt_overload": "Demasiadas tarefas / sobrecarga",
+      "opt_procrastination": "Começar as coisas difíceis",
+      "opt_balance": "Equilíbrio trabalho-vida",
+      "opt_deep": "Blocos profundos (2h+ de foco)",
+      "opt_reactive": "Sprints curtos, respostas rápidas",
+      "opt_mixed": "Mistura de ambos"
+    },
+    "banner": {
+      "playbook": "O seu guia de {{role}}, {{name}}.",
+      "letsGo": "Vamos lá, {{name}}.",
+      "weekGoal": "🌟 Esta semana: {{goal}}"
+    },
+    "updateProfile": {
+      "title": "Atualizar Perfil",
+      "message": "O que gostaria de alterar?",
+      "weekGoal": "Atualizar objetivo semanal",
+      "restart": "Reiniciar questionário",
+      "cancel": "Cancelar"
+    },
+    "tips": {
+      "sectionTitle": "✦ A sua dica diária",
+      "focus_1": "Comece com a tarefa mais difícil antes de verificar o e-mail.",
+      "focus_2": "Ative o Modo Foco para um sprint de 25 min sem distrações.",
+      "focus_3": "Escreva aqui a sua tarefa mais importante antes de tudo.",
+      "focus_action_1": "Iniciar Modo Foco",
+      "focus_action_2": "Abrir Modo Foco",
+      "overload_1": "Coma o sapo: identifique a UMA tarefa que mais muda o jogo.",
+      "overload_2": "Agrupe tarefas semelhantes — todas as chamadas juntas, toda a escrita junta.",
+      "overload_3": "Diga não a uma coisa hoje. Ponha-a nas Notas, não na lista de tarefas.",
+      "procrastination_1": "Comece com uma versão de 2 minutos da tarefa assustadora.",
+      "procrastination_2": "Una a tarefa a música ou a uma recompensa depois de concluída.",
+      "procrastination_3": "Diga a um parceiro o seu compromisso — a responsabilidade funciona.",
+      "procrastination_action_3": "Partilhar via WhatsApp",
+      "balance_1": "Reserve tempo pessoal como eventos de calendário inegociáveis.",
+      "balance_2": "Registe a sua rotina noturna em Mente → Registo de Sono.",
+      "balance_3": "Defina uma hora de paragem firme hoje e cumpra-a.",
+      "balance_action_2": "Registar Sono"
+    },
+    "categories": {
+      "Work": "Trabalho",
+      "Personal": "Pessoal",
+      "Health": "Saúde",
+      "Family": "Família",
+      "Finance": "Finanças",
+      "Grocery": "Compras"
+    },
+    "roles": {
+      "entrepreneur": "fundador criador",
+      "executive": "executivo gestor",
+      "wfh": "remoto wfh",
+      "healthcare": "saúde clínico",
+      "student": "estudante aprendiz",
+      "other": "outro"
+    },
+    "free": {
+      "tasks": "{{count}}/{{max}} tarefas",
+      "upgrade": "Upgrade para ilimitado"
+    },
+    "partner": {
+      "title": "Listas Partilhadas",
+      "desc": "Introduza o e-mail do parceiro para sincronizar as listas de Família e Compras.",
+      "placeholder": "parceiro@email.com",
+      "send": "Enviar Pedido de Ligação",
+      "syncedWith": "Sincronizado com {{name}}",
+      "syncedSub": "As listas de Família e Compras sincronizam automaticamente.",
+      "stop": "Parar Sincronização"
+    },
+    "task": {
+      "linkedWorkout": "Treino Associado",
+      "goMove": "→ Ir para Move-te",
+      "linkedHabit": "Hábito Associado",
+      "goWellness": "→ Ir para Mente",
+      "delete": "Eliminar Tarefa",
+      "due": "📅 Prazo: {{date}}",
+      "estimate": "⏱ Estimativa: {{min}} min",
+      "project": "📁 Projeto: {{tag}}",
+      "ai": "✦ IA"
+    },
+    "upsell": {
+      "title": "Desbloquear Produtividade Pro",
+      "sub": "Tarefas ilimitadas · Decomposição IA · Tags de projeto · Sincronização · Integrações Bluom"
+    },
+    "priorityLabel": "Prioridade",
+    "editTask": "Editar Tarefa",
+    "weekGoalHint": "Um objetivo por linha",
+    "weekGoalMultiHint": "Adiciona vários objetivos, um por linha"
   }
 }

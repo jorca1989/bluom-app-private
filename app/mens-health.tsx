@@ -929,8 +929,18 @@ export default function MensHealthScreen() {
           <Text style={[s.scoreChipVal, { color: mc.accent }]}>{status?.score ?? 0}%</Text>
           <Text style={s.scoreChipLbl}>{t('mensHealth.tabToday','Hoje')}</Text>
         </View>
-        <TouchableOpacity onPress={() => { SecureStore.deleteItemAsync(QUIZ_KEY); setQuizDone(false); setQuizStep(0); setQuizAnswers({}); }} style={s.retakeBtn}>
-          <Ionicons name="settings-outline" size={18} color="#64748b" />
+        <TouchableOpacity
+          onPress={() => Alert.alert(
+            t('mensHealth.restartTitle', 'Restart Quiz'),
+            t('mensHealth.restartMsg', 'This will clear your current profile and restart the questionnaire. Continue?'),
+            [
+              { text: t('common.cancel', 'Cancel'), style: 'cancel' },
+              { text: t('mensHealth.restartConfirm', 'Restart'), style: 'destructive', onPress: () => { SecureStore.deleteItemAsync(QUIZ_KEY); setQuizDone(false); setQuizStep(0); setQuizAnswers({}); } },
+            ]
+          )}
+          style={s.retakeBtn}
+        >
+          <Ionicons name="pencil-outline" size={18} color="#64748b" />
         </TouchableOpacity>
       </LinearGradient>
 
@@ -961,7 +971,7 @@ export default function MensHealthScreen() {
             <LinearGradient colors={mc.gradient} style={s.modeHero}>
               <View style={s.modeHeroTop}>
                 <View>
-                  <Text style={s.modeHeroMode}>{mc.emoji} {mc.label} {t('mensHealth.protocol', 'Protocol') as string}</Text>
+                  <Text style={s.modeHeroMode}>{mc.emoji} {t('mensHealth.modeProtocolBadge', '{{mode}} Protocol', { mode: mc.label }) as string}</Text>
                   <Text style={s.modeHeroGoal}>{t(`mensHealth.quiz.${profile?.primaryGoal}`, { defaultValue: profile?.primaryGoal?.replace(/_/g, ' ') }) as string} · {t(`mensHealth.quiz.${profile?.yearsTraining}`, { defaultValue: profile?.yearsTraining?.replace(/_/g, ' ') }) as string}</Text>
                   {profile?.competitionFocus && profile.competitionFocus !== 'none' && (
                     <Text style={s.modeHeroComp}>🏆 {profile.competitionFocus}</Text>
@@ -1257,7 +1267,12 @@ export default function MensHealthScreen() {
               if (a.category === 'Compete') return profile?.competitionFocus !== 'none';
               return true;
             }).map(article => (
-              <TouchableOpacity key={article.id} style={s.articleCard} onPress={() => setShowArticle(article)} activeOpacity={0.85}>
+              <TouchableOpacity
+                key={article.id}
+                style={s.articleCard}
+                onPress={() => router.push({ pathname: '/library/[slug]' as any, params: { slug: `mh_${article.id}`, title: t(`mensHealth.articles.${article.id}.title`, article.title), body: t(`mensHealth.articles.${article.id}.body`, article.body), category: article.category, emoji: article.emoji, time: article.time } })}
+                activeOpacity={0.85}
+              >
                 <View style={s.articleCardLeft}>
                   <Text style={s.articleCardEmoji}>{article.emoji}</Text>
                   <View style={{ flex: 1 }}>

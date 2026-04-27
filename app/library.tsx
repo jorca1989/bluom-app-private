@@ -1,111 +1,214 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, TouchableOpacity, ScrollView, Image, Linking, Alert } from 'react-native';
+import {
+  View, Text, TouchableOpacity, ScrollView,
+  Image, TextInput, Animated
+} from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getBottomContentPadding } from '@/utils/layout';
-import { useAccessControl } from '@/hooks/useAccessControl';
-import { ProUpgradeModal } from '@/components/ProUpgradeModal';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+
+// ─── Feature categories ─────────────────────────────────────
+const FEATURE_CATEGORIES = [
+  { id: 'All',           label: 'All',              emoji: '📚', color: '#2563eb' },
+  { id: "Men's Health",  label: "Men's Health",     emoji: '💪', color: '#1d4ed8' },
+  { id: "Women's Health",label: "Women's Health",   emoji: '🌸', color: '#e11d48' },
+  { id: 'Nutrition',     label: 'Nutrition',        emoji: '🥗', color: '#10b981' },
+  { id: 'Fitness',       label: 'Fitness',          emoji: '🏋️', color: '#f97316' },
+  { id: 'Wellness',      label: 'Wellness',         emoji: '🧘', color: '#8b5cf6' },
+  { id: 'Fasting',       label: 'Fasting',          emoji: '⏱️', color: '#f59e0b' },
+  { id: 'Hormones',      label: 'Hormones',         emoji: '⚗️', color: '#ec4899' },
+  { id: 'Mental Health', label: 'Mental Health',    emoji: '🧠', color: '#6366f1' },
+  { id: 'Health',        label: 'Health',           emoji: '❤️', color: '#ef4444' },
+];
+
+// ─── Fallback static posts (shown when DB has no content) ───
+const STATIC_POSTS = [
+  {
+    _id: 's1', slug: 'autophagy', title: 'The Autophagy Secret: How Fasting Rewires Your Cells',
+    category: 'Fasting', emoji: '🔬', time: '5 min',
+    featuredImage: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800',
+    content: 'Autophagy is your body\'s cellular recycling process...'
+  },
+  {
+    _id: 's2', slug: 'sugar-drop', title: 'The Sugar Drop Phase Explained',
+    category: 'Fasting', emoji: '📉', time: '4 min',
+    featuredImage: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+    content: 'What happens in the first 12 hours of a fast...'
+  },
+  {
+    _id: 's3', slug: 'fat-burn', title: 'Entering Fat Burn: The Metabolic Switch',
+    category: 'Nutrition', emoji: '🔥', time: '4 min',
+    featuredImage: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800',
+    content: 'Between 12–18 hours, glycogen stores deplete...'
+  },
+];
 
 export default function LibraryScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { isPro, promptUpgrade } = useAccessControl();
-  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [selectedCat, setSelectedCat] = useState('All');
+  const [search, setSearch] = useState('');
 
-  // Removed auto-redirect useEffect
+  const publishedPosts = useQuery(api.admin.getPublishedArticles, { category: selectedCat === 'All' ? undefined : selectedCat });
 
-  const articles = [
-    {
-      id: '1',
-      title: t('wellness.library.art1Title', 'Precision Nutrition: Why Bio-Individuality Matters'),
-      category: t('wellness.library.catNutrition', 'Nutrition'),
-      image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800',
-      shopLink: 'https://amazon.com',
-      shopLabel: t('wellness.library.shopSupplements', 'Shop Supplements')
-    },
-    {
-      id: '2',
-      title: t('wellness.library.art2Title', 'The Autophagy Secret: How Fasting Rewires Your Cells'),
-      category: t('wellness.library.catWellness', 'Wellness'),
-      image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800',
-      shopLink: 'https://bluom-app.myshopify.com',
-      shopLabel: t('wellness.library.shopGear', 'Shop Bluom Gear')
-    },
-    {
-      id: '3',
-      title: t('wellness.library.art3Title', 'Hormone Optimization for High Performance'),
-      category: t('wellness.library.catHealth', 'Health'),
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
-      shopLink: 'https://amazon.com',
-      shopLabel: t('wellness.library.shopTech', 'Shop Health Tech')
-    }
-  ];
+  // Merge DB posts with static fallback
+  const allPosts = (publishedPosts && publishedPosts.length > 0) ? publishedPosts : STATIC_POSTS;
+  const filtered = allPosts.filter(p => {
+    const matchesCat = selectedCat === 'All' || p.category === selectedCat;
+    const matchesSearch = !search || p.title.toLowerCase().includes(search.toLowerCase());
+    return matchesCat && matchesSearch;
+  });
 
-  const handleArticlePress = (title: string) => {
-    if (!isPro) {
-      promptUpgrade(t('wellness.library.upgradePrompt', 'Upgrade to access full research papers and guides.'));
-    } else {
-      Alert.alert(t('wellness.library.proContent', 'Pro Content'), t('wellness.library.openingTitle', 'Opening: {{title}} (Content Reader coming soon)', { title }));
-    }
+  const openPost = (post: any) => {
+    router.push({
+      pathname: '/library/[slug]' as any,
+      params: {
+        slug: post.slug ?? post._id,
+        title: post.title,
+        body: post.content ?? '',
+        category: post.category ?? '',
+        emoji: (post as any).emoji ?? '📖',
+      }
+    });
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#ffffff]" edges={['top', 'bottom']}>
-      <View className="px-4 pb-3 flex-row items-center gap-3 border-b border-slate-100" style={{ paddingTop: Math.max(insets.top, 12) + 8 }}>
-        <TouchableOpacity onPress={() => router.back()} className="w-10 h-10 rounded-xl bg-slate-50 items-center justify-center">
-          <Ionicons name="arrow-back" size={20} color="#0f172a" />
-        </TouchableOpacity>
-        <View className="flex-1">
-          <Text className="text-slate-900 font-black text-lg">{t('wellness.library.title', 'Bluom Library')}</Text>
-          <Text className="text-slate-500 font-bold text-xs">{t('wellness.library.subtitle', 'Curated Knowledge')}</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['top', 'bottom']}>
+      {/* ── Header ── */}
+      <View style={{ paddingHorizontal: 20, paddingTop: Math.max(insets.top, 12) + 8, paddingBottom: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Ionicons name="arrow-back" size={20} color="#1e293b" />
+          </TouchableOpacity>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 20, fontWeight: '900', color: '#1e293b' }}>📚 {t('wellness.library.title', 'Bluom Library')}</Text>
+            <Text style={{ fontSize: 12, color: '#64748b', fontWeight: '600', marginTop: 1 }}>{t('wellness.library.subtitle', 'Curated Knowledge')}</Text>
+          </View>
+        </View>
+
+        {/* Search */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#f1f5f9', borderRadius: 14, paddingHorizontal: 14, paddingVertical: 10, gap: 8 }}>
+          <Ionicons name="search-outline" size={16} color="#94a3b8" />
+          <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder={t('wellness.library.search', 'Search articles...')}
+            placeholderTextColor="#94a3b8"
+            style={{ flex: 1, fontSize: 14, color: '#1e293b', padding: 0 }}
+          />
+          {search ? (
+            <TouchableOpacity onPress={() => setSearch('')}>
+              <Ionicons name="close-circle" size={16} color="#94a3b8" />
+            </TouchableOpacity>
+          ) : null}
         </View>
       </View>
 
+      {/* ── Category Pills ── */}
       <ScrollView
-        className="flex-1 px-4 pt-6"
-        contentContainerStyle={{ paddingBottom: getBottomContentPadding(insets.bottom, 24) }}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ maxHeight: 52, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 10, gap: 8 }}
       >
-        {articles.map((a) => (
-          <View key={a.id} className="mb-8">
-            <TouchableOpacity onPress={() => handleArticlePress(a.title)} activeOpacity={0.9}>
-              <View className="rounded-[32px] overflow-hidden shadow-xl bg-slate-900 aspect-[16/9] mb-4 relative">
-                <Image source={{ uri: a.image }} className="w-full h-full opacity-80" />
-                <View className="absolute top-4 left-4 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-                  <Text className="text-white font-black text-[10px] uppercase tracking-widest">{a.category}</Text>
-                </View>
-                {!isPro && (
-                  <View className="absolute bottom-4 right-4 bg-slate-900/80 px-3 py-1 rounded-full flex-row items-center gap-1">
-                    <Ionicons name="lock-closed" size={12} color="white" />
-                    <Text className="text-white font-bold text-xs">{t('wellness.library.pro', 'Pro')}</Text>
-                  </View>
-                )}
-              </View>
-              <Text className="text-slate-900 font-black text-xl leading-tight mb-2">{a.title}</Text>
-              <Text className="text-slate-500 font-semibold mb-4 leading-5">{t('wellness.library.articleDesc', 'Unlock the science behind precision living with our expert-led research papers and guides.')}</Text>
-            </TouchableOpacity>
-
+        {FEATURE_CATEGORIES.map(cat => {
+          const active = selectedCat === cat.id;
+          return (
             <TouchableOpacity
-              onPress={() => Linking.openURL(a.shopLink)}
-              className="flex-row items-center gap-2 bg-blue-50 self-start px-4 py-2 rounded-xl border border-blue-100"
+              key={cat.id}
+              onPress={() => setSelectedCat(cat.id)}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: active ? cat.color : '#f1f5f9' }}
             >
-              <Ionicons name="cart" size={16} color="#2563eb" />
-              <Text className="text-blue-600 font-black text-xs">{a.shopLabel}</Text>
+              <Text style={{ fontSize: 13 }}>{cat.emoji}</Text>
+              <Text style={{ fontSize: 12, fontWeight: '700', color: active ? '#fff' : '#64748b' }}>{cat.label}</Text>
             </TouchableOpacity>
-          </View>
-        ))}
+          );
+        })}
       </ScrollView>
 
-      <ProUpgradeModal
-        visible={showUpgrade}
-        onClose={() => { setShowUpgrade(false); }}
-        onUpgrade={() => { setShowUpgrade(false); router.push('/premium'); }}
-        title={t('wellness.library.modalTitle', 'Bluom Library Pro')}
-        message={t('wellness.library.modalMessage', 'Upgrade to Pro to access our full curated knowledge library and research papers.')}
-      />
+      {/* ── Article List ── */}
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: getBottomContentPadding(insets.bottom, 24), gap: 16 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {filtered.length === 0 ? (
+          <View style={{ alignItems: 'center', marginTop: 60 }}>
+            <Text style={{ fontSize: 40, marginBottom: 12 }}>📭</Text>
+            <Text style={{ fontSize: 16, fontWeight: '700', color: '#94a3b8' }}>{t('wellness.library.noResults', 'No articles found')}</Text>
+            <Text style={{ fontSize: 13, color: '#cbd5e1', marginTop: 6 }}>{t('wellness.library.noResultsSub', 'Try a different category or search term')}</Text>
+          </View>
+        ) : (
+          filtered.map((post) => <ArticleCard key={(post as any)._id} post={post as any} onPress={() => openPost(post)} />)
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
+// ─── Article Card – 1 per row ────────────────────────────────
+function ArticleCard({ post, onPress }: { post: any; onPress: () => void }) {
+  const catColor = FEATURE_CATEGORIES.find(c => c.id === post.category)?.color ?? '#2563eb';
+  const emoji    = (post as any).emoji ?? '📖';
+  const timeStr  = (post as any).time ?? (post.content ? `${Math.max(1, Math.ceil((post.content?.length ?? 0) / 800))} min` : '');
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.88}
+      style={{ backgroundColor: '#fff', borderRadius: 20, overflow: 'hidden', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 }}
+    >
+      {/* Image */}
+      {post.featuredImage ? (
+        <View style={{ height: 180, width: '100%', backgroundColor: '#e2e8f0' }}>
+          <Image source={{ uri: post.featuredImage }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+          <View style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.18)' }} />
+          <View style={{ position: 'absolute', top: 12, left: 12 }}>
+            <View style={{ backgroundColor: catColor, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 }}>
+              <Text style={{ color: '#fff', fontWeight: '800', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.8 }}>{emoji} {post.category}</Text>
+            </View>
+          </View>
+          {timeStr ? (
+            <View style={{ position: 'absolute', top: 12, right: 12, backgroundColor: 'rgba(0,0,0,0.45)', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12 }}>
+              <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700' }}>⏱ {timeStr}</Text>
+            </View>
+          ) : null}
+        </View>
+      ) : (
+        <View style={{ height: 64, backgroundColor: catColor + '18', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: 32 }}>{emoji}</Text>
+        </View>
+      )}
+
+      {/* Text */}
+      <View style={{ padding: 16 }}>
+        {!post.featuredImage && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <View style={{ backgroundColor: catColor + '18', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 }}>
+              <Text style={{ color: catColor, fontWeight: '800', fontSize: 10, textTransform: 'uppercase' }}>{post.category}</Text>
+            </View>
+            {timeStr ? <Text style={{ color: '#94a3b8', fontSize: 11, fontWeight: '600' }}>⏱ {timeStr}</Text> : null}
+          </View>
+        )}
+        <Text style={{ fontSize: 17, fontWeight: '800', color: '#1e293b', lineHeight: 23, marginBottom: 6 }}>{post.title}</Text>
+        {post.content ? (
+          <Text numberOfLines={2} style={{ fontSize: 13, color: '#64748b', lineHeight: 19, marginBottom: 12 }}>
+            {post.content.replace(/\*\*/g, '').replace(/•/g, '').slice(0, 120)}…
+          </Text>
+        ) : null}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          <Text style={{ color: catColor, fontWeight: '800', fontSize: 13 }}>Read more</Text>
+          <Ionicons name="arrow-forward" size={13} color={catColor} />
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+}

@@ -6,11 +6,11 @@
  * teaser, stats row, and all existing menu items preserved.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  Alert, Modal, Image, Pressable,
+  Alert, Modal, Image, Pressable, Switch,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUser, useAuth } from '@clerk/clerk-expo';
@@ -24,7 +24,7 @@ import Avatar, { AvatarConfig } from '@/components/Avatar';
 import {
   Sparkles, RefreshCcw, TrendingDown, MessageSquare, Clock,
   LayoutGrid, BookOpen, Calendar, Zap, Bug, Scale,
-  LogOut, Settings, Trophy, ChevronRight, Star,
+  LogOut, Settings, Settings2, Trophy, ChevronRight, Star,
   Utensils, Dumbbell, Heart, Brain,
 } from 'lucide-react-native';
 import AchievementsCard from '@/components/achievementcard';
@@ -108,6 +108,21 @@ const AVATAR_CONFIG_KEY = 'bluom_avatar_config_v2';
 const AVATAR_BG_KEY = 'bluom_avatar_bg_v1';
 
 // ─────────────────────────────────────────────────────────────
+// WIDGET TOGGLE SYSTEM
+// ─────────────────────────────────────────────────────────────
+type ProfileWidgetId = 'hero' | 'achievements' | 'stats' | 'account' | 'health' | 'tools' | 'support';
+const PROFILE_WIDGETS: { id: ProfileWidgetId; emoji: string; labelKey: string }[] = [
+  { id: 'hero',         emoji: '👤', labelKey: 'profile.widgets.hero' },
+  { id: 'achievements', emoji: '🏆', labelKey: 'profile.widgets.achievements' },
+  { id: 'stats',        emoji: '📊', labelKey: 'profile.widgets.stats' },
+  { id: 'account',      emoji: '🔑', labelKey: 'profile.widgets.account' },
+  { id: 'health',       emoji: '❤️', labelKey: 'profile.widgets.health' },
+  { id: 'tools',        emoji: '🛠️', labelKey: 'profile.widgets.tools' },
+  { id: 'support',      emoji: '💬', labelKey: 'profile.widgets.support' },
+];
+const PROFILE_WIDGETS_KEY = 'bluom_profile_widgets_v1';
+
+// ─────────────────────────────────────────────────────────────
 // MENU ROW
 // ─────────────────────────────────────────────────────────────
 function MenuRow({
@@ -162,6 +177,34 @@ export default function ProfileScreen() {
   const gardenState = useQuery(api.mindworld.getGardenState, convexUser?._id ? { userId: convexUser._id } : 'skip');
   const resetOnboarding = useMutation(api.users.resetOnboarding);
   const { t } = useTranslation();
+
+  // ── Widget config ──
+  const allProfileWidgetIds = PROFILE_WIDGETS.map(w => w.id);
+  const [visibleProfileWidgets, setVisibleProfileWidgets] = useState<Set<ProfileWidgetId>>(new Set(allProfileWidgetIds));
+  const [showProfileWidgetConfig, setShowProfileWidgetConfig] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const raw = await SecureStore.getItemAsync(PROFILE_WIDGETS_KEY);
+        if (raw) {
+          const parsed: ProfileWidgetId[] = JSON.parse(raw);
+          setVisibleProfileWidgets(new Set(parsed));
+        }
+      } catch { /* ignore */ }
+    })();
+  }, []);
+
+  const toggleProfileWidget = useCallback(async (id: ProfileWidgetId) => {
+    setVisibleProfileWidgets(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) { next.delete(id); } else { next.add(id); }
+      SecureStore.setItemAsync(PROFILE_WIDGETS_KEY, JSON.stringify([...next])).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  const isPW = (id: ProfileWidgetId) => visibleProfileWidgets.has(id);
 
   // Avatar state — stored in SecureStore
   const defaultAvatarConfig: AvatarConfig = useMemo(() => ({
@@ -294,6 +337,44 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={s.screen} edges={['top']}>
+      {/* ── WIDGET CONFIG MODAL ── */}
+      <Modal visible={showProfileWidgetConfig} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowProfileWidgetConfig(false)}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['top']}>
+          <View style={s.wcHeader}>
+            <Text style={s.wcTitle}>{t('profile.widgets.title', 'Widget Config')}</Text>
+            <TouchableOpacity onPress={() => setShowProfileWidgetConfig(false)} style={s.wcClose}>
+              <Ionicons name="close" size={20} color="#1e293b" />
+            </TouchableOpacity>
+          </View>
+          <ScrollView contentContainerStyle={{ padding: 20, gap: 0, paddingBottom: 40 }}>
+            {/* Dark mode placeholder */}
+            <View style={s.wcDarkRow}>
+              <View style={s.wcDarkLeft}>
+                <Ionicons name="moon-outline" size={18} color="#6366f1" />
+                <Text style={s.wcDarkLabel}>{t('common.darkMode', 'Dark Mode')}</Text>
+              </View>
+              <Switch value={false} onValueChange={() => {}} trackColor={{ true: '#6366f1', false: '#e2e8f0' }} thumbColor="#fff" />
+            </View>
+            <View style={s.wcDivider} />
+            {PROFILE_WIDGETS.map((w, i) => (
+              <View key={w.id}>
+                <View style={s.wcRow}>
+                  <Text style={s.wcEmoji}>{w.emoji}</Text>
+                  <Text style={s.wcLabel}>{t(w.labelKey, w.id)}</Text>
+                  <Switch
+                    value={isPW(w.id)}
+                    onValueChange={() => toggleProfileWidget(w.id)}
+                    trackColor={{ true: '#2563eb', false: '#e2e8f0' }}
+                    thumbColor="#fff"
+                  />
+                </View>
+                {i < PROFILE_WIDGETS.length - 1 && <View style={s.wcDivider} />}
+              </View>
+            ))}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
       {/* ── AVATAR PICKER MODAL ── */}
       <Modal visible={showAvatarPick} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['top']}>
@@ -407,12 +488,20 @@ export default function ProfileScreen() {
         </SafeAreaView>
       </Modal>
 
+      {/* ── PAGE HEADER ── */}
+      <View style={s.pageHeader}>
+        <Text style={s.pageHeaderTitle}>{t('profile.title', 'Profile')}</Text>
+        <TouchableOpacity style={s.gearBtn} onPress={() => setShowProfileWidgetConfig(true)} activeOpacity={0.75}>
+          <Settings2 size={17} color="#475569" />
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         contentContainerStyle={[s.scroll, { paddingBottom: Math.max(insets.bottom, 16) + 24 }]}
         showsVerticalScrollIndicator={false}
       >
         {/* ── HERO CARD ── */}
-        <LinearGradient colors={['#0f172a', '#1e293b']} style={s.heroCard}>
+        {isPW('hero') && <LinearGradient colors={['#0f172a', '#1e293b']} style={s.heroCard}>
           {/* Avatar */}
           <TouchableOpacity
             style={s.avatarWrap}
@@ -465,13 +554,13 @@ export default function ProfileScreen() {
               <Text style={s.statLbl}>{t('profile.streak', 'Sequência')}</Text>
             </View>
           </View>
-        </LinearGradient>
+        </LinearGradient>}
 
         {/* ── ACHIEVEMENTS ── */}
-        {convexUser?._id ? <AchievementsCard userId={convexUser._id} /> : null}
+        {isPW('achievements') && (convexUser?._id ? <AchievementsCard userId={convexUser._id} /> : null)}
 
         {/* ── QUICK STATS ── */}
-        <View style={s.quickStats}>
+        {isPW('stats') && <View style={s.quickStats}>
           {[
             { icon: '🎯', label: t('profile.goal', 'Objetivo'), value: goal },
             { icon: '⚖️', label: t('profile.weight', 'Peso'), value: weight },
@@ -484,10 +573,10 @@ export default function ProfileScreen() {
               <Text style={s.quickStatLbl}>{item.label}</Text>
             </View>
           ))}
-        </View>
+        </View>}
 
         {/* ── ACCOUNT ── */}
-        <Section title={t('profile.sectionAccount', 'Conta')}>
+        {isPW('account') && <Section title={t('profile.sectionAccount', 'Conta')}>
           {!isPro && (
             <>
               <MenuRow
@@ -516,10 +605,10 @@ export default function ProfileScreen() {
             label={t('profile.restartGoal', 'Reiniciar Objetivo')} sub={t('profile.restartGoalSub', 'Redefinir biómetràs e onboarding')}
             onPress={handleReset}
           />
-        </Section>
+        </Section>}
 
         {/* ── HEALTH & TRACKING ── */}
-        <Section title={t('profile.sectionHealth', 'Saúde e Monitorização')}>
+        {isPW('health') && <Section title={t('profile.sectionHealth', 'Saúde e Monitorização')}>
           <MenuRow
             icon={<Scale size={18} color="#0ea5e9" />} iconBg="#f0f9ff"
             label={t('profile.weightJourney', 'Jornada de Peso')} sub={t('profile.weightJourneySub', 'Registos, medidas e fotos de progresso')}
@@ -541,10 +630,10 @@ export default function ProfileScreen() {
             label={t('profile.fastingTracker', 'Rastreador de Jejum')} sub={t('profile.fastingTrackerSub', 'Protocolos, temporizadores e sequências')}
             onPress={() => router.push('/fasting')}
           />
-        </Section>
+        </Section>}
 
         {/* ── TOOLS ── */}
-        <Section title={t('profile.sectionTools', 'Ferramentas')}>
+        {isPW('tools') && <Section title={t('profile.sectionTools', 'Ferramentas')}>
           <MenuRow
             icon={<MessageSquare size={18} color="#2563eb" />} iconBg="#eff6ff"
             label={t('profile.aiCoach', 'Treinador IA')} sub={t('profile.aiCoachSub', 'O teu especialista em saúde de precisão')}
@@ -594,10 +683,10 @@ export default function ProfileScreen() {
             label={t('profile.achievements', 'Conquistas')} sub={`${unlockedCount} ${t('profile.achievementsUnlocked', 'desbloqueadas')} · ${t('profile.level', 'Nível')} ${level}`}
             onPress={() => router.push('/achievements' as any)}
           />
-        </Section>
+        </Section>}
 
         {/* ── SUPPORT ── */}
-        <Section title={t('profile.sectionSupport', 'Suporte')}>
+        {isPW('support') && <Section title={t('profile.sectionSupport', 'Suporte')}>
           <MenuRow
             icon={<Bug size={18} color="#64748b" />} iconBg="#f1f5f9"
             label={t('profile.helpFeedback', 'Ajuda e Feedback')}
@@ -609,7 +698,7 @@ export default function ProfileScreen() {
             label={t('profile.settings', 'Definições')} sub={t('profile.settingsSub', 'Unidades, objetivos, notificações')}
             onPress={() => router.push('/settings')}
           />
-        </Section>
+        </Section>}
 
         {/* ── ADMIN DEBUG ── */}
         {convexUser?.isAdmin && (
@@ -652,6 +741,23 @@ export default function ProfileScreen() {
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#F5F4F0' },
   scroll: { paddingHorizontal: 16, paddingTop: 12 },
+
+  // Page header
+  pageHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 },
+  pageHeaderTitle: { fontSize: 28, fontWeight: '900', color: '#0f172a' },
+  gearBtn: { width: 36, height: 36, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
+
+  // Widget config modal
+  wcHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+  wcTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a' },
+  wcClose: { width: 34, height: 34, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
+  wcRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14 },
+  wcEmoji: { fontSize: 20 },
+  wcLabel: { flex: 1, fontSize: 15, fontWeight: '600', color: '#0f172a' },
+  wcDivider: { height: 1, backgroundColor: '#f1f5f9' },
+  wcDarkRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14 },
+  wcDarkLeft: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  wcDarkLabel: { fontSize: 15, fontWeight: '600', color: '#0f172a' },
 
   // Hero
   heroCard: { borderRadius: 24, padding: 24, alignItems: 'center', marginBottom: 14, overflow: 'hidden' },

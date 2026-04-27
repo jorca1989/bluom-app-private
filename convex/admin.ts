@@ -412,3 +412,50 @@ export const createArticle = mutation({
         return articleId;
     }
 });
+
+export const updateArticle = mutation({
+    args: {
+        articleId: v.id("blogArticles"),
+        title: v.optional(v.string()),
+        content: v.optional(v.string()),
+        status: v.optional(v.union(v.literal("DRAFT"), v.literal("PENDING"), v.literal("PUBLISHED"))),
+        category: v.optional(v.string()),
+        featuredImage: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        await checkAdminPower(ctx);
+        const { articleId, ...updates } = args;
+        await ctx.db.patch(articleId, { ...updates, updatedAt: Date.now() });
+    }
+});
+
+export const deleteArticle = mutation({
+    args: { articleId: v.id("blogArticles") },
+    handler: async (ctx, args) => {
+        await checkAdminPower(ctx);
+        await ctx.db.delete(args.articleId);
+    }
+});
+
+export const getPublishedArticles = query({
+    args: { category: v.optional(v.string()) },
+    handler: async (ctx, args) => {
+        const all = await ctx.db.query("blogArticles")
+            .withIndex("by_status", q => q.eq("status", "PUBLISHED"))
+            .order("desc")
+            .collect();
+        if (args.category && args.category !== 'All') {
+            return all.filter(a => a.category === args.category);
+        }
+        return all;
+    }
+});
+
+export const getArticleBySlug = query({
+    args: { slug: v.string() },
+    handler: async (ctx, args) => {
+        return await ctx.db.query("blogArticles")
+            .withIndex("by_slug", q => q.eq("slug", args.slug))
+            .first();
+    }
+});

@@ -32,8 +32,42 @@ import {
     FilePen,
     Trash2,
     ChevronDown,
+    ChevronUp,
     Check
 } from 'lucide-react-native';
+
+// ── Accordion helpers (reused across name / ingredients / instructions) ──────
+function LangAccordion({ title, children }: { title: string; children: React.ReactNode }) {
+    const [open, setOpen] = React.useState(false);
+    return (
+        <View style={{ borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 12, marginBottom: 8, overflow: 'hidden' }}>
+            <TouchableOpacity
+                onPress={() => setOpen(o => !o)}
+                style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 12, backgroundColor: '#f8fafc' }}
+            >
+                <Text style={{ fontSize: 13, fontWeight: '700', color: '#1e293b' }}>{title}</Text>
+                {open ? <ChevronUp size={15} color="#64748b" /> : <ChevronDown size={15} color="#64748b" />}
+            </TouchableOpacity>
+            {open && <View style={{ padding: 12, backgroundColor: '#fff' }}>{children}</View>}
+        </View>
+    );
+}
+
+function FieldAccordion({ title, children }: { title: string; children: React.ReactNode }) {
+    const [open, setOpen] = React.useState(false);
+    return (
+        <View style={{ borderWidth: 1.5, borderColor: '#cbd5e1', borderRadius: 14, marginBottom: 12, overflow: 'hidden' }}>
+            <TouchableOpacity
+                onPress={() => setOpen(o => !o)}
+                style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 14, backgroundColor: '#f1f5f9' }}
+            >
+                <Text style={{ fontSize: 14, fontWeight: '800', color: '#1e293b' }}>{title}</Text>
+                {open ? <ChevronUp size={16} color="#475569" /> : <ChevronDown size={16} color="#475569" />}
+            </TouchableOpacity>
+            {open && <View style={{ padding: 14, gap: 8 }}>{children}</View>}
+        </View>
+    );
+}
 
 // ─── Dropdown Field Component  ────────────────────────────────────────────────
 function DropdownField({
@@ -534,23 +568,27 @@ export default function RecipesManager() {
                         </TouchableOpacity>
                     </View>
                     <ScrollView style={styles.modalForm}>
-                        <Text style={styles.label}>{t('admin.name', 'Name')} (EN)</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder={t('admin.recipeNamePlaceholder', 'e.g. Mediterranean Salmon')}
-                            value={newRecipe.title}
-                            onChangeText={(t) => setNewRecipe((p) => ({ ...p, title: t }))}
-                        />
-                        <Text style={styles.label}>Name (PT)</Text>
-                        <TextInput style={styles.input} placeholder="ex. Salmão Mediterrâneo" value={newRecipe.title_pt} onChangeText={v => setNewRecipe(p => ({ ...p, title_pt: v }))} />
-                        <Text style={styles.label}>Name (ES)</Text>
-                        <TextInput style={styles.input} placeholder="ej. Salmón Mediterráneo" value={newRecipe.title_es} onChangeText={v => setNewRecipe(p => ({ ...p, title_es: v }))} />
-                        <Text style={styles.label}>Name (FR)</Text>
-                        <TextInput style={styles.input} placeholder="ex. Saumon Méditerranéen" value={newRecipe.title_fr} onChangeText={v => setNewRecipe(p => ({ ...p, title_fr: v }))} />
-                        <Text style={styles.label}>Name (DE)</Text>
-                        <TextInput style={styles.input} placeholder="z.B. Mediterraner Lachs" value={newRecipe.title_de} onChangeText={v => setNewRecipe(p => ({ ...p, title_de: v }))} />
-                        <Text style={styles.label}>Name (NL)</Text>
-                        <TextInput style={styles.input} placeholder="bijv. Mediterrane Zalm" value={newRecipe.title_nl} onChangeText={v => setNewRecipe(p => ({ ...p, title_nl: v }))} />
+                        {/* Recipe Name — Accordion */}
+                        <FieldAccordion title={`📝 ${t('admin.name', 'Name')} *`}>
+                            <LangAccordion title="🇬🇧 EN (required)">
+                                <TextInput style={styles.input} placeholder={t('admin.recipeNamePlaceholder', 'e.g. Mediterranean Salmon')} value={newRecipe.title} onChangeText={(t) => setNewRecipe((p) => ({ ...p, title: t }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇵🇹 PT">
+                                <TextInput style={styles.input} placeholder="ex. Salmão Mediterrâneo" value={newRecipe.title_pt} onChangeText={v => setNewRecipe(p => ({ ...p, title_pt: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇪🇸 ES">
+                                <TextInput style={styles.input} placeholder="ej. Salmón Mediterráneo" value={newRecipe.title_es} onChangeText={v => setNewRecipe(p => ({ ...p, title_es: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇫🇷 FR">
+                                <TextInput style={styles.input} placeholder="ex. Saumon Méditerranéen" value={newRecipe.title_fr} onChangeText={v => setNewRecipe(p => ({ ...p, title_fr: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇩🇪 DE">
+                                <TextInput style={styles.input} placeholder="z.B. Mediterraner Lachs" value={newRecipe.title_de} onChangeText={v => setNewRecipe(p => ({ ...p, title_de: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇳🇱 NL">
+                                <TextInput style={styles.input} placeholder="bijv. Mediterrane Zalm" value={newRecipe.title_nl} onChangeText={v => setNewRecipe(p => ({ ...p, title_nl: v }))} />
+                            </LangAccordion>
+                        </FieldAccordion>
 
                         <DropdownField
                             label={t('admin.categories', 'Categories')}
@@ -682,43 +720,61 @@ export default function RecipesManager() {
                             </View>
                         </View>
 
-                        <Text style={styles.label}>{t('admin.ingredientsList', 'Ingredients (one per line)')} (EN)</Text>
-                        <TextInput
-                            style={[styles.input, { height: 150 }]}
-                            multiline
-                            placeholder={'2 Eggs\n1 Avocado\n...'}
-                            value={newRecipe.ingredientsText}
-                            onChangeText={(t) => setNewRecipe((p) => ({ ...p, ingredientsText: t }))}
-                        />
-                        <Text style={styles.label}>Ingredients (PT)</Text>
-                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Ovos\n1 Abacate\n...'} value={newRecipe.ingr_pt} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_pt: v }))} />
-                        <Text style={styles.label}>Ingredients (ES)</Text>
-                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Huevos\n1 Aguacate\n...'} value={newRecipe.ingr_es} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_es: v }))} />
-                        <Text style={styles.label}>Ingredients (FR)</Text>
-                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Œufs\n1 Avocat\n...'} value={newRecipe.ingr_fr} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_fr: v }))} />
-                        <Text style={styles.label}>Ingredients (DE)</Text>
-                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Eier\n1 Avocado\n...'} value={newRecipe.ingr_de} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_de: v }))} />
-                        <Text style={styles.label}>Ingredients (NL)</Text>
-                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Eieren\n1 Avocado\n...'} value={newRecipe.ingr_nl} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_nl: v }))} />
+                        {/* Ingredients — Accordion */}
+                        <FieldAccordion title={`🥦 ${t('admin.ingredientsList', 'Ingredients')} *`}>
+                            <LangAccordion title="🇬🇧 EN (required)">
+                                <TextInput
+                                    style={[styles.input, { height: 150 }]}
+                                    multiline
+                                    placeholder={'2 Eggs\n1 Avocado\n...'}
+                                    value={newRecipe.ingredientsText}
+                                    onChangeText={(t) => setNewRecipe((p) => ({ ...p, ingredientsText: t }))}
+                                />
+                            </LangAccordion>
+                            <LangAccordion title="🇵🇹 PT">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Ovos\n1 Abacate\n...'} value={newRecipe.ingr_pt} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_pt: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇪🇸 ES">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Huevos\n1 Aguacate\n...'} value={newRecipe.ingr_es} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_es: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇫🇷 FR">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Œufs\n1 Avocat\n...'} value={newRecipe.ingr_fr} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_fr: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇩🇪 DE">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Eier\n1 Avocado\n...'} value={newRecipe.ingr_de} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_de: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇳🇱 NL">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Eieren\n1 Avocado\n...'} value={newRecipe.ingr_nl} onChangeText={v => setNewRecipe(p => ({ ...p, ingr_nl: v }))} />
+                            </LangAccordion>
+                        </FieldAccordion>
 
-                        <Text style={styles.label}>{t('admin.instructionsSteps', 'Instructions (one step per line)')} (EN)</Text>
-                        <TextInput
-                            style={[styles.input, { height: 150 }]}
-                            multiline
-                            placeholder={'1) Preheat oven...\n2) Season salmon...\n...'}
-                            value={newRecipe.instructionsText}
-                            onChangeText={(t) => setNewRecipe((p) => ({ ...p, instructionsText: t }))}
-                        />
-                        <Text style={styles.label}>Instructions (PT)</Text>
-                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Pré-aquecer o forno...\n2) Temperar o salmão...'} value={newRecipe.instr_pt} onChangeText={v => setNewRecipe(p => ({ ...p, instr_pt: v }))} />
-                        <Text style={styles.label}>Instructions (ES)</Text>
-                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Precalentar el horno...\n2) Sazonar el salmón...'} value={newRecipe.instr_es} onChangeText={v => setNewRecipe(p => ({ ...p, instr_es: v }))} />
-                        <Text style={styles.label}>Instructions (FR)</Text>
-                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Préchauffer le four...\n2) Assaisonner le saumon...'} value={newRecipe.instr_fr} onChangeText={v => setNewRecipe(p => ({ ...p, instr_fr: v }))} />
-                        <Text style={styles.label}>Instructions (DE)</Text>
-                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Den Ofen vorheizen...\n2) Den Lachs würzen...'} value={newRecipe.instr_de} onChangeText={v => setNewRecipe(p => ({ ...p, instr_de: v }))} />
-                        <Text style={styles.label}>Instructions (NL)</Text>
-                        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) De oven voorverwarmen...\n2) De zalm kruiden...'} value={newRecipe.instr_nl} onChangeText={v => setNewRecipe(p => ({ ...p, instr_nl: v }))} />
+                        {/* Instructions — Accordion */}
+                        <FieldAccordion title={`📋 ${t('admin.instructionsSteps', 'Instructions')} *`}>
+                            <LangAccordion title="🇬🇧 EN (required)">
+                                <TextInput
+                                    style={[styles.input, { height: 150 }]}
+                                    multiline
+                                    placeholder={'1) Preheat oven...\n2) Season salmon...\n...'}
+                                    value={newRecipe.instructionsText}
+                                    onChangeText={(t) => setNewRecipe((p) => ({ ...p, instructionsText: t }))}
+                                />
+                            </LangAccordion>
+                            <LangAccordion title="🇵🇹 PT">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Pré-aquecer o forno...\n2) Temperar o salmão...'} value={newRecipe.instr_pt} onChangeText={v => setNewRecipe(p => ({ ...p, instr_pt: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇪🇸 ES">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Precalentar el horno...\n2) Sazonar el salmón...'} value={newRecipe.instr_es} onChangeText={v => setNewRecipe(p => ({ ...p, instr_es: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇫🇷 FR">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Préchauffer le four...\n2) Assaisonner le saumon...'} value={newRecipe.instr_fr} onChangeText={v => setNewRecipe(p => ({ ...p, instr_fr: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇩🇪 DE">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Den Ofen vorheizen...\n2) Den Lachs würzen...'} value={newRecipe.instr_de} onChangeText={v => setNewRecipe(p => ({ ...p, instr_de: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇳🇱 NL">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) De oven voorverwarmen...\n2) De zalm kruiden...'} value={newRecipe.instr_nl} onChangeText={v => setNewRecipe(p => ({ ...p, instr_nl: v }))} />
+                            </LangAccordion>
+                        </FieldAccordion>
 
 
 

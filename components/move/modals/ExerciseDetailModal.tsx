@@ -126,7 +126,7 @@ export default function ExerciseDetailModal({
                       <View style={styles.stepBadge}>
                         <Text style={styles.stepBadgeText}>{i + 1}</Text>
                       </View>
-                      <Text style={styles.instructionText}>{t(`db.${step.replace(/\s+/g, '')}`, step) as string}</Text>
+                      <Text style={styles.instructionText}>{step}</Text>
                     </View>
                   ))
                 ) : (

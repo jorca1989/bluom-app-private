@@ -870,13 +870,12 @@ const styles = StyleSheet.create({
 
   // ── NEW: Action buttons row ──────────────────────────────────
   actionButtonsRow: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     gap: 10,
     marginTop: 16,
   },
   // "Log as Meal" – primary, orange fill
   logMealButton: {
-    flex: 1,
     backgroundColor: '#3b82f6',
     borderRadius: 14,
     paddingVertical: 12,
@@ -894,7 +893,6 @@ const styles = StyleSheet.create({
   logMealButtonText: { color: '#ffffff', fontSize: 14, fontWeight: '700' },
   // "Shopping List" – secondary, outline style
   addToListButton: {
-    flex: 1,
     borderRadius: 14,
     paddingVertical: 12,
     paddingHorizontal: 10,
