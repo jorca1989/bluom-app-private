@@ -462,14 +462,14 @@ export default function OnboardingScreen() {
 
     if (answers.fitnessGoal && answers.weight && answers.targetWeight) {
       const w = parseFloat(answers.weight);
-      const t = parseFloat(answers.targetWeight);
-      if (answers.fitnessGoal === 'lose_weight' && t >= w) {
+      const targetVal = parseFloat(answers.targetWeight);
+      if (answers.fitnessGoal === 'lose_weight' && targetVal >= w) {
         Alert.alert("Goal Check", "You selected 'Lose Weight' but your target is higher/equal to current weight.");
         return false;
       }
-      if (answers.fitnessGoal === 'build_muscle' && t < w && !hasShownRecompAlert) {
+      if (answers.fitnessGoal === 'build_muscle' && targetVal < w && !hasShownRecompAlert) {
         setHasShownRecompAlert(true);
-        Alert.alert("Body Recomposition Plan", `Got it! We will set you up for a Body Recomposition (Fat Loss + Muscle Maintenance) to reach your target of ${t} ${units.weight}.`);
+        Alert.alert(t('onboarding.alerts.bodyRecompTitle', 'Body Recomposition Plan'), t('onboarding.alerts.bodyRecompMsg', `Got it! We will set you up for a Body Recomposition (Fat Loss + Muscle Maintenance) to reach your target of {{target}} {{unit}}.`, { target: targetVal, unit: units.weight }));
       }
     }
 
@@ -799,7 +799,7 @@ export default function OnboardingScreen() {
       {showWelcome ? (
         <LinearGradient colors={['#ffffff', '#f8fafc']} style={styles.fullscreen}>
           <SafeAreaView style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center', paddingVertical: 40 }}>
-            <View style={{ alignItems: 'center', paddingHorizontal: 30, paddingTop: insets.top + 100 }}>
+            <View style={{ alignItems: 'center', paddingHorizontal: 30, paddingTop: insets.top + 60 }}>
               {currentWelcomeSlide === 0 && (
                 <>
                   <Image source={WELCOME_LOGO} style={{ width: 140, height: 40, marginBottom: 40 }} resizeMode="contain" />
@@ -816,8 +816,8 @@ export default function OnboardingScreen() {
                       <Text style={[styles.pillarText, { color: '#2563EB' }]}>{t('onboarding.welcome.pillarNutrition', 'Nutrition')}</Text>
                     </View>
                     <View style={[styles.pillarCard, { borderColor: '#2563EB', backgroundColor: '#eff6ff' }]}>
-                      <Ionicons name="fitness" size={28} color="#2563EB" />
-                      <Text style={[styles.pillarText, { color: '#2563EB' }]}>{t('onboarding.welcome.pillarMove', 'Move')}</Text>
+                      <Ionicons name="barbell" size={28} color="#2563EB" />
+                      <Text style={[styles.pillarText, { color: '#2563EB' }]}>{t('onboarding.welcome.pillarMove', 'Treino')}</Text>
                     </View>
                     <View style={[styles.pillarCard, { borderColor: '#2563EB', backgroundColor: '#eff6ff' }]}>
                       <Ionicons name="leaf" size={28} color="#2563EB" />
@@ -953,7 +953,7 @@ const styles = StyleSheet.create({
   welcomeTitle: { fontSize: 32, fontWeight: '800', color: '#1e293b', textAlign: 'center', marginBottom: 12 },
   welcomeSubtitle: { fontSize: 18, fontWeight: '600', color: '#6366f1', textAlign: 'center', marginBottom: 16 },
   welcomeDesc: { fontSize: 16, color: '#64748b', textAlign: 'center', lineHeight: 24, paddingHorizontal: 20 },
-  dotsContainer: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 40 },
+  dotsContainer: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 32, marginTop: 48 },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#e2e8f0' },
   activeDot: { backgroundColor: '#2563eb', width: 20 },
   welcomeBtn: { backgroundColor: '#2563eb', marginHorizontal: 30, padding: 18, borderRadius: 16, alignItems: 'center', marginBottom: 40 },

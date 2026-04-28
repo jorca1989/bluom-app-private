@@ -181,7 +181,12 @@
       "sat": "Sáb",
       "sun": "Dom"
     },
+    "calories": "Calorias",
+    "protein": "Proteína (g)",
+    "carbs": "Hidratos (g)",
+    "fat": "Gordura (g)",
     "summary": {
+      "kcal": "cal",
       "kcalOver": "kcal excesso",
       "kcalLeft": "kcal restam",
       "consumed": "Consumido",
@@ -232,16 +237,16 @@
       "notNow": "Agora não"
     },
     "photo": {
-      "title": "Registo IA por Foto",
-      "extract": "Extraia macros da sua refeição",
-      "ready": "Pronto a analisar",
-      "camRequired": "Acesso à câmara necessário",
-      "scanFood": "Analise alimentos para extrair macros automaticamente.",
+      "title": "Registo por Foto",
+      "extract": "Extrair macros da tua refeição",
+      "ready": "Pronto para analisar",
+      "camRequired": "Câmara necessária",
+      "scanFood": "Fotografa a comida para extrair macros automaticamente.",
       "enableCam": "Ativar Câmara",
       "captured": "Foto Capturada",
-      "retake": "Tirar Novamente",
-      "analyze": "Analisar Comida",
-      "upsell": "Desbloqueie reconhecimento de comida IA e monitorização de macros com o Bluom Pro."
+      "retake": "Repetir",
+      "analyze": "Analisar Alimento",
+      "upsell": "Desbloqueia o reconhecimento de alimentos por IA com Bluom Pro."
     },
     "voice": {
       "title": "Registo por Voz",
@@ -521,7 +526,17 @@
       "sat": "S"
     },
     "darkMode": "Modo Escuro",
-    "comingSoon": "Em breve"
+    "comingSoon": "Em breve",
+    "breakfast": "Pequeno-almoço",
+    "lunch": "Almoço",
+    "dinner": "Jantar",
+    "snack": "Lanche",
+    "saved": "Guardado",
+    "saving": "A guardar…",
+    "tryAgain": "Por favor, tenta novamente.",
+    "min": "min",
+    "servings": "porções",
+    "calories": "Calorias"
   },
   "move": {
     "title": "Treinar",
@@ -797,16 +812,16 @@
   "onboarding": {
     "welcome": {
       "slide1Title": "A tua vida, otimizada.",
-      "slide1Sub": "Gestão de vida com IA",
-      "slide1Desc": "Bem-vindo ao Bluom. O único sistema que integra Nutrição, Movimento e Mente num fluxo contínuo.",
+      "slide1Sub": "Governa a tua vida com IA",
+      "slide1Desc": "Bem-vindo à Bluom. O único sistema que integra Nutrição, Exercício e Mente num fluxo contínuo.",
       "slide2Title": "Um ecossistema completo",
       "slide2Sub": "Além dos pilares",
       "slide2Desc": "Inclui protocolos especializados para saúde masculina e feminina, arquitetura de produtividade e mindset e meditação.",
       "slide3Title": "O teu plano",
       "slide3Sub": "Pronto para evoluir?",
-      "slide3Desc": "Responde a algumas perguntas rápidas para obteres o teu plano de nutrição personalizado e recomendações de treino.",
+      "slide3Desc": "Responde a algumas perguntas rápidas para obteres o teu plano de nutrição personalizado, plano de treino e saúde mental.",
       "pillarNutrition": "Nutrição",
-      "pillarMove": "Mover",
+      "pillarMove": "Treino",
       "pillarMind": "Mente",
       "next": "Seguinte",
       "letsGo": "Vamos lá!"
@@ -991,6 +1006,10 @@
       "commitBalanced": "Progresso Consistente",
       "commitMaximum": "Transformação Intensiva",
       "disclaimer": "Esta é uma estimativa. Os resultados reais dependem da consistência, recuperação e metabolismo individual."
+    },
+    "alerts": {
+      "bodyRecompTitle": "Plano de Recomposição Corporal",
+      "bodyRecompMsg": "Preparado! Vamos configurar um plano de Recomposição Corporal (Perda de Gordura + Manutenção Muscular) para atingires o teu objetivo de {{target}} {{unit}}."
     }
   },
   "premium": {
@@ -3694,9 +3713,23 @@
     "quote": "\"O trabalho profundo é o superpoder do século XXI.\"",
     "readyPrompt": "Pronto para Imergir?",
     "pause": "Pausar Sessão",
-    "start": "Começar a Focar",
+    "start": "Começar",
     "tagline": "Mantém o Foco • Floresce Fundo",
     "proTitle": "Modo Foco Pro",
     "proMessage": "Faz upgrade para Pro para aceder a sessões de foco profundo e monitorização de produtividade."
+  },
+  "foodReview": {
+    "title": "Rever Macros",
+    "food": "Alimento",
+    "foodPlaceholder": "Nome do alimento",
+    "hint": "Podes corrigir o que a IA detetou.",
+    "meal": "Refeição",
+    "perServing": "Por porção (editável)",
+    "servings": "Porções",
+    "total": "Total",
+    "saveToMeal": "Guardar em {{meal}}",
+    "missingName": "Nome em falta",
+    "enterName": "Insere o nome do alimento (ou mantém \"Desconhecido\").",
+    "addedMsg": "{{name}} adicionado a {{meal}}"
   }
 }

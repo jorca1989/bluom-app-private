@@ -104,6 +104,7 @@ export const recognizeFoodFromImage = action({
     imageBase64: v.string(),
     mimeType: v.string(), // e.g. "image/jpeg"
     platform: v.string(),
+    language: v.optional(v.string()), // e.g. "pt", "es" — defaults to "en"
   },
   handler: async (_ctx, args) => {
     const { apiKey, source, normalizedPlatform } = getGeminiApiKeyForPlatform(args.platform);
@@ -113,6 +114,10 @@ export const recognizeFoodFromImage = action({
       platform === "ios"
         ? process.env.GEMINI_API_KEY_ANDROID
         : process.env.GEMINI_API_KEY_IOS;
+    const lang = args.language ?? 'en';
+    const langInstruction = lang !== 'en'
+      ? `\n- Return the food "name" in ${lang === 'pt' ? 'European Portuguese' : lang} language.`
+      : '';
     const prompt =
       'Analyze this food image. Provide the Food Name, estimated Calories, Protein, Carbs, and Fats. Return ONLY a JSON object.\n' +
       'Exact shape:\n' +
@@ -125,8 +130,9 @@ export const recognizeFoodFromImage = action({
       '}\n' +
       'Rules:\n' +
       '- Calories in kcal. Macros in grams.\n' +
-      '- If unsure, return name="Unknown" and set numbers to 0.\n' +
-      '- Output MUST be valid JSON with no extra text.';
+      '- If unsure, return name="Desconhecido" and set numbers to 0.\n' +
+      '- Output MUST be valid JSON with no extra text.' +
+      langInstruction;
 
     let text = "";
     try {

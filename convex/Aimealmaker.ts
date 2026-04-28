@@ -27,9 +27,15 @@ export const generateAiMealFromIngredients = action({
     cuisine: v.string(),
     goal: v.string(),
     platform: v.string(),
+    language: v.optional(v.string()), // e.g. "pt", "es" — defaults to "en"
   },
   handler: async (_ctx, args) => {
     const apiKey = getGeminiKey(args.platform);
+
+    const lang = args.language ?? 'en';
+    const langInstruction = lang !== 'en'
+      ? `\n- IMPORTANT: Write ALL text fields (title, description, steps, ingredient names, tags) in ${lang === 'pt' ? 'European Portuguese' : lang} language.`
+      : '';
 
     const prompt = `You are a professional chef and nutritionist.
 Create ONE recipe using these ingredients (you may add basic pantry staples):
@@ -59,7 +65,7 @@ Rules:
 - All numbers must be plain numbers (no strings).
 - steps array: 4-8 steps, each a clear single action.
 - tags: 2-4 relevant tags (e.g. "High Protein", "Quick", "Mediterranean").
-- Output MUST be valid JSON only.`;
+- Output MUST be valid JSON only.${langInstruction}`;
 
     let text = "";
     try {

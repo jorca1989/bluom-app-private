@@ -91,7 +91,8 @@ export default function ContentCMS() {
   const updateArticle = useMutation(api.admin.updateArticle);
   const deleteArticle = useMutation(api.admin.deleteArticle);
   const legalDocs = useQuery(
-    activeTab === 'legal' ? api.admin.getLegalDocuments : (undefined as any)
+    api.admin.getLegalDocuments,
+    activeTab !== 'legal' ? 'skip' : {}
   );
 
   const setF = (key: keyof ReturnType<typeof emptyForm>) => (val: string) =>

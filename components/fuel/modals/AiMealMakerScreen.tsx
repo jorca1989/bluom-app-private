@@ -98,7 +98,7 @@ function getRecipeImage(query: string): string {
 export default function AiMealMakerScreen() {
   const router   = useRouter();
   const insets   = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user: clerkUser } = useUser();
 
   const { isPro, promptUpgrade, convexUser } = useAccessControl();
@@ -149,6 +149,7 @@ export default function AiMealMakerScreen() {
         imageBase64: photo.base64,
         mimeType: 'image/jpeg',
         platform,
+        language: i18n.language,
       });
 
       if (result.status === 'maintenance') {
@@ -205,6 +206,7 @@ export default function AiMealMakerScreen() {
         cuisine: selectedCuisine,
         goal: selectedGoal,
         platform,
+        language: i18n.language,
       });
       setGeneratedRecipe(result as GeneratedRecipe);
       setMode('result');

@@ -31,7 +31,7 @@ interface PhotoRecognitionModalProps {
 export default function PhotoRecognitionModal({ visible, onClose, onRecognized, meal, isPro = false }: PhotoRecognitionModalProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [recognizeError, setRecognizeError] = useState<string | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
@@ -134,6 +134,7 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
         imageBase64: capturedBase64!,
         mimeType: capturedMimeType!,
         platform: Platform.OS,
+        language: i18n.language,
       });
       if (result?.status === 'maintenance') {
         setRecognizeError('Temporarily unavailable. Please try again in a bit.');
@@ -231,20 +232,17 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
                   {recognizeError && <Text style={styles.errorText}>{recognizeError}</Text>}
 
                   <View style={styles.resultActions}>
-                    <TouchableOpacity style={styles.retakeBtn} onPress={resetCapture} disabled={loading}>
-                      <Text style={styles.retakeText}>{t('modals.photo.retake', 'Retake')}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                      style={[styles.analyzeBtn, loading && styles.disabledBtn]} 
-                      onPress={handleRecognize} 
-                      disabled={loading}
-                    >
+                    <TouchableOpacity style={[styles.analyzeBtn, loading && styles.disabledBtn]} onPress={handleRecognize} disabled={loading}>
                       {loading ? <ActivityIndicator size="small" color="#ffffff"/> : (
                         <>
-                          <Text style={styles.analyzeBtnText}>{t('modals.photo.analyze', 'Analyze Food')}</Text>
                           <Ionicons name="sparkles" size={18} color="#ffffff" />
+                          <Text style={styles.analyzeBtnText}>{t('modals.photo.analyze', 'Analyze Food')}</Text>
                         </>
                       )}
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.retakeBtn} onPress={resetCapture} disabled={loading}>
+                      <Ionicons name="camera-reverse-outline" size={18} color="#475569" />
+                      <Text style={styles.retakeText}>{t('modals.photo.retake', 'Retake')}</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -431,19 +429,20 @@ const styles = StyleSheet.create({
     color: '#0f172a',
   },
   resultActions: {
-    flexDirection: 'row',
-    gap: 12,
+    flexDirection: 'column',
+    gap: 10,
   },
   retakeBtn: {
-    flex: 1,
     backgroundColor: '#f1f5f9',
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderRadius: 16,
     alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
   },
   retakeText: { color: '#475569', fontWeight: 'bold', fontSize: 15 },
   analyzeBtn: {
-    flex: 2,
     flexDirection: 'row',
     backgroundColor: '#3b82f6',
     paddingVertical: 16,
@@ -451,6 +450,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 8,
+    shadowColor: '#2563eb',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 3,
   },
   analyzeBtnText: { color: '#ffffff', fontWeight: 'bold', fontSize: 15 },
   disabledBtn: { opacity: 0.6 },

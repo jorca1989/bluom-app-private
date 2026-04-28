@@ -121,7 +121,7 @@ export default function FoodScanReviewScreen() {
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Meal</Text>
+          <Text style={styles.cardTitle}>{t('foodReview.meal', 'Meal')}</Text>
           <View style={styles.mealSelector}>
             {(['Breakfast', 'Lunch', 'Dinner', 'Snack'] as MealName[]).map((m) => (
               <TouchableOpacity

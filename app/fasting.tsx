@@ -206,11 +206,11 @@ export default function FastingScreen() {
                     }`}
                 >
                   <View className="flex-row items-center gap-3">
-                    <View style={protocol.proRequired && !isPro ? { opacity: 0.15 } : undefined}>
-                      <Text className={`font-black ${selectedProtocol === protocol.id ? 'text-blue-600' : 'text-slate-500'}`}>
-                        {protocol.name}
-                      </Text>
-                    </View>
+                    <Text className={`font-black ${selectedProtocol === protocol.id ? 'text-blue-600' : 'text-slate-500'}`}>
+                      {protocol.proRequired && !isPro
+                        ? protocol.id === 'OMAD' ? '••••' : '••:•'
+                        : protocol.name}
+                    </Text>
                     {protocol.proRequired && (
                       <View className="bg-gradient-to-r from-amber-400 to-amber-500 px-2 py-1 rounded-full">
                         <Text className="text-white font-black text-[8px]">PRO</Text>

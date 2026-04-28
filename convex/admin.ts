@@ -235,12 +235,22 @@ export const deletePublicRecipe = mutation({
 /**
  * Meditations: Create Session
  */
+const localizationsArg = v.optional(v.object({
+    pt: v.optional(v.string()),
+    es: v.optional(v.string()),
+    nl: v.optional(v.string()),
+    de: v.optional(v.string()),
+    fr: v.optional(v.string()),
+}));
+
 export const createMeditationSession = mutation({
     args: {
         title: v.string(),
         category: v.string(),
         duration: v.float64(),
         description: v.string(),
+        titleLocalizations: localizationsArg,
+        descriptionLocalizations: localizationsArg,
         audioUrl: v.optional(v.string()),
         videoUrl: v.optional(v.string()),
         coverImage: v.optional(v.string()),
@@ -258,6 +268,8 @@ export const createMeditationSession = mutation({
             category: args.category.trim(),
             duration: args.duration,
             description: args.description.trim(),
+            titleLocalizations: args.titleLocalizations,
+            descriptionLocalizations: args.descriptionLocalizations,
             audioUrl: args.audioUrl?.trim(),
             videoUrl: args.videoUrl?.trim(),
             coverImage: args.coverImage?.trim(),
@@ -288,6 +300,8 @@ export const updateMeditationSession = mutation({
         category: v.optional(v.string()),
         duration: v.optional(v.float64()),
         description: v.optional(v.string()),
+        titleLocalizations: localizationsArg,
+        descriptionLocalizations: localizationsArg,
         audioUrl: v.optional(v.string()),
         videoUrl: v.optional(v.string()),
         coverImage: v.optional(v.string()),
@@ -306,6 +320,8 @@ export const updateMeditationSession = mutation({
             ...(args.category && { category: args.category.trim() }),
             ...(args.duration !== undefined && { duration: args.duration }),
             ...(args.description && { description: args.description.trim() }),
+            ...(args.titleLocalizations !== undefined && { titleLocalizations: args.titleLocalizations }),
+            ...(args.descriptionLocalizations !== undefined && { descriptionLocalizations: args.descriptionLocalizations }),
             ...(args.audioUrl !== undefined && { audioUrl: args.audioUrl ? args.audioUrl.trim() : undefined }),
             ...(args.videoUrl !== undefined && { videoUrl: args.videoUrl ? args.videoUrl.trim() : undefined }),
             ...(args.coverImage !== undefined && { coverImage: args.coverImage ? args.coverImage.trim() : undefined }),

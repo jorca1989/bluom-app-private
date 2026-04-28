@@ -627,24 +627,27 @@ export default function RecipesManager() {
                             </View>
                         </View>
 
-                        <Text style={styles.label}>{t('admin.shortDescription', 'Short description')} (EN)</Text>
-                        <TextInput
-                            style={[styles.input, { height: 90 }]}
-                            multiline
-                            placeholder={t('admin.shortDescriptionPlaceholder', 'One-line description users see in-app...')}
-                            value={newRecipe.shortDescription}
-                            onChangeText={(t) => setNewRecipe((p) => ({ ...p, shortDescription: t }))}
-                        />
-                        <Text style={styles.label}>Description (PT)</Text>
-                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descrição em português..." value={newRecipe.desc_pt} onChangeText={v => setNewRecipe(p => ({ ...p, desc_pt: v }))} />
-                        <Text style={styles.label}>Description (ES)</Text>
-                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descripción en español..." value={newRecipe.desc_es} onChangeText={v => setNewRecipe(p => ({ ...p, desc_es: v }))} />
-                        <Text style={styles.label}>Description (FR)</Text>
-                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Description en français..." value={newRecipe.desc_fr} onChangeText={v => setNewRecipe(p => ({ ...p, desc_fr: v }))} />
-                        <Text style={styles.label}>Description (DE)</Text>
-                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschreibung auf Deutsch..." value={newRecipe.desc_de} onChangeText={v => setNewRecipe(p => ({ ...p, desc_de: v }))} />
-                        <Text style={styles.label}>Description (NL)</Text>
-                        <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschrijving in het Nederlands..." value={newRecipe.desc_nl} onChangeText={v => setNewRecipe(p => ({ ...p, desc_nl: v }))} />
+                        {/* Description — Accordion */}
+                        <FieldAccordion title={`📄 ${t('admin.shortDescription', 'Description')}`}>
+                            <LangAccordion title="🇬🇧 EN (required)">
+                                <TextInput style={[styles.input, { height: 90 }]} multiline placeholder={t('admin.shortDescriptionPlaceholder', 'One-line description users see in-app...')} value={newRecipe.shortDescription} onChangeText={v => setNewRecipe(p => ({ ...p, shortDescription: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇵🇹 PT">
+                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descrição em português..." value={newRecipe.desc_pt} onChangeText={v => setNewRecipe(p => ({ ...p, desc_pt: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇪🇸 ES">
+                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descripción en español..." value={newRecipe.desc_es} onChangeText={v => setNewRecipe(p => ({ ...p, desc_es: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇫🇷 FR">
+                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Description en français..." value={newRecipe.desc_fr} onChangeText={v => setNewRecipe(p => ({ ...p, desc_fr: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇩🇪 DE">
+                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschreibung auf Deutsch..." value={newRecipe.desc_de} onChangeText={v => setNewRecipe(p => ({ ...p, desc_de: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇳🇱 NL">
+                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschrijving in het Nederlands..." value={newRecipe.desc_nl} onChangeText={v => setNewRecipe(p => ({ ...p, desc_nl: v }))} />
+                            </LangAccordion>
+                        </FieldAccordion>
 
                         <Text style={styles.label}>{t('admin.imageUrl', 'Image URL (R2)')}</Text>
                         <TextInput
