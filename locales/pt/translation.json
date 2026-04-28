@@ -131,9 +131,9 @@
     }
   },
   "tabs": {
-    "home": "Home",
-    "fuel": "Nutri",
-    "move": "Move-te",
+    "home": "Início",
+    "fuel": "Come",
+    "move": "Treina",
     "wellness": "Mente",
     "profile": "Perfil"
   },
@@ -594,8 +594,8 @@
     "detailInfo": "Toque num exercício para ver os detalhes. Utilizadores Pro podem adicionar ou remover exercícios.",
     "personalisedTraining": "Treino Personalizado",
     "upgradeDetail": "Atualize para o Pro para adicionar ou remover exercícios do seu plano.",
-    "upperBodyFocus": "Foco Corpo Superior",
-    "lowerBodyFocus": "Foco Corpo Inferior",
+    "upperBodyFocus": "Parte Superior do Corpo",
+    "lowerBodyFocus": "Parte Inferior do Corpo",
     "coreFocus": "Core e Mobilidade",
     "fullBodyFocus": "Corpo Inteiro / Misto",
     "weeklyProgress": "Progresso Semanal",
@@ -1586,16 +1586,16 @@
     "upgrade": "✦ Atualizar",
     "myBlueprint": "O Meu Plano",
     "myBlueprintSub": "Plano de nutrição, fitness e bem-estar",
-    "sugarControl": "Controlo de óçúcar",
+    "sugarControl": "Controlo de Açúcar",
     "sugarControlSub": "Reset de 90 dias + check-ins diários",
     "restartGoal": "Reiniciar Objetivo",
     "restartGoalSub": "Redefinir biómetras e onboarding",
-    "weightJourney": "Jornada de Peso",
+    "weightJourney": "Gestão de Peso",
     "weightJourneySub": "Registos, medidas e fotos de progresso",
     "womensHealth": "Saúde Feminina",
     "mensHealth": "Saúde Masculina",
     "hormonal": "Plano hormonal e protocolos diários",
-    "fastingTracker": "Rastreador de Jejum",
+    "fastingTracker": "Jejum",
     "fastingTrackerSub": "Protocolos, temporizadores e sequências",
     "aiCoach": "Treinador IA",
     "aiCoachSub": "O teu especialista em saúde de precisão",
@@ -1625,6 +1625,69 @@
       "health": "Saúde e Monitorização",
       "tools": "Ferramentas",
       "support": "Suporte"
+    },
+    "avatarOpts": {
+      "hair": {
+        "shortFlat": "Curto Liso",
+        "shortWaved": "Curto Ondulado",
+        "shaggy": "Despenteado",
+        "curly": "Encaracolado",
+        "longButNotTooLong": "Comprido",
+        "dreads01": "Dreads",
+        "bun": "Coque",
+        "hat": "Chapéu",
+        "theCaesar": "César",
+        "theCaesarAndSidePart": "César com Risco",
+        "shavedSides": "Lados Rapados",
+        "bigHair": "Cabelo Volumoso"
+      },
+      "hairColor": {
+        "Black": "Preto",
+        "Blue Black": "Preto Azulado",
+        "Dark Brown": "Castanho Escuro",
+        "Brown": "Castanho",
+        "Blonde": "Loiro",
+        "Auburn": "Ruivo Acastanhado",
+        "Gray": "Grisalho",
+        "Red": "Ruivo"
+      },
+      "eyes": {
+        "Happy": "Feliz",
+        "Default": "Normal",
+        "Wink": "Piscar",
+        "Surprised": "Surpreendido",
+        "Side": "Lateral",
+        "Closed": "Fechados"
+      },
+      "brows": {
+        "Natural": "Natural",
+        "Raised": "Levantadas",
+        "Concerned": "Preocupadas",
+        "Angry": "Raivosas",
+        "Flat": "Planas"
+      },
+      "mouth": {
+        "Smile": "Sorriso",
+        "Soft": "Suave",
+        "Twinkle": "Brilhante"
+      },
+      "beard": {
+        "None": "Nenhuma",
+        "Mustache": "Bigode",
+        "Mustache (Bold)": "Bigode Grosso",
+        "Beard (Light)": "Barba Ligeira",
+        "Beard (Medium)": "Barba Média",
+        "Beard (Majestic)": "Barba Majestosa"
+      },
+      "skin": {
+        "Light": "Clara",
+        "Yellow": "Amarelada",
+        "Warm": "Quente",
+        "Tan": "Bronzeada",
+        "Deep": "Escura",
+        "Rich": "Intensa",
+        "Black": "Negra"
+      }
     }
   },
   "plan": {
@@ -2539,8 +2602,8 @@
     "muscles": {
       "All": "Todos",
       "Full Body": "Corpo Inteiro",
-      "Upper Body": "Parte Superior do Corpo",
-      "Lower Body": "Parte Inferior do Corpo",
+      "Upper Body": "Superior",
+      "Lower Body": "Inferior",
       "Chest": "Peito",
       "Pectoralis Major": "Peitoral Maior",
       "Pectoralis Minor": "Peitoral Menor",
@@ -2754,7 +2817,8 @@
     "Inhaleonyourreturn": "Inspira no retorno.",
     "Holdfor30seconds": "Segura por 30 segundos.",
     "Repeatfor3sets": "Repete por 3 séries.",
-    "Restfor60seconds": "Descansa por 60 segundos."
+    "Restfor60seconds": "Descansa por 60 segundos.",
+    "core": "Tronco"
   },
   "admin": {
     "library": "Biblioteca de Exercícios",
@@ -2972,7 +3036,7 @@
     "mentalToolbox": "A tua caixa de ferramentas mental",
     "reflectionsLabel": "Reflexões",
     "journalGratitude": "Diário e gratidão",
-    "brainGames": "Jogos Mentais",
+    "brainGames": "Jogos cognitivos",
     "sharpenMind": "Afia a tua mente",
     "dailyStreaks": "Sequências diárias",
     "lifeGoals": "Objetivos de Vida",
@@ -3393,7 +3457,7 @@
     },
     "soundscapes": "Sons da natureza",
     "gamesHub": {
-      "title": "Centro de Jogos Mentais",
+      "title": "Centro de Jogos",
       "subtitle": "Treino de foco e atenção",
       "comingSoon": "Em breve",
       "gamesImproved": "Jogos em melhoria contínua",
@@ -3618,5 +3682,21 @@
     "editTask": "Editar Tarefa",
     "weekGoalHint": "Um objetivo por linha",
     "weekGoalMultiHint": "Adiciona vários objetivos, um por linha"
+  },
+  "focusMode": {
+    "title": "Modo Foco",
+    "complete": "Sessão Completa!",
+    "completeMsg": "Faz uma pausa, mereceste.",
+    "stayFocused": "Mantém o Foco",
+    "endEarly": "Tens a certeza que queres terminar a sessão de foco mais cedo?",
+    "endSession": "Terminar Sessão",
+    "upgradeMsg": "Faz upgrade para desbloquear sessões de foco profundo.",
+    "quote": "\"O trabalho profundo é o superpoder do século XXI.\"",
+    "readyPrompt": "Pronto para Imergir?",
+    "pause": "Pausar Sessão",
+    "start": "Começar a Focar",
+    "tagline": "Mantém o Foco • Floresce Fundo",
+    "proTitle": "Modo Foco Pro",
+    "proMessage": "Faz upgrade para Pro para aceder a sessões de foco profundo e monitorização de produtividade."
   }
 }

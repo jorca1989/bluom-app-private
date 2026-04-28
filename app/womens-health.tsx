@@ -1312,8 +1312,8 @@ const s = StyleSheet.create({
   insightLinkTxt: { fontSize: 12, fontWeight: '700', color: '#e11d48' },
 
   // Pro blur
-  proBlurWrap: { borderRadius: 18, overflow: 'hidden', height: 160, backgroundColor: '#fff', marginBottom: 14 },
-  proBlurContent: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20 },
+  proBlurWrap: { borderRadius: 18, overflow: 'hidden', backgroundColor: '#fff', marginBottom: 14, borderWidth: 1, borderColor: '#fce7f3' },
+  proBlurContent: { alignItems: 'center', justifyContent: 'center', paddingVertical: 24, paddingHorizontal: 20 },
   proBlurTitle: { fontSize: 16, fontWeight: '800', color: '#0f172a', marginBottom: 6, textAlign: 'center' },
   proBlurSub:   { fontSize: 13, color: '#64748b', textAlign: 'center', marginBottom: 14, lineHeight: 19 },
   proBlurBtn:   { backgroundColor: '#e11d48', borderRadius: 14, paddingVertical: 12, paddingHorizontal: 24 },

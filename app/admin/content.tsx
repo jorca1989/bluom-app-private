@@ -1,15 +1,30 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  TextInput, Modal, ActivityIndicator, Alert, Image
+  TextInput, Modal, ActivityIndicator, Alert, Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { FileText, HelpCircle, Shield, Plus, Pencil, Trash2, Calendar, Image as ImageIcon, ChevronDown, ChevronUp } from 'lucide-react-native';
+import {
+  FileText, HelpCircle, Shield, Plus, Pencil, Trash2,
+  Calendar, Image as ImageIcon, ChevronDown, ChevronUp, Bold,
+  List, Heading1, RefreshCw,
+} from 'lucide-react-native';
+import { R2_CONFIG } from '@/utils/r2Config';
 
 const CATEGORIES = ['Wellness', "Men's Health", "Women's Health", 'Nutrition', 'Fitness', 'Fasting', 'Hormones', 'Mental Health', 'Health'];
-const LANGS = [{ code: 'en', label: '🇬🇧 EN' }, { code: 'pt', label: '🇵🇹 PT' }, { code: 'es', label: '🇪🇸 ES' }];
+const LANGS = [
+  { code: 'en', label: '🇬🇧 EN', required: true },
+  { code: 'pt', label: '🇵🇹 PT', required: false },
+  { code: 'es', label: '🇪🇸 ES', required: false },
+  { code: 'fr', label: '🇫🇷 FR', required: false },
+  { code: 'de', label: '🇩🇪 DE', required: false },
+  { code: 'nl', label: '🇳🇱 NL', required: false },
+];
+
+const langKey = (base: string, code: string) =>
+  code === 'en' ? base : `${base}${code.charAt(0).toUpperCase()}${code.slice(1)}`;
 
 const TabButton = ({ label, icon: Icon, active, onPress }: any) => (
   <TouchableOpacity onPress={onPress} style={[styles.tabButton, active && styles.tabButtonActive]}>
@@ -18,7 +33,7 @@ const TabButton = ({ label, icon: Icon, active, onPress }: any) => (
   </TouchableOpacity>
 );
 
-// ── Accordion Section ──────────────────────────────────────
+// ── Accordion ──────────────────────────────────────────────
 function AccordionSection({ title, children }: { title: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
@@ -32,10 +47,35 @@ function AccordionSection({ title, children }: { title: string; children: React.
   );
 }
 
-// ── Empty state (initial blank form) ─────────────────────
+// ── Markdown Toolbar ───────────────────────────────────────
+function MarkdownToolbar({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const insert = (snippet: string) => onChange(value + (value && !value.endsWith('\n') ? '\n' : '') + snippet);
+  return (
+    <View style={styles.toolbar}>
+      <TouchableOpacity style={styles.toolbarBtn} onPress={() => insert('**Bold text**')}>
+        <Bold size={14} color="#475569" />
+        <Text style={styles.toolbarTxt}>Bold</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toolbarBtn} onPress={() => insert('## Heading')}>
+        <Heading1 size={14} color="#475569" />
+        <Text style={styles.toolbarTxt}>H2</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toolbarBtn} onPress={() => insert('• Item')}>
+        <List size={14} color="#475569" />
+        <Text style={styles.toolbarTxt}>Bullet</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toolbarBtn} onPress={() => insert('\n---\n')}>
+        <Text style={[styles.toolbarTxt, { fontSize: 16 }]}>—</Text>
+        <Text style={styles.toolbarTxt}>HR</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+// ── Empty form factory ─────────────────────────────────────
 const emptyForm = () => ({
-  title: '', titlePt: '', titleEs: '',
-  content: '', contentPt: '', contentEs: '',
+  title: '', titlePt: '', titleEs: '', titleFr: '', titleDe: '', titleNl: '',
+  content: '', contentPt: '', contentEs: '', contentFr: '', contentDe: '', contentNl: '',
   category: 'Wellness', featuredImage: '', status: 'PUBLISHED' as 'PUBLISHED' | 'DRAFT',
 });
 
@@ -44,45 +84,74 @@ export default function ContentCMS() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm());
+  const [activeLang, setActiveLang] = useState('en');
 
   const articles = useQuery(api.admin.getArticles);
   const createArticle = useMutation(api.admin.createArticle);
   const updateArticle = useMutation(api.admin.updateArticle);
   const deleteArticle = useMutation(api.admin.deleteArticle);
+  const legalDocs = useQuery(
+    activeTab === 'legal' ? api.admin.getLegalDocuments : (undefined as any)
+  );
 
-  const setF = (key: keyof typeof form) => (val: string) => setForm(f => ({ ...f, [key]: val }));
+  const setF = (key: keyof ReturnType<typeof emptyForm>) => (val: string) =>
+    setForm(f => ({ ...f, [key]: val }));
 
-  const openNew = () => { setEditId(null); setForm(emptyForm()); setIsModalOpen(true); };
+  const openNew = () => { setEditId(null); setForm(emptyForm()); setActiveLang('en'); setIsModalOpen(true); };
   const openEdit = (item: any) => {
     setEditId(item._id);
     setForm({
       title: item.title ?? '',
       titlePt: item.titlePt ?? '',
       titleEs: item.titleEs ?? '',
+      titleFr: item.titleFr ?? '',
+      titleDe: item.titleDe ?? '',
+      titleNl: item.titleNl ?? '',
       content: item.content ?? '',
       contentPt: item.contentPt ?? '',
       contentEs: item.contentEs ?? '',
+      contentFr: item.contentFr ?? '',
+      contentDe: item.contentDe ?? '',
+      contentNl: item.contentNl ?? '',
       category: item.category ?? 'Wellness',
       featuredImage: item.featuredImage ?? '',
       status: item.status ?? 'PUBLISHED',
     });
+    setActiveLang('en');
     setIsModalOpen(true);
   };
 
   const handleSave = async () => {
-    if (!form.title || !form.content) {
+    if (!form.title.trim() || !form.content.trim()) {
       Alert.alert('Error', 'Title and content (EN) are required.');
       return;
     }
+    const payload = {
+      title: form.title.trim(),
+      content: form.content.trim(),
+      status: form.status,
+      category: form.category,
+      featuredImage: form.featuredImage.trim() || undefined,
+      titlePt: form.titlePt.trim() || undefined,
+      titleEs: form.titleEs.trim() || undefined,
+      titleFr: form.titleFr.trim() || undefined,
+      titleDe: form.titleDe.trim() || undefined,
+      titleNl: form.titleNl.trim() || undefined,
+      contentPt: form.contentPt.trim() || undefined,
+      contentEs: form.contentEs.trim() || undefined,
+      contentFr: form.contentFr.trim() || undefined,
+      contentDe: form.contentDe.trim() || undefined,
+      contentNl: form.contentNl.trim() || undefined,
+    };
     try {
-      const slug = form.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
       if (editId) {
-        await updateArticle({ articleId: editId as any, title: form.title, content: form.content, status: form.status, category: form.category, featuredImage: form.featuredImage || undefined });
+        await updateArticle({ articleId: editId as any, ...payload });
       } else {
-        await createArticle({ title: form.title, content: form.content, slug, status: form.status, category: form.category, featuredImage: form.featuredImage || undefined });
+        const slug = form.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+        await createArticle({ slug, ...payload });
       }
       setIsModalOpen(false);
-      Alert.alert('Success', editId ? 'Article updated.' : 'Article created.');
+      Alert.alert('Saved', editId ? 'Article updated.' : 'Article published.');
     } catch (e) {
       Alert.alert('Error', 'Could not save article.');
     }
@@ -95,17 +164,23 @@ export default function ContentCMS() {
     ]);
   };
 
+  // ── Current lang content key helpers ──
+  const titleKey = langKey('title', activeLang) as keyof ReturnType<typeof emptyForm>;
+  const contentKey = langKey('content', activeLang) as keyof ReturnType<typeof emptyForm>;
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
           <Text style={styles.title}>Content Management</Text>
-          <Text style={styles.subtitle}>Blog posts & knowledge library</Text>
+          <Text style={styles.subtitle}>Blog posts, FAQs & Legal</Text>
         </View>
-        <TouchableOpacity style={styles.addButton} onPress={openNew}>
-          <Plus color="#ffffff" size={20} />
-          <Text style={styles.addButtonText}>New Post</Text>
-        </TouchableOpacity>
+        {activeTab === 'blog' && (
+          <TouchableOpacity style={styles.addButton} onPress={openNew}>
+            <Plus color="#ffffff" size={20} />
+            <Text style={styles.addButtonText}>New Post</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.tabs}>
@@ -115,6 +190,7 @@ export default function ContentCMS() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* ── Blog Tab ── */}
         {activeTab === 'blog' && (
           <>
             {!articles ? (
@@ -128,7 +204,7 @@ export default function ContentCMS() {
               articles.map((item) => (
                 <View key={item._id} style={styles.articleCard}>
                   {item.featuredImage ? (
-                    <Image source={{ uri: item.featuredImage }} style={styles.articleImage} />
+                    <Image source={{ uri: item.featuredImage }} style={styles.articleImage} resizeMode="cover" />
                   ) : (
                     <View style={styles.articleImagePlaceholder}><ImageIcon size={28} color="#cbd5e1" /></View>
                   )}
@@ -158,8 +234,39 @@ export default function ContentCMS() {
             )}
           </>
         )}
-        {activeTab === 'faqs' && <View style={styles.card}><Text style={styles.placeholderText}>FAQ Manager loading…</Text></View>}
-        {activeTab === 'legal' && <View style={styles.card}><Text style={styles.placeholderText}>Legal Documents loading…</Text></View>}
+
+        {/* ── FAQs Tab ── */}
+        {activeTab === 'faqs' && (
+          <View style={styles.card}>
+            <Text style={styles.placeholderText}>FAQ Manager — coming soon.</Text>
+          </View>
+        )}
+
+        {/* ── Legal Tab ── */}
+        {activeTab === 'legal' && (
+          !legalDocs ? (
+            <ActivityIndicator color="#2563eb" style={{ marginTop: 40 }} />
+          ) : legalDocs.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={{ fontSize: 40 }}>📄</Text>
+              <Text style={styles.emptyText}>No legal documents found in the database.</Text>
+            </View>
+          ) : (
+            legalDocs.map((doc: any) => (
+              <View key={doc._id} style={styles.card}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <Text style={styles.legalDocTitle}>{doc.type === 'terms' ? '📜 Terms of Service' : '🔒 Privacy Policy'}</Text>
+                  <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+                    <Text style={styles.legalVersion}>v{doc.version}</Text>
+                    {doc.isActive && <View style={styles.legalActiveBadge}><Text style={styles.legalActiveTxt}>ACTIVE</Text></View>}
+                  </View>
+                </View>
+                <Text style={styles.legalPreview} numberOfLines={3}>{doc.content}</Text>
+                <Text style={styles.legalDate}>Updated: {new Date(doc.createdAt).toLocaleDateString()}</Text>
+              </View>
+            ))
+          )
+        )}
       </ScrollView>
 
       {/* ── Create / Edit Modal ── */}
@@ -175,7 +282,8 @@ export default function ContentCMS() {
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={styles.modalForm} contentContainerStyle={{ paddingBottom: 60 }}>
+          <ScrollView style={styles.modalForm} contentContainerStyle={{ paddingBottom: 80 }} keyboardShouldPersistTaps="handled">
+
             {/* Status */}
             <Text style={styles.label}>Status</Text>
             <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
@@ -197,42 +305,69 @@ export default function ContentCMS() {
             </ScrollView>
 
             {/* Featured Image */}
-            <Text style={styles.label}>Featured Image URL (optional)</Text>
-            <TextInput style={styles.input} placeholder="https://..." value={form.featuredImage} onChangeText={setF('featuredImage')} autoCapitalize="none" />
-            {form.featuredImage ? <Image source={{ uri: form.featuredImage }} style={{ width: '100%', height: 160, borderRadius: 12, marginBottom: 16 }} resizeMode="cover" /> : null}
+            <Text style={styles.label}>🖼 Featured Image URL (R2)</Text>
+            <TextInput
+              style={styles.input}
+              placeholder={`${R2_CONFIG.generalBaseUrl}/articles/cover.jpg`}
+              value={form.featuredImage}
+              onChangeText={setF('featuredImage')}
+              autoCapitalize="none"
+              keyboardType="url"
+            />
+            {form.featuredImage ? (
+              <Image source={{ uri: form.featuredImage }} style={{ width: '100%', height: 160, borderRadius: 12, marginBottom: 16 }} resizeMode="cover" />
+            ) : null}
 
-            {/* Title accordion */}
-            <AccordionSection title="📝 Title">
-              {LANGS.map(lang => (
-                <View key={lang.code} style={{ marginBottom: 12 }}>
-                  <Text style={styles.langLabel}>{lang.label}</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder={`Title (${lang.code.toUpperCase()})`}
-                    value={(form as any)[lang.code === 'en' ? 'title' : `title${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}`]}
-                    onChangeText={setF(lang.code === 'en' ? 'title' : `title${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as any)}
-                  />
-                </View>
+            {/* Language selector */}
+            <Text style={styles.label}>Language</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }} contentContainerStyle={{ gap: 8, paddingRight: 8 }}>
+              {LANGS.map(l => (
+                <TouchableOpacity key={l.code} onPress={() => setActiveLang(l.code)} style={[styles.catPill, activeLang === l.code && { backgroundColor: '#8b5cf6' }]}>
+                  <Text style={[styles.catPillText, activeLang === l.code && { color: '#fff' }]}>{l.label}{l.required ? ' *' : ''}</Text>
+                </TouchableOpacity>
               ))}
-            </AccordionSection>
+            </ScrollView>
 
-            {/* Content accordion */}
-            <AccordionSection title="📄 Content">
-              {LANGS.map(lang => (
-                <View key={lang.code} style={{ marginBottom: 12 }}>
-                  <Text style={styles.langLabel}>{lang.label}</Text>
-                  <TextInput
-                    style={[styles.input, styles.textArea]}
-                    placeholder={`Content in ${lang.code.toUpperCase()} (Markdown supported)\n\n**Bold heading**\n• Bullet point\nParagraph text`}
-                    multiline
-                    numberOfLines={8}
-                    value={(form as any)[lang.code === 'en' ? 'content' : `content${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}`]}
-                    onChangeText={setF(lang.code === 'en' ? 'content' : `content${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as any)}
-                    textAlignVertical="top"
-                  />
-                </View>
-              ))}
-            </AccordionSection>
+            {/* Title for active lang */}
+            <Text style={styles.label}>Title ({activeLang.toUpperCase()}){activeLang === 'en' ? ' *' : ''}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder={`Article title in ${activeLang.toUpperCase()}`}
+              value={(form as any)[titleKey] ?? ''}
+              onChangeText={setF(titleKey)}
+            />
+
+            {/* Markdown toolbar + Content for active lang */}
+            <Text style={styles.label}>Content ({activeLang.toUpperCase()}){activeLang === 'en' ? ' *' : ''}</Text>
+            <Text style={styles.hint}>Supports: **Bold**, ## Heading, • Bullet</Text>
+            <MarkdownToolbar
+              value={(form as any)[contentKey] ?? ''}
+              onChange={setF(contentKey)}
+            />
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              placeholder={`Write content in ${activeLang.toUpperCase()}...\n\n**Bold heading**\n• Bullet point\nParagraph text`}
+              multiline
+              value={(form as any)[contentKey] ?? ''}
+              onChangeText={setF(contentKey)}
+              textAlignVertical="top"
+            />
+
+            {/* Completion summary */}
+            <View style={styles.langProgress}>
+              {LANGS.map(l => {
+                const hasTitle = !!((form as any)[langKey('title', l.code)] ?? '').trim();
+                const hasContent = !!((form as any)[langKey('content', l.code)] ?? '').trim();
+                const done = hasTitle && hasContent;
+                return (
+                  <TouchableOpacity key={l.code} onPress={() => setActiveLang(l.code)} style={[styles.langDot, { backgroundColor: done ? '#10b981' : l.required ? '#ef4444' : '#e2e8f0' }]}>
+                    <Text style={{ fontSize: 9, fontWeight: '800', color: done || l.required ? '#fff' : '#94a3b8' }}>{l.label.slice(0, 2)}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+              <Text style={styles.langProgressTxt}>Tap to switch language</Text>
+            </View>
+
           </ScrollView>
         </SafeAreaView>
       </Modal>
@@ -272,6 +407,13 @@ const styles = StyleSheet.create({
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   metaText: { fontSize: 11, color: '#94a3b8' },
 
+  legalDocTitle: { fontSize: 15, fontWeight: '800', color: '#1e293b' },
+  legalVersion: { fontSize: 11, fontWeight: '700', color: '#64748b', backgroundColor: '#f1f5f9', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+  legalActiveBadge: { backgroundColor: '#d1fae5', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+  legalActiveTxt: { fontSize: 10, fontWeight: '800', color: '#10b981' },
+  legalPreview: { fontSize: 12, color: '#64748b', lineHeight: 18, marginTop: 8 },
+  legalDate: { fontSize: 11, color: '#94a3b8', marginTop: 8 },
+
   modalContainer: { flex: 1, backgroundColor: '#fff' },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
   modalTitle: { fontSize: 17, fontWeight: '800', color: '#1e293b' },
@@ -279,10 +421,14 @@ const styles = StyleSheet.create({
   modalAction: { fontSize: 15, color: '#2563eb', fontWeight: '800' },
   modalForm: { padding: 20 },
 
-  label: { fontSize: 13, fontWeight: '700', color: '#1e293b', marginBottom: 8, marginTop: 4 },
-  langLabel: { fontSize: 12, fontWeight: '700', color: '#64748b', marginBottom: 6 },
-  input: { backgroundColor: '#f8fafc', padding: 13, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0', fontSize: 14, marginBottom: 4 },
-  textArea: { height: 180, textAlignVertical: 'top' },
+  label: { fontSize: 13, fontWeight: '700', color: '#1e293b', marginBottom: 6, marginTop: 4 },
+  hint: { fontSize: 11, color: '#94a3b8', marginBottom: 6, marginTop: -4 },
+  input: { backgroundColor: '#f8fafc', padding: 13, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0', fontSize: 14, marginBottom: 8 },
+  textArea: { height: 220, textAlignVertical: 'top' },
+
+  toolbar: { flexDirection: 'row', gap: 6, marginBottom: 6, backgroundColor: '#f1f5f9', borderRadius: 10, padding: 8 },
+  toolbarBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#fff', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: '#e2e8f0' },
+  toolbarTxt: { fontSize: 11, fontWeight: '700', color: '#475569' },
 
   statusPill: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: '#e2e8f0' },
   statusPillActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
@@ -296,4 +442,8 @@ const styles = StyleSheet.create({
   accordionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 14, backgroundColor: '#f8fafc' },
   accordionTitle: { fontSize: 14, fontWeight: '700', color: '#1e293b' },
   accordionBody: { padding: 14, backgroundColor: '#fff' },
+
+  langProgress: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8, flexWrap: 'wrap' },
+  langDot: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  langProgressTxt: { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
 });

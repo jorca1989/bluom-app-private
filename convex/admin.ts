@@ -397,18 +397,26 @@ export const createArticle = mutation({
         status: v.union(v.literal("DRAFT"), v.literal("PENDING"), v.literal("PUBLISHED")),
         category: v.string(),
         featuredImage: v.optional(v.string()),
+        titlePt: v.optional(v.string()),
+        titleEs: v.optional(v.string()),
+        titleFr: v.optional(v.string()),
+        titleDe: v.optional(v.string()),
+        titleNl: v.optional(v.string()),
+        contentPt: v.optional(v.string()),
+        contentEs: v.optional(v.string()),
+        contentFr: v.optional(v.string()),
+        contentDe: v.optional(v.string()),
+        contentNl: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const admin = await checkAdminPower(ctx);
-
         const articleId = await ctx.db.insert("blogArticles", {
             ...args,
-            authorId: admin.subject as any, // Clerk ID handled as user ID in ctx.auth
+            authorId: admin.subject as any,
             tags: [],
             updatedAt: Date.now(),
             createdAt: Date.now(),
         });
-
         return articleId;
     }
 });
@@ -421,6 +429,16 @@ export const updateArticle = mutation({
         status: v.optional(v.union(v.literal("DRAFT"), v.literal("PENDING"), v.literal("PUBLISHED"))),
         category: v.optional(v.string()),
         featuredImage: v.optional(v.string()),
+        titlePt: v.optional(v.string()),
+        titleEs: v.optional(v.string()),
+        titleFr: v.optional(v.string()),
+        titleDe: v.optional(v.string()),
+        titleNl: v.optional(v.string()),
+        contentPt: v.optional(v.string()),
+        contentEs: v.optional(v.string()),
+        contentFr: v.optional(v.string()),
+        contentDe: v.optional(v.string()),
+        contentNl: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         await checkAdminPower(ctx);
@@ -457,5 +475,13 @@ export const getArticleBySlug = query({
         return await ctx.db.query("blogArticles")
             .withIndex("by_slug", q => q.eq("slug", args.slug))
             .first();
+    }
+});
+
+export const getLegalDocuments = query({
+    args: {},
+    handler: async (ctx) => {
+        await checkAdminPower(ctx);
+        return await ctx.db.query("legalDocuments").order("desc").collect();
     }
 });

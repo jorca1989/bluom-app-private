@@ -1542,5 +1542,21 @@
       "todayActivities": "Today's Activities",
       "moveInsights": "Move Insights"
     }
+  },
+  "focusMode": {
+    "title": "Focus Mode",
+    "complete": "Focus Complete!",
+    "completeMsg": "Take a break, you earned it.",
+    "stayFocused": "Stay Focused",
+    "endEarly": "Are you sure you want to end your focus session early?",
+    "endSession": "End Session",
+    "upgradeMsg": "Upgrade to unlock deep focus sessions.",
+    "quote": "\"Deep work is the superpower of the 21st century.\"",
+    "readyPrompt": "Ready to dive in?",
+    "pause": "Pause Session",
+    "start": "Start Focusing",
+    "tagline": "Stay Focused • Bloom Deep",
+    "proTitle": "Focus Mode Pro",
+    "proMessage": "Upgrade to Pro to access deep focus sessions and productivity tracking."
   }
 }

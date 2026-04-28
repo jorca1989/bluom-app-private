@@ -130,8 +130,8 @@ const UtilCard = ({ icon, label, desc, bgColor, onPress, fullWidth }: UtilCardPr
       <Ionicons name={icon} size={20} color="#ffffff" />
     </View>
     <View style={styles.utilTextContainer}>
-      <Text style={styles.utilLabel} adjustsFontSizeToFit numberOfLines={1}>{label}</Text>
-      <Text style={styles.utilDesc} adjustsFontSizeToFit numberOfLines={1}>{desc}</Text>
+      <Text style={styles.utilLabel} adjustsFontSizeToFit numberOfLines={1} minimumFontScale={0.7} ellipsizeMode="tail">{label}</Text>
+      <Text style={styles.utilDesc} adjustsFontSizeToFit numberOfLines={1} minimumFontScale={0.7} ellipsizeMode="tail">{desc}</Text>
     </View>
   </TouchableOpacity>
 );
@@ -192,12 +192,12 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   utilLabel: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: 'bold',
     color: '#ffffff',
   },
   utilDesc: {
-    fontSize: 10,
+    fontSize: 9,
     color: 'rgba(255, 255, 255, 0.8)',
   },
 });

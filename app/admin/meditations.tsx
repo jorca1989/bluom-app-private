@@ -46,9 +46,11 @@ export default function MeditationsManager() {
 
     const emptyForm = {
         title: '',
+        titlePt: '', titleEs: '', titleNl: '', titleDe: '',
+        description: '',
+        descPt: '', descEs: '', descNl: '', descDe: '',
         filters: [MEDITATION_FILTERS[0].id] as string[],
         duration: '10',
-        description: '',
         audioUrl: '',
         videoUrl: '',
         coverImage: '',
@@ -84,11 +86,15 @@ export default function MeditationsManager() {
 
     const handleEdit = (session: any) => {
         setSelectedSession(session);
+        const tl = session.titleLocalizations ?? {};
+        const dl = session.descriptionLocalizations ?? {};
         setForm({
             title: session.title,
+            titlePt: tl.pt ?? '', titleEs: tl.es ?? '', titleNl: tl.nl ?? '', titleDe: tl.de ?? '',
+            description: session.description || '',
+            descPt: dl.pt ?? '', descEs: dl.es ?? '', descNl: dl.nl ?? '', descDe: dl.de ?? '',
             filters: [session.category, ...(session.tags || [])].filter(Boolean),
             duration: String(session.duration || 10),
-            description: session.description || '',
             audioUrl: session.audioUrl || '',
             videoUrl: session.videoUrl || '',
             coverImage: session.coverImage || '',
@@ -122,11 +128,25 @@ export default function MeditationsManager() {
                 return;
             }
             
+            const titleLocalizations = {
+                pt: form.titlePt.trim() || undefined,
+                es: form.titleEs.trim() || undefined,
+                nl: form.titleNl.trim() || undefined,
+                de: form.titleDe.trim() || undefined,
+            };
+            const descriptionLocalizations = {
+                pt: form.descPt.trim() || undefined,
+                es: form.descEs.trim() || undefined,
+                nl: form.descNl.trim() || undefined,
+                de: form.descDe.trim() || undefined,
+            };
             const commonArgs = {
-                title, 
-                category: form.type === 'soundscape' ? 'soundscape' : primaryCategory, 
-                duration: form.type === 'soundscape' ? 0 : duration, 
+                title,
+                category: form.type === 'soundscape' ? 'soundscape' : primaryCategory,
+                duration: form.type === 'soundscape' ? 0 : duration,
                 description,
+                titleLocalizations,
+                descriptionLocalizations,
                 audioUrl: form.audioUrl.trim() || undefined,
                 videoUrl: form.videoUrl.trim() || undefined,
                 coverImage: form.coverImage.trim() || undefined,
@@ -405,8 +425,25 @@ export default function MeditationsManager() {
                             </>
                         )}
 
+                        <Text style={styles.label}>{t('admin.titleLabel', 'Title')} 🇧🇷 PT</Text>
+                        <TextInput style={styles.input} value={form.titlePt} onChangeText={v => setForm(p => ({ ...p, titlePt: v }))} placeholder="Título em português..." />
+                        <Text style={styles.label}>{t('admin.titleLabel', 'Title')} 🇪🇸 ES</Text>
+                        <TextInput style={styles.input} value={form.titleEs} onChangeText={v => setForm(p => ({ ...p, titleEs: v }))} placeholder="Título en español..." />
+                        <Text style={styles.label}>{t('admin.titleLabel', 'Title')} 🇩🇪 DE</Text>
+                        <TextInput style={styles.input} value={form.titleDe} onChangeText={v => setForm(p => ({ ...p, titleDe: v }))} placeholder="Titel auf Deutsch..." />
+                        <Text style={styles.label}>{t('admin.titleLabel', 'Title')} 🇳🇱 NL</Text>
+                        <TextInput style={styles.input} value={form.titleNl} onChangeText={v => setForm(p => ({ ...p, titleNl: v }))} placeholder="Titel in het Nederlands..." />
+
                         <Text style={styles.label}>{t('admin.description', 'Description')} {form.type === 'soundscape' && t('admin.optional', '(Optional)')}</Text>
                         <TextInput style={[styles.input, { height: 100, textAlignVertical: 'top' }]} multiline value={form.description} onChangeText={t => setForm(p => ({ ...p, description: t }))} placeholder={t('admin.descriptionPlaceholder', 'What this session helps with...')} />
+                        <Text style={styles.label}>{t('admin.description', 'Description')} 🇧🇷 PT</Text>
+                        <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descPt} onChangeText={v => setForm(p => ({ ...p, descPt: v }))} placeholder="Descrição em português..." />
+                        <Text style={styles.label}>{t('admin.description', 'Description')} 🇪🇸 ES</Text>
+                        <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descEs} onChangeText={v => setForm(p => ({ ...p, descEs: v }))} placeholder="Descripción en español..." />
+                        <Text style={styles.label}>{t('admin.description', 'Description')} 🇩🇪 DE</Text>
+                        <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descDe} onChangeText={v => setForm(p => ({ ...p, descDe: v }))} placeholder="Beschreibung auf Deutsch..." />
+                        <Text style={styles.label}>{t('admin.description', 'Description')} 🇳🇱 NL</Text>
+                        <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descNl} onChangeText={v => setForm(p => ({ ...p, descNl: v }))} placeholder="Beschrijving in het Nederlands..." />
 
                         {/* Audio URL */}
                         <View style={styles.mediaSection}>

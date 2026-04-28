@@ -401,7 +401,7 @@ export default function ProfileScreen() {
                   style={[s.chip, tempConfig.top === opt.id && s.chipActive]}
                   onPress={() => setTempConfig(prev => ({ ...prev, top: opt.id }))}
                 >
-                  <Text style={[s.chipTxt, tempConfig.top === opt.id && s.chipTxtActive]}>{opt.label}</Text>
+                  <Text style={[s.chipTxt, tempConfig.top === opt.id && s.chipTxtActive]}>{t(`profile.avatarOpts.hair.${opt.id}`, opt.label)}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -426,7 +426,7 @@ export default function ProfileScreen() {
                   style={[s.chip, tempConfig.eyes === opt.id && s.chipActive]}
                   onPress={() => setTempConfig(prev => ({ ...prev, eyes: opt.id }))}
                 >
-                  <Text style={[s.chipTxt, tempConfig.eyes === opt.id && s.chipTxtActive]}>{opt.label}</Text>
+                  <Text style={[s.chipTxt, tempConfig.eyes === opt.id && s.chipTxtActive]}>{t(`profile.avatarOpts.eyes.${opt.label}`, opt.label)}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -439,7 +439,7 @@ export default function ProfileScreen() {
                   style={[s.chip, tempConfig.mouth === opt.id && s.chipActive]}
                   onPress={() => setTempConfig(prev => ({ ...prev, mouth: opt.id }))}
                 >
-                  <Text style={[s.chipTxt, tempConfig.mouth === opt.id && s.chipTxtActive]}>{opt.label}</Text>
+                  <Text style={[s.chipTxt, tempConfig.mouth === opt.id && s.chipTxtActive]}>{t(`profile.avatarOpts.mouth.${opt.label}`, opt.label)}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -452,7 +452,7 @@ export default function ProfileScreen() {
                   style={[s.chip, tempConfig.eyebrows === opt.id && s.chipActive]}
                   onPress={() => setTempConfig(prev => ({ ...prev, eyebrows: opt.id }))}
                 >
-                  <Text style={[s.chipTxt, tempConfig.eyebrows === opt.id && s.chipTxtActive]}>{opt.label}</Text>
+                  <Text style={[s.chipTxt, tempConfig.eyebrows === opt.id && s.chipTxtActive]}>{t(`profile.avatarOpts.brows.${opt.label}`, opt.label)}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -465,7 +465,7 @@ export default function ProfileScreen() {
                   style={[s.chip, (tempConfig.facialHair ?? 'none') === opt.id && s.chipActive]}
                   onPress={() => setTempConfig(prev => ({ ...prev, facialHair: opt.id }))}
                 >
-                  <Text style={[s.chipTxt, (tempConfig.facialHair ?? 'none') === opt.id && s.chipTxtActive]}>{opt.label}</Text>
+                  <Text style={[s.chipTxt, (tempConfig.facialHair ?? 'none') === opt.id && s.chipTxtActive]}>{t(`profile.avatarOpts.beard.${opt.label}`, opt.label)}</Text>
                 </TouchableOpacity>
               ))}
             </View>

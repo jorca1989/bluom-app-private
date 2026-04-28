@@ -156,7 +156,7 @@ export default defineSchema({
   blogArticles: defineTable({
     title: v.string(),
     slug: v.string(),
-    content: v.string(), // HTML/Markdown
+    content: v.string(), // Markdown
     featuredImage: v.optional(v.string()),
     authorId: v.id("users"),
     status: v.union(v.literal("DRAFT"), v.literal("PENDING"), v.literal("PUBLISHED")),
@@ -165,6 +165,17 @@ export default defineSchema({
     scheduledAt: v.optional(v.float64()),
     updatedAt: v.float64(),
     createdAt: v.float64(),
+    // Multilang
+    titlePt: v.optional(v.string()),
+    titleEs: v.optional(v.string()),
+    titleFr: v.optional(v.string()),
+    titleDe: v.optional(v.string()),
+    titleNl: v.optional(v.string()),
+    contentPt: v.optional(v.string()),
+    contentEs: v.optional(v.string()),
+    contentFr: v.optional(v.string()),
+    contentDe: v.optional(v.string()),
+    contentNl: v.optional(v.string()),
   }).index("by_status", ["status"]).index("by_slug", ["slug"]),
 
   faqs: defineTable({

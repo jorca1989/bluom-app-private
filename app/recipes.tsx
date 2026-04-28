@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useWindowDimensions } from 'react-native'; // dynamic width for responsive grid
 import {
   View,
   Text,
@@ -295,6 +296,7 @@ export default function RecipesScreen() {
   const appUser = useAppUser();
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
+  const { width: screenWidth } = useWindowDimensions();
 
   const convexUser = useQuery(
     api.users.getUserByClerkId,
@@ -321,7 +323,7 @@ export default function RecipesScreen() {
 
   const loading = !isClerkLoaded || (clerkUser && convexUser === undefined) || recipes === undefined;
   const isPro = appUser.isPro || appUser.isAdmin;
-  const gridItemWidth = useMemo(() => (width - 64) / 2, []);
+  const gridItemWidth = useMemo(() => (screenWidth - 64) / 2, [screenWidth]);
 
   // Pre-compute image sources once per recipe list to maintain stable object
   // references across renders — React Native's image cache keyed by reference.
