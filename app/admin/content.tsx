@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  TextInput, Modal, ActivityIndicator, Alert, Image,
+  TextInput, Modal, ActivityIndicator, Alert, Image, Platform,
+  NativeSyntheticEvent, TextInputSelectionChangeEventData,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery, useMutation } from 'convex/react';
@@ -9,7 +10,7 @@ import { api } from '@/convex/_generated/api';
 import {
   FileText, HelpCircle, Shield, Plus, Pencil, Trash2,
   Calendar, Image as ImageIcon, ChevronDown, ChevronUp, Bold,
-  List, Heading1, RefreshCw,
+  List, Heading1, Italic, Minus,
 } from 'lucide-react-native';
 import { R2_CONFIG } from '@/utils/r2Config';
 
@@ -47,28 +48,74 @@ function AccordionSection({ title, children }: { title: string; children: React.
   );
 }
 
-// ── Markdown Toolbar ───────────────────────────────────────
-function MarkdownToolbar({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const insert = (snippet: string) => onChange(value + (value && !value.endsWith('\n') ? '\n' : '') + snippet);
+// ── Selection-aware Markdown Toolbar ─────────────────────
+interface ToolbarProps {
+  inputRef: React.RefObject<TextInput | null>;
+  value: string;
+  onChange: (v: string) => void;
+  selection: { start: number; end: number };
+  onImageInsert: () => void;
+}
+
+function MarkdownToolbar({ inputRef, value, onChange, selection, onImageInsert }: ToolbarProps) {
+  // Wrap selected text with before/after markers, or insert placeholder if nothing selected
+  const wrapSelection = (before: string, after: string, placeholder: string) => {
+    const { start, end } = selection;
+    const hasSelection = end > start;
+    if (hasSelection) {
+      const selected = value.slice(start, end);
+      const newText = value.slice(0, start) + before + selected + after + value.slice(end);
+      onChange(newText);
+    } else {
+      const tail = value && !value.endsWith('\n') ? '\n' : '';
+      onChange(value + tail + before + placeholder + after);
+    }
+  };
+
+  // For block-level (heading, bullet): prefix the selected line(s) or insert new
+  const prefixLines = (prefix: string, placeholder: string) => {
+    const { start, end } = selection;
+    const hasSelection = end > start;
+    if (hasSelection) {
+      const selected = value.slice(start, end);
+      const prefixed = selected.split('\n').map((l: string) => prefix + l).join('\n');
+      onChange(value.slice(0, start) + prefixed + value.slice(end));
+    } else {
+      const tail = value && !value.endsWith('\n') ? '\n' : '';
+      onChange(value + tail + prefix + placeholder);
+    }
+  };
+
   return (
-    <View style={styles.toolbar}>
-      <TouchableOpacity style={styles.toolbarBtn} onPress={() => insert('**Bold text**')}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.toolbar} contentContainerStyle={{ gap: 6, paddingHorizontal: 8, paddingVertical: 6 }}>
+      <TouchableOpacity style={styles.toolbarBtn} onPress={() => wrapSelection('**', '**', 'Bold text')}>
         <Bold size={14} color="#475569" />
         <Text style={styles.toolbarTxt}>Bold</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.toolbarBtn} onPress={() => insert('## Heading')}>
+      <TouchableOpacity style={styles.toolbarBtn} onPress={() => wrapSelection('*', '*', 'Italic text')}>
+        <Italic size={14} color="#475569" />
+        <Text style={styles.toolbarTxt}>Italic</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toolbarBtn} onPress={() => prefixLines('## ', 'Heading')}>
         <Heading1 size={14} color="#475569" />
         <Text style={styles.toolbarTxt}>H2</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.toolbarBtn} onPress={() => insert('• Item')}>
-        <List size={14} color="#475569" />
-        <Text style={styles.toolbarTxt}>Bullet</Text>
+      <TouchableOpacity style={styles.toolbarBtn} onPress={() => prefixLines('### ', 'Heading')}>
+        <Text style={[styles.toolbarTxt, { fontWeight: '900' }]}>H3</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.toolbarBtn} onPress={() => insert('\n---\n')}>
-        <Text style={[styles.toolbarTxt, { fontSize: 16 }]}>—</Text>
+      <TouchableOpacity style={styles.toolbarBtn} onPress={() => prefixLines('• ', 'Item')}>
+        <List size={14} color="#475569" />
+        <Text style={styles.toolbarTxt}>List</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toolbarBtn} onPress={() => onChange(value + (value && !value.endsWith('\n') ? '\n' : '') + '\n---\n')}>
+        <Minus size={14} color="#475569" />
         <Text style={styles.toolbarTxt}>HR</Text>
       </TouchableOpacity>
-    </View>
+      <TouchableOpacity style={styles.toolbarBtn} onPress={onImageInsert}>
+        <ImageIcon size={14} color="#475569" />
+        <Text style={styles.toolbarTxt}>Image</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
@@ -76,7 +123,8 @@ function MarkdownToolbar({ value, onChange }: { value: string; onChange: (v: str
 const emptyForm = () => ({
   title: '', titlePt: '', titleEs: '', titleFr: '', titleDe: '', titleNl: '',
   content: '', contentPt: '', contentEs: '', contentFr: '', contentDe: '', contentNl: '',
-  category: 'Wellness', featuredImage: '', status: 'PUBLISHED' as 'PUBLISHED' | 'DRAFT',
+  categories: ['Wellness'] as string[], // multi-select; joined as comma string on save
+  featuredImage: '', status: 'PUBLISHED' as 'PUBLISHED' | 'DRAFT',
 });
 
 export default function ContentCMS() {
@@ -85,6 +133,14 @@ export default function ContentCMS() {
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm());
   const [activeLang, setActiveLang] = useState('en');
+
+  // Selection tracking for the toolbar
+  const contentInputRef = useRef<TextInput>(null);
+  const [contentSelection, setContentSelection] = useState({ start: 0, end: 0 });
+
+  // Image URL modal
+  const [imageModalVisible, setImageModalVisible] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
 
   const articles = useQuery(api.admin.getArticles);
   const createArticle = useMutation(api.admin.createArticle);
@@ -98,9 +154,57 @@ export default function ContentCMS() {
   const setF = (key: keyof ReturnType<typeof emptyForm>) => (val: string) =>
     setForm(f => ({ ...f, [key]: val }));
 
-  const openNew = () => { setEditId(null); setForm(emptyForm()); setActiveLang('en'); setIsModalOpen(true); };
+  const toggleCategory = (cat: string) => {
+    setForm(f => ({
+      ...f,
+      categories: f.categories.includes(cat)
+        ? f.categories.length > 1 ? f.categories.filter(c => c !== cat) : f.categories // keep at least 1
+        : [...f.categories, cat],
+    }));
+  };
+
+  const handleImageInsert = () => {
+    if (Platform.OS === 'ios') {
+      Alert.prompt('Insert Image', 'Paste image URL (R2 or external):', (url) => {
+        if (!url?.trim()) return;
+        const ck = langKey('content', activeLang) as keyof ReturnType<typeof emptyForm>;
+        const current = (form as any)[ck] as string ?? '';
+        const { start, end } = contentSelection;
+        const alt = current.slice(start, end).trim() || 'Image';
+        const snippet = `\n![${alt}](${url.trim()})\n`;
+        const newText = current.slice(0, start) + snippet + current.slice(end);
+        setForm(f => ({ ...f, [ck]: newText }));
+      });
+    } else {
+      // Android: show a small modal for URL input
+      setImageUrl('');
+      setImageModalVisible(true);
+    }
+  };
+
+  const confirmImageInsert = () => {
+    if (!imageUrl.trim()) { setImageModalVisible(false); return; }
+    const ck = langKey('content', activeLang) as keyof ReturnType<typeof emptyForm>;
+    const current = (form as any)[ck] as string ?? '';
+    const { start, end } = contentSelection;
+    const alt = current.slice(start, end).trim() || 'Image';
+    const snippet = `\n![${alt}](${imageUrl.trim()})\n`;
+    const newText = current.slice(0, start) + snippet + current.slice(end);
+    setForm(f => ({ ...f, [ck]: newText }));
+    setImageModalVisible(false);
+  };
+
+  const openNew = () => {
+    setEditId(null); setForm(emptyForm()); setActiveLang('en');
+    setContentSelection({ start: 0, end: 0 });
+    setIsModalOpen(true);
+  };
   const openEdit = (item: any) => {
     setEditId(item._id);
+    // category may be stored as comma-separated string from multi-select
+    const cats = item.category
+      ? item.category.split(',').map((c: string) => c.trim()).filter(Boolean)
+      : ['Wellness'];
     setForm({
       title: item.title ?? '',
       titlePt: item.titlePt ?? '',
@@ -114,24 +218,30 @@ export default function ContentCMS() {
       contentFr: item.contentFr ?? '',
       contentDe: item.contentDe ?? '',
       contentNl: item.contentNl ?? '',
-      category: item.category ?? 'Wellness',
+      categories: cats,
       featuredImage: item.featuredImage ?? '',
       status: item.status ?? 'PUBLISHED',
     });
     setActiveLang('en');
+    setContentSelection({ start: 0, end: 0 });
     setIsModalOpen(true);
   };
 
   const handleSave = async () => {
-    if (!form.title.trim() || !form.content.trim()) {
-      Alert.alert('Error', 'Title and content (EN) are required.');
+    if (!form.title.trim()) {
+      Alert.alert('Error', 'Title (EN) is required.');
       return;
     }
+    if (!form.content.trim()) {
+      Alert.alert('Error', 'Content (EN) is required.');
+      return;
+    }
+    const category = form.categories.length > 0 ? form.categories.join(', ') : 'Wellness';
     const payload = {
       title: form.title.trim(),
       content: form.content.trim(),
       status: form.status,
-      category: form.category,
+      category,
       featuredImage: form.featuredImage.trim() || undefined,
       titlePt: form.titlePt.trim() || undefined,
       titleEs: form.titleEs.trim() || undefined,
@@ -148,13 +258,14 @@ export default function ContentCMS() {
       if (editId) {
         await updateArticle({ articleId: editId as any, ...payload });
       } else {
-        const slug = form.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+        const slug = form.title.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
         await createArticle({ slug, ...payload });
       }
       setIsModalOpen(false);
-      Alert.alert('Saved', editId ? 'Article updated.' : 'Article published.');
-    } catch (e) {
-      Alert.alert('Error', 'Could not save article.');
+      Alert.alert('Saved ✓', editId ? 'Article updated.' : 'Article published.');
+    } catch (e: any) {
+      console.error('Save error:', e);
+      Alert.alert('Error', e?.message ?? 'Could not save article. Check the console for details.');
     }
   };
 
@@ -295,15 +406,18 @@ export default function ContentCMS() {
               ))}
             </View>
 
-            {/* Category */}
-            <Text style={styles.label}>Category</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }} contentContainerStyle={{ gap: 8, paddingRight: 8 }}>
-              {CATEGORIES.map(c => (
-                <TouchableOpacity key={c} onPress={() => setForm(f => ({ ...f, category: c }))} style={[styles.catPill, form.category === c && styles.catPillActive]}>
-                  <Text style={[styles.catPillText, form.category === c && { color: '#fff' }]}>{c}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+            {/* Category — multi-select */}
+            <Text style={styles.label}>Category <Text style={{ fontWeight: '400', color: '#94a3b8' }}>(tap to toggle)</Text></Text>
+            <View style={styles.categoryGrid}>
+              {CATEGORIES.map(c => {
+                const active = form.categories.includes(c);
+                return (
+                  <TouchableOpacity key={c} onPress={() => toggleCategory(c)} style={[styles.catPill, active && styles.catPillActive]}>
+                    <Text style={[styles.catPillText, active && { color: '#fff' }]}>{c}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
 
             {/* Featured Image */}
             <Text style={styles.label}>🖼 Featured Image URL (R2)</Text>
@@ -340,18 +454,25 @@ export default function ContentCMS() {
 
             {/* Markdown toolbar + Content for active lang */}
             <Text style={styles.label}>Content ({activeLang.toUpperCase()}){activeLang === 'en' ? ' *' : ''}</Text>
-            <Text style={styles.hint}>Supports: **Bold**, ## Heading, • Bullet</Text>
+            <Text style={styles.hint}>Select text then tap a format button to apply it.</Text>
             <MarkdownToolbar
+              inputRef={contentInputRef}
               value={(form as any)[contentKey] ?? ''}
               onChange={setF(contentKey)}
+              selection={contentSelection}
+              onImageInsert={handleImageInsert}
             />
             <TextInput
+              ref={contentInputRef}
               style={[styles.input, styles.textArea]}
-              placeholder={`Write content in ${activeLang.toUpperCase()}...\n\n**Bold heading**\n• Bullet point\nParagraph text`}
+              placeholder={`Write content in ${activeLang.toUpperCase()}...\n\n**Bold heading**\n### Subheading\n• Bullet point\nParagraph text`}
               multiline
               value={(form as any)[contentKey] ?? ''}
               onChangeText={setF(contentKey)}
               textAlignVertical="top"
+              onSelectionChange={(e: NativeSyntheticEvent<TextInputSelectionChangeEventData>) => {
+                setContentSelection(e.nativeEvent.selection);
+              }}
             />
 
             {/* Completion summary */}
@@ -371,6 +492,32 @@ export default function ContentCMS() {
 
           </ScrollView>
         </SafeAreaView>
+      </Modal>
+
+      {/* ── Android: Image URL input modal ── */}
+      <Modal visible={imageModalVisible} transparent animationType="fade">
+        <View style={styles.imageModalOverlay}>
+          <View style={styles.imageModalBox}>
+            <Text style={styles.imageModalTitle}>Insert Image</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="https://..."
+              value={imageUrl}
+              onChangeText={setImageUrl}
+              autoCapitalize="none"
+              keyboardType="url"
+              autoFocus
+            />
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
+              <TouchableOpacity style={[styles.statusPill, { flex: 1 }]} onPress={() => setImageModalVisible(false)}>
+                <Text style={[styles.statusPillText, { textAlign: 'center' }]}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.statusPill, styles.statusPillActive, { flex: 1 }]} onPress={confirmImageInsert}>
+                <Text style={[styles.statusPillText, { color: '#fff', textAlign: 'center' }]}>Insert</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       </Modal>
     </View>
   );
@@ -427,7 +574,7 @@ const styles = StyleSheet.create({
   input: { backgroundColor: '#f8fafc', padding: 13, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0', fontSize: 14, marginBottom: 8 },
   textArea: { height: 220, textAlignVertical: 'top' },
 
-  toolbar: { flexDirection: 'row', gap: 6, marginBottom: 6, backgroundColor: '#f1f5f9', borderRadius: 10, padding: 8 },
+  toolbar: { marginBottom: 6, backgroundColor: '#f1f5f9', borderRadius: 10 },
   toolbarBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#fff', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: '#e2e8f0' },
   toolbarTxt: { fontSize: 11, fontWeight: '700', color: '#475569' },
 
@@ -438,6 +585,11 @@ const styles = StyleSheet.create({
   catPill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, backgroundColor: '#f1f5f9' },
   catPillActive: { backgroundColor: '#2563eb' },
   catPillText: { fontSize: 12, fontWeight: '700', color: '#64748b' },
+  categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
+
+  imageModalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 24 },
+  imageModalBox: { backgroundColor: '#fff', borderRadius: 20, padding: 24, width: '100%' },
+  imageModalTitle: { fontSize: 17, fontWeight: '800', color: '#1e293b', marginBottom: 16 },
 
   accordion: { borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 14, marginBottom: 14, overflow: 'hidden' },
   accordionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 14, backgroundColor: '#f8fafc' },

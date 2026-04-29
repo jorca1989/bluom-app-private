@@ -262,16 +262,16 @@ export default function HomeScreen() {
   const [weatherPerm, setWeatherPerm] = useState<'unknown' | 'granted' | 'denied'>('unknown');
 
   const wmoToCondition = (code: number): { condition: string; icon: keyof typeof Ionicons.glyphMap } => {
-    if (code === 0) return { condition: 'Clear', icon: 'sunny' };
-    if ([1, 2].includes(code)) return { condition: 'Mostly Clear', icon: 'partly-sunny' };
-    if (code === 3) return { condition: 'Cloudy', icon: 'cloudy' };
-    if ([45, 48].includes(code)) return { condition: 'Fog', icon: 'cloud' };
-    if (code >= 51 && code <= 57) return { condition: 'Drizzle', icon: 'rainy' };
-    if (code >= 61 && code <= 67) return { condition: 'Rain', icon: 'rainy' };
-    if (code >= 71 && code <= 77) return { condition: 'Snow', icon: 'snow' };
-    if (code >= 80 && code <= 82) return { condition: 'Showers', icon: 'rainy' };
-    if (code >= 95) return { condition: 'Thunderstorm', icon: 'thunderstorm' };
-    return { condition: 'Weather', icon: 'partly-sunny' };
+    if (code === 0) return { condition: t('home.weather.conditions.clear', 'Clear'), icon: 'sunny' };
+    if ([1, 2].includes(code)) return { condition: t('home.weather.conditions.mostlyClear', 'Mostly Clear'), icon: 'partly-sunny' };
+    if (code === 3) return { condition: t('home.weather.conditions.cloudy', 'Cloudy'), icon: 'cloudy' };
+    if ([45, 48].includes(code)) return { condition: t('home.weather.conditions.fog', 'Fog'), icon: 'cloud' };
+    if (code >= 51 && code <= 57) return { condition: t('home.weather.conditions.drizzle', 'Drizzle'), icon: 'rainy' };
+    if (code >= 61 && code <= 67) return { condition: t('home.weather.conditions.rain', 'Rain'), icon: 'rainy' };
+    if (code >= 71 && code <= 77) return { condition: t('home.weather.conditions.snow', 'Snow'), icon: 'snow' };
+    if (code >= 80 && code <= 82) return { condition: t('home.weather.conditions.showers', 'Showers'), icon: 'rainy' };
+    if (code >= 95) return { condition: t('home.weather.conditions.thunderstorm', 'Thunderstorm'), icon: 'thunderstorm' };
+    return { condition: t('home.weather.conditions.default', 'Weather'), icon: 'partly-sunny' };
   };
 
   const refreshWeather = useCallback(async (requestPermission: boolean) => {
@@ -476,7 +476,7 @@ export default function HomeScreen() {
         <View style={{ alignItems: 'flex-end', gap: 8 }}>
           <Ionicons name={(weather?.icon ?? 'partly-sunny') as any} size={46} color="#ffffff" />
           <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 12, fontWeight: '700' }}>
-            H:{weather?.highC ?? '—'}°  L:{weather?.lowC ?? '—'}°
+            {t('home.weather.high', 'H')}:{weather?.highC ?? '—'}°  {t('home.weather.low', 'L')}:{weather?.lowC ?? '—'}°
           </Text>
 
           <TouchableOpacity

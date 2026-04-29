@@ -29,7 +29,21 @@
       "enableDesc": "Usamos a sua localização aproximada para mostrar as condições de hoje.",
       "updating": "A atualizar…",
       "refresh": "Atualizar",
-      "enableBtn": "Ativar"
+      "enableBtn": "Ativar",
+      "high": "M",
+      "low": "m",
+      "conditions": {
+        "clear": "Céu Limpo",
+        "mostlyClear": "Maioritariamente Limpo",
+        "cloudy": "Nublado",
+        "fog": "Nevoeiro",
+        "drizzle": "Chuvisco",
+        "rain": "Chuva",
+        "snow": "Neve",
+        "showers": "Aguaceiros",
+        "thunderstorm": "Trovoada",
+        "default": "Nublado"
+      }
     },
     "vitality": {
       "label": "Pontuação de Vitalidade",
@@ -866,6 +880,8 @@
       "goalEnduranceInfo": "Otimiza a capacidade aeróbia, resistência e eficiência cardiovascular.",
       "goalGeneralHealth": "Saúde geral",
       "goalGeneralHealthInfo": "Prioriza a longevidade, energia equilibrada e prevenção de doenças através de hábitos holísticos.",
+      "goalBodyRecomp": "Recomposição corporal",
+      "goalBodyRecompInfo": "Perder gordura e ganhar músculo em simultâneo. Ideal para quem quer remodelar o corpo sem grandes alterações de peso.",
       "experience": "Nível de experiência",
       "expBeginner": "Iniciante",
       "expIntermediate": "Intermédio",
@@ -962,10 +978,30 @@
       "peakEvening": "Tarde/noite",
       "peakLateNight": "Madrugada"
     },
+    "transition": {
+      "goalSet": "Objetivo definido!",
+      "calibrating": "A calibrar os teus objetivos...",
+      "understood": "Compreendido.",
+      "mentalFramework": "A construir o teu enquadramento mental...",
+      "almostThere": "Quase lá!",
+      "nutritionPlan": "A desenhar o teu plano nutricional..."
+    },
     "results": {
       "title": "O teu plano",
-      "subtitle": "Com base nos teus objetivos, este é o teu alvo diário.",
+      "subtitle": "O teu plano personalizado em 3 pilares.",
       "dailyCalories": "Calorias diárias",
+      "kcalDay": "kcal / dia",
+      "nutritionPillar": "Nutrição",
+      "fitnessPillar": "Fitness",
+      "mentalPillar": "Saúde Mental",
+      "week1": "Semana 1 · Fundação",
+      "week2": "Semana 2 · Progressão",
+      "week3": "Semana 3 · Pico",
+      "week4": "Semana 4 · Recuperação",
+      "mental1": "Fundamentos do Stress",
+      "mental2": "Otimização do Sono",
+      "mental3": "Mentalidade & Reframing",
+      "mental4": "Semana de Integração",
       "proInsights": "ANÁLISES PRO",
       "unlockMacros": "Desbloqueia o teu perfil completo de macros e planos de refeições.",
       "continueToPlan": "Continuar para o plano"

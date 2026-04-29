@@ -123,7 +123,8 @@ const getStepGroups = (t: any): StepGroup[] => [
           { label: t('onboarding.questions.goalBuildMuscle'), value: 'build_muscle', info: t('onboarding.questions.goalBuildMuscleInfo') },
           { label: t('onboarding.questions.goalMaintain'), value: 'maintain', info: t('onboarding.questions.goalMaintainInfo') },
           { label: t('onboarding.questions.goalEndurance'), value: 'improve_endurance', info: t('onboarding.questions.goalEnduranceInfo') },
-          { label: t('onboarding.questions.goalGeneralHealth'), value: 'general_health', info: t('onboarding.questions.goalGeneralHealthInfo') }
+          { label: t('onboarding.questions.goalGeneralHealth'), value: 'general_health', info: t('onboarding.questions.goalGeneralHealthInfo') },
+          { label: t('onboarding.questions.goalBodyRecomp', 'Body Recomposition'), value: 'body_recomp', info: t('onboarding.questions.goalBodyRecompInfo', 'Lose fat and gain muscle simultaneously. Best for those who want to reshape their physique without drastic weight changes.') },
         ]
       },
       {
@@ -327,11 +328,12 @@ const getStepGroups = (t: any): StepGroup[] => [
 ];
 
 // Transition toasts — shown inline via Toast component (no Modal)
-const TRANSITION_MESSAGES: { [key: number]: { title: string; subtitle: string; emoji: string } } = {
-  2: { title: "Goal Set!", subtitle: "We're calibrating your targets...", emoji: "🎯" },
-  5: { title: "Understood.", subtitle: "Building your mental framework...", emoji: "🧠" },
-  6: { title: "Almost there!", subtitle: "Designing your nutrition plan...", emoji: "🥗" },
-};
+// Defined as a function so it can use the t() translation function
+const getTransitionMessages = (t: (key: string, fallback: string) => string): { [key: number]: { title: string; subtitle: string; emoji: string } } => ({
+  2: { title: t('onboarding.transition.goalSet', 'Goal Set!'), subtitle: t('onboarding.transition.calibrating', "We're calibrating your targets..."), emoji: "🎯" },
+  5: { title: t('onboarding.transition.understood', 'Understood.'), subtitle: t('onboarding.transition.mentalFramework', 'Building your mental framework...'), emoji: "🧠" },
+  6: { title: t('onboarding.transition.almostThere', 'Almost there!'), subtitle: t('onboarding.transition.nutritionPlan', 'Designing your nutrition plan...'), emoji: "🥗" },
+});
 
 const WELCOME_SLIDES = [
   {
@@ -488,7 +490,7 @@ export default function OnboardingScreen() {
     }
 
     // Show transition toast (no Modal — just the Toast component)
-    const transition = TRANSITION_MESSAGES[currentGroupIndex];
+    const transition = getTransitionMessages(t)[currentGroupIndex];
     if (transition) {
       showToast(transition.subtitle, transition.title, transition.emoji);
       setTimeout(() => advanceGroup(), 2000);
@@ -542,6 +544,8 @@ export default function OnboardingScreen() {
       goalMod = -500;
     } else if (answers.fitnessGoal === 'build_muscle') {
       goalMod = targetKg < weightKg ? -200 : 300;
+    } else if (answers.fitnessGoal === 'body_recomp') {
+      goalMod = 0; // maintenance calories — body recomposition at TDEE
     }
 
     return {
@@ -750,47 +754,112 @@ export default function OnboardingScreen() {
     </Modal>
   );
 
-  const renderResults = () => (
-    <Modal visible={showResults} animationType="slide">
-      <SafeAreaView style={styles.resultsContainer}>
-        <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
-          <Text style={styles.resultsHeader}>{t('onboarding.results.title', 'Your Blueprint')}</Text>
-          <Text style={styles.resultsSub}>{t('onboarding.results.subtitle', 'Based on your goals, here is your daily target.')}</Text>
+  const renderResults = () => {
+    const PillarCard = ({ emoji, title, color, children }: { emoji: string; title: string; color: string; children: React.ReactNode }) => (
+      <View style={[styles.pillarResultCard, { borderLeftColor: color }]}>
+        <View style={styles.pillarResultHeader}>
+          <Text style={{ fontSize: 22 }}>{emoji}</Text>
+          <Text style={[styles.pillarResultTitle, { color }]}>{title}</Text>
+        </View>
+        {children}
+      </View>
+    );
 
-          <View style={styles.macroCard}>
-            <View style={styles.calorieCircle}>
-              <Text style={styles.calorieVal}>{calculatedResults?.dailyCalories}</Text>
-              <Text style={styles.calorieLabel}>{t('onboarding.results.dailyCalories', 'Daily Calories')}</Text>
-            </View>
-          </View>
+    return (
+      <Modal visible={showResults} animationType="slide">
+        <SafeAreaView style={styles.resultsContainer}>
+          <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 120 }}>
+            <Text style={styles.resultsHeader}>{t('onboarding.results.title', 'Your Blueprint')}</Text>
+            <Text style={styles.resultsSub}>{t('onboarding.results.subtitle', 'Your personalised plan across 3 pillars.')}</Text>
 
-          <View style={styles.proSection}>
-            <View style={styles.blurContainer}>
-              <View style={styles.macroRow}>
-                <View style={styles.macroItem}><Text style={[styles.macroVal, { opacity: 0 }]}>150g</Text><Text style={{ opacity: 0 }}>Protein</Text></View>
-                <View style={styles.macroItem}><Text style={[styles.macroVal, { opacity: 0 }]}>200g</Text><Text style={{ opacity: 0 }}>Carbs</Text></View>
-                <View style={styles.macroItem}><Text style={[styles.macroVal, { opacity: 0 }]}>60g</Text><Text style={{ opacity: 0 }}>Fats</Text></View>
+            {/* ── Pillar 1: Nutrition ── */}
+            <PillarCard emoji="🥗" title={t('onboarding.results.nutritionPillar', 'Nutrition')} color="#2563eb">
+              <View style={styles.pillarCalRow}>
+                <Text style={styles.pillarCalVal}>{calculatedResults?.dailyCalories}</Text>
+                <Text style={styles.pillarCalLabel}>{t('onboarding.results.kcalDay', 'kcal / day')}</Text>
               </View>
-            </View>
-            <BlurView intensity={100} tint="light" style={StyleSheet.absoluteFill}>
-              <View style={styles.lockOverlay}>
-                <View style={styles.proBadge}><Text style={styles.proText}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text></View>
-                <Lock size={32} color="#1e293b" style={{ marginTop: 16 }} />
-                <Text style={styles.lockText}>{t('onboarding.results.unlockMacros', 'Unlock your full macro breakdown & meal plans.')}</Text>
+              {/* Blurred macros */}
+              <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 72 }}>
+                <View style={styles.macroRow}>
+                  <View style={styles.macroItem}>
+                    <Text style={styles.macroVal}>{calculatedResults?.protein}g</Text>
+                    <Text style={styles.macroLabel}>{t('fuel.protein', 'Protein')}</Text>
+                  </View>
+                  <View style={styles.macroItem}>
+                    <Text style={styles.macroVal}>{calculatedResults?.carbs}g</Text>
+                    <Text style={styles.macroLabel}>{t('fuel.carbs', 'Carbs')}</Text>
+                  </View>
+                  <View style={styles.macroItem}>
+                    <Text style={styles.macroVal}>{calculatedResults?.fat}g</Text>
+                    <Text style={styles.macroLabel}>{t('fuel.fat', 'Fat')}</Text>
+                  </View>
+                </View>
+                <BlurView intensity={90} tint="light" style={StyleSheet.absoluteFill} />
+                <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
+                  <Lock size={14} color="#1e293b" />
+                  <Text style={{ fontSize: 11, fontWeight: '800', color: '#1e293b' }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+                </View>
               </View>
-            </BlurView>
-          </View>
+            </PillarCard>
 
-          <TouchableOpacity style={styles.primaryBtn} onPress={handleFinalSubmit} disabled={isSubmitting}>
-            {isSubmitting
-              ? <ActivityIndicator color="#fff" />
-              : <Text style={styles.primaryBtnText}>{t('onboarding.results.continueToPlan', 'Continue to Plan')}</Text>
-            }
-          </TouchableOpacity>
-        </ScrollView>
-      </SafeAreaView>
-    </Modal>
-  );
+            {/* ── Pillar 2: Fitness ── */}
+            <PillarCard emoji="🏋️" title={t('onboarding.results.fitnessPillar', 'Fitness')} color="#7c3aed">
+              <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8 }}>
+                {[
+                  t('onboarding.results.week1', 'Week 1 · Foundation'),
+                  t('onboarding.results.week2', 'Week 2 · Progression'),
+                  t('onboarding.results.week3', 'Week 3 · Peak'),
+                  t('onboarding.results.week4', 'Week 4 · Recovery'),
+                ].map((week, i) => (
+                  <View key={i} style={[styles.planWeekRow, { backgroundColor: i % 2 === 0 ? '#f8fafc' : '#fff' }]}>
+                    <Text style={styles.planWeekNum}>W{i + 1}</Text>
+                    <Text style={styles.planWeekLabel}>{week}</Text>
+                  </View>
+                ))}
+                <BlurView intensity={80} tint="light" style={StyleSheet.absoluteFill} />
+                <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
+                  <Lock size={14} color="#1e293b" />
+                  <Text style={{ fontSize: 11, fontWeight: '800', color: '#1e293b' }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+                </View>
+              </View>
+            </PillarCard>
+
+            {/* ── Pillar 3: Mental Health ── */}
+            <PillarCard emoji="🧠" title={t('onboarding.results.mentalPillar', 'Mental Health')} color="#059669">
+              <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8 }}>
+                {[
+                  t('onboarding.results.mental1', 'Stress Foundations'),
+                  t('onboarding.results.mental2', 'Sleep Optimisation'),
+                  t('onboarding.results.mental3', 'Mindset & Reframe'),
+                  t('onboarding.results.mental4', 'Integration Week'),
+                ].map((theme, i) => (
+                  <View key={i} style={[styles.planWeekRow, { backgroundColor: i % 2 === 0 ? '#f0fdf4' : '#fff' }]}>
+                    <Text style={[styles.planWeekNum, { color: '#059669' }]}>W{i + 1}</Text>
+                    <Text style={styles.planWeekLabel}>{theme}</Text>
+                  </View>
+                ))}
+                <BlurView intensity={80} tint="light" style={StyleSheet.absoluteFill} />
+                <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
+                  <Lock size={14} color="#1e293b" />
+                  <Text style={{ fontSize: 11, fontWeight: '800', color: '#1e293b' }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+                </View>
+              </View>
+            </PillarCard>
+          </ScrollView>
+
+          {/* Fixed footer button */}
+          <View style={styles.resultsFooter}>
+            <TouchableOpacity style={styles.primaryBtn} onPress={handleFinalSubmit} disabled={isSubmitting}>
+              {isSubmitting
+                ? <ActivityIndicator color="#fff" />
+                : <Text style={styles.primaryBtnText}>{t('onboarding.results.continueToPlan', 'Continue to Plan')}</Text>
+              }
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </Modal>
+    );
+  };
 
   // ─── Main render ─────────────────────────────────────────────────────────
 
@@ -1018,6 +1087,21 @@ const styles = StyleSheet.create({
 
   primaryBtn: { backgroundColor: '#2563eb', padding: 20, borderRadius: 20, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8 },
   primaryBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+
+  // Results footer
+  resultsFooter: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#fff', padding: 20, borderTopWidth: 1, borderTopColor: '#e2e8f0', shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8, elevation: 10 },
+
+  // 3-Pillar result cards
+  pillarResultCard: { backgroundColor: '#fff', borderRadius: 20, padding: 20, marginBottom: 16, borderLeftWidth: 4, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
+  pillarResultHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
+  pillarResultTitle: { fontSize: 18, fontWeight: '800' },
+  pillarCalRow: { flexDirection: 'row', alignItems: 'baseline', gap: 6 },
+  pillarCalVal: { fontSize: 40, fontWeight: '900', color: '#1e293b' },
+  pillarCalLabel: { fontSize: 14, color: '#64748b', fontWeight: '600' },
+  macroLabel: { fontSize: 12, color: '#64748b', fontWeight: '600' },
+  planWeekRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 14 },
+  planWeekNum: { fontSize: 12, fontWeight: '900', color: '#7c3aed', width: 24 },
+  planWeekLabel: { fontSize: 13, fontWeight: '600', color: '#334155' },
 
   // Language FAB
   langFab: {
