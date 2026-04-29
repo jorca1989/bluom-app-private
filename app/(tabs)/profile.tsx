@@ -528,7 +528,7 @@ export default function ProfileScreen() {
             </View>
           ) : (
             <TouchableOpacity style={s.upgradeChip} onPress={() => router.push('/premium')} activeOpacity={0.85}>
-              <Text style={s.upgradeChipTxt}>{t('profile.upgradePro', '✦ Atualizar para Pro')}</Text>
+              <Text style={s.upgradeChipTxt}>{t('profile.upgradePro', '✦ Subscribe Pro')}</Text>
             </TouchableOpacity>
           )}
 

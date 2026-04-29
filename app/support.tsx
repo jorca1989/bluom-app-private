@@ -7,11 +7,13 @@ import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
 import { getBottomContentPadding } from '@/utils/layout';
+import { useTranslation } from 'react-i18next';
 
 export default function SupportScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
+  const { t } = useTranslation();
 
   const convexUser = useQuery(
     api.users.getUserByClerkId,
@@ -35,11 +37,11 @@ export default function SupportScreen() {
         category,
         message: message.trim(),
       });
-      Alert.alert('Sent!', 'Your ticket has been received. We’ll get back to you soon.');
+      Alert.alert(t('support.successTitle', 'Sent!'), t('support.successMsg', "Your ticket has been received. We'll get back to you soon."));
       setMessage('');
       router.back();
     } catch (e: any) {
-      Alert.alert('Error', 'Failed to send ticket. Please try again later.');
+      Alert.alert(t('support.errorTitle', 'Error'), t('support.errorMsg', 'Failed to send ticket. Please try again later.'));
     } finally {
       setLoading(false);
     }
@@ -52,8 +54,8 @@ export default function SupportScreen() {
           <Ionicons name="arrow-back" size={20} color="#0f172a" />
         </TouchableOpacity>
         <View className="flex-1">
-          <Text className="text-slate-900 font-black text-lg">Support & Feedback</Text>
-          <Text className="text-slate-500 font-bold text-xs">Help us improve Bluom</Text>
+          <Text className="text-slate-900 font-black text-lg">{t('support.title', 'Support & Feedback')}</Text>
+          <Text className="text-slate-500 font-bold text-xs">{t('support.subtitle', 'Help us improve Bluom')}</Text>
         </View>
       </View>
 
@@ -62,9 +64,9 @@ export default function SupportScreen() {
         contentContainerStyle={{ paddingBottom: getBottomContentPadding(insets.bottom, 24) }}
       >
         <View className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-          <Text className="text-slate-900 font-black text-xl mb-2">How can we help?</Text>
+          <Text className="text-slate-900 font-black text-xl mb-2">{t('support.heading', 'How can we help?')}</Text>
           <Text className="text-slate-500 font-semibold mb-6 leading-5">
-            Select a category and let us know what’s on your mind. We read every single ticket.
+            {t('support.desc', "Select a category and let us know what's on your mind. We read every single ticket.")}
           </Text>
 
           <View className="flex-row gap-3 mb-6">
@@ -73,21 +75,21 @@ export default function SupportScreen() {
               className={`flex-1 flex-row items-center justify-center gap-2 py-4 rounded-2xl border ${category === 'feedback' ? 'bg-blue-50 border-blue-600' : 'bg-slate-50 border-slate-200'}`}
             >
               <Ionicons name="chatbubble-ellipses" size={18} color={category === 'feedback' ? '#2563eb' : '#64748b'} />
-              <Text className={`font-black ${category === 'feedback' ? 'text-blue-600' : 'text-slate-500'}`}>Feedback</Text>
+              <Text className={`font-black ${category === 'feedback' ? 'text-blue-600' : 'text-slate-500'}`}>{t('support.feedback', 'Feedback')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => setCategory('bug')}
               className={`flex-1 flex-row items-center justify-center gap-2 py-4 rounded-2xl border ${category === 'bug' ? 'bg-rose-50 border-rose-600' : 'bg-slate-50 border-slate-200'}`}
             >
               <Ionicons name="bug" size={18} color={category === 'bug' ? '#e11d48' : '#64748b'} />
-              <Text className={`font-black ${category === 'bug' ? 'text-rose-600' : 'text-slate-500'}`}>Report Bug</Text>
+              <Text className={`font-black ${category === 'bug' ? 'text-rose-600' : 'text-slate-500'}`}>{t('support.reportBug', 'Report Bug')}</Text>
             </TouchableOpacity>
           </View>
 
-          <Text className="text-slate-700 font-black mb-2 px-1">Message</Text>
+          <Text className="text-slate-700 font-black mb-2 px-1">{t('support.message', 'Message')}</Text>
           <TextInput
             className="bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-900 font-semibold h-40"
-            placeholder="Type your message here..."
+            placeholder={t('support.placeholder', 'Type your message here...')}
             placeholderTextColor="#94a3b8"
             value={message}
             onChangeText={setMessage}
@@ -95,17 +97,17 @@ export default function SupportScreen() {
             textAlignVertical="top"
           />
 
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={handleSubmit}
             disabled={loading || !message.trim()}
-            className={`mt-8 py-5 rounded-2xl items-center shadow-xl ${loading || !message.trim() ? 'bg-slate-200' : 'bg-slate-900'}`}
+            className={`mt-8 py-5 rounded-2xl items-center shadow-xl ${loading || !message.trim() ? 'bg-slate-200' : 'bg-blue-600'}`}
           >
-            {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white font-black text-lg">Send Message</Text>}
+            {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white font-black text-lg">{t('support.send', 'Send Message')}</Text>}
           </TouchableOpacity>
         </View>
 
         <View className="mt-8 items-center">
-          <Text className="text-slate-400 font-bold text-xs uppercase tracking-widest">Bluom Life Management</Text>
+          <Text className="text-slate-400 font-bold text-xs uppercase tracking-widest">{t('support.footer', 'Bluom Life Management')}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -119,6 +119,79 @@ function MarkdownToolbar({ inputRef, value, onChange, selection, onImageInsert }
   );
 }
 
+// ── Simple Markdown Preview ───────────────────────────────
+function InlineText({ text }: { text: string }) {
+  // Parse **bold** and *italic* inline segments
+  const parts: React.ReactNode[] = [];
+  let i = 0;
+  while (i < text.length) {
+    if (text[i] === '*' && text[i + 1] === '*') {
+      const close = text.indexOf('**', i + 2);
+      if (close !== -1) {
+        parts.push(<Text key={i} style={{ fontWeight: '900' }}>{text.slice(i + 2, close)}</Text>);
+        i = close + 2;
+        continue;
+      }
+    }
+    if (text[i] === '*') {
+      const close = text.indexOf('*', i + 1);
+      if (close !== -1) {
+        parts.push(<Text key={i} style={{ fontStyle: 'italic' }}>{text.slice(i + 1, close)}</Text>);
+        i = close + 1;
+        continue;
+      }
+    }
+    // Accumulate plain chars
+    let j = i + 1;
+    while (j < text.length && text[j] !== '*') j++;
+    parts.push(text.slice(i, j));
+    i = j;
+  }
+  return <>{parts}</>;
+}
+
+function MarkdownPreview({ content }: { content: string }) {
+  const lines = content.split('\n');
+  const nodes: React.ReactNode[] = [];
+  lines.forEach((line, idx) => {
+    if (/^---+$/.test(line.trim())) {
+      nodes.push(<View key={idx} style={{ height: 1, backgroundColor: '#e2e8f0', marginVertical: 10 }} />);
+    } else if (line.startsWith('## ')) {
+      nodes.push(<Text key={idx} style={previewStyles.h2}>{line.slice(3)}</Text>);
+    } else if (line.startsWith('### ')) {
+      nodes.push(<Text key={idx} style={previewStyles.h3}>{line.slice(4)}</Text>);
+    } else if (line.startsWith('• ') || line.startsWith('- ')) {
+      nodes.push(
+        <View key={idx} style={previewStyles.bulletRow}>
+          <Text style={previewStyles.bullet}>•</Text>
+          <Text style={previewStyles.bulletText}><InlineText text={line.slice(2)} /></Text>
+        </View>
+      );
+    } else if (/^!\[.*?\]\(.*?\)$/.test(line.trim())) {
+      const match = line.match(/^!\[(.*?)\]\((.*?)\)$/);
+      if (match) {
+        nodes.push(<Image key={idx} source={{ uri: match[2] }} style={previewStyles.previewImage} resizeMode="cover" />);
+      }
+    } else if (line.trim() === '') {
+      nodes.push(<View key={idx} style={{ height: 8 }} />);
+    } else {
+      nodes.push(<Text key={idx} style={previewStyles.para}><InlineText text={line} /></Text>);
+    }
+  });
+  return <View style={previewStyles.container}>{nodes}</View>;
+}
+
+const previewStyles = StyleSheet.create({
+  container: { padding: 4 },
+  h2: { fontSize: 20, fontWeight: '900', color: '#0f172a', marginTop: 14, marginBottom: 6, lineHeight: 26 },
+  h3: { fontSize: 16, fontWeight: '800', color: '#1e293b', marginTop: 10, marginBottom: 4, lineHeight: 22 },
+  para: { fontSize: 14, color: '#334155', lineHeight: 22, marginBottom: 2 },
+  bulletRow: { flexDirection: 'row', gap: 8, marginBottom: 4 },
+  bullet: { fontSize: 14, color: '#64748b', lineHeight: 22 },
+  bulletText: { flex: 1, fontSize: 14, color: '#334155', lineHeight: 22 },
+  previewImage: { width: '100%', height: 200, borderRadius: 12, marginVertical: 10 },
+});
+
 // ── Empty form factory ─────────────────────────────────────
 const emptyForm = () => ({
   title: '', titlePt: '', titleEs: '', titleFr: '', titleDe: '', titleNl: '',
@@ -137,6 +210,7 @@ export default function ContentCMS() {
   // Selection tracking for the toolbar
   const contentInputRef = useRef<TextInput>(null);
   const [contentSelection, setContentSelection] = useState({ start: 0, end: 0 });
+  const [previewMode, setPreviewMode] = useState(false);
 
   // Image URL modal
   const [imageModalVisible, setImageModalVisible] = useState(false);
@@ -196,7 +270,7 @@ export default function ContentCMS() {
 
   const openNew = () => {
     setEditId(null); setForm(emptyForm()); setActiveLang('en');
-    setContentSelection({ start: 0, end: 0 });
+    setContentSelection({ start: 0, end: 0 }); setPreviewMode(false);
     setIsModalOpen(true);
   };
   const openEdit = (item: any) => {
@@ -223,7 +297,7 @@ export default function ContentCMS() {
       status: item.status ?? 'PUBLISHED',
     });
     setActiveLang('en');
-    setContentSelection({ start: 0, end: 0 });
+    setContentSelection({ start: 0, end: 0 }); setPreviewMode(false);
     setIsModalOpen(true);
   };
 
@@ -453,27 +527,45 @@ export default function ContentCMS() {
             />
 
             {/* Markdown toolbar + Content for active lang */}
-            <Text style={styles.label}>Content ({activeLang.toUpperCase()}){activeLang === 'en' ? ' *' : ''}</Text>
-            <Text style={styles.hint}>Select text then tap a format button to apply it.</Text>
-            <MarkdownToolbar
-              inputRef={contentInputRef}
-              value={(form as any)[contentKey] ?? ''}
-              onChange={setF(contentKey)}
-              selection={contentSelection}
-              onImageInsert={handleImageInsert}
-            />
-            <TextInput
-              ref={contentInputRef}
-              style={[styles.input, styles.textArea]}
-              placeholder={`Write content in ${activeLang.toUpperCase()}...\n\n**Bold heading**\n### Subheading\n• Bullet point\nParagraph text`}
-              multiline
-              value={(form as any)[contentKey] ?? ''}
-              onChangeText={setF(contentKey)}
-              textAlignVertical="top"
-              onSelectionChange={(e: NativeSyntheticEvent<TextInputSelectionChangeEventData>) => {
-                setContentSelection(e.nativeEvent.selection);
-              }}
-            />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, marginTop: 4 }}>
+              <Text style={[styles.label, { marginBottom: 0, marginTop: 0 }]}>Content ({activeLang.toUpperCase()}){activeLang === 'en' ? ' *' : ''}</Text>
+              <TouchableOpacity
+                onPress={() => setPreviewMode(p => !p)}
+                style={[styles.statusPill, previewMode && styles.statusPillActive, { paddingHorizontal: 12, paddingVertical: 5 }]}
+              >
+                <Text style={[styles.statusPillText, previewMode && { color: '#fff' }, { fontSize: 11 }]}>
+                  {previewMode ? '✏️ Edit' : '👁 Preview'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {previewMode ? (
+              <View style={[styles.input, { minHeight: 220 }]}>
+                <MarkdownPreview content={(form as any)[contentKey] ?? ''} />
+              </View>
+            ) : (
+              <>
+                <Text style={styles.hint}>Select text, then tap a format button to apply.</Text>
+                <MarkdownToolbar
+                  inputRef={contentInputRef}
+                  value={(form as any)[contentKey] ?? ''}
+                  onChange={setF(contentKey)}
+                  selection={contentSelection}
+                  onImageInsert={handleImageInsert}
+                />
+                <TextInput
+                  ref={contentInputRef}
+                  style={[styles.input, styles.textArea]}
+                  placeholder={`Write content in ${activeLang.toUpperCase()}...\n\n## Heading\n### Subheading\n**Bold** or *italic*\n• Bullet point\nParagraph text`}
+                  multiline
+                  value={(form as any)[contentKey] ?? ''}
+                  onChangeText={setF(contentKey)}
+                  textAlignVertical="top"
+                  onSelectionChange={(e: NativeSyntheticEvent<TextInputSelectionChangeEventData>) => {
+                    setContentSelection(e.nativeEvent.selection);
+                  }}
+                />
+              </>
+            )}
 
             {/* Completion summary */}
             <View style={styles.langProgress}>

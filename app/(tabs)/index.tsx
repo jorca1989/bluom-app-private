@@ -448,7 +448,7 @@ export default function HomeScreen() {
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
             <Ionicons name="location" size={13} color="rgba(255,255,255,0.85)" />
             <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>
-              {(weather?.location ?? 'LOCAL WEATHER').toUpperCase()}
+              {(weather?.location ?? t('home.weather.local', 'LOCAL WEATHER')).toUpperCase()}
             </Text>
           </View>
 

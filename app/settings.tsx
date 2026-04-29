@@ -105,9 +105,9 @@ export default function SettingsScreen() {
             });
             setShowUnitsModal(false);
             triggerSound(SoundEffect.WELLNESS_LOG);
-            Alert.alert(t('settings.success', 'Sucesso'), t('settings.unitsUpdated', 'Unidades atualizadas com sucesso'));
+            Alert.alert(t('settings.success', 'Success'), t('settings.unitsUpdated', 'Units updated successfully'));
         } catch (err) {
-            Alert.alert(t('settings.error', 'Erro'), t('settings.unitsFailed', 'Failed to update units'));
+            Alert.alert(t('settings.error', 'Error'), t('settings.unitsFailed', 'Failed to update units'));
         }
     };
 
@@ -129,16 +129,16 @@ export default function SettingsScreen() {
             });
             setShowGoalsModal(false);
             triggerSound(SoundEffect.WELLNESS_LOG);
-            Alert.alert(t('settings.success', 'Sucesso'), t('settings.goalsUpdated', 'Objetivos atualizados com sucesso'));
+            Alert.alert(t('settings.success', 'Success'), t('settings.goalsUpdated', 'Goals updated successfully'));
         } catch (err) {
-            Alert.alert(t('settings.error', 'Erro'), t('settings.goalsFailed', 'Failed to update goals'));
+            Alert.alert(t('settings.error', 'Error'), t('settings.goalsFailed', 'Failed to update goals'));
         }
     };
 
     const handleSignOut = () => {
-        Alert.alert(t('settings.signOut', 'Terminar Sessão'), t('settings.signOutConfirm', 'Are you sure you want to sign out?'), [
+        Alert.alert(t('settings.signOut', 'Sign Out'), t('settings.signOutConfirm', 'Are you sure you want to sign out?'), [
             { text: t('common.cancel', 'Cancelar'), style: 'cancel' },
-            { text: t('settings.signOut', 'Terminar Sessão'), style: 'destructive', onPress: () => signOut() },
+            { text: t('settings.signOut', 'Sign Out'), style: 'destructive', onPress: () => signOut() },
         ]);
     };
 
@@ -149,7 +149,7 @@ export default function SettingsScreen() {
             [
                 { text: 'Cancelar', style: 'cancel' },
                 {
-                    text: t('settings.deletePermanently', 'Apagar Permanentemente'),
+                    text: t('settings.deletePermanently', 'Delete Permanently'),
                     style: 'destructive',
                     onPress: async () => {
                         if (convexUser && clerkUser?.id) {
@@ -201,8 +201,8 @@ export default function SettingsScreen() {
                     <Ionicons name="arrow-back" size={24} color="#1e293b" />
                 </TouchableOpacity>
                 <View style={styles.headerText}>
-                    <Text style={styles.title}>{t('settings.title', 'Definições')}</Text>
-                    <Text style={styles.subtitle}>{t('settings.subtitle', 'Personalize a sua experiência')}</Text>
+                    <Text style={styles.title}>{t('settings.title', 'Settings')}</Text>
+                    <Text style={styles.subtitle}>{t('settings.subtitle', 'Personalise your experience')}</Text>
                 </View>
             </View>
 
@@ -217,7 +217,7 @@ export default function SettingsScreen() {
                         <View style={[styles.sectionIcon, { backgroundColor: '#eff6ff' }]}>
                             <Feather name="user" size={18} color="#2563eb" />
                         </View>
-                        <Text style={styles.sectionTitle}>{t('settings.account', 'Conta')}</Text>
+                        <Text style={styles.sectionTitle}>{t('settings.account', 'Account')}</Text>
                     </View>
                     <View style={styles.itemsList}>
                         {/* Integrations — Commented out for App Store submission (no HealthKit/Strava entitlements)
@@ -234,7 +234,7 @@ export default function SettingsScreen() {
 
                         <TouchableOpacity style={styles.item} activeOpacity={0.7} onPress={() => { }}>
                             <View style={styles.itemLeft}>
-                                <Text style={styles.itemLabel}>{t('settings.email', 'E-mail')}</Text>
+                                <Text style={styles.itemLabel}>{t('settings.email', 'Email')}</Text>
                                 <Text style={styles.itemValue}>{convexUser.email}</Text>
                             </View>
                             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
@@ -244,10 +244,10 @@ export default function SettingsScreen() {
 
                         <TouchableOpacity style={styles.item} activeOpacity={0.7} onPress={() => router.push('/premium')}>
                             <View style={styles.itemLeft}>
-                                <Text style={styles.itemLabel}>{t('settings.subscription', 'Assinatura')}</Text>
+                                <Text style={styles.itemLabel}>{t('settings.subscription', 'Subscription')}</Text>
                                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                                     <Text style={[styles.itemValue, convexUser.isPremium && { color: '#f59e0b', fontWeight: 'bold' }]}>
-                                        {convexUser.isPremium ? t('settings.premium', 'Premium') : t('settings.free', 'Gratuita')}
+                                        {convexUser.isPremium ? t('settings.premium', 'Premium') : t('settings.free', 'Free')}
                                     </Text>
                                     {convexUser.isPremium && <Ionicons name="diamond" size={12} color="#f59e0b" />}
                                 </View>
@@ -265,11 +265,11 @@ export default function SettingsScreen() {
                         <View style={[styles.sectionIcon, { backgroundColor: '#fef3c7' }]}>
                             <Feather name="settings" size={18} color="#d97706" />
                         </View>
-                        <Text style={styles.sectionTitle}>{t('settings.preferences', 'Preferências')}</Text>
+                        <Text style={styles.sectionTitle}>{t('settings.preferences', 'Preferences')}</Text>
                     </View>
                     <View style={styles.itemsList}>
                         <TouchableOpacity style={styles.item} activeOpacity={0.7} onPress={() => {
-                            Alert.alert(t('settings.language', 'Idioma'), t('settings.selectLanguage', 'Selecione o seu idioma preferido'), [
+                            Alert.alert(t('settings.language', 'Language'), t('settings.selectLanguage', 'Select your preferred language'), [
                                 { text: 'English', onPress: async () => {
                                     i18n.changeLanguage('en');
                                     saveLanguagePreference('en');
@@ -288,7 +288,7 @@ export default function SettingsScreen() {
                             ]);
                         }}>
                             <View style={styles.itemLeft}>
-                                <Text style={styles.itemLabel}>{t('settings.language', 'Idioma')}</Text>
+                                <Text style={styles.itemLabel}>{t('settings.language', 'Language')}</Text>
                                 <Text style={styles.itemValue}>{convexUser.preferredLanguage ? convexUser.preferredLanguage.toUpperCase() : 'EN'}</Text>
                             </View>
                             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
@@ -298,7 +298,7 @@ export default function SettingsScreen() {
 
                         <TouchableOpacity style={styles.item} activeOpacity={0.7} onPress={() => setShowUnitsModal(true)}>
                             <View style={styles.itemLeft}>
-                                <Text style={styles.itemLabel}>{t('settings.units', 'Unidades e Medidas')}</Text>
+                                <Text style={styles.itemLabel}>{t('settings.units', 'Units & Measures')}</Text>
                                 <Text style={styles.itemValue}>
                                     {tempUnits.weight}, {tempUnits.height}, {tempUnits.volume}
                                 </Text>
@@ -310,7 +310,7 @@ export default function SettingsScreen() {
 
                         <TouchableOpacity style={styles.item} activeOpacity={0.7} onPress={() => setShowGoalsModal(true)}>
                             <View style={styles.itemLeft}>
-                                <Text style={styles.itemLabel}>{t('settings.dailyGoals', 'Objetivos Diários')}</Text>
+                                <Text style={styles.itemLabel}>{t('settings.dailyGoals', 'Daily Goals')}</Text>
                                 <Text style={styles.itemValue}>{tempGoals.dailyCalories} cal, {tempGoals.dailyProtein}g P</Text>
                             </View>
                             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
@@ -324,13 +324,13 @@ export default function SettingsScreen() {
                         <View style={[styles.sectionIcon, { backgroundColor: '#ecfdf5' }]}>
                             <Ionicons name="volume-high-outline" size={18} color="#059669" />
                         </View>
-                        <Text style={styles.sectionTitle}>{t('settings.soundHaptics', 'Som e Háptica')}</Text>
+                        <Text style={styles.sectionTitle}>{t('settings.soundHaptics', 'Sound & Haptics')}</Text>
                     </View>
                     <View style={styles.itemsList}>
                         <View style={styles.itemWithSwitch}>
                             <View style={styles.itemLeft}>
-                                <Text style={styles.itemLabel}>{t('settings.soundEffects', 'Efeitos Sonoros')}</Text>
-                                <Text style={styles.itemValue}>{t('settings.soundEffectsDesc', 'Ativar feedback sonoro')}</Text>
+                                <Text style={styles.itemLabel}>{t('settings.soundEffects', 'Sound Effects')}</Text>
+                                <Text style={styles.itemValue}>{t('settings.soundEffectsDesc', 'Enable audio feedback')}</Text>
                             </View>
                             <Switch
                                 value={soundEffectsEnabled}
@@ -348,8 +348,8 @@ export default function SettingsScreen() {
 
                         <View style={styles.itemWithSwitch}>
                             <View style={styles.itemLeft}>
-                                <Text style={styles.itemLabel}>{t('settings.haptics', 'Háptica')}</Text>
-                                <Text style={styles.itemValue}>{t('settings.hapticsDesc', 'Feedback de vibração física')}</Text>
+                                <Text style={styles.itemLabel}>{t('settings.haptics', 'Haptics')}</Text>
+                                <Text style={styles.itemValue}>{t('settings.hapticsDesc', 'Physical vibration feedback')}</Text>
                             </View>
                             <Switch
                                 value={hapticsEnabled}
@@ -391,7 +391,7 @@ export default function SettingsScreen() {
                         <View style={[styles.sectionIcon, { backgroundColor: '#fdf2f8' }]}>
                             <Feather name="globe" size={18} color="#db2777" />
                         </View>
-                        <Text style={styles.sectionTitle}>{t('settings.support', 'Suporte')}</Text>
+                        <Text style={styles.sectionTitle}>{t('settings.support', 'Support')}</Text>
                     </View>
                     <View style={styles.itemsList}>
                         <TouchableOpacity
@@ -400,8 +400,8 @@ export default function SettingsScreen() {
                             onPress={() => openExternalUrl('https://www.bluom.app/about')}
                         >
                             <View style={styles.itemLeft}>
-                                <Text style={styles.itemLabel}>{t('settings.aboutUs', 'Sobre nós')}</Text>
-                                <Text style={styles.itemValue}>{t('settings.aboutUsDesc', 'Saiba mais sobre a Bluom')}</Text>
+                                <Text style={styles.itemLabel}>{t('settings.aboutUs', 'About Us')}</Text>
+                                <Text style={styles.itemValue}>{t('settings.aboutUsDesc', 'Learn more about Bluom')}</Text>
                             </View>
                             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
                         </TouchableOpacity>
@@ -414,8 +414,8 @@ export default function SettingsScreen() {
                             onPress={() => openExternalUrl('https://www.bluom.app/support')}
                         >
                             <View style={styles.itemLeft}>
-                                <Text style={styles.itemLabel}>{t('settings.helpCenter', 'Centro de Ajuda')}</Text>
-                                <Text style={styles.itemValue}>{t('settings.helpCenterDesc', 'Obter assistência')}</Text>
+                                <Text style={styles.itemLabel}>{t('settings.helpCenter', 'Help Centre')}</Text>
+                                <Text style={styles.itemValue}>{t('settings.helpCenterDesc', 'Get assistance')}</Text>
                             </View>
                             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
                         </TouchableOpacity>
@@ -435,7 +435,7 @@ export default function SettingsScreen() {
                         >
                             <View style={styles.itemLeft}>
                                 <Text style={styles.itemLabel}>{t('settings.legal', 'Legal')}</Text>
-                                <Text style={styles.itemValue}>{t('settings.legalDesc', 'Termos e Privacidade')}</Text>
+                                <Text style={styles.itemValue}>{t('settings.legalDesc', 'Terms & Privacy')}</Text>
                             </View>
                             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
                         </TouchableOpacity>
@@ -444,7 +444,7 @@ export default function SettingsScreen() {
 
                         <TouchableOpacity style={[styles.item, { paddingVertical: 16 }]} activeOpacity={0.7} onPress={handleSignOut}>
                             <View style={styles.itemLeft}>
-                                <Text style={[styles.itemLabel, { color: '#64748b' }]}>{t('settings.signOut', 'Terminar Sessão')}</Text>
+                                <Text style={[styles.itemLabel, { color: '#64748b' }]}>{t('settings.signOut', 'Sign Out')}</Text>
                             </View>
                             <Ionicons name="log-out-outline" size={18} color="#64748b" />
                         </TouchableOpacity>
@@ -453,7 +453,7 @@ export default function SettingsScreen() {
 
                         <TouchableOpacity style={[styles.item, { paddingVertical: 16 }]} activeOpacity={0.7} onPress={handleDeleteAccount}>
                             <View style={styles.itemLeft}>
-                                <Text style={[styles.itemLabel, { color: '#ef4444' }]}>{t('settings.deleteAccount', 'Apagar Conta')}</Text>
+                                <Text style={[styles.itemLabel, { color: '#ef4444' }]}>{t('settings.deleteAccount', 'Delete Account')}</Text>
                             </View>
                             <Ionicons name="trash-outline" size={18} color="#ef4444" />
                         </TouchableOpacity>
@@ -474,7 +474,7 @@ export default function SettingsScreen() {
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>{t('settings.units', 'Unidades e Medidas')}</Text>
+                            <Text style={styles.modalTitle}>{t('settings.units', 'Units & Measures')}</Text>
                             <TouchableOpacity onPress={() => setShowUnitsModal(false)}>
                                 <Ionicons name="close" size={24} color="#1e293b" />
                             </TouchableOpacity>
@@ -482,7 +482,7 @@ export default function SettingsScreen() {
 
                         <View style={styles.modalBody}>
                             <View style={styles.unitGroup}>
-                                <Text style={styles.unitLabel}>{t('settings.weight', 'Peso')}</Text>
+                                <Text style={styles.unitLabel}>{t('settings.weight', 'Weight')}</Text>
                                 <View style={styles.unitButtons}>
                                     {['lbs', 'kg'].map((u) => (
                                         <TouchableOpacity
@@ -499,7 +499,7 @@ export default function SettingsScreen() {
                             </View>
 
                             <View style={styles.unitGroup}>
-                                <Text style={styles.unitLabel}>{t('settings.height', 'Altura')}</Text>
+                                <Text style={styles.unitLabel}>{t('settings.height', 'Height')}</Text>
                                 <View style={styles.unitButtons}>
                                     {['ft', 'cm'].map((u) => (
                                         <TouchableOpacity
@@ -516,7 +516,7 @@ export default function SettingsScreen() {
                             </View>
 
                             <View style={styles.unitGroup}>
-                                <Text style={styles.unitLabel}>{t('settings.distance', 'Distância')}</Text>
+                                <Text style={styles.unitLabel}>{t('settings.distance', 'Distance')}</Text>
                                 <View style={styles.unitButtons}>
                                     {['miles', 'km'].map((u) => (
                                         <TouchableOpacity
@@ -525,7 +525,7 @@ export default function SettingsScreen() {
                                             onPress={() => setTempUnits({ ...tempUnits, distance: u })}
                                         >
                                             <Text style={[styles.unitButtonText, tempUnits.distance === u && styles.unitButtonTextActive]}>
-                                                {u === 'miles' ? t('settings.miles', 'Milhas') : t('settings.km', 'KM')}
+                                                {u === 'miles' ? t('settings.miles', 'Miles') : t('settings.km', 'KM')}
                                             </Text>
                                         </TouchableOpacity>
                                     ))}
@@ -533,7 +533,7 @@ export default function SettingsScreen() {
                             </View>
 
                             <View style={styles.unitGroup}>
-                                <Text style={styles.unitLabel}>{t('settings.water', 'Água')}</Text>
+                                <Text style={styles.unitLabel}>{t('settings.water', 'Water')}</Text>
                                 <View style={styles.unitButtons}>
                                     {['oz', 'ml'].map((u) => (
                                         <TouchableOpacity
@@ -550,7 +550,7 @@ export default function SettingsScreen() {
                             </View>
 
                             <TouchableOpacity style={styles.saveButton} onPress={saveUnits}>
-                                <Text style={styles.saveButtonText}>{t('settings.saveChanges', 'Guardar Alterações')}</Text>
+                                <Text style={styles.saveButtonText}>{t('settings.saveChanges', 'Save Changes')}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -563,7 +563,7 @@ export default function SettingsScreen() {
                     <ScrollView contentContainerStyle={styles.modalScrollContent}>
                         <View style={styles.modalContent}>
                             <View style={styles.modalHeader}>
-                                <Text style={styles.modalTitle}>{t('settings.dailyGoals', 'Objetivos Diários')}</Text>
+                                <Text style={styles.modalTitle}>{t('settings.dailyGoals', 'Daily Goals')}</Text>
                                 <TouchableOpacity onPress={() => setShowGoalsModal(false)}>
                                     <Ionicons name="close" size={24} color="#1e293b" />
                                 </TouchableOpacity>
@@ -611,7 +611,7 @@ export default function SettingsScreen() {
                                 </View>
 
                                 <TouchableOpacity style={styles.saveButton} onPress={saveGoals}>
-                                    <Text style={styles.saveButtonText}>{t('settings.updateGoals', 'Atualizar Objetivos')}</Text>
+                                    <Text style={styles.saveButtonText}>{t('settings.updateGoals', 'Update Goals')}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
