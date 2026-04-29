@@ -296,7 +296,7 @@ export default function PremiumScreen() {
                 <Text style={styles.sectionEyebrow}>{t('premium.choosePlan', 'CHOOSE YOUR PLAN')}</Text>
                 <PlanCard
                   title={t('premium.annualTitle', 'Pro Annual')}
-                  subtitle={annualWeeklyNote ? t('premium.annualSub', `Just ${annualWeeklyNote}/wk — save 50%`) : t('premium.annualSubAlt', 'Best value, cancel anytime')}
+                  subtitle={annualWeeklyNote ? t('premium.annualSub', `Just ${annualWeeklyNote}/wk — save 50%`, { price: annualWeeklyNote }) : t('premium.annualSubAlt', 'Best value, cancel anytime')}
                   price={pkgs?.annual?.product?.priceString ?? '—'}
                   priceNote={annualMonthlyNote ? `${annualMonthlyNote} / ${t('premium.month', 'mo')}` : null}
                   popular={true}

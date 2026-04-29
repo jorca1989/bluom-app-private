@@ -143,7 +143,7 @@ function SectionCard({ onPress, accentColor, iconBg, icon, title, subtitle, isPr
 
       {/* CTA strip */}
       <View style={[sc.cta, { borderColor: accentColor + '30', backgroundColor: accentColor + '08' }]}>
-        <Text style={[sc.ctaText, { color: accentColor }]}>{t('plan.viewFull', 'Ver plano completo')}</Text>
+        <Text style={[sc.ctaText, { color: accentColor }]}>{t('plan.viewFull', 'View full plan')}</Text>
         <ChevronRight size={13} color={accentColor} />
       </View>
     </TouchableOpacity>
@@ -184,7 +184,7 @@ function NutritionPreview({
   const { t } = useTranslation();
 
   const MEAL_TYPE_PT: Record<string, string> = {
-    Breakfast: t('meals.breakfast', 'Pequeno-Almoço'),
+    Breakfast: t('meals.breakfast', 'Breakfast'),
     Lunch:     t('meals.lunch',     'Almoço'),
     Dinner:    t('meals.dinner',    'Jantar'),
     Snack:     t('meals.snack',     'Lanche'),
@@ -216,7 +216,7 @@ function NutritionPreview({
     <View style={np.wrap}>
       {/* Macro row */}
       <View style={np.macroRow}>
-        <StatChip label={t('meals.calories', 'Calorias')} value={`${Math.round(calories)}`}   color="#f59e0b" />
+        <StatChip label={t('meals.calories', 'Calories')} value={`${Math.round(calories)}`}   color="#f59e0b" />
         <StatChip label={t('meals.protein',  'Proteína')} value={`${Math.round(protein)}g`}   color="#ef4444" />
         <StatChip label={t('meals.carbs',    'Hidratos')} value={`${Math.round(carbs)}g`}     color="#3b82f6" />
         <StatChip label={t('meals.fat',      'Gordura')} value={`${Math.round(fat)}g`}        color="#10b981" />
@@ -231,7 +231,7 @@ function NutritionPreview({
             <View style={[np.dot, { backgroundColor: accent }]} />
             <Text style={np.mealType}>{mealLabel}</Text>
             <Text style={np.mealKcal}>{Math.round(meal.calories)} kcal</Text>
-            <Text style={np.mealMacro}>{t('meals.proteinShort','P')} {Math.round(meal.protein)}g · {t('meals.carbsShort','H')} {Math.round(meal.carbs)}g · {t('meals.fatShort','G')} {Math.round(meal.fat)}g</Text>
+            <Text style={np.mealMacro}>{t('meals.proteinShort', 'P')} {Math.round(meal.protein)}g · {t('meals.carbsShort', 'C')} {Math.round(meal.carbs)}g · {t('meals.fatShort', 'F')} {Math.round(meal.fat)}g</Text>
           </View>
         );
       })}
@@ -242,8 +242,8 @@ function NutritionPreview({
           <Clock size={12} color="#60a5fa" />
           <Text style={np.countdownText}>
             {rotationDays > 0
-              ? `${t('meals.rotatesIn', 'Renova em')} ${rotationDays} ${rotationDays !== 1 ? t('meals.days', 'dias') : t('meals.day1', 'dia')}`
-              : t('meals.rotatingSoon', 'A renovar em breve…')}
+              ? `${t('meals.rotatesIn', 'Rotates in')} ${rotationDays} ${rotationDays !== 1 ? t('meals.days', 'days') : t('meals.day1', 'day')}`
+              : t('meals.rotatingSoon', 'Rotating soon…')}
           </Text>
         </View>
       )}
@@ -313,7 +313,7 @@ function FitnessPreview({ currentWeekIndex }: { currentWeekIndex: number }) {
               key={week.weekNum}
               style={[fp.weekPill, { backgroundColor: WEEK_COLORS[idx] }, isActive && fp.weekPillActive]}
             >
-              <Text style={fp.weekNum}>{t('plan.weekAbbr', 'S')}{week.weekNum}</Text>
+              <Text style={fp.weekNum}>{t('plan.weekAbbr', 'W')}{week.weekNum}</Text>
               <Text style={fp.weekTheme} numberOfLines={1}>{themePT}</Text>
               {isActive && <View style={fp.activeDot} />}
             </View>
@@ -327,7 +327,7 @@ function FitnessPreview({ currentWeekIndex }: { currentWeekIndex: number }) {
         const themePT = isPT ? (WEEK_THEME_PT[week.theme] ?? week.theme) : week.theme;
         return (
           <View style={fp.activeDetail}>
-            <Text style={fp.activeWeekLabel}>{t('plan.week', 'Semana')} {week.weekNum} · {themePT}</Text>
+            <Text style={fp.activeWeekLabel}>{t('plan.week', 'Week')} {week.weekNum} · {themePT}</Text>
             <View style={fp.focusTags}>
               {week.focus.map(f => {
                 const label = isPT ? (FOCUS_PT[f] ?? f) : f;
@@ -338,7 +338,7 @@ function FitnessPreview({ currentWeekIndex }: { currentWeekIndex: number }) {
                 );
               })}
             </View>
-            <Text style={fp.dayCount}>{week.days.length} {t('plan.trainingDays', 'dias de treino')}</Text>
+            <Text style={fp.dayCount}>{week.days.length} {t('plan.trainingDays', 'training days')}</Text>
           </View>
         );
       })()}
@@ -402,7 +402,7 @@ function MentalHealthPreview({ currentDay }: { currentDay: number }) {
               style={[mhp.weekPill, isActive && mhp.weekPillActive]}
             >
               <Ionicons name={w.icon as any} size={10} color={isActive ? '#fff' : 'rgba(255,255,255,0.55)'} />
-              <Text style={[mhp.weekLabel, !isActive && { opacity: 0.55 }]}>{t('plan.weekAbbr', 'S')}{w.week}</Text>
+              <Text style={[mhp.weekLabel, !isActive && { opacity: 0.55 }]}>{t('plan.weekAbbr', 'W')}{w.week}</Text>
               <Text style={[mhp.weekTheme, !isActive && { opacity: 0.55 }]} numberOfLines={1}>{themePT}</Text>
             </LinearGradient>
           );
@@ -417,7 +417,7 @@ function MentalHealthPreview({ currentDay }: { currentDay: number }) {
         const taglinePT = isPT ? (MH_TAGLINE_PT[w.tagline] ?? w.tagline) : w.tagline;
         return (
           <View style={mhp.activeDetail}>
-            <Text style={mhp.activeLabel}>{t('plan.week', 'Semana')} {w.week} · {themePT}</Text>
+            <Text style={mhp.activeLabel}>{t('plan.week', 'Week')} {w.week} · {themePT}</Text>
             <Text style={mhp.activeTagline}>{taglinePT}</Text>
             <View style={mhp.pillarsRow}>
               {w.pillars.map(p => {
@@ -433,7 +433,7 @@ function MentalHealthPreview({ currentDay }: { currentDay: number }) {
               <View style={mhp.progressTrack}>
                 <View style={[mhp.progressFill, { width: `${((dayInWeek - 1) / 7) * 100}%` }]} />
               </View>
-              <Text style={mhp.progressText}>{t('plan.day', 'Dia')} {currentDay} {t('plan.of', 'de')} 28</Text>
+              <Text style={mhp.progressText}>{t('plan.day', 'Day')} {currentDay} {t('plan.of', 'of')} 28</Text>
             </View>
           </View>
         );
@@ -467,10 +467,10 @@ function ProLockedOverlay({ onPress }: { onPress: () => void }) {
   return (
     <View style={lo.wrap}>
       <View style={lo.badge}><Lock size={16} color="#fff" /></View>
-      <Text style={lo.title}>{t('plan.proBlueprint', 'Plano Pro')}</Text>
-      <Text style={lo.sub}>{t('plan.proSub', 'Personalização IA, troca de refeições e planos rotativos de 30 dias')}</Text>
+      <Text style={lo.title}>{t('plan.proBlueprint', 'Pro Blueprint')}</Text>
+      <Text style={lo.sub}>{t('plan.proSub', 'AI personalisation, meal swaps and rotating 30-day plans')}</Text>
       <TouchableOpacity style={lo.btn} onPress={onPress} activeOpacity={0.85}>
-        <Text style={lo.btnText}>{t('plan.unlockPro', 'Desbloquear Pro')}</Text>
+        <Text style={lo.btnText}>{t('plan.unlockPro', 'Unlock Pro')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -529,7 +529,7 @@ export default function PersonalizedPlanScreen() {
           <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
             <ChevronLeft size={22} color="#1e293b" />
           </TouchableOpacity>
-          <Text style={s.headerTitle}>{t('plan.title', 'O Teu Plano')}</Text>
+          <Text style={s.headerTitle}>{t('plan.title', 'Your Blueprint')}</Text>
           <View style={{ width: 36 }} />
         </View>
 
@@ -539,14 +539,14 @@ export default function PersonalizedPlanScreen() {
           <View style={s.heroBadge}>
             <Sparkles size={11} color="#a78bfa" />
             <Text style={s.heroBadgeText}>
-              {isPro ? t('plan.heroBadgePro', 'Alimentado por IA · Renova a cada 30 dias') : t('plan.heroBadgeFree', 'Plano Gratuito')}
+              {isPro ? t('plan.heroBadgePro', 'AI-powered · Rotates every 30 days') : t('plan.heroBadgeFree', 'Free Plan')}
             </Text>
           </View>
-          <Text style={s.heroTitle}>{t('plan.heroTitle', 'Plano de Performance')}</Text>
+          <Text style={s.heroTitle}>{t('plan.heroTitle', 'Performance Blueprint')}</Text>
           <Text style={s.heroSub}>
             {isPro
-              ? t('plan.heroSubPro', 'A tua prescrição personalizada de nutrição, fitness e saúde mental.')
-              : t('plan.heroSubFree', 'Um programa estruturado de 30 dias. Atualiza para Pro para personalização por IA.')}
+              ? t('plan.heroSubPro', 'Your personalised nutrition, fitness and mental health prescription.')
+              : t('plan.heroSubFree', 'A structured 30-day programme. Upgrade to Pro for AI personalisation.')}
           </Text>
 
           {/* Overall progress */}
@@ -555,7 +555,7 @@ export default function PersonalizedPlanScreen() {
               <View style={s.overallTrack}>
                 <View style={[s.overallFill, { width: `${overallProgress}%` }]} />
               </View>
-              <Text style={s.overallText}>{overallProgress}% {t('plan.complete', 'completo em todos os pilares')}</Text>
+              <Text style={s.overallText}>{overallProgress}% {t('plan.complete', 'complete across all pillars')}</Text>
             </View>
           )}
 
@@ -563,7 +563,7 @@ export default function PersonalizedPlanScreen() {
         </LinearGradient>
 
         {/* ── Section divider ── */}
-        <Text style={s.sectionLabel}>{t('plan.yourPlans', 'Os Teus Planos')}</Text>
+        <Text style={s.sectionLabel}>{t('plan.yourPlans', 'Your Plans')}</Text>
 
         {/* ════════════════════════════════════════════════════════
             1. NUTRITION — navigates to /meal-hub
@@ -604,7 +604,7 @@ export default function PersonalizedPlanScreen() {
           iconBg="#ede9fe"
           icon={<Dumbbell size={20} color="#7c3aed" />}
           title={t('plan.fitnessTitle', 'Plano de Fitness')}
-          subtitle={`${t('plan.fourWeekPlan', 'Plano de 4 Semanas')} · ${t('plan.week', 'Semana')} ${fitnessWeekIdx + 1} ${t('plan.of', 'de')} 4`}
+          subtitle={`${t('plan.fourWeekPlan', 'Plano de 4 Semanas')} · ${t('plan.week', 'Week')} ${fitnessWeekIdx + 1} ${t('plan.of', 'of')} 4`}
           isPro={isPro}
         >
           <FitnessPreview currentWeekIndex={fitnessWeekIdx} />
@@ -620,7 +620,7 @@ export default function PersonalizedPlanScreen() {
           iconBg="#f5f3ff"
           icon={<Brain size={20} color="#8b5cf6" />}
           title={t('plan.mentalTitle', 'Plano de Saúde Mental')}
-          subtitle={`${t('plan.thirtyDay', 'Programa 30 Dias')} · ${t('plan.day', 'Dia')} ${mhCurrentDay} ${t('plan.of', 'de')} 28`}
+          subtitle={`${t('plan.thirtyDay', 'Programa 30 Dias')} · ${t('plan.day', 'Day')} ${mhCurrentDay} ${t('plan.of', 'of')} 28`}
           isPro={isPro}
         >
           <MentalHealthPreview currentDay={mhCurrentDay} />

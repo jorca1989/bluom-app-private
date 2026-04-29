@@ -24,6 +24,8 @@ import {
     Image as ImageIcon,
     Filter,
     Search,
+    ChevronDown,
+    ChevronUp,
 } from 'lucide-react-native';
 import { useUser } from '@clerk/clerk-expo';
 import { useMutation, useQuery } from 'convex/react';
@@ -31,6 +33,39 @@ import { api } from '@/convex/_generated/api';
 import { useTranslation } from 'react-i18next';
 import { MEDITATION_FILTERS } from '@/constants/meditationFilters';
 import { R2_CONFIG } from '@/utils/r2Config';
+
+// ── Reusable accordion for multilanguage fields ──────────────
+function LangAccordion({ title, children }: { title: string; children: React.ReactNode }) {
+    const [open, setOpen] = React.useState(false);
+    return (
+        <View style={{ borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 12, marginBottom: 8, overflow: 'hidden' }}>
+            <TouchableOpacity
+                onPress={() => setOpen(o => !o)}
+                style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 12, backgroundColor: '#f8fafc' }}
+            >
+                <Text style={{ fontSize: 13, fontWeight: '700', color: '#1e293b' }}>{title}</Text>
+                {open ? <ChevronUp size={15} color="#64748b" /> : <ChevronDown size={15} color="#64748b" />}
+            </TouchableOpacity>
+            {open && <View style={{ padding: 12, backgroundColor: '#fff' }}>{children}</View>}
+        </View>
+    );
+}
+
+function FieldAccordion({ title, children }: { title: string; children: React.ReactNode }) {
+    const [open, setOpen] = React.useState(false);
+    return (
+        <View style={{ borderWidth: 1.5, borderColor: '#cbd5e1', borderRadius: 14, marginBottom: 12, overflow: 'hidden' }}>
+            <TouchableOpacity
+                onPress={() => setOpen(o => !o)}
+                style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 14, backgroundColor: '#f1f5f9' }}
+            >
+                <Text style={{ fontSize: 14, fontWeight: '800', color: '#1e293b' }}>{title}</Text>
+                {open ? <ChevronUp size={16} color="#475569" /> : <ChevronDown size={16} color="#475569" />}
+            </TouchableOpacity>
+            {open && <View style={{ padding: 14, gap: 8 }}>{children}</View>}
+        </View>
+    );
+}
 
 export default function MeditationsManager() {
     const { t } = useTranslation();
@@ -394,8 +429,41 @@ export default function MeditationsManager() {
                             ))}
                         </View>
 
-                        <Text style={styles.label}>{t('admin.titleLabel', 'Title')}</Text>
-                        <TextInput style={styles.input} value={form.title} onChangeText={t => setForm(p => ({ ...p, title: t }))} placeholder={t('admin.titlePlaceholder', 'e.g. Deep Sleep Journey')} />
+                        <FieldAccordion title={`📝 ${t('admin.titleLabel', 'Title')} *`}>
+                            <LangAccordion title="🇬🇧 EN (required)">
+                                <TextInput style={styles.input} value={form.title} onChangeText={t => setForm(p => ({ ...p, title: t }))} placeholder={t('admin.titlePlaceholder', 'e.g. Deep Sleep Journey')} />
+                            </LangAccordion>
+                            <LangAccordion title="🇧🇷 PT">
+                                <TextInput style={styles.input} value={form.titlePt} onChangeText={v => setForm(p => ({ ...p, titlePt: v }))} placeholder="Título em português..." />
+                            </LangAccordion>
+                            <LangAccordion title="🇪🇸 ES">
+                                <TextInput style={styles.input} value={form.titleEs} onChangeText={v => setForm(p => ({ ...p, titleEs: v }))} placeholder="Título en español..." />
+                            </LangAccordion>
+                            <LangAccordion title="🇩🇪 DE">
+                                <TextInput style={styles.input} value={form.titleDe} onChangeText={v => setForm(p => ({ ...p, titleDe: v }))} placeholder="Titel auf Deutsch..." />
+                            </LangAccordion>
+                            <LangAccordion title="🇳🇱 NL">
+                                <TextInput style={styles.input} value={form.titleNl} onChangeText={v => setForm(p => ({ ...p, titleNl: v }))} placeholder="Titel in het Nederlands..." />
+                            </LangAccordion>
+                        </FieldAccordion>
+
+                        <FieldAccordion title={`📋 ${t('admin.description', 'Description')} ${form.type === 'soundscape' ? t('admin.optional', '(Optional)') : ''}`}>
+                            <LangAccordion title="🇬🇧 EN">
+                                <TextInput style={[styles.input, { height: 100, textAlignVertical: 'top' }]} multiline value={form.description} onChangeText={t => setForm(p => ({ ...p, description: t }))} placeholder={t('admin.descriptionPlaceholder', 'What this session helps with...')} />
+                            </LangAccordion>
+                            <LangAccordion title="🇧🇷 PT">
+                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descPt} onChangeText={v => setForm(p => ({ ...p, descPt: v }))} placeholder="Descrição em português..." />
+                            </LangAccordion>
+                            <LangAccordion title="🇪🇸 ES">
+                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descEs} onChangeText={v => setForm(p => ({ ...p, descEs: v }))} placeholder="Descripción en español..." />
+                            </LangAccordion>
+                            <LangAccordion title="🇩🇪 DE">
+                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descDe} onChangeText={v => setForm(p => ({ ...p, descDe: v }))} placeholder="Beschreibung auf Deutsch..." />
+                            </LangAccordion>
+                            <LangAccordion title="🇳🇱 NL">
+                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descNl} onChangeText={v => setForm(p => ({ ...p, descNl: v }))} placeholder="Beschrijving in het Nederlands..." />
+                            </LangAccordion>
+                        </FieldAccordion>
 
                         {form.type === 'meditation' && (
                             <>
@@ -424,26 +492,6 @@ export default function MeditationsManager() {
                                 <TextInput style={styles.input} value={form.duration} onChangeText={t => setForm(p => ({ ...p, duration: t }))} keyboardType="numeric" placeholder="10" />
                             </>
                         )}
-
-                        <Text style={styles.label}>{t('admin.titleLabel', 'Title')} 🇧🇷 PT</Text>
-                        <TextInput style={styles.input} value={form.titlePt} onChangeText={v => setForm(p => ({ ...p, titlePt: v }))} placeholder="Título em português..." />
-                        <Text style={styles.label}>{t('admin.titleLabel', 'Title')} 🇪🇸 ES</Text>
-                        <TextInput style={styles.input} value={form.titleEs} onChangeText={v => setForm(p => ({ ...p, titleEs: v }))} placeholder="Título en español..." />
-                        <Text style={styles.label}>{t('admin.titleLabel', 'Title')} 🇩🇪 DE</Text>
-                        <TextInput style={styles.input} value={form.titleDe} onChangeText={v => setForm(p => ({ ...p, titleDe: v }))} placeholder="Titel auf Deutsch..." />
-                        <Text style={styles.label}>{t('admin.titleLabel', 'Title')} 🇳🇱 NL</Text>
-                        <TextInput style={styles.input} value={form.titleNl} onChangeText={v => setForm(p => ({ ...p, titleNl: v }))} placeholder="Titel in het Nederlands..." />
-
-                        <Text style={styles.label}>{t('admin.description', 'Description')} {form.type === 'soundscape' && t('admin.optional', '(Optional)')}</Text>
-                        <TextInput style={[styles.input, { height: 100, textAlignVertical: 'top' }]} multiline value={form.description} onChangeText={t => setForm(p => ({ ...p, description: t }))} placeholder={t('admin.descriptionPlaceholder', 'What this session helps with...')} />
-                        <Text style={styles.label}>{t('admin.description', 'Description')} 🇧🇷 PT</Text>
-                        <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descPt} onChangeText={v => setForm(p => ({ ...p, descPt: v }))} placeholder="Descrição em português..." />
-                        <Text style={styles.label}>{t('admin.description', 'Description')} 🇪🇸 ES</Text>
-                        <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descEs} onChangeText={v => setForm(p => ({ ...p, descEs: v }))} placeholder="Descripción en español..." />
-                        <Text style={styles.label}>{t('admin.description', 'Description')} 🇩🇪 DE</Text>
-                        <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descDe} onChangeText={v => setForm(p => ({ ...p, descDe: v }))} placeholder="Beschreibung auf Deutsch..." />
-                        <Text style={styles.label}>{t('admin.description', 'Description')} 🇳🇱 NL</Text>
-                        <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descNl} onChangeText={v => setForm(p => ({ ...p, descNl: v }))} placeholder="Beschrijving in het Nederlands..." />
 
                         {/* Audio URL */}
                         <View style={styles.mediaSection}>

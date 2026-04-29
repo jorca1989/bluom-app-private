@@ -1168,7 +1168,7 @@
     "title": "Conquistas",
     "first_workout": {
       "title": "Primeira Repetição",
-      "description": "Registe o seu primeiro treino"
+      "desc": "Registe o seu primeiro treino"
     },
     "step_goal": {
       "title": "Mestre dos Passos",
@@ -1200,419 +1200,419 @@
     },
     "first_meal_log": {
       "title": "Primeira Dentada",
-      "description": "Registe a sua primeira refeição"
+      "desc": "Registe a sua primeira refeição"
     },
     "log_7_days_meals": {
       "title": "Consistente",
-      "description": "Registe refeições 7 dias seguidos"
+      "desc": "Registe refeições 7 dias seguidos"
     },
     "log_30_days_meals": {
       "title": "Mestre da Nutrição",
-      "description": "Registe refeições 30 dias seguidos"
+      "desc": "Registe refeições 30 dias seguidos"
     },
     "hit_protein_goal": {
       "title": "Golpe de Proteína",
-      "description": "Atinja a sua meta de proteína"
+      "desc": "Atinja a sua meta de proteína"
     },
     "hit_protein_7days": {
       "title": "Sequência Proteica",
-      "description": "Atinja a meta de proteína 7 dias seguidos"
+      "desc": "Atinja a meta de proteína 7 dias seguidos"
     },
     "water_goal_day": {
       "title": "Hidratado",
-      "description": "Atinja a sua meta de água"
+      "desc": "Atinja a sua meta de água"
     },
     "water_goal_7days": {
       "title": "Fluxo de Rio",
-      "description": "Atinja a meta de água 7 dias seguidos"
+      "desc": "Atinja a meta de água 7 dias seguidos"
     },
     "water_goal_30days": {
       "title": "Mente Oceânica",
-      "description": "Atinja a meta de água 30 dias seguidos"
+      "desc": "Atinja a meta de água 30 dias seguidos"
     },
     "ai_meal_scan": {
       "title": "Detetive de Comida",
-      "description": "Analise uma refeição com a câmara IA"
+      "desc": "Analise uma refeição com a câmara IA"
     },
     "under_calorie_goal": {
       "title": "Dia de Défice",
-      "description": "Mantenha-se na sua meta de calorias"
+      "desc": "Mantenha-se na sua meta de calorias"
     },
     "calorie_goal_14days": {
       "title": "Preciso",
-      "description": "Cumpra a meta calórica 14 dias seguidos"
+      "desc": "Cumpra a meta calórica 14 dias seguidos"
     },
     "meal_plan_full_day": {
       "title": "Seguidor de Planos",
-      "description": "Registe todas as refeições do seu plano de 30 dias"
+      "desc": "Registe todas as refeições do seu plano de 30 dias"
     },
     "try_new_recipe": {
       "title": "Explorador de Cozinha",
-      "description": "Cozinhe uma receita do Bluom"
+      "desc": "Cozinhe uma receita do Bluom"
     },
     "sugar_free_day": {
       "title": "Sem Açúcar",
-      "description": "Complete um dia sem açúcar"
+      "desc": "Complete um dia sem açúcar"
     },
     "sugar_free_7days": {
       "title": "Detox Doce",
-      "description": "Fique 7 dias sem açúcar"
+      "desc": "Fique 7 dias sem açúcar"
     },
     "sugar_free_30days": {
       "title": "Campeão Sem Açúcar",
-      "description": "30 dias seguidos sem açúcar"
+      "desc": "30 dias seguidos sem açúcar"
     },
     "workout_7days": {
       "title": "Guerreiro da Semana",
-      "description": "Treine 7 dias seguidos"
+      "desc": "Treine 7 dias seguidos"
     },
     "workout_30days": {
       "title": "Disciplina de Ferro",
-      "description": "30 dias seguidos a treinar"
+      "desc": "30 dias seguidos a treinar"
     },
     "steps_5k": {
       "title": "5K Passos",
-      "description": "Ande 5.000 passos num dia"
+      "desc": "Ande 5.000 passos num dia"
     },
     "steps_10k": {
       "title": "Clube 10K",
-      "description": "Ande 10.000 passos num dia"
+      "desc": "Ande 10.000 passos num dia"
     },
     "steps_10k_7days": {
       "title": "Sequência de Passos",
-      "description": "10.000 passos durante 7 dias seguidos"
+      "desc": "10.000 passos durante 7 dias seguidos"
     },
     "steps_10k_30days": {
       "title": "Espírito de Maratona",
-      "description": "10.000 passos todos os dias durante 30 dias"
+      "desc": "10.000 passos todos os dias durante 30 dias"
     },
     "calories_burned_300": {
       "title": "Queimador",
-      "description": "Queime 300+ calorias numa única sessão"
+      "desc": "Queime 300+ calorias numa única sessão"
     },
     "calories_burned_500": {
       "title": "Inferno",
-      "description": "Queime 500+ calorias numa única sessão"
+      "desc": "Queime 500+ calorias numa única sessão"
     },
     "try_cardio": {
       "title": "Curioso por Cardio",
-      "description": "Registe uma sessão de cardio"
+      "desc": "Registe uma sessão de cardio"
     },
     "try_strength": {
       "title": "Toque de Ferro",
-      "description": "Registe uma sessão de força"
+      "desc": "Registe uma sessão de força"
     },
     "try_hiit": {
       "title": "Iniciado no HIIT",
-      "description": "Complete um treino HIIT"
+      "desc": "Complete um treino HIIT"
     },
     "try_yoga": {
       "title": "Corpo Zen",
-      "description": "Registe uma sessão de yoga ou flexibilidade"
+      "desc": "Registe uma sessão de yoga ou flexibilidade"
     },
     "complete_4week_plan": {
       "title": "Plano Completo",
-      "description": "Termine o plano gratuito de 4 semanas"
+      "desc": "Termine o plano gratuito de 4 semanas"
     },
     "total_10_workouts": {
       "title": "Dígitos Duplos",
-      "description": "Registe 10 treinos no total"
+      "desc": "Registe 10 treinos no total"
     },
     "total_50_workouts": {
       "title": "Meio Século",
-      "description": "Registe 50 treinos no total"
+      "desc": "Registe 50 treinos no total"
     },
     "total_100_workouts": {
       "title": "Clube Centenário",
-      "description": "Registe 100 treinos no total"
+      "desc": "Registe 100 treinos no total"
     },
     "first_mood_log": {
       "title": "Verificação de Humor",
-      "description": "Registe o seu humor pela primeira vez"
+      "desc": "Registe o seu humor pela primeira vez"
     },
     "mood_log_7days": {
       "title": "Rastreador de Humor",
-      "description": "Registe o seu humor 7 dias seguidos"
+      "desc": "Registe o seu humor 7 dias seguidos"
     },
     "mood_log_30days": {
       "title": "Inteligência Emocional",
-      "description": "Registe o humor durante 30 dias seguidos"
+      "desc": "Registe o humor durante 30 dias seguidos"
     },
     "first_meditation": {
       "title": "Primeira Respiração",
-      "description": "Complete a sua primeira sessão de meditação"
+      "desc": "Complete a sua primeira sessão de meditação"
     },
     "meditate_7days": {
       "title": "Semana Consciente",
-      "description": "Medite 7 dias seguidos"
+      "desc": "Medite 7 dias seguidos"
     },
     "meditate_30days": {
       "title": "Modo Monge",
-      "description": "Sequência de meditação de 30 dias"
+      "desc": "Sequência de meditação de 30 dias"
     },
     "first_sleep_log": {
       "title": "Rastreador de Sono",
-      "description": "Registe a sua qualidade de sono"
+      "desc": "Registe a sua qualidade de sono"
     },
     "sleep_8hrs": {
       "title": "Sono Dourado",
-      "description": "Registe 8+ horas de sono de qualidade"
+      "desc": "Registe 8+ horas de sono de qualidade"
     },
     "sleep_8hrs_7days": {
       "title": "Campeão do Sono",
-      "description": "8+ horas de sono durante 7 dias seguidos"
+      "desc": "8+ horas de sono durante 7 dias seguidos"
     },
     "perfect_vitality": {
       "title": "Humano de Elite",
-      "description": "Pontue 90+ na Pontuação de Vitalidade"
+      "desc": "Pontue 90+ na Pontuação de Vitalidade"
     },
     "stress_low_week": {
       "title": "Comandante Calmo",
-      "description": "Registe baixo stress durante 7 dias seguidos"
+      "desc": "Registe baixo stress durante 7 dias seguidos"
     },
     "first_journal": {
       "title": "Primeira Página",
-      "description": "Escreva a sua primeira entrada no diário"
+      "desc": "Escreva a sua primeira entrada no diário"
     },
     "journal_7days": {
       "title": "Semana Reflexiva",
-      "description": "Escreva no diário durante 7 dias seguidos"
+      "desc": "Escreva no diário durante 7 dias seguidos"
     },
     "journal_30days": {
       "title": "Arquiteto Interior",
-      "description": "Escreva no diário todos os dias durante um mês"
+      "desc": "Escreva no diário todos os dias durante um mês"
     },
     "first_gratitude": {
       "title": "Coração Grato",
-      "description": "Registe a sua primeira entrada de gratidão"
+      "desc": "Registe a sua primeira entrada de gratidão"
     },
     "gratitude_7days": {
       "title": "Sequência de Gratidão",
-      "description": "Pratique a gratidão 7 dias seguidos"
+      "desc": "Pratique a gratidão 7 dias seguidos"
     },
     "gratitude_30days": {
       "title": "Mentalidade de Abundância",
-      "description": "Gratidão registada durante 30 dias seguidos"
+      "desc": "Gratidão registada durante 30 dias seguidos"
     },
     "ai_reflection": {
       "title": "Espelho Digital",
-      "description": "Gere a sua primeira reflexão mental com a IA"
+      "desc": "Gere a sua primeira reflexão mental com a IA"
     },
     "total_50_entries": {
       "title": "Escritor Prolífico",
-      "description": "Escreva 50 entradas de diário ou gratidão"
+      "desc": "Escreva 50 entradas de diário ou gratidão"
     },
     "first_habit": {
       "title": "Hábito Nascido",
-      "description": "Crie o seu primeiro hábito"
+      "desc": "Crie o seu primeiro hábito"
     },
     "habit_7day_streak": {
       "title": "Hábito Fixo",
-      "description": "Mantenha um hábito durante 7 dias"
+      "desc": "Mantenha um hábito durante 7 dias"
     },
     "habit_21day_streak": {
       "title": "Conectado",
-      "description": "Sequência de 21 dias - já está enraizado"
+      "desc": "Sequência de 21 dias - já está enraizado"
     },
     "habit_66day_streak": {
       "title": "Automático",
-      "description": "66 dias - a ciência diz que é permanente"
+      "desc": "66 dias - a ciência diz que é permanente"
     },
     "all_habits_today": {
       "title": "Limpeza Total",
-      "description": "Complete todos os hábitos num único dia"
+      "desc": "Complete todos os hábitos num único dia"
     },
     "break_habit_7days": {
       "title": "Libertação",
-      "description": "Passe 7 dias sem um mau hábito"
+      "desc": "Passe 7 dias sem um mau hábito"
     },
     "break_habit_30days": {
       "title": "Liberto",
-      "description": "30 dias livre de um mau hábito"
+      "desc": "30 dias livre de um mau hábito"
     },
     "break_habit_90days": {
       "title": "Nova Identidade",
-      "description": "90 dias - o velho hábito desapareceu"
+      "desc": "90 dias - o velho hábito desapareceu"
     },
     "habit_savings_100": {
       "title": "Dinheiro Poupado",
-      "description": "Poupe 100 ao abandonar um mau hábito"
+      "desc": "Poupe 100 ao abandonar um mau hábito"
     },
     "first_task": {
       "title": "A Começar",
-      "description": "Adicione a sua primeira tarefa"
+      "desc": "Adicione a sua primeira tarefa"
     },
     "complete_10_tasks": {
       "title": "Esmagador de Tarefas",
-      "description": "Complete 10 tarefas"
+      "desc": "Complete 10 tarefas"
     },
     "complete_50_tasks": {
       "title": "Máquina de Execução",
-      "description": "Complete 50 tarefas"
+      "desc": "Complete 50 tarefas"
     },
     "complete_100_tasks": {
       "title": "Operador",
-      "description": "Complete 100 tarefas"
+      "desc": "Complete 100 tarefas"
     },
     "focus_first_session": {
       "title": "Trabalho Profundo",
-      "description": "Complete a sua primeira sessão de Foco"
+      "desc": "Complete a sua primeira sessão de Foco"
     },
     "focus_7_sessions": {
       "title": "Frequente no Flow",
-      "description": "Complete 7 sessões de Foco"
+      "desc": "Complete 7 sessões de Foco"
     },
     "north_star_set": {
       "title": "Estrela do Norte",
-      "description": "Defina o seu objetivo de vida de 12 meses"
+      "desc": "Defina o seu objetivo de vida de 12 meses"
     },
     "life_goal_achieved": {
       "title": "Objetivo Alcançado",
-      "description": "Marque um objetivo de vida como alcançado"
+      "desc": "Marque um objetivo de vida como alcançado"
     },
     "partner_linked": {
       "title": "Casal Poderoso",
-      "description": "Vincule-se a um parceiro para listas partilhadas"
+      "desc": "Vincule-se a um parceiro para listas partilhadas"
     },
     "weight_logged": {
       "title": "Corpo Consciente",
-      "description": "Registe o seu peso pela primeira vez"
+      "desc": "Registe o seu peso pela primeira vez"
     },
     "weight_goal_reached": {
       "title": "Meta Alcançada",
-      "description": "Alcance o seu peso corporal alvo"
+      "desc": "Alcance o seu peso corporal alvo"
     },
     "weight_log_30days": {
       "title": "Cronista do Corpo",
-      "description": "Registe o peso todos os dias durante 30 dias"
+      "desc": "Registe o peso todos os dias durante 30 dias"
     },
     "first_fast": {
       "title": "Iniciado no Jejum",
-      "description": "Complete a sua primeira sessão de jejum"
+      "desc": "Complete a sua primeira sessão de jejum"
     },
     "fast_16hrs": {
       "title": "16:8 Iniciado",
-      "description": "Complete um jejum de 16 horas"
+      "desc": "Complete um jejum de 16 horas"
     },
     "fast_24hrs": {
       "title": "Jejum de Um Dia",
-      "description": "Complete um jejum de 24 horas"
+      "desc": "Complete um jejum de 24 horas"
     },
     "fast_7streak": {
       "title": "Praticante de Jejum",
-      "description": "7 dias consecutivos de jejum"
+      "desc": "7 dias consecutivos de jejum"
     },
     "bio_log_first": {
       "title": "Bio Consciente",
-      "description": "Complete o seu primeiro Bio-Registo"
+      "desc": "Complete o seu primeiro Bio-Registo"
     },
     "bio_log_7days": {
       "title": "Scanner Corporal",
-      "description": "Registe marcadores biológicos 7 dias seguidos"
+      "desc": "Registe marcadores biológicos 7 dias seguidos"
     },
     "pelvic_first": {
       "title": "Iniciador de Protocolo",
-      "description": "Complete a sua primeira sessão de Força Pélvica"
+      "desc": "Complete a sua primeira sessão de Força Pélvica"
     },
     "supplements_7days": {
       "title": "Pilha Consistente",
-      "description": "Registe suplementos 7 dias seguidos"
+      "desc": "Registe suplementos 7 dias seguidos"
     },
     "sugar_scan_first": {
       "title": "Detetive de Rótulos",
-      "description": "Analise o rótulo de um produto com a IA"
+      "desc": "Analise o rótulo de um produto com a IA"
     },
     "cycle_logged": {
       "title": "Ciclo Consciente",
-      "description": "Registe os dados do seu primeiro ciclo"
+      "desc": "Registe os dados do seu primeiro ciclo"
     },
     "pregnancy_milestone": {
       "title": "Novo Capítulo",
-      "description": "Desbloqueie o acompanhamento da gravidez"
+      "desc": "Desbloqueie o acompanhamento da gravidez"
     },
     "ai_first_message": {
       "title": "Coach Ativado",
-      "description": "Envie a sua primeira mensagem ao Treinador IA"
+      "desc": "Envie a sua primeira mensagem ao Treinador IA"
     },
     "ai_10_messages": {
       "title": "Treinável",
-      "description": "Tenha 10 conversas com o Treinador IA"
+      "desc": "Tenha 10 conversas com o Treinador IA"
     },
     "ai_plan_generated": {
       "title": "Projeto Criado",
-      "description": "Gere o seu primeiro plano personalizado da IA"
+      "desc": "Gere o seu primeiro plano personalizado da IA"
     },
     "ai_meal_swapped": {
       "title": "Arquiteto de Refeições",
-      "description": "Troque uma refeição usando a IA (Pro)"
+      "desc": "Troque uma refeição usando a IA (Pro)"
     },
     "ai_recipe_generated": {
       "title": "Chef IA",
-      "description": "Gere uma receita com a IA"
+      "desc": "Gere uma receita com a IA"
     },
     "ai_insight_generated": {
       "title": "Espelho Digital",
-      "description": "Desbloqueie o seu relatório mental com a IA"
+      "desc": "Desbloqueie o seu relatório mental com a IA"
     },
     "whatsapp_shared": {
       "title": "Post de Responsabilidade",
-      "description": "Partilhe a sua lista via WhatsApp"
+      "desc": "Partilhe a sua lista via WhatsApp"
     },
     "partner_synced_week": {
       "title": "Jogador de Equipa",
-      "description": "Mantenha-se sincronizado com o parceiro durante uma semana"
+      "desc": "Mantenha-se sincronizado com o parceiro durante uma semana"
     },
     "onboarding_complete": {
       "title": "Projeto Desbloqueado",
-      "description": "Complete a introdução ao Bluom"
+      "desc": "Complete a introdução ao Bluom"
     },
     "pro_subscriber": {
       "title": "Membro Pro",
-      "description": "Atualize para o Bluom Pro"
+      "desc": "Atualize para o Bluom Pro"
     },
     "all_tabs_used": {
       "title": "Super Utilizador",
-      "description": "Use os separadores Nutrição, Treino, Bem-Estar e Mente"
+      "desc": "Use os separadores Nutrição, Treino, Bem-Estar e Mente"
     },
     "streak_30_days": {
       "title": "Sequência de 30 Dias",
-      "description": "Use o Bluom todos os dias durante 30 dias"
+      "desc": "Use o Bluom todos os dias durante 30 dias"
     },
     "streak_90_days": {
       "title": "Lenda dos 90 Dias",
-      "description": "Use o Bluom todos os dias durante 90 dias"
+      "desc": "Use o Bluom todos os dias durante 90 dias"
     },
     "streak_365_days": {
       "title": "Ano Bluom",
-      "description": "Use o Bluom todos os dias durante um ano"
+      "desc": "Use o Bluom todos os dias durante um ano"
     },
     "xp_1000": {
       "title": "Em Ascensão",
-      "description": "Ganhe 1.000 XP"
+      "desc": "Ganhe 1.000 XP"
     },
     "xp_5000": {
       "title": "Estabelecido",
-      "description": "Ganhe 5.000 XP"
+      "desc": "Ganhe 5.000 XP"
     },
     "xp_10000": {
       "title": "Elite",
-      "description": "Ganhe 10.000 XP"
+      "desc": "Ganhe 10.000 XP"
     },
     "xp_50000": {
       "title": "Lenda",
-      "description": "Ganhe 50.000 XP no total"
+      "desc": "Ganhe 50.000 XP no total"
     },
     "total_5_achievements": {
       "title": "Colecionador",
-      "description": "Desbloqueie 5 conquistas"
+      "desc": "Desbloqueie 5 conquistas"
     },
     "total_20_achievements": {
       "title": "Caixa de Troféus",
-      "description": "Desbloqueie 20 conquistas"
+      "desc": "Desbloqueie 20 conquistas"
     },
     "total_50_achievements": {
       "title": "Completista",
-      "description": "Desbloqueie 50 conquistas"
+      "desc": "Desbloqueie 50 conquistas"
     }
   },
   "aiCoach": {
@@ -1620,7 +1620,7 @@
     "subtitle": "Especialista em Saúde de Precisão",
     "daily": "Diário",
     "welcome": "Olá! Sou o teu Treinador IA Bluom. Como posso ajudar-te com fitness, nutrição ou bem-estar hoje?",
-    "q1": "📝 ójuda-me a criar uma rotina diária consistente",
+    "q1": "📝 Ajuda-me a criar uma rotina diária consistente",
     "q2": "😴 Melhorar a minha qualidade de sono naturalmente",
     "q3": "💧 Criar um plano de ingestão de água personalizado",
     "q4": "🧘 Técnicas rápidas para gerir o stress diário",
@@ -1708,7 +1708,7 @@
     "sectionTools": "Ferramentas",
     "sectionSupport": "Suporte",
     "sectionAdmin": "Debug ódmin",
-    "goPremium": "Ir Premium",
+    "goPremium": "Subscrever Pro",
     "goPremiumSub": "Desbloquear todas as funcionalidades e planos IA",
     "upgrade": "✦ Atualizar",
     "myBlueprint": "O Meu Plano",
@@ -1743,6 +1743,18 @@
     "settingsSub": "Unidades, objetivos, notificações",
     "footer": "Vida Optimizada",
     "title": "Perfil",
+    "goals": {
+      "lose_weight": "Perder Peso",
+      "build_muscle": "Ganhar Músculo",
+      "maintain": "Manter",
+      "general_health": "Saúde Geral",
+      "improve_endurance": "Resistência"
+    },
+    "sexOptions": {
+      "male": "Masculino",
+      "female": "Feminino",
+      "other": "Outro"
+    },
     "widgets": {
       "title": "Configuração de Widgets",
       "hero": "Cartão de Perfil",
@@ -3179,7 +3191,7 @@
       "heroTitle2": "Saúde Mental",
       "heroSubPro": "Personalizado de acordo com os teus padrões de stress, dados de sono e objetivos.",
       "heroSubFree": "Um programa de 28 dias baseado em evidências. Utilizadores gratuitos recebem um plano completo. Atualiza para Pro para continuar.",
-      "progressText": "Dia {{day}} de 28 completo · {{pct}}%",
+      "progressText": "Dia {{day}} de 28 · {{pct}}%",
       "todayLabel": "HOJE · DIA {{day}}",
       "start": "Começar",
       "pillarBalance": "Equilíbrio de Pilares",

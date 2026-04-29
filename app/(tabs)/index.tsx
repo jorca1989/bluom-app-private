@@ -820,7 +820,7 @@ export default function HomeScreen() {
         style={{ opacity: fadeAnim }}
         contentContainerStyle={[
           s.scroll,
-          { paddingBottom: Math.max(insets.bottom, 12) + 28 },
+          { paddingBottom: Math.max(insets.bottom, 12) + 6 },
           isTablet && { alignItems: 'center' as const },
         ]}
         showsVerticalScrollIndicator={false}

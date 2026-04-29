@@ -843,7 +843,7 @@ export default function MentalHealthPlanScreen() {
             <View style={ps.progressTrack}>
               <View style={[ps.progressFill, { width: `${progressPct}%` }]} />
             </View>
-            <Text style={ps.progressText}>{t('wellness.mentalHealth.progressText', 'Day {{day}} of 28 complete · {{pct}}%', { day: currentDay - 1, pct: progressPct })}</Text>
+            <Text style={ps.progressText}>{t('wellness.mentalHealth.progressText', 'Day {{day}} of 28 · {{pct}}%', { day: currentDay, pct: progressPct })}</Text>
           </View>
         </LinearGradient>
 
@@ -891,7 +891,7 @@ export default function MentalHealthPlanScreen() {
                   <View style={[ps.pillarIconWrap, { backgroundColor: meta.color + '20' }]}>
                     <Ionicons name={meta.icon as any} size={18} color={meta.color} />
                   </View>
-                  <Text style={[ps.pillarLabel, { color: meta.color }]}>{t(`wellness.mentalHealth.pillars.${key}`, meta.label)}</Text>
+                  <Text style={[ps.pillarLabel, { color: meta.color }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>{t(`wellness.mentalHealth.pillars.${key}`, meta.label)}</Text>
                   <View style={ps.pillarBarTrack}>
                     <View style={[ps.pillarBarFill, { width: `${pct * 100}%`, backgroundColor: meta.color }]} />
                   </View>

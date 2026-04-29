@@ -264,7 +264,7 @@ export default function WellnessScreen() {
     );
   }
 
-  const bottomPad = getBottomContentPadding(insets.bottom, 16) + TAB_BAR_HEIGHT;
+  const bottomPad = getBottomContentPadding(insets.bottom, 0) + TAB_BAR_HEIGHT;
 
   return (
     <SafeAreaView style={s.container} edges={['top']}>

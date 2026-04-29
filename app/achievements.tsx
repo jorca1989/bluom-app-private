@@ -82,9 +82,9 @@ export default function AchievementsScreen() {
           <Ionicons name="arrow-back" size={20} color="#0f172a" />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <Text style={s.title}>{t('achievements.title', 'Conquistas')}</Text>
+          <Text style={s.title}>{t('achievements.title', 'Achievements')}</Text>
           <Text style={s.subTitle}>
-            {unlockedCount}/{totalVisible} {t('achievements.unlocked', 'desbloqueadas')} · {t('achievements.level', 'Nível')} {level}
+            {unlockedCount}/{totalVisible} {t('achievements.unlocked', 'unlocked')} · {t('achievements.level', 'Level')} {level}
           </Text>
         </View>
       </View>
@@ -104,7 +104,7 @@ export default function AchievementsScreen() {
           </View>
           <View style={s.statCard}>
             <Text style={s.statVal}>{streak}</Text>
-            <Text style={s.statLbl}>{t('achievements.streak', 'Sequência')}</Text>
+            <Text style={s.statLbl}>{t('achievements.streak', 'Streak')}</Text>
           </View>
         </View>
 
@@ -114,23 +114,23 @@ export default function AchievementsScreen() {
             style={[s.chip, category === 'all' && s.chipActive]}
             activeOpacity={0.85}
           >
-            <Text style={[s.chipTxt, category === 'all' && s.chipTxtActive]}>{t('achievements.filterAll', 'Tudo')}</Text>
+            <Text style={[s.chipTxt, category === 'all' && s.chipTxtActive]}>{t('achievements.filterAll', 'All')}</Text>
           </TouchableOpacity>
 
           {(Object.keys(CATEGORY_CONFIG) as AchievementCategory[]).map((k) => {
             const cc = CATEGORY_CONFIG[k];
             const active = category === k;
             const CAT_PT: Record<string, string> = {
-              fuel: t('achievements.cat.fuel', 'Alimentação'),
-              move: t('achievements.cat.move', 'Movimento'),
-              wellness: t('achievements.cat.wellness', 'Bem-estar'),
-              mind: t('achievements.cat.mind', 'Mente'),
-              habits: t('achievements.cat.habits', 'Hábitos'),
-              productivity: t('achievements.cat.productivity', 'Produtividade'),
-              health: t('achievements.cat.health', 'Saúde'),
+              fuel: t('achievements.cat.fuel', 'Nutrition'),
+              move: t('achievements.cat.move', 'Movement'),
+              wellness: t('achievements.cat.wellness', 'Wellness'),
+              mind: t('achievements.cat.mind', 'Mind'),
+              habits: t('achievements.cat.habits', 'Habits'),
+              productivity: t('achievements.cat.productivity', 'Productivity'),
+              health: t('achievements.cat.health', 'Health'),
               social: t('achievements.cat.social', 'Social'),
-              ai: t('achievements.cat.ai', 'IA'),
-              milestone: t('achievements.cat.milestone', 'Marco'),
+              ai: t('achievements.cat.ai', 'AI'),
+              milestone: t('achievements.cat.milestone', 'Milestone'),
             };
             return (
               <TouchableOpacity
@@ -152,12 +152,12 @@ export default function AchievementsScreen() {
             const rc = RARITY_CONFIG[a.rarity];
             const isSecretLocked = !!a.secret && locked;
             const RARITY_PT: Record<string, string> = {
-              common: t('achievements.rarity.common', 'Comum'),
-              rare: t('achievements.rarity.rare', 'Raro'),
-              epic: t('achievements.rarity.epic', 'Épico'),
-              legendary: t('achievements.rarity.legendary', 'Lendário'),
+              common: t('achievements.rarity.common', 'Common'),
+              rare: t('achievements.rarity.rare', 'Rare'),
+              epic: t('achievements.rarity.epic', 'Epic'),
+              legendary: t('achievements.rarity.legendary', 'Legendary'),
             };
-            const aTitle = isSecretLocked ? t('achievements.secret', 'Conquista Secreta') : t(`achievements.${a.id}.title`, a.title);
+            const aTitle = isSecretLocked ? t('achievements.secret', 'Secret Achievement') : t(`achievements.${a.id}.title`, a.title);
             const aDesc  = isSecretLocked ? t('achievements.secretDesc', 'Desbloqueie para revelar os detalhes.') : t(`achievements.${a.id}.desc`, a.description);
             return (
               <TouchableOpacity
@@ -211,24 +211,24 @@ export default function AchievementsScreen() {
               const cc = CATEGORY_CONFIG[detail.category];
               const isSecretLocked = !!detail.secret && !unlocked;
               const CAT_PT: Record<string, string> = {
-                fuel: t('achievements.cat.fuel', 'Alimentação'),
-                move: t('achievements.cat.move', 'Movimento'),
-                wellness: t('achievements.cat.wellness', 'Bem-estar'),
-                mind: t('achievements.cat.mind', 'Mente'),
-                habits: t('achievements.cat.habits', 'Hábitos'),
-                productivity: t('achievements.cat.productivity', 'Produtividade'),
-                health: t('achievements.cat.health', 'Saúde'),
+                fuel: t('achievements.cat.fuel', 'Nutrition'),
+                move: t('achievements.cat.move', 'Movement'),
+                wellness: t('achievements.cat.wellness', 'Wellness'),
+                mind: t('achievements.cat.mind', 'Mind'),
+                habits: t('achievements.cat.habits', 'Habits'),
+                productivity: t('achievements.cat.productivity', 'Productivity'),
+                health: t('achievements.cat.health', 'Health'),
                 social: t('achievements.cat.social', 'Social'),
-                ai: t('achievements.cat.ai', 'IA'),
-                milestone: t('achievements.cat.milestone', 'Marco'),
+                ai: t('achievements.cat.ai', 'AI'),
+                milestone: t('achievements.cat.milestone', 'Milestone'),
               };
               const RARITY_PT: Record<string, string> = {
-                common: t('achievements.rarity.common', 'Comum'),
-                rare: t('achievements.rarity.rare', 'Raro'),
-                epic: t('achievements.rarity.epic', 'Épico'),
-                legendary: t('achievements.rarity.legendary', 'Lendário'),
+                common: t('achievements.rarity.common', 'Common'),
+                rare: t('achievements.rarity.rare', 'Rare'),
+                epic: t('achievements.rarity.epic', 'Epic'),
+                legendary: t('achievements.rarity.legendary', 'Legendary'),
               };
-              const dTitle = isSecretLocked ? t('achievements.secret', 'Conquista Secreta') : t(`achievements.${detail.id}.title`, detail.title);
+              const dTitle = isSecretLocked ? t('achievements.secret', 'Secret Achievement') : t(`achievements.${detail.id}.title`, detail.title);
               const dDesc  = isSecretLocked ? t('achievements.secretDesc', 'Desbloqueie para revelar os detalhes.') : t(`achievements.${detail.id}.desc`, detail.description);
               return (
                 <View>

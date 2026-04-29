@@ -1012,7 +1012,7 @@
       "heroTitle2": "Health Plan",
       "heroSubPro": "Personalised to your stress patterns, sleep data and goals.",
       "heroSubFree": "An evidence-based 28-day programme. Free users get the full plan. Upgrade to Pro to continue.",
-      "progressText": "Day {{day}} of 28 complete · {{pct}}%",
+      "progressText": "Day {{day}} of 28 · {{pct}}%",
       "todayLabel": "TODAY · DAY {{day}}",
       "start": "Start",
       "pillarBalance": "Pillar Balance",
@@ -1026,7 +1026,7 @@
       "dayLabel": "DAY {{day}}",
       "todaysPractices": "Today's Practices",
       "eveningReflection": "Evening Reflection",
-      "durationMin": "{{duration}} min",
+      "durationMin": "{{min}} min",
       "evening": "Evening",
       "themes": {
         "w1Title": "Foundation",
@@ -1298,6 +1298,18 @@
     "settingsSub": "Units, goals, notifications",
     "footer": "Optimised Life",
     "title": "Profile",
+    "goals": {
+      "lose_weight": "Weight Loss",
+      "build_muscle": "Build Muscle",
+      "maintain": "Maintain",
+      "general_health": "General Health",
+      "improve_endurance": "Endurance"
+    },
+    "sexOptions": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
     "widgets": {
       "title": "Widget Config",
       "hero": "Profile Card",
@@ -1674,5 +1686,427 @@
     "tagline": "Stay Focused • Bloom Deep",
     "proTitle": "Focus Mode Pro",
     "proMessage": "Upgrade to Pro to access deep focus sessions and productivity tracking."
+  },
+  "achievements": {
+    "first_meal_log": {
+      "title": "First Bite",
+      "desc": "Log your first meal"
+    },
+    "log_7_days_meals": {
+      "title": "Consistent",
+      "desc": "Log meals 7 days in a row"
+    },
+    "log_30_days_meals": {
+      "title": "Nutrition Master",
+      "desc": "Log meals 30 days in a row"
+    },
+    "hit_protein_goal": {
+      "title": "Protein Hit",
+      "desc": "Hit your protein goal"
+    },
+    "hit_protein_7days": {
+      "title": "Protein Streak",
+      "desc": "Hit your protein goal 7 days in a row"
+    },
+    "water_goal_day": {
+      "title": "Hydrated",
+      "desc": "Hit your water goal"
+    },
+    "water_goal_7days": {
+      "title": "River Flow",
+      "desc": "Hit your water goal 7 days in a row"
+    },
+    "water_goal_30days": {
+      "title": "Ocean Mind",
+      "desc": "Hit your water goal 30 days in a row"
+    },
+    "ai_meal_scan": {
+      "title": "Food Detective",
+      "desc": "Scan a meal with the AI camera"
+    },
+    "under_calorie_goal": {
+      "title": "Deficit Day",
+      "desc": "Stay under your calorie goal"
+    },
+    "calorie_goal_14days": {
+      "title": "Precise",
+      "desc": "Meet calorie goal 14 days in a row"
+    },
+    "meal_plan_full_day": {
+      "title": "Plan Follower",
+      "desc": "Log all meals from your 30-day plan"
+    },
+    "try_new_recipe": {
+      "title": "Kitchen Explorer",
+      "desc": "Cook a Bluom recipe"
+    },
+    "sugar_free_day": {
+      "title": "Sugar Free",
+      "desc": "Complete a sugar-free day"
+    },
+    "sugar_free_7days": {
+      "title": "Sweet Detox",
+      "desc": "Go 7 days without sugar"
+    },
+    "sugar_free_30days": {
+      "title": "Sugar Free Champ",
+      "desc": "30 consecutive days without sugar"
+    },
+    "first_workout": {
+      "title": "First Rep",
+      "desc": "Log your first workout"
+    },
+    "workout_7days": {
+      "title": "Week Warrior",
+      "desc": "Workout 7 days in a row"
+    },
+    "workout_30days": {
+      "title": "Iron Discipline",
+      "desc": "30 days in a row working out"
+    },
+    "steps_5k": {
+      "title": "5K Steps",
+      "desc": "Walk 5,000 steps in a day"
+    },
+    "steps_10k": {
+      "title": "10K Club",
+      "desc": "Walk 10,000 steps in a day"
+    },
+    "steps_10k_7days": {
+      "title": "Step Streak",
+      "desc": "10,000 steps for 7 days in a row"
+    },
+    "steps_10k_30days": {
+      "title": "Marathon Spirit",
+      "desc": "10,000 steps every day for 30 days"
+    },
+    "calories_burned_300": {
+      "title": "Burner",
+      "desc": "Burn 300+ calories in a single session"
+    },
+    "calories_burned_500": {
+      "title": "Inferno",
+      "desc": "Burn 500+ calories in a single session"
+    },
+    "try_cardio": {
+      "title": "Cardio Curious",
+      "desc": "Log a cardio session"
+    },
+    "try_strength": {
+      "title": "Iron Touch",
+      "desc": "Log a strength session"
+    },
+    "try_hiit": {
+      "title": "HIIT Initiate",
+      "desc": "Complete a HIIT workout"
+    },
+    "try_yoga": {
+      "title": "Zen Body",
+      "desc": "Log a yoga or flexibility session"
+    },
+    "complete_4week_plan": {
+      "title": "Plan Completed",
+      "desc": "Finish the 4-week free plan"
+    },
+    "total_10_workouts": {
+      "title": "Double Digits",
+      "desc": "Log 10 workouts total"
+    },
+    "total_50_workouts": {
+      "title": "Half Century",
+      "desc": "Log 50 workouts total"
+    },
+    "total_100_workouts": {
+      "title": "Century Club",
+      "desc": "Log 100 workouts total"
+    },
+    "first_mood_log": {
+      "title": "Mood Check",
+      "desc": "Log your mood for the first time"
+    },
+    "mood_log_7days": {
+      "title": "Mood Tracker",
+      "desc": "Log your mood 7 days in a row"
+    },
+    "mood_log_30days": {
+      "title": "Emotional Intelligence",
+      "desc": "Log mood for 30 consecutive days"
+    },
+    "first_meditation": {
+      "title": "First Breath",
+      "desc": "Complete your first meditation session"
+    },
+    "meditate_7days": {
+      "title": "Mindful Week",
+      "desc": "Meditate 7 days in a row"
+    },
+    "meditate_30days": {
+      "title": "Monk Mode",
+      "desc": "30-day meditation streak"
+    },
+    "first_sleep_log": {
+      "title": "Sleep Tracker",
+      "desc": "Log your sleep quality"
+    },
+    "sleep_8hrs": {
+      "title": "Golden Sleep",
+      "desc": "Log 8+ hours of quality sleep"
+    },
+    "sleep_8hrs_7days": {
+      "title": "Sleep Champ",
+      "desc": "8+ hours of sleep for 7 days in a row"
+    },
+    "perfect_vitality": {
+      "title": "Elite Human",
+      "desc": "Score 90+ on Vitality Score"
+    },
+    "stress_low_week": {
+      "title": "Calm Commander",
+      "desc": "Log low stress for 7 days in a row"
+    },
+    "first_journal": {
+      "title": "First Page",
+      "desc": "Write your first journal entry"
+    },
+    "journal_7days": {
+      "title": "Reflective Week",
+      "desc": "Journal for 7 days in a row"
+    },
+    "journal_30days": {
+      "title": "Inner Architect",
+      "desc": "Journal every day for a month"
+    },
+    "first_gratitude": {
+      "title": "Grateful Heart",
+      "desc": "Log your first gratitude entry"
+    },
+    "gratitude_7days": {
+      "title": "Gratitude Streak",
+      "desc": "Practice gratitude 7 days in a row"
+    },
+    "gratitude_30days": {
+      "title": "Abundance Mindset",
+      "desc": "Gratitude logged for 30 consecutive days"
+    },
+    "ai_reflection": {
+      "title": "Digital Mirror",
+      "desc": "Generate your first AI mind reflection"
+    },
+    "total_50_entries": {
+      "title": "Prolific Writer",
+      "desc": "Write 50 journal or gratitude entries"
+    },
+    "first_habit": {
+      "title": "Habit Born",
+      "desc": "Create your first habit"
+    },
+    "habit_7day_streak": {
+      "title": "Habit Fixed",
+      "desc": "Maintain a habit for 7 days"
+    },
+    "habit_21day_streak": {
+      "title": "Wired In",
+      "desc": "21-day streak - it's taking root"
+    },
+    "habit_66day_streak": {
+      "title": "Automatic",
+      "desc": "66 days - science says it's permanent"
+    },
+    "all_habits_today": {
+      "title": "Clean Sweep",
+      "desc": "Complete all habits in a single day"
+    },
+    "break_habit_7days": {
+      "title": "Break Free",
+      "desc": "Go 7 days without a bad habit"
+    },
+    "break_habit_30days": {
+      "title": "Liberated",
+      "desc": "30 days free from a bad habit"
+    },
+    "break_habit_90days": {
+      "title": "New Identity",
+      "desc": "90 days - the old habit is gone"
+    },
+    "habit_savings_100": {
+      "title": "Money Saved",
+      "desc": "Save 100 by breaking a bad habit"
+    },
+    "first_task": {
+      "title": "Getting Started",
+      "desc": "Add your first task"
+    },
+    "complete_10_tasks": {
+      "title": "Task Smasher",
+      "desc": "Complete 10 tasks"
+    },
+    "complete_50_tasks": {
+      "title": "Execution Machine",
+      "desc": "Complete 50 tasks"
+    },
+    "complete_100_tasks": {
+      "title": "Operator",
+      "desc": "Complete 100 tasks"
+    },
+    "focus_first_session": {
+      "title": "Deep Work",
+      "desc": "Complete your first Focus session"
+    },
+    "focus_7_sessions": {
+      "title": "Flow Frequent",
+      "desc": "Complete 7 Focus sessions"
+    },
+    "north_star_set": {
+      "title": "North Star",
+      "desc": "Set your 12-month life goal"
+    },
+    "life_goal_achieved": {
+      "title": "Goal Achieved",
+      "desc": "Mark a life goal as achieved"
+    },
+    "partner_linked": {
+      "title": "Power Couple",
+      "desc": "Link with a partner for shared lists"
+    },
+    "weight_logged": {
+      "title": "Body Aware",
+      "desc": "Log your weight for the first time"
+    },
+    "weight_goal_reached": {
+      "title": "Goal Reached",
+      "desc": "Reach your target body weight"
+    },
+    "weight_log_30days": {
+      "title": "Body Chronicler",
+      "desc": "Log weight every day for 30 days"
+    },
+    "first_fast": {
+      "title": "Fast Initiate",
+      "desc": "Complete your first fasting session"
+    },
+    "fast_16hrs": {
+      "title": "16:8 Initiated",
+      "desc": "Complete a 16-hour fast"
+    },
+    "fast_24hrs": {
+      "title": "Day Long Fast",
+      "desc": "Complete a 24-hour fast"
+    },
+    "fast_7streak": {
+      "title": "Fasting Practitioner",
+      "desc": "7 consecutive days of fasting"
+    },
+    "bio_log_first": {
+      "title": "Bio Aware",
+      "desc": "Complete your first Bio-Log"
+    },
+    "bio_log_7days": {
+      "title": "Body Scanner",
+      "desc": "Log bio-markers 7 days in a row"
+    },
+    "pelvic_first": {
+      "title": "Protocol Starter",
+      "desc": "Complete your first Pelvic Strength session"
+    },
+    "supplements_7days": {
+      "title": "Consistent Stack",
+      "desc": "Log supplements 7 days in a row"
+    },
+    "sugar_scan_first": {
+      "title": "Label Detective",
+      "desc": "Scan a product label with AI"
+    },
+    "cycle_logged": {
+      "title": "Cycle Aware",
+      "desc": "Log your first cycle data"
+    },
+    "pregnancy_milestone": {
+      "title": "New Chapter",
+      "desc": "Unlock pregnancy tracking"
+    },
+    "ai_first_message": {
+      "title": "Coach Engaged",
+      "desc": "Send your first message to the AI Coach"
+    },
+    "ai_10_messages": {
+      "title": "Coachable",
+      "desc": "Have 10 conversations with the AI Coach"
+    },
+    "ai_plan_generated": {
+      "title": "Blueprint Created",
+      "desc": "Generate your first custom AI plan"
+    },
+    "ai_meal_swapped": {
+      "title": "Meal Architect",
+      "desc": "Swap a meal using AI (Pro)"
+    },
+    "ai_recipe_generated": {
+      "title": "AI Chef",
+      "desc": "Generate a recipe with AI"
+    },
+    "ai_insight_generated": {
+      "title": "Digital Mirror",
+      "desc": "Unlock your AI mind report"
+    },
+    "whatsapp_shared": {
+      "title": "Accountability Post",
+      "desc": "Share your list via WhatsApp"
+    },
+    "partner_synced_week": {
+      "title": "Team Player",
+      "desc": "Stay synced with partner for a week"
+    },
+    "onboarding_complete": {
+      "title": "Blueprint Unlocked",
+      "desc": "Complete the Bluom onboarding"
+    },
+    "pro_subscriber": {
+      "title": "Pro Member",
+      "desc": "Upgrade to Bluom Pro"
+    },
+    "all_tabs_used": {
+      "title": "Power User",
+      "desc": "Use Nutrition, Workout, Wellness, and Mind tabs"
+    },
+    "streak_30_days": {
+      "title": "30-Day Streak",
+      "desc": "Use Bluom every day for 30 days"
+    },
+    "streak_90_days": {
+      "title": "90-Day Legend",
+      "desc": "Use Bluom every day for 90 days"
+    },
+    "streak_365_days": {
+      "title": "Bluom Year",
+      "desc": "Use Bluom every day for a year"
+    },
+    "xp_1000": {
+      "title": "Rising Up",
+      "desc": "Earn 1,000 XP"
+    },
+    "xp_5000": {
+      "title": "Established",
+      "desc": "Earn 5,000 XP"
+    },
+    "xp_10000": {
+      "title": "Elite",
+      "desc": "Earn 10,000 XP"
+    },
+    "xp_50000": {
+      "title": "Legend",
+      "desc": "Earn 50,000 XP total"
+    },
+    "total_5_achievements": {
+      "title": "Collector",
+      "desc": "Unlock 5 achievements"
+    },
+    "total_20_achievements": {
+      "title": "Trophy Case",
+      "desc": "Unlock 20 achievements"
+    },
+    "total_50_achievements": {
+      "title": "Completionist",
+      "desc": "Unlock 50 achievements"
+    }
   }
 }

@@ -291,10 +291,10 @@ const GENERIC_WEEK: Record<DietKey, MealTemplate[][]> = {
 // Alias for now — in a real app you'd differentiate
 GENERIC_WEEK['flexible'] = GENERIC_WEEK['balanced'];
 
-/** Build a 30-day plan from the 7-day rotating pattern */
+/** Build a 28-day plan from the 7-day rotating pattern */
 function build30DayPlan(dietKey: DietKey): DayTemplate[] {
   const weekPatterns = GENERIC_WEEK[dietKey] ?? GENERIC_WEEK['balanced'];
-  return Array.from({ length: 30 }, (_, i) => ({
+  return Array.from({ length: 28 }, (_, i) => ({
     day: i + 1,
     meals: weekPatterns[i % weekPatterns.length],
   }));
@@ -381,10 +381,10 @@ function MealCard({
   };
 
   const MEAL_LABEL: Record<string, string> = {
-    Breakfast: t('meals.breakfast', 'Pequeno-Almoço'),
-    Lunch:     t('meals.lunch',     'Almoço'),
-    Dinner:    t('meals.dinner',    'Jantar'),
-    Snack:     t('meals.snack',     'Lanche'),
+    Breakfast: t('meals.breakfast', 'Breakfast'),
+    Lunch:     t('meals.lunch', 'Lunch'),
+    Dinner:    t('meals.dinner', 'Dinner'),
+    Snack:     t('meals.snack', 'Snack'),
   };
   const mealLabel = MEAL_LABEL[meal.mealType] ?? meal.mealType;
 
@@ -429,7 +429,7 @@ function MealCard({
             Alert.alert(
               t('meals.swapTitle', 'Swap meal'),
               isPro
-                ? t('meals.swapProMsg', 'Tell our AI what you’re craving, and we’ll swap this meal.')
+                ? t('meals.swapProMsg', "Tell our AI what you're craving, and we'll swap this meal.")
                 : t('meals.swapFreeMsg', 'Upgrade to Pro to swap meals.')
             );
           }}
@@ -510,7 +510,7 @@ export default function MealHubScreen() {
   const planData: DayTemplate[] = useMemo(() => {
     const templates = activePlans?.nutritionPlan?.mealTemplates;
     if (isPro && Array.isArray(templates) && templates.length > 0) {
-      return templates.slice(0, 30);
+      return templates.slice(0, 28);
     }
     return build30DayPlan(dietKey);
   }, [isPro, activePlans, dietKey]);
@@ -520,7 +520,7 @@ export default function MealHubScreen() {
   const daysSince = startDate
     ? Math.floor((Date.now() - startDate) / (1000 * 60 * 60 * 24))
     : 0;
-  const todayDayNum = Math.min(Math.max(daysSince + 1, 1), 30);
+  const todayDayNum = Math.min(Math.max(daysSince + 1, 1), 28);
 
   const [selectedDay, setSelectedDay] = useState(todayDayNum);
   const [regenLoading, setRegenLoading] = useState<string | null>(null);
@@ -536,8 +536,8 @@ export default function MealHubScreen() {
   const totalDayCals  = activeDayPlan?.meals.reduce((a, m) => a + m.calories, 0) ?? 0;
 
   // Pro plan progress
-  const daysCompleted = Math.min(todayDayNum - 1, 29);
-  const progressPct   = Math.round((daysCompleted / 30) * 100);
+  const daysCompleted = Math.min(todayDayNum - 1, 27);
+  const progressPct   = Math.round((daysCompleted / 28) * 100);
 
   const handleRegenMeal = async (dayIndex: number, mealIndex: number, mealType: string, preference?: string) => {
     if (!isPro || !convexUser?._id || !activePlans?.nutritionPlan?._id) return;
@@ -600,7 +600,7 @@ export default function MealHubScreen() {
                 <Ionicons name="close" size={18} color="#64748b" />
               </TouchableOpacity>
             </View>
-            <Text style={ms.prefSub}>{t('meals.prefsSub', 'Pick a vibe — we’ll swap this meal to match.')}</Text>
+            <Text style={ms.prefSub}>{t('meals.prefsSub', "Pick a vibe — we'll swap this meal to match.")}</Text>
 
             <Text style={ms.prefLabel}>{t('meals.cravingLabel', 'What are you craving?')}</Text>
             <View style={ms.chipRow}>
@@ -666,7 +666,7 @@ export default function MealHubScreen() {
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={ms.headerTitle}>{t('meals.hubTitle', 'Meal Hub')}</Text>
-          <Text style={ms.headerSub}>{t('meals.hubSub', '30-day personalised nutrition')}</Text>
+          <Text style={ms.headerSub}>{t('meals.hubSub', '28-day personalised nutrition')}</Text>
         </View>
         {isPro && (
           <View style={ms.proBadge}>
@@ -694,19 +694,19 @@ export default function MealHubScreen() {
                 <Text style={[ms.dietBadgeText, { color: dietMeta.color }]}>{t(dietMeta.labelKey, dietMeta.label)}</Text>
               </View>
               <Text style={ms.heroTitle}>
-                {isPro ? t('meals.heroTitlePro', 'Plano Personalizado IA') : t('meals.heroTitleFree', 'Plano de Refeições 28 Dias')}
+                {isPro ? t('meals.heroTitlePro', 'AI Personalised Plan') : t('meals.heroTitleFree', '28-Day Meal Plan')}
               </Text>
               <Text style={ms.heroSub}>
                 {isPro
-                  ? t('meals.heroSubPro', 'Renova mensalmente · toca numa refeição para trocar')
-                  : t('meals.heroSubFree', 'Template genérico · atualiza para Pro para personalização por IA')}
+                  ? t('meals.heroSubPro', 'Rotates monthly · tap a meal to swap')
+                  : t('meals.heroSubFree', 'Generic template · upgrade to Pro for AI personalisation')}
               </Text>
               {/* Progress bar */}
               <View style={ms.progressWrap}>
                 <View style={ms.progressTrack}>
                   <View style={[ms.progressFill, { width: `${progressPct}%`, backgroundColor: dietMeta.color }]} />
                 </View>
-                <Text style={ms.progressText}>{t('meals.dayProgress', { current: daysCompleted, total: 30, defaultValue: `Day ${daysCompleted} of 30` })} · {progressPct}%</Text>
+                <Text style={ms.progressText}>{t('meals.dayProgress', { current: todayDayNum, total: 28, defaultValue: `Day ${todayDayNum} of 28` })} · {progressPct}%</Text>
               </View>
             </View>
           </LinearGradient>
@@ -719,7 +719,7 @@ export default function MealHubScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={ms.dayPicker}
           >
-            {Array.from({ length: 30 }, (_, i) => {
+            {Array.from({ length: 28 }, (_, i) => {
               const d = i + 1;
               const isSelected = selectedDay === d;
               const isToday    = d === todayDayNum;
@@ -747,12 +747,12 @@ export default function MealHubScreen() {
         {/* ── Day Summary ── */}
         <View style={ms.daySummary}>
           <View style={ms.daySummaryLeft}>
-            <Text style={ms.daySummaryTitle}>{t('meals.day', 'Dia')} {selectedDay}</Text>
-            <Text style={ms.daySummarySub}>{totalDayCals} kcal · {activeDayPlan?.meals.length} {t('meals.meals', 'refeições')}</Text>
+            <Text style={ms.daySummaryTitle}>{t('meals.day', 'Day')} {selectedDay}</Text>
+            <Text style={ms.daySummarySub}>{totalDayCals} kcal · {activeDayPlan?.meals.length} {t('meals.meals', 'meals')}</Text>
           </View>
           {selectedDay === todayDayNum && (
             <View style={ms.todayTag}>
-              <Text style={ms.todayTagText}>{t('common.today', 'Hoje')}</Text>
+              <Text style={ms.todayTagText}>{t('common.today', 'Today')}</Text>
             </View>
           )}
         </View>
@@ -793,12 +793,12 @@ export default function MealHubScreen() {
               >
                 <View style={[ms.blob, { top: -20, right: 0, width: 100, height: 100, backgroundColor: 'rgba(139,92,246,0.2)' }]} />
                 <Ionicons name="sparkles" size={22} color="#a78bfa" style={{ marginBottom: 10 }} />
-                <Text style={ms.upsellTitle}>{t('meals.upsellTitle', 'Continua a Tua Jornada')}</Text>
+                <Text style={ms.upsellTitle}>{t('meals.upsellTitle', 'Continue Your Journey')}</Text>
                 <Text style={ms.upsellSub}>
-                  {t('meals.upsellSub', 'Utilizadores gratuitos recebem um plano completo de 28 dias. Quando terminares, atualiza para Pro para continuares a tua transformação com um plano gerado por IA.')}
+                  {t('meals.upsellSub', 'Free users get a full 28-day plan. When you finish, upgrade to Pro to continue your transformation with an AI-generated plan.')}
                 </Text>
                 <View style={ms.upsellCta}>
-                  <Text style={ms.upsellCtaText}>{t('meals.upsellCta', 'Atualizar para Pro')} →</Text>
+                  <Text style={ms.upsellCtaText}>{t('meals.upsellCta', 'Upgrade to Pro')} →</Text>
                 </View>
               </LinearGradient>
             </TouchableOpacity>

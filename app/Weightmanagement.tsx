@@ -351,9 +351,9 @@ export default function WeightManagementScreen() {
       await updateUser({ userId: convexUser._id, updates: { weight: Math.round(kg * 100) / 100 } });
 
       setWeightInput(''); setWeightNote(''); setActiveModal(null);
-      Alert.alert(t('weightMgmt.logged', 'Registado!'), `${t('weightMgmt.weightSaved', 'Peso guardado')}: ${entered} ${unitLabel}`);
+      Alert.alert(t('weightMgmt.logged', 'Logged!'), `${t('weightMgmt.weightSaved', 'Weight saved')}: ${entered} ${unitLabel}`);
     } catch (e: any) {
-      Alert.alert(t('weightMgmt.error', 'Erro'), e?.message ?? t('weightMgmt.couldNotSave', 'Não foi possível guardar o peso.'));
+      Alert.alert(t('weightMgmt.error', 'Error'), e?.message ?? t('weightMgmt.couldNotSave', 'Could not save weight.'));
     } finally {
       setSaving(false);
     }

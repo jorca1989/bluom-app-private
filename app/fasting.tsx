@@ -112,7 +112,7 @@ export default function FastingScreen() {
       userId: convexUser._id,
       endTime: Date.now()
     });
-    Alert.alert(t('fasting.fastEnded', 'Jejum Terminado'), `${t('fasting.totalTime', 'Tempo total')}: ${Math.floor(elapsedHours)}h ${Math.floor((elapsedHours % 1) * 60)}m`);
+    Alert.alert(t('fasting.fastEnded', 'Fast Ended'), `${t('fasting.totalTime', 'Total time')}: ${Math.floor(elapsedHours)}h ${Math.floor((elapsedHours % 1) * 60)}m`);
   }
 
   function handleProtocolSelect(protocolId: string) {
@@ -138,8 +138,8 @@ export default function FastingScreen() {
           <Ionicons name="arrow-back" size={20} color="#0f172a" />
         </TouchableOpacity>
         <View className="flex-1">
-          <Text className="text-slate-900 font-black text-lg">{t('fasting.title', 'Rastreador Metabólico')}</Text>
-          <Text className="text-slate-500 font-bold text-xs">{t('fasting.subtitle', 'Inteligência de jejum de precisão')}</Text>
+          <Text className="text-slate-900 font-black text-lg">{t('fasting.title', 'Jejum')}</Text>
+          <Text className="text-slate-500 font-bold text-xs">{t('fasting.subtitle', 'Precision fasting intelligence')}</Text>
         </View>
       </View>
 
@@ -157,9 +157,9 @@ export default function FastingScreen() {
               trackColor="#f1f5f9"
             />
             <View className="absolute items-center">
-              <Text className="text-slate-400 font-black uppercase tracking-widest text-[10px] mb-1">{t('fasting.elapsed', 'Tempo Decorrido')}</Text>
+              <Text className="text-slate-400 font-black uppercase tracking-widest text-[10px] mb-1">{t('fasting.elapsed', 'Time Elapsed')}</Text>
               <Text className="text-slate-900 font-black text-4xl tabular-nums">{formatTime(elapsedMs)}</Text>
-              <Text className="text-slate-500 font-bold mt-1">{t('fasting.goal', 'Objetivo')}: {targetHours}h</Text>
+              <Text className="text-slate-500 font-bold mt-1">{t('fasting.goal', 'Goal')}: {targetHours}h</Text>
             </View>
           </View>
 
@@ -179,7 +179,7 @@ export default function FastingScreen() {
             className={`mt-10 w-full py-5 rounded-3xl items-center shadow-xl ${activeLog ? 'bg-slate-900' : 'bg-blue-600'}`}
           >
             <Text className="text-white font-black text-lg">
-              {activeLog ? t('fasting.endFasting', 'Terminar Jejum') : t('fasting.startFasting', 'Iniciar Jejum')}
+              {activeLog ? t('fasting.endFasting', 'End Fast') : t('fasting.startFasting', 'Start Fast')}
             </Text>
           </TouchableOpacity>
 
@@ -188,7 +188,7 @@ export default function FastingScreen() {
           {activeLog && (
             <View className="flex-row items-center gap-2 mt-4 opacity-80">
               <Ionicons name="sync" size={14} color="#94a3b8" />
-              <Text className="text-slate-400 font-bold text-xs uppercase tracking-wider">{t('fasting.syncing', 'A sincronizar dados metabólicos')}</Text>
+              <Text className="text-slate-400 font-bold text-xs uppercase tracking-wider">{t('fasting.syncing', 'Syncing metabolic data')}</Text>
             </View>
           )}
         </View>
@@ -196,7 +196,7 @@ export default function FastingScreen() {
         {/* Protocol Selector */}
         {!activeLog && (
           <View className="mt-6">
-            <Text className="text-slate-900 font-black text-lg mb-3 px-2">{t('fasting.chooseProtocol', 'Escolher Protocolo')}</Text>
+            <Text className="text-slate-900 font-black text-lg mb-3 px-2">{t('fasting.chooseProtocol', 'Choose Protocol')}</Text>
             <View className="space-y-2">
               {protocols.map((protocol) => (
                 <TouchableOpacity
@@ -229,8 +229,8 @@ export default function FastingScreen() {
         {/* Metabolic Phases */}
         <View className="mt-8 bg-white rounded-3xl overflow-hidden relative border border-slate-200">
           <View className="p-6 pb-2">
-            <Text className="text-slate-900 font-black text-lg">{t('fasting.metabolicPhases', 'Fases Metabólicas')}</Text>
-            <Text className="text-slate-400 font-medium text-xs mb-4">{t('fasting.tapToLearn', 'Toca para aprender o que acontece dentro de ti')}</Text>
+            <Text className="text-slate-900 font-black text-lg">{t('fasting.metabolicPhases', 'Metabolic Phases')}</Text>
+            <Text className="text-slate-400 font-medium text-xs mb-4">{t('fasting.tapToLearn', 'Tap to learn what happens inside you')}</Text>
           </View>
 
           <View className="px-4 pb-6 space-y-3">
@@ -265,10 +265,10 @@ export default function FastingScreen() {
             <View className="absolute inset-0 items-center justify-center z-50" style={{ backgroundColor: '#ffffff' }}>
               <View className="bg-white p-6 rounded-3xl items-center shadow-lg w-[85%] border border-slate-200">
                 <Ionicons name="lock-closed" size={32} color="#3b82f6" className="mb-4" />
-                <Text className="text-slate-900 font-black text-lg text-center mb-2">{t('fasting.unlockVision', 'Desbloquear Visão Metabólica')}</Text>
-                <Text className="text-slate-500 text-center text-sm mb-6">{t('fasting.unlockVisionDesc', 'Veja em que fase de queima de gordura se encontra.')}</Text>
+                <Text className="text-slate-900 font-black text-lg text-center mb-2">{t('fasting.unlockVision', 'Unlock Metabolic View')}</Text>
+                <Text className="text-slate-500 text-center text-sm mb-6">{t('fasting.unlockVisionDesc', 'See which fat-burning phase you are in.')}</Text>
                 <TouchableOpacity onPress={() => promptUpgrade(t('fasting.seeMetabolicState', 'See your metabolic state in real-time.'))} className="bg-blue-600 px-6 py-3 rounded-full shadow-blue-200">
-                  <Text className="font-bold text-white uppercase tracking-wider text-xs">{t('fasting.upgradeUnlock', 'Atualizar para Desbloquear')}</Text>
+                  <Text className="font-bold text-white uppercase tracking-wider text-xs">{t('fasting.upgradeUnlock', 'Upgrade to Unlock')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -277,7 +277,7 @@ export default function FastingScreen() {
 
         {/* Educational Resources */}
         <View className="mt-8 mb-4">
-          <Text className="text-slate-900 font-black text-lg mb-4 px-2">{t('fasting.fastingScience', 'Ciência do Jejum')}</Text>
+          <Text className="text-slate-900 font-black text-lg mb-4 px-2">{t('fasting.fastingScience', 'Fasting Science')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="gap-3" contentContainerStyle={{ paddingHorizontal: 4 }}>
             {educationCards.map((card, index) => (
               <TouchableOpacity

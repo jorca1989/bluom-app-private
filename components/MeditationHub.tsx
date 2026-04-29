@@ -302,7 +302,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
           }}
           soundscape={selectedSoundscape}
           audioUrl={getLocalizedAudio(activeSession)}
-          sessionTitle={activeSession?.title}
+          sessionTitle={getLocalizedField(activeSession, 'title')}
           coverImage={activeSession?.coverImage}
           duration={activeSession?.duration}
         />

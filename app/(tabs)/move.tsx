@@ -923,43 +923,45 @@ export default function MoveScreen() {
             </View>
           </View>}
 
-          {/* Program and Workouts Widget — or Upgrade banner if free plan expired */}
-          {isMW('swipeable') && (freePlanExpired ? (
-            <TouchableOpacity
-              style={[styles.card, { marginHorizontal: 24, marginTop: 24, backgroundColor: '#1e293b', borderWidth: 0, alignItems: 'center', padding: 32 }]}
-              onPress={() => handleProFeature(t('move.continueJourney', 'Continue Your Journey'), t('move.freeUsers28DaysFull', 'Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.'))}
-              activeOpacity={0.85}
-            >
-              <Ionicons name="lock-closed" size={32} color="#f59e0b" style={{ marginBottom: 12 }} />
-              <Text style={{ fontSize: 18, fontWeight: '900', color: '#ffffff', marginBottom: 8, textAlign: 'center' }}>{t('move.freePlanComplete', 'Your 28-Day Blueprint is Complete!')}</Text>
-              <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', textAlign: 'center', lineHeight: 20, marginBottom: 16 }}>{t('move.freePlanCompleteDesc', 'Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.')}</Text>
-              <View style={{ backgroundColor: '#3b82f6', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 14 }}>
-                <Text style={{ color: '#ffffff', fontWeight: '800', fontSize: 15 }}>{t('move.upgradeToPro', 'Upgrade to Pro →')}</Text>
-              </View>
-            </TouchableOpacity>
-          ) : (
-            <ProgramWorkoutWidget
-              programName={`${t('common.weekNum', 'Week {{num}}', { num: currentWeekIndex + 1 })}: ${freePlanCurrentWeek?.theme ? t(`db.${freePlanCurrentWeek.theme.toLowerCase()}`, freePlanCurrentWeek.theme) : t('db.foundation', 'Foundation')}`}
-              level={isPro ? 'Pro' : 'Beginner'}
-              daysPerWeek={totalWorkoutsPerWeek}
-              currentWeek={currentWeekIndex + 1}
-              totalWeeks={4}
-              progressPercent={Math.min(100, Math.floor((accountAgeMs / PLAN_DURATION_MS) * 100))}
-              workouts={workouts as any}
-              onInfoPress={() => { setWorkoutDetailTab(0); setShowWorkoutDetail(true); }}
-              onWorkoutsPress={() => { setWorkoutDetailTab(0); setShowWorkoutDetail(true); }}
-              onStartWorkout={(idx) => { 
-                setWorkoutDetailTab(idx + 1 as any); 
-                setWorkoutDetailMode('start'); 
-                setShowWorkoutDetail(true); 
-              }}
-              onViewWorkout={(idx) => { 
-                setWorkoutDetailTab(idx + 1 as any); 
-                setWorkoutDetailMode('view'); 
-                setShowWorkoutDetail(true); 
-              }}
-            />
-          ))}
+          {/* Program and Workouts Widget — always show, with subtle banner if free plan expired */}
+          {isMW('swipeable') && (
+            <>
+              {freePlanExpired && (
+                <TouchableOpacity
+                  style={{ marginHorizontal: 24, marginTop: 20, marginBottom: 4, backgroundColor: '#1e293b', borderRadius: 14, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 12 }}
+                  onPress={() => handleProFeature(t('move.continueJourney', 'Continue Your Journey'), t('move.freeUsers28DaysFull', 'Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.'))}
+                  activeOpacity={0.85}
+                >
+                  <Ionicons name="lock-closed" size={18} color="#f59e0b" />
+                  <Text style={{ flex: 1, fontSize: 13, color: 'rgba(255,255,255,0.85)', fontWeight: '600' }}>{t('move.freePlanComplete', 'Blueprint complete — upgrade to continue')}</Text>
+                  <View style={{ backgroundColor: '#3b82f6', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 }}>
+                    <Text style={{ color: '#ffffff', fontWeight: '800', fontSize: 12 }}>{t('move.upgradeToPro', 'Go Pro')}</Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+              <ProgramWorkoutWidget
+                programName={`${t('common.weekNum', 'Week {{num}}', { num: currentWeekIndex + 1 })}: ${freePlanCurrentWeek?.theme ? t(`db.${freePlanCurrentWeek.theme.toLowerCase()}`, freePlanCurrentWeek.theme) : t('db.foundation', 'Foundation')}`}
+                level={isPro ? 'Pro' : 'Beginner'}
+                daysPerWeek={totalWorkoutsPerWeek}
+                currentWeek={currentWeekIndex + 1}
+                totalWeeks={4}
+                progressPercent={Math.min(100, Math.floor((accountAgeMs / PLAN_DURATION_MS) * 100))}
+                workouts={workouts as any}
+                onInfoPress={() => { setWorkoutDetailTab(0); setShowWorkoutDetail(true); }}
+                onWorkoutsPress={() => { setWorkoutDetailTab(0); setShowWorkoutDetail(true); }}
+                onStartWorkout={(idx) => {
+                  setWorkoutDetailTab(idx + 1 as any);
+                  setWorkoutDetailMode('start');
+                  setShowWorkoutDetail(true);
+                }}
+                onViewWorkout={(idx) => {
+                  setWorkoutDetailTab(idx + 1 as any);
+                  setWorkoutDetailMode('view');
+                  setShowWorkoutDetail(true);
+                }}
+              />
+            </>
+          )}
 
 
           {/* Move Quick Actions & Insights */}

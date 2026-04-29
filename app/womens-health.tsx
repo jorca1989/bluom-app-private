@@ -267,7 +267,7 @@ function buildInsights(
 
   // Birth control insight
   if (profile?.birthControl === 'pill') {
-    insights.push({ title: t('womensHealth.insight.pillTitle','Pílula & Depleção de Nutrientes'), body: t('womensHealth.insight.pillBody','A pílula combinada pode deplecionar B6, B12, folato, magnésio e zinco. Considera um suplemento de complexo B e análises regulares.'), icon: '💊', priority: 'medium' });
+    insights.push({ title: t('womensHealth.insight.pillTitle', 'Pill & Nutrient Depletion'), body: t('womensHealth.insight.pillBody', 'The combined pill can deplete B6, B12, folate, magnesium and zinc. Consider a B-complex supplement and regular blood work.'), icon: '💊', priority: 'medium' });
   }
 
   // Activity vs cycle
@@ -565,7 +565,7 @@ export default function WomensHealthScreen() {
               <Text style={s.quizHeroEmoji}>🌸</Text>
               <Text style={s.quizHeroTitle}>{t('womensHealth.blueprintTitle', 'O Teu Blueprint Hormonal')}</Text>
               <Text style={s.quizHeroSub}>
-                {t('womensHealth.blueprintSub', '4 perguntas para personalizar as tuas informações sobre ciclo, suplementos e orientação hormonal.')}
+                {t('womensHealth.blueprintSub', '4 questions to personalise your cycle insights, supplements and hormonal guidance.')}
               </Text>
               {/* Show onboarding data we already have */}
               {convexUser && (
@@ -719,7 +719,7 @@ export default function WomensHealthScreen() {
       <Modal visible={showSupps} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['top']}>
           <View style={s.modalHeader}>
-            <Text style={s.modalTitle}>{t('womensHealth.vitalityStack', 'O Teu Stack de Vitalidade')}</Text>
+            <Text style={s.modalTitle}>{t('womensHealth.vitalityStack', 'Your Vitality Stack')}</Text>
             <TouchableOpacity onPress={() => setShowSupps(false)} style={s.modalClose}>
               <Ionicons name="close" size={20} color="#1e293b" />
             </TouchableOpacity>
@@ -735,7 +735,7 @@ export default function WomensHealthScreen() {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={s.actionLabel}>{t('womensHealth.pillReminder', 'Contraceção & Lembrete de Comprimido')}</Text>
-                <Text style={s.actionSub}>{t('womensHealth.pillReminderSub', 'Acompanha os teus medicamentos e suplementos com segurança')}</Text>
+                <Text style={s.actionSub}>{t('womensHealth.pillReminderSub', 'Track your medications and supplements safely')}</Text>
               </View>
               <Ionicons name="chevron-forward" size={16} color="#94a3b8" />
             </TouchableOpacity>
@@ -745,8 +745,8 @@ export default function WomensHealthScreen() {
                 <View style={{ marginBottom: 16, padding: 16, borderRadius: 16, backgroundColor: '#fdf2f8', flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                   <Ionicons name="lock-closed" size={24} color="#e11d48" />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 15, fontWeight: '800', color: '#0f172a' }}>{t('womensHealth.unlockStack', 'Desbloqueia o Teu Stack de Vitaminas')}</Text>
-                    <Text style={{ fontSize: 13, color: '#475569', marginTop: 2 }}>{t('womensHealth.unlockStackSub', 'Vê as tuas recomendações de suplementos personalizadas para a tua fase do ciclo.')}</Text>
+                    <Text style={{ fontSize: 15, fontWeight: '800', color: '#0f172a' }}>{t('womensHealth.unlockStack', 'Unlock Your Vitamin Stack')}</Text>
+                    <Text style={{ fontSize: 13, color: '#475569', marginTop: 2 }}>{t('womensHealth.unlockStackSub', 'See your personalised supplement recommendations for your cycle phase.')}</Text>
                   </View>
                   <TouchableOpacity onPress={() => { setShowSupps(false); router.push('/premium' as any); }}>
                     <Text style={{ color: '#e11d48', fontWeight: '700' }}>{t('common.upgrade', 'Atualizar')}</Text>
@@ -770,7 +770,7 @@ export default function WomensHealthScreen() {
 
             <View style={s.suppDisclaimer}>
               <Ionicons name="shield-checkmark-outline" size={16} color="#94a3b8" />
-              <Text style={s.suppDisclaimerTxt}>{t('womensHealth.suppDisclaimer', 'Consulta sempre um profissional de saúde antes de iniciar novos suplementos, especialmente durante a gravidez.')}</Text>
+              <Text style={s.suppDisclaimerTxt}>{t('womensHealth.suppDisclaimer', 'Always consult a healthcare professional before starting new supplements, especially during pregnancy.')}</Text>
             </View>
           </ScrollView>
         </SafeAreaView>
@@ -966,7 +966,7 @@ export default function WomensHealthScreen() {
             {[
               { icon: 'pulse-outline',   label: t('womensHealth.biolog','Bio-Registo Diário'),       sub: `${t('womensHealth.biologSub','Humor, energia, sintomas')}${lifeStage === 'cycle' ? ', '+t('womensHealth.flowLow','fluxo') : ''}`, onPress: () => setShowBioModal(true),   color: '#fdf2f8' },
               { icon: 'fitness-outline', label: t('womensHealth.pelvic','Protocolo Pélvico'),          sub: t('womensHealth.pelvicSub2','Core, pavimento & postura'),                                                                                 onPress: () => setShowPelvicModal(true), color: '#fdf2f8' },
-              { icon: 'flask-outline',   label: t('womensHealth.vitStack','Stack de Vitalidade'),      sub: `${suppStack.length} ${t('womensHealth.personalisedSupps','suplementos personalizados')}`,                                              onPress: () => setShowSupps(true),       color: '#fdf2f8' },
+              { icon: 'flask-outline',   label: t('womensHealth.vitStack', 'Vitality Stack'),      sub: `${suppStack.length} ${t('womensHealth.personalisedSupps', 'personalised supplements')}`,                                              onPress: () => setShowSupps(true),       color: '#fdf2f8' },
             ].map((a, i) => (
               <TouchableOpacity key={i} style={s.actionTile} onPress={a.onPress} activeOpacity={0.8}>
                 <View style={[s.actionIcon, { backgroundColor: a.color }]}>
