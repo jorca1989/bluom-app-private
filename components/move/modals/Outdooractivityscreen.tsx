@@ -1,4 +1,4 @@
-i KNOW /**
+/**
  * OutdoorActivityScreen.tsx
  *
  * Full-screen outdoor activity recorder — Strava/Wikiloc-style.
@@ -44,25 +44,25 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
 import { UIManager } from 'react-native';
 
-// IMPORTANT: These are native modules. Importing them at module scope will crash
-// any build that wasn't rebuilt with them (Expo Go / old dev builds).
-function safeRequire<T = any>(name: string): T | null {
-  try {
-    // eslint-disable-next-line no-eval
-    const req = (0, eval)('require');
-    return req(name) as T;
-  } catch {
-    return null;
-  }
-}
+let Location: any = null;
+let TaskManager: any = null;
+let Maps: any = null;
+let MapView: any = null;
+let Polyline: any = null;
+let Marker: any = null;
+let PROVIDER_DEFAULT: any = null;
 
-const Location = safeRequire<any>('expo-location');
-const TaskManager = safeRequire<any>('expo-task-manager');
-const Maps = safeRequire<any>('react-native-maps');
-const MapView: any = (Maps as any)?.default ?? Maps;
-const Polyline: any = (Maps as any)?.Polyline;
-const Marker: any = (Maps as any)?.Marker;
-const PROVIDER_DEFAULT: any = (Maps as any)?.PROVIDER_DEFAULT;
+try {
+  Location = require('expo-location');
+  TaskManager = require('expo-task-manager');
+  Maps = require('react-native-maps');
+  MapView = Maps?.default ?? Maps;
+  Polyline = Maps?.Polyline;
+  Marker = Maps?.Marker;
+  PROVIDER_DEFAULT = Maps?.PROVIDER_DEFAULT;
+} catch (e) {
+  console.warn('Native maps/location modules not found:', e);
+}
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';

@@ -17,16 +17,12 @@ export default ({ config }) => {
             scheme: "bluom",
             userInterfaceStyle: "automatic",
             runtimeVersion: "1.0.27",
-            // Disable New Architecture (Fabric/TurboModules) — required for
-            // react-native-health, which is not yet compatible with New Arch.
-            // This unblocks Apple Health, Apple Sign In, and react-native-maps.
-            // TODO: revisit when react-native-health publishes New Arch support
-            // (or migrate to @kingstinct/react-native-healthkit).
-            newArchEnabled: false,
+            // Enable New Architecture (Fabric/TurboModules) — supported by @kingstinct/react-native-healthkit
+            newArchEnabled: true,
             privacyPolicyUrl: "https://www.bluom.app/legal/privacy",
             ios: {
                 bundleIdentifier: "com.jwfca.bluom",
-                buildNumber: "42",
+                // buildNumber: "42", // Ignored when using EAS remote versioning
                 googleServicesFile: "./GoogleService-Info.plist",
                 entitlements: {
                     // ── HealthKit ─────────────────────────────────────────────────
@@ -171,9 +167,12 @@ export default ({ config }) => {
 
                 // ── HealthKit (iOS) ───────────────────────────────────────────────
                 [
-                    "react-native-health",
+                    "@kingstinct/react-native-healthkit",
                     {
-                        isClinicalDataEnabled: false,
+                        healthSharePermission:
+                            "Bluom reads your step count, active calories, walking distance, body weight, sleep duration, and heart rate from Apple Health to automatically update your daily goals and generate personalised wellness insights — so you never have to log manually.",
+                        healthUpdatePermission:
+                            "Bluom writes your logged workouts, sleep minutes, and body weight back to Apple Health, keeping all your wellness data in one place.",
                     },
                 ],
 

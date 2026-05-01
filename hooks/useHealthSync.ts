@@ -20,15 +20,13 @@ import { useMutation } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
 
-function safeRequire<T = any>(name: string): T | null {
-  try {
-    // eslint-disable-next-line no-eval
-    const req = (0, eval)('require');
-    return req(name) as T;
-  } catch {
-    return null;
-  }
-}
+let KingstinctHealthKit: any = null;
+let AndroidHealthConnect: any = null;
+let AsyncStorageModule: any = null;
+
+try { KingstinctHealthKit = require('@kingstinct/react-native-healthkit'); } catch (e) {}
+try { AndroidHealthConnect = require('react-native-health-connect'); } catch (e) {}
+try { AsyncStorageModule = require('@react-native-async-storage/async-storage'); } catch (e) {}
 
 // ─── Types ────────────────────────────────────────────────────
 export type HealthSource = 'apple_health' | 'google_health';
@@ -70,42 +68,43 @@ export interface UseHealthSyncReturn {
 async function connectAppleHealth(): Promise<boolean> {
   if (Platform.OS !== 'ios') return false;
   try {
-    // Dynamic require so Android bundler never touches HealthKit symbols
-    const mod = safeRequire<any>('react-native-health');
-    const AppleHealthKit = mod?.default ?? mod;
-    if (!AppleHealthKit) return false;
+    const mod = KingstinctHealthKit;
+    if (!mod || !mod.requestAuthorization) return false;
 
-    const baseRead = [
-      'Steps',
-      'ActiveEnergyBurned',
-      'DistanceWalkingRunning',
-      'BodyMass',
-      'SleepAnalysis',
-      'HeartRate',
-      'BodyFatPercentage',
+    const HKQuantityTypeIdentifier = mod.HKQuantityTypeIdentifier || {
+      stepCount: 'HKQuantityTypeIdentifierStepCount',
+      activeEnergyBurned: 'HKQuantityTypeIdentifierActiveEnergyBurned',
+      distanceWalkingRunning: 'HKQuantityTypeIdentifierDistanceWalkingRunning',
+      bodyMass: 'HKQuantityTypeIdentifierBodyMass',
+      heartRate: 'HKQuantityTypeIdentifierHeartRate',
+      bodyFatPercentage: 'HKQuantityTypeIdentifierBodyFatPercentage',
+    };
+    
+    const HKCategoryTypeIdentifier = mod.HKCategoryTypeIdentifier || {
+      sleepAnalysis: 'HKCategoryTypeIdentifierSleepAnalysis',
+    };
+
+    const readPermissions = [
+      HKQuantityTypeIdentifier.stepCount,
+      HKQuantityTypeIdentifier.activeEnergyBurned,
+      HKQuantityTypeIdentifier.distanceWalkingRunning,
+      HKQuantityTypeIdentifier.bodyMass,
+      HKCategoryTypeIdentifier.sleepAnalysis,
+      HKQuantityTypeIdentifier.heartRate,
+      HKQuantityTypeIdentifier.bodyFatPercentage,
     ];
 
-    // Reproductive Health: try requesting, but fall back if unsupported.
-    const reproRead = ['MenstrualFlow', 'OvulationTestResult'];
-
-    const tryInit = (read: string[]) =>
-      new Promise<boolean>((resolve) => {
-        const permissions = { permissions: { read, write: [] as string[] } };
-        AppleHealthKit.initHealthKit(permissions, (err: any) => resolve(!err));
-      });
-
-    let ok = await tryInit([...baseRead, ...reproRead]);
-    if (!ok) ok = await tryInit(baseRead);
-    return ok;
+    const writePermissions: any[] = [];
+    const ok = await mod.requestAuthorization(readPermissions, writePermissions);
+    return !!ok;
   } catch {
     return false;
   }
 }
 
 async function fetchAppleHealthData(): Promise<Omit<HealthSyncResult, 'source' | 'syncedAt'>> {
-  const mod = safeRequire<any>('react-native-health');
-  const AppleHealthKit = mod?.default ?? mod;
-  if (!AppleHealthKit) {
+  const mod = KingstinctHealthKit;
+  if (!mod || !mod.queryQuantitySamples) {
     return {
       steps: 0,
       activeCalories: 0,
@@ -119,103 +118,95 @@ async function fetchAppleHealthData(): Promise<Omit<HealthSyncResult, 'source' |
     };
   }
 
+  const HKQuantityTypeIdentifier = mod.HKQuantityTypeIdentifier || {
+    stepCount: 'HKQuantityTypeIdentifierStepCount',
+    activeEnergyBurned: 'HKQuantityTypeIdentifierActiveEnergyBurned',
+    distanceWalkingRunning: 'HKQuantityTypeIdentifierDistanceWalkingRunning',
+    bodyMass: 'HKQuantityTypeIdentifierBodyMass',
+    heartRate: 'HKQuantityTypeIdentifierHeartRate',
+    bodyFatPercentage: 'HKQuantityTypeIdentifierBodyFatPercentage',
+  };
+  
+  const HKCategoryTypeIdentifier = mod.HKCategoryTypeIdentifier || {
+    sleepAnalysis: 'HKCategoryTypeIdentifierSleepAnalysis',
+    menstrualFlow: 'HKCategoryTypeIdentifierMenstrualFlow',
+    ovulationTestResult: 'HKCategoryTypeIdentifierOvulationTestResult',
+  };
+
   const now = new Date();
   const startOfDay = new Date(now);
   startOfDay.setHours(0, 0, 0, 0);
+
   const options = {
-    startDate: startOfDay.toISOString(),
-    endDate: now.toISOString(),
-    includeManuallyAdded: false,
+    from: startOfDay,
+    to: now,
   };
 
-  // Helper: wrap HealthKit callbacks in Promises
-  const get = <T>(fn: (opts: any, cb: (err: any, val: T) => void) => void, opts: any): Promise<T | null> =>
-    new Promise((res) => fn(opts, (err, val) => res(err ? null : val)));
+  const [stepsRes, calRes, distRes, weightRes, bodyFatRes, sleepRes, hrRes] = await Promise.allSettled([
+    mod.queryQuantitySamples(HKQuantityTypeIdentifier.stepCount, options),
+    mod.queryQuantitySamples(HKQuantityTypeIdentifier.activeEnergyBurned, options),
+    mod.queryQuantitySamples(HKQuantityTypeIdentifier.distanceWalkingRunning, options),
+    mod.queryQuantitySamples(HKQuantityTypeIdentifier.bodyMass, options),
+    mod.queryQuantitySamples(HKQuantityTypeIdentifier.bodyFatPercentage, options),
+    mod.queryCategorySamples(HKCategoryTypeIdentifier.sleepAnalysis, options),
+    mod.queryQuantitySamples(HKQuantityTypeIdentifier.heartRate, options),
+  ]);
 
-  const [stepsResult, caloriesResult, distanceResult, weightResult, bodyFatResult, sleepResult, hrResult, flowResult, ovuResult] =
-    await Promise.allSettled([
-      get<{ value: number }>(
-        (o, cb) => AppleHealthKit.getStepCount(o, cb),
-        options
-      ),
-      get<{ value: number }>(
-        (o, cb) => AppleHealthKit.getActiveEnergyBurned(o, cb),
-        options
-      ),
-      get<{ value: number }>(
-        (o, cb) => AppleHealthKit.getDistanceWalkingRunning(o, cb),
-        options
-      ),
-      get<{ value: number }>(
-        (o, cb) => AppleHealthKit.getLatestWeight(o, cb),
-        { unit: 'kilogram' }
-      ),
-      get<{ value: number }>(
-        (o, cb) => AppleHealthKit.getLatestBodyFatPercentage(o, cb),
-        { unit: 'percent' }
-      ),
-      get<Array<{ value: string; startDate: string; endDate: string }>>(
-        (o, cb) => AppleHealthKit.getSleepSamples(o, cb),
-        options
-      ),
-      get<Array<{ value: number }>>(
-        (o, cb) => AppleHealthKit.getHeartRateSamples(o, cb),
-        options
-      ),
-      get<any[]>(
-        (o, cb) => AppleHealthKit.getSamples(o, cb),
-        { ...options, type: 'MenstrualFlow', ascending: false, limit: 1 }
-      ),
-      get<any[]>(
-        (o, cb) => AppleHealthKit.getSamples(o, cb),
-        { ...options, type: 'OvulationTestResult', ascending: false, limit: 1 }
-      ),
-    ]);
+  const steps = stepsRes.status === 'fulfilled'
+    ? stepsRes.value.reduce((acc: number, sample: any) => acc + (sample.quantity || 0), 0)
+    : 0;
 
-  const steps = stepsResult.status === 'fulfilled' ? (stepsResult.value?.value ?? 0) : 0;
-  const calories = caloriesResult.status === 'fulfilled' ? (caloriesResult.value?.value ?? 0) : 0;
-  // HealthKit returns distance in meters by default
-  const distanceRaw = distanceResult.status === 'fulfilled' ? (distanceResult.value?.value ?? 0) : 0;
+  const calories = calRes.status === 'fulfilled'
+    ? calRes.value.reduce((acc: number, sample: any) => acc + (sample.quantity || 0), 0)
+    : 0;
+
+  const distanceRaw = distRes.status === 'fulfilled'
+    ? distRes.value.reduce((acc: number, sample: any) => acc + (sample.quantity || 0), 0)
+    : 0;
   const distanceKm = distanceRaw / 1000;
-  const weightKg = weightResult.status === 'fulfilled' ? (weightResult.value?.value ?? null) : null;
-  const bodyFatPct = bodyFatResult.status === 'fulfilled' ? (bodyFatResult.value?.value ?? null) : null;
 
-  // Sleep: sum of "ASLEEP" samples in hours
+  let weightKg: number | null = null;
+  if (weightRes.status === 'fulfilled' && weightRes.value.length > 0) {
+    const sorted = weightRes.value.sort((a: any, b: any) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime());
+    weightKg = sorted[0]?.quantity ?? null;
+  }
+
+  let bodyFatPct: number | null = null;
+  if (bodyFatRes.status === 'fulfilled' && bodyFatRes.value.length > 0) {
+    const sorted = bodyFatRes.value.sort((a: any, b: any) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime());
+    // Kingstinct returns fraction (e.g. 0.15 for 15%)
+    bodyFatPct = sorted[0]?.quantity != null ? sorted[0].quantity * 100 : null;
+  }
+
   let sleepHours: number | null = null;
-  if (sleepResult.status === 'fulfilled' && Array.isArray(sleepResult.value)) {
-    const asleep = sleepResult.value.filter((s) => s.value === 'ASLEEP');
+  if (sleepRes.status === 'fulfilled' && sleepRes.value.length > 0) {
+    // HKCategoryValueSleepAnalysisAsleep = 0
+    const asleep = sleepRes.value.filter((s: any) => s.value === 0);
     if (asleep.length > 0) {
-      const totalMs = asleep.reduce((acc, s) => {
-        return acc + (new Date(s.endDate).getTime() - new Date(s.startDate).getTime());
-      }, 0);
+      const totalMs = asleep.reduce((acc: number, s: any) => acc + (new Date(s.endDate).getTime() - new Date(s.startDate).getTime()), 0);
       sleepHours = Math.round((totalMs / 3_600_000) * 10) / 10;
     }
   }
 
-  // Heart rate: average of samples
   let heartRateAvg: number | null = null;
-  if (hrResult.status === 'fulfilled' && Array.isArray(hrResult.value) && hrResult.value.length > 0) {
-    const sum = hrResult.value.reduce((a, s) => a + s.value, 0);
-    heartRateAvg = Math.round(sum / hrResult.value.length);
+  if (hrRes.status === 'fulfilled' && hrRes.value.length > 0) {
+    const sum = hrRes.value.reduce((acc: number, s: any) => acc + (s.quantity || 0), 0);
+    heartRateAvg = Math.round(sum / hrRes.value.length);
   }
-
-  const flowArr = flowResult.status === 'fulfilled' && Array.isArray(flowResult.value) ? flowResult.value : [];
-  const ovuArr = ovuResult.status === 'fulfilled' && Array.isArray(ovuResult.value) ? ovuResult.value : [];
-  const menstrualFlow = flowArr.length > 0 ? Number((flowArr[0] as any)?.value ?? null) : null;
-  const ovulationTestResult = ovuArr.length > 0 ? Number((ovuArr[0] as any)?.value ?? null) : null;
 
   return {
     steps: Math.round(steps),
     activeCalories: Math.round(calories),
     distanceKm: Math.round(distanceKm * 100) / 100,
-    weightKg,
+    weightKg: weightKg !== null ? Math.round(weightKg * 10) / 10 : null,
     bodyFatPct: bodyFatPct !== null ? Math.round(bodyFatPct * 10) / 10 : null,
     sleepHours,
     heartRateAvg,
-    menstrualFlow: Number.isFinite(menstrualFlow as any) ? (menstrualFlow as number) : null,
-    ovulationTestResult: Number.isFinite(ovulationTestResult as any) ? (ovulationTestResult as number) : null,
+    menstrualFlow: null,
+    ovulationTestResult: null,
   };
 }
+
 
 // ─── Android – Google Health Connect ─────────────────────────
 async function connectGoogleHealth(): Promise<boolean> {
@@ -226,7 +217,7 @@ async function connectGoogleHealth(): Promise<boolean> {
       requestPermission,
       getSdkStatus,
       SdkAvailabilityStatus,
-    } = (safeRequire<any>('react-native-health-connect') ?? {});
+    } = AndroidHealthConnect || {};
     if (!initialize || !requestPermission || !getSdkStatus || !SdkAvailabilityStatus) return false;
 
     const status = await getSdkStatus();
@@ -260,7 +251,7 @@ async function connectGoogleHealth(): Promise<boolean> {
 }
 
 async function fetchGoogleHealthData(): Promise<Omit<HealthSyncResult, 'source' | 'syncedAt'>> {
-  const { readRecords } = (safeRequire<any>('react-native-health-connect') ?? {});
+  const { readRecords } = AndroidHealthConnect || {};
   if (!readRecords) {
     return {
       steps: 0,
@@ -379,7 +370,7 @@ export function useHealthSync(): UseHealthSyncReturn {
   const mountedRef = useRef(true);
 
   const getAsyncStorage = useCallback(() => {
-    const mod = safeRequire<any>('@react-native-async-storage/async-storage');
+    const mod = AsyncStorageModule;
     return mod?.default ?? mod ?? null;
   }, []);
 
