@@ -1,4 +1,4 @@
-/**
+i KNOW /**
  * OutdoorActivityScreen.tsx
  *
  * Full-screen outdoor activity recorder — Strava/Wikiloc-style.

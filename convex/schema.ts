@@ -68,7 +68,12 @@ export default defineSchema({
     subscriptionStatus: v.optional(v.string()), // "pro" or "free"
     endsOn: v.optional(v.number()), // Unix timestamp for expiration
 
-
+    // ── Affiliate / Influencer Manual Override ────────────────────────────────
+    // Set by admin to give influencers/family timed or lifetime pro access
+    // without them needing an active RevenueCat subscription.
+    manualPremiumUntil: v.optional(v.number()), // Unix ms timestamp; null = no manual grant
+    isLifetimeAdmin: v.optional(v.boolean()),   // true = permanent free pro (family/VIP)
+    affiliateCode: v.optional(v.string()),       // e.g. "PEDRO20" — their unique promo code
 
     rcUserId: v.optional(v.string()), // RevenueCat App User ID
 
@@ -96,6 +101,29 @@ export default defineSchema({
   })
     .index("by_clerk_id", ["clerkId"])
     .index("by_email", ["email"]),
+
+  // ── Affiliates / Influencer Registry ─────────────────────────────────────────
+  // One record per influencer. Created when you grant them manual access.
+  affiliates: defineTable({
+    clerkId: v.string(),                        // links to users.clerkId
+    name: v.string(),                           // display name
+    email: v.optional(v.string()),
+    handle: v.optional(v.string()),             // @instagram / TikTok handle
+    platform: v.optional(v.string()),           // "instagram" | "tiktok" | "youtube" | "other"
+    language: v.optional(v.string()),           // "en" | "pt" | "es" …
+    tier: v.string(),                           // "1_month" | "3_months" | "6_months" | "1_year" | "2_years" | "lifetime" | "family"
+    offerCode: v.optional(v.string()),          // Apple promo code e.g. "PEDRO20"
+    commissionPct: v.optional(v.float64()),     // e.g. 20 for 20%
+    notes: v.optional(v.string()),
+    status: v.string(),                         // "active" | "paused" | "revoked"
+    grantedAt: v.number(),                      // Unix ms when access was granted
+    expiresAt: v.optional(v.number()),          // Unix ms (null if lifetime)
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_clerk_id", ["clerkId"])
+    .index("by_status", ["status"])
+    .index("by_offer_code", ["offerCode"]),
 
   // Life Goals Table
   lifeGoals: defineTable({

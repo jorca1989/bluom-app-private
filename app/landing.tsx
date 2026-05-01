@@ -140,7 +140,12 @@ export default function LandingPage() {
                         </div>
 
                         <div id="download" className="flex flex-wrap items-center justify-center gap-4">
-                            <a href="#" className="bg-slate-900 text-white px-8 py-4 rounded-2xl flex items-center gap-3 hover:transform hover:scale-105 transition-all no-underline shadow-xl">
+                            <a
+                                href="https://apps.apple.com/app/bluom-nutrition-fitness-ai/id6759072102"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-slate-900 text-white px-8 py-4 rounded-2xl flex items-center gap-3 hover:transform hover:scale-105 transition-all no-underline shadow-xl"
+                            >
                                 <div className="text-left">
                                     <p className="text-[10px] uppercase font-bold opacity-60 m-0">Download on the</p>
                                     <p className="text-xl font-bold font-inter leading-none m-0">App Store</p>

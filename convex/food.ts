@@ -35,16 +35,6 @@ export const logFoodEntry = mutation({
     const user = await ctx.db.get(args.userId);
     if (!user) throw new Error("User not found");
 
-    // Free users: max 5 meal logs/day (any mealType).
-    if (!isProOrAdmin(user)) {
-      const todays = await ctx.db
-        .query("foodEntries")
-        .withIndex("by_user_date", (q) => q.eq("userId", args.userId).eq("date", args.date))
-        .collect();
-      if (todays.length >= 5) {
-        throw new Error("Daily meal log limit reached for free users");
-      }
-    }
 
     // Check if premium_slot requires premium
     if (args.mealType === "premium_slot" && !user.isPremium) {

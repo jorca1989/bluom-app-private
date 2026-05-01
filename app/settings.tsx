@@ -220,7 +220,8 @@ export default function SettingsScreen() {
                         <Text style={styles.sectionTitle}>{t('settings.account', 'Account')}</Text>
                     </View>
                     <View style={styles.itemsList}>
-                        {/* Integrations — Commented out for App Store submission (no HealthKit/Strava entitlements)
+                        {/* Integrations — Re-enabled for Health Connect / Strava testing.
+                            REMINDER: hide again before App Store submission unless HealthKit/Strava entitlements are configured. */}
                         <TouchableOpacity style={styles.item} activeOpacity={0.7} onPress={() => router.push('/integrations' as any)}>
                             <View style={styles.itemLeft}>
                                 <Text style={styles.itemLabel}>Connected Apps & Devices</Text>
@@ -230,7 +231,6 @@ export default function SettingsScreen() {
                             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
                         </TouchableOpacity>
                         <View style={styles.divider} />
-                        */}
 
                         <TouchableOpacity style={styles.item} activeOpacity={0.7} onPress={() => { }}>
                             <View style={styles.itemLeft}>

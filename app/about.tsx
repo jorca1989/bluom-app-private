@@ -13,7 +13,7 @@ export default function AboutPage() {
                 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet" />
             </Head>
 
-            <div className="bg-[#F5F4F0] text-[#1e293b] min-h-screen font-sans">
+            <div className="bg-[#F4FF50] text-[#1e293b] min-h-screen font-sans">
                 <style dangerouslySetInnerHTML={{
                     __html: `
                         body { margin: 0; background-color: #F5F4F0 !important; }

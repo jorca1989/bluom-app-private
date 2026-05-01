@@ -928,7 +928,7 @@ export default function MoveScreen() {
             <>
               {freePlanExpired && (
                 <TouchableOpacity
-                  style={{ marginHorizontal: 24, marginTop: 20, marginBottom: 4, backgroundColor: '#1e293b', borderRadius: 14, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 12 }}
+                  style={{ marginHorizontal: 24, marginTop: 4, marginBottom: 16, backgroundColor: '#1e293b', borderRadius: 14, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 12 }}
                   onPress={() => handleProFeature(t('move.continueJourney', 'Continue Your Journey'), t('move.freeUsers28DaysFull', 'Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.'))}
                   activeOpacity={0.85}
                 >
@@ -980,8 +980,8 @@ export default function MoveScreen() {
             }}
           />}
 
-          {/* Outdoor Activity - Hidden for Lite Build */}
-          {/* <OutdoorActivityBanner onStart={() => setShowOutdoor(true)} /> */}
+          {/* Outdoor Activity - Re-enabled for testing GPS tracking */}
+          <OutdoorActivityBanner onStart={() => setShowOutdoor(true)} />
 
           {/* Today's Activities */}
           {isMW('todayActivities') && <View style={styles.card}>
@@ -1584,7 +1584,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     marginHorizontal: 24,
-    marginBottom: 16,
+    marginBottom: 8,
   },
   summaryCard: {
     backgroundColor: '#ffffff',

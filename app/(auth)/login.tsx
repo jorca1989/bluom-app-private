@@ -247,12 +247,10 @@ export default function LoginScreen() {
 
                 {Platform.OS !== 'web' && (
                   <>
-                    {/* Social Logins - Hidden for Lite Build */}
-                    {/*
+                    {/* Social Logins - Re-enabled for testing */}
                     <GoogleSignInButton disabled={loading} />
                     <View style={{ height: 12 }} />
                     <AppleSignInButton disabled={loading} />
-                    */}
                   </>
                 )}
               </>

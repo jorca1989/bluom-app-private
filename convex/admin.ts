@@ -501,3 +501,224 @@ export const getLegalDocuments = query({
         return await ctx.db.query("legalDocuments").order("desc").collect();
     }
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AFFILIATE / INFLUENCER MANAGEMENT
+// ─────────────────────────────────────────────────────────────────────────────
+
+const TIER_DURATIONS_MS: Record<string, number | null> = {
+    "1_month":  30  * 24 * 60 * 60 * 1000,
+    "3_months": 90  * 24 * 60 * 60 * 1000,
+    "6_months": 180 * 24 * 60 * 60 * 1000,
+    "1_year":   365 * 24 * 60 * 60 * 1000,
+    "2_years":  730 * 24 * 60 * 60 * 1000,
+    "lifetime": null,
+    "family":   null,
+};
+
+/**
+ * Grant manual Pro access to an influencer or family member by their Clerk ID.
+ * Creates or updates their affiliate record and patches the users table.
+ * Call this from the Convex dashboard or your admin panel.
+ */
+export const grantManualAccess = mutation({
+    args: {
+        clerkId: v.string(),
+        tier: v.union(
+            v.literal("1_month"),
+            v.literal("3_months"),
+            v.literal("6_months"),
+            v.literal("1_year"),
+            v.literal("2_years"),
+            v.literal("lifetime"),
+            v.literal("family"),
+        ),
+        name: v.string(),
+        email: v.optional(v.string()),
+        handle: v.optional(v.string()),
+        platform: v.optional(v.string()),
+        language: v.optional(v.string()),
+        offerCode: v.optional(v.string()),
+        commissionPct: v.optional(v.float64()),
+        notes: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        await checkAdminPower(ctx);
+
+        const now = Date.now();
+        const durationMs = TIER_DURATIONS_MS[args.tier];
+        const isLifetime = durationMs === null;
+        const expiresAt = isLifetime ? undefined : now + durationMs!;
+
+        // ── 1. Patch the users table ──────────────────────────────────────────
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+            .first();
+
+        if (!user) throw new Error(`No Convex user found for clerkId: ${args.clerkId}`);
+
+        await ctx.db.patch(user._id, {
+            isPremium: true,
+            subscriptionStatus: "pro",
+            isLifetimeAdmin: isLifetime ? true : undefined,
+            manualPremiumUntil: isLifetime ? undefined : expiresAt,
+            affiliateCode: args.offerCode,
+            updatedAt: now,
+        });
+
+        // ── 2. Upsert affiliates record ───────────────────────────────────────
+        const existing = await ctx.db
+            .query("affiliates")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+            .first();
+
+        if (existing) {
+            await ctx.db.patch(existing._id, {
+                name: args.name,
+                email: args.email,
+                handle: args.handle,
+                platform: args.platform,
+                language: args.language,
+                tier: args.tier,
+                offerCode: args.offerCode,
+                commissionPct: args.commissionPct,
+                notes: args.notes,
+                status: "active",
+                grantedAt: now,
+                expiresAt,
+                updatedAt: now,
+            });
+            return { success: true, affiliateId: existing._id, expiresAt };
+        }
+
+        const affiliateId = await ctx.db.insert("affiliates", {
+            clerkId: args.clerkId,
+            name: args.name,
+            email: args.email,
+            handle: args.handle,
+            platform: args.platform,
+            language: args.language,
+            tier: args.tier,
+            offerCode: args.offerCode,
+            commissionPct: args.commissionPct,
+            notes: args.notes,
+            status: "active",
+            grantedAt: now,
+            expiresAt,
+            createdAt: now,
+            updatedAt: now,
+        });
+
+        return { success: true, affiliateId, expiresAt };
+    },
+});
+
+/**
+ * Revoke manual Pro access (sets status to "revoked" and clears manual fields).
+ */
+export const revokeManualAccess = mutation({
+    args: { clerkId: v.string() },
+    handler: async (ctx, args) => {
+        await checkAdminPower(ctx);
+
+        const now = Date.now();
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+            .first();
+
+        if (user) {
+            await ctx.db.patch(user._id, {
+                isPremium: false,
+                subscriptionStatus: "free",
+                isLifetimeAdmin: undefined,
+                manualPremiumUntil: undefined,
+                updatedAt: now,
+            });
+        }
+
+        const affiliate = await ctx.db
+            .query("affiliates")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+            .first();
+
+        if (affiliate) {
+            await ctx.db.patch(affiliate._id, { status: "revoked", updatedAt: now });
+        }
+
+        return { success: true };
+    },
+});
+
+/**
+ * List all affiliates (admin only).
+ */
+export const listAffiliates = query({
+    args: { status: v.optional(v.string()) },
+    handler: async (ctx, args) => {
+        await checkAdminPower(ctx);
+        const all = await ctx.db.query("affiliates").order("desc").collect();
+        if (args.status) return all.filter((a) => a.status === args.status);
+        return all;
+    },
+});
+
+/**
+ * Extend or change the tier for an existing affiliate.
+ */
+export const extendAffiliateAccess = mutation({
+    args: {
+        clerkId: v.string(),
+        tier: v.union(
+            v.literal("1_month"),
+            v.literal("3_months"),
+            v.literal("6_months"),
+            v.literal("1_year"),
+            v.literal("2_years"),
+            v.literal("lifetime"),
+            v.literal("family"),
+        ),
+    },
+    handler: async (ctx, args) => {
+        await checkAdminPower(ctx);
+
+        const now = Date.now();
+        const durationMs = TIER_DURATIONS_MS[args.tier];
+        const isLifetime = durationMs === null;
+        const expiresAt = isLifetime ? undefined : now + durationMs!;
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+            .first();
+
+        if (!user) throw new Error(`No Convex user found for clerkId: ${args.clerkId}`);
+
+        await ctx.db.patch(user._id, {
+            isLifetimeAdmin: isLifetime ? true : undefined,
+            manualPremiumUntil: isLifetime ? undefined : expiresAt,
+            isPremium: true,
+            subscriptionStatus: "pro",
+            updatedAt: now,
+        });
+
+        const affiliate = await ctx.db
+            .query("affiliates")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+            .first();
+
+        if (affiliate) {
+            await ctx.db.patch(affiliate._id, {
+                tier: args.tier,
+                grantedAt: now,
+                expiresAt,
+                status: "active",
+                updatedAt: now,
+            });
+        }
+
+        return { success: true, expiresAt };
+    },
+});

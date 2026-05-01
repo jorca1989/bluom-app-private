@@ -1,8 +1,6 @@
 import 'dotenv/config';
 
 export default ({ config }) => {
-    // Expo CLI doesn't always evaluate config with a specific platform (e.g. `expo start`).
-    // Use env hints when present.
     const platformEnv = String(process.env.EAS_BUILD_PLATFORM || process.env.EXPO_OS || "").toLowerCase();
     const isIOS = platformEnv === "ios";
     const isAndroid =
@@ -15,59 +13,59 @@ export default ({ config }) => {
             name: "Bluom",
             slug: "bolt-expo-nativewind",
             owner: "ggovsaas",
-            version: "1.0.26",
+            version: "1.0.27",
             scheme: "bluom",
             userInterfaceStyle: "automatic",
-            runtimeVersion: "1.0.26",
+            runtimeVersion: "1.0.27",
+            // Disable New Architecture (Fabric/TurboModules) — required for
+            // react-native-health, which is not yet compatible with New Arch.
+            // This unblocks Apple Health, Apple Sign In, and react-native-maps.
+            // TODO: revisit when react-native-health publishes New Arch support
+            // (or migrate to @kingstinct/react-native-healthkit).
+            newArchEnabled: false,
             privacyPolicyUrl: "https://www.bluom.app/legal/privacy",
             ios: {
                 bundleIdentifier: "com.jwfca.bluom",
-                buildNumber: "41",
+                buildNumber: "42",
                 googleServicesFile: "./GoogleService-Info.plist",
                 entitlements: {
-                    // "com.apple.developer.healthkit": true,
+                    // ── HealthKit ─────────────────────────────────────────────────
+                    "com.apple.developer.healthkit": true,
+                    "com.apple.developer.healthkit.background-delivery": true,
+                    // ── Associated Domains (deep links) ──────────────────────────
                     "com.apple.developer.associated-domains": ["applinks:bluom.app"],
                 },
                 infoPlist: {
                     ITSAppUsesNonExemptEncryption: false,
-                    UIBackgroundModes: ["audio"],
 
-                    // ── Camera & Photos (updated for Body Scan feature) ──
+                    // ── Background Modes ──────────────────────────────────────────
+                    // "location" enables background GPS for outdoor workouts
+                    UIBackgroundModes: ["audio", "location", "fetch", "remote-notification"],
+
+                    // ── Camera & Photos ───────────────────────────────────────────
                     NSPhotoLibraryUsageDescription:
                         "Bluom uses your photo library to scan food labels for nutrition insights and to save or upload body progress photos for the Body Scan feature.",
                     NSCameraUsageDescription:
                         "Bluom uses the camera to scan food items for nutrition insights and to take body progress photos for AI-powered body composition analysis.",
 
-                    // ── Location (Weather & Workouts) ──────────────────────────────
-                    /*
+                    // ── Location (Weather + Outdoor Workouts) ─────────────────────
                     NSLocationWhenInUseUsageDescription:
-                        "Bluom uses your location to provide real-time local weather data on your dashboard and to track your outdoor running or cycling workout routes.",
+                        "Bluom uses your location to show real-time local weather on your dashboard and to track outdoor workout routes.",
                     NSLocationAlwaysAndWhenInUseUsageDescription:
-                        "Bluom uses your location in the background to accurately record your outdoor workout distance, pace, and routes, even when your phone is in your pocket or the app is closed.",
+                        "Bluom uses your location in the background to accurately record distance, pace, and routes for outdoor workouts, even when your phone is in your pocket.",
                     NSLocationAlwaysUsageDescription:
-                        "Bluom securely uses your location in the background to maintain accurate live tracking for your outdoor workouts.",
-                    */
+                        "Bluom uses your location in the background to maintain accurate live GPS tracking during outdoor workouts.",
 
-                    // ── HealthKit (NEW) ───────────────────────────────────────────
-                    /*
+                    // ── HealthKit ─────────────────────────────────────────────────
                     NSHealthShareUsageDescription:
-                        "Bluom reads your daily step count, active calories burned, walking distance, body weight, sleep duration, heart rate, and (if you choose to grant access) cycle-related data like menstrual flow and ovulation test results from Apple Health. This data automatically updates your daily calorie burn goal, tracks your body composition progress over time, and generates personalised recovery, Wellness, and cycle insights — so you never have to log manually.",
-
+                        "Bluom reads your step count, active calories, walking distance, body weight, sleep duration, and heart rate from Apple Health to automatically update your daily goals and generate personalised wellness insights — so you never have to log manually.",
                     NSHealthUpdateUsageDescription:
-                        "Bluom can sync your logged workouts, sleep minutes, and weight back to Apple Health, helping you maintain a unified and complete record of your wellness activities across all your devices.",
-                    */
-
-                    // ── Motion (Removed for Lite Build) ──────────────────────────
-                    // NSMotionUsageDescription:
-                    //     "Bluom uses motion data to count your steps in the background and update your daily activity goal in real time.",
+                        "Bluom writes your logged workouts, sleep minutes, and body weight back to Apple Health, keeping all your wellness data in one place.",
 
                     // ── URL Schemes ───────────────────────────────────────────────
                     CFBundleURLTypes: [
                         {
-                            CFBundleURLSchemes: [
-                                // Strava OAuth callback — must match redirectUri in IntegrationsScreen
-                                "bluom",
-                            ],
+                            CFBundleURLSchemes: ["bluom"],
                         },
                     ],
                 },
@@ -90,25 +88,47 @@ export default ({ config }) => {
             },
             android: {
                 package: "com.jwfca.bluom",
-                versionCode: 51,
+                versionCode: 52,
                 googleServicesFile: "./google-services.json",
+                // Google Maps SDK for Android — required for react-native-maps to render
+                // Key lives in .env.local (GOOGLE_MAPS_ANDROID_KEY) and EAS secrets for build server
+                config: {
+                    googleMaps: {
+                        apiKey: process.env.GOOGLE_MAPS_ANDROID_KEY,
+                    },
+                },
                 splash: {
                     image: "./assets/images/splash.png",
                     imageWidth: 420,
                     resizeMode: "contain"
                 },
                 permissions: [
-                    // ── Existing ──────────────────────────────────────────────────
+                    // ── Camera ────────────────────────────────────────────────────
                     "android.permission.CAMERA",
                     "android.permission.RECORD_AUDIO",
                     "android.permission.MODIFY_AUDIO_SETTINGS",
+                    // ── Foreground service / wake lock ────────────────────────────
                     "android.permission.FOREGROUND_SERVICE",
                     "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+                    "android.permission.FOREGROUND_SERVICE_LOCATION",
                     "android.permission.WAKE_LOCK",
-
-                    // ── Location (Removed for Lite Build) ─────────────────────────
-
-                    // ── Health Connect (Removed for Lite Build) ────────────────────
+                    // ── Location (outdoor workouts + weather) ─────────────────────
+                    "android.permission.ACCESS_FINE_LOCATION",
+                    "android.permission.ACCESS_COARSE_LOCATION",
+                    "android.permission.ACCESS_BACKGROUND_LOCATION",
+                    // ── Notifications ─────────────────────────────────────────────
+                    "android.permission.POST_NOTIFICATIONS",
+                    "android.permission.RECEIVE_BOOT_COMPLETED",
+                    // ── Health Connect ────────────────────────────────────────────
+                    "android.permission.health.READ_STEPS",
+                    "android.permission.health.READ_DISTANCE",
+                    "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
+                    "android.permission.health.READ_HEART_RATE",
+                    "android.permission.health.READ_SLEEP",
+                    "android.permission.health.READ_WEIGHT",
+                    "android.permission.health.WRITE_EXERCISE",
+                    "android.permission.health.WRITE_SLEEP",
+                    "android.permission.health.WRITE_WEIGHT",
                 ],
             },
             icon: "./assets/images/icon.png",
@@ -130,16 +150,37 @@ export default ({ config }) => {
                 "expo-asset",
                 "expo-splash-screen",
                 "@react-native-community/datetimepicker",
-                /*
+
+                // ── Apple Sign In ─────────────────────────────────────────────────
                 "expo-apple-authentication",
+
+                // ── Location + Background GPS (outdoor workouts + weather) ─────────
+                [
+                    "expo-location",
+                    {
+                        locationAlwaysAndWhenInUsePermission:
+                            "Bluom uses your location in the background to accurately record distance, pace, and routes for outdoor workouts.",
+                        locationAlwaysPermission:
+                            "Bluom uses your location in the background to maintain accurate live GPS tracking during outdoor workouts.",
+                        locationWhenInUsePermission:
+                            "Bluom uses your location to show local weather and track outdoor workout routes.",
+                        isIosBackgroundLocationEnabled: true,
+                        isAndroidBackgroundLocationEnabled: true,
+                    },
+                ],
+
+                // ── HealthKit (iOS) ───────────────────────────────────────────────
                 [
                     "react-native-health",
                     {
-                        "isClinicalDataEnabled": false
-                    }
+                        isClinicalDataEnabled: false,
+                    },
                 ],
+
+                // ── Health Connect (Android) ──────────────────────────────────────
                 "react-native-health-connect",
-                */
+
+                // ── Camera ────────────────────────────────────────────────────────
                 [
                     "expo-camera",
                     {
@@ -147,6 +188,8 @@ export default ({ config }) => {
                             "Bluom uses the camera to scan food items for nutrition insights and to take body progress photos for AI-powered body composition analysis.",
                     },
                 ],
+
+                // ── Push Notifications ────────────────────────────────────────────
                 "expo-notifications",
             ],
             extra: {
@@ -165,14 +208,12 @@ export default ({ config }) => {
     if (isAndroid) {
         buildProps.android = { minSdkVersion: 26 };
     }
-    // isIOS: deploymentTarget intentionally omitted (see comment in original file)
 
     const plugins = [...base.expo.plugins, ["expo-build-properties", buildProps]];
 
     return {
         ...base.expo,
         ...config,
-        // Override dynamic config slug to match EAS
         slug: "bolt-expo-nativewind",
         plugins,
     };
