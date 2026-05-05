@@ -1050,9 +1050,11 @@ export default function MoveScreen() {
 
                       <View style={styles.activityInfo}>
                         <Text style={styles.activityName}>
-                          {typeof activity.name === 'object' && activity.name !== null
-                            ? (activity.name as any).en
-                            : activity.name}
+                          {activity.activityType === 'exercise'
+                            ? t(`db.${(typeof activity.name === 'object' && activity.name !== null ? (activity.name as any).en : activity.name).replace(/\s+/g, '')}`, typeof activity.name === 'object' && activity.name !== null ? (activity.name as any).en : activity.name)
+                            : (typeof activity.name === 'string' && activity.name.includes('Steps')
+                              ? activity.name.replace('Steps', t('move.steps', 'Steps')).replace('(Health)', `(${t('move.health', 'Health')})`)
+                              : (typeof activity.name === 'object' && activity.name !== null ? (activity.name as any).en : activity.name))}
                         </Text>
                         <Text style={styles.activityDetails}>
                           {activity.activityType === 'exercise' && activity.duration > 0
