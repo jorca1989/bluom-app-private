@@ -66,6 +66,26 @@ export function getLocalizedField(
 }
 
 /**
+ * getLocalizedListField
+ *
+ * Convenience wrapper for Pattern B for array fields (like ingredients, instructions):
+ * reads `doc[field]` + `doc[field + 'Localizations']` and returns the array of strings.
+ */
+export function getLocalizedListField(
+  doc: Record<string, any> | undefined | null,
+  field: string,
+  lang: string,
+): string[] {
+  if (!doc) return [];
+  const code = lang?.split('-')[0] ?? 'en';
+  const localizations = doc[`${field}Localizations`];
+  if (code !== 'en' && localizations && localizations[code] && Array.isArray(localizations[code]) && localizations[code].length > 0) {
+    return localizations[code];
+  }
+  return Array.isArray(doc[field]) ? doc[field] : [];
+}
+
+/**
  * getLocalizedExerciseName
  *
  * Exercise names from exerciseLibrary are stored as either:

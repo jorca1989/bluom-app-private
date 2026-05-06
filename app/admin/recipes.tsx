@@ -217,6 +217,8 @@ export default function RecipesManager() {
         ingr_pt: '', ingr_es: '', ingr_fr: '', ingr_de: '', ingr_nl: '',
         instructionsText: '',
         instr_pt: '', instr_es: '', instr_fr: '', instr_de: '', instr_nl: '',
+        shoppingListText: '',
+        shopping_pt: '', shopping_es: '', shopping_fr: '', shopping_de: '', shopping_nl: '',
         tags: [] as string[],
         status: 'published',
     });
@@ -240,6 +242,8 @@ export default function RecipesManager() {
             ingr_pt: '', ingr_es: '', ingr_fr: '', ingr_de: '', ingr_nl: '',
             instructionsText: '',
             instr_pt: '', instr_es: '', instr_fr: '', instr_de: '', instr_nl: '',
+            shoppingListText: '',
+            shopping_pt: '', shopping_es: '', shopping_fr: '', shopping_de: '', shopping_nl: '',
             tags: [],
             status: 'published',
         });
@@ -276,6 +280,12 @@ export default function RecipesManager() {
             instr_fr: (recipe.instructionsLocalizations?.fr || []).join('\n'),
             instr_de: (recipe.instructionsLocalizations?.de || []).join('\n'),
             instr_nl: (recipe.instructionsLocalizations?.nl || []).join('\n'),
+            shoppingListText: (recipe.shoppingListItems || []).join('\n'),
+            shopping_pt: (recipe.shoppingListLocalizations?.pt || []).join('\n'),
+            shopping_es: (recipe.shoppingListLocalizations?.es || []).join('\n'),
+            shopping_fr: (recipe.shoppingListLocalizations?.fr || []).join('\n'),
+            shopping_de: (recipe.shoppingListLocalizations?.de || []).join('\n'),
+            shopping_nl: (recipe.shoppingListLocalizations?.nl || []).join('\n'),
             tags: recipe.tags || [],
             status: recipe.status || 'published',
         });
@@ -334,6 +344,8 @@ export default function RecipesManager() {
                 ingredientsLocalizations: buildListLocalizations(newRecipe.ingr_pt, newRecipe.ingr_es, newRecipe.ingr_fr, newRecipe.ingr_de, newRecipe.ingr_nl),
                 instructions: parseLines(newRecipe.instructionsText),
                 instructionsLocalizations: buildListLocalizations(newRecipe.instr_pt, newRecipe.instr_es, newRecipe.instr_fr, newRecipe.instr_de, newRecipe.instr_nl),
+                shoppingListItems: parseLines(newRecipe.shoppingListText),
+                shoppingListLocalizations: buildListLocalizations(newRecipe.shopping_pt, newRecipe.shopping_es, newRecipe.shopping_fr, newRecipe.shopping_de, newRecipe.shopping_nl),
                 tags: newRecipe.tags,
                 status: newRecipe.status,
                 isPremium: false,
@@ -776,6 +788,33 @@ export default function RecipesManager() {
                             </LangAccordion>
                             <LangAccordion title="🇳🇱 NL">
                                 <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) De oven voorverwarmen...\n2) De zalm kruiden...'} value={newRecipe.instr_nl} onChangeText={v => setNewRecipe(p => ({ ...p, instr_nl: v }))} />
+                            </LangAccordion>
+                        </FieldAccordion>
+
+                        <FieldAccordion title="Shopping List Items (one per line)">
+                            <LangAccordion title="🇬🇧 EN (required)">
+                                <TextInput
+                                    style={[styles.input, { height: 150 }]}
+                                    multiline
+                                    placeholder={'1 cup Almond Milk\n2 tbsp Honey\n...'}
+                                    value={newRecipe.shoppingListText}
+                                    onChangeText={(t) => setNewRecipe((p) => ({ ...p, shoppingListText: t }))}
+                                />
+                            </LangAccordion>
+                            <LangAccordion title="🇵🇹 PT">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1 cháv. Leite de Amêndoa\n2 c.s. Mel'} value={newRecipe.shopping_pt} onChangeText={v => setNewRecipe(p => ({ ...p, shopping_pt: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇪🇸 ES">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1 taza de leche de almendras\n2 cdas de miel'} value={newRecipe.shopping_es} onChangeText={v => setNewRecipe(p => ({ ...p, shopping_es: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇫🇷 FR">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={"1 tasse de lait d'amande\n2 c.à.s de miel"} value={newRecipe.shopping_fr} onChangeText={v => setNewRecipe(p => ({ ...p, shopping_fr: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇩🇪 DE">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1 Tasse Mandelmilch\n2 EL Honig'} value={newRecipe.shopping_de} onChangeText={v => setNewRecipe(p => ({ ...p, shopping_de: v }))} />
+                            </LangAccordion>
+                            <LangAccordion title="🇳🇱 NL">
+                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1 kopje amandelmelk\n2 el honing'} value={newRecipe.shopping_nl} onChangeText={v => setNewRecipe(p => ({ ...p, shopping_nl: v }))} />
                             </LangAccordion>
                         </FieldAccordion>
 

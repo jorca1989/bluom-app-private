@@ -27,7 +27,7 @@ import { triggerSound, SoundEffect } from '@/utils/soundEffects';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useUser as useAppUser } from '@/context/UserContext';
 import { getTodayISO } from '@/utils/dates'; // ← ADD THIS IMPORT
-import { getLocalizedField } from '@/utils/localize';
+import { getLocalizedField, getLocalizedListField } from '@/utils/localize';
 
 const { width } = Dimensions.get('window');
 const isSmallScreen = width < 380;
@@ -325,6 +325,10 @@ export default function RecipesScreen() {
   const isPro = appUser.isPro || appUser.isAdmin;
   const gridItemWidth = useMemo(() => (screenWidth - 64) / 2, [screenWidth]);
 
+  const localIngredients = useMemo(() => getLocalizedListField(selectedRecipe, 'ingredients', lang), [selectedRecipe, lang]);
+  const localInstructions = useMemo(() => getLocalizedListField(selectedRecipe, 'instructions', lang), [selectedRecipe, lang]);
+  const localShoppingListItems = useMemo(() => getLocalizedListField(selectedRecipe, 'shoppingListItems', lang), [selectedRecipe, lang]);
+
   // Pre-compute image sources once per recipe list to maintain stable object
   // references across renders — React Native's image cache keyed by reference.
   const imageSources = useMemo(() => {
@@ -565,9 +569,8 @@ export default function RecipesScreen() {
                         return;
                       }
                       if (!isPro) { setShowUpgrade(true); return; }
-                      const ingredients: string[] = Array.isArray(selectedRecipe.ingredients)
-                        ? selectedRecipe.ingredients : [];
-                      if (ingredients.length === 0) {
+                      const itemsToPush = localShoppingListItems.length > 0 ? localShoppingListItems : localIngredients;
+                      if (itemsToPush.length === 0) {
                         Alert.alert('No ingredients', 'This recipe has no ingredients to add.');
                         return;
                       }
@@ -576,7 +579,7 @@ export default function RecipesScreen() {
                         const res = await addRecipeIngredients({
                           userId: convexUser._id,
                           recipeId: selectedRecipe._id,
-                          ingredients,
+                          ingredients: itemsToPush,
                         });
                         Alert.alert(
                           t('shopping.addedTitle', 'Added to Shopping List'),
@@ -622,11 +625,11 @@ export default function RecipesScreen() {
               </View>
 
               {/* Ingredients – pro gated */}
-              {!!selectedRecipe.ingredients?.length && (
+              {!!localIngredients.length && (
                 <View style={styles.card}>
                   <Text style={styles.cardTitle}>{t('recipes.ingredients', 'Ingredients')}</Text>
                   <View style={!isPro ? { opacity: 0.25 } : undefined}>
-                    {selectedRecipe.ingredients.map((ingredient: string, idx: number) => (
+                    {localIngredients.map((ingredient: string, idx: number) => (
                       <View key={`${ingredient}-${idx}`} style={styles.ingredientItem}>
                         <View style={styles.ingredientDot} />
                         <Text style={styles.ingredientText}>{t(`db.${ingredient.replace(/\s+/g, '')}`, ingredient)}</Text>
@@ -651,11 +654,11 @@ export default function RecipesScreen() {
               )}
 
               {/* Instructions – pro gated */}
-              {!!selectedRecipe.instructions?.length && (
+              {!!localInstructions.length && (
                 <View style={styles.card}>
                   <Text style={styles.cardTitle}>{t('recipes.instructions', 'Instructions')}</Text>
                   <View style={!isPro ? { opacity: 0.25 } : undefined}>
-                    {selectedRecipe.instructions.map((instruction: string, idx: number) => (
+                    {localInstructions.map((instruction: string, idx: number) => (
                       <View key={`${idx}`} style={styles.instructionItem}>
                         <View style={styles.instructionNumber}>
                           <Text style={styles.instructionNumberText}>{idx + 1}</Text>

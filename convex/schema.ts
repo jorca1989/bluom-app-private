@@ -448,6 +448,8 @@ export default defineSchema({
     instructions: v.optional(v.array(v.string())),
     ingredientsLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())) })),
     instructionsLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())) })),
+    shoppingListItems: v.optional(v.array(v.string())),
+    shoppingListLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())) })),
     createdAt: v.float64(),
     updatedAt: v.float64(),
   })

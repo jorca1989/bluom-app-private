@@ -186,6 +186,8 @@ export const createPublicRecipe = mutation({
         instructions: v.optional(v.array(v.string())),
         ingredientsLocalizations: listLocalizationsValidator,
         instructionsLocalizations: listLocalizationsValidator,
+        shoppingListItems: v.optional(v.array(v.string())),
+        shoppingListLocalizations: listLocalizationsValidator,
         status: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
@@ -209,10 +211,12 @@ export const createPublicRecipe = mutation({
             category: args.category,
             categories: args.categories,
             isPremium: args.isPremium,
-            ingredients: args.ingredients,
-            instructions: args.instructions,
+            ingredients: args.ingredients ?? [],
+            instructions: args.instructions ?? [],
             ingredientsLocalizations: args.ingredientsLocalizations,
             instructionsLocalizations: args.instructionsLocalizations,
+            shoppingListItems: args.shoppingListItems ?? [],
+            shoppingListLocalizations: args.shoppingListLocalizations,
             status: args.status ?? 'draft',
             createdAt: now,
             updatedAt: now,
@@ -363,6 +367,8 @@ export const updatePublicRecipe = mutation({
         instructions: v.optional(v.array(v.string())),
         ingredientsLocalizations: listLocalizationsValidator,
         instructionsLocalizations: listLocalizationsValidator,
+        shoppingListItems: v.optional(v.array(v.string())),
+        shoppingListLocalizations: listLocalizationsValidator,
         status: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
@@ -392,6 +398,8 @@ export const updatePublicRecipe = mutation({
         if (args.instructions) updateFields.instructions = args.instructions;
         if (args.ingredientsLocalizations !== undefined) updateFields.ingredientsLocalizations = args.ingredientsLocalizations;
         if (args.instructionsLocalizations !== undefined) updateFields.instructionsLocalizations = args.instructionsLocalizations;
+        if (args.shoppingListItems !== undefined) updateFields.shoppingListItems = args.shoppingListItems;
+        if (args.shoppingListLocalizations !== undefined) updateFields.shoppingListLocalizations = args.shoppingListLocalizations;
         if (args.status) updateFields.status = args.status;
 
         await ctx.db.patch(args.recipeId, updateFields);
