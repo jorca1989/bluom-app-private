@@ -727,6 +727,16 @@ export default function WorkoutsManager() {
                             <Image source={{ uri: form.thumbnail }} style={styles.thumbPreview} contentFit="cover" />
                         )}
 
+                        {/* Video URL */}
+                        <Text style={styles.label}>{t('admin.videoUrl', 'Video URL — Fallback / Unisex (R2)')}</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={form.videoUrl}
+                            onChangeText={t => setField('videoUrl', t)}
+                            placeholder={`${R2_CONFIG.workoutBaseUrl}/workouts/video.mp4`}
+                            autoCapitalize="none"
+                        />
+
                         {/* ── Gender Thumbnails & Videos — always visible ── */}
                         <View style={styles.sectionSeparator}>
                             <Users size={14} color="#8b5cf6" />

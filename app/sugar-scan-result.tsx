@@ -11,6 +11,7 @@ import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useUser as useAppUser } from '@/context/UserContext';
 import { useCelebration } from '@/context/CelebrationContext';
 import { getBottomContentPadding } from '@/utils/layout';
+import { useTranslation } from 'react-i18next';
 
 // ─── Editable Row helper (same pattern as food-scan-review) ──
 function Row({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
@@ -35,6 +36,7 @@ export default function SugarScanResultScreen() {
   const appUser = useAppUser();
   const celebration = useCelebration();
   const { user: clerkUser } = useUser();
+  const { t } = useTranslation();
 
   const convexUser = useQuery(
     api.users.getUserByClerkId,
@@ -139,8 +141,8 @@ export default function SugarScanResultScreen() {
           <Ionicons name="arrow-back" size={22} color="#1e293b" />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle}>Scan Result</Text>
-          <Text style={styles.headerSub}>Review & correct if needed</Text>
+          <Text style={styles.headerTitle}>{t('modals.sugar.scanResultTitle', 'Scan Result')}</Text>
+          <Text style={styles.headerSub}>{t('modals.sugar.scanResultSub', 'Review & correct if needed')}</Text>
         </View>
         <View style={{ width: 40 }} />
       </View>
@@ -152,23 +154,23 @@ export default function SugarScanResultScreen() {
       >
         {/* ── Product Name (editable) ── */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Product Name</Text>
+          <Text style={styles.cardTitle}>{t('modals.sugar.productName', 'Product Name')}</Text>
           <TextInput
             value={productName}
             onChangeText={setProductName}
-            placeholder="Product name"
+            placeholder={t('modals.sugar.productNamePH', 'Product name')}
             style={styles.input}
             autoCapitalize="words"
             returnKeyType="done"
           />
-          <Text style={styles.hint}>You can overwrite anything the AI guessed.</Text>
+          <Text style={styles.hint}>{t('modals.sugar.overwriteHint', 'You can overwrite anything the AI guessed.')}</Text>
         </View>
 
         {/* ── Sugar & Calories (editable) ── */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Nutritional Info (editable)</Text>
-          <Row label="Sugar (g)" value={sugar} onChange={setSugar} />
-          <Row label="Calories" value={calories} onChange={setCalories} />
+          <Text style={styles.cardTitle}>{t('modals.sugar.nutritionalInfo', 'Nutritional Info (editable)')}</Text>
+          <Row label={t('modals.sugar.sugarLabel', 'Sugar (g)')} value={sugar} onChange={setSugar} />
+          <Row label={t('modals.sugar.caloriesLabel', 'Calories')} value={calories} onChange={setCalories} />
         </View>
 
         {/* ── Hidden Sugars (read-only pills) ── */}
@@ -176,7 +178,7 @@ export default function SugarScanResultScreen() {
           <View style={styles.hiddenSugarsCard}>
             <View style={styles.hiddenSugarsHeader}>
               <Ionicons name="warning" size={18} color="#e11d48" />
-              <Text style={styles.hiddenSugarsTitle}>Hidden Sugars Found</Text>
+              <Text style={styles.hiddenSugarsTitle}>{t('modals.sugar.hiddenSugarsTitle', 'Hidden Sugars Found')}</Text>
             </View>
             <View style={styles.pillsRow}>
               {hiddenSugars.map((s: string, i: number) => (
@@ -190,17 +192,17 @@ export default function SugarScanResultScreen() {
 
         {/* ── Smart Alternative (Pro-gated, read-only) ── */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Smart Alternative</Text>
+          <Text style={styles.cardTitle}>{t('modals.sugar.smartAlternative', 'Smart Alternative')}</Text>
           {appUser.isPro || appUser.isAdmin ? (
             <Text style={styles.alternativeText}>{alternative || '—'}</Text>
           ) : (
             <View style={styles.blurContainer}>
               <BlurView intensity={30} tint="light" style={styles.blurOverlay} />
               <View style={{ padding: 12 }}>
-                <Text style={styles.proTitle}>Unlock with Pro</Text>
-                <Text style={styles.proSubtitle}>Get smart, low-sugar alternatives tailored to what you scanned.</Text>
+                <Text style={styles.proTitle}>{t('modals.pro.unlockTitle', 'Unlock with Pro')}</Text>
+                <Text style={styles.proSubtitle}>{t('modals.pro.smartAltDesc', 'Get smart, low-sugar alternatives tailored to what you scanned.')}</Text>
                 <TouchableOpacity onPress={() => setShowUpgrade(true)} activeOpacity={0.85} style={styles.proBtn}>
-                  <Text style={styles.proBtnText}>View Pro Plans</Text>
+                  <Text style={styles.proBtnText}>{t('modals.pro.viewPlans', 'View Pro Plans')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -209,11 +211,11 @@ export default function SugarScanResultScreen() {
 
         {/* ── Notes (editable) ── */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Notes</Text>
+          <Text style={styles.cardTitle}>{t('modals.sugar.notesTitle', 'Notes')}</Text>
           <TextInput
             value={notes}
             onChangeText={setNotes}
-            placeholder="AI analysis or your own notes"
+            placeholder={t('modals.sugar.notesPH', 'AI analysis or your own notes')}
             style={styles.textArea}
             multiline
             textAlignVertical="top"
@@ -227,15 +229,15 @@ export default function SugarScanResultScreen() {
           activeOpacity={0.85}
         >
           <Ionicons name="restaurant-outline" size={18} color="#f97316" />
-          <Text style={styles.logMealBtnText}>Log as Meal in Fuel Diary</Text>
+          <Text style={styles.logMealBtnText}>{t('modals.sugar.logAsMeal', 'Log as Meal in Fuel Diary')}</Text>
           <Ionicons name={showMealPicker ? 'chevron-up' : 'chevron-down'} size={16} color="#f97316" />
         </TouchableOpacity>
 
         {showMealPicker && (
           <View style={styles.mealPickerRow}>
             {(['breakfast', 'lunch', 'dinner', 'snack'] as const).map((m) => {
-              const labels: Record<string, string> = { breakfast: 'B', lunch: 'L', dinner: 'D', snack: 'S' };
-              const fullLabels: Record<string, string> = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack' };
+              const labels: Record<string, string> = { breakfast: t('modals.sugar.bLetter', 'B'), lunch: t('modals.sugar.lLetter', 'L'), dinner: t('modals.sugar.dLetter', 'D'), snack: t('modals.sugar.sLetter', 'S') };
+              const fullLabels: Record<string, string> = { breakfast: t('modals.sugar.bLabel', 'Breakfast'), lunch: t('modals.sugar.lLabel', 'Lunch'), dinner: t('modals.sugar.dLabel', 'Dinner'), snack: t('modals.sugar.sLabel', 'Snack') };
               return (
                 <TouchableOpacity
                   key={m}
@@ -260,7 +262,7 @@ export default function SugarScanResultScreen() {
           disabled={saving}
         >
           <Ionicons name="checkmark-circle" size={18} color="#fff" />
-          <Text style={styles.saveBtnText}>{saving ? 'Saving…' : 'Save Sugar Log'}</Text>
+          <Text style={styles.saveBtnText}>{saving ? t('modals.sugar.saving', 'Saving…') : t('modals.sugar.saveLog', 'Save Sugar Log')}</Text>
         </TouchableOpacity>
       </ScrollView>
 
@@ -271,9 +273,9 @@ export default function SugarScanResultScreen() {
           setShowUpgrade(false);
           router.push('/premium');
         }}
-        title="Unlock with Pro"
-        message="Upgrade to Pro to save Sugar scan logs and unlock Smart Alternatives."
-        upgradeLabel="View Pro Plans"
+        title={t('modals.pro.unlockTitle', 'Unlock with Pro')}
+        message={t('modals.sugar.proUpsell', 'Upgrade to Pro to save Sugar scan logs and unlock Smart Alternatives.')}
+        upgradeLabel={t('modals.pro.viewPlans', 'View Pro Plans')}
       />
     </SafeAreaView>
   );
@@ -406,7 +408,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   mealChipLetter: { fontSize: 18, fontWeight: '900', color: '#f97316' },
-  mealChipLabel: { fontSize: 10, fontWeight: '700', color: '#64748b' },
+  mealChipLabel: { fontSize: 10, fontWeight: '700', color: '#64748b', textAlign: 'center' },
   // Save Sugar Log
   saveBtn: {
     marginTop: 12,

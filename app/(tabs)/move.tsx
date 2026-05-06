@@ -53,13 +53,14 @@ import { buildPlanFromDBWorkouts } from '@/utils/buildPlanFromDB';
 // ─────────────────────────────────────────────────────────────
 // WIDGET TOGGLE SYSTEM
 // ─────────────────────────────────────────────────────────────
-type MoveWidgetId = 'kpis' | 'swipeable' | 'quickActions' | 'todayActivities' | 'moveInsights';
+type MoveWidgetId = 'kpis' | 'swipeable' | 'quickActions' | 'todayActivities' | 'moveInsights' | 'proBanner';
 const MOVE_WIDGETS: { id: MoveWidgetId; emoji: string; labelKey: string }[] = [
   { id: 'kpis',            emoji: '📊', labelKey: 'move.widgets.kpis' },
   { id: 'swipeable',       emoji: '🗓️', labelKey: 'move.widgets.swipeable' },
   { id: 'quickActions',    emoji: '⚡', labelKey: 'move.widgets.quickActions' },
   { id: 'todayActivities', emoji: '🏃', labelKey: 'move.widgets.todayActivities' },
   { id: 'moveInsights',    emoji: '📈', labelKey: 'move.widgets.moveInsights' },
+  { id: 'proBanner',       emoji: '🔒', labelKey: 'move.widgets.proBanner' },
 ];
 const MOVE_WIDGETS_KEY = 'bluom_move_widgets_v1';
 
@@ -99,7 +100,7 @@ export default function MoveScreen() {
   const params = useLocalSearchParams<{ openWorkouts?: string }>();
   const insets = useSafeAreaInsets();
   const { width, isTablet, isSmallPhone: isSmallScreen, contentMaxWidth, kpiCardWidth } = useResponsive();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // ── Widget config ──
   const allMoveWidgetIds = MOVE_WIDGETS.map(w => w.id);
@@ -926,7 +927,7 @@ export default function MoveScreen() {
           {/* Program and Workouts Widget — always show, with subtle banner if free plan expired */}
           {isMW('swipeable') && (
             <>
-              {freePlanExpired && (
+              {isMW('proBanner') && freePlanExpired && (
                 <TouchableOpacity
                   style={{ marginHorizontal: 24, marginTop: 4, marginBottom: 16, backgroundColor: '#1e293b', borderRadius: 14, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 12 }}
                   onPress={() => handleProFeature(t('move.continueJourney', 'Continue Your Journey'), t('move.freeUsers28DaysFull', 'Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.'))}
@@ -1051,7 +1052,12 @@ export default function MoveScreen() {
                       <View style={styles.activityInfo}>
                         <Text style={styles.activityName}>
                           {activity.activityType === 'exercise'
-                            ? t(`db.${(typeof activity.name === 'object' && activity.name !== null ? (activity.name as any).en : activity.name).replace(/\s+/g, '')}`, typeof activity.name === 'object' && activity.name !== null ? (activity.name as any).en : activity.name)
+                            ? (function() {
+                                let parsedName = activity.name;
+                                try { if (typeof parsedName === 'string' && parsedName.startsWith('{')) parsedName = JSON.parse(parsedName); } catch(e){}
+                                const localized = typeof parsedName === 'object' && parsedName !== null ? (parsedName as any)[i18n.language] || (parsedName as any).en : parsedName;
+                                return localized ? t(`db.${String(localized).replace(/\s+/g, '')}`, localized) : '';
+                              })()
                             : (typeof activity.name === 'string' && activity.name.includes('Steps')
                               ? activity.name.replace('Steps', t('move.steps', 'Steps')).replace('(Health)', `(${t('move.health', 'Health')})`)
                               : (typeof activity.name === 'object' && activity.name !== null ? (activity.name as any).en : activity.name))}
@@ -1330,7 +1336,7 @@ export default function MoveScreen() {
             const etype = (src?.type ?? 'strength') as 'strength' | 'cardio' | 'yoga' | 'hiit';
             const eName = typeof src?.name === 'string'
               ? src.name
-              : (src?.name as any)?.en || t('move.manualWorkout', 'Manual Workout');
+              : JSON.stringify(src?.name || { en: t('move.manualWorkout', 'Manual Workout') });
 
             await logExerciseEntry({
               userId: convexUser._id,

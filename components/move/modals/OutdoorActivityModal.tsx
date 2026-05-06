@@ -19,7 +19,7 @@ export default function OutdoorActivityModal({ visible, onClose }: Props) {
 
     (async () => {
       try {
-        const mod = await import('./Outdooractivityscreen');
+        const mod = await import('./OutdoorActivityScreen');
         setLoaded(() => (mod as any).default);
       } catch {
         setFailed(true);

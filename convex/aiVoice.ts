@@ -38,6 +38,7 @@ export const parseVoiceFoodLog = action({
     audioBase64: v.string(),
     mimeType: v.string(),   // "audio/m4a" | "audio/wav" | "audio/webm"
     platform: v.string(),
+    language: v.optional(v.string()), // e.g. "pt", "es" — defaults to "en"
   },
   handler: async (_ctx, args) => {
     let { apiKey, normalizedPlatform } = getGeminiApiKeyForPlatform(args.platform);
@@ -46,9 +47,16 @@ export const parseVoiceFoodLog = action({
         ? process.env.GEMINI_API_KEY_ANDROID
         : process.env.GEMINI_API_KEY_IOS;
 
+    const lang = args.language ?? 'en';
+    const langInstruction = lang !== 'en'
+      ? `\n- Return the food "name" in ${lang === 'pt' ? 'European Portuguese' : lang} language. Note: the unit must always remain a standard english string, e.g. "g", "ml", "cup", "tbsp", "piece", "serving".`
+      : '';
+
     const prompt =
       `You are a nutrition assistant. The user has recorded themselves describing what they just ate.
-Listen to the audio and extract all food items mentioned.
+Listen to the audio and extract all food items mentioned.${langInstruction}
+
+Extract all food items mentioned.
 
 Return ONLY valid JSON with this exact shape — no markdown, no explanation:
 {

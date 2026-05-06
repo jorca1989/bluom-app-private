@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
+import { getLocalizedExerciseName } from '@/utils/localize';
 
 export interface PlannedExercise {
   id: string;
@@ -66,7 +67,7 @@ export default function WorkoutDetailModal({
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = React.useState(initialTab);
   const [showUpgrade, setShowUpgrade] = React.useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   React.useEffect(() => {
     if (visible) setActiveTab(initialTab);
@@ -146,7 +147,7 @@ export default function WorkoutDetailModal({
                 </View>
 
                 <View style={styles.cardBody}>
-                  <Text style={styles.exName}>{index + 1}.  {ex.name}</Text>
+                  <Text style={styles.exName}>{index + 1}.  {getLocalizedExerciseName(ex.name, i18n.language)}</Text>
                   <Text style={styles.exDetails}>
                     <Text style={styles.equipment}>{ex.equipment ?? 'Bodyweight'}</Text>
                     {'   '}{ex.sets} × {ex.reps}

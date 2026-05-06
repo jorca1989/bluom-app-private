@@ -225,6 +225,7 @@ export const scanSugarProductFromImage = action({
     imageBase64: v.string(),
     mimeType: v.string(),
     platform: v.string(),
+    language: v.optional(v.string()), // e.g. "pt", "es" — defaults to "en"
   },
   handler: async (_ctx, args) => {
     const { apiKey, source, normalizedPlatform } = getGeminiApiKeyForPlatform(args.platform);
@@ -234,6 +235,12 @@ export const scanSugarProductFromImage = action({
       platform === "ios"
         ? process.env.GEMINI_API_KEY_ANDROID
         : process.env.GEMINI_API_KEY_IOS;
+
+    const lang = args.language ?? 'en';
+    const langInstruction = lang !== 'en'
+      ? `\n- Return ALL string values in the JSON (including productName, hiddenSugarsFound, smartAlternative, and notes) in ${lang === 'pt' ? 'European Portuguese' : lang} language.`
+      : '';
+
     const prompt =
       'You are a nutrition expert and sugar-awareness coach.\n' +
       'Analyze this image of a packaged food/product (front label or nutrition label).\n' +
@@ -245,14 +252,14 @@ export const scanSugarProductFromImage = action({
       '  "hiddenSugarsFound": ["string"],\n' +
       '  "smartAlternative": "string",\n' +
       '  "notes": "string"\n' +
-      '}\n' +
+      '}\n\n' +
       'Rules:\n' +
       '- Sugar grams and calories should be per serving if you can read serving info; otherwise best-effort estimate.\n' +
       '- hiddenSugarsFound: list any ingredients that are actually hidden sugars (maltodextrin, high fructose corn syrup, rice syrup, etc.).\n' +
       '- If you cannot read the label, infer from product type; if still unsure, use 0.\n' +
       '- smartAlternative should be a concrete healthier swap a user could buy instead.\n' +
       '- notes: short explanation (1 sentence max), no markdown.\n' +
-      '- Output MUST be JSON only, no extra text.';
+      '- Output MUST be JSON only, no extra text.' + langInstruction;
 
     let text = "";
     try {

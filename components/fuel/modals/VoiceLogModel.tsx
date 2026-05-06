@@ -77,7 +77,7 @@ export default function VoiceLogModal({
 }: Props) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // Convex
   const logFoodEntry   = useMutation(api.food.logFoodEntry);
@@ -166,6 +166,7 @@ export default function VoiceLogModal({
         audioBase64: base64,
         mimeType: 'audio/m4a',
         platform,
+        language: i18n.language,
       });
 
       if (result.status === 'maintenance') {

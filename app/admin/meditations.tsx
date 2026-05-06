@@ -90,6 +90,7 @@ export default function MeditationsManager() {
         videoUrl: '',
         coverImage: '',
         coverImageLandscape: '',
+        visualType: 'thumbnail' as 'thumbnail' | 'animation',
         status: 'published',
         isPremium: false,
         isFeatured: false,
@@ -134,6 +135,7 @@ export default function MeditationsManager() {
             videoUrl: session.videoUrl || '',
             coverImage: session.coverImage || '',
             coverImageLandscape: session.coverImageLandscape || '',
+            visualType: session.visualType || 'thumbnail',
             status: session.status || 'published',
             isPremium: session.isPremium || false,
             isFeatured: session.isFeatured || false,
@@ -186,6 +188,7 @@ export default function MeditationsManager() {
                 videoUrl: form.videoUrl.trim() || undefined,
                 coverImage: form.coverImage.trim() || undefined,
                 coverImageLandscape: form.coverImageLandscape.trim() || undefined,
+                visualType: form.visualType,
                 tags: form.type === 'soundscape' ? [] : secondaryTags,
                 status: form.status,
                 isPremium: !!form.isPremium,
@@ -531,6 +534,22 @@ export default function MeditationsManager() {
                             <Text style={[styles.label, { marginTop: 0 }]}>{t('admin.coverImageLandscape', 'Cover Image Landscape URL')}</Text>
                             <TextInput style={styles.input} value={form.coverImageLandscape} onChangeText={t => setForm(p => ({ ...p, coverImageLandscape: t }))} placeholder={`${R2_CONFIG.generalBaseUrl}/meditations/landscape.png`} autoCapitalize="none" keyboardType="url" />
                             <Text style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>{t('admin.landscapeHint', 'Used exclusively for the massive Recommended/Featured hero card in the Hub.')}</Text>
+                        </View>
+
+                        <Text style={styles.label}>{t('admin.visualType', 'Player Visual Style')}</Text>
+                        <Text style={{ fontSize: 11, color: '#94a3b8', marginBottom: 6, marginTop: -4 }}>{t('admin.visualTypeHint', 'Should the player show the breathing animation or the static thumbnail?')}</Text>
+                        <View style={{ flexDirection: 'row', gap: 12 }}>
+                            {['thumbnail', 'animation'].map(vt => (
+                                <TouchableOpacity
+                                    key={vt}
+                                    style={[styles.typeOption, form.visualType === vt && styles.typeOptionActive]}
+                                    onPress={() => setForm(p => ({ ...p, visualType: vt as any }))}
+                                >
+                                    <Text style={[styles.typeText, form.visualType === vt && styles.typeTextActive]}>
+                                        {vt === 'animation' ? t('admin.vtAnimation', 'Animation') : t('admin.vtThumbnail', 'Thumbnail')}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
                         </View>
 
                         <Text style={styles.label}>{t('admin.visibility', 'Visibility')}</Text>

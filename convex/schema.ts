@@ -617,6 +617,7 @@ export default defineSchema({
     videoUrl: v.optional(v.string()),
     coverImage: v.optional(v.string()),
     coverImageLandscape: v.optional(v.string()),
+    visualType: v.optional(v.union(v.literal("thumbnail"), v.literal("animation"))),
     tags: v.optional(v.array(v.string())),
     status: v.optional(v.string()), // 'published' | 'draft'
     isPremium: v.boolean(),

@@ -13,6 +13,7 @@
 export interface DBWorkoutDoc {
   _id: string;
   title: string;
+  titleLocalizations?: Record<string, string>;
   description: string;
   thumbnail: string;
   thumbnailMale?: string;
@@ -108,7 +109,7 @@ export function buildPlanFromDBWorkouts(
       // you could apply similar logic here. We use the workout's resolved media.
       allExercises.push({
         id: `${workout._id}-ex-${exIdx}`,
-        name: ex.name,
+        name: workout.titleLocalizations ? { en: ex.name, ...workout.titleLocalizations } : ex.name,
         thumbnailUrl: resolvedThumb,
         videoUrl: resolvedVideo,
         category: workout.category ?? primaryMuscleFallback,

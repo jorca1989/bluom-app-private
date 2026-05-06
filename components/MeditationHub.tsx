@@ -101,7 +101,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
   const combinedSoundscapes = useMemo(() => {
     const local = [SOUNDSCAPES.rain, SOUNDSCAPES.forest, SOUNDSCAPES.ocean, SOUNDSCAPES.brownNoise].map((ss, idx) => ({
       _id: `local-${ss.id}`,
-      title: ss.name,
+      title: t('wellness.soundscapes.' + ss.id, ss.name),
       isLocal: true,
       emoji: idx === 0 ? '🌧' : idx === 1 ? '🌲' : idx === 2 ? '🌊' : '🎧',
       localRef: ss,
@@ -110,7 +110,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
       ? allSessions.filter((s: any) => s.type === 'soundscape' || (s.category && s.category.toLowerCase() === 'soundscapes'))
       : [];
     return [...local, ...fromDb];
-  }, [allSessions]);
+  }, [allSessions, t]);
 
   const handleStartSession = (session: any) => {
     if (session.coverImage) Image.prefetch(session.coverImage);
@@ -304,6 +304,8 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
           audioUrl={getLocalizedAudio(activeSession)}
           sessionTitle={getLocalizedField(activeSession, 'title')}
           coverImage={activeSession?.coverImage}
+          videoUrl={activeSession?.videoUrl}
+          visualType={activeSession?.visualType}
           duration={activeSession?.duration}
         />
       )}

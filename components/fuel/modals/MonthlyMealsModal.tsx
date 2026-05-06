@@ -288,12 +288,245 @@ const GENERIC_WEEK: Record<DietKey, MealTemplate[][]> = {
   ],
 };
 
+const GENERIC_WEEK_PT: Record<DietKey, MealTemplate[][]> = {
+  high_protein: [
+    // Day pattern 1
+    [
+      { mealType: 'Pequeno-almoço', calories: 450, protein: 38, carbs: 30, fat: 14, suggestions: ['4 ovos mexidos', 'iogurte grego 150g', 'Café preto'] },
+      { mealType: 'Almoço',     calories: 620, protein: 52, carbs: 40, fat: 18, suggestions: ['Peito de frango grelhado 220g', 'Arroz integral 120g', 'Brócolos cozidos'] },
+      { mealType: 'Jantar',    calories: 680, protein: 55, carbs: 35, fat: 22, suggestions: ['Salmão assado 200g', 'Batata doce 150g', 'Espargos'] },
+      { mealType: 'Lanche',     calories: 180, protein: 22, carbs: 8,  fat: 5,  suggestions: ['Queijo cottage 180g', 'Fatias de pepino'] },
+    ],
+    // Day pattern 2
+    [
+      { mealType: 'Pequeno-almoço', calories: 480, protein: 40, carbs: 28, fat: 16, suggestions: ['Batido de proteína (30g whey)', 'Aveia 60g', '1 banana'] },
+      { mealType: 'Almoço',     calories: 590, protein: 48, carbs: 45, fat: 15, suggestions: ['Tigela de carne de peru picada 200g', 'Quinoa 100g', 'Folhas verdes'] },
+      { mealType: 'Jantar',    calories: 650, protein: 50, carbs: 38, fat: 20, suggestions: ['Bife de vaca 180g', 'Batata assada 200g', 'Feijão verde'] },
+      { mealType: 'Lanche',     calories: 200, protein: 25, carbs: 10, fat: 6,  suggestions: ['Ovos cozidos x3', 'Tomates cereja'] },
+    ],
+    // Day patterns 3–7 (abbreviated for brevity; same structure)
+    [
+      { mealType: 'Pequeno-almoço', calories: 420, protein: 35, carbs: 32, fat: 12, suggestions: ['Omolete de claras x5', 'Tosta integral x1', 'Abacate ¼'] },
+      { mealType: 'Almoço',     calories: 600, protein: 50, carbs: 42, fat: 16, suggestions: ['Atum 180g', 'Massa integral 90g', 'Molho de tomate'] },
+      { mealType: 'Jantar',    calories: 660, protein: 54, carbs: 30, fat: 24, suggestions: ['Lombo de porco 200g', 'Puré de couve-flor', 'Ervilhas 80g'] },
+      { mealType: 'Lanche',     calories: 170, protein: 20, carbs: 6,  fat: 4,  suggestions: ['Barra de proteína (20g+)', 'Amêndoas 15g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 460, protein: 36, carbs: 35, fat: 14, suggestions: ['Aveia adormecida 80g', 'Scoop de whey', 'Mirtilos 80g'] },
+      { mealType: 'Almoço',     calories: 610, protein: 53, carbs: 38, fat: 17, suggestions: ['Salteado de camarão 200g', 'Arroz branco 120g', 'Pak choi'] },
+      { mealType: 'Jantar',    calories: 640, protein: 52, carbs: 36, fat: 20, suggestions: ['Coxas de frango 220g', 'Vegetais assados 200g', 'Húmus 30g'] },
+      { mealType: 'Lanche',     calories: 190, protein: 24, carbs: 9,  fat: 5,  suggestions: ['Queijo magro 50g', 'Bolachas integrais x5'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 500, protein: 42, carbs: 30, fat: 18, suggestions: ['Salmão fumado 80g', 'Ovos x2', 'Pão de centeio x1'] },
+      { mealType: 'Almoço',     calories: 580, protein: 48, carbs: 44, fat: 14, suggestions: ['Tigela de carne picada magra 180g', 'Lentilhas 100g', 'Salada de espinafres'] },
+      { mealType: 'Jantar',    calories: 670, protein: 56, carbs: 32, fat: 22, suggestions: ['Filete de bacalhau 220g', 'Batata doce wedges 150g', 'Brócolos'] },
+      { mealType: 'Lanche',     calories: 160, protein: 20, carbs: 7,  fat: 4,  suggestions: ['Iogurte Skyr 150g', 'Nozes 15g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 440, protein: 34, carbs: 38, fat: 13, suggestions: ['Panquecas de proteína x3', 'Xarope de ácer 10ml', 'Frutos vermelhos 60g'] },
+      { mealType: 'Almoço',     calories: 630, protein: 54, carbs: 40, fat: 19, suggestions: ['Salada Caesar de frango (sem croutons)', 'Ovo cozido x2'] },
+      { mealType: 'Jantar',    calories: 660, protein: 50, carbs: 40, fat: 21, suggestions: ['Peito de pato 160g', 'Trigo bulgur 100g', 'Brócolos'] },
+      { mealType: 'Lanche',     calories: 180, protein: 22, carbs: 8,  fat: 5,  suggestions: ['Edamame 100g', 'Bolacha de arroz x2'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 470, protein: 40, carbs: 28, fat: 16, suggestions: ['Muffins de ovo x4', 'Espinafres & feta', 'Expresso'] },
+      { mealType: 'Almoço',     calories: 600, protein: 50, carbs: 45, fat: 16, suggestions: ['Tigela de noodles com camarão', 'Bok choy', 'Caldo de soja leve'] },
+      { mealType: 'Jantar',    calories: 680, protein: 55, carbs: 34, fat: 22, suggestions: ['Bife da vazia 180g', 'Cogumelos assados', 'Salada de agrião'] },
+      { mealType: 'Lanche',     calories: 190, protein: 25, carbs: 8,  fat: 5,  suggestions: ['Batido de proteína 250ml', 'Bolacha de arroz x1'] },
+    ],
+  ],
+
+  balanced: [
+    [
+      { mealType: 'Pequeno-almoço', calories: 380, protein: 18, carbs: 50, fat: 11, suggestions: ['Papas de aveia 70g', 'Banana', 'Leite de amêndoa', 'Sementes de chia 10g'] },
+      { mealType: 'Almoço',     calories: 520, protein: 28, carbs: 58, fat: 16, suggestions: ['Wrap de frango integral', 'Abacate', 'Tomate', 'Alface'] },
+      { mealType: 'Jantar',    calories: 600, protein: 32, carbs: 65, fat: 18, suggestions: ['Salmão 170g', 'Arroz integral 120g', 'Vegetais assados'] },
+      { mealType: 'Lanche',     calories: 150, protein: 6,  carbs: 20, fat: 6,  suggestions: ['Maçã', 'Manteiga de amendoim 15g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 400, protein: 20, carbs: 48, fat: 13, suggestions: ['Ovos x2', 'Tosta integral x2', 'Sumo de laranja 150ml'] },
+      { mealType: 'Almoço',     calories: 540, protein: 30, carbs: 55, fat: 17, suggestions: ['Atum salad sandwich', 'Salada', 'Batatas fritas magras 20g'] },
+      { mealType: 'Jantar',    calories: 580, protein: 30, carbs: 62, fat: 16, suggestions: ['Salteado de frango 180g', 'Noodles 100g', 'Vegetais mistos', 'Molho de soja'] },
+      { mealType: 'Lanche',     calories: 160, protein: 7,  carbs: 22, fat: 5,  suggestions: ['Iogurte 130g', 'Granola 20g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 360, protein: 16, carbs: 52, fat: 10, suggestions: ['Tigela de smoothie', 'Frutos vermelhos congelados 100g', 'Banana', 'Aveia 30g', 'Flocos de coco'] },
+      { mealType: 'Almoço',     calories: 510, protein: 26, carbs: 58, fat: 15, suggestions: ['Sopa de lentilhas 300ml', 'Pão integral', 'Salada'] },
+      { mealType: 'Jantar',    calories: 590, protein: 32, carbs: 60, fat: 17, suggestions: ['Almôndegas de peru em molho de tomate', 'Esparguete 90g', 'Parmesão 15g'] },
+      { mealType: 'Lanche',     calories: 140, protein: 5,  carbs: 19, fat: 5,  suggestions: ['Mão-cheia de uvas', 'Queijo 25g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 390, protein: 19, carbs: 46, fat: 13, suggestions: ['Rabanadas x2', 'Frutos vermelhos', 'iogurte grego 100g'] },
+      { mealType: 'Almoço',     calories: 530, protein: 28, carbs: 56, fat: 16, suggestions: ['Húmus & veggie wrap', 'Halloumi grelhado 50g', 'Pimentos assados'] },
+      { mealType: 'Jantar',    calories: 610, protein: 34, carbs: 62, fat: 17, suggestions: ['Ragu de carne 160g', 'Pappardelle 90g', 'Pão de alho 30g'] },
+      { mealType: 'Lanche',     calories: 155, protein: 6,  carbs: 21, fat: 5,  suggestions: ['Bolacha de arrozs x3', 'Manteiga de amêndoa 15g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 370, protein: 17, carbs: 50, fat: 11, suggestions: ['Muesli Bircher 200g', 'Maçã estufada', 'Fio de mel'] },
+      { mealType: 'Almoço',     calories: 545, protein: 29, carbs: 57, fat: 17, suggestions: ['Tigela de salada de frango grelhado', 'Feta 30g', 'Azeitonas', 'Fatia de pão de massa mãe'] },
+      { mealType: 'Jantar',    calories: 595, protein: 31, carbs: 64, fat: 16, suggestions: ['Massa com camarão 180g', 'Alho', 'Malagueta', 'Tomates cereja', 'Rúcula'] },
+      { mealType: 'Lanche',     calories: 145, protein: 5,  carbs: 20, fat: 5,  suggestions: ['Banana', 'Manteiga de amendoim 10g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 410, protein: 21, carbs: 44, fat: 14, suggestions: ['Shakshuka (2 eggs)', 'Pão pita integral', 'Chá de menta'] },
+      { mealType: 'Almoço',     calories: 520, protein: 27, carbs: 59, fat: 15, suggestions: ['Caril de vegetais 300g', 'Arroz basmati 100g', 'Naan 40g'] },
+      { mealType: 'Jantar',    calories: 600, protein: 33, carbs: 63, fat: 17, suggestions: ['Robalo 180g', 'Batatas novas 150g', 'Salicórnia e manteiga de limão'] },
+      { mealType: 'Lanche',     calories: 150, protein: 6,  carbs: 20, fat: 5,  suggestions: ['Nozes mistas 20g', 'Tâmara Medjool x1'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 385, protein: 18, carbs: 48, fat: 12, suggestions: ['Tigela de açaí', 'Granola 25g', 'Kiwi', 'Mirtilos'] },
+      { mealType: 'Almoço',     calories: 535, protein: 29, carbs: 56, fat: 16, suggestions: ['Wrap de falafel (3 falafel)', 'Tahini', 'Couve em conserva', 'Palitos de cenoura'] },
+      { mealType: 'Jantar',    calories: 605, protein: 33, carbs: 61, fat: 18, suggestions: ['Kofta de borrego 180g', 'Cuscuz 100g', 'Tzatziki 60g', 'Curgete grelhada'] },
+      { mealType: 'Lanche',     calories: 155, protein: 7,  carbs: 18, fat: 6,  suggestions: ['Queijo de corda x1', 'Tomates cereja 80g'] },
+    ],
+  ],
+
+  low_carb: [
+    [
+      { mealType: 'Pequeno-almoço', calories: 430, protein: 28, carbs: 8,  fat: 32, suggestions: ['Bacon x3 rashers', 'Ovos x3 scrambled', 'Abacate ½', 'Café preto'] },
+      { mealType: 'Almoço',     calories: 580, protein: 40, carbs: 10, fat: 42, suggestions: ['Atum stuffed avocado', 'Fatias de pepino', 'Queijo 40g'] },
+      { mealType: 'Jantar',    calories: 650, protein: 48, carbs: 12, fat: 46, suggestions: ['Bife ribeye 200g', 'Cogumelos salteados em manteiga', 'Salada de folhas com azeite'] },
+      { mealType: 'Lanche',     calories: 200, protein: 12, carbs: 4,  fat: 16, suggestions: ['Salame 40g', 'Queijo 30g', 'Azeitonas 8 unid'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 410, protein: 26, carbs: 6,  fat: 30, suggestions: ['Panquecas keto x3', 'Queijo creme', 'Frutos vermelhos 50g'] },
+      { mealType: 'Almoço',     calories: 560, protein: 38, carbs: 9,  fat: 40, suggestions: ['Caesar de frango (sem croutons)', 'Parmesão 30g', 'Alface romana', 'Anchovas'] },
+      { mealType: 'Jantar',    calories: 630, protein: 46, carbs: 11, fat: 44, suggestions: ['Salmão with butter & dill 200g', 'Arroz de couve-flor 200g', 'Espargos'] },
+      { mealType: 'Lanche',     calories: 180, protein: 10, carbs: 3,  fat: 14, suggestions: ['Nozes macadâmia 30g', 'Chocolate negro 2 quadrados'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 450, protein: 30, carbs: 7, fat: 34, suggestions: ['Omolete x3 eggs', 'Espinafres', 'Feta 30g', 'Tomates cereja'] },
+      { mealType: 'Almoço',     calories: 570, protein: 42, carbs: 8, fat: 42, suggestions: ['Alface wrap burgers x2', 'Hambúrguer de vaca 120g', 'Cheddar', 'Molho de hambúrguer'] },
+      { mealType: 'Jantar',    calories: 640, protein: 48, carbs: 10, fat: 45, suggestions: ['Barriga de porco 180g', 'Brócolos assados', 'Alho butter sauce'] },
+      { mealType: 'Lanche',     calories: 190, protein: 11, carbs: 3,  fat: 15, suggestions: ['Queijo brie 40g', 'Palitos de aipo 3'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 420, protein: 27, carbs: 5,  fat: 32, suggestions: ['Salmão fumado 80g', 'Queijo creme 40g', 'Pepino', 'Alcaparras'] },
+      { mealType: 'Almoço',     calories: 555, protein: 40, carbs: 9,  fat: 38, suggestions: ['Noodles de curgete', 'Pesto 30g', 'Tomates cereja', 'Frango grelhado'] },
+      { mealType: 'Jantar',    calories: 660, protein: 50, carbs: 10, fat: 47, suggestions: ['Perna de pato confitada 200g', 'Feijão verde in butter', 'Puré de aipo'] },
+      { mealType: 'Lanche',     calories: 170, protein: 9,  carbs: 2,  fat: 14, suggestions: ['Pepperoni 30g', 'Queijo de corda x1'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 440, protein: 32, carbs: 6,  fat: 33, suggestions: ['Pudim de chia 200ml leite de coco', 'Scoop de proteína', 'Frutos vermelhos 40g'] },
+      { mealType: 'Almoço',     calories: 575, protein: 44, carbs: 8,  fat: 42, suggestions: ['Salada de ovo 3 eggs', 'Maionese 30g', 'Copos de alface romana', 'Pedaços de bacon'] },
+      { mealType: 'Jantar',    calories: 620, protein: 46, carbs: 11, fat: 43, suggestions: ['Costeletas de borrego x2', 'Curgete assada', 'Molho de iogurte e menta 30g'] },
+      { mealType: 'Lanche',     calories: 185, protein: 11, carbs: 3,  fat: 15, suggestions: ['Queijo crackers 3 keto', 'Guacamoleamole 40g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 460, protein: 30, carbs: 7,  fat: 35, suggestions: ['Café Bulletproof 350ml', 'Copos de bacon e ovo x2'] },
+      { mealType: 'Almoço',     calories: 560, protein: 38, carbs: 7,  fat: 42, suggestions: ['Atum tataki 180g', 'Edamame 60g', 'Molho de sésamo', 'Nori'] },
+      { mealType: 'Jantar',    calories: 650, protein: 50, carbs: 9,  fat: 46, suggestions: ['Bife T-bone 220g', 'Alho butter mushrooms', 'Molho de queijo azul 30g'] },
+      { mealType: 'Lanche',     calories: 195, protein: 12, carbs: 4,  fat: 15, suggestions: ['Bolachas de farinha de amêndoa x4', 'Queijo creme 30g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 425, protein: 28, carbs: 8,  fat: 31, suggestions: ['Abacate egg boats x2', 'Bacon estaladiço', 'Molho picante'] },
+      { mealType: 'Almoço',     calories: 570, protein: 42, carbs: 8,  fat: 41, suggestions: ['Salada caprese', 'Mozzarella 100g', 'Presunto 60g', 'Manjericão e azeite'] },
+      { mealType: 'Jantar',    calories: 640, protein: 48, carbs: 10, fat: 45, suggestions: ['Bacalhau assado 200g', 'Gratinado de couve-flor', 'Rúcula & parmesan salad'] },
+      { mealType: 'Lanche',     calories: 175, protein: 10, carbs: 2,  fat: 14, suggestions: ['Ovos recheados x2', 'Fitas de pepino'] },
+    ],
+  ],
+
+  plant_based: [
+    [
+      { mealType: 'Pequeno-almoço', calories: 380, protein: 14, carbs: 58, fat: 10, suggestions: ['Tigela de smoothie', 'Mixed berries 100g', 'Aveia 40g', 'Sementes de cânhamo 15g', 'Leite de amêndoa'] },
+      { mealType: 'Almoço',     calories: 510, protein: 20, carbs: 68, fat: 14, suggestions: ['Tigela de Buddha', 'Grão-de-bico 150g', 'Quinoa 100g', 'Vegetais assados', 'Tahini'] },
+      { mealType: 'Jantar',    calories: 590, protein: 24, carbs: 75, fat: 16, suggestions: ['Dal de lentilhas 300g', 'Arroz integral 120g', 'Naan 40g', 'Chutney de manga'] },
+      { mealType: 'Lanche',     calories: 150, protein: 6,  carbs: 20, fat: 5,  suggestions: ['Maçã slices', 'Manteiga de amêndoa 15g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 400, protein: 16, carbs: 55, fat: 12, suggestions: ['Mexido de tofu 200g', 'Açafrão e espinafres', 'Tosta integral x2', 'Tomate'] },
+      { mealType: 'Almoço',     calories: 530, protein: 22, carbs: 65, fat: 15, suggestions: ['Tigela de edamame e noodles', 'Molho de sésamo e gengibre', 'Pepino', 'Tiras de nori'] },
+      { mealType: 'Jantar',    calories: 600, protein: 26, carbs: 72, fat: 16, suggestions: ['Tacos de feijão preto x2', 'Tortilhas de milho', 'Salsa', 'Guacamole 40g', 'Salada de repolho'] },
+      { mealType: 'Lanche',     calories: 160, protein: 8,  carbs: 18, fat: 6,  suggestions: ['Húmus 60g', 'Carrot & celery sticks'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 370, protein: 12, carbs: 60, fat: 9,  suggestions: ['Aveia adormecida 80g', 'Chia 10g', 'Leite de aveia', 'Ameixas estufadas', 'Xarope de ácer'] },
+      { mealType: 'Almoço',     calories: 520, protein: 21, carbs: 66, fat: 14, suggestions: ['Sopa de ervilha e menta 400ml', 'Fatia de pão de massa mãe', 'Cobertura de sementes mistas'] },
+      { mealType: 'Jantar',    calories: 580, protein: 24, carbs: 70, fat: 15, suggestions: ['Risoto de cogumelos 300g', 'Levedura nutricional', 'Salada de ervas frescas'] },
+      { mealType: 'Lanche',     calories: 145, protein: 5,  carbs: 22, fat: 4,  suggestions: ['Tâmara Medjools x2', 'Cajus 20g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 410, protein: 18, carbs: 52, fat: 13, suggestions: ['Panquecas de proteína (vegan)', 'Frutos vermelhos 80g', 'Iogurte de coco 100g'] },
+      { mealType: 'Almoço',     calories: 540, protein: 23, carbs: 67, fat: 15, suggestions: ['Salteado de tempeh 180g', 'Noodles soba 90g', 'Molho de amendoim', 'Rebentos de feijão'] },
+      { mealType: 'Jantar',    calories: 595, protein: 25, carbs: 73, fat: 15, suggestions: ['Caril de jaca 300g', 'Basmati 120g', 'Roti 30g', 'Lassi de manga (oat)'] },
+      { mealType: 'Lanche',     calories: 155, protein: 6,  carbs: 21, fat: 5,  suggestions: ['Mistura de sementes/frutos secos 30g', 'Manga desidratada 20g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 390, protein: 15, carbs: 57, fat: 11, suggestions: ['Parfait de chia', 'Coconut milk', 'Maracujá', 'Granola 25g'] },
+      { mealType: 'Almoço',     calories: 525, protein: 22, carbs: 64, fat: 15, suggestions: ['Vegetais assados & feta (base vegetal)', 'Pão achatado 60g', 'Molho de limão e tahini'] },
+      { mealType: 'Jantar',    calories: 590, protein: 26, carbs: 68, fat: 16, suggestions: ['Tikka masala de grão-de-bico 300g', 'Arroz integral 110g', 'Chutney de coentros'] },
+      { mealType: 'Lanche',     calories: 150, protein: 7,  carbs: 18, fat: 5,  suggestions: ['Iogurte de soja 150g', 'Sementes de linhaça 10g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 420, protein: 17, carbs: 54, fat: 13, suggestions: ['Abacate toast x2', 'Tofu escalfado 80g', 'Malagueta flakes', 'Limão'] },
+      { mealType: 'Almoço',     calories: 510, protein: 20, carbs: 65, fat: 14, suggestions: ['Gaspacho 300ml', 'Sourdough x1', 'Húmus de pimento assado 50g'] },
+      { mealType: 'Jantar',    calories: 600, protein: 25, carbs: 74, fat: 15, suggestions: ['Beringela à parmegiana (vegan)', 'Esparguete 80g', 'Pesto de manjericão (vegan)'] },
+      { mealType: 'Lanche',     calories: 160, protein: 6,  carbs: 22, fat: 5,  suggestions: ['Bolas de energia x2', 'Aveia & peanut butter'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 400, protein: 16, carbs: 55, fat: 12, suggestions: ['Smoothie verde 500ml', 'Espinafres', 'Proteína de ervilha 25g', 'Manga', 'Gengibre'] },
+      { mealType: 'Almoço',     calories: 535, protein: 22, carbs: 66, fat: 15, suggestions: ['Rolos de papel de arroz vietnamitas x4', 'Tofu 100g', 'Molho de amendoim para mergulhar'] },
+      { mealType: 'Jantar',    calories: 585, protein: 24, carbs: 71, fat: 15, suggestions: ['Laksa de tofu 350ml', 'Noodles de arroz 80g', 'Bok choy', 'Lima e malagueta'] },
+      { mealType: 'Lanche',     calories: 145, protein: 5,  carbs: 21, fat: 4,  suggestions: ['Pipocas 30g', 'Levedura nutricional sprinkle'] },
+    ],
+  ],
+
+  flexible: [
+    [
+      { mealType: 'Pequeno-almoço', calories: 400, protein: 22, carbs: 46, fat: 13, suggestions: ['Ovos any style x2', 'Toast x2', 'Fruta à escolha', 'Café ou chá'] },
+      { mealType: 'Almoço',     calories: 550, protein: 32, carbs: 55, fat: 16, suggestions: ['Proteína + hidratos + vegetais à escolha (e.g. chicken + rice + salad)'] },
+      { mealType: 'Jantar',    calories: 620, protein: 36, carbs: 60, fat: 18, suggestions: ['Qualquer prato equilibrado: proteína 150g, amido 120g, 2 porções de vegetais'] },
+      { mealType: 'Lanche',     calories: 160, protein: 8,  carbs: 18, fat: 5,  suggestions: ['Iogurte OU fruta + nozes OU bolacha de arroz + manteiga de frutos secos'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 380, protein: 18, carbs: 50, fat: 11, suggestions: ['Smoothie com proteína em pó', 'Qualquer fruta que tiver', 'Aveia or granola 40g'] },
+      { mealType: 'Almoço',     calories: 530, protein: 30, carbs: 58, fat: 15, suggestions: ['Restos do jantar OU sanduíche com recheio de proteína', 'Salada'] },
+      { mealType: 'Jantar',    calories: 610, protein: 34, carbs: 62, fat: 17, suggestions: ['Salteado: proteína + vegetais + noodles ou arroz', 'Molho à escolha'] },
+      { mealType: 'Lanche',     calories: 155, protein: 7,  carbs: 19, fat: 5,  suggestions: ['Mão-cheia de nozes mistas', 'Peça de fruta'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 420, protein: 20, carbs: 48, fat: 14, suggestions: ['Aveia adormecida', 'iogurte grego', 'Frutos vermelhos', 'Mel'] },
+      { mealType: 'Almoço',     calories: 545, protein: 31, carbs: 57, fat: 16, suggestions: ['Wrap com proteína magra + salada', 'Fruta'] },
+      { mealType: 'Jantar',    calories: 600, protein: 33, carbs: 63, fat: 16, suggestions: ['Massa com molho de proteína', 'Salada verde grande', 'Pão de água'] },
+      { mealType: 'Lanche',     calories: 165, protein: 8,  carbs: 20, fat: 5,  suggestions: ['Queijo + crackers', 'Tomates cereja'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 390, protein: 19, carbs: 47, fat: 12, suggestions: ['Abacate toast x2', 'Ovo ao seu gosto', 'Café'] },
+      { mealType: 'Almoço',     calories: 540, protein: 30, carbs: 60, fat: 14, suggestions: ['Tigela de Buddha: grain + protein + veg + dressing'] },
+      { mealType: 'Jantar',    calories: 615, protein: 35, carbs: 61, fat: 17, suggestions: ['Proteína grelhada ou assada 180g', 'Vegetais assados', 'Puré ou arroz 120g'] },
+      { mealType: 'Lanche',     calories: 150, protein: 6,  carbs: 19, fat: 5,  suggestions: ['Mistura de sementes/frutos secos 30g', 'OU yogurt 130g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 410, protein: 21, carbs: 45, fat: 14, suggestions: ['Panquecas de proteína x2', 'Frutos vermelhos', 'Xarope de ácer 10ml'] },
+      { mealType: 'Almoço',     calories: 535, protein: 29, carbs: 57, fat: 16, suggestions: ['Sopa + pão', 'Fonte de proteína (ovo/atum/frango) adicionada'] },
+      { mealType: 'Jantar',    calories: 600, protein: 32, carbs: 64, fat: 16, suggestions: ['Caril com proteína (qualquer): 300g + rice 120g + naan 40g'] },
+      { mealType: 'Lanche',     calories: 160, protein: 7,  carbs: 20, fat: 5,  suggestions: ['Bolacha de arroz x2 + nut butter 15g'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 400, protein: 20, carbs: 48, fat: 12, suggestions: ['Cereal (rico em proteína) + leite', 'Banana', 'Café preto'] },
+      { mealType: 'Almoço',     calories: 545, protein: 31, carbs: 58, fat: 16, suggestions: ['Tigela de salada + cobertura de proteína + grãos', 'Molho à escolha'] },
+      { mealType: 'Jantar',    calories: 610, protein: 33, carbs: 63, fat: 17, suggestions: ['Peixe (ou carne) 180g + new potatoes 150g + vegetais verdes'] },
+      { mealType: 'Lanche',     calories: 155, protein: 7,  carbs: 19, fat: 5,  suggestions: ['Ovo cozido x1', 'Peça de fruta'] },
+    ],
+    [
+      { mealType: 'Pequeno-almoço', calories: 415, protein: 22, carbs: 46, fat: 13, suggestions: ['Shakshuka x2 eggs', 'Pitta bread', 'Salada de ervas frescas'] },
+      { mealType: 'Almoço',     calories: 530, protein: 28, carbs: 59, fat: 15, suggestions: ['Batata assada + tuna/cheese filling', 'Salada'] },
+      { mealType: 'Jantar',    calories: 605, protein: 34, carbs: 61, fat: 17, suggestions: ['Tajine (qualquer proteína) 300g', 'Cuscuz 100g', 'Pão achatado de harissa'] },
+      { mealType: 'Lanche',     calories: 160, protein: 7,  carbs: 20, fat: 5,  suggestions: ['Edamame 80g', 'Bolacha de arroz x3'] },
+    ],
+  ],
+};
+
 // Alias for now — in a real app you'd differentiate
 GENERIC_WEEK['flexible'] = GENERIC_WEEK['balanced'];
 
 /** Build a 28-day plan from the 7-day rotating pattern */
-function build30DayPlan(dietKey: DietKey): DayTemplate[] {
-  const weekPatterns = GENERIC_WEEK[dietKey] ?? GENERIC_WEEK['balanced'];
+
+/** Build a 28-day plan from the 7-day rotating pattern */
+function build30DayPlan(dietKey: DietKey, lang: string): DayTemplate[] {
+  const dict = lang.startsWith('pt') ? GENERIC_WEEK_PT : GENERIC_WEEK;
+  const weekPatterns = dict[dietKey] ?? dict['balanced'];
   return Array.from({ length: 28 }, (_, i) => ({
     day: i + 1,
     meals: weekPatterns[i % weekPatterns.length],
@@ -334,7 +567,7 @@ function MealCard({
   const logFoodEntry = useMutation(api.food.logFoodEntry);
   const today = new Date().toISOString().split('T')[0];
   const [logging, setLogging] = useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const spinValue = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -496,7 +729,7 @@ const mcS = StyleSheet.create({
 export default function MealHubScreen() {
   const router  = useRouter();
   const insets  = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user: clerkUser } = useUser();
 
   const convexUser  = useQuery(api.users.getUserByClerkId, clerkUser?.id ? { clerkId: clerkUser.id } : 'skip');
@@ -512,7 +745,7 @@ export default function MealHubScreen() {
     if (isPro && Array.isArray(templates) && templates.length > 0) {
       return templates.slice(0, 28);
     }
-    return build30DayPlan(dietKey);
+    return build30DayPlan(dietKey, i18n.language);
   }, [isPro, activePlans, dietKey]);
 
   // Which day plan is active (based on programStartDate)

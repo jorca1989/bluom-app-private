@@ -391,3 +391,15 @@ export const relapseHabit = mutation({
     });
   },
 });
+
+/**
+ * Delete a quitting habit
+ */
+export const deleteQuittingHabit = mutation({
+  args: {
+    habitId: v.id("quittingHabits"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.habitId);
+  },
+});

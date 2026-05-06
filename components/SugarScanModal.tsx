@@ -8,6 +8,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { requireOptionalNativeModule } from 'expo-modules-core';
 import { useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import { useTranslation } from 'react-i18next';
 
 export type SugarScanResult = {
   productName: string;
@@ -31,6 +32,7 @@ export function SugarScanModal({
   isPro: boolean;
   onUpgrade: () => void;
 }) {
+  const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
   const cameraRef = useRef<CameraView | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
@@ -126,7 +128,7 @@ export function SugarScanModal({
     setLoading(true);
     setError(null);
     try {
-      const res = await scan({ imageBase64: capturedBase64, mimeType: 'image/jpeg', platform: Platform.OS });
+      const res = await scan({ imageBase64: capturedBase64, mimeType: 'image/jpeg', platform: Platform.OS, language: i18n.language });
       if (res?.status === 'maintenance') {
         setError('Temporarily unavailable. Please try again later.');
         return;
@@ -161,8 +163,8 @@ export function SugarScanModal({
             {/* Top Bar */}
             <SafeAreaView style={[st.topBar, { paddingTop: Math.max(insets.top, 44) }]} edges={['top']}>
               <View style={st.topInfo}>
-                <Text style={st.scanTitle}>Scan Product</Text>
-                <Text style={st.scanSubtitle}>Identify hidden sugars & alternatives</Text>
+                <Text style={st.scanTitle}>{t('modals.sugar.scanTitle', 'Scan Product')}</Text>
+                <Text style={st.scanSubtitle}>{t('modals.sugar.scanSubtitle', 'Identify hidden sugars & alternatives')}</Text>
               </View>
               <TouchableOpacity onPress={onClose} style={st.iconCloseBtn}>
                 <Ionicons name="close" size={24} color="#ffffff" />
@@ -199,24 +201,24 @@ export function SugarScanModal({
              {permission && !permission.granted ? (
                 <View style={st.permContainer}>
                    <Ionicons name="camera-outline" size={48} color="#64748b" />
-                   <Text style={st.permTitle}>Camera access required</Text>
-                   <Text style={st.permSub}>Scan food products to find hidden sugars.</Text>
+                   <Text style={st.permTitle}>{t('modals.photo.camRequired', 'Camera access required')}</Text>
+                   <Text style={st.permSub}>{t('modals.sugar.scanSub', 'Scan food products to find hidden sugars.')}</Text>
                    <TouchableOpacity style={st.permBtn} onPress={requestPermission}>
-                      <Text style={st.permBtnText}>Enable Camera</Text>
+                      <Text style={st.permBtnText}>{t('modals.photo.enableCam', 'Enable Camera')}</Text>
                    </TouchableOpacity>
                 </View>
              ) : (
                 <View style={st.analysisCard}>
                   <View style={st.successHeader}>
                     <Ionicons name="checkmark-circle" size={32} color="#10b981" />
-                    <Text style={st.analysisTitle}>Photo Captured</Text>
+                    <Text style={st.analysisTitle}>{t('modals.photo.captured', 'Photo Captured')}</Text>
                   </View>
 
                   {!!error && <Text style={st.errorText}>{error}</Text>}
 
                   <View style={st.resultActions}>
                     <TouchableOpacity style={st.retakeBtn} onPress={() => setCapturedBase64(null)} disabled={loading}>
-                      <Text style={st.retakeText}>Retake</Text>
+                      <Text style={st.retakeText}>{t('modals.photo.retake', 'Retake')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
                       style={[st.analyzeBtn, loading && st.disabledBtn]} 
@@ -225,7 +227,7 @@ export function SugarScanModal({
                     >
                       {loading ? <ActivityIndicator size="small" color="#ffffff"/> : (
                         <>
-                          <Text style={st.analyzeBtnText}>Analyze Product</Text>
+                          <Text style={st.analyzeBtnText}>{t('modals.sugar.analyze', 'Analyze Product')}</Text>
                           <Ionicons name="sparkles" size={18} color="#ffffff" />
                         </>
                       )}

@@ -5,6 +5,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Video, ResizeMode } from 'expo-av';
+import { getLocalizedExerciseName } from '@/utils/localize';
 
 export interface SetData {
   id: string;
@@ -42,7 +43,7 @@ export default function ActiveWorkoutModal({
   onDeleteExercise
 }: ActiveWorkoutModalProps) {
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [timeSpent, setTimeSpent] = useState(0);
   const [exercises, setExercises] = useState<ActiveExercise[]>([]);
   const [restTimer, setRestTimer] = useState(0);
@@ -190,7 +191,7 @@ export default function ActiveWorkoutModal({
                     <View style={styles.exNumBadge}>
                       <Text style={styles.exNumBadgeText}>{exIdx + 1}</Text>
                     </View>
-                    <Text style={styles.exName}>{t(`db.${ex.name.replace(/\s+/g, '')}`, ex.name)}</Text>
+                    <Text style={styles.exName}>{getLocalizedExerciseName(ex.name, i18n.language)}</Text>
 
                     {onDeleteExercise && (
                       <TouchableOpacity 

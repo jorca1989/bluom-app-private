@@ -233,6 +233,7 @@ export default function HabitHubScreen() {
     const quittingHabits = useQuery(api.habits.getUserQuittingHabits, user ? { userId: user._id } : "skip");
     const createQuittingHabit = useMutation(api.habits.createQuittingHabit);
     const relapseHabit = useMutation(api.habits.relapseHabit);
+    const deleteQuittingHabit = useMutation(api.habits.deleteQuittingHabit);
 
     // Freedom Clock Logic
     const [now, setNow] = useState(Date.now());
@@ -268,6 +269,13 @@ export default function HabitHubScreen() {
                 }
             ]
         );
+    };
+
+    const handleDeleteQuittingHabit = (habitId: Id<"quittingHabits">, name: string) => {
+        Alert.alert(t('wellness.habits.deleteTitle', 'Delete Habit'), t('wellness.habits.deletePrompt', 'Are you sure you want to delete {{name}}?', { name }), [
+            { text: t('wellness.common.cancel', 'Cancel'), style: 'cancel' },
+            { text: t('wellness.common.delete', 'Delete'), style: 'destructive', onPress: () => deleteQuittingHabit({ habitId }) }
+        ]);
     };
 
     const handleEmergency = (habitName: string) => {
@@ -384,16 +392,19 @@ export default function HabitHubScreen() {
                             return (
                                 <View key={habit._id} style={styles.breakCard}>
                                     <View style={styles.breakCardHeader}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, marginRight: 8 }}>
                                             <View style={styles.breakIconContainer}>
                                                 <Text style={{ fontSize: 24 }}>{habit.icon}</Text>
                                             </View>
-                                            <Text style={styles.breakTitle}>{habit.name}</Text>
+                                            <Text style={[styles.breakTitle, { flexShrink: 1 }]} numberOfLines={2}>{habit.name}</Text>
                                         </View>
                                         <View style={styles.statusBadge}>
                                             <View style={[styles.statusDot, { backgroundColor: habit.status === 'relapsed' ? '#ef4444' : '#22c55e' }]} />
                                             <Text style={styles.statusText}>{habit.status === 'active' ? t('wellness.habits.statusFree', 'Livre') : t('wellness.habits.statusRelapsed', 'Recaída')}</Text>
                                         </View>
+                                        <TouchableOpacity onPress={() => handleDeleteQuittingHabit(habit._id, habit.name)} style={{ marginLeft: 8 }}>
+                                            <Ionicons name="trash" size={18} color="#dc2626" />
+                                        </TouchableOpacity>
                                     </View>
 
                                     <View style={styles.freedomClockContainer}>

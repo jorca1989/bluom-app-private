@@ -203,6 +203,7 @@ interface MeditationPlayerProps {
   videoUrl?: string;   // NEW – MP4 support
   sessionTitle?: string;
   coverImage?: string;
+  visualType?: 'thumbnail' | 'animation';
   duration?: number;   // minutes hint
   logId?: Id<'meditationLogs'> | null;
 }
@@ -214,7 +215,7 @@ type LoadState = 'idle' | 'loading' | 'buffering' | 'ready';
 // ─────────────────────────────────────────────────────────────
 export default function MeditationPlayerScreen({
   visible, onClose, soundscape, audioUrl, videoUrl,
-  sessionTitle, coverImage, duration, logId,
+  sessionTitle, coverImage, visualType, duration, logId,
 }: MeditationPlayerProps) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -466,7 +467,12 @@ export default function MeditationPlayerScreen({
     const lower = title.toLowerCase();
     return lower.includes('sleep') || lower.includes('anxiety') || lower.includes('focus') || lower.includes('breath');
   };
-  const showAnimation = (isBreathCategory(sessionTitle) || (soundscape && ['sleep', 'focus', 'anxiety'].includes(soundscape.category))) && !isVideoSession;
+  
+  const showAnimation = !isVideoSession && (
+    visualType === 'animation' || 
+    (!visualType && (isBreathCategory(sessionTitle) || (soundscape && ['sleep', 'focus', 'anxiety'].includes(soundscape.category))))
+  );
+  
   const showSeekBar = durationMs > 0 && !isSoundscape;
 
   // ── Layout sizes ─────────────────────────────────────────────

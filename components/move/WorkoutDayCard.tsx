@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedExerciseName } from '@/utils/localize';
 
 interface ExerciseThumb {
   id: string;
@@ -26,7 +27,7 @@ export default function WorkoutDayCard({
   onStartWorkout,
   onViewWorkout
 }: WorkoutDayCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // For visual truncation if more than 3 exercises
   const displayExercises = exercises.slice(0, 3);
