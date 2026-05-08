@@ -1,0 +1,56 @@
+{
+  "cli": {
+    "version": ">= 16.28.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development"
+    },
+    "development-simulator": {
+      "extends": "development",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "local": {
+      "extends": "development"
+    },
+    "preview": {
+      "distribution": "internal",
+      "channel": "preview",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_CONVEX_URL": "https://cheerful-snake-681.convex.cloud",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuYmx1b20uYXBwJA",
+        "EXPO_PUBLIC_CLERK_JWT_TEMPLATE_ID": "jtmp_37ixCZjxhFlM4THbZIBUlZYoFLr"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_CONVEX_URL": "https://cheerful-snake-681.convex.cloud",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuYmx1b20uYXBwJA",
+        "EXPO_PUBLIC_CLERK_JWT_TEMPLATE_ID": "jtmp_37ixCZjxhFlM4THbZIBUlZYoFLr",
+        "EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY": "goog_cbCtfoKokhXOpxiRuTGRDvFNURD",
+        "EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY": "appl_xNLLTCKltfDiOqsFefIwcIkaHVR",
+        "EXPO_PUBLIC_POSTHOG_API_KEY": "phc_FxRJ7YGC7Ma8K1yzdT8C1pIOz98ahx8MqOCQceEoe6T",
+        "EXPO_PUBLIC_POSTHOG_HOST": "https://us.i.posthog.com"
+      }
+    },
+    "simulator": {
+      "extends": "production",
+      "ios": {
+        "simulator": true
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

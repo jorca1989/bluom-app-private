@@ -1,0 +1,81 @@
+# Chest exercises — one name per line, no extension, no _female suffix
+# Stopping point was: Barbell Smith Chest Press_Female → resume from after that
+
+# ── Band exercises ────────────────────────────────────────────────────────────
+Band Chest Fly
+Band Chest Press
+Band Decline Chest Press
+Band Incline Chest Press
+Band Push Up
+Band Single Arm Chest Press
+
+# ── Barbell exercises ─────────────────────────────────────────────────────────
+Barbell Bench Press
+Barbell Board Press
+Barbell Close Grip Bench Press
+Barbell Decline Bench Press
+Barbell Floor Press
+Barbell Incline Bench Press
+Barbell Pin Press
+Barbell Reverse Grip Bench Press
+Barbell Smith Bench Press
+Barbell Smith Decline Bench Press
+Barbell Smith Incline Bench Press
+# NOTE: Barbell Smith Chest Press done up to _Female — resume from next one
+
+# ── Bodyweight ────────────────────────────────────────────────────────────────
+Archer Push Up
+Chest Dip
+Clapping Push Up
+Close Grip Push Up
+Decline Push Up
+Diamond Push Up
+Dip
+Hindu Push Up
+Incline Push Up
+Knee Push Up
+Pike Push Up
+Pseudo Planche Push Up
+Push Up
+Spiderman Push Up
+Wide Grip Push Up
+
+# ── Cable exercises ───────────────────────────────────────────────────────────
+Cable Chest Fly
+Cable Chest Press
+Cable Cross Over
+Cable Crossover
+Cable Decline Fly
+Cable Fly
+Cable Incline Fly
+Cable Low Fly
+Cable Mid Fly
+Cable Single Arm Chest Press
+Cable Single Arm Fly
+
+# ── Dumbbell exercises ────────────────────────────────────────────────────────
+Dumbbell Bench Press
+Dumbbell Chest Fly
+Dumbbell Chest Press
+Dumbbell Decline Bench Press
+Dumbbell Decline Fly
+Dumbbell Floor Press
+Dumbbell Fly
+Dumbbell Hex Press
+Dumbbell Incline Bench Press
+Dumbbell Incline Fly
+Dumbbell Pullover
+Dumbbell Single Arm Bench Press
+
+# ── Machine exercises ─────────────────────────────────────────────────────────
+Machine Bench Press
+Machine Chest Fly
+Machine Chest Press
+Machine Decline Press
+Machine Fly
+Machine Incline Press
+Machine Pec Deck
+Pec Deck Fly
+Smith Machine Bench Press
+Smith Machine Decline Press
+Smith Machine Incline Press

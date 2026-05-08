@@ -1,0 +1,117 @@
+# Legs exercises — one name per line, no extension, no _female suffix
+# Stopping point was: Band single leg split squat_female → resume from after that
+
+# ── Band exercises ────────────────────────────────────────────────────────────
+Band Single Leg Split Squat
+# above is done — items below are new
+Band Squat
+Band Hip Thrust
+Band Lateral Walk
+Band Leg Curl
+Band Leg Extension
+Band Leg Press
+Band Lunge
+Band Romanian Deadlift
+Band Side Kick
+Band Squat to Stand
+Band Step Up
+Band Walking Lunge
+
+# ── Barbell exercises ─────────────────────────────────────────────────────────
+Barbell Bulgarian Split Squat
+Barbell Front Squat
+Barbell Good Morning
+Barbell Hack Squat
+Barbell Hip Thrust
+Barbell Lunge
+Barbell Romanian Deadlift
+Barbell Squat
+Barbell Step Up
+Barbell Sumo Squat
+Barbell Walking Lunge
+Barbell Zercher Squat
+
+# ── Bodyweight ────────────────────────────────────────────────────────────────
+Box Jump
+Box Step Up
+Bulgarian Split Squat
+Calf Raise
+Curtsy Lunge
+Donkey Kick
+Fire Hydrant
+Forward Lunge
+Frog Jump
+Glute Bridge
+Glute Kickback
+Good Morning
+Hip Thrust
+Jump Squat
+Lateral Lunge
+Lunge
+Pistol Squat
+Reverse Lunge
+Single Leg Calf Raise
+Single Leg Glute Bridge
+Single Leg Hip Thrust
+Single Leg Romanian Deadlift
+Single Leg Squat
+Sissy Squat
+Squat
+Squat Jump
+Standing Calf Raise
+Sumo Squat
+Wall Sit
+Walking Lunge
+
+# ── Cable exercises ───────────────────────────────────────────────────────────
+Cable Abduction
+Cable Adduction
+Cable Donkey Kick
+Cable Glute Kickback
+Cable Hip Abduction
+Cable Hip Extension
+Cable Leg Curl
+Cable Romanian Deadlift
+Cable Squat
+
+# ── Dumbbell exercises ────────────────────────────────────────────────────────
+Dumbbell Bulgarian Split Squat
+Dumbbell Calf Raise
+Dumbbell Front Squat
+Dumbbell Goblet Squat
+Dumbbell Hip Thrust
+Dumbbell Lunge
+Dumbbell Romanian Deadlift
+Dumbbell Single Leg Deadlift
+Dumbbell Squat
+Dumbbell Step Up
+Dumbbell Sumo Squat
+Dumbbell Walking Lunge
+
+# ── Kettlebell exercises ──────────────────────────────────────────────────────
+Kettlebell Front Squat
+Kettlebell Goblet Squat
+Kettlebell Hip Thrust
+Kettlebell Romanian Deadlift
+Kettlebell Single Leg Deadlift
+Kettlebell Squat
+Kettlebell Sumo Squat
+Kettlebell Swing
+
+# ── Machine exercises ─────────────────────────────────────────────────────────
+Hack Squat Machine
+Leg Curl
+Leg Extension
+Leg Press
+Machine Calf Raise
+Machine Hip Abduction
+Machine Hip Adduction
+Machine Leg Curl
+Machine Leg Extension
+Machine Leg Press
+Machine Squat
+Seated Calf Raise
+Seated Leg Curl
+Smith Machine Front Squat
+Smith Machine Lunge
+Smith Machine Squat
