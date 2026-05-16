@@ -66,4 +66,12 @@ out.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.eslintcache
+.eslintcache-e 
+# Environment and credential files
+.env
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+.credentials
