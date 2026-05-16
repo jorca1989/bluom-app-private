@@ -17,6 +17,10 @@ export default defineSchema({
       volume: v.optional(v.string()), // 'ml' | 'oz'
     })),
 
+    // Visual Theme — synced cross-device
+    // One of: 'default' | 'pink' | 'green' | 'navy' | 'black' | 'violet'
+    preferredTheme: v.optional(v.string()),
+
     // Strava Integration
     stravaAccessToken: v.optional(v.string()),
     stravaRefreshToken: v.optional(v.string()),

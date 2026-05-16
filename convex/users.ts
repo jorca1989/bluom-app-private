@@ -141,6 +141,7 @@ export const updateUser = mutation({
       height: v.optional(v.float64()),
       targetWeight: v.optional(v.float64()),
       preferredLanguage: v.optional(v.string()),
+      preferredTheme: v.optional(v.string()),
       preferredUnits: v.optional(v.object({
         height: v.string(),
         weight: v.string(),

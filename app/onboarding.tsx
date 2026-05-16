@@ -47,6 +47,7 @@ import { setPendingRouteAfterOnboarding } from './_layout';
 import HeightRuler from '@/components/onboarding/HeightRuler';
 import Toast from '@/components/onboarding/Toast';
 import GoalEstimator from '@/components/onboarding/GoalEstimator';
+import { useTheme, THEMES, THEME_ORDER, type ThemeKey } from '@/context/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 const WELCOME_LOGO = require('../assets/images/logo.png');
@@ -387,6 +388,10 @@ export default function OnboardingScreen() {
   const [hasShownRecompAlert, setHasShownRecompAlert] = useState(false);
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [currentLang, setCurrentLang] = useState(i18n.language || 'en');
+
+  // Theme picker on welcome slide 3
+  const { theme: activeTheme, setTheme: setActiveTheme } = useTheme();
+  const [pendingThemePick, setPendingThemePick] = useState<ThemeKey | null>(null);
 
   const LANG_OPTIONS = [
     { code: 'pt', flag: '🇵🇹', label: 'PT' },
@@ -906,6 +911,38 @@ export default function OnboardingScreen() {
                   <Text style={[styles.welcomeTitle, { color: '#1e293b' }]}>{t('onboarding.welcome.slide3Title', 'Your Blueprint')}</Text>
                   <Text style={[styles.welcomeSubtitle, { color: '#2563EB' }]}>{t('onboarding.welcome.slide3Sub', 'Ready to Evolve?')}</Text>
                   <Text style={styles.welcomeDesc}>{t('onboarding.welcome.slide3Desc', 'Answer a few quick questions to get your custom nutrition plan and workout recommendations.')}</Text>
+
+                  {/* ── Inline Theme Picker ─────────────────────────────── */}
+                  <View style={styles.themePickerWrap}>
+                    <Text style={styles.themePickerLabel}>
+                      {t('onboarding.welcome.themePrompt', 'Which colour speaks to you?')}
+                    </Text>
+                    <View style={styles.themePickerRow}>
+                      {THEME_ORDER.map((key) => {
+                        const th = THEMES[key];
+                        const isActive = activeTheme === key;
+                        return (
+                          <TouchableOpacity
+                            key={key}
+                            data-testid={`onboarding-theme-${key}`}
+                            activeOpacity={0.85}
+                            onPress={() => setPendingThemePick(key)}
+                            style={[
+                              styles.themePickerSwatch,
+                              { backgroundColor: th.swatch },
+                              isActive && { borderColor: th.colors.primary, borderWidth: 3 },
+                            ]}
+                          >
+                            {isActive && (
+                              <View style={[styles.themePickerCheck, { backgroundColor: th.colors.primary }]}>
+                                <Check size={11} color={th.colors.onPrimary} />
+                              </View>
+                            )}
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
+                  </View>
                 </>
               )}
             </View>
@@ -925,8 +962,7 @@ export default function OnboardingScreen() {
           </SafeAreaView>
 
           {/* Floating language selector */}
-          <View style={{ position: 'absolute', bottom: 140, right: 24 }}>
-            {showLangPicker && (
+          <View style={{ position: 'absolute', bottom: 140, right: 24 }}>            {showLangPicker && (
               <View style={styles.langPickerPopup}>
                 {LANG_OPTIONS.map(lang => (
                   <TouchableOpacity
@@ -1009,6 +1045,84 @@ export default function OnboardingScreen() {
           </ScrollView>
         </SafeAreaView>
       )}
+
+      {/* ── Theme confirmation popup (works on any slide) ────────────────── */}
+      <Modal
+        visible={pendingThemePick !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPendingThemePick(null)}
+      >
+        <View style={styles.themeConfirmOverlay}>
+          <View style={styles.themeConfirmCard}>
+            {pendingThemePick && (
+              <>
+                <View
+                  style={[
+                    styles.themeConfirmPreview,
+                    { backgroundColor: THEMES[pendingThemePick].colors.bg },
+                  ]}
+                >
+                  <View
+                    style={[
+                      styles.themeConfirmChip,
+                      {
+                        backgroundColor: THEMES[pendingThemePick].colors.surface,
+                        borderColor: THEMES[pendingThemePick].colors.border,
+                      },
+                    ]}
+                  >
+                    <View style={[styles.themeConfirmDot, { backgroundColor: THEMES[pendingThemePick].colors.primary }]} />
+                    <View style={[styles.themeConfirmDot, { backgroundColor: THEMES[pendingThemePick].colors.accent }]} />
+                  </View>
+                </View>
+                <Text style={styles.themeConfirmTitle}>
+                  {t('onboarding.welcome.themeConfirmTitle', 'Set {{name}} as my theme?', { name: THEMES[pendingThemePick].label })}
+                </Text>
+                <Text style={styles.themeConfirmDesc}>
+                  {t(
+                    'onboarding.welcome.themeConfirmDesc',
+                    'This will tint your whole experience. You can change it anytime in Settings.'
+                  )}
+                </Text>
+                <View style={styles.themeConfirmActions}>
+                  <TouchableOpacity
+                    data-testid="onboarding-theme-cancel"
+                    style={[styles.themeConfirmBtn, styles.themeConfirmBtnSecondary]}
+                    onPress={() => setPendingThemePick(null)}
+                  >
+                    <Text style={styles.themeConfirmBtnSecondaryText}>
+                      {t('common.cancel', 'Cancel')}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    data-testid="onboarding-theme-confirm"
+                    style={[
+                      styles.themeConfirmBtn,
+                      styles.themeConfirmBtnPrimary,
+                      { backgroundColor: THEMES[pendingThemePick].colors.primary },
+                    ]}
+                    onPress={async () => {
+                      const pick = pendingThemePick;
+                      setPendingThemePick(null);
+                      await setActiveTheme(pick);
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.themeConfirmBtnPrimaryText,
+                        { color: THEMES[pendingThemePick].colors.onPrimary },
+                      ]}
+                    >
+                      {t('onboarding.welcome.themeConfirmCta', 'Set as my theme')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -1129,4 +1243,108 @@ const styles = StyleSheet.create({
   langOptionActive: { backgroundColor: '#eff6ff' },
   langFlag: { fontSize: 18 },
   langCode: { fontSize: 13, fontWeight: '600', color: '#475569' },
+
+  // Theme picker (welcome slide 3)
+  themePickerWrap: { marginTop: 28, alignItems: 'center', width: '100%' },
+  themePickerLabel: { fontSize: 14, fontWeight: '600', color: '#475569', marginBottom: 14 },
+  themePickerRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'center' },
+  themePickerSwatch: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1.5,
+    borderColor: 'rgba(0,0,0,0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  themePickerCheck: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // Theme confirmation popup
+  themeConfirmOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.55)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  themeConfirmCard: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    padding: 22,
+    alignItems: 'stretch',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.18,
+    shadowRadius: 24,
+    elevation: 12,
+  },
+  themeConfirmPreview: {
+    height: 88,
+    borderRadius: 16,
+    marginBottom: 16,
+    alignItems: 'flex-start',
+    justifyContent: 'flex-end',
+    padding: 14,
+  },
+  themeConfirmChip: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  themeConfirmDot: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+  },
+  themeConfirmTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#1e293b',
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  themeConfirmDesc: {
+    fontSize: 14,
+    color: '#64748b',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 18,
+  },
+  themeConfirmActions: { flexDirection: 'row', gap: 10 },
+  themeConfirmBtn: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  themeConfirmBtnSecondary: {
+    backgroundColor: '#f1f5f9',
+  },
+  themeConfirmBtnSecondaryText: {
+    color: '#475569',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  themeConfirmBtnPrimary: {},
+  themeConfirmBtnPrimaryText: {
+    fontSize: 15,
+    fontWeight: '800',
+  },
 });

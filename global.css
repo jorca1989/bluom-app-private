@@ -1,3 +1,101 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ──────────────────────────────────────────────────────────────────────────────
+   Multi-Theme System (NativeWind v4)
+   --------------------------------------------------------------------------- */
+@layer base {
+  :root,
+  .theme-default {
+    --brand-bg: #F5F4F0;
+    --brand-bg-gradient-from: #F5F4F0;
+    --brand-bg-gradient-to: #F5F4F0;
+    --brand-surface: #FFFFFF;
+    --brand-surface-muted: #F8FAFC;
+    --brand-text: #1E293B;
+    --brand-text-muted: #64748B;
+    --brand-border: #E2E8F0;
+    --brand-primary: #2563EB;
+    --brand-accent: #2563EB;
+    --brand-on-primary: #FFFFFF;
+    --brand-scheme: light;
+  }
+
+  .theme-pink {
+    --brand-bg: #FDE7EF;
+    --brand-bg-gradient-from: #FDE7EF;
+    --brand-bg-gradient-to: #FDE7EF;
+    --brand-surface: #FFFFFF;
+    --brand-surface-muted: #FFF5F8;
+    --brand-text: #1E293B;
+    --brand-text-muted: #6B6770;
+    --brand-border: #F4D2DF;
+    --brand-primary: #D6336C;
+    --brand-accent: #D6336C;
+    --brand-on-primary: #FFFFFF;
+    --brand-scheme: light;
+  }
+
+  .theme-green {
+    --brand-bg: #DFFFD0;
+    --brand-bg-gradient-from: #DFFFD0;
+    --brand-bg-gradient-to: #DFFFD0;
+    --brand-surface: #FFFFFF;
+    --brand-surface-muted: #F2FFEC;
+    --brand-text: #1E293B;
+    --brand-text-muted: #4F6E58;
+    --brand-border: #C8E8B8;
+    --brand-primary: #3A8A5A;
+    --brand-accent: #3A8A5A;
+    --brand-on-primary: #FFFFFF;
+    --brand-scheme: light;
+  }
+
+  /* DARK THEME — no whitish cards, surfaces are slightly lighter than bg */
+  .theme-navy {
+    --brand-bg: #1D375A;
+    --brand-bg-gradient-from: #1D375A;
+    --brand-bg-gradient-to: #14253E;
+    --brand-surface: #2B4673;
+    --brand-surface-muted: #23396A;
+    --brand-text: #F1F5F9;
+    --brand-text-muted: #B7C2D6;
+    --brand-border: #4D5E75;
+    --brand-primary: #7CA0DA;
+    --brand-accent: #4D5E75;
+    --brand-on-primary: #0B1B33;
+    --brand-scheme: dark;
+  }
+
+  /* DARK THEME — gradient pure black */
+  .theme-black {
+    --brand-bg: #000000;
+    --brand-bg-gradient-from: #000000;
+    --brand-bg-gradient-to: #1B1A1A;
+    --brand-surface: #0B0B0B;
+    --brand-surface-muted: #120F0F;
+    --brand-text: #F5F5F5;
+    --brand-text-muted: #A1A1A6;
+    --brand-border: #1F1F1F;
+    --brand-primary: #F5F5F5;
+    --brand-accent: #0A0A0C;
+    --brand-on-primary: #000000;
+    --brand-scheme: dark;
+  }
+
+  .theme-violet {
+    --brand-bg: #EFEAFE;
+    --brand-bg-gradient-from: #EFEAFE;
+    --brand-bg-gradient-to: #EFEAFE;
+    --brand-surface: #FFFFFF;
+    --brand-surface-muted: #F7F4FF;
+    --brand-text: #1E1B2E;
+    --brand-text-muted: #6B6485;
+    --brand-border: #DCD3F4;
+    --brand-primary: #6D28D9;
+    --brand-accent: #6D28D9;
+    --brand-on-primary: #FFFFFF;
+    --brand-scheme: light;
+  }
+}

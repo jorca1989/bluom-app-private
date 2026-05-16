@@ -25,6 +25,7 @@ import { getSoundSettings, setSoundSettings, triggerSound, SoundEffect } from '@
 import { getBottomContentPadding } from '@/utils/layout';
 import { useTranslation } from 'react-i18next';
 import { saveLanguagePreference } from '@/i18n';
+import { useTheme, THEMES, type ThemeKey } from '@/context/ThemeContext';
 
 const LANG_OPTIONS = [
     { code: 'en', label: 'English' },
@@ -61,6 +62,10 @@ export default function SettingsScreen() {
     const [showUnitsModal, setShowUnitsModal] = useState(false);
     const [showGoalsModal, setShowGoalsModal] = useState(false);
     const [showLangModal, setShowLangModal] = useState(false);
+    const [showThemeModal, setShowThemeModal] = useState(false);
+
+    // Theme switcher
+    const { theme: activeTheme, setTheme, themes } = useTheme();
 
     // Sound settings state
     const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(true);
@@ -292,6 +297,22 @@ export default function SettingsScreen() {
                                 <Text style={styles.itemLabel}>{t('settings.language', 'Language')}</Text>
                                 <Text style={styles.itemValue}>{LANG_OPTIONS.find(l => l.code === (convexUser.preferredLanguage || i18n.language))?.label || 'English'}</Text>
                             </View>
+                            <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
+                        </TouchableOpacity>
+
+                        <View style={styles.divider} />
+
+                        <TouchableOpacity
+                            data-testid="settings-theme-row"
+                            style={styles.item}
+                            activeOpacity={0.7}
+                            onPress={() => setShowThemeModal(true)}
+                        >
+                            <View style={styles.itemLeft}>
+                                <Text style={styles.itemLabel}>{t('settings.themeColor', 'Theme Colour')}</Text>
+                                <Text style={styles.itemValue}>{THEMES[activeTheme]?.label ?? 'Stone'}</Text>
+                            </View>
+                            <View style={[styles.themeSwatchPreview, { backgroundColor: THEMES[activeTheme]?.swatch }]} />
                             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
                         </TouchableOpacity>
 
@@ -661,6 +682,72 @@ export default function SettingsScreen() {
                     </View>
                 </View>
             </Modal>
+            {/* Theme Picker Modal */}
+            <Modal visible={showThemeModal} animationType="slide" transparent>
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.modalContent, { maxHeight: '80%' }]}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>{t('settings.themeColor', 'Theme Colour')}</Text>
+                            <TouchableOpacity onPress={() => setShowThemeModal(false)} data-testid="theme-modal-close">
+                                <Ionicons name="close" size={24} color="#1e293b" />
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={{ fontSize: 13, color: '#64748b', marginBottom: 16, lineHeight: 18 }}>
+                            {t('settings.themeColorDesc', 'Pick a palette that matches your mood. Changes apply instantly.')}
+                        </Text>
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            <View style={styles.themeGrid}>
+                                {themes.map((th) => {
+                                    const isActive = activeTheme === th.key;
+                                    const isDark = th.colors.scheme === 'dark';
+                                    return (
+                                        <TouchableOpacity
+                                            key={th.key}
+                                            data-testid={`theme-option-${th.key}`}
+                                            activeOpacity={0.85}
+                                            onPress={async () => {
+                                                await setTheme(th.key as ThemeKey);
+                                                triggerSound(SoundEffect.UI_TAP);
+                                            }}
+                                            style={[
+                                                styles.themeCard,
+                                                {
+                                                    backgroundColor: th.colors.bg,
+                                                    borderColor: isActive ? th.colors.primary : 'rgba(0,0,0,0.08)',
+                                                    borderWidth: isActive ? 2.5 : 1,
+                                                },
+                                            ]}
+                                        >
+                                            <View
+                                                style={[
+                                                    styles.themeCardChip,
+                                                    {
+                                                        backgroundColor: th.colors.surface,
+                                                        borderColor: th.colors.border,
+                                                    },
+                                                ]}
+                                            >
+                                                <View style={[styles.themeDot, { backgroundColor: th.colors.primary }]} />
+                                                <View style={[styles.themeDot, { backgroundColor: th.colors.accent }]} />
+                                                <View style={[styles.themeDot, { backgroundColor: th.colors.surfaceMuted, borderWidth: 1, borderColor: th.colors.border }]} />
+                                            </View>
+                                            <Text style={[styles.themeCardLabel, { color: isDark ? '#F5F5F5' : '#1E293B' }]}>
+                                                {th.label}
+                                            </Text>
+                                            {isActive && (
+                                                <View style={[styles.themeCheck, { backgroundColor: th.colors.primary }]}>
+                                                    <Ionicons name="checkmark" size={14} color={th.colors.onPrimary} />
+                                                </View>
+                                            )}
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
+                        </ScrollView>
+                    </View>
+                </View>
+            </Modal>
+
         </SafeAreaView >
     );
 }
@@ -925,5 +1012,57 @@ const styles = StyleSheet.create({
     volumeDotActive: {
         backgroundColor: '#3b82f6',
         borderColor: '#3b82f6',
+    },
+    // Theme picker
+    themeSwatchPreview: {
+        width: 22,
+        height: 22,
+        borderRadius: 11,
+        borderWidth: 1,
+        borderColor: 'rgba(0,0,0,0.08)',
+        marginRight: 8,
+    },
+    themeGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 12,
+        justifyContent: 'space-between',
+    },
+    themeCard: {
+        width: '47%',
+        borderRadius: 18,
+        padding: 14,
+        paddingBottom: 16,
+        minHeight: 108,
+        justifyContent: 'space-between',
+        position: 'relative',
+    },
+    themeCardChip: {
+        flexDirection: 'row',
+        gap: 6,
+        padding: 8,
+        borderRadius: 10,
+        borderWidth: 1,
+        alignSelf: 'flex-start',
+    },
+    themeDot: {
+        width: 16,
+        height: 16,
+        borderRadius: 8,
+    },
+    themeCardLabel: {
+        fontSize: 15,
+        fontWeight: '700',
+        marginTop: 12,
+    },
+    themeCheck: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        width: 22,
+        height: 22,
+        borderRadius: 11,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });

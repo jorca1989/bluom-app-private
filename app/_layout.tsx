@@ -20,6 +20,7 @@ import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { CelebrationProvider } from '@/context/CelebrationContext';
 import { AudioProvider } from '@/context/AudioContext';
+import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { warnIfMissingGoogleOAuthClientIds } from '@/utils/googleOAuthEnv';
 import { AnalyticsProvider } from '@/components/AnalyticsProvider';
 import { Buffer } from 'buffer';
@@ -264,29 +265,43 @@ function InitialLayout() {
       <AudioProvider>
         <UserProvider>
           <CelebrationProvider>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: '#ffffff' },
-              }}
-            >
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)/login" options={{ headerShown: false, presentation: 'card' }} />
-              <Stack.Screen name="(auth)/signup" options={{ headerShown: false, presentation: 'card' }} />
-              <Stack.Screen name="onboarding" options={{ headerShown: false, presentation: 'card', gestureEnabled: false }} />
-              <Stack.Screen name="premium" options={{ headerShown: false, presentation: 'card' }} />
-              <Stack.Screen name="meal-hub" options={{ headerShown: false, presentation: 'card' }} />
-              <Stack.Screen name="ai-meal-maker" options={{ headerShown: false, presentation: 'card' }} />
-              <Stack.Screen name="settings" options={{ headerShown: false, presentation: 'modal' }} />
-              <Stack.Screen name="admin" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" options={{ headerShown: false }} />
-            </Stack>
+            <ThemedRoot />
           </CelebrationProvider>
         </UserProvider>
       </AudioProvider>
       <StatusBar style="auto" />
     </>
+  );
+}
+
+// ─── Themed wrapper around the Stack — reacts to ThemeContext ─────────────────
+function ThemedRoot() {
+  const { themeClass, colors } = useTheme();
+  return (
+    <View
+      className={themeClass}
+      style={{ flex: 1, backgroundColor: colors.bg }}
+      data-testid="theme-root"
+    >
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: colors.bg },
+        }}
+      >
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)/login" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="(auth)/signup" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="onboarding" options={{ headerShown: false, presentation: 'card', gestureEnabled: false }} />
+        <Stack.Screen name="premium" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="meal-hub" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="ai-meal-maker" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="settings" options={{ headerShown: false, presentation: 'modal' }} />
+        <Stack.Screen name="admin" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" options={{ headerShown: false }} />
+      </Stack>
+    </View>
   );
 }
 
@@ -340,7 +355,9 @@ export default function RootLayout() {
           <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
             <ConvexProviderWithClerk client={convex} useAuth={useConvexClerkAuth}>
               <AnalyticsProvider>
-                <InitialLayout />
+                <ThemeProvider>
+                  <InitialLayout />
+                </ThemeProvider>
               </AnalyticsProvider>
             </ConvexProviderWithClerk>
           </ClerkProvider>
