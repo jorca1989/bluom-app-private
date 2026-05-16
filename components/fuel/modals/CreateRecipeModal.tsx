@@ -282,7 +282,7 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
               </View>
 
               <View style={styles.switchRow}>
-                <Text style={styles.label}>{t('modals.createRecipe.bulkImport', 'Use Bulk Import for Ingredients?')}</Text>
+                <Text style={[styles.label, { flex: 1, marginRight: 12 }]} numberOfLines={2}>{t('modals.createRecipe.bulkImport', 'Use Bulk Import for Ingredients?')}</Text>
                 <TouchableOpacity 
                    style={[styles.checkbox, bulkImportEnabled && styles.checkboxActive]} 
                    onPress={() => setBulkImportEnabled(!bulkImportEnabled)}
@@ -461,20 +461,20 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
                  <Text style={styles.reviewSub}>{t('modals.createRecipe.perServing', 'Nutrition info per serving')}</Text>
                  <View style={styles.macrosGrid}>
                     <View style={styles.macroStat}>
-                       <Text style={styles.macroStatVal}>{Math.round(macros.calories / servings)}</Text>
-                       <Text style={styles.macroStatLbl}>{t('common.kcal', 'kcal')}</Text>
+                       <Text style={styles.macroStatVal} numberOfLines={1} adjustsFontSizeToFit>{Math.round(macros.calories / servings)}</Text>
+                       <Text style={styles.macroStatLbl} numberOfLines={1} adjustsFontSizeToFit>{t('common.kcal', 'kcal')}</Text>
                     </View>
                     <View style={styles.macroStat}>
-                       <Text style={styles.macroStatVal}>{Math.round(macros.protein / servings)}g</Text>
-                       <Text style={styles.macroStatLbl}>{t('common.protein', 'Protein')}</Text>
+                       <Text style={styles.macroStatVal} numberOfLines={1} adjustsFontSizeToFit>{Math.round(macros.protein / servings)}g</Text>
+                       <Text style={styles.macroStatLbl} numberOfLines={1} adjustsFontSizeToFit>{t('common.protein', 'Protein')}</Text>
                     </View>
                     <View style={styles.macroStat}>
-                       <Text style={styles.macroStatVal}>{Math.round(macros.carbs / servings)}g</Text>
-                       <Text style={styles.macroStatLbl}>{t('common.carbs', 'Carbs')}</Text>
+                       <Text style={styles.macroStatVal} numberOfLines={1} adjustsFontSizeToFit>{Math.round(macros.carbs / servings)}g</Text>
+                       <Text style={styles.macroStatLbl} numberOfLines={1} adjustsFontSizeToFit>{t('common.carbs', 'Carbs')}</Text>
                     </View>
                     <View style={styles.macroStat}>
-                       <Text style={styles.macroStatVal}>{Math.round(macros.fat / servings)}g</Text>
-                       <Text style={styles.macroStatLbl}>{t('common.fat', 'Fat')}</Text>
+                       <Text style={styles.macroStatVal} numberOfLines={1} adjustsFontSizeToFit>{Math.round(macros.fat / servings)}g</Text>
+                       <Text style={styles.macroStatLbl} numberOfLines={1} adjustsFontSizeToFit>{t('common.fat', 'Fat')}</Text>
                     </View>
                  </View>
               </View>
@@ -822,24 +822,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 12,
+    gap: 6,
   },
   macroStat: {
     alignItems: 'center',
     backgroundColor: '#ffffff',
-    padding: 12,
+    padding: 10,
     borderRadius: 16,
-    width: '23%',
+    flex: 1,
+    minWidth: 0,
     borderWidth: 1,
     borderColor: '#f1f5f9',
   },
   macroStatVal: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 'bold',
     color: '#0f172a',
     marginBottom: 2,
+    textAlign: 'center',
   },
   macroStatLbl: {
-    fontSize: 11,
+    fontSize: 10,
     color: '#64748b',
+    textAlign: 'center',
   },
 });

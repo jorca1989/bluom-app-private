@@ -631,13 +631,6 @@ export default function ProfileScreen() {
             label={t('profile.aiCoach', 'Treinador IA')} sub={t('profile.aiCoachSub', 'O teu especialista em saúde de precisão')}
             onPress={() => router.push('/ai-coach')}
           />
-          {/* Integrations - Re-enabled for testing Health Connect / Strava */}
-          <MenuRow
-            icon={<Zap size={18} color="#0ea5e9" />} iconBg="#f0f9ff"
-            label="Integrations" sub="Apple Health, Strava & more"
-            onPress={() => router.push('/integrations')}
-          />
-          <View style={s.divider} />
           <MenuRow
             icon={<Dumbbell size={18} color="#7c3aed" />} iconBg="#ede9fe"
             label={t('profile.move', 'Movimento')} sub={t('profile.moveSub', 'Treinos, passos e registo de exercício')}

@@ -83,8 +83,9 @@ export default function FourWeekPlanWeekScreen() {
 
   const weekIndex = useMemo(() => {
     const n = parseInt(String(params.week ?? '1'), 10);
-    if (!Number.isFinite(n)) return 0;
-    return Math.min(Math.max(n - 1, 0), 3);
+    if (!Number.isFinite(n) || n < 1) return 0;
+    // Rotate for Pro users: week 5 → index 0, week 6 → index 1, etc.
+    return (n - 1) % 4;
   }, [params.week]);
 
   const week = useMemo(() => {

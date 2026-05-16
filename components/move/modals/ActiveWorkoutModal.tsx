@@ -52,10 +52,12 @@ export default function ActiveWorkoutModal({
 
   useEffect(() => {
     if (visible) {
-      if (initialExercises.length > 0 && exercises.length === 0) {
-        setExercises(initialExercises);
-      }
+      // Always reinitialize from props when modal opens — this is how day-switching works
+      setExercises(initialExercises.length > 0 ? initialExercises : []);
       setExpandedIndex(0);
+      setTimeSpent(0);
+      setRestTimer(0);
+      setShowRestPopup(false);
       const interval = setInterval(() => setTimeSpent(t => t + 1), 1000);
       return () => clearInterval(interval);
     }

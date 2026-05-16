@@ -139,13 +139,13 @@ export default function FoodSearchModal({
 
         <View style={styles.tabsRow}>
           <TouchableOpacity style={[styles.tab, activeTab === 'search' && styles.tabActive]} onPress={() => setActiveTab('search')}>
-            <Text style={[styles.tabText, activeTab === 'search' && styles.tabTextActive]}>{t('modals.search.searchTab', 'Search Food')}</Text>
+            <Text style={[styles.tabText, activeTab === 'search' && styles.tabTextActive]} numberOfLines={1} adjustsFontSizeToFit>{t('modals.search.searchTab', 'Search Food')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.tab, activeTab === 'recipes' && styles.tabActive]} onPress={() => setActiveTab('recipes')}>
-            <Text style={[styles.tabText, activeTab === 'recipes' && styles.tabTextActive]}>{t('modals.search.recipesTab', 'My Recipes')}</Text>
+            <Text style={[styles.tabText, activeTab === 'recipes' && styles.tabTextActive]} numberOfLines={1} adjustsFontSizeToFit>{t('modals.search.recipesTab', 'My Recipes')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.tab, activeTab === 'create' && styles.tabActive]} onPress={() => setActiveTab('create')}>
-            <Text style={[styles.tabText, activeTab === 'create' && styles.tabTextActive]}>{t('modals.search.createTab', 'Create')}</Text>
+            <Text style={[styles.tabText, activeTab === 'create' && styles.tabTextActive]} numberOfLines={1} adjustsFontSizeToFit>{t('modals.search.createTab', 'Create')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -326,23 +326,26 @@ const styles = StyleSheet.create({
   },
   tabsRow: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#f1f5f9',
   },
   tab: {
+    flex: 1,
     paddingVertical: 12,
-    marginRight: 24,
+    paddingHorizontal: 4,
     borderBottomWidth: 2,
     borderBottomColor: 'transparent',
+    alignItems: 'center',
   },
   tabActive: {
     borderBottomColor: '#3b82f6',
   },
   tabText: {
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '600',
     color: '#64748b',
+    textAlign: 'center',
   },
   tabTextActive: {
     color: '#3b82f6',

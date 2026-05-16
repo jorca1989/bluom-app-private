@@ -115,8 +115,21 @@ export const recognizeFoodFromImage = action({
         ? process.env.GEMINI_API_KEY_ANDROID
         : process.env.GEMINI_API_KEY_IOS;
     const lang = args.language ?? 'en';
+    const LANG_NAMES: Record<string, string> = {
+      'pt': 'European Portuguese',
+      'fr': 'French',
+      'de': 'German',
+      'es': 'Spanish',
+      'it': 'Italian',
+      'nl': 'Dutch',
+      'pl': 'Polish',
+      'da': 'Danish',
+      'sv': 'Swedish',
+      'no': 'Norwegian',
+    };
+    const langName = LANG_NAMES[lang] ?? lang;
     const langInstruction = lang !== 'en'
-      ? `\n- Return the food "name" in ${lang === 'pt' ? 'European Portuguese' : lang} language.`
+      ? `\n- Return the food "name" in ${langName} language.`
       : '';
     const prompt =
       'Analyze this food image. Provide the Food Name, estimated Calories, Protein, Carbs, and Fats. Return ONLY a JSON object.\n' +
@@ -130,7 +143,7 @@ export const recognizeFoodFromImage = action({
       '}\n' +
       'Rules:\n' +
       '- Calories in kcal. Macros in grams.\n' +
-      '- If unsure, return name="Desconhecido" and set numbers to 0.\n' +
+      '- If unsure, return name="Unknown" and set numbers to 0.\n' +
       '- Output MUST be valid JSON with no extra text.' +
       langInstruction;
 
@@ -237,8 +250,21 @@ export const scanSugarProductFromImage = action({
         : process.env.GEMINI_API_KEY_IOS;
 
     const lang = args.language ?? 'en';
+    const LANG_NAMES: Record<string, string> = {
+      'pt': 'European Portuguese',
+      'fr': 'French',
+      'de': 'German',
+      'es': 'Spanish',
+      'it': 'Italian',
+      'nl': 'Dutch',
+      'pl': 'Polish',
+      'da': 'Danish',
+      'sv': 'Swedish',
+      'no': 'Norwegian',
+    };
+    const langName = LANG_NAMES[lang] ?? lang;
     const langInstruction = lang !== 'en'
-      ? `\n- Return ALL string values in the JSON (including productName, hiddenSugarsFound, smartAlternative, and notes) in ${lang === 'pt' ? 'European Portuguese' : lang} language.`
+      ? `\n- Return ALL string values in the JSON (including productName, hiddenSugarsFound, smartAlternative, and notes) in ${langName} language.`
       : '';
 
     const prompt =

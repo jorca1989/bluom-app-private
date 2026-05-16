@@ -20,6 +20,7 @@ import ActiveWorkoutModal, { ActiveExercise } from '@/components/move/modals/Act
 import ExerciseDetailModal from '@/components/move/modals/ExerciseDetailModal';
 import { FREE_4_WEEK_PLAN, getWeekRoutineDays, PlanWeek } from '@/utils/fourWeekPlanData';
 import { buildWeekFromDBWorkouts } from '@/utils/buildPlanFromDB';
+import { useAccessControl } from '@/hooks/useAccessControl';
 
 // ─── Week colours ─────────────────────────────────────────────────────────────
 const WEEK_COLORS = ['#1e293b', '#4c1d95', '#065f46', '#92400e'];
@@ -34,8 +35,7 @@ export default function FourWeekPlanScreen() {
     api.users.getUserByClerkId,
     clerkUser?.id ? { clerkId: clerkUser.id } : 'skip'
   );
-  const isPro = convexUser?.subscriptionStatus === 'active' ||
-    clerkUser?.emailAddresses?.some(e => e.emailAddress === 'ggovsaas@gmail.com');
+  const { isPro } = useAccessControl();
   
   const activePlans = useQuery(
     api.plans.getActivePlans,
@@ -59,6 +59,8 @@ export default function FourWeekPlanScreen() {
 
   const getWeekDays = useMemo(() => {
     return (weekIdx: number) => {
+      // For rotation beyond 4 weeks, map the index onto the 4-week cycle
+      const rotatedIdx = weekIdx % 4;
       // 1. AI plan takes priority
       if (aiWorkouts && aiWorkouts.length > 0) {
         return aiWorkouts.map((w: any, i: number) => ({
@@ -82,10 +84,10 @@ export default function FourWeekPlanScreen() {
       // 2. DB workouts
       if (dbWorkouts && dbWorkouts.length > 0) {
         const dbDaysPerWeek = Number(convexUser?.weeklyWorkoutTime) || 4;
-        return buildWeekFromDBWorkouts(dbWorkouts, weekIdx, dbDaysPerWeek, convexUser?.biologicalSex || 'male', t);
+        return buildWeekFromDBWorkouts(dbWorkouts, rotatedIdx, dbDaysPerWeek, convexUser?.biologicalSex || 'male', t);
       }
-      // 3. Static fallback
-      return getWeekRoutineDays(weekIdx).map(day => ({
+      // 3. Static fallback — use rotated index for Week 5+ cycling
+      return getWeekRoutineDays(rotatedIdx).map(day => ({
         ...day,
         dayTitle: t(`db.${day.dayTitle.replace(/\s+/g, '').toLowerCase()}`, day.dayTitle),
         muscleGroups: t(`db.${day.muscleGroups.replace(/[\s,\/]+/g, '').toLowerCase()}`, day.muscleGroups),
@@ -99,7 +101,8 @@ export default function FourWeekPlanScreen() {
       const split = activePlans?.fitnessPlan?.workoutSplit || `Week ${weekIdx + 1}`;
       return t(`db.${split.replace(/\s+/g, '')}`, split);
     }
-    const theme = FREE_4_WEEK_PLAN[weekIdx]?.theme || 'Phase';
+    const rotatedIdx = weekIdx % 4;
+    const theme = FREE_4_WEEK_PLAN[rotatedIdx]?.theme || 'Phase';
     return t(`db.${theme.toLowerCase()}`, theme);
   };
 
@@ -171,7 +174,7 @@ export default function FourWeekPlanScreen() {
             return (
               <TouchableOpacity
                 key={`week-card-${idx}`}
-                style={[styles.weekCard, { backgroundColor: WEEK_COLORS[idx] }]}
+              style={[styles.weekCard, { backgroundColor: WEEK_COLORS[idx % WEEK_COLORS.length] }]}
                 onPress={() => handleViewWeek(idx)}
                 activeOpacity={0.85}
               >

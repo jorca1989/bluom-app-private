@@ -18,7 +18,6 @@ import { useRouter, Link } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, LogIn, Eye, EyeOff } from 'lucide-react-native';
 import { MASTER_ADMINS } from '@/convex/permissions';
-import GoogleSignInButton from '@/components/GoogleSignInButton';
 import AppleSignInButton from '@/components/AppleSignInButton';
 import { useTranslation } from 'react-i18next';
 
@@ -245,14 +244,7 @@ export default function LoginScreen() {
                   </LinearGradient>
                 </TouchableOpacity>
 
-                {Platform.OS !== 'web' && (
-                  <>
-                    {/* Social Logins - Re-enabled for testing */}
-                    <GoogleSignInButton disabled={loading} />
-                    <View style={{ height: 12 }} />
-                    <AppleSignInButton disabled={loading} />
-                  </>
-                )}
+                {/* Social Logins removed for App Store compliance (Guideline 4.8) */}
               </>
             )}
           </View>

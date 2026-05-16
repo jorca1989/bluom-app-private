@@ -16,7 +16,6 @@ import { useSignUp } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, UserPlus, Eye, EyeOff } from 'lucide-react-native';
-import GoogleSignInButton from '@/components/GoogleSignInButton';
 import AppleSignInButton from '@/components/AppleSignInButton';
 import { useTranslation } from 'react-i18next';
 
@@ -182,14 +181,7 @@ export default function SignupScreen() {
                   </LinearGradient>
                 </TouchableOpacity>
 
-                {Platform.OS !== 'web' && (
-                  <>
-                    {/* Social Logins - Re-enabled for testing */}
-                    <GoogleSignInButton disabled={loading} />
-                    <View style={{ height: 12 }} />
-                    <AppleSignInButton disabled={loading} />
-                  </>
-                )}
+                {/* Social Logins removed for App Store compliance (Guideline 4.8) */}
 
                 <View style={styles.footer}>
                   <Text style={styles.footerText}>{t('auth.signup.alreadyAccount', 'Already have an account? ')}</Text>

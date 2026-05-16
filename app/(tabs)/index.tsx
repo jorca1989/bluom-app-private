@@ -278,7 +278,8 @@ export default function HomeScreen() {
     if (!enabledWidgets.has('weather')) return;
     setWeatherLoading(true);
     try {
-      const Location = await import('expo-location').then(m => m).catch(() => null as any);
+      // expo-location has been removed for App Store compliance.
+      const Location = null as any;
       if (!Location?.getForegroundPermissionsAsync) {
         setWeatherPerm('denied');
         setWeather(null);

@@ -982,7 +982,7 @@ export default function MoveScreen() {
           />}
 
           {/* Outdoor Activity - Re-enabled for testing GPS tracking */}
-          <OutdoorActivityBanner onStart={() => setShowOutdoor(true)} />
+          {/* <OutdoorActivityBanner onStart={() => setShowOutdoor(true)} /> */}
 
           {/* Today's Activities */}
           {isMW('todayActivities') && <View style={styles.card}>

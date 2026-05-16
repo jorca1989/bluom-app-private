@@ -24,7 +24,14 @@ const MacroCards = ({ macros }: MacroCardsProps) => {
           <View key={macro.name} style={styles.card}>
             <View style={styles.header}>
               <Text style={styles.emoji}>{macro.emoji}</Text>
-              <Text style={styles.name}>{macro.name}</Text>
+              <Text 
+                style={styles.name} 
+                numberOfLines={1} 
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}
+              >
+                {macro.name}
+              </Text>
             </View>
             
             <View style={styles.values}>
@@ -73,6 +80,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   name: {
+    flex: 1,
     fontSize: 13,
     fontWeight: '500',
     color: '#64748b',
