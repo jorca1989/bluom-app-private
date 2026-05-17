@@ -55,6 +55,8 @@ import AchievementsCard from '@/components/achievementcard';
 import { useResponsive } from '@/utils/responsive';
 import Avatar, { AvatarConfig } from '@/components/Avatar';
 import { useTheme } from '@/context/ThemeContext';
+import { THEMES } from '@/context/ThemeContext';
+import type { ThemeColors } from '@/context/ThemeContext';
 // IMPORTANT: don't import expo-location at module scope.
 // If the current binary wasn't rebuilt after installing expo-location,
 // a static import will crash the app with "Cannot find native module 'ExpoLocation'".
@@ -124,6 +126,11 @@ export default function HomeScreen() {
   const { isLoading: isAccessLoading } = useAccessControl();
   const { isTablet, contentMaxWidth, discoveryColumns } = useResponsive();
   const { colors: themeColors } = useTheme();
+  const { theme: homeActiveTheme, setTheme: homeSetTheme } = useTheme();
+  const homeIsDarkMode = homeActiveTheme === 'black' || homeActiveTheme === 'navy';
+  const s = useMemo(() => createS(themeColors), [themeColors]);
+  const mb = useMemo(() => createMb(themeColors), [themeColors]);
+  const kpi = useMemo(() => createKpi(themeColors), [themeColors]);
 
   const [enabledWidgets, setEnabledWidgets] = useState<Set<WidgetId>>(
     new Set(WIDGET_REGISTRY.filter(w => w.defaultEnabled).map(w => w.id))
@@ -774,6 +781,23 @@ export default function HomeScreen() {
         </View>
         <Text style={s.modSub}>{t('home.customize.sub', 'Toggle cards to personalize your home screen.')}</Text>
         <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
+          {/* Dark Mode toggle — wired to Theme system */}
+          <View style={s.wRow}>
+            <View style={s.wLeft}>
+              <Text style={s.wEmoji}>🌙</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={s.wName}>{t('common.darkMode', 'Dark Mode')}</Text>
+                <Text style={s.wDesc}>{t('common.darkModeDesc', 'Switches the whole app to a dark palette')}</Text>
+              </View>
+            </View>
+            <Switch
+              data-testid="home-darkmode-toggle"
+              value={homeIsDarkMode}
+              onValueChange={(v) => homeSetTheme(v ? 'black' : 'default')}
+              trackColor={{ true: '#2563eb', false: '#e2e8f0' }}
+              thumbColor="#fff"
+            />
+          </View>
           {WIDGET_REGISTRY.map(w => (
             <View key={w.id} style={s.wRow}>
               <View style={s.wLeft}>
@@ -873,10 +897,10 @@ function MiniBar({ label, pct, color }: { label: string; pct: number; color: str
     </View>
   );
 }
-const mb = StyleSheet.create({
+const createMb = (c: ThemeColors) => StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', marginBottom: 9, gap: 8 },
-  lbl: { width: 60, fontSize: 11, fontWeight: '700', color: '#64748b' },
-  track: { flex: 1, height: 6, backgroundColor: '#f1f5f9', borderRadius: 3, overflow: 'hidden' },
+  lbl: { width: 60, fontSize: 11, fontWeight: '700', color: c.textMuted },
+  track: { flex: 1, height: 6, backgroundColor: c.surfaceMuted, borderRadius: 3, overflow: 'hidden' },
   fill: { height: '100%', borderRadius: 3 },
   pct: { width: 34, fontSize: 11, fontWeight: '700', textAlign: 'right' },
 });
@@ -912,31 +936,31 @@ function KPICard({
     </View>
   );
 }
-const kpi = StyleSheet.create({
+const createKpi = (c: ThemeColors) => StyleSheet.create({
   card: { flex: 1, minWidth: (SCREEN_WIDTH - 52) / 2, borderRadius: 18, padding: 14, minHeight: 100, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 8, elevation: 1 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
   lbl: { fontSize: 13, fontWeight: '700' },
-  val: { fontSize: 22, fontWeight: '900', color: '#0f172a', marginBottom: 6 },
-  unit: { fontSize: 12, fontWeight: '600', color: '#64748b' },
+  val: { fontSize: 22, fontWeight: '900', color: c.text, marginBottom: 6 },
+  unit: { fontSize: 12, fontWeight: '600', color: c.textMuted },
   bar: { height: 4, backgroundColor: 'rgba(0,0,0,0.07)', borderRadius: 2, overflow: 'hidden', marginBottom: 4 },
   fill: { height: '100%', borderRadius: 2 },
-  sub: { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
+  sub: { fontSize: 11, color: c.textMuted, fontWeight: '600' },
 });
 
 // ─────────────────────────────────────────────────────────────
 // STYLES
 // ─────────────────────────────────────────────────────────────
-const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#F5F4F0' },
-  loadWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8fafc', gap: 16 },
-  loadText: { color: '#64748b', fontWeight: '600', fontSize: 14 },
-  errorText: { color: '#475569', fontWeight: '700', fontSize: 15, textAlign: 'center', paddingHorizontal: 32 },
-  resetBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12, shadowColor: '#000', shadowOpacity: 0.07, shadowRadius: 8, elevation: 2 },
-  resetBtnTxt: { color: '#1e293b', fontWeight: '600' },
+const createS = (c: ThemeColors) => StyleSheet.create({
+  screen: { flex: 1, backgroundColor: c.bg },
+  loadWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: c.surfaceMuted, gap: 16 },
+  loadText: { color: c.textMuted, fontWeight: '600', fontSize: 14 },
+  errorText: { color: c.text, fontWeight: '700', fontSize: 15, textAlign: 'center', paddingHorizontal: 32 },
+  resetBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: c.surface, paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12, shadowColor: '#000', shadowOpacity: 0.07, shadowRadius: 8, elevation: 2 },
+  resetBtnTxt: { color: c.text, fontWeight: '600' },
 
-  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10, backgroundColor: '#F5F4F0' },
+  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10, backgroundColor: c.bg },
   topLogo: { width: 80, height: 26 },
-  cBtn: { width: 36, height: 36, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
+  cBtn: { width: 36, height: 36, borderRadius: 11, backgroundColor: c.surface, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
 
   banner: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fef2f2', borderColor: '#fecaca', borderWidth: 1, marginHorizontal: 16, marginBottom: 6, padding: 11, borderRadius: 12 },
   bannerDot: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#ef4444' },
@@ -945,8 +969,8 @@ const s = StyleSheet.create({
   scroll: { paddingHorizontal: 16, paddingTop: 12 },
 
   // Greeting
-  greetCard: { backgroundColor: '#fff', borderRadius: 20, padding: 18, marginBottom: 12, flexDirection: 'row', alignItems: 'center', shadowColor: '#2563eb', shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
-  greetLine1: { fontSize: 19, fontWeight: '800', color: '#0f172a', marginBottom: 2 },
+  greetCard: { backgroundColor: c.surface, borderRadius: 20, padding: 18, marginBottom: 12, flexDirection: 'row', alignItems: 'center', shadowColor: '#2563eb', shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
+  greetLine1: { fontSize: 19, fontWeight: '800', color: c.text, marginBottom: 2 },
   greetLine2: { fontSize: 13, fontWeight: '600' },
   greetLogo: { width: 52, height: 18 },
   avatarEditBadge: {
@@ -958,16 +982,16 @@ const s = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#3b82f6',
     borderWidth: 2,
-    borderColor: '#fff',
+    borderColor: c.surface,
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   // Generic card
-  card: { backgroundColor: '#fff', borderRadius: 20, padding: 17, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 10, elevation: 1 },
+  card: { backgroundColor: c.surface, borderRadius: 20, padding: 17, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 10, elevation: 1 },
   cardHead: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 },
-  cardTitle: { fontSize: 16, fontWeight: '800', color: '#1e293b' },
-  cardSub: { fontSize: 11, color: '#94a3b8', fontWeight: '600', marginTop: 2 },
+  cardTitle: { fontSize: 16, fontWeight: '800', color: c.text },
+  cardSub: { fontSize: 11, color: c.textMuted, fontWeight: '600', marginTop: 2 },
 
   badge: { paddingHorizontal: 9, paddingVertical: 4, borderRadius: 8 },
   badgeTxt: { fontSize: 11, fontWeight: '700' },
@@ -977,60 +1001,65 @@ const s = StyleSheet.create({
   circleWrap: { position: 'relative', alignItems: 'center', justifyContent: 'center' },
   circleAbs: { position: 'absolute', alignItems: 'center' },
   vNum: { fontSize: 28, fontWeight: '900', lineHeight: 32 },
-  vSub: { fontSize: 11, color: '#94a3b8', fontWeight: '700' },
-  vHint: { marginTop: 10, fontSize: 12, color: '#94a3b8', fontWeight: '600', textAlign: 'center' },
+  vSub: { fontSize: 11, color: c.textMuted, fontWeight: '700' },
+  vHint: { marginTop: 10, fontSize: 12, color: c.textMuted, fontWeight: '600', textAlign: 'center' },
 
   // Balance
   balRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
-  balOp: { fontSize: 17, color: '#cbd5e1', fontWeight: '300', marginBottom: 10 },
-  progTrack: { height: 5, backgroundColor: '#f1f5f9', borderRadius: 3, overflow: 'hidden', marginBottom: 5 },
+  balOp: { fontSize: 17, color: c.textMuted, fontWeight: '300', marginBottom: 10 },
+  progTrack: { height: 5, backgroundColor: c.surfaceMuted, borderRadius: 3, overflow: 'hidden', marginBottom: 5 },
   progFill: { height: '100%', borderRadius: 3 },
-  progLbl: { fontSize: 10, color: '#94a3b8', fontWeight: '600', textAlign: 'right' },
+  progLbl: { fontSize: 10, color: c.textMuted, fontWeight: '600', textAlign: 'right' },
 
   // KPIs
   kpiGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 12 },
   kpiCard: { flex: 1, minWidth: (SCREEN_WIDTH - 52) / 2, borderRadius: 18, padding: 14, minHeight: 100, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 8, elevation: 1 },
   kpiHead: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
   kpiLbl: { fontSize: 13, fontWeight: '700' },
-  kpiVal: { fontSize: 22, fontWeight: '900', color: '#0f172a', marginBottom: 6 },
-  kpiUnit: { fontSize: 12, fontWeight: '600', color: '#64748b' },
-  kpiSub: { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
+  kpiVal: { fontSize: 22, fontWeight: '900', color: c.text, marginBottom: 6 },
+  kpiUnit: { fontSize: 12, fontWeight: '600', color: c.textMuted },
+  kpiSub: { fontSize: 11, color: c.textMuted, fontWeight: '600' },
 
   // Quick actions
   qaRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 },
   qaItem: { alignItems: 'center', flex: 1 },
   qaIcon: { width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginBottom: 5 },
-  qaLbl: { fontSize: 10, fontWeight: '700', color: '#475569', textAlign: 'center' },
+  qaLbl: { fontSize: 10, fontWeight: '700', color: c.text, textAlign: 'center' },
 
   // Trends
   chartRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 72 },
   chartCol: { flex: 1, alignItems: 'center', gap: 5 },
-  chartTrack: { width: 20, height: 56, backgroundColor: '#f1f5f9', borderRadius: 6, overflow: 'hidden', justifyContent: 'flex-end' },
+  chartTrack: { width: 20, height: 56, backgroundColor: c.surfaceMuted, borderRadius: 6, overflow: 'hidden', justifyContent: 'flex-end' },
   chartFill: { width: '100%', backgroundColor: '#3b82f6', borderRadius: 6 },
-  chartDay: { fontSize: 10, fontWeight: '700', color: '#94a3b8' },
+  chartDay: { fontSize: 10, fontWeight: '700', color: c.textMuted },
 
   // Discover
   discGrid: { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -4 },
   discItem: { alignItems: 'center', padding: 6, marginBottom: 8 },
   discIcon: { width: 48, height: 48, borderRadius: 15, alignItems: 'center', justifyContent: 'center', marginBottom: 5 },
-  discLbl: { fontSize: 11, fontWeight: '700', color: '#475569', textAlign: 'center' },
+  discLbl: { fontSize: 11, fontWeight: '700', color: c.text, textAlign: 'center' },
   showMore: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 6, gap: 4 },
   showMoreTxt: { fontSize: 12, fontWeight: '700', color: '#2563eb' },
 
   // Empty
   empty: { alignItems: 'center', paddingVertical: 80, gap: 10 },
-  emptyTitle: { fontSize: 17, fontWeight: '800', color: '#94a3b8' },
-  emptySub: { fontSize: 13, color: '#cbd5e1', textAlign: 'center' },
+  emptyTitle: { fontSize: 17, fontWeight: '800', color: c.textMuted },
+  emptySub: { fontSize: 13, color: c.textMuted, textAlign: 'center' },
 
   // Modal
-  modWrap: { flex: 1, backgroundColor: '#f8fafc' },
+  modWrap: { flex: 1, backgroundColor: c.surfaceMuted },
   modHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, paddingBottom: 6 },
-  modTitle: { fontSize: 21, fontWeight: '900', color: '#1e293b' },
-  modClose: { width: 34, height: 34, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
-  modSub: { fontSize: 13, color: '#64748b', paddingHorizontal: 20, marginBottom: 18, fontWeight: '500' },
-  wRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+  modTitle: { fontSize: 21, fontWeight: '900', color: c.text },
+  modClose: { width: 34, height: 34, borderRadius: 10, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
+  modSub: { fontSize: 13, color: c.textMuted, paddingHorizontal: 20, marginBottom: 18, fontWeight: '500' },
+  wRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted },
   wLeft: { flexDirection: 'row', alignItems: 'center', gap: 14, flex: 1, marginRight: 10 },
   wEmoji: { fontSize: 24 },
-  wName: { fontSize: 15, fontWeight: '700', color: '#1e293b' },
-  wDesc: { fontSize: 12, color: '#94a3b8', fontWeight: '500', marginTop: 1 },
+  wName: { fontSize: 15, fontWeight: '700', color: c.text },
+  wDesc: { fontSize: 12, color: c.textMuted, fontWeight: '500', marginTop: 1 },
 });
+// Static fallback for module-scope helper components
+// (Helpers defined outside the main component cannot access component-scoped themed styles)
+const s = createS(THEMES.default.colors);
+const mb = createMb(THEMES.default.colors);
+const kpi = createKpi(THEMES.default.colors);

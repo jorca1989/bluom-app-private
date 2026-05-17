@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -68,6 +69,7 @@ function ovulationTestLabel(code: number | null | undefined) {
 }
 
 export default function HealthLogScreen() {
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
@@ -135,7 +137,7 @@ export default function HealthLogScreen() {
   const ovulationSource = (metrics as any)?.sources?.ovulationTestResult ?? null;
 
   return (
-    <SafeAreaView style={s.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={[s.container, { backgroundColor: themeColors.bg }]} edges={['top', 'bottom']}>
       <View style={[s.header, { paddingTop: Math.max(insets.top, 12) + 8 }]}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.7}>
           <Ionicons name="arrow-back" size={24} color="#0f172a" />

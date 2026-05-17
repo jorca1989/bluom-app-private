@@ -1,3 +1,4 @@
+import { useTheme } from '@/context/ThemeContext';
 /**
  * Bluom Productivity Hub  —  app/todo.tsx
  * ─────────────────────────────────────────────
@@ -145,6 +146,7 @@ const FREE_LIMIT = 3;
 // MAIN COMPONENT
 // ─────────────────────────────────────────────────────────────
 export default function ProductivityHub() {
+  const { colors: themeColors } = useTheme();
   const { t } = useTranslation();
   const router   = useRouter();
   const insets   = useSafeAreaInsets();
@@ -389,7 +391,7 @@ export default function ProductivityHub() {
   // ─────────────────────────────────────────────────────────
   if (quizLoading) {
     return (
-      <SafeAreaView style={s.screen} edges={['top']}>
+      <SafeAreaView style={[s.screen, { backgroundColor: themeColors.bg }]} edges={['top']}>
         <ActivityIndicator style={{ flex: 1 }} color="#2563eb" />
       </SafeAreaView>
     );

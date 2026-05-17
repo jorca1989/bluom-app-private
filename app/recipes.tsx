@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 import { useWindowDimensions } from 'react-native'; // dynamic width for responsive grid
 import {
   View,
@@ -290,6 +291,7 @@ const lmStyles = StyleSheet.create({
 
 // ─── Main Screen ──────────────────────────────────────────────
 export default function RecipesScreen() {
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser, isLoaded: isClerkLoaded } = useClerkUser();
@@ -389,7 +391,7 @@ export default function RecipesScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top', 'bottom']}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={{

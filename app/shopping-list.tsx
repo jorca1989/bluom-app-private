@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 import {
   View,
   Text,
@@ -66,6 +67,7 @@ const CATEGORY_META: Record<ShoppingDoc['category'], { emoji: string; color: str
 };
 
 export default function ShoppingListScreen() {
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -123,7 +125,7 @@ export default function ShoppingListScreen() {
 
   if (!isClerkLoaded) {
     return (
-      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top', 'bottom']}>
         <View style={styles.center}>
           <Text style={styles.muted}>{t('shopping.loading', 'Loading...')}</Text>
         </View>

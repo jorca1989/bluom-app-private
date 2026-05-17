@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 import {
   View,
   Text,
@@ -26,6 +27,7 @@ import { useAccessControl } from '@/hooks/useAccessControl';
 const WEEK_COLORS = ['#1e293b', '#4c1d95', '#065f46', '#92400e'];
 
 export default function FourWeekPlanScreen() {
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useClerkUser();
@@ -134,7 +136,7 @@ export default function FourWeekPlanScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['bottom']}>
       <View style={[styles.header, { paddingTop: Math.max(insets.top, 44) }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={26} color="#0f172a" />

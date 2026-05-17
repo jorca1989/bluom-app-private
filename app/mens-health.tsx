@@ -1,3 +1,4 @@
+import { useTheme } from '@/context/ThemeContext';
 /**
  * app/mens-health.tsx
  * ─────────────────────────────────────────────────────────────
@@ -427,6 +428,7 @@ const HEALTH_MARKERS = [
 // MAIN COMPONENT
 // ─────────────────────────────────────────────────────────────
 export default function MensHealthScreen() {
+  const { colors: themeColors } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -595,7 +597,7 @@ export default function MensHealthScreen() {
   // ─────────────────────────────────────────────────────────
   // QUIZ SCREEN
   // ─────────────────────────────────────────────────────────
-  if (quizLoading) return <SafeAreaView style={s.screen} edges={['top']}><ActivityIndicator style={{ flex: 1 }} color="#60a5fa" /></SafeAreaView>;
+  if (quizLoading) return <SafeAreaView style={[s.screen, { backgroundColor: themeColors.bg }]} edges={['top']}><ActivityIndicator style={{ flex: 1 }} color="#60a5fa" /></SafeAreaView>;
 
   if (!quizDone) {
     const step = MENS_QUIZ[quizStep];

@@ -181,6 +181,7 @@ type OnboardingArgs = {
   coachingStyle?: string;
   commitmentLevel?: string;
   preferredLanguage?: string;
+  preferredTheme?: string;
   preferredUnits?: {
     weight: string;
     height: string;
@@ -227,6 +228,7 @@ export const onboardUser = mutation({
     coachingStyle: v.optional(v.string()), // Made optional per request
     commitmentLevel: v.optional(v.string()), // 'easy', 'balanced', 'maximum'
     preferredLanguage: v.optional(v.string()), // Added for localization support
+    preferredTheme: v.optional(v.string()), // Theme palette key
     preferredUnits: v.optional(v.object({
       weight: v.string(),
       height: v.string(),
@@ -345,6 +347,7 @@ export const onboardUser = mutation({
       coachingStyle: args.coachingStyle,
       commitmentLevel: args.commitmentLevel,
       ...(args.preferredLanguage && { preferredLanguage: args.preferredLanguage }),
+      ...(args.preferredTheme && { preferredTheme: args.preferredTheme }),
       ...(args.preferredUnits && {
         preferredUnits: {
           ...args.preferredUnits,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     View,
     Text,
@@ -25,7 +25,7 @@ import { getSoundSettings, setSoundSettings, triggerSound, SoundEffect } from '@
 import { getBottomContentPadding } from '@/utils/layout';
 import { useTranslation } from 'react-i18next';
 import { saveLanguagePreference } from '@/i18n';
-import { useTheme, THEMES, type ThemeKey } from '@/context/ThemeContext';
+import { useTheme, THEMES, type ThemeKey, type ThemeColors } from '@/context/ThemeContext';
 
 const LANG_OPTIONS = [
     { code: 'en', label: 'English' },
@@ -66,6 +66,7 @@ export default function SettingsScreen() {
 
     // Theme switcher
     const { theme: activeTheme, setTheme, themes, colors: themeColors } = useTheme();
+    const styles = useMemo(() => createStyles(themeColors), [themeColors]);
 
     // Sound settings state
     const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(true);
@@ -752,10 +753,10 @@ export default function SettingsScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F4F0',
+        backgroundColor: c.bg,
     },
     center: {
         justifyContent: 'center',
@@ -771,7 +772,7 @@ const styles = StyleSheet.create({
         width: 44,
         height: 44,
         borderRadius: 22,
-        backgroundColor: '#ffffff',
+        backgroundColor: c.surface,
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 16,
@@ -787,11 +788,11 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: '800',
-        color: '#1e293b',
+        color: c.text,
     },
     subtitle: {
         fontSize: 14,
-        color: '#64748b',
+        color: c.textMuted,
         marginTop: 2,
     },
     scrollView: {
@@ -818,12 +819,12 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 14,
         fontWeight: '800',
-        color: '#64748b',
+        color: c.textMuted,
         textTransform: 'uppercase',
         letterSpacing: 1,
     },
     itemsList: {
-        backgroundColor: '#ffffff',
+        backgroundColor: c.surface,
         borderRadius: 20,
         overflow: 'hidden',
         shadowColor: '#000',
@@ -849,16 +850,16 @@ const styles = StyleSheet.create({
     itemLabel: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#1e293b',
+        color: c.text,
         marginBottom: 2,
     },
     itemValue: {
         fontSize: 13,
-        color: '#64748b',
+        color: c.textMuted,
     },
     divider: {
         height: 1,
-        backgroundColor: '#f1f5f9',
+        backgroundColor: c.surfaceMuted,
         marginHorizontal: 16,
     },
     footer: {
@@ -882,11 +883,11 @@ const styles = StyleSheet.create({
     appName: {
         fontSize: 18,
         fontWeight: '800',
-        color: '#1e293b',
+        color: c.text,
     },
     versionText: {
         fontSize: 14,
-        color: '#94a3b8',
+        color: c.textMuted,
         marginTop: 4,
     },
     // Modal Styles
@@ -901,7 +902,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     modalContent: {
-        backgroundColor: '#ffffff',
+        backgroundColor: c.surface,
         borderRadius: 24,
         padding: 24,
         shadowColor: '#000',
@@ -919,7 +920,7 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 20,
         fontWeight: '800',
-        color: '#1e293b',
+        color: c.text,
     },
     modalBody: {
         gap: 20,
@@ -930,7 +931,7 @@ const styles = StyleSheet.create({
     unitLabel: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#64748b',
+        color: c.textMuted,
     },
     unitButtons: {
         flexDirection: 'row',
@@ -941,9 +942,9 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderRadius: 12,
         borderWidth: 2,
-        borderColor: '#f1f5f9',
+        borderColor: c.surfaceMuted,
         alignItems: 'center',
-        backgroundColor: '#f8fafc',
+        backgroundColor: c.surfaceMuted,
     },
     unitButtonActive: {
         borderColor: '#2563eb',
@@ -952,7 +953,7 @@ const styles = StyleSheet.create({
     unitButtonText: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#64748b',
+        color: c.textMuted,
     },
     unitButtonTextActive: {
         color: '#2563eb',
@@ -975,16 +976,16 @@ const styles = StyleSheet.create({
     goalLabel: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#64748b',
+        color: c.textMuted,
     },
     goalInput: {
-        backgroundColor: '#f8fafc',
+        backgroundColor: c.surfaceMuted,
         borderWidth: 1,
-        borderColor: '#e2e8f0',
+        borderColor: c.border,
         borderRadius: 12,
         padding: 12,
         fontSize: 16,
-        color: '#1e293b',
+        color: c.text,
         fontWeight: '600',
     },
     volumeControl: {
@@ -993,7 +994,7 @@ const styles = StyleSheet.create({
     volumeLabel: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#1e293b',
+        color: c.text,
         marginBottom: 12,
     },
     volumeDotsRow: {
@@ -1005,9 +1006,9 @@ const styles = StyleSheet.create({
         width: 24,
         height: 24,
         borderRadius: 12,
-        backgroundColor: '#f1f5f9',
+        backgroundColor: c.surfaceMuted,
         borderWidth: 2,
-        borderColor: '#e2e8f0',
+        borderColor: c.border,
     },
     volumeDotActive: {
         backgroundColor: '#3b82f6',

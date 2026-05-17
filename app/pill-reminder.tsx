@@ -4,6 +4,7 @@
  * 4 tabs: Today | Calendar | History | Settings
  */
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Modal, TextInput, Alert, Animated, Switch, Dimensions,
@@ -53,6 +54,7 @@ function calcStreak(history: any[], schedules: any[]): number {
 // ─── MAIN COMPONENT ─────────────────────────────────────────
 
 export default function PillReminderScreen() {
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
@@ -183,7 +185,7 @@ export default function PillReminderScreen() {
   ];
 
   return (
-    <SafeAreaView style={s.screen} edges={['top']}>
+    <SafeAreaView style={[s.screen, { backgroundColor: themeColors.bg }]} edges={['top']}>
       {/* Day detail bottom sheet */}
       <Modal visible={showDaySheet} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['top']}>

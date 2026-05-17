@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '@/context/ThemeContext';
 import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -8,6 +9,7 @@ import { api } from '@/convex/_generated/api';
 import LifeGoalsHub from '@/components/LifeGoalsHub';
 
 export default function LifeGoalsRoute() {
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const { user: clerkUser } = useClerkUser();
   const convexUser = useQuery(
@@ -17,7 +19,7 @@ export default function LifeGoalsRoute() {
 
   if (!clerkUser || !convexUser?._id) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F4F0' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator />
         </View>

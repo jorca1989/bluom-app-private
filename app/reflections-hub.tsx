@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import {
     View,
@@ -45,6 +46,7 @@ const getJournalPrompts = (t: any) => [
 ];
 
 export default function ReflectionsHub() {
+  const { colors: themeColors } = useTheme();
     const { t } = useTranslation();
     const router = useRouter();
     const { user: clerkUser } = useUser();
@@ -277,7 +279,7 @@ export default function ReflectionsHub() {
     }
 
     return (
-        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top', 'bottom']}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color="#1e293b" />

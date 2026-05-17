@@ -1,3 +1,4 @@
+import { useTheme } from '@/context/ThemeContext';
 /**
  * app/womens-health.tsx
  * ─────────────────────────────────────────────────────────────
@@ -369,6 +370,7 @@ const SYMPTOMS_KEYS = [
 // MAIN COMPONENT
 // ─────────────────────────────────────────────────────────────
 export default function WomensHealthScreen() {
+  const { colors: themeColors } = useTheme();
   const router   = useRouter();
   const insets   = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
@@ -540,7 +542,7 @@ export default function WomensHealthScreen() {
   // ─────────────────────────────────────────────────────────
   // QUIZ SCREEN
   // ─────────────────────────────────────────────────────────
-  if (quizLoading) return <SafeAreaView style={s.screen} edges={['top']}><ActivityIndicator style={{ flex: 1 }} color="#e11d48" /></SafeAreaView>;
+  if (quizLoading) return <SafeAreaView style={[s.screen, { backgroundColor: themeColors.bg }]} edges={['top']}><ActivityIndicator style={{ flex: 1 }} color="#e11d48" /></SafeAreaView>;
 
   if (!quizDone) {
     const step = WOMENS_QUIZ[quizStep];

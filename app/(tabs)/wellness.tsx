@@ -19,6 +19,8 @@ import LifeGoalsHub from '../../components/LifeGoalsHub';
 import { triggerSound, SoundEffect } from '../../utils/soundEffects';
 import { getBottomContentPadding, TAB_BAR_HEIGHT } from '../../utils/layout';
 import { useTheme } from '@/context/ThemeContext';
+import { THEMES } from '@/context/ThemeContext';
+import type { ThemeColors } from '@/context/ThemeContext';
 import * as SecureStore from 'expo-secure-store';
 
 const { width } = Dimensions.get('window');
@@ -62,10 +64,10 @@ function KpiCard({
     </View>
   );
 }
-const kpiStyles = StyleSheet.create({
+const createKpiStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
     width: (width - 64) / 2,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 18, padding: 14, marginBottom: 16,
     minHeight: 100,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
@@ -78,11 +80,11 @@ const kpiStyles = StyleSheet.create({
     width: 28, height: 28, borderRadius: 8,
     justifyContent: 'center', alignItems: 'center',
   },
-  label: { fontSize: 13, fontWeight: '700', color: '#64748b', flexShrink: 1 },
-  value: { fontSize: 22, fontWeight: '900', color: '#0f172a', marginBottom: 6 },
+  label: { fontSize: 13, fontWeight: '700', color: c.textMuted, flexShrink: 1 },
+  value: { fontSize: 22, fontWeight: '900', color: c.text, marginBottom: 6 },
   bar: { height: 4, backgroundColor: 'rgba(0,0,0,0.07)', borderRadius: 2, overflow: 'hidden', marginBottom: 4 },
   fill: { height: '100%' as any, borderRadius: 2 },
-  sub: { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
+  sub: { fontSize: 11, color: c.textMuted, fontWeight: '600' },
 });
 
 // ─── Quick Action Button ───────────────────────────────────────────────────────
@@ -96,7 +98,7 @@ function QuickActionBtn({
     </TouchableOpacity>
   );
 }
-const qaStyles = StyleSheet.create({
+const createQaStyles = (c: ThemeColors) => StyleSheet.create({
   btn: {
     flex: 1, alignItems: 'center', justifyContent: 'center',
     paddingVertical: 14, borderRadius: 14, gap: 6, minWidth: 70,
@@ -127,7 +129,7 @@ function HubCard({
     </TouchableOpacity>
   );
 }
-const hubStyles = StyleSheet.create({
+const createHubStyles = (c: ThemeColors) => StyleSheet.create({
   wrap: { width: (width - 60) / 2 },
   card: {
     borderRadius: 20, padding: 18, minHeight: 108,
@@ -140,7 +142,7 @@ const hubStyles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.2)',
     justifyContent: 'center', alignItems: 'center', marginBottom: 10,
   },
-  label: { fontSize: 13, fontWeight: '800', color: '#fff', letterSpacing: 0.1 },
+  label: { fontSize: 13, fontWeight: '800', color: '#ffffff', letterSpacing: 0.1 },
   sub: { fontSize: 10, color: 'rgba(255,255,255,0.65)', marginTop: 2 },
   arrow: { position: 'absolute', top: 14, right: 14 },
 });
@@ -161,6 +163,12 @@ function SectionHeader({ title, sub }: { title: string; sub?: string }) {
 export default function WellnessScreen() {
   const { t } = useTranslation();
   const { colors: themeColors } = useTheme();
+  const { theme: wellnessActiveTheme, setTheme: wellnessSetTheme } = useTheme();
+  const wellnessIsDarkMode = wellnessActiveTheme === 'black' || wellnessActiveTheme === 'navy';
+  const s = useMemo(() => createS(themeColors), [themeColors]);
+  const kpiStyles = useMemo(() => createKpiStyles(themeColors), [themeColors]);
+  const qaStyles = useMemo(() => createQaStyles(themeColors), [themeColors]);
+  const hubStyles = useMemo(() => createHubStyles(themeColors), [themeColors]);
   const router = useRouter();
   const params = useLocalSearchParams();
   const insets = useSafeAreaInsets();
@@ -287,10 +295,16 @@ export default function WellnessScreen() {
                   <Text style={{ fontSize: 20 }}>🌙</Text>
                   <View>
                     <Text style={{ fontSize: 15, fontWeight: '700', color: '#0f172a' }}>{t('common.darkMode', 'Dark Mode')}</Text>
-                    <Text style={{ fontSize: 12, color: '#94a3b8' }}>{t('common.comingSoon', 'Coming soon')}</Text>
+                    <Text style={{ fontSize: 12, color: '#94a3b8' }}>{t('common.darkModeDesc', 'Switches the whole app to a dark palette')}</Text>
                   </View>
                 </View>
-                <Switch value={false} disabled trackColor={{ true: '#059669', false: '#e2e8f0' }} thumbColor="#fff" />
+                <Switch
+                  data-testid="wellness-darkmode-toggle"
+                  value={wellnessIsDarkMode}
+                  onValueChange={(v) => wellnessSetTheme(v ? 'black' : 'default')}
+                  trackColor={{ true: '#059669', false: '#e2e8f0' }}
+                  thumbColor="#fff"
+                />
               </View>
               {WELLNESS_WIDGETS.map(w => (
                 <View key={w.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f8fafc' }}>
@@ -565,16 +579,16 @@ export default function WellnessScreen() {
   );
 }
 
-const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F4F0' },
+const createS = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
   header: {
     paddingHorizontal: 24, paddingTop: 12, paddingBottom: 8,
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
   },
-  title: { fontSize: 28, fontWeight: '900', color: '#0f172a', letterSpacing: -0.5 },
-  subtitle: { fontSize: 13, color: '#64748b', marginTop: 2 },
+  title: { fontSize: 28, fontWeight: '900', color: c.text, letterSpacing: -0.5 },
+  subtitle: { fontSize: 13, color: c.textMuted, marginTop: 2 },
 
   kpiGrid: {
     flexDirection: 'row', flexWrap: 'wrap',
@@ -627,52 +641,58 @@ const s = StyleSheet.create({
   // ── Mood chart ───────────────────────────────────────────────────
   moodChart: {
     flexDirection: 'row', justifyContent: 'space-between',
-    backgroundColor: '#fff', borderRadius: 20, padding: 20,
+    backgroundColor: c.surface, borderRadius: 20, padding: 20,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
   },
   moodBar: { alignItems: 'center', flex: 1, gap: 4 },
   moodBarTrack: {
-    width: 8, height: 60, backgroundColor: '#f1f5f9',
+    width: 8, height: 60, backgroundColor: c.surfaceMuted,
     borderRadius: 4, justifyContent: 'flex-end', overflow: 'hidden',
   },
   moodBarFill: { width: '100%', borderRadius: 4 },
-  moodDayLabel: { fontSize: 10, color: '#94a3b8', fontWeight: '600' },
+  moodDayLabel: { fontSize: 10, color: c.textMuted, fontWeight: '600' },
   moodEmoji: { fontSize: 11 },
 
   // ── Modals ───────────────────────────────────────────────────────
-  modalWrap: { flex: 1, backgroundColor: '#fff' },
+  modalWrap: { flex: 1, backgroundColor: c.surface },
   modalHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: 24, paddingVertical: 18,
-    borderBottomWidth: 1, borderBottomColor: '#f1f5f9',
+    borderBottomWidth: 1, borderBottomColor: c.surfaceMuted,
   },
-  modalTitle: { fontSize: 20, fontWeight: '800', color: '#0f172a' },
+  modalTitle: { fontSize: 20, fontWeight: '800', color: c.text },
 
   metricRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    backgroundColor: '#f8fafc', padding: 18, borderRadius: 14, marginBottom: 10,
+    backgroundColor: c.surfaceMuted, padding: 18, borderRadius: 14, marginBottom: 10,
   },
-  metricLabel: { fontSize: 15, fontWeight: '600', color: '#475569' },
-  metricValue: { fontSize: 17, fontWeight: '800', color: '#0f172a' },
+  metricLabel: { fontSize: 15, fontWeight: '600', color: c.text },
+  metricValue: { fontSize: 17, fontWeight: '800', color: c.text },
 
-  inputLabel: { fontSize: 14, fontWeight: '600', color: '#0f172a', marginBottom: 8 },
+  inputLabel: { fontSize: 14, fontWeight: '600', color: c.text, marginBottom: 8 },
   input: {
-    height: 52, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 12,
-    paddingHorizontal: 16, fontSize: 18, color: '#0f172a',
-    backgroundColor: '#f8fafc', marginBottom: 20,
+    height: 52, borderWidth: 1, borderColor: c.border, borderRadius: 12,
+    paddingHorizontal: 16, fontSize: 18, color: c.text,
+    backgroundColor: c.surfaceMuted, marginBottom: 20,
   },
   saveBtn: {
     backgroundColor: '#8b5cf6', borderRadius: 14,
     paddingVertical: 16, alignItems: 'center',
   },
-  saveBtnText: { color: '#fff', fontWeight: '800', fontSize: 16 },
+  saveBtnText: { color: '#ffffff', fontWeight: '800', fontSize: 16 },
 
   moodOption: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#f8fafc', borderRadius: 14,
+    backgroundColor: c.surfaceMuted, borderRadius: 14,
     padding: 16, borderWidth: 1, gap: 14,
   },
   moodOptionEmoji: { fontSize: 28 },
   moodOptionLabel: { flex: 1, fontSize: 17, fontWeight: '700' },
 });
+// Static fallback for module-scope helper components
+// (Helpers defined outside the main component cannot access component-scoped themed styles)
+const s = createS(THEMES.default.colors);
+const kpiStyles = createKpiStyles(THEMES.default.colors);
+const qaStyles = createQaStyles(THEMES.default.colors);
+const hubStyles = createHubStyles(THEMES.default.colors);

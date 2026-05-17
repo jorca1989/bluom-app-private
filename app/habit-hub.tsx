@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import {
     View,
@@ -109,6 +110,7 @@ const DEFAULT_HABIT_NAME_MAP: Record<string, string> = {
 };
 
 export default function HabitHubScreen() {
+  const { colors: themeColors } = useTheme();
     const { t } = useTranslation();
     const router = useRouter();
     const insets = useSafeAreaInsets();
@@ -296,7 +298,7 @@ export default function HabitHubScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color="#1e293b" />

@@ -600,6 +600,7 @@ export default function OnboardingScreen() {
         commitmentLevel: answers.commitmentLevel,
         preferredUnits: { weight: units.weight, height: units.height, volume: units.volume || 'ml' },
         preferredLanguage: currentLang,
+        preferredTheme: activeTheme,
         twelveMonthGoal: answers.goal,
       };
 

@@ -30,6 +30,8 @@ import {
 import AchievementsCard from '@/components/achievementcard';
 import { getCustomerInfoSafe } from '@/utils/revenuecat';
 import { useTheme } from '@/context/ThemeContext';
+import { THEMES } from '@/context/ThemeContext';
+import type { ThemeColors } from '@/context/ThemeContext';
 
 // ─────────────────────────────────────────────────────────────
 // DICEBEAR AVATAR OPTIONS (Avataaars)
@@ -187,6 +189,7 @@ export default function ProfileScreen() {
   // ── Theme integration (Dark Mode toggle now flips between 'black' and 'default') ──
   const { theme: activeTheme, setTheme, colors: themeColors } = useTheme();
   const isDarkMode = activeTheme === 'black' || activeTheme === 'navy';
+  const s = useMemo(() => createS(themeColors), [themeColors]);
 
   useEffect(() => {
     (async () => {
@@ -727,34 +730,34 @@ export default function ProfileScreen() {
 // ─────────────────────────────────────────────────────────────
 // STYLES
 // ─────────────────────────────────────────────────────────────
-const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#F5F4F0' },
+const createS = (c: ThemeColors) => StyleSheet.create({
+  screen: { flex: 1, backgroundColor: c.bg },
   scroll: { paddingHorizontal: 16, paddingTop: 12 },
 
   // Page header
   pageHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 },
-  pageHeaderTitle: { fontSize: 28, fontWeight: '900', color: '#0f172a' },
-  gearBtn: { width: 36, height: 36, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
+  pageHeaderTitle: { fontSize: 28, fontWeight: '900', color: c.text },
+  gearBtn: { width: 36, height: 36, borderRadius: 11, backgroundColor: c.surface, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
 
   // Widget config modal
-  wcHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
-  wcTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a' },
-  wcClose: { width: 34, height: 34, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
+  wcHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted },
+  wcTitle: { fontSize: 20, fontWeight: '900', color: c.text },
+  wcClose: { width: 34, height: 34, borderRadius: 10, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
   wcRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14 },
   wcEmoji: { fontSize: 20 },
-  wcLabel: { flex: 1, fontSize: 15, fontWeight: '600', color: '#0f172a' },
-  wcDivider: { height: 1, backgroundColor: '#f1f5f9' },
+  wcLabel: { flex: 1, fontSize: 15, fontWeight: '600', color: c.text },
+  wcDivider: { height: 1, backgroundColor: c.surfaceMuted },
   wcDarkRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14 },
   wcDarkLeft: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
-  wcDarkLabel: { fontSize: 15, fontWeight: '600', color: '#0f172a' },
+  wcDarkLabel: { fontSize: 15, fontWeight: '600', color: c.text },
 
   // Hero
   heroCard: { borderRadius: 24, padding: 24, alignItems: 'center', marginBottom: 14, overflow: 'hidden' },
   avatarWrap: { position: 'relative', marginBottom: 14 },
   avatar: { width: 84, height: 84, borderRadius: 26, alignItems: 'center', justifyContent: 'center' },
   avatarEmoji: { fontSize: 40 },
-  editBadge: { position: 'absolute', bottom: -4, right: -4, width: 24, height: 24, borderRadius: 12, backgroundColor: '#2563eb', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#1e293b' },
-  heroName: { fontSize: 22, fontWeight: '900', color: '#fff', marginBottom: 4 },
+  editBadge: { position: 'absolute', bottom: -4, right: -4, width: 24, height: 24, borderRadius: 12, backgroundColor: '#2563eb', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: c.text },
+  heroName: { fontSize: 22, fontWeight: '900', color: '#ffffff', marginBottom: 4 },
   heroEmail: { fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: '600', marginBottom: 12 },
   proBadge: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: '#fef3c7', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 5, marginBottom: 16 },
   proBadgeTxt: { fontSize: 12, fontWeight: '800', color: '#92400e' },
@@ -762,82 +765,85 @@ const s = StyleSheet.create({
   upgradeChipTxt: { fontSize: 12, fontWeight: '800', color: '#fcd34d' },
   statsRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 16, paddingVertical: 12, paddingHorizontal: 8, width: '100%' },
   stat: { flex: 1, alignItems: 'center' },
-  statVal: { fontSize: 18, fontWeight: '900', color: '#fff' },
+  statVal: { fontSize: 18, fontWeight: '900', color: '#ffffff' },
   statLbl: { fontSize: 9, color: 'rgba(255,255,255,0.5)', fontWeight: '700', marginTop: 2 },
   statDivider: { width: 1, height: 28, backgroundColor: 'rgba(255,255,255,0.1)' },
 
   // Achievements teaser
-  achievCard: { backgroundColor: '#fff', borderRadius: 20, padding: 16, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 8, elevation: 1, gap: 10 },
+  achievCard: { backgroundColor: c.surface, borderRadius: 20, padding: 16, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 8, elevation: 1, gap: 10 },
   achievLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  achievTitle: { fontSize: 16, fontWeight: '800', color: '#0f172a' },
-  achievSub: { fontSize: 11, color: '#94a3b8', fontWeight: '600', marginTop: 1 },
+  achievTitle: { fontSize: 16, fontWeight: '800', color: c.text },
+  achievSub: { fontSize: 11, color: c.textMuted, fontWeight: '600', marginTop: 1 },
   achievBadges: { flexDirection: 'row', gap: 6 },
   miniBadge: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   miniBadgeEmoji: { fontSize: 18 },
-  achievNone: { fontSize: 12, color: '#94a3b8', fontStyle: 'italic' },
-  achievBar: { height: 4, backgroundColor: '#f1f5f9', borderRadius: 2, overflow: 'hidden' },
+  achievNone: { fontSize: 12, color: c.textMuted, fontStyle: 'italic' },
+  achievBar: { height: 4, backgroundColor: c.surfaceMuted, borderRadius: 2, overflow: 'hidden' },
   achievBarFill: { height: '100%', backgroundColor: '#d97706', borderRadius: 2 },
 
   // Quick stats
-  quickStats: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 18, padding: 14, marginBottom: 14, gap: 0 },
+  quickStats: { flexDirection: 'row', backgroundColor: c.surface, borderRadius: 18, padding: 14, marginBottom: 14, gap: 0 },
   quickStatItem: { flex: 1, alignItems: 'center', gap: 3 },
   quickStatEmoji: { fontSize: 18 },
-  quickStatVal: { fontSize: 13, fontWeight: '800', color: '#0f172a' },
-  quickStatLbl: { fontSize: 9, color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase' },
+  quickStatVal: { fontSize: 13, fontWeight: '800', color: c.text },
+  quickStatLbl: { fontSize: 9, color: c.textMuted, fontWeight: '600', textTransform: 'uppercase' },
 
   // Sections
   section: { marginBottom: 14 },
-  sectionTitle: { fontSize: 11, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, paddingHorizontal: 2 },
-  sectionCard: { backgroundColor: '#fff', borderRadius: 18, overflow: 'hidden', shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 8, elevation: 1 },
-  divider: { height: 1, backgroundColor: '#f8fafc', marginHorizontal: 16 },
+  sectionTitle: { fontSize: 11, fontWeight: '800', color: c.textMuted, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, paddingHorizontal: 2 },
+  sectionCard: { backgroundColor: c.surface, borderRadius: 18, overflow: 'hidden', shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 8, elevation: 1 },
+  divider: { height: 1, backgroundColor: c.surfaceMuted, marginHorizontal: 16 },
 
   // Menu rows
   menuRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
   menuIcon: { width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
   menuText: { flex: 1 },
-  menuLabel: { fontSize: 15, fontWeight: '600', color: '#0f172a' },
-  menuSub: { fontSize: 11, color: '#94a3b8', marginTop: 1, fontWeight: '500' },
+  menuLabel: { fontSize: 15, fontWeight: '600', color: c.text },
+  menuSub: { fontSize: 11, color: c.textMuted, marginTop: 1, fontWeight: '500' },
   menuBadge: { backgroundColor: '#fef9c3', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 },
   menuBadgeTxt: { fontSize: 10, fontWeight: '800', color: '#d97706' },
 
   // Sign out
-  signOutBtn: { backgroundColor: '#fff', borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, borderWidth: 1, borderColor: '#fecaca' },
+  signOutBtn: { backgroundColor: c.surface, borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, borderWidth: 1, borderColor: '#fecaca' },
   signOutTxt: { fontSize: 15, fontWeight: '700', color: '#ef4444' },
 
   // Debug
-  debugBox: { backgroundColor: '#f8fafc', padding: 12, borderRadius: 10, margin: 14 },
-  debugTxt: { fontSize: 10, color: '#475569', fontFamily: 'monospace' },
+  debugBox: { backgroundColor: c.surfaceMuted, padding: 12, borderRadius: 10, margin: 14 },
+  debugTxt: { fontSize: 10, color: c.text, fontFamily: 'monospace' },
 
   // Footer
   footer: { alignItems: 'center', paddingVertical: 32, gap: 6 },
   footerLogo: { width: 72, height: 22 },
-  footerTxt: { fontSize: 11, color: '#cbd5e1', fontWeight: '600' },
+  footerTxt: { fontSize: 11, color: c.textMuted, fontWeight: '600' },
 
   // Avatar picker modal
-  pickerHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
-  pickerTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a' },
-  pickerClose: { width: 34, height: 34, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
-  pickerSectionLbl: { fontSize: 12, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 },
+  pickerHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted },
+  pickerTitle: { fontSize: 20, fontWeight: '900', color: c.text },
+  pickerClose: { width: 34, height: 34, borderRadius: 10, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
+  pickerSectionLbl: { fontSize: 12, fontWeight: '800', color: c.textMuted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 },
   avatarLarge: { width: 100, height: 100, borderRadius: 30, alignItems: 'center', justifyContent: 'center' },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   chip: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 14,
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   chipActive: { backgroundColor: '#eff6ff', borderColor: '#2563eb' },
-  chipTxt: { fontSize: 12, fontWeight: '700', color: '#334155' },
+  chipTxt: { fontSize: 12, fontWeight: '700', color: c.text },
   chipTxtActive: { color: '#1d4ed8' },
   swatchRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   swatch: { width: 34, height: 34, borderRadius: 17, borderWidth: 2, borderColor: 'transparent' },
-  swatchActive: { borderColor: '#0f172a', transform: [{ scale: 1.08 }] },
+  swatchActive: { borderColor: c.text, transform: [{ scale: 1.08 }] },
   bgRow: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
   bgSwatch: { width: 44, height: 44, borderRadius: 14, borderWidth: 2, borderColor: 'transparent', overflow: 'hidden' },
-  bgSwatchActive: { borderColor: '#0f172a', transform: [{ scale: 1.1 }] },
+  bgSwatchActive: { borderColor: c.text, transform: [{ scale: 1.1 }] },
   bgSwatchGrad: { flex: 1 },
   saveAvatarBtn: { backgroundColor: '#2563eb', borderRadius: 16, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
-  saveAvatarTxt: { color: '#fff', fontSize: 16, fontWeight: '800' },
+  saveAvatarTxt: { color: '#ffffff', fontSize: 16, fontWeight: '800' },
 });
+// Static fallback for module-scope helper components
+// (Helpers defined outside the main component cannot access component-scoped themed styles)
+const s = createS(THEMES.default.colors);

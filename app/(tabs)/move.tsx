@@ -48,6 +48,7 @@ import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { FREE_4_WEEK_PLAN, getWeekRoutineDays } from '@/utils/fourWeekPlanData';
 import { buildPlanFromDBWorkouts } from '@/utils/buildPlanFromDB';
 import { useTheme } from '@/context/ThemeContext';
+import type { ThemeColors } from '@/context/ThemeContext';
 
 
 
@@ -103,6 +104,10 @@ export default function MoveScreen() {
   const { width, isTablet, isSmallPhone: isSmallScreen, contentMaxWidth, kpiCardWidth } = useResponsive();
   const { t, i18n } = useTranslation();
   const { colors: themeColors } = useTheme();
+  const { theme: moveActiveTheme, setTheme: moveSetTheme } = useTheme();
+  const moveIsDarkMode = moveActiveTheme === 'black' || moveActiveTheme === 'navy';
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
+  const mwStyles = useMemo(() => createMwStyles(themeColors), [themeColors]);
 
   // ── Widget config ──
   const allMoveWidgetIds = MOVE_WIDGETS.map(w => w.id);
@@ -818,7 +823,13 @@ export default function MoveScreen() {
                 <Ionicons name="moon-outline" size={18} color="#6366f1" />
                 <Text style={mwStyles.darkLabel}>{t('common.darkMode', 'Dark Mode')}</Text>
               </View>
-              <Switch value={false} onValueChange={() => {}} trackColor={{ true: '#6366f1', false: '#e2e8f0' }} thumbColor="#fff" />
+              <Switch
+                data-testid="move-darkmode-toggle"
+                value={moveIsDarkMode}
+                onValueChange={(v) => moveSetTheme(v ? 'black' : 'default')}
+                trackColor={{ true: '#6366f1', false: '#e2e8f0' }}
+                thumbColor="#fff"
+              />
             </View>
             <View style={mwStyles.divider} />
             {MOVE_WIDGETS.map((w, i) => (
@@ -1517,10 +1528,10 @@ export default function MoveScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F4F0',
+    backgroundColor: c.bg,
   },
   scrollView: {
     flex: 1,
@@ -1544,12 +1555,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: c.text,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
   },
   headerButton: {
     width: 40,
@@ -1567,7 +1578,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#3b82f6',
   },
   plusMenu: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     marginHorizontal: 24,
     marginBottom: 16,
     borderRadius: 16,
@@ -1587,7 +1598,7 @@ const styles = StyleSheet.create({
   },
   plusMenuText: {
     fontSize: 14,
-    color: '#1e293b',
+    color: c.text,
   },
   activitySummary: {
     flexDirection: 'row',
@@ -1597,7 +1608,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   summaryCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 18,
     padding: 14,
     marginBottom: 16,
@@ -1622,7 +1633,7 @@ const styles = StyleSheet.create({
   kpiVal: {
     fontSize: 22,
     fontWeight: '900',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 6,
   },
   kpiBar: {
@@ -1638,7 +1649,7 @@ const styles = StyleSheet.create({
   },
   kpiSub: {
     fontSize: 11,
-    color: '#94a3b8',
+    color: c.textMuted,
     fontWeight: '600',
   },
   summaryIconContainer: {
@@ -1651,20 +1662,20 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     marginBottom: 4,
     minHeight: 16,
   },
   summaryValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: c.text,
     marginBottom: 2,
     minHeight: 28,
   },
   summarySubtext: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: c.textMuted,
     minHeight: 14,
   },
   addStepsLink: {
@@ -1675,14 +1686,14 @@ const styles = StyleSheet.create({
   },
 
   sectionContainer: { marginBottom: 24, marginTop: 8 },
-  sectionTitle: { fontSize: 18, fontWeight: '700', color: '#1e293b', paddingHorizontal: 20, marginBottom: 12 },
+  sectionTitle: { fontSize: 18, fontWeight: '700', color: c.text, paddingHorizontal: 20, marginBottom: 12 },
   routineCard: { width: 160, height: 140, marginRight: 12, borderRadius: 16, overflow: 'hidden' },
   routineGradient: { flex: 1, padding: 16, justifyContent: 'flex-end' },
-  routineName: { fontSize: 16, fontWeight: 'bold', color: '#fff', marginBottom: 4 },
+  routineName: { fontSize: 16, fontWeight: 'bold', color: '#ffffff', marginBottom: 4 },
   routineStats: { fontSize: 12, color: '#e0e7ff' },
 
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     marginHorizontal: 24,
     marginBottom: 16,
     padding: 24,
@@ -1702,7 +1713,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1e293b',
+    color: c.text,
   },
 
   activitiesList: {
@@ -1713,7 +1724,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 12,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 12,
   },
   activityLeft: {
@@ -1735,12 +1746,12 @@ const styles = StyleSheet.create({
   activityName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1e293b',
+    color: c.text,
     marginBottom: 4,
   },
   activityDetails: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
   },
   activityRight: {
     alignItems: 'flex-end',
@@ -1748,7 +1759,7 @@ const styles = StyleSheet.create({
   },
   activityTime: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: c.textMuted,
   },
   deleteButton: {
     padding: 6,
@@ -1760,7 +1771,7 @@ const styles = StyleSheet.create({
   emptyIconContainer: {
     width: 64,
     height: 64,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
@@ -1768,12 +1779,12 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 16,
-    color: '#64748b',
+    color: c.textMuted,
     marginBottom: 8,
   },
   emptyStateSubtext: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: c.textMuted,
     textAlign: 'center',
   },
   viewMoreBtn: {
@@ -1799,10 +1810,10 @@ const styles = StyleSheet.create({
   achievementCard: {
     flexBasis: '48%',
     maxWidth: '48%',
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     padding: 12,
     marginBottom: 8,
     shadowColor: '#000',
@@ -1835,7 +1846,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#ffffff',
+    borderColor: c.surface,
   },
   achievementContent: {
     flex: 1,
@@ -1852,7 +1863,7 @@ const styles = StyleSheet.create({
   },
   progressContainer: {
     height: 4,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: c.border,
     borderRadius: 2,
     overflow: 'hidden',
   },
@@ -1881,17 +1892,17 @@ const styles = StyleSheet.create({
   achievementTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1e293b',
+    color: c.text,
     marginBottom: 4,
   },
   achievementDescription: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
   },
   // Modal styles
   modalContent: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -1904,7 +1915,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: c.text,
   },
   modalScroll: {
     flex: 1,
@@ -1924,7 +1935,7 @@ const styles = StyleSheet.create({
   },
   searchExerciseButtonText: {
     fontSize: 16,
-    color: '#64748b',
+    color: c.textMuted,
   },
   selectedExerciseCard: {
     backgroundColor: '#eff6ff',
@@ -1935,12 +1946,12 @@ const styles = StyleSheet.create({
   selectedExerciseName: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1e293b',
+    color: c.text,
     marginBottom: 8,
   },
   selectedExerciseCategory: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     marginBottom: 16,
   },
   inputGroup: {
@@ -1953,7 +1964,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1e293b',
+    color: c.text,
     marginBottom: 8,
   },
   input: {
@@ -1963,8 +1974,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 16,
     fontSize: 16,
-    color: '#1e293b',
-    backgroundColor: '#ffffff',
+    color: c.text,
+    backgroundColor: c.surface,
   },
   textArea: {
     height: 90,
@@ -1973,7 +1984,7 @@ const styles = StyleSheet.create({
   },
   estimatedCalories: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     marginTop: 8,
   },
   modalButtons: {
@@ -2003,12 +2014,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   modalButtonSecondaryText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1e293b',
+    color: c.text,
   },
   searchContainer: {
     flex: 1,
@@ -2022,7 +2033,7 @@ const styles = StyleSheet.create({
     borderColor: '#d1d5db',
     borderRadius: 12,
     paddingHorizontal: 12,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   searchIcon: {
     marginRight: 8,
@@ -2031,7 +2042,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     fontSize: 16,
-    color: '#1e293b',
+    color: c.text,
   },
   categoriesScroll: {
     marginBottom: 16,
@@ -2042,7 +2053,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     marginRight: 8,
   },
   categoryChipActive: {
@@ -2050,7 +2061,7 @@ const styles = StyleSheet.create({
   },
   categoryChipText: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: '500',
   },
   categoryChipTextActive: {
@@ -2066,7 +2077,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    color: '#64748b',
+    color: c.textMuted,
     marginTop: 12,
   },
   exerciseResultItem: {
@@ -2078,7 +2089,7 @@ const styles = StyleSheet.create({
     borderColor: '#e5e7eb',
     borderRadius: 12,
     marginBottom: 12,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   exerciseResultInfo: {
     flex: 1,
@@ -2086,17 +2097,17 @@ const styles = StyleSheet.create({
   exerciseResultName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1e293b',
+    color: c.text,
     marginBottom: 4,
   },
   exerciseResultCategory: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     marginBottom: 2,
   },
   exerciseResultMuscles: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: c.textMuted,
   },
   exerciseResultAdd: {
     width: 32,
@@ -2112,22 +2123,22 @@ const styles = StyleSheet.create({
   },
   noResultsText: {
     fontSize: 16,
-    color: '#64748b',
+    color: c.textMuted,
     textAlign: 'center',
   },
 });
 
 // Widget config modal styles
-const mwStyles = StyleSheet.create({
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
-  title: { fontSize: 20, fontWeight: '900', color: '#0f172a' },
-  close: { width: 34, height: 34, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
+const createMwStyles = (c: ThemeColors) => StyleSheet.create({
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted },
+  title: { fontSize: 20, fontWeight: '900', color: c.text },
+  close: { width: 34, height: 34, borderRadius: 10, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14 },
   emoji: { fontSize: 20 },
-  label: { flex: 1, fontSize: 15, fontWeight: '600', color: '#0f172a' },
-  divider: { height: 1, backgroundColor: '#f1f5f9' },
+  label: { flex: 1, fontSize: 15, fontWeight: '600', color: c.text },
+  divider: { height: 1, backgroundColor: c.surfaceMuted },
   darkRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14 },
   darkLeft: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
-  darkLabel: { fontSize: 15, fontWeight: '600', color: '#0f172a' },
-  gearBtn: { width: 36, height: 36, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
+  darkLabel: { fontSize: 15, fontWeight: '600', color: c.text },
+  gearBtn: { width: 36, height: 36, borderRadius: 11, backgroundColor: c.surface, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
 });

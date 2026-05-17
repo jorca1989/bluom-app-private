@@ -50,6 +50,7 @@ import FoodSearchModal from '@/components/fuel/modals/FoodSearchModal';
 import VoiceLogModal from '@/components/fuel/modals/VoiceLogModel';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useTheme } from '@/context/ThemeContext';
+import type { ThemeColors } from '@/context/ThemeContext';
 
 type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 type MealTypeLower = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'premium_slot';
@@ -91,6 +92,9 @@ export default function FuelScreen() {
   const isTablet = windowWidth > 768;
   const tabletMaxWidth = Math.min(1000, Math.max(0, windowWidth - 32));
   const { colors: themeColors } = useTheme();
+  const { theme: fuelActiveTheme, setTheme: fuelSetTheme } = useTheme();
+  const fuelIsDarkMode = fuelActiveTheme === 'black' || fuelActiveTheme === 'navy';
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
 
   const { user: clerkUser, isLoaded: isClerkLoaded } = useClerkUser();
   const convexUser = useQuery(
@@ -385,16 +389,22 @@ export default function FuelScreen() {
                 </TouchableOpacity>
               </View>
               <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-                {/* Dark mode placeholder */}
+                {/* Dark mode — wired to Theme system */}
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#f8fafc' }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                     <Text style={{ fontSize: 20 }}>🌙</Text>
                     <View>
                       <Text style={{ fontSize: 15, fontWeight: '700', color: '#0f172a' }}>{t('common.darkMode', 'Dark Mode')}</Text>
-                      <Text style={{ fontSize: 12, color: '#94a3b8' }}>{t('common.comingSoon', 'Coming soon')}</Text>
+                      <Text style={{ fontSize: 12, color: '#94a3b8' }}>{t('common.darkModeDesc', 'Switches the whole app to a dark palette')}</Text>
                     </View>
                   </View>
-                  <Switch value={false} disabled trackColor={{ true: '#2563eb', false: '#e2e8f0' }} thumbColor="#fff" />
+                  <Switch
+                    data-testid="fuel-darkmode-toggle"
+                    value={fuelIsDarkMode}
+                    onValueChange={(v) => fuelSetTheme(v ? 'black' : 'default')}
+                    trackColor={{ true: '#2563eb', false: '#e2e8f0' }}
+                    thumbColor="#fff"
+                  />
                 </View>
                 {FUEL_WIDGETS.map(w => (
                   <View key={w.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f8fafc' }}>
@@ -720,10 +730,10 @@ export default function FuelScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F4F0',
+    backgroundColor: c.bg,
   },
   scrollView: {
     flex: 1,
@@ -735,7 +745,7 @@ const styles = StyleSheet.create({
     flex: 1, 
     justifyContent: 'center', 
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   header: {
     paddingHorizontal: 24,
@@ -747,7 +757,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   section: {
     paddingHorizontal: 20,
@@ -756,7 +766,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 16,
   },
   mealsSection: {
@@ -767,13 +777,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 18,
     paddingVertical: 16,
     paddingHorizontal: 16,
     marginTop: 10,
     borderWidth: 1.5,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderStyle: 'dashed',
   },
   extraMealCardPro: {
@@ -798,20 +808,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#dbeafe',
   },
   extraMealIconWrapLocked: {
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
   },
   extraMealTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#1e293b',
+    color: c.text,
     marginBottom: 2,
   },
   extraMealTitleLocked: {
-    color: '#94a3b8',
+    color: c.textMuted,
   },
   extraMealSub: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: c.textMuted,
     fontWeight: '500',
   },
   proCrown: {
@@ -831,7 +841,7 @@ const styles = StyleSheet.create({
   fastingBanner: {
      marginHorizontal: 20,
      marginTop: 24,
-     backgroundColor: '#0f172a',
+     backgroundColor: c.text,
      borderRadius: 24,
      padding: 24,
      overflow: 'hidden',
@@ -865,7 +875,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   fastingSubtitle: {
-    color: '#94a3b8', 
+    color: c.textMuted, 
     fontWeight: '500', 
     fontSize: 14,
   }

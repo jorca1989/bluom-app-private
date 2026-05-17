@@ -16,6 +16,7 @@
  */
 
 import React, { useMemo } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import {
   View,
@@ -487,6 +488,7 @@ const lo = StyleSheet.create({
 // ─── Main Screen ───────────────────────────────────────────────────────────────
 
 export default function PersonalizedPlanScreen() {
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
@@ -519,7 +521,7 @@ export default function PersonalizedPlanScreen() {
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={s.container} edges={['top']}>
+    <SafeAreaView style={[s.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
       <ScrollView
         contentContainerStyle={[s.scroll, { paddingBottom: insets.bottom + 40 }]}
         showsVerticalScrollIndicator={false}

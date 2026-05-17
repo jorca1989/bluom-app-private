@@ -18,6 +18,7 @@
  */
 
 import React, { useMemo, useState, useRef } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
@@ -216,6 +217,7 @@ const pl = StyleSheet.create({
 type ActiveModal = 'weight' | 'measurements' | 'scan' | 'history_measurements' | 'history_scans' | null;
 
 export default function WeightManagementScreen() {
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { convexUser, isPro, promptUpgrade } = useAccessControl();
@@ -557,7 +559,7 @@ export default function WeightManagementScreen() {
   const latestScan = (scanHistory ?? [])[0];
 
   return (
-    <SafeAreaView style={s.container} edges={['top']}>
+    <SafeAreaView style={[s.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
 
       {/* ── Header ── */}
       <LinearGradient colors={['#F5F4F0', '#F5F4F0']} style={s.headerGrad}>

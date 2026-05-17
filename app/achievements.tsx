@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,6 +29,7 @@ function formatDate(ts: number) {
 }
 
 export default function AchievementsScreen() {
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -76,7 +78,7 @@ export default function AchievementsScreen() {
   const streak = gardenState?.meditationStreak ?? 0;
 
   return (
-    <SafeAreaView style={s.screen} edges={['top']}>
+    <SafeAreaView style={[s.screen, { backgroundColor: themeColors.bg }]} edges={['top']}>
       <View style={[s.header, { paddingTop: Math.max(insets.top, 10) }]}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.85}>
           <Ionicons name="arrow-back" size={20} color="#0f172a" />

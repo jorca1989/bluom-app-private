@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import {
     View,
@@ -49,6 +50,7 @@ import { Video, ResizeMode } from 'expo-av';
 const { width } = Dimensions.get('window');
 
 export default function WorkoutsScreen() {
+  const { colors: themeColors } = useTheme();
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const { user: clerkUser } = useClerkUser();
@@ -265,7 +267,7 @@ export default function WorkoutsScreen() {
             <Stack.Screen options={{ headerShown: false }} />
 
             {/* ══ LIST VIEW — always mounted ══ */}
-            <SafeAreaView style={styles.container} edges={['top']}>
+            <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
 
                 {/* ── Header ── */}
                 <View style={styles.header}>

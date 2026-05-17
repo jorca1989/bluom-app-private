@@ -171,7 +171,7 @@ interface ThemeContextValue {
   themeClass: string;
   colors: ThemeColors;
   themes: ThemeDefinition[];
-  setTheme: (key: ThemeKey) => Promise<void>;
+  setTheme: (key: ThemeKey) => Promise<void> | void;
   isHydrated: boolean;
 }
 

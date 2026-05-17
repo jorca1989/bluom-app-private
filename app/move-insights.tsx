@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 import {
     View,
     Text,
@@ -69,6 +70,7 @@ function MiniBar({ label, value, max, color }: { label: string; value: number; m
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
 export default function MoveInsightsScreen() {
+  const { colors: themeColors } = useTheme();
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const { user: clerkUser } = useClerkUser();
@@ -176,7 +178,7 @@ export default function MoveInsightsScreen() {
     }, [thisWeekEntries, lastWeekEntries]);
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
                     <Ionicons name="chevron-back" size={26} color="#0f172a" />
