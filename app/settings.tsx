@@ -65,7 +65,7 @@ export default function SettingsScreen() {
     const [showThemeModal, setShowThemeModal] = useState(false);
 
     // Theme switcher
-    const { theme: activeTheme, setTheme, themes } = useTheme();
+    const { theme: activeTheme, setTheme, themes, colors: themeColors } = useTheme();
 
     // Sound settings state
     const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(true);
@@ -218,7 +218,7 @@ export default function SettingsScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
             {/* Header */}
             <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) }]}>
                 <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>

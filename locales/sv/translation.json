@@ -1895,7 +1895,9 @@
     "proteinG": "Dagligt protein (g)",
     "carbsG": "Dagliga kolhydrater (g)",
     "fatG": "Dagligt fett (g)",
-    "updateGoals": "Uppdatera mål"
+    "updateGoals": "Uppdatera mål",
+    "themeColor": "Temafärg",
+    "themeColorDesc": "Välj en palett som matchar din stämning. Ändringar tillämpas direkt."
   },
   "support": {
     "title": "Support & Feedback",
@@ -2665,7 +2667,11 @@
       "slide3Sub": "Obegränsad potential",
       "slide3Desc": "Lås upp avancerade protokoll: Livslängd, Topp-prestation, Biohacking och Fokus.",
       "startBtn": "Starta profil",
-      "continueBtn": "Fortsätt"
+      "continueBtn": "Fortsätt",
+      "themePrompt": "Vilken färg tilltalar dig?",
+      "themeConfirmTitle": "Ange {{name}} som mitt tema?",
+      "themeConfirmDesc": "Detta färgar hela din upplevelse. Du kan ändra det när som helst i Inställningar.",
+      "themeConfirmCta": "Ange som mitt tema"
     },
     "estimator": {
       "title": "Ditt mål i siffror",

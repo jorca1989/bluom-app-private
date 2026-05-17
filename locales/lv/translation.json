@@ -1895,7 +1895,9 @@
     "proteinG": "Proteína Diária (g)",
     "carbsG": "Hidratos Diários (g)",
     "fatG": "Gordura Diária (g)",
-    "updateGoals": "Atualizar Objetivos"
+    "updateGoals": "Atualizar Objetivos",
+    "themeColor": "Tēmas Krāsa",
+    "themeColorDesc": "Izvēlieties paleti, kas atbilst jūsu noskaņojumam. Izmaiņas tiek piemērotas uzreiz."
   },
   "support": {
     "title": "Suporte & Feedback",
@@ -2670,7 +2672,11 @@
       "slide3Sub": "Potencial Ilimitado",
       "slide3Desc": "Desbloqueia protocolos avançados: Longevidade, Pico de Performance, Biohacking, Anti-idade, Foco e muito mais.",
       "startBtn": "Começar Perfil",
-      "continueBtn": "Continuar"
+      "continueBtn": "Continuar",
+      "themePrompt": "Kura krāsa jums uzrunā?",
+      "themeConfirmTitle": "Iestatīt {{name}} kā manu tēmu?",
+      "themeConfirmDesc": "Tas iekrāsos visu jūsu pieredzi. To var mainīt jebkurā laikā iestatījumos.",
+      "themeConfirmCta": "Iestatīt kā manu tēmu"
     },
     "estimator": {
       "title": "O teu objetivo em números",

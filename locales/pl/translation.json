@@ -131,25 +131,14 @@
     }
   },
   "move": {
-    "title": "Trening",
-    "outdoorActivity": "Aktywność na zewnątrz",
-    "outdoorActivityDesc": "Śledź swoje biegi, przejażdżki i wędrówki za pomocą GPS.",
-    "running": "Bieganie",
-    "cycling": "Jazda na rowerze",
-    "hiking": "Wędrówka",
-    "walking": "Spacer",
-    "startActivity": "Zacznij aktywność",
-    "activityComplete": "Aktywność ukończona",
-    "saveActivity": "Zapisz aktywność",
-    "discard": "Odrzuć",
-    "distance": "Dystans",
-    "duration": "Czas trwania",
-    "calories": "Kalorie",
-    "avgSpeed": "Śr. prędkość",
-    "avgPace": "Śr. tempo",
-    "nativeBuildRequired": "Wymagany build natywny",
-    "nativeBuildRequiredDesc": "Ten rejestrator używa Map i śledzenia w tle. Twój obecny build nie zawiera jeszcze wymaganych modułów natywnych.",
-    "gpsAccuracyTip": "GPS aktywuje się po rozpoczęciu. Trzymaj telefon w dostępnym miejscu dla najlepszej dokładności."
+    "widgets": {
+      "title": "Konfiguracja widżetów",
+      "kpis": "KPI aktywności",
+      "swipeable": "Plan treningowy",
+      "quickActions": "Szybkie działania",
+      "todayActivities": "Dzisiejsze aktywności",
+      "moveInsights": "Wglądy Move"
+    }
   },
   "tabs": {
     "home": "Start",
@@ -715,227 +704,119 @@
   },
   "womensHealth": {
     "phaseName": {
-      "menstrual": "Menstruacja",
-      "follicular": "Faza folikularna",
+      "menstrual": "Menstruacyjna",
+      "follicular": "Folikularna",
       "ovulation": "Owulacja",
-      "lutealEarly": "Faza lutealna (wczesna)",
-      "lutealLate": "Faza lutealna (późna)"
+      "lutealEarly": "Lutealna (wczesna)",
+      "lutealLate": "Lutealna (późna)"
     },
     "phaseDesc": {
-      "menstrual": "Złuszczanie błony śluzowej macicy. Estrogen i progesteron są na najniższym poziomie.",
-      "follicular": "Wzrost FSH, rozwój pęcherzyków, wzrost estrogenu. Wzrost energii i jasności umysłu.",
-      "ovulation": "Skok LH wyzwala uwolnienie jajeczka. Estrogen osiąga szczyt. Czujesz się najlepiej.",
-      "lutealEarly": "Wzrost progesteronu wraz z formowaniem się ciałka żółtego. Temperatura ciała podnosi się.",
-      "lutealLate": "Okno PMS. Spadek progesteronu w przypadku braku zapłodnienia. Wzrost wrażliwości na kortyzol."
+      "menstrual": "Złuszczanie błony śluzowej macicy. Estrogen i progesteron na najniższym poziomie.",
+      "follicular": "FSH rośnie, rozwijają się pęcherzyki, estrogen rośnie. Energia i jasność umysłu wzrastają.",
+      "ovulation": "Szczyt LH wyzwala uwolnienie komórki jajowej. Estrogen w szczycie. Czujesz się najlepiej.",
+      "lutealEarly": "Progesteron rośnie wraz z tworzeniem się ciałka żółtego. Temperatura ciała rośnie.",
+      "lutealLate": "Okno PMS. Progesteron spada, jeśli nie doszło do zapłodnienia. Wrażliwość na kortyzol rośnie."
     },
     "phaseEnergy": {
-      "menstrual": "Niska — postaw na odpoczynek",
+      "menstrual": "Niska — uszanuj potrzebę odpoczynku",
       "follicular": "Rosnąca — idealna na nowe początki",
-      "ovulation": "Szczytowa — najwyższa sprawność fizyczna",
-      "lutealEarly": "Stabilna — zrównoważony wysiłek",
-      "lutealLate": "Niska do umiarkowanej — zwolnij"
+      "ovulation": "Szczytowa — najwyższa wydolność fizyczna",
+      "lutealEarly": "Stabilna — równomierny wysiłek",
+      "lutealLate": "Niska do umiarkowanej — zwolnij tempo"
     },
     "phaseWorkout": {
       "menstrual": "Delikatna joga, spacery, rozciąganie",
       "follicular": "Trening siłowy, HIIT, cardio",
       "ovulation": "Rekordy życiowe, intensywne cardio",
-      "lutealEarly": "Umiarkowane ciężary, Pilates, jazda na rowerze",
+      "lutealEarly": "Umiarkowany trening siłowy, Pilates",
       "lutealLate": "Lekkie cardio, joga, spacer"
     },
     "phaseNutrition": {
-      "menstrual": "Pokarmy bogate w żelazo: soczewica, zielone warzywa liściaste, czerwone mięso",
-      "follicular": "Węglowodany złożone, produkty fermentowane, chude białko",
+      "menstrual": "Produkty bogate w żelazo: soczewica, zielone liście, czerwone mięso",
+      "follicular": "Węglowodany złożone, kiszonki, chude białko",
       "ovulation": "Antyoksydanty, produkty bogate w cynk (pestki dyni, ostrygi)",
-      "lutealEarly": "Magnez (gorzka czekolada, orzechy), B6 dla nastroju",
-      "lutealLate": "Ogranicz sól + cukier. Produkty z tryptofanem (indyk, jajka) dla serotoniny."
+      "lutealEarly": "Magnez (gorzka czekolada, orzechy), B6 na nastrój",
+      "lutealLate": "Ogranicz sól i cukier. Produkty z tryptofanem (indyk, jajka) na serotoninę."
     },
     "phaseMood": {
-      "menstrual": "Introspektywny, emocjonalny",
+      "menstrual": "Refleksyjny, emocjonalny",
       "follicular": "Optymistyczny, zmotywowany, towarzyski",
       "ovulation": "Pewny siebie, magnetyczny, komunikatywny",
-      "lutealEarly": "Skoncentrowany, zorientowany na detale, możliwe wzdęcia",
+      "lutealEarly": "Skupiony, drobiazgowy, możliwe obrzęki",
       "lutealLate": "Wrażliwy, drażliwy, potrzebujący komfortu"
     },
-    "phaseHormone": {
-      "menstrual": "Niski poziom estrogenu i progesteronu",
-      "follicular": "Wzrost estrogenu, aktywny FSH",
-      "ovulation": "Skok LH + szczyt estrogenu",
-      "lutealEarly": "Wzrost progesteronu",
-      "lutealLate": "Spadek progesteronu i estrogenu"
-    },
     "phaseTip": {
-      "menstrual": "Używaj poduszki grzewczej, ogranicz kofeinę i priorytetyzuj sen.",
-      "follicular": "Zaplanuj wymagające projekty i pracę kreatywną — Twój mózg jest w trybie turbo.",
-      "ovulation": "Twój głos jest teraz dosłownie bardziej atrakcyjny — wykorzystaj sytuacje towarzyskie.",
-      "lutealEarly": "To najlepsza faza na szczegółową pracę administracyjną i głębokie skupienie.",
-      "lutealLate": "Ogranicz alkohol i przetworzoną żywność. Śledź objawy PMS, aby zidentyfikować wzorce."
+      "menstrual": "Używaj termoforu, ogranicz kofeinę i priorytetyzuj sen.",
+      "follicular": "Planuj teraz wymagające projekty i pracę kreatywną — Twój mózg jest w trybie turbo.",
+      "lutealLate": "Ogranicz alkohol i przetworzoną żywność. Rejestruj objawy PMS, aby poznać wzorce."
     },
     "milestone": {
-      "0": "Bicie serca",
-      "1": "Formowanie palców",
-      "2": "Możliwe pierwsze ruchy",
-      "3": "Rozwój słuchu",
+      "0": "Serce bije",
+      "1": "Formują się palce",
+      "2": "Pierwsze kopnięcia",
+      "3": "Rozwija się słuch",
       "4": "Dziecko może śnić",
-      "5": "Dojrzewanie płuc",
-      "6": "Ćwiczenie oddychania",
-      "7": "Zbliżanie się do terminu",
-      "default": "Rośnie w siłę"
+      "5": "Płuca dojrzewają",
+      "6": "Praktyka oddychania",
+      "7": "Blisko terminu",
+      "default": "Rośnie silne"
     },
     "insight": {
-      "pmsTitle": "Aktywne okno PMS",
-      "pmsBody": "Glicynian magnezu (300mg) przyjmowany przed snem ma silne dowody kliniczne na łagodzenie skurczów, wzdęć i zmian nastroju.",
-      "stressLutealTitle": "Wysoki stres + późna faza lutealna = Ryzyko",
-      "stressLutealBody": "Twój poziom stresu w połączeniu z oknem PMS może potęgować wydzielanie kortyzolu i pogarszać objawy. Postaw dziś na praktyki redukujące stres.",
+      "pmsTitle": "Okno PMS Aktywne",
+      "pmsBody": "Glicynian magnezu (300mg) przed snem ma silne dowody kliniczne na redukcję skurczów, wzdęć i wahań nastroju.",
       "fertilityTitle": "Okno płodności otwarte",
-      "fertilityBody": "Jesteś w szczytowym oknie płodności. Jeśli planujesz poczęcie, to optymalny czas.",
-      "estrogenTitle": "Wzrost estrogenu = Siła umysłu",
-      "estrogenBody": "W tej fazie poziom serotoniny i dopaminy jest podwyższony. To świetny czas na trudne rozmowy, prezentacje lub projekty kreatywne.",
+      "fertilityBody": "Jesteś w oknie maksymalnej płodności.",
       "sleepTitle": "Deficyt snu zaburza hormony",
-      "sleepBody": "Mniej niż 7 godzin snu podnosi poziom kortyzolu, tłumi progesteron i może powodować nieregularność cyklu.",
-      "lowCarbTitle": "Low Carb + Hormony",
-      "lowCarbBody": "Diety o bardzo niskiej zawartości węglowodanów mogą tłumić LH i FSH, powodując nieregularne miesiączki lub ich brak.",
-      "painTitle": "Silny ból wymaga diagnostyki",
-      "painBody": "Silny ból menstruacyjny nie jest normalny i może wskazywać na endometriozę lub mięśniaki. Zalecamy konsultację z lekarzem.",
-      "pillTitle": "Pigułka a niedobory składników",
-      "pillBody": "Antykoncepcja hormonalna może wypłukiwać witaminy B6, B12, kwas foliowy, magnez i cynk. Rozważ suplementację kompleksem witamin B.",
-      "athleticTitle": "Uważaj na triadę sportsmenek",
-      "athleticBody": "Trening o wysokiej intensywności może tłumić estrogen i zaburzać cykl (RED-S). Monitoruj miesiączkę — każda zmiana to sygnał ostrzegawczy.",
-      "periTitle": "Może zaczynać się perimenopauza",
-      "periBody": "Wahania hormonalne często zaczynają się po 35. roku życia, nawet przy regularnych miesiączkach. Śledź uważnie nastrój, sen i zmiany w cyklu.",
-      "calorieTitle": "Restrykcja kaloryczna a hormony",
-      "calorieBody": "Agresywny deficyt kaloryczny tłumi leptynę i hormony tarczycy, co może zatrzymać utratę wagi i zaburzyć cykl."
+      "sleepBody": "Mniej niż 7 godzin snu podnosi kortyzol i tłumi progesteron."
     },
     "supps": {
       "magnesium": {
         "name": "Glicynian magnezu",
-        "reason": "Łagodzi skurcze, objawy nastroju w PMS i poprawia sen",
+        "reason": "Redukuje skurcze, objawy nastroju w PMS i poprawia sen",
         "timing": "Przed snem"
       },
       "iron": {
         "name": "Żelazo + Witamina C",
-        "reason": "Uzupełnia żelazo utracone podczas miesiączki; witamina C zwiększa wchłanianie",
-        "timing": "Do śniadania, z dala od kawy"
+        "reason": "Uzupełnia żelazo utracone podczas miesiączki; Wit. C poprawia wchłanianie",
+        "timing": "Przy śniadaniu, z dala od kawy"
       },
       "omega3": {
         "name": "Omega-3 (EPA/DHA)",
-        "reason": "Działa przeciwzapalnie; łagodzi skurcze wywołane przez prostaglandyny.",
-        "timing": "Do posiłków"
-      },
-      "vitD3": {
-        "name": "Witamina D3",
-        "reason": "Niedobór powiązany z bolesnym miesiączkowaniem",
-        "timing": "Z posiłkiem zawierającym tłuszcz"
-      },
-      "bComplex": {
-        "name": "B-Complex (B6, B12, Folian)",
-        "reason": "Antykoncepcja wypłukuje witaminy z grupy B — kluczowe dla nastroju",
-        "timing": "Rano z jedzeniem"
-      },
-      "zinc": {
-        "name": "Cynk",
-        "reason": "Pigułka antykoncepcyjna obniża poziom cynku, wpływając na odporność i skórę",
-        "timing": "Do kolacji"
-      },
-      "ashwagandha": {
-        "name": "Ashwagandha KSM-66",
-        "reason": "Adaptogen o udowodnionym działaniu redukującym kortyzol i balansującym hormony",
-        "timing": "Do kolacji lub przed snem"
-      },
-      "magLThreonate": {
-        "name": "L-treonian magnezu",
-        "reason": "Przekracza barierę krew-mózg; poprawia głęboki sen i redukuje lęk nocny",
-        "timing": "30 min przed snem"
+        "reason": "Przeciwzapalne; redukuje skurcze wywołane prostaglandynami",
+        "timing": "Z posiłkami"
       }
     },
-    "loggedTitle": "Zapisano ✓",
-    "loggedMsg": "Twoje codzienne biomarkery zostały zapisane.",
-    "saveError": "Nie udało się zapisać. Spróbuj ponownie.",
-    "blueprintTitle": "Twój plan hormonalny",
-    "blueprintSub": "4 pytania, aby spersonalizować informacje o cyklu, suplementacji i wskazówki hormonalne.",
-    "alreadyPersonalised": "✦ Spersonalizowane na podstawie Twojego profilu",
-    "articleDisclaimer": "Treści edukacyjne, nie stanowią porady medycznej. Skonsultuj się z lekarzem w celu uzyskania spersonalizowanych wskazówek.",
-    "dailyBioLog": "Dziennik Bio",
-    "moodSynced": "Nastrój zsynchronizowany z modułu Wellness",
-    "energyToday": "Energia dzisiaj (1–10)",
-    "symptoms": "Objawy",
-    "flow": "Krwawienie",
-    "babyMovement": "Ruchy dziecka dzisiaj (1–10)",
-    "hotFlash": "Intensywność uderzeń gorąca (1–10)",
-    "saveBioLog": "Zapisz dziennik Bio",
-    "vitalityStack": "Twój zestaw witalności",
-    "pillReminder": "Antykoncepcja i przypomnienie o pigułkach",
-    "pillReminderSub": "Bezpiecznie śledź swoje leki i suplementy",
-    "unlockStack": "Odblokuj swój zestaw witamin",
-    "unlockStackSub": "Zobacz spersonalizowane rekomendacje suplementów dopasowane do fazy Twojego cyklu.",
-    "pelvicTitle": "Protokół mięśni dna miednicy",
-    "pelvicSub": "Wzmacnia dno miednicy, łagodzi skurcze i wspiera stabilizację centralną",
-    "pelvicInstructions": "Napnij 5s → Rozluźnij 5s → Powtórz. Wykonaj 10 cykli na sesję.",
-    "stopSession": "Zatrzymaj sesję",
-    "startTimer": "Uruchom timer",
     "lifeStage": "Etap życia",
-    "menstrualCycle": "Cykl miesiączkowy",
+    "menstrualCycle": "Cykl menstruacyjny",
     "pregnancy": "Ciąża",
     "menopause": "Menopauza",
-    "title": "Zdrowie kobiet",
+    "title": "Zdrowie Kobiet",
     "headerSub": "Inteligencja hormonalna",
-    "stage": {
-      "cycle": "cykl",
-      "pregnancy": "ciąża",
-      "menopause": "menopauza"
-    },
-    "tabToday": "Dzisiaj",
+    "tabToday": "Dziś",
     "tabBaby": "Dziecko",
     "tabTracker": "Tracker",
     "tabCycle": "Cykl",
-    "tabLearn": "Wiedza",
-    "setupSubPreg": "Kiedy był termin poczęcia?",
-    "setupSubCycle": "Kiedy zaczęła się Twoja ostatnia miesiączka?",
+    "tabLearn": "Edukacja",
     "day": "Dzień",
     "ofCycle": "cyklu",
     "today": "dzisiaj",
     "trimester": "Trymestr",
-    "weeksToGo": "pozostało tygodni",
-    "adherence": "przestrzeganie",
-    "dailyProtocols": "Codzienne protokoły",
+    "weeksToGo": "tygodni do końca",
+    "dailyProtocols": "Protokoły codzienne",
     "workout": "🏋️ Trening",
-    "nutrition": "🥗 Żywienie",
+    "nutrition": "🥗 Odżywianie",
     "mood": "😌 Nastrój",
     "energy": "⚡ Energia",
-    "biolog": "Dziennik Bio",
-    "biologSub": "Nastrój, energia, objawy",
-    "flowLow": "krwawienie",
-    "pelvic": "Protokół dna miednicy",
-    "pelvicSub2": "Stabilizacja, dno miednicy i postawa",
-    "calendar": "Kalendarz 28-dniowy",
-    "workoutLabel": "Trening",
-    "nutritionLabel": "Żywienie",
-    "moodLabel": "Nastrój",
-    "energyLabel": "Energia",
+    "biolog": "Bio-Log Codzienny",
+    "flow": "Krwawienie",
+    "calendar": "Kalendarz 28 dni",
     "pregnancyTimeline": "Oś czasu ciąży",
     "youAreHere": "← jesteś tutaj",
-    "tri1": "Tydzień 1–13 · Formowanie organów, nudności, zmęczenie",
+    "tri1": "Tydzień 1–13 · Organy, nudności, zmęczenie",
     "tri2": "Tydzień 14–27 · Powrót energii, ruchy dziecka",
-    "tri3": "Tydzień 28–40 · Wzrost, przygotowanie, plan porodu",
-    "symptomHistory": "Historia objawów",
-    "hotFlashShort": "Uderzenie gorąca",
-    "startLogging": "Zacznij prowadzić codzienny dziennik Bio, aby zobaczyć tu wzorce.",
-    "yourInsights": "Twoje wglądy hormonalne",
-    "proBlurTitle": "Odblokuj głęboką analizę hormonalną",
-    "proBlurSub": "Wglądy AI, które dostosowują się do historii Twojego cyklu, wzorców i objawów.",
-    "library": "Biblioteka inteligencji hormonalnej",
-    "privacyTitle": "Twoje dane należą do Ciebie",
-    "privacySub": "Nigdy nie sprzedajemy Twoich intymnych danych zdrowotnych. Przeczytaj naszą obietnicę.",
-    "retake": "Zaktualizuj profil hormonalny",
-    "privacyFirst": "Twoja prywatność przede wszystkim",
-    "priv1Title": "Brak sprzedaży danych",
-    "priv1Body": "Twoje intymne dane zdrowotne nie są sprzedawane reklamodawcom.",
-    "priv2Title": "Szyfrowanie end-to-end",
-    "priv2Body": "Wszystkie wrażliwe dane są szyfrowane. Tylko Ty masz do nich dostęp.",
-    "priv3Title": "Brak profilowania",
-    "priv3Body": "Nie używamy danych zdrowotnych do tworzenia profili reklamowych.",
-    "restartTitle": "Zrestartuj kwestionariusz",
-    "restartMsg": "To usunie Twój obecny profil i zrestartuje kwestionariusz. Kontynuować?",
-    "restartConfirm": "Restartuj"
+    "tri3": "Tydzień 28–40 · Wzrost, przygotowanie do porodu",
+    "privacyTitle": "Twoje dane są Twoje",
+    "privacySub": "Nigdy nie sprzedajemy Twoich intymnych danych zdrowotnych."
   },
   "todo": {
     "title": "Centrum Produktywności",
@@ -1486,132 +1367,6 @@
       "other": "Inna"
     }
   },
-  "womensHealth": {
-    "phaseName": {
-      "menstrual": "Menstruacyjna",
-      "follicular": "Folikularna",
-      "ovulation": "Owulacja",
-      "lutealEarly": "Lutealna (wczesna)",
-      "lutealLate": "Lutealna (późna)"
-    },
-    "phaseDesc": {
-      "menstrual": "Złuszczanie błony śluzowej macicy. Estrogen i progesteron na najniższym poziomie.",
-      "follicular": "FSH rośnie, rozwijają się pęcherzyki, estrogen rośnie. Energia i jasność umysłu wzrastają.",
-      "ovulation": "Szczyt LH wyzwala uwolnienie komórki jajowej. Estrogen w szczycie. Czujesz się najlepiej.",
-      "lutealEarly": "Progesteron rośnie wraz z tworzeniem się ciałka żółtego. Temperatura ciała rośnie.",
-      "lutealLate": "Okno PMS. Progesteron spada, jeśli nie doszło do zapłodnienia. Wrażliwość na kortyzol rośnie."
-    },
-    "phaseEnergy": {
-      "menstrual": "Niska — uszanuj potrzebę odpoczynku",
-      "follicular": "Rosnąca — idealna na nowe początki",
-      "ovulation": "Szczytowa — najwyższa wydolność fizyczna",
-      "lutealEarly": "Stabilna — równomierny wysiłek",
-      "lutealLate": "Niska do umiarkowanej — zwolnij tempo"
-    },
-    "phaseWorkout": {
-      "menstrual": "Delikatna joga, spacery, rozciąganie",
-      "follicular": "Trening siłowy, HIIT, cardio",
-      "ovulation": "Rekordy życiowe, intensywne cardio",
-      "lutealEarly": "Umiarkowany trening siłowy, Pilates",
-      "lutealLate": "Lekkie cardio, joga, spacer"
-    },
-    "phaseNutrition": {
-      "menstrual": "Produkty bogate w żelazo: soczewica, zielone liście, czerwone mięso",
-      "follicular": "Węglowodany złożone, kiszonki, chude białko",
-      "ovulation": "Antyoksydanty, produkty bogate w cynk (pestki dyni, ostrygi)",
-      "lutealEarly": "Magnez (gorzka czekolada, orzechy), B6 na nastrój",
-      "lutealLate": "Ogranicz sól i cukier. Produkty z tryptofanem (indyk, jajka) na serotoninę."
-    },
-    "phaseMood": {
-      "menstrual": "Refleksyjny, emocjonalny",
-      "follicular": "Optymistyczny, zmotywowany, towarzyski",
-      "ovulation": "Pewny siebie, magnetyczny, komunikatywny",
-      "lutealEarly": "Skupiony, drobiazgowy, możliwe obrzęki",
-      "lutealLate": "Wrażliwy, drażliwy, potrzebujący komfortu"
-    },
-    "phaseTip": {
-      "menstrual": "Używaj termoforu, ogranicz kofeinę i priorytetyzuj sen.",
-      "follicular": "Planuj teraz wymagające projekty i pracę kreatywną — Twój mózg jest w trybie turbo.",
-      "lutealLate": "Ogranicz alkohol i przetworzoną żywność. Rejestruj objawy PMS, aby poznać wzorce."
-    },
-    "milestone": {
-      "0": "Serce bije",
-      "1": "Formują się palce",
-      "2": "Pierwsze kopnięcia",
-      "3": "Rozwija się słuch",
-      "4": "Dziecko może śnić",
-      "5": "Płuca dojrzewają",
-      "6": "Praktyka oddychania",
-      "7": "Blisko terminu",
-      "default": "Rośnie silne"
-    },
-    "insight": {
-      "pmsTitle": "Okno PMS Aktywne",
-      "pmsBody": "Glicynian magnezu (300mg) przed snem ma silne dowody kliniczne na redukcję skurczów, wzdęć i wahań nastroju.",
-      "fertilityTitle": "Okno płodności otwarte",
-      "fertilityBody": "Jesteś w oknie maksymalnej płodności.",
-      "sleepTitle": "Deficyt snu zaburza hormony",
-      "sleepBody": "Mniej niż 7 godzin snu podnosi kortyzol i tłumi progesteron."
-    },
-    "supps": {
-      "magnesium": {
-        "name": "Glicynian magnezu",
-        "reason": "Redukuje skurcze, objawy nastroju w PMS i poprawia sen",
-        "timing": "Przed snem"
-      },
-      "iron": {
-        "name": "Żelazo + Witamina C",
-        "reason": "Uzupełnia żelazo utracone podczas miesiączki; Wit. C poprawia wchłanianie",
-        "timing": "Przy śniadaniu, z dala od kawy"
-      },
-      "omega3": {
-        "name": "Omega-3 (EPA/DHA)",
-        "reason": "Przeciwzapalne; redukuje skurcze wywołane prostaglandynami",
-        "timing": "Z posiłkami"
-      }
-    },
-    "lifeStage": "Etap życia",
-    "menstrualCycle": "Cykl menstruacyjny",
-    "pregnancy": "Ciąża",
-    "menopause": "Menopauza",
-    "title": "Zdrowie Kobiet",
-    "headerSub": "Inteligencja hormonalna",
-    "tabToday": "Dziś",
-    "tabBaby": "Dziecko",
-    "tabTracker": "Tracker",
-    "tabCycle": "Cykl",
-    "tabLearn": "Edukacja",
-    "day": "Dzień",
-    "ofCycle": "cyklu",
-    "today": "dzisiaj",
-    "trimester": "Trymestr",
-    "weeksToGo": "tygodni do końca",
-    "dailyProtocols": "Protokoły codzienne",
-    "workout": "🏋️ Trening",
-    "nutrition": "🥗 Odżywianie",
-    "mood": "😌 Nastrój",
-    "energy": "⚡ Energia",
-    "biolog": "Bio-Log Codzienny",
-    "flow": "Krwawienie",
-    "calendar": "Kalendarz 28 dni",
-    "pregnancyTimeline": "Oś czasu ciąży",
-    "youAreHere": "← jesteś tutaj",
-    "tri1": "Tydzień 1–13 · Organy, nudności, zmęczenie",
-    "tri2": "Tydzień 14–27 · Powrót energii, ruchy dziecka",
-    "tri3": "Tydzień 28–40 · Wzrost, przygotowanie do porodu",
-    "privacyTitle": "Twoje dane są Twoje",
-    "privacySub": "Nigdy nie sprzedajemy Twoich intymnych danych zdrowotnych."
-  },
-  "move": {
-    "widgets": {
-      "title": "Konfiguracja widżetów",
-      "kpis": "KPI aktywności",
-      "swipeable": "Plan treningowy",
-      "quickActions": "Szybkie działania",
-      "todayActivities": "Dzisiejsze aktywności",
-      "moveInsights": "Wglądy Move"
-    }
-  },
   "premium": {
     "heroTitle": "Twoja biologia,",
     "heroTitle2": "W pełni odblokowana.",
@@ -1678,7 +1433,9 @@
     "water": "Woda",
     "calKcal": "Kalorie (kcal)",
     "proteinG": "Białko (g)",
-    "updateGoals": "Aktualizuj cele"
+    "updateGoals": "Aktualizuj cele",
+    "themeColor": "Kolor Motywu",
+    "themeColorDesc": "Wybierz paletę pasującą do Twojego nastroju. Zmiany wchodzą w życie natychmiast."
   },
   "support": {
     "title": "Wsparcie i Feedback",
@@ -2281,7 +2038,11 @@
       "pillarMind": "Umysł",
       "slide2Title": "Kompletny ekosystem",
       "startBtn": "Zacznij profil",
-      "continueBtn": "Kontynuuj"
+      "continueBtn": "Kontynuuj",
+      "themePrompt": "Który kolor do Ciebie przemawia?",
+      "themeConfirmTitle": "Ustawić {{name}} jako mój motyw?",
+      "themeConfirmDesc": "Zabarwi to całe Twoje doświadczenie. Możesz to zmienić w dowolnej chwili w Ustawieniach.",
+      "themeConfirmCta": "Ustaw jako mój motyw"
     },
     "estimator": {
       "title": "Twój cel w liczbach",

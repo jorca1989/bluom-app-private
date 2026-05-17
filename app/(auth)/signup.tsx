@@ -18,11 +18,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, UserPlus, Eye, EyeOff } from 'lucide-react-native';
 import AppleSignInButton from '@/components/AppleSignInButton';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function SignupScreen() {
   const { t } = useTranslation();
   const { signUp, setActive, isLoaded } = useSignUp();
   const router = useRouter();
+  const { colors: themeColors } = useTheme();
 
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -89,7 +91,7 @@ export default function SignupScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top', 'bottom']}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardView}>
         <ScrollView
           contentContainerStyle={[styles.scrollContent, { paddingTop: Math.max(insets.top, 20), paddingBottom: Math.max(insets.bottom, 40) }]}

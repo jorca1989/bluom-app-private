@@ -1895,7 +1895,9 @@
     "proteinG": "Proteína Diária (g)",
     "carbsG": "Hidratos Diários (g)",
     "fatG": "Gordura Diária (g)",
-    "updateGoals": "Atualizar Objetivos"
+    "updateGoals": "Atualizar Objetivos",
+    "themeColor": "Цвят на Темата",
+    "themeColorDesc": "Изберете палитра, която отговаря на настроението ви. Промените се прилагат веднага."
   },
   "support": {
     "title": "Suporte & Feedback",
@@ -2670,7 +2672,11 @@
       "slide3Sub": "Potencial Ilimitado",
       "slide3Desc": "Desbloqueia protocolos avançados: Longevidade, Pico de Performance, Biohacking, Anti-idade, Foco e muito mais.",
       "startBtn": "Começar Perfil",
-      "continueBtn": "Continuar"
+      "continueBtn": "Continuar",
+      "themePrompt": "Кой цвят ви говори?",
+      "themeConfirmTitle": "Задаване на {{name}} като моя тема?",
+      "themeConfirmDesc": "Това ще оцвети цялото ви изживяване. Може да го промените по всяко време в Настройки.",
+      "themeConfirmCta": "Задай като моя тема"
     },
     "estimator": {
       "title": "O teu objetivo em números",

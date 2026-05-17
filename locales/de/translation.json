@@ -1895,7 +1895,9 @@
     "proteinG": "Tägliches Protein (g)",
     "carbsG": "Tägliche Kohlenhydrate (g)",
     "fatG": "Tägliches Fett (g)",
-    "updateGoals": "Ziele aktualisieren"
+    "updateGoals": "Ziele aktualisieren",
+    "themeColor": "Designfarbe",
+    "themeColorDesc": "Wähle eine Palette, die zu deiner Stimmung passt. Änderungen werden sofort übernommen."
   },
   "support": {
     "title": "Support & Feedback",
@@ -2670,7 +2672,11 @@
       "slide3Sub": "Limitless Potential",
       "slide3Desc": "Unlock advanced protocols: Longevity, Peak Performance, Biohacking, Anti-aging, Focus and more.",
       "startBtn": "Start Profile",
-      "continueBtn": "Continue"
+      "continueBtn": "Continue",
+      "themePrompt": "Welche Farbe spricht dich an?",
+      "themeConfirmTitle": "{{name}} als mein Theme festlegen?",
+      "themeConfirmDesc": "Dies wird deine gesamte App einfärben. Du kannst es jederzeit in den Einstellungen ändern.",
+      "themeConfirmCta": "Als mein Theme festlegen"
     },
     "estimator": {
       "title": "Dein Ziel in Zahlen",

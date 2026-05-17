@@ -1913,7 +1913,9 @@
     "proteinG": "Proteína Diária (g)",
     "carbsG": "Hidratos Diários (g)",
     "fatG": "Gordura Diária (g)",
-    "updateGoals": "Atualizar Objetivos"
+    "updateGoals": "Atualizar Objetivos",
+    "themeColor": "Cor do Tema",
+    "themeColorDesc": "Escolha uma paleta que combine com o seu humor. As alterações aplicam-se de imediato."
   },
   "support": {
     "title": "Suporte & Feedback",
@@ -2688,7 +2690,11 @@
       "slide3Sub": "Potencial Ilimitado",
       "slide3Desc": "Desbloqueia protocolos avançados: Longevidade, Pico de Performance, Biohacking, Anti-idade, Foco e muito mais.",
       "startBtn": "Começar Perfil",
-      "continueBtn": "Continuar"
+      "continueBtn": "Continuar",
+      "themePrompt": "Que cor fala consigo?",
+      "themeConfirmTitle": "Definir {{name}} como o meu tema?",
+      "themeConfirmDesc": "Vai colorir toda a sua experiência. Pode alterar a qualquer momento nas Definições.",
+      "themeConfirmCta": "Definir como o meu tema"
     },
     "estimator": {
       "title": "O teu objetivo em números",

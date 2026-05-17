@@ -1895,7 +1895,9 @@
     "proteinG": "Daglig protein (g)",
     "carbsG": "Daglige karbohydrater (g)",
     "fatG": "Daglig fett (g)",
-    "updateGoals": "Oppdater mål"
+    "updateGoals": "Oppdater mål",
+    "themeColor": "Temafarge",
+    "themeColorDesc": "Velg en palett som passer humøret ditt. Endringer trer i kraft umiddelbart."
   },
   "support": {
     "title": "Support & Tilbakemelding",
@@ -2670,7 +2672,11 @@
       "slide3Sub": "Ubegrenset potensial",
       "slide3Desc": "Lås opp avanserte protokoller: Levetid, toppytelse, biohacking, anti-aldring, fokus og mye mer.",
       "startBtn": "Start profil",
-      "continueBtn": "Fortsett"
+      "continueBtn": "Fortsett",
+      "themePrompt": "Hvilken farge appellerer til deg?",
+      "themeConfirmTitle": "Angi {{name}} som temaet mitt?",
+      "themeConfirmDesc": "Dette farger hele opplevelsen din. Du kan endre det når som helst i Innstillinger.",
+      "themeConfirmCta": "Angi som mitt tema"
     },
     "estimator": {
       "title": "Ditt mål i tall",

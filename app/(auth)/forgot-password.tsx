@@ -4,10 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSignIn } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { Mail, Lock } from 'lucide-react-native';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function ForgotPasswordScreen() {
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
+  const { colors: themeColors } = useTheme();
 
   const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
@@ -78,7 +80,7 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F5F4F0]" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: themeColors.bg }} edges={['top', 'bottom']}>
       <View className="flex-1 px-6 pt-10">
         <Text className="text-3xl font-bold text-slate-800 mb-2">Reset Password</Text>
         

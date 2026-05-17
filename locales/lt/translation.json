@@ -1895,7 +1895,9 @@
     "proteinG": "Proteína Diária (g)",
     "carbsG": "Hidratos Diários (g)",
     "fatG": "Gordura Diária (g)",
-    "updateGoals": "Atualizar Objetivos"
+    "updateGoals": "Atualizar Objetivos",
+    "themeColor": "Temos Spalva",
+    "themeColorDesc": "Pasirinkite paletę, atitinkančią jūsų nuotaiką. Pakeitimai įsigalioja iškart."
   },
   "support": {
     "title": "Suporte & Feedback",
@@ -2670,7 +2672,11 @@
       "slide3Sub": "Potencial Ilimitado",
       "slide3Desc": "Desbloqueia protocolos avançados: Longevidade, Pico de Performance, Biohacking, Anti-idade, Foco e muito mais.",
       "startBtn": "Começar Perfil",
-      "continueBtn": "Continuar"
+      "continueBtn": "Continuar",
+      "themePrompt": "Kuri spalva jus prabyla?",
+      "themeConfirmTitle": "Nustatyti {{name}} kaip mano temą?",
+      "themeConfirmDesc": "Tai nudažys visą jūsų patirtį. Bet kada galite pakeisti nustatymuose.",
+      "themeConfirmCta": "Nustatyti kaip mano temą"
     },
     "estimator": {
       "title": "O teu objetivo em números",

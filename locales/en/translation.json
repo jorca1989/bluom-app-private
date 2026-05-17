@@ -131,25 +131,14 @@
     }
   },
   "move": {
-    "title": "Move",
-    "outdoorActivity": "Outdoor Activity",
-    "outdoorActivityDesc": "Track your runs, rides and hikes with GPS.",
-    "running": "Running",
-    "cycling": "Cycling",
-    "hiking": "Hiking",
-    "walking": "Walking",
-    "startActivity": "Start Activity",
-    "activityComplete": "Activity Complete",
-    "saveActivity": "Save Activity",
-    "discard": "Discard",
-    "distance": "Distance",
-    "duration": "Duration",
-    "calories": "Calories",
-    "avgSpeed": "Avg Speed",
-    "avgPace": "Avg Pace",
-    "nativeBuildRequired": "Native build required",
-    "nativeBuildRequiredDesc": "This recorder uses Maps + background tracking. Your current build doesn't include the required native modules yet.",
-    "gpsAccuracyTip": "GPS will activate when you start. Keep your phone accessible for best accuracy."
+    "widgets": {
+      "title": "Widget Config",
+      "kpis": "Activity KPIs",
+      "swipeable": "Workout Plan",
+      "quickActions": "Quick Actions",
+      "todayActivities": "Today's Activities",
+      "moveInsights": "Move Insights"
+    }
   },
   "tabs": {
     "home": "Home",
@@ -1826,997 +1815,6 @@
     "restartMsg": "This will clear your current profile and restart the questionnaire. Continue?",
     "restartConfirm": "Restart"
   },
-  "move": {
-    "widgets": {
-      "title": "Widget Config",
-      "kpis": "Activity KPIs",
-      "swipeable": "Workout Plan",
-      "quickActions": "Quick Actions",
-      "todayActivities": "Today's Activities",
-      "moveInsights": "Move Insights"
-    }
-  },
-  "premium": {
-    "heroTitle": "Peak Biology,",
-    "heroTitle2": "Fully Unlocked.",
-    "heroSub": "A comprehensive system for peak human performance.",
-    "alreadyPro": "✦ You're Pro",
-    "alreadyProSub": "Full access is active. Keep optimising.",
-    "continue": "Continue",
-    "mathTitle": "For less than your daily treat",
-    "forever": "Forever",
-    "choosePlan": "CHOOSE YOUR PLAN",
-    "annualTitle": "Pro Annual",
-    "annualSub": "Just {{price}}/wk — save 50%",
-    "annualSubAlt": "Best value, cancel anytime",
-    "month": "mo",
-    "monthlyTitle": "Pro Monthly",
-    "monthlySub": "Full access, billed monthly",
-    "processing": "Processing…",
-    "socialProof": "🔥 Join 10,000+ people already optimising their biology",
-    "everythingLabel": "EVERYTHING INCLUDED",
-    "featuresTitle": "The Pro Advantage",
-    "continueFree": "Continue with the free plan",
-    "restoring": "Restoring…",
-    "restore": "Restore purchases",
-    "bestValue": "✦ BEST VALUE",
-    "startAnnual": "✦ Start Annual Pro",
-    "startMonthly": "Start Monthly",
-    "featAiCoachTitle": "AI Coach",
-    "featAiCoachDesc": "Unlimited personalised responses",
-    "featVisionTitle": "AI Vision",
-    "featVisionDesc": "Scan meals with your camera",
-    "featWorkoutsTitle": "Video Workouts",
-    "featWorkoutsDesc": "Full exercise video library",
-    "featAnalyticsTitle": "Advanced Analytics",
-    "featAnalyticsDesc": "Deep health and performance trends",
-    "featHormonesTitle": "Hormonal Health",
-    "featHormonesDesc": "Cycle, supplements and guidance",
-    "featFastingTitle": "Metabolic Fasting",
-    "featFastingDesc": "Advanced fasting protocols",
-    "featHouseholdTitle": "Household Management",
-    "featHouseholdDesc": "Shared lists and partner sync",
-    "featCogLabTitle": "Cognitive Lab",
-    "featCogLabDesc": "Brain training games and focus",
-    "featNutritionTitle": "Personalised Nutrition Plan",
-    "featNutritionDesc": "Custom macros, meals and daily protocols tailored to your goals",
-    "featFitnessTitle": "Personalised Fitness Plan",
-    "featFitnessDesc": "4-week progressive training programme built around your schedule",
-    "featMentalTitle": "Mental Health Plan",
-    "featMentalDesc": "Weekly mindset themes, stress protocols and meditation sessions"
-  },
-  "settings": {
-    "title": "Settings",
-    "subtitle": "Personalise your experience",
-    "account": "Account",
-    "email": "Email",
-    "subscription": "Subscription",
-    "premium": "Premium",
-    "free": "Free",
-    "preferences": "Preferences",
-    "language": "Language",
-    "selectLanguage": "Select your preferred language",
-    "units": "Units & Measures",
-    "dailyGoals": "Daily Goals",
-    "soundHaptics": "Sound & Haptics",
-    "soundEffects": "Sound Effects",
-    "soundEffectsDesc": "Enable audio feedback",
-    "haptics": "Haptics",
-    "hapticsDesc": "Physical vibration feedback",
-    "volume": "Volume",
-    "support": "Support",
-    "aboutUs": "About Us",
-    "aboutUsDesc": "Learn more about Bluom",
-    "helpCenter": "Help Centre",
-    "helpCenterDesc": "Get assistance",
-    "legal": "Legal",
-    "legalDesc": "Terms & Privacy",
-    "signOut": "Sign Out",
-    "signOutConfirm": "Are you sure you want to sign out?",
-    "deleteAccount": "Delete Account",
-    "deletePermanently": "Delete Permanently",
-    "success": "Success",
-    "error": "Error",
-    "unitsUpdated": "Units updated successfully",
-    "unitsFailed": "Failed to update units",
-    "goalsUpdated": "Goals updated successfully",
-    "goalsFailed": "Failed to update goals",
-    "saveChanges": "Save Changes",
-    "weight": "Weight",
-    "height": "Height",
-    "distance": "Distance",
-    "water": "Water",
-    "feetInches": "Feet & In",
-    "cm": "CM",
-    "miles": "Miles",
-    "km": "KM",
-    "calKcal": "Daily Calories (kcal)",
-    "proteinG": "Daily Protein (g)",
-    "carbsG": "Daily Carbs (g)",
-    "fatG": "Daily Fat (g)",
-    "updateGoals": "Update Goals"
-  },
-  "support": {
-    "title": "Support & Feedback",
-    "subtitle": "Help us improve Bluom",
-    "heading": "How can we help?",
-    "desc": "Select a category and let us know what's on your mind. We read every single ticket.",
-    "feedback": "Feedback",
-    "reportBug": "Report Bug",
-    "message": "Message",
-    "placeholder": "Type your message here...",
-    "send": "Send Message",
-    "successTitle": "Sent!",
-    "successMsg": "Your ticket has been received. We'll get back to you soon.",
-    "errorTitle": "Error",
-    "errorMsg": "Failed to send ticket. Please try again later.",
-    "footer": "Bluom Life Management"
-  },
-  "focusMode": {
-    "title": "Focus Mode",
-    "complete": "Focus Complete!",
-    "completeMsg": "Take a break, you earned it.",
-    "stayFocused": "Stay Focused",
-    "endEarly": "Are you sure you want to end your focus session early?",
-    "endSession": "End Session",
-    "upgradeMsg": "Upgrade to unlock deep focus sessions.",
-    "quote": "\"Deep work is the superpower of the 21st century.\"",
-    "readyPrompt": "Ready to dive in?",
-    "pause": "Pause Session",
-    "start": "Start Focusing",
-    "tagline": "Stay Focused • Bloom Deep",
-    "proTitle": "Focus Mode Pro",
-    "proMessage": "Upgrade to Pro to access deep focus sessions and productivity tracking."
-  },
-  "achievements": {
-    "first_meal_log": {
-      "title": "First Bite",
-      "desc": "Log your first meal"
-    },
-    "log_7_days_meals": {
-      "title": "Consistent",
-      "desc": "Log meals 7 days in a row"
-    },
-    "log_30_days_meals": {
-      "title": "Nutrition Master",
-      "desc": "Log meals 30 days in a row"
-    },
-    "hit_protein_goal": {
-      "title": "Protein Hit",
-      "desc": "Hit your protein goal"
-    },
-    "hit_protein_7days": {
-      "title": "Protein Streak",
-      "desc": "Hit your protein goal 7 days in a row"
-    },
-    "water_goal_day": {
-      "title": "Hydrated",
-      "desc": "Hit your water goal"
-    },
-    "water_goal_7days": {
-      "title": "River Flow",
-      "desc": "Hit your water goal 7 days in a row"
-    },
-    "water_goal_30days": {
-      "title": "Ocean Mind",
-      "desc": "Hit your water goal 30 days in a row"
-    },
-    "ai_meal_scan": {
-      "title": "Food Detective",
-      "desc": "Scan a meal with the AI camera"
-    },
-    "under_calorie_goal": {
-      "title": "Deficit Day",
-      "desc": "Stay under your calorie goal"
-    },
-    "calorie_goal_14days": {
-      "title": "Precise",
-      "desc": "Meet calorie goal 14 days in a row"
-    },
-    "meal_plan_full_day": {
-      "title": "Plan Follower",
-      "desc": "Log all meals from your 30-day plan"
-    },
-    "try_new_recipe": {
-      "title": "Kitchen Explorer",
-      "desc": "Cook a Bluom recipe"
-    },
-    "sugar_free_day": {
-      "title": "Sugar Free",
-      "desc": "Complete a sugar-free day"
-    },
-    "sugar_free_7days": {
-      "title": "Sweet Detox",
-      "desc": "Go 7 days without sugar"
-    },
-    "sugar_free_30days": {
-      "title": "Sugar Free Champ",
-      "desc": "30 consecutive days without sugar"
-    },
-    "first_workout": {
-      "title": "First Rep",
-      "desc": "Log your first workout"
-    },
-    "workout_7days": {
-      "title": "Week Warrior",
-      "desc": "Workout 7 days in a row"
-    },
-    "workout_30days": {
-      "title": "Iron Discipline",
-      "desc": "30 days in a row working out"
-    },
-    "steps_5k": {
-      "title": "5K Steps",
-      "desc": "Walk 5,000 steps in a day"
-    },
-    "steps_10k": {
-      "title": "10K Club",
-      "desc": "Walk 10,000 steps in a day"
-    },
-    "steps_10k_7days": {
-      "title": "Step Streak",
-      "desc": "10,000 steps for 7 days in a row"
-    },
-    "steps_10k_30days": {
-      "title": "Marathon Spirit",
-      "desc": "10,000 steps every day for 30 days"
-    },
-    "calories_burned_300": {
-      "title": "Burner",
-      "desc": "Burn 300+ calories in a single session"
-    },
-    "calories_burned_500": {
-      "title": "Inferno",
-      "desc": "Burn 500+ calories in a single session"
-    },
-    "try_cardio": {
-      "title": "Cardio Curious",
-      "desc": "Log a cardio session"
-    },
-    "try_strength": {
-      "title": "Iron Touch",
-      "desc": "Log a strength session"
-    },
-    "try_hiit": {
-      "title": "HIIT Initiate",
-      "desc": "Complete a HIIT workout"
-    },
-    "try_yoga": {
-      "title": "Zen Body",
-      "desc": "Log a yoga or flexibility session"
-    },
-    "complete_4week_plan": {
-      "title": "Plan Completed",
-      "desc": "Finish the 4-week free plan"
-    },
-    "total_10_workouts": {
-      "title": "Double Digits",
-      "desc": "Log 10 workouts total"
-    },
-    "total_50_workouts": {
-      "title": "Half Century",
-      "desc": "Log 50 workouts total"
-    },
-    "total_100_workouts": {
-      "title": "Century Club",
-      "desc": "Log 100 workouts total"
-    },
-    "first_mood_log": {
-      "title": "Mood Check",
-      "desc": "Log your mood for the first time"
-    },
-    "mood_log_7days": {
-      "title": "Mood Tracker",
-      "desc": "Log your mood 7 days in a row"
-    },
-    "mood_log_30days": {
-      "title": "Emotional Intelligence",
-      "desc": "Log mood for 30 consecutive days"
-    },
-    "first_meditation": {
-      "title": "First Breath",
-      "desc": "Complete your first meditation session"
-    },
-    "meditate_7days": {
-      "title": "Mindful Week",
-      "desc": "Meditate 7 days in a row"
-    },
-    "meditate_30days": {
-      "title": "Monk Mode",
-      "desc": "30-day meditation streak"
-    },
-    "first_sleep_log": {
-      "title": "Sleep Tracker",
-      "desc": "Log your sleep quality"
-    },
-    "sleep_8hrs": {
-      "title": "Golden Sleep",
-      "desc": "Log 8+ hours of quality sleep"
-    },
-    "sleep_8hrs_7days": {
-      "title": "Sleep Champ",
-      "desc": "8+ hours of sleep for 7 days in a row"
-    },
-    "perfect_vitality": {
-      "title": "Elite Human",
-      "desc": "Score 90+ on Vitality Score"
-    },
-    "stress_low_week": {
-      "title": "Calm Commander",
-      "desc": "Log low stress for 7 days in a row"
-    },
-    "first_journal": {
-      "title": "First Page",
-      "desc": "Write your first journal entry"
-    },
-    "journal_7days": {
-      "title": "Reflective Week",
-      "desc": "Journal for 7 days in a row"
-    },
-    "journal_30days": {
-      "title": "Inner Architect",
-      "desc": "Journal every day for a month"
-    },
-    "first_gratitude": {
-      "title": "Grateful Heart",
-      "desc": "Log your first gratitude entry"
-    },
-    "gratitude_7days": {
-      "title": "Gratitude Streak",
-      "desc": "Practice gratitude 7 days in a row"
-    },
-    "gratitude_30days": {
-      "title": "Abundance Mindset",
-      "desc": "Gratitude logged for 30 consecutive days"
-    },
-    "ai_reflection": {
-      "title": "Digital Mirror",
-      "desc": "Generate your first AI mind reflection"
-    },
-    "total_50_entries": {
-      "title": "Prolific Writer",
-      "desc": "Write 50 journal or gratitude entries"
-    },
-    "first_habit": {
-      "title": "Habit Born",
-      "desc": "Create your first habit"
-    },
-    "habit_7day_streak": {
-      "title": "Habit Fixed",
-      "desc": "Maintain a habit for 7 days"
-    },
-    "habit_21day_streak": {
-      "title": "Wired In",
-      "desc": "21-day streak - it's taking root"
-    },
-    "habit_66day_streak": {
-      "title": "Automatic",
-      "desc": "66 days - science says it's permanent"
-    },
-    "all_habits_today": {
-      "title": "Clean Sweep",
-      "desc": "Complete all habits in a single day"
-    },
-    "break_habit_7days": {
-      "title": "Break Free",
-      "desc": "Go 7 days without a bad habit"
-    },
-    "break_habit_30days": {
-      "title": "Liberated",
-      "desc": "30 days free from a bad habit"
-    },
-    "break_habit_90days": {
-      "title": "New Identity",
-      "desc": "90 days - the old habit is gone"
-    },
-    "habit_savings_100": {
-      "title": "Money Saved",
-      "desc": "Save 100 by breaking a bad habit"
-    },
-    "first_task": {
-      "title": "Getting Started",
-      "desc": "Add your first task"
-    },
-    "complete_10_tasks": {
-      "title": "Task Smasher",
-      "desc": "Complete 10 tasks"
-    },
-    "complete_50_tasks": {
-      "title": "Execution Machine",
-      "desc": "Complete 50 tasks"
-    },
-    "complete_100_tasks": {
-      "title": "Operator",
-      "desc": "Complete 100 tasks"
-    },
-    "focus_first_session": {
-      "title": "Deep Work",
-      "desc": "Complete your first Focus session"
-    },
-    "focus_7_sessions": {
-      "title": "Flow Frequent",
-      "desc": "Complete 7 Focus sessions"
-    },
-    "north_star_set": {
-      "title": "North Star",
-      "desc": "Set your 12-month life goal"
-    },
-    "life_goal_achieved": {
-      "title": "Goal Achieved",
-      "desc": "Mark a life goal as achieved"
-    },
-    "partner_linked": {
-      "title": "Power Couple",
-      "desc": "Link with a partner for shared lists"
-    },
-    "weight_logged": {
-      "title": "Body Aware",
-      "desc": "Log your weight for the first time"
-    },
-    "weight_goal_reached": {
-      "title": "Goal Reached",
-      "desc": "Reach your target body weight"
-    },
-    "weight_log_30days": {
-      "title": "Body Chronicler",
-      "desc": "Log weight every day for 30 days"
-    },
-    "first_fast": {
-      "title": "Fast Initiate",
-      "desc": "Complete your first fasting session"
-    },
-    "fast_16hrs": {
-      "title": "16:8 Initiated",
-      "desc": "Complete a 16-hour fast"
-    },
-    "fast_24hrs": {
-      "title": "Day Long Fast",
-      "desc": "Complete a 24-hour fast"
-    },
-    "fast_7streak": {
-      "title": "Fasting Practitioner",
-      "desc": "7 consecutive days of fasting"
-    },
-    "bio_log_first": {
-      "title": "Bio Aware",
-      "desc": "Complete your first Bio-Log"
-    },
-    "bio_log_7days": {
-      "title": "Body Scanner",
-      "desc": "Log bio-markers 7 days in a row"
-    },
-    "pelvic_first": {
-      "title": "Protocol Starter",
-      "desc": "Complete your first Pelvic Strength session"
-    },
-    "supplements_7days": {
-      "title": "Consistent Stack",
-      "desc": "Log supplements 7 days in a row"
-    },
-    "sugar_scan_first": {
-      "title": "Label Detective",
-      "desc": "Scan a product label with AI"
-    },
-    "cycle_logged": {
-      "title": "Cycle Aware",
-      "desc": "Log your first cycle data"
-    },
-    "pregnancy_milestone": {
-      "title": "New Chapter",
-      "desc": "Unlock pregnancy tracking"
-    },
-    "ai_first_message": {
-      "title": "Coach Engaged",
-      "desc": "Send your first message to the AI Coach"
-    },
-    "ai_10_messages": {
-      "title": "Coachable",
-      "desc": "Have 10 conversations with the AI Coach"
-    },
-    "ai_plan_generated": {
-      "title": "Blueprint Created",
-      "desc": "Generate your first custom AI plan"
-    },
-    "ai_meal_swapped": {
-      "title": "Meal Architect",
-      "desc": "Swap a meal using AI (Pro)"
-    },
-    "ai_recipe_generated": {
-      "title": "AI Chef",
-      "desc": "Generate a recipe with AI"
-    },
-    "ai_insight_generated": {
-      "title": "Digital Mirror",
-      "desc": "Unlock your AI mind report"
-    },
-    "whatsapp_shared": {
-      "title": "Accountability Post",
-      "desc": "Share your list via WhatsApp"
-    },
-    "partner_synced_week": {
-      "title": "Team Player",
-      "desc": "Stay synced with partner for a week"
-    },
-    "onboarding_complete": {
-      "title": "Blueprint Unlocked",
-      "desc": "Complete the Bluom onboarding"
-    },
-    "pro_subscriber": {
-      "title": "Pro Member",
-      "desc": "Upgrade to Bluom Pro"
-    },
-    "all_tabs_used": {
-      "title": "Power User",
-      "desc": "Use Nutrition, Workout, Wellness, and Mind tabs"
-    },
-    "streak_30_days": {
-      "title": "30-Day Streak",
-      "desc": "Use Bluom every day for 30 days"
-    },
-    "streak_90_days": {
-      "title": "90-Day Legend",
-      "desc": "Use Bluom every day for 90 days"
-    },
-    "streak_365_days": {
-      "title": "Bluom Year",
-      "desc": "Use Bluom every day for a year"
-    },
-    "xp_1000": {
-      "title": "Rising Up",
-      "desc": "Earn 1,000 XP"
-    },
-    "xp_5000": {
-      "title": "Established",
-      "desc": "Earn 5,000 XP"
-    },
-    "xp_10000": {
-      "title": "Elite",
-      "desc": "Earn 10,000 XP"
-    },
-    "xp_50000": {
-      "title": "Legend",
-      "desc": "Earn 50,000 XP total"
-    },
-    "total_5_achievements": {
-      "title": "Collector",
-      "desc": "Unlock 5 achievements"
-    },
-    "total_20_achievements": {
-      "title": "Trophy Case",
-      "desc": "Unlock 20 achievements"
-    },
-    "total_50_achievements": {
-      "title": "Completionist",
-      "desc": "Unlock 50 achievements"
-    }
-  },
-  "fasting": {
-    "title": "Fasting Tracker",
-    "subtitle": "Precision fasting intelligence",
-    "elapsed": "Elapsed Time",
-    "goal": "Goal",
-    "startFasting": "Start Fasting",
-    "endFasting": "End Fast",
-    "fastEnded": "Fast Ended",
-    "totalTime": "Total time",
-    "syncing": "Syncing metabolic data",
-    "chooseProtocol": "Choose Protocol",
-    "metabolicPhases": "Metabolic Phases",
-    "tapToLearn": "Tap to learn what's happening inside",
-    "unlockVision": "Unlock Metabolic Vision",
-    "unlockVisionDesc": "See exactly which stage of fat burning you are in.",
-    "upgradeUnlock": "Upgrade to Unlock",
-    "fastingScience": "Fasting Science",
-    "seeMetabolicState": "See your real-time metabolic state.",
-    "advancedProtocols": "Advanced Protocols",
-    "advancedDesc": "Unlock 18:6, 20:4, and OMAD protocols for maximum metabolic benefits.",
-    "proTitle": "Metabolic Insights Pro",
-    "proDesc": "Unlock real-time metabolic phase tracking and advanced fasting analytics.",
-    "protocols": {
-      "168": "Standard intermittent fasting",
-      "186": "Advanced fat burning",
-      "204": "Extreme ketosis protocol",
-      "omad": "One meal a day"
-    },
-    "phases": {
-      "sugarDrop": "Sugar Drop",
-      "sugarDropDesc": "Blood sugar stabilizing",
-      "fatBurn": "Fat Burning",
-      "fatBurnDesc": "Entering ketosis state",
-      "autophagy": "Autophagy",
-      "autophagyDesc": "Active cellular cleanup"
-    },
-    "edu": {
-      "autophagy": "What is Autophagy?",
-      "autophagyDesc": "The body's cellular recycling process that clears out damaged cells and generates new ones.",
-      "muscle": "Fasting and Muscle",
-      "muscleDesc": "Proper fasting preserves muscle while burning fat, especially when consuming enough protein.",
-      "electrolytes": "Electrolytes Basics",
-      "electrolytesDesc": "Stay hydrated with sodium, potassium, and magnesium during extended fasts."
-    }
-  },
-  "weightMgmt": {
-    "title": "Body Metrics",
-    "subtitle": "Your complete physique dashboard",
-    "start": "START",
-    "goalLabel": "GOAL",
-    "current": "CURRENT",
-    "toGoal": "to goal",
-    "edit": "edit",
-    "logWeight": "Log Today's Weight",
-    "bmi": "BMI Calculator",
-    "bmiSub": "Body Mass Index · always free",
-    "idealWeight": "Ideal weight range for your height",
-    "weightTrend": "Weight Trend",
-    "history90": "90-day history",
-    "logMore": "Log more weights to see your trend",
-    "measurements": "Body Measurements",
-    "measurementsSub": "All measurements in cm",
-    "noMeasurements": "No measurements yet. Log your first set.",
-    "logMeasurements": "Log Measurements",
-    "bodyScan": "Body Composition",
-    "bodyScanSub": "Scale, DEXA, InBody data",
-    "logged": "Logged!",
-    "weightSaved": "Weight saved",
-    "error": "Error",
-    "couldNotSave": "Could not save weight.",
-    "saved": "Saved!",
-    "measurementsRecorded": "Measurements recorded.",
-    "scanRecorded": "Body composition data recorded.",
-    "confirmDelete": "Are you sure you want to delete this log?",
-    "bmiUnderweight": "Underweight",
-    "bmiNormal": "Normal",
-    "bmiOverweight": "Overweight",
-    "bmiObese": "Obese",
-    "mChest": "Chest",
-    "mWaist": "Waist",
-    "mHips": "Hips",
-    "mShoulders": "Shoulders",
-    "mNeck": "Neck",
-    "mLeftArm": "L Arm",
-    "mRightArm": "R Arm",
-    "mLeftThigh": "L Thigh",
-    "mRightThigh": "R Thigh",
-    "mLeftCalf": "L Calf",
-    "mRightCalf": "R Calf",
-    "sBodyFat": "Body Fat",
-    "sMuscleMass": "Muscle Mass",
-    "sBoneMass": "Bone Mass",
-    "sWater": "Water",
-    "sVisceralFat": "Visceral Fat",
-    "sBMR": "BMR",
-    "sMetabolicAge": "Metabolic Age",
-    "kpiLostGained": "Lost / Gained",
-    "kpiRemaining": "Remaining",
-    "kpiLogs": "Logs",
-    "kpiEntries": "entries",
-    "proFeature": "Pro Feature",
-    "proFeatureSub": "Unlock full history, body analysis and before/after photos",
-    "upgradeToPro": "Upgrade to Pro",
-    "setGoalWeight": "Set Goal Weight",
-    "targetWeightPh": "Goal weight ({{unit}})",
-    "weightUnit": "Weight ({{unit}})",
-    "noteOptional": "Note (optional)",
-    "notePh": "Post-workout, morning, etc.",
-    "saveWeight": "Save Weight",
-    "measureHint": "All measurements in centimeters. Leave blank to skip.",
-    "saveMeasurements": "Save Measurements",
-    "aiBodyAnalysis": "AI Body Analysis",
-    "aiScanTitle": "Visual Composition Scan",
-    "aiScanSub": "Our AI analyzes your latest measurements and photos to estimate body composition.",
-    "startAiScan": "Start AI Scan",
-    "enterManually": "Enter manually",
-    "scanning": "Scanning biomarkers...",
-    "detectingMarkers": "Detecting metabolic markers",
-    "aiEstimatedResults": "AI Estimated Results",
-    "enterResults": "Enter Results",
-    "confirmSaveResults": "Confirm & Save Results",
-    "measurementHistory": "Measurement History",
-    "bodyScanHistory": "Body Scan History",
-    "addFirstPhoto": "Start your visual journey. Add your first photo.",
-    "photo_before": "Before",
-    "photo_after": "After",
-    "photo_progress": "Progress",
-    "noData": "No data"
-  },
-  "onboarding": {
-    "groups": {
-      "identityTitle": "Who are you?",
-      "identityDesc": "Basic info to tailor your experience.",
-      "biometricsTitle": "Your Body",
-      "biometricsDesc": "Help us calibrate your health metrics.",
-      "trainingTitle": "Your Training",
-      "trainingDesc": "Customize your fitness journey.",
-      "lifestyleTitle": "Your Lifestyle",
-      "lifestyleDesc": "Connect your daily habits.",
-      "goalsTitle": "Your Goals",
-      "goalsDesc": "What do you want to achieve?",
-      "activityTitle": "Daily Activity",
-      "commitmentTitle": "Your Commitment Level",
-      "commitmentDesc": "How intense do you want this journey to be?",
-      "mindsetTitle": "Mindset",
-      "mindsetDesc": "What drives you and what holds you back?",
-      "dietTitle": "Nutritional Preference"
-    },
-    "questions": {
-      "age": "How old are you?",
-      "agePlaceholder": "e.g. 30",
-      "gender": "Biological Sex",
-      "genderMale": "Male",
-      "genderFemale": "Female",
-      "genderSub": "For accurate metabolic calculations.",
-      "weight": "Current Weight",
-      "weightPlaceholder": "0",
-      "height": "Height",
-      "heightPlaceholder": "0",
-      "targetWeight": "Target Weight",
-      "targetWeightPlaceholder": "0",
-      "targetWeightSub": "Optional goal weight.",
-      "activityLevel": "Activity Level",
-      "activitySedentary": "Sedentary",
-      "activityLight": "Lightly Active",
-      "activityModerate": "Moderately Active",
-      "activityVery": "Very Active",
-      "activityExtra": "Extra Active",
-      "experienceLevel": "Experience Level",
-      "expBeginner": "Beginner",
-      "expIntermediate": "Intermediate",
-      "expAdvanced": "Advanced",
-      "trainingLocation": "Where do you train?",
-      "locHome": "Home",
-      "locGym": "Gym",
-      "locOutdoor": "Outdoors",
-      "sleepHours": "Average Sleep",
-      "sleepPlaceholder": "hours/night",
-      "dietType": "Diet Type",
-      "dietBalanced": "Balanced",
-      "dietKeto": "Keto",
-      "dietPaleo": "Paleo",
-      "dietVegan": "Vegan",
-      "dietVegetarian": "Vegetarian",
-      "primaryGoal": "Primary Goal",
-      "goalMuscle": "Build Muscle",
-      "goalFatLoss": "Lose Fat",
-      "goalEndurance": "Endurance",
-      "goalHealth": "Overall Health",
-      "goalFlexibility": "Flexibility",
-      "focusAreas": "Focus Areas (Optional)",
-      "focusChest": "Chest",
-      "focusBack": "Back",
-      "focusLegs": "Legs",
-      "focusArms": "Arms",
-      "focusCore": "Core",
-      "focusCardio": "Cardio",
-      "fitnessGoal": "Main Goal",
-      "goalLoseWeight": "Lose Weight",
-      "goalLoseWeightInfo": "Create a sustainable caloric deficit to lose fat while maintaining energy.",
-      "goalBuildMuscle": "Build Muscle",
-      "goalBuildMuscleInfo": "Maximize hypertrophy with progressive overload and optimal protein intake.",
-      "goalMaintain": "Maintain",
-      "goalMaintainInfo": "Focus on performance and metabolic health without changing weight.",
-      "goalEnduranceInfo": "Optimize aerobic capacity, stamina, and cardiovascular efficiency.",
-      "goalGeneralHealth": "General Health",
-      "goalGeneralHealthInfo": "Prioritize longevity, balanced energy, and disease prevention.",
-      "goalBodyRecomp": "Body Recomposition",
-      "goalBodyRecompInfo": "Lose fat and gain muscle simultaneously. Ideal for reshaping the physique without drastic weight changes.",
-      "experience": "Experience Level",
-      "workoutStyle": "Workout Style",
-      "wsStrength": "Strength",
-      "wsStrengthInfo": "Focus on building muscle and power through resistance.",
-      "wsCardio": "Cardio",
-      "wsCardioInfo": "Endurance activities like running, cycling, or swimming.",
-      "wsHiit": "HIIT",
-      "wsHiitInfo": "High-intensity interval training to burn calories quickly.",
-      "wsYoga": "Yoga/Flexibility",
-      "wsYogaInfo": "Focus on flexibility, balance, and mind-body connection.",
-      "wsCrossfit": "CrossFit",
-      "wsCrossfitInfo": "High-intensity functional movements.",
-      "wsPilates": "Pilates",
-      "wsPilatesInfo": "Low-impact flexibility and muscular strength.",
-      "wsMixed": "Mixed",
-      "wsMixedInfo": "A combination of different styles.",
-      "milestone": "Main milestone for the next 12 months",
-      "milestonePlaceholder": "e.g., Run a marathon, buy a house...",
-      "activitySub": "Be honest for best results!",
-      "actSedentary": "Sedentary (desk job)",
-      "actLightlyActive": "Lightly active",
-      "actModeratelyActive": "Moderately active",
-      "actVeryActive": "Very active",
-      "actExtremelyActive": "Extremely active",
-      "weeklyTime": "Available weekly time",
-      "commitmentApproach": "Choose your approach",
-      "commitToast": "Perfect! We will tailor your plan to your commitment level.",
-      "commitEasy": "I want it easy",
-      "commitEasyInfo": "Gentle and sustainable changes at your own pace. Slower progress but easier to maintain.",
-      "commitBalanced": "Balanced effort",
-      "commitBalancedInfo": "A steady and proven approach. Moderate changes with consistent results.",
-      "commitMaximum": "Maximum effort",
-      "commitMaximumInfo": "All in for a rapid transformation. Requires intensive commitment but yields faster results.",
-      "stressLevel": "Stress level",
-      "stressLow": "Low",
-      "stressMod": "Moderate",
-      "stressHigh": "High",
-      "stressVeryHigh": "Very high",
-      "mainStressors": "Main stressors",
-      "stressorWork": "Work & Career",
-      "stressorFamily": "Family & Parenting",
-      "stressorFinances": "Finances",
-      "stressorHealth": "Health & Self-care",
-      "stressorSocial": "Social & Relationships",
-      "stressorSleep": "Sleep quality",
-      "stressorPurpose": "Lack of purpose",
-      "stressorTime": "Time management",
-      "stressorEnvironment": "Environment & Housing",
-      "stressorBurnout": "Burnout",
-      "stressorOverwhelm": "Work overload",
-      "stressorLoneliness": "Loneliness",
-      "motivations": "Motivations",
-      "motivHealth": "Health",
-      "motivAppearance": "Appearance",
-      "motivEnergy": "Energy",
-      "motivStrength": "Strength",
-      "motivConfidence": "Confidence",
-      "motivLongevity": "Longevity",
-      "challenges": "Challenges",
-      "chalTime": "Time",
-      "chalMotivation": "Motivation",
-      "chalKnowledge": "Knowledge",
-      "chalConsistency": "Consistency",
-      "chalDiet": "Diet",
-      "chalSocial": "Social support",
-      "coachingStyle": "Preferred coaching style",
-      "csDirect": "Direct & Disciplined",
-      "csEncouraging": "Encouraging & Gentle",
-      "csData": "Data-Driven",
-      "dietApproach": "Dietary approach",
-      "dietHighProtein": "High Protein",
-      "dietHighProteinInfo": "Boosts metabolism and muscle recovery. Ideal for lean mass and appetite control.",
-      "dietLowCarb": "Low Carb",
-      "dietLowCarbInfo": "Minimizes carbs to stabilize blood sugar and activate fat burning.",
-      "dietBalancedInfo": "A sustainable mix of all macronutrients.",
-      "dietPlantBased": "Plant-based",
-      "dietPlantBasedInfo": "Rich in vegetables, fruits, legumes, and whole grains.",
-      "dietFlexible": "Flexible (IIFYM)",
-      "dietFlexibleInfo": "Track macros instead of restricting foods. Eat what you like within your goals.",
-      "mealsPerDay": "Meals per day",
-      "meals2": "2 meals (Intermittent Fasting)",
-      "meals3": "3 meals (Standard / IF)",
-      "meals4": "4-5 meals (High performance)",
-      "meals6": "6+ meals (Hypermetabolic)",
-      "peakEnergy": "Peak energy time",
-      "peakEarlyMorning": "Early morning",
-      "peakMidday": "Mid-day",
-      "peakEvening": "Evening",
-      "peakLateNight": "Late night"
-    },
-    "common": {
-      "next": "Next",
-      "back": "Back",
-      "finish": "Finish",
-      "skip": "Skip"
-    },
-    "welcome": {
-      "slide1Title": "Welcome to Bluom",
-      "slide1Sub": "Your journey starts here",
-      "slide1Desc": "To personalize your experience and create the ideal plan, we need to get to know you better. It takes just 2 minutes.",
-      "pillarNutrition": "Nutrition",
-      "pillarMove": "Fitness",
-      "pillarMind": "Mind",
-      "slide2Title": "A Complete Ecosystem",
-      "slide2Sub": "Beyond the Pillars",
-      "slide2Desc": "Includes specialized protocols for Men & Women's health, Productivity architecture, and Mindset & Meditation.",
-      "slide3Title": "Elite Protocols",
-      "slide3Sub": "Limitless Potential",
-      "slide3Desc": "Unlock advanced protocols: Longevity, Peak Performance, Biohacking, Anti-aging, Focus and more.",
-      "startBtn": "Start Profile",
-      "continueBtn": "Continue"
-    },
-    "estimator": {
-      "title": "Your Goal in Numbers",
-      "subtitle": "Based on your commitment and availability",
-      "estimatedTime": "Estimated time to goal",
-      "toLose": "To lose",
-      "toGain": "To gain",
-      "perWeek": "Per week",
-      "journey": "Your Journey",
-      "now": "Now",
-      "wk": "Wk",
-      "month_one": "month",
-      "month_other": "months",
-      "week_one": "week",
-      "week_other": "weeks",
-      "commitEasy": "Gentle & Sustainable",
-      "commitBalanced": "Consistent Progress",
-      "commitMaximum": "Intensive Transformation",
-      "disclaimer": "This is an estimate. Actual results depend on consistency, recovery, and individual metabolism."
-    },
-    "transition": {
-      "goalSet": "Goal set!",
-      "calibrating": "Calibrating your targets...",
-      "understood": "Understood.",
-      "mentalFramework": "Building your mental framework...",
-      "almostThere": "Almost there!",
-      "nutritionPlan": "Designing your nutrition plan..."
-    }
-  },
-  "pillReminder": {
-    "title": "Pill Reminder",
-    "tracker": "Medication tracker",
-    "today": "Today",
-    "calendar": "Calendar",
-    "history": "History",
-    "settings": "Settings",
-    "dayStreak": "Day streak",
-    "thisMonth": "This month",
-    "todaysPills": "Today's Pills",
-    "emptyToday": "No pills scheduled for today. Add one in Settings.",
-    "addNewPill": "Add New Pill",
-    "pillNamePlaceholder": "Pill name (e.g. Prenatal Multivitamin)",
-    "color": "Color",
-    "shape": "Shape",
-    "shapes": {
-      "round": "round",
-      "oval": "oval",
-      "square": "square"
-    },
-    "reminderTime": "Reminder time (HH:MM)",
-    "days": "Days",
-    "addPillSchedule": "Add Pill Schedule",
-    "dailyReminders": "Daily reminders",
-    "yourSchedules": "Your Schedules",
-    "everyDay": "Every day",
-    "daysPerWeek_one": "1 day/week",
-    "daysPerWeek_other": "{{count}} days/week",
-    "added": "Added",
-    "savedMsg": "{{name}} schedule saved.",
-    "adherence": "12-Week Adherence",
-    "stats": "Per-Pill Stats",
-    "taken": "taken",
-    "missed": "missed",
-    "status": {
-      "taken": "Taken",
-      "missed": "Missed",
-      "future": "Future",
-      "allTaken": "All taken"
-    },
-    "months": {
-      "jan": "January",
-      "feb": "February",
-      "mar": "March",
-      "apr": "April",
-      "may": "May",
-      "jun": "June",
-      "jul": "July",
-      "aug": "August",
-      "sep": "September",
-      "oct": "October",
-      "nov": "November",
-      "dec": "December"
-    },
-    "daysInitials": {
-      "sun": "S",
-      "mon": "M",
-      "tue": "T",
-      "wed": "W",
-      "thu": "T",
-      "fri": "F",
-      "sat": "S"
-    }
-  },
-  "focusMode": {
-    "title": "Focus Mode",
-    "complete": "Session Complete!",
-    "completeMsg": "Take a break, you've earned it.",
-    "stayFocused": "Stay focused",
-    "endEarly": "Are you sure you want to end early?",
-    "endSession": "End Session",
-    "upgradeMsg": "Upgrade to Pro to unlock deep focus sessions.",
-    "quote": "\"Deep work is the superpower of the 21st century.\"",
-    "readyPrompt": "Ready for a deep dive?",
-    "pause": "Pause Session",
-    "start": "Start",
-    "tagline": "Focus • Thrive Deeply"
-  },
   "premium": {
     "title": "Bluom Pro",
     "subtitle": "Unlock your full potential",
@@ -2842,7 +1840,9 @@
     "deleteAccount": "Delete Account",
     "version": "Version {{version}}",
     "connectedDevices": "Connected Devices",
-    "healthConnect": "Health Integration"
+    "healthConnect": "Health Integration",
+    "themeColor": "Theme Colour",
+    "themeColorDesc": "Pick a palette that matches your mood. Changes apply instantly."
   },
   "support": {
     "title": "Support",
@@ -2856,6 +1856,20 @@
     "successMsg": "We've received your message and will get back to you soon.",
     "errorTitle": "Error",
     "errorMsg": "Could not send message. Please try again later."
+  },
+  "focusMode": {
+    "title": "Focus Mode",
+    "complete": "Session Complete!",
+    "completeMsg": "Take a break, you've earned it.",
+    "stayFocused": "Stay focused",
+    "endEarly": "Are you sure you want to end early?",
+    "endSession": "End Session",
+    "upgradeMsg": "Upgrade to Pro to unlock deep focus sessions.",
+    "quote": "\"Deep work is the superpower of the 21st century.\"",
+    "readyPrompt": "Ready for a deep dive?",
+    "pause": "Pause Session",
+    "start": "Start",
+    "tagline": "Focus • Thrive Deeply"
   },
   "achievements": {
     "first_meal_log": {
@@ -3273,6 +2287,423 @@
     "total_50_achievements": {
       "title": "Completionist",
       "desc": "Unlock 50 achievements"
+    }
+  },
+  "fasting": {
+    "title": "Fasting Tracker",
+    "subtitle": "Precision fasting intelligence",
+    "elapsed": "Elapsed Time",
+    "goal": "Goal",
+    "startFasting": "Start Fasting",
+    "endFasting": "End Fast",
+    "fastEnded": "Fast Ended",
+    "totalTime": "Total time",
+    "syncing": "Syncing metabolic data",
+    "chooseProtocol": "Choose Protocol",
+    "metabolicPhases": "Metabolic Phases",
+    "tapToLearn": "Tap to learn what's happening inside",
+    "unlockVision": "Unlock Metabolic Vision",
+    "unlockVisionDesc": "See exactly which stage of fat burning you are in.",
+    "upgradeUnlock": "Upgrade to Unlock",
+    "fastingScience": "Fasting Science",
+    "seeMetabolicState": "See your real-time metabolic state.",
+    "advancedProtocols": "Advanced Protocols",
+    "advancedDesc": "Unlock 18:6, 20:4, and OMAD protocols for maximum metabolic benefits.",
+    "proTitle": "Metabolic Insights Pro",
+    "proDesc": "Unlock real-time metabolic phase tracking and advanced fasting analytics.",
+    "protocols": {
+      "168": "Standard intermittent fasting",
+      "186": "Advanced fat burning",
+      "204": "Extreme ketosis protocol",
+      "omad": "One meal a day"
+    },
+    "phases": {
+      "sugarDrop": "Sugar Drop",
+      "sugarDropDesc": "Blood sugar stabilizing",
+      "fatBurn": "Fat Burning",
+      "fatBurnDesc": "Entering ketosis state",
+      "autophagy": "Autophagy",
+      "autophagyDesc": "Active cellular cleanup"
+    },
+    "edu": {
+      "autophagy": "What is Autophagy?",
+      "autophagyDesc": "The body's cellular recycling process that clears out damaged cells and generates new ones.",
+      "muscle": "Fasting and Muscle",
+      "muscleDesc": "Proper fasting preserves muscle while burning fat, especially when consuming enough protein.",
+      "electrolytes": "Electrolytes Basics",
+      "electrolytesDesc": "Stay hydrated with sodium, potassium, and magnesium during extended fasts."
+    }
+  },
+  "weightMgmt": {
+    "title": "Body Metrics",
+    "subtitle": "Your complete physique dashboard",
+    "start": "START",
+    "goalLabel": "GOAL",
+    "current": "CURRENT",
+    "toGoal": "to goal",
+    "edit": "edit",
+    "logWeight": "Log Today's Weight",
+    "bmi": "BMI Calculator",
+    "bmiSub": "Body Mass Index · always free",
+    "idealWeight": "Ideal weight range for your height",
+    "weightTrend": "Weight Trend",
+    "history90": "90-day history",
+    "logMore": "Log more weights to see your trend",
+    "measurements": "Body Measurements",
+    "measurementsSub": "All measurements in cm",
+    "noMeasurements": "No measurements yet. Log your first set.",
+    "logMeasurements": "Log Measurements",
+    "bodyScan": "Body Composition",
+    "bodyScanSub": "Scale, DEXA, InBody data",
+    "logged": "Logged!",
+    "weightSaved": "Weight saved",
+    "error": "Error",
+    "couldNotSave": "Could not save weight.",
+    "saved": "Saved!",
+    "measurementsRecorded": "Measurements recorded.",
+    "scanRecorded": "Body composition data recorded.",
+    "confirmDelete": "Are you sure you want to delete this log?",
+    "bmiUnderweight": "Underweight",
+    "bmiNormal": "Normal",
+    "bmiOverweight": "Overweight",
+    "bmiObese": "Obese",
+    "mChest": "Chest",
+    "mWaist": "Waist",
+    "mHips": "Hips",
+    "mShoulders": "Shoulders",
+    "mNeck": "Neck",
+    "mLeftArm": "L Arm",
+    "mRightArm": "R Arm",
+    "mLeftThigh": "L Thigh",
+    "mRightThigh": "R Thigh",
+    "mLeftCalf": "L Calf",
+    "mRightCalf": "R Calf",
+    "sBodyFat": "Body Fat",
+    "sMuscleMass": "Muscle Mass",
+    "sBoneMass": "Bone Mass",
+    "sWater": "Water",
+    "sVisceralFat": "Visceral Fat",
+    "sBMR": "BMR",
+    "sMetabolicAge": "Metabolic Age",
+    "kpiLostGained": "Lost / Gained",
+    "kpiRemaining": "Remaining",
+    "kpiLogs": "Logs",
+    "kpiEntries": "entries",
+    "proFeature": "Pro Feature",
+    "proFeatureSub": "Unlock full history, body analysis and before/after photos",
+    "upgradeToPro": "Upgrade to Pro",
+    "setGoalWeight": "Set Goal Weight",
+    "targetWeightPh": "Goal weight ({{unit}})",
+    "weightUnit": "Weight ({{unit}})",
+    "noteOptional": "Note (optional)",
+    "notePh": "Post-workout, morning, etc.",
+    "saveWeight": "Save Weight",
+    "measureHint": "All measurements in centimeters. Leave blank to skip.",
+    "saveMeasurements": "Save Measurements",
+    "aiBodyAnalysis": "AI Body Analysis",
+    "aiScanTitle": "Visual Composition Scan",
+    "aiScanSub": "Our AI analyzes your latest measurements and photos to estimate body composition.",
+    "startAiScan": "Start AI Scan",
+    "enterManually": "Enter manually",
+    "scanning": "Scanning biomarkers...",
+    "detectingMarkers": "Detecting metabolic markers",
+    "aiEstimatedResults": "AI Estimated Results",
+    "enterResults": "Enter Results",
+    "confirmSaveResults": "Confirm & Save Results",
+    "measurementHistory": "Measurement History",
+    "bodyScanHistory": "Body Scan History",
+    "addFirstPhoto": "Start your visual journey. Add your first photo.",
+    "photo_before": "Before",
+    "photo_after": "After",
+    "photo_progress": "Progress",
+    "noData": "No data"
+  },
+  "onboarding": {
+    "groups": {
+      "identityTitle": "Who are you?",
+      "identityDesc": "Basic info to tailor your experience.",
+      "biometricsTitle": "Your Body",
+      "biometricsDesc": "Help us calibrate your health metrics.",
+      "trainingTitle": "Your Training",
+      "trainingDesc": "Customize your fitness journey.",
+      "lifestyleTitle": "Your Lifestyle",
+      "lifestyleDesc": "Connect your daily habits.",
+      "goalsTitle": "Your Goals",
+      "goalsDesc": "What do you want to achieve?",
+      "activityTitle": "Daily Activity",
+      "commitmentTitle": "Your Commitment Level",
+      "commitmentDesc": "How intense do you want this journey to be?",
+      "mindsetTitle": "Mindset",
+      "mindsetDesc": "What drives you and what holds you back?",
+      "dietTitle": "Nutritional Preference"
+    },
+    "questions": {
+      "age": "How old are you?",
+      "agePlaceholder": "e.g. 30",
+      "gender": "Biological Sex",
+      "genderMale": "Male",
+      "genderFemale": "Female",
+      "genderSub": "For accurate metabolic calculations.",
+      "weight": "Current Weight",
+      "weightPlaceholder": "0",
+      "height": "Height",
+      "heightPlaceholder": "0",
+      "targetWeight": "Target Weight",
+      "targetWeightPlaceholder": "0",
+      "targetWeightSub": "Optional goal weight.",
+      "activityLevel": "Activity Level",
+      "activitySedentary": "Sedentary",
+      "activityLight": "Lightly Active",
+      "activityModerate": "Moderately Active",
+      "activityVery": "Very Active",
+      "activityExtra": "Extra Active",
+      "experienceLevel": "Experience Level",
+      "expBeginner": "Beginner",
+      "expIntermediate": "Intermediate",
+      "expAdvanced": "Advanced",
+      "trainingLocation": "Where do you train?",
+      "locHome": "Home",
+      "locGym": "Gym",
+      "locOutdoor": "Outdoors",
+      "sleepHours": "Average Sleep",
+      "sleepPlaceholder": "hours/night",
+      "dietType": "Diet Type",
+      "dietBalanced": "Balanced",
+      "dietKeto": "Keto",
+      "dietPaleo": "Paleo",
+      "dietVegan": "Vegan",
+      "dietVegetarian": "Vegetarian",
+      "primaryGoal": "Primary Goal",
+      "goalMuscle": "Build Muscle",
+      "goalFatLoss": "Lose Fat",
+      "goalEndurance": "Endurance",
+      "goalHealth": "Overall Health",
+      "goalFlexibility": "Flexibility",
+      "focusAreas": "Focus Areas (Optional)",
+      "focusChest": "Chest",
+      "focusBack": "Back",
+      "focusLegs": "Legs",
+      "focusArms": "Arms",
+      "focusCore": "Core",
+      "focusCardio": "Cardio",
+      "fitnessGoal": "Main Goal",
+      "goalLoseWeight": "Lose Weight",
+      "goalLoseWeightInfo": "Create a sustainable caloric deficit to lose fat while maintaining energy.",
+      "goalBuildMuscle": "Build Muscle",
+      "goalBuildMuscleInfo": "Maximize hypertrophy with progressive overload and optimal protein intake.",
+      "goalMaintain": "Maintain",
+      "goalMaintainInfo": "Focus on performance and metabolic health without changing weight.",
+      "goalEnduranceInfo": "Optimize aerobic capacity, stamina, and cardiovascular efficiency.",
+      "goalGeneralHealth": "General Health",
+      "goalGeneralHealthInfo": "Prioritize longevity, balanced energy, and disease prevention.",
+      "goalBodyRecomp": "Body Recomposition",
+      "goalBodyRecompInfo": "Lose fat and gain muscle simultaneously. Ideal for reshaping the physique without drastic weight changes.",
+      "experience": "Experience Level",
+      "workoutStyle": "Workout Style",
+      "wsStrength": "Strength",
+      "wsStrengthInfo": "Focus on building muscle and power through resistance.",
+      "wsCardio": "Cardio",
+      "wsCardioInfo": "Endurance activities like running, cycling, or swimming.",
+      "wsHiit": "HIIT",
+      "wsHiitInfo": "High-intensity interval training to burn calories quickly.",
+      "wsYoga": "Yoga/Flexibility",
+      "wsYogaInfo": "Focus on flexibility, balance, and mind-body connection.",
+      "wsCrossfit": "CrossFit",
+      "wsCrossfitInfo": "High-intensity functional movements.",
+      "wsPilates": "Pilates",
+      "wsPilatesInfo": "Low-impact flexibility and muscular strength.",
+      "wsMixed": "Mixed",
+      "wsMixedInfo": "A combination of different styles.",
+      "milestone": "Main milestone for the next 12 months",
+      "milestonePlaceholder": "e.g., Run a marathon, buy a house...",
+      "activitySub": "Be honest for best results!",
+      "actSedentary": "Sedentary (desk job)",
+      "actLightlyActive": "Lightly active",
+      "actModeratelyActive": "Moderately active",
+      "actVeryActive": "Very active",
+      "actExtremelyActive": "Extremely active",
+      "weeklyTime": "Available weekly time",
+      "commitmentApproach": "Choose your approach",
+      "commitToast": "Perfect! We will tailor your plan to your commitment level.",
+      "commitEasy": "I want it easy",
+      "commitEasyInfo": "Gentle and sustainable changes at your own pace. Slower progress but easier to maintain.",
+      "commitBalanced": "Balanced effort",
+      "commitBalancedInfo": "A steady and proven approach. Moderate changes with consistent results.",
+      "commitMaximum": "Maximum effort",
+      "commitMaximumInfo": "All in for a rapid transformation. Requires intensive commitment but yields faster results.",
+      "stressLevel": "Stress level",
+      "stressLow": "Low",
+      "stressMod": "Moderate",
+      "stressHigh": "High",
+      "stressVeryHigh": "Very high",
+      "mainStressors": "Main stressors",
+      "stressorWork": "Work & Career",
+      "stressorFamily": "Family & Parenting",
+      "stressorFinances": "Finances",
+      "stressorHealth": "Health & Self-care",
+      "stressorSocial": "Social & Relationships",
+      "stressorSleep": "Sleep quality",
+      "stressorPurpose": "Lack of purpose",
+      "stressorTime": "Time management",
+      "stressorEnvironment": "Environment & Housing",
+      "stressorBurnout": "Burnout",
+      "stressorOverwhelm": "Work overload",
+      "stressorLoneliness": "Loneliness",
+      "motivations": "Motivations",
+      "motivHealth": "Health",
+      "motivAppearance": "Appearance",
+      "motivEnergy": "Energy",
+      "motivStrength": "Strength",
+      "motivConfidence": "Confidence",
+      "motivLongevity": "Longevity",
+      "challenges": "Challenges",
+      "chalTime": "Time",
+      "chalMotivation": "Motivation",
+      "chalKnowledge": "Knowledge",
+      "chalConsistency": "Consistency",
+      "chalDiet": "Diet",
+      "chalSocial": "Social support",
+      "coachingStyle": "Preferred coaching style",
+      "csDirect": "Direct & Disciplined",
+      "csEncouraging": "Encouraging & Gentle",
+      "csData": "Data-Driven",
+      "dietApproach": "Dietary approach",
+      "dietHighProtein": "High Protein",
+      "dietHighProteinInfo": "Boosts metabolism and muscle recovery. Ideal for lean mass and appetite control.",
+      "dietLowCarb": "Low Carb",
+      "dietLowCarbInfo": "Minimizes carbs to stabilize blood sugar and activate fat burning.",
+      "dietBalancedInfo": "A sustainable mix of all macronutrients.",
+      "dietPlantBased": "Plant-based",
+      "dietPlantBasedInfo": "Rich in vegetables, fruits, legumes, and whole grains.",
+      "dietFlexible": "Flexible (IIFYM)",
+      "dietFlexibleInfo": "Track macros instead of restricting foods. Eat what you like within your goals.",
+      "mealsPerDay": "Meals per day",
+      "meals2": "2 meals (Intermittent Fasting)",
+      "meals3": "3 meals (Standard / IF)",
+      "meals4": "4-5 meals (High performance)",
+      "meals6": "6+ meals (Hypermetabolic)",
+      "peakEnergy": "Peak energy time",
+      "peakEarlyMorning": "Early morning",
+      "peakMidday": "Mid-day",
+      "peakEvening": "Evening",
+      "peakLateNight": "Late night"
+    },
+    "common": {
+      "next": "Next",
+      "back": "Back",
+      "finish": "Finish",
+      "skip": "Skip"
+    },
+    "welcome": {
+      "slide1Title": "Welcome to Bluom",
+      "slide1Sub": "Your journey starts here",
+      "slide1Desc": "To personalize your experience and create the ideal plan, we need to get to know you better. It takes just 2 minutes.",
+      "pillarNutrition": "Nutrition",
+      "pillarMove": "Fitness",
+      "pillarMind": "Mind",
+      "slide2Title": "A Complete Ecosystem",
+      "slide2Sub": "Beyond the Pillars",
+      "slide2Desc": "Includes specialized protocols for Men & Women's health, Productivity architecture, and Mindset & Meditation.",
+      "slide3Title": "Elite Protocols",
+      "slide3Sub": "Limitless Potential",
+      "slide3Desc": "Unlock advanced protocols: Longevity, Peak Performance, Biohacking, Anti-aging, Focus and more.",
+      "startBtn": "Start Profile",
+      "continueBtn": "Continue",
+      "themePrompt": "Which colour speaks to you?",
+      "themeConfirmTitle": "Set {{name}} as my theme?",
+      "themeConfirmDesc": "This will tint your whole experience. You can change it anytime in Settings.",
+      "themeConfirmCta": "Set as my theme"
+    },
+    "estimator": {
+      "title": "Your Goal in Numbers",
+      "subtitle": "Based on your commitment and availability",
+      "estimatedTime": "Estimated time to goal",
+      "toLose": "To lose",
+      "toGain": "To gain",
+      "perWeek": "Per week",
+      "journey": "Your Journey",
+      "now": "Now",
+      "wk": "Wk",
+      "month_one": "month",
+      "month_other": "months",
+      "week_one": "week",
+      "week_other": "weeks",
+      "commitEasy": "Gentle & Sustainable",
+      "commitBalanced": "Consistent Progress",
+      "commitMaximum": "Intensive Transformation",
+      "disclaimer": "This is an estimate. Actual results depend on consistency, recovery, and individual metabolism."
+    },
+    "transition": {
+      "goalSet": "Goal set!",
+      "calibrating": "Calibrating your targets...",
+      "understood": "Understood.",
+      "mentalFramework": "Building your mental framework...",
+      "almostThere": "Almost there!",
+      "nutritionPlan": "Designing your nutrition plan..."
+    }
+  },
+  "pillReminder": {
+    "title": "Pill Reminder",
+    "tracker": "Medication tracker",
+    "today": "Today",
+    "calendar": "Calendar",
+    "history": "History",
+    "settings": "Settings",
+    "dayStreak": "Day streak",
+    "thisMonth": "This month",
+    "todaysPills": "Today's Pills",
+    "emptyToday": "No pills scheduled for today. Add one in Settings.",
+    "addNewPill": "Add New Pill",
+    "pillNamePlaceholder": "Pill name (e.g. Prenatal Multivitamin)",
+    "color": "Color",
+    "shape": "Shape",
+    "shapes": {
+      "round": "round",
+      "oval": "oval",
+      "square": "square"
+    },
+    "reminderTime": "Reminder time (HH:MM)",
+    "days": "Days",
+    "addPillSchedule": "Add Pill Schedule",
+    "dailyReminders": "Daily reminders",
+    "yourSchedules": "Your Schedules",
+    "everyDay": "Every day",
+    "daysPerWeek_one": "1 day/week",
+    "daysPerWeek_other": "{{count}} days/week",
+    "added": "Added",
+    "savedMsg": "{{name}} schedule saved.",
+    "adherence": "12-Week Adherence",
+    "stats": "Per-Pill Stats",
+    "taken": "taken",
+    "missed": "missed",
+    "status": {
+      "taken": "Taken",
+      "missed": "Missed",
+      "future": "Future",
+      "allTaken": "All taken"
+    },
+    "months": {
+      "jan": "January",
+      "feb": "February",
+      "mar": "March",
+      "apr": "April",
+      "may": "May",
+      "jun": "June",
+      "jul": "July",
+      "aug": "August",
+      "sep": "September",
+      "oct": "October",
+      "nov": "November",
+      "dec": "December"
+    },
+    "daysInitials": {
+      "sun": "S",
+      "mon": "M",
+      "tue": "T",
+      "wed": "W",
+      "thu": "T",
+      "fri": "F",
+      "sat": "S"
     }
   }
 }

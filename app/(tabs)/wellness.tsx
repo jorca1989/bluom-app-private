@@ -18,6 +18,7 @@ import GamesHub from '../../components/GamesHub';
 import LifeGoalsHub from '../../components/LifeGoalsHub';
 import { triggerSound, SoundEffect } from '../../utils/soundEffects';
 import { getBottomContentPadding, TAB_BAR_HEIGHT } from '../../utils/layout';
+import { useTheme } from '@/context/ThemeContext';
 import * as SecureStore from 'expo-secure-store';
 
 const { width } = Dimensions.get('window');
@@ -159,6 +160,7 @@ function SectionHeader({ title, sub }: { title: string; sub?: string }) {
 // ─── Main Screen ───────────────────────────────────────────────────────────────
 export default function WellnessScreen() {
   const { t } = useTranslation();
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const params = useLocalSearchParams();
   const insets = useSafeAreaInsets();
@@ -267,7 +269,7 @@ export default function WellnessScreen() {
   const bottomPad = getBottomContentPadding(insets.bottom, 0) + TAB_BAR_HEIGHT;
 
   return (
-    <SafeAreaView style={s.container} edges={['top']}>
+    <SafeAreaView style={[s.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
       <ScrollView contentContainerStyle={{ paddingTop: 12, paddingBottom: bottomPad }} showsVerticalScrollIndicator={false}>
 
         {/* Widget Config Modal */}

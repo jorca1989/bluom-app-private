@@ -54,6 +54,7 @@ import NorthStarWidget from '@/components/NorthStarWidget';
 import AchievementsCard from '@/components/achievementcard';
 import { useResponsive } from '@/utils/responsive';
 import Avatar, { AvatarConfig } from '@/components/Avatar';
+import { useTheme } from '@/context/ThemeContext';
 // IMPORTANT: don't import expo-location at module scope.
 // If the current binary wasn't rebuilt after installing expo-location,
 // a static import will crash the app with "Cannot find native module 'ExpoLocation'".
@@ -122,6 +123,7 @@ export default function HomeScreen() {
   const { user: clerkUser } = useUser();
   const { isLoading: isAccessLoading } = useAccessControl();
   const { isTablet, contentMaxWidth, discoveryColumns } = useResponsive();
+  const { colors: themeColors } = useTheme();
 
   const [enabledWidgets, setEnabledWidgets] = useState<Set<WidgetId>>(
     new Set(WIDGET_REGISTRY.filter(w => w.defaultEnabled).map(w => w.id))
@@ -798,11 +800,11 @@ export default function HomeScreen() {
   // MAIN RENDER
   // ─────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={s.screen} edges={['top']}>
+    <SafeAreaView style={[s.screen, { backgroundColor: themeColors.bg }]} edges={['top']}>
       {customizeModal}
 
       {/* TOP BAR */}
-      <View style={s.topBar}>
+      <View style={[s.topBar, { backgroundColor: themeColors.bg }]}>
         <Image source={require('../../assets/images/logo.png')} style={s.topLogo} resizeMode="contain" />
         <TouchableOpacity style={s.cBtn} onPress={() => setShowCustomize(true)} activeOpacity={0.75}>
           <Settings2 size={17} color="#475569" />

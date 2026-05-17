@@ -1895,7 +1895,9 @@
     "proteinG": "Günlük Protein (g)",
     "carbsG": "Günlük Karbonhidrat (g)",
     "fatG": "Günlük Yağ (g)",
-    "updateGoals": "Hedefleri Güncelle"
+    "updateGoals": "Hedefleri Güncelle",
+    "themeColor": "Tema Rengi",
+    "themeColorDesc": "Modunuza uygun bir palet seçin. Değişiklikler anında uygulanır."
   },
   "support": {
     "title": "Destek ve Geri Bildirim",
@@ -2670,7 +2672,11 @@
       "slide3Sub": "Sınırsız Potansiyel",
       "slide3Desc": "Gelişmiş protokolleri aç: Uzun Ömür, Zirve Performans, Biohacking, Yaşlanma Karşıtı, Odak ve dahası.",
       "startBtn": "Profil Oluştur",
-      "continueBtn": "Devam Et"
+      "continueBtn": "Devam Et",
+      "themePrompt": "Hangi renk size hitap ediyor?",
+      "themeConfirmTitle": "{{name}} temam olarak ayarlansın mı?",
+      "themeConfirmDesc": "Bu tüm deneyiminizi renklendirecek. İstediğiniz zaman Ayarlar'dan değiştirebilirsiniz.",
+      "themeConfirmCta": "Temam olarak ayarla"
     },
     "estimator": {
       "title": "Rakamlarla hedefin",

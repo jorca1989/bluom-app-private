@@ -20,6 +20,7 @@ import { Mail, Lock, LogIn, Eye, EyeOff } from 'lucide-react-native';
 import { MASTER_ADMINS } from '@/convex/permissions';
 import AppleSignInButton from '@/components/AppleSignInButton';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/context/ThemeContext';
 
 function isAdminEmail(email: string) {
   const e = String(email ?? '').toLowerCase().trim();
@@ -30,6 +31,7 @@ export default function LoginScreen() {
   const { t } = useTranslation();
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
+  const { colors: themeColors } = useTheme();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -143,7 +145,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top', 'bottom']}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardView}>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           <View style={styles.header}>

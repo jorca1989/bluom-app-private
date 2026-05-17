@@ -1895,7 +1895,9 @@
     "proteinG": "Proteína Diária (g)",
     "carbsG": "Hidratos Diários (g)",
     "fatG": "Gordura Diária (g)",
-    "updateGoals": "Atualizar Objetivos"
+    "updateGoals": "Atualizar Objetivos",
+    "themeColor": "Χρώμα Θέματος",
+    "themeColorDesc": "Επιλέξτε μια παλέτα που ταιριάζει στη διάθεσή σας. Οι αλλαγές εφαρμόζονται άμεσα."
   },
   "support": {
     "title": "Suporte & Feedback",
@@ -2670,7 +2672,11 @@
       "slide3Sub": "Potencial Ilimitado",
       "slide3Desc": "Desbloqueia protocolos avançados: Longevidade, Pico de Performance, Biohacking, Anti-idade, Foco e muito mais.",
       "startBtn": "Começar Perfil",
-      "continueBtn": "Continuar"
+      "continueBtn": "Continuar",
+      "themePrompt": "Ποιο χρώμα σας μιλά;",
+      "themeConfirmTitle": "Ορισμός {{name}} ως θέμα μου;",
+      "themeConfirmDesc": "Αυτό θα χρωματίσει όλη σας την εμπειρία. Μπορείτε να το αλλάξετε ανά πάσα στιγμή στις Ρυθμίσεις.",
+      "themeConfirmCta": "Ορισμός ως θέμα μου"
     },
     "estimator": {
       "title": "O teu objetivo em números",

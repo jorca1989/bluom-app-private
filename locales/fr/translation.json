@@ -1895,7 +1895,9 @@
     "proteinG": "Protéines (g)",
     "carbsG": "Glucides (g)",
     "fatG": "Lipides (g)",
-    "updateGoals": "Mettre à jour les objectifs"
+    "updateGoals": "Mettre à jour les objectifs",
+    "themeColor": "Couleur du Thème",
+    "themeColorDesc": "Choisissez une palette qui correspond à votre humeur. Les changements s'appliquent instantanément."
   },
   "support": {
     "title": "Support & Feedback",
@@ -2670,7 +2672,11 @@
       "slide3Sub": "Potentiel Illimité",
       "slide3Desc": "Débloque des protocoles avancés : Longévité, Performance, Biohacking, Anti-âge, Focus et bien plus.",
       "startBtn": "Démarrer Profil",
-      "continueBtn": "Continuer"
+      "continueBtn": "Continuer",
+      "themePrompt": "Quelle couleur vous parle ?",
+      "themeConfirmTitle": "Définir {{name}} comme mon thème ?",
+      "themeConfirmDesc": "Cela teintera toute votre expérience. Vous pouvez le changer à tout moment dans les Paramètres.",
+      "themeConfirmCta": "Définir comme mon thème"
     },
     "estimator": {
       "title": "Ton objectif en chiffres",

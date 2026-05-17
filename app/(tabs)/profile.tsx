@@ -29,6 +29,7 @@ import {
 } from 'lucide-react-native';
 import AchievementsCard from '@/components/achievementcard';
 import { getCustomerInfoSafe } from '@/utils/revenuecat';
+import { useTheme } from '@/context/ThemeContext';
 
 // ─────────────────────────────────────────────────────────────
 // DICEBEAR AVATAR OPTIONS (Avataaars)
@@ -183,6 +184,10 @@ export default function ProfileScreen() {
   const [visibleProfileWidgets, setVisibleProfileWidgets] = useState<Set<ProfileWidgetId>>(new Set(allProfileWidgetIds));
   const [showProfileWidgetConfig, setShowProfileWidgetConfig] = useState(false);
 
+  // ── Theme integration (Dark Mode toggle now flips between 'black' and 'default') ──
+  const { theme: activeTheme, setTheme, colors: themeColors } = useTheme();
+  const isDarkMode = activeTheme === 'black' || activeTheme === 'navy';
+
   useEffect(() => {
     (async () => {
       try {
@@ -328,7 +333,7 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView style={s.screen} edges={['top']}>
+    <SafeAreaView style={[s.screen, { backgroundColor: themeColors.bg }]} edges={['top']}>
       {/* ── WIDGET CONFIG MODAL ── */}
       <Modal visible={showProfileWidgetConfig} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowProfileWidgetConfig(false)}>
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['top']}>
@@ -339,13 +344,19 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 20, gap: 0, paddingBottom: 40 }}>
-            {/* Dark mode placeholder */}
+            {/* Dark mode — wired to Theme system */}
             <View style={s.wcDarkRow}>
               <View style={s.wcDarkLeft}>
                 <Ionicons name="moon-outline" size={18} color="#6366f1" />
                 <Text style={s.wcDarkLabel}>{t('common.darkMode', 'Dark Mode')}</Text>
               </View>
-              <Switch value={false} onValueChange={() => {}} trackColor={{ true: '#6366f1', false: '#e2e8f0' }} thumbColor="#fff" />
+              <Switch
+                data-testid="profile-darkmode-toggle"
+                value={isDarkMode}
+                onValueChange={(v) => setTheme(v ? 'black' : 'default')}
+                trackColor={{ true: '#6366f1', false: '#e2e8f0' }}
+                thumbColor="#fff"
+              />
             </View>
             <View style={s.wcDivider} />
             {PROFILE_WIDGETS.map((w, i) => (

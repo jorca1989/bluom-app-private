@@ -49,6 +49,7 @@ import LogRecipeModal from '@/components/fuel/modals/LogRecipeModal';
 import FoodSearchModal from '@/components/fuel/modals/FoodSearchModal';
 import VoiceLogModal from '@/components/fuel/modals/VoiceLogModel';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
+import { useTheme } from '@/context/ThemeContext';
 
 type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 type MealTypeLower = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'premium_slot';
@@ -89,6 +90,7 @@ export default function FuelScreen() {
   const { width: windowWidth } = useWindowDimensions();
   const isTablet = windowWidth > 768;
   const tabletMaxWidth = Math.min(1000, Math.max(0, windowWidth - 32));
+  const { colors: themeColors } = useTheme();
 
   const { user: clerkUser, isLoaded: isClerkLoaded } = useClerkUser();
   const convexUser = useQuery(
@@ -356,7 +358,7 @@ export default function FuelScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
       <StatusBar barStyle="dark-content" />
       
       <ScrollView

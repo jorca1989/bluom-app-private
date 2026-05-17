@@ -390,7 +390,7 @@ export default function OnboardingScreen() {
   const [currentLang, setCurrentLang] = useState(i18n.language || 'en');
 
   // Theme picker on welcome slide 3
-  const { theme: activeTheme, setTheme: setActiveTheme } = useTheme();
+  const { theme: activeTheme, setTheme: setActiveTheme, colors: themeColors } = useTheme();
   const [pendingThemePick, setPendingThemePick] = useState<ThemeKey | null>(null);
 
   const LANG_OPTIONS = [
@@ -869,9 +869,9 @@ export default function OnboardingScreen() {
   // ─── Main render ─────────────────────────────────────────────────────────
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: themeColors.bg }}>
       {showWelcome ? (
-        <LinearGradient colors={['#ffffff', '#f8fafc']} style={styles.fullscreen}>
+        <LinearGradient colors={[themeColors.bgGradientFrom, themeColors.bgGradientTo]} style={styles.fullscreen}>
           <SafeAreaView style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center', paddingVertical: 40 }}>
             <View style={{ alignItems: 'center', paddingHorizontal: 30, paddingTop: insets.top + 60 }}>
               {currentWelcomeSlide === 0 && (
@@ -986,7 +986,7 @@ export default function OnboardingScreen() {
           </View>
         </LinearGradient>
       ) : (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
           {/* Unified Toast — handles both feedback and transition messages */}
           <Toast
             message={toastMessage}

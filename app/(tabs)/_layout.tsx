@@ -6,6 +6,7 @@ import { SoundEffect, triggerSound } from '@/utils/soundEffects';
 import { useConvexAuth } from 'convex/react';
 import { ActivityIndicator, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/context/ThemeContext';
 
 
 export default function TabLayout() {
@@ -13,11 +14,12 @@ export default function TabLayout() {
   const bottom = Math.max(insets.bottom, 8);
   const { isLoading, isAuthenticated } = useConvexAuth();
   const { t } = useTranslation();
+  const { colors } = useTheme();
 
   if (isLoading || !isAuthenticated) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#ffffff' }}>
-        <ActivityIndicator size="large" color="#3B82F6" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.bg }}>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -26,12 +28,13 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#3B82F6',
-        tabBarInactiveTintColor: '#6B7280',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textMuted,
+        sceneStyle: { backgroundColor: colors.bg },
         tabBarStyle: {
-          backgroundColor: '#ffffff',
+          backgroundColor: colors.surface,
           borderTopWidth: 1,
-          borderTopColor: '#e5e7eb',
+          borderTopColor: colors.border,
           height: TAB_BAR_HEIGHT + bottom,
           paddingBottom: bottom,
           paddingTop: 8,

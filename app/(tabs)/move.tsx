@@ -47,6 +47,7 @@ import ExerciseDetailModal from '@/components/move/modals/ExerciseDetailModal';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { FREE_4_WEEK_PLAN, getWeekRoutineDays } from '@/utils/fourWeekPlanData';
 import { buildPlanFromDBWorkouts } from '@/utils/buildPlanFromDB';
+import { useTheme } from '@/context/ThemeContext';
 
 
 
@@ -101,6 +102,7 @@ export default function MoveScreen() {
   const insets = useSafeAreaInsets();
   const { width, isTablet, isSmallPhone: isSmallScreen, contentMaxWidth, kpiCardWidth } = useResponsive();
   const { t, i18n } = useTranslation();
+  const { colors: themeColors } = useTheme();
 
   // ── Widget config ──
   const allMoveWidgetIds = MOVE_WIDGETS.map(w => w.id);
@@ -798,7 +800,7 @@ export default function MoveScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
       <StatusBar style="dark" />
 
       {/* ── WIDGET CONFIG MODAL ── */}

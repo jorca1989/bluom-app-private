@@ -1382,7 +1382,9 @@
     "water": "Water",
     "calKcal": "Dagelijkse calorieën (kcal)",
     "proteinG": "Dagelijkse eiwitten (g)",
-    "updateGoals": "Doelen bijwerken"
+    "updateGoals": "Doelen bijwerken",
+    "themeColor": "Themakleur",
+    "themeColorDesc": "Kies een palet dat bij je stemming past. Wijzigingen worden meteen toegepast."
   },
   "support": {
     "title": "Support & Feedback",
@@ -1621,7 +1623,11 @@
       "pillarMind": "Geest",
       "slide2Title": "Een compleet ecosysteem",
       "startBtn": "Profiel starten",
-      "continueBtn": "Doorgaan"
+      "continueBtn": "Doorgaan",
+      "themePrompt": "Welke kleur spreekt jou aan?",
+      "themeConfirmTitle": "{{name}} instellen als mijn thema?",
+      "themeConfirmDesc": "Hiermee krijgt je hele ervaring deze tint. Je kunt het altijd wijzigen in de Instellingen.",
+      "themeConfirmCta": "Instellen als mijn thema"
     },
     "estimator": {
       "title": "Je doel in cijfers",
