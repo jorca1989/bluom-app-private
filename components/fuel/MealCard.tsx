@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+
 export interface FoodItem {
   id: string; // Convex _id
   name: string;
@@ -95,9 +97,9 @@ const MealCard = ({ title, icon, time, foods, onAddPress, onDeletePress }: MealC
 
 export default MealCard;
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 24,
     padding: 16,
     marginBottom: 16,
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 2,
     borderWidth: 1,
-    borderColor: '#f1f5f9'
+    borderColor: c.surfaceMuted
   },
   header: {
     flexDirection: 'row',
@@ -122,11 +124,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   time: {
     fontSize: 12,
-    color: '#64748b',
+    color: c.textMuted,
     marginTop: 2,
   },
   headerRight: {
@@ -137,7 +139,7 @@ const styles = StyleSheet.create({
   calTotal: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   addButton: {
     width: 36,
@@ -159,7 +161,7 @@ const styles = StyleSheet.create({
   },
   foodName: {
     fontSize: 14,
-    color: '#334155',
+    color: c.text,
     flex: 1,
   },
   foodRight: {
@@ -169,7 +171,7 @@ const styles = StyleSheet.create({
   },
   foodCal: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
   },
   deleteBtn: {
      padding: 2,
@@ -193,13 +195,16 @@ const styles = StyleSheet.create({
   },
   macroText: {
     fontSize: 11,
-    color: '#64748b',
+    color: c.textMuted,
   },
   emptyText: {
     fontSize: 13,
-    color: '#94a3b8',
+    color: c.textMuted,
     textAlign: 'center',
     paddingVertical: 12,
     marginTop: 8,
   },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

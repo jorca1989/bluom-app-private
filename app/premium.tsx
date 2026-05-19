@@ -32,6 +32,8 @@ import Svg, { Path } from 'react-native-svg';
 import * as SecureStore from 'expo-secure-store';
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+
 const { width, height } = Dimensions.get('window');
 
 const HERO_IMAGE_URL = 'https://pub-df4415ed308d4c5c9617037ae2ddcbe9.r2.dev/Premiun.tsx%20hero.png';
@@ -135,6 +137,8 @@ function FeatureRow({ icon, title, desc, index }: { icon: string; title: string;
 
 // ─── Main screen ──────────────────────────────────────────────────────────────
 export default function PremiumScreen() {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const { t } = useTranslation();
   const FEATURES = useMemo(() => getFeatures(t), [t]);
   const router = useRouter();
@@ -405,7 +409,7 @@ const BORDER = '#e2e8f0';
 const TEXT = '#0f172a';
 const MUTED = '#64748b';
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   root: { flex: 1, backgroundColor: BG },
   center: { alignItems: 'center', justifyContent: 'center' },
 
@@ -567,8 +571,8 @@ const styles = StyleSheet.create({
   planCtaGold: {
     backgroundColor: GOLD,
   },
-  planCtaText: { fontSize: 14, fontWeight: '800', color: '#0f172a' },
-  planCtaTextDark: { color: '#0f172a' },
+  planCtaText: { fontSize: 14, fontWeight: '800', color: c.text },
+  planCtaTextDark: { color: c.text },
 
   upgradingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 8 },
   upgradingText: { fontSize: 13, color: MUTED },
@@ -642,3 +646,6 @@ const styles = StyleSheet.create({
   legalDot: { color: MUTED, paddingHorizontal: 4 },
 
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

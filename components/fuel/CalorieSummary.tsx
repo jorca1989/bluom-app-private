@@ -3,6 +3,8 @@ import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+
 interface CalorieSummaryProps {
   consumed: number;
   goal: number;
@@ -79,7 +81,7 @@ const CalorieSummary = ({ consumed, goal }: CalorieSummaryProps) => {
 
 export default CalorieSummary;
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -87,10 +89,10 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 16,
     gap: 32,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 20,
     borderWidth: 2,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     shadowColor: '#10b981',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
@@ -118,12 +120,12 @@ const styles = StyleSheet.create({
   remainingText: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     fontFamily: 'System', // use default or replace if loaded custom font
   },
   kcalLeftText: {
     fontSize: 12,
-    color: '#64748b',
+    color: c.textMuted,
     marginTop: 2,
   },
   legendContainer: {
@@ -141,11 +143,14 @@ const styles = StyleSheet.create({
   },
   legendLabel: {
     fontSize: 12,
-    color: '#64748b',
+    color: c.textMuted,
   },
   legendValue: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

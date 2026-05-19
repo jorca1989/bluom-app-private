@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import {
     View,
@@ -51,6 +51,7 @@ const { width } = Dimensions.get('window');
 
 export default function WorkoutsScreen() {
   const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const { user: clerkUser } = useClerkUser();
@@ -852,39 +853,39 @@ export default function WorkoutsScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
     // List screen
-    container: { flex: 1, backgroundColor: '#F5F4F0' },
+    container: { flex: 1, backgroundColor: c.bg },
     header: { padding: 24, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     headerCircle: {
-        width: 40, height: 40, borderRadius: 20, backgroundColor: '#ffffff',
+        width: 40, height: 40, borderRadius: 20, backgroundColor: c.surface,
         justifyContent: 'center', alignItems: 'center',
         shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2,
     },
-    title: { fontSize: 28, fontWeight: '900', color: '#1e293b' },
-    subtitle: { fontSize: 16, color: '#64748b', fontWeight: '600' },
+    title: { fontSize: 28, fontWeight: '900', color: c.text },
+    subtitle: { fontSize: 16, color: c.textMuted, fontWeight: '600' },
     searchContainer: { paddingHorizontal: 24, marginBottom: 16 },
     searchBar: {
-        flexDirection: 'row', alignItems: 'center', backgroundColor: '#ffffff',
-        paddingHorizontal: 16, height: 56, borderRadius: 16, borderWidth: 1, borderColor: '#e2e8f0',
+        flexDirection: 'row', alignItems: 'center', backgroundColor: c.surface,
+        paddingHorizontal: 16, height: 56, borderRadius: 16, borderWidth: 1, borderColor: c.border,
         shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12,
     },
-    searchInput: { flex: 1, marginLeft: 12, fontSize: 16, fontWeight: '600', color: '#1e293b' },
+    searchInput: { flex: 1, marginLeft: 12, fontSize: 16, fontWeight: '600', color: c.text },
     // Tabs
-    tabsRow: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#f1f5f9', paddingHorizontal: 16, backgroundColor: '#ffffff' },
+    tabsRow: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: c.surfaceMuted, paddingHorizontal: 16, backgroundColor: c.surface },
     tabItem: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 13, borderBottomWidth: 3, borderBottomColor: 'transparent', gap: 6 },
     tabItemActive: { borderBottomColor: '#2563eb' },
-    tabText: { fontSize: 13, fontWeight: '700', color: '#94a3b8' },
+    tabText: { fontSize: 13, fontWeight: '700', color: c.textMuted },
     tabTextActive: { color: '#2563eb' },
     // Type filter pills row
-    filterRow: { borderBottomWidth: 1, borderBottomColor: '#f1f5f9', paddingVertical: 10, backgroundColor: '#ffffff' },
+    filterRow: { borderBottomWidth: 1, borderBottomColor: c.surfaceMuted, paddingVertical: 10, backgroundColor: c.surface },
     filterScroll: { paddingHorizontal: 16, gap: 8 },
-    filterPill: { paddingHorizontal: 16, paddingVertical: 7, borderRadius: 20, backgroundColor: '#f8fafc', borderWidth: 1, borderColor: '#e2e8f0' },
-    filterPillActive: { backgroundColor: '#1e293b', borderColor: '#1e293b' },
-    filterPillText: { fontSize: 13, fontWeight: '700', color: '#64748b' },
+    filterPill: { paddingHorizontal: 16, paddingVertical: 7, borderRadius: 20, backgroundColor: c.surfaceMuted, borderWidth: 1, borderColor: c.border },
+    filterPillActive: { backgroundColor: c.text, borderColor: c.text },
+    filterPillText: { fontSize: 13, fontWeight: '700', color: c.textMuted },
     filterPillTextActive: { color: '#ffffff' },
     listContainer: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 40, flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-    workoutCard: { width: (width - 44) / 2, height: 220, borderRadius: 20, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.14, shadowRadius: 16, elevation: 6, backgroundColor: '#ffffff', borderWidth: 2, borderColor: '#e2e8f0' },
+    workoutCard: { width: (width - 44) / 2, height: 220, borderRadius: 20, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.14, shadowRadius: 16, elevation: 6, backgroundColor: c.surface, borderWidth: 2, borderColor: c.border },
     cardImage: { width: '100%', height: '100%' },
     cardGradient: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '70%' },
     cardContent: { position: 'absolute', inset: 0, padding: 14, justifyContent: 'flex-end' },
@@ -901,11 +902,11 @@ const styles = StyleSheet.create({
     cardStatText: { color: '#ffffff', fontSize: 10, fontWeight: '700' },
     loading: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     empty: { alignItems: 'center', paddingVertical: 60, gap: 12, width: '100%' },
-    emptyText: { color: '#94a3b8', fontSize: 16, fontWeight: '600' },
-    emptySubText: { color: '#cbd5e1', fontSize: 13, fontWeight: '500', textAlign: 'center' },
+    emptyText: { color: c.textMuted, fontSize: 16, fontWeight: '600' },
+    emptySubText: { color: c.border, fontSize: 13, fontWeight: '500', textAlign: 'center' },
     // Muscle image grid
     muscleGridContent: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 40 },
-    muscleSectionHeader: { fontSize: 16, fontWeight: '800', color: '#1e293b', paddingVertical: 14 },
+    muscleSectionHeader: { fontSize: 16, fontWeight: '800', color: c.text, paddingVertical: 14 },
     muscleImageGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
     muscleImageCard: {
         width: (width - 44) / 2,
@@ -935,7 +936,7 @@ const styles = StyleSheet.create({
     clearMuscleBtnText: { fontSize: 13, fontWeight: '700', color: '#2563eb' },
 
     // Detail screen
-    detailContainer: { flex: 1, backgroundColor: '#F5F4F0' },
+    detailContainer: { flex: 1, backgroundColor: c.bg },
     detailContent: { paddingBottom: 100 },
     detailHero: { height: 350, width: '100%' },
     heroImage: { width: '100%', height: '100%' },
@@ -951,23 +952,23 @@ const styles = StyleSheet.create({
     },
     premiumDetailBadge: { position: 'absolute', bottom: 20, left: 20, backgroundColor: '#6366f1', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
     premiumDetailText: { color: '#ffffff', fontWeight: '900', fontSize: 12 },
-    detailBody: { padding: 24, marginTop: -20, backgroundColor: '#ffffff', borderTopLeftRadius: 24, borderTopRightRadius: 24 },
+    detailBody: { padding: 24, marginTop: -20, backgroundColor: c.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24 },
     lockNotice: { backgroundColor: '#fffbeb', borderWidth: 1, borderColor: '#fde68a', paddingVertical: 10, paddingHorizontal: 12, borderRadius: 14, marginBottom: 12, alignItems: 'center' },
     lockNoticeText: { color: '#92400e', fontWeight: '900' },
     titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-    detailTitle: { fontSize: 24, fontWeight: '900', color: '#1e293b', flex: 1, marginRight: 12 },
-    detailDescription: { fontSize: 16, color: '#64748b', lineHeight: 24, marginBottom: 24 },
-    statsStrip: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#f8fafc', borderRadius: 20, padding: 20, marginBottom: 32 },
+    detailTitle: { fontSize: 24, fontWeight: '900', color: c.text, flex: 1, marginRight: 12 },
+    detailDescription: { fontSize: 16, color: c.textMuted, lineHeight: 24, marginBottom: 24 },
+    statsStrip: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: c.surfaceMuted, borderRadius: 20, padding: 20, marginBottom: 32 },
     statBox: { alignItems: 'center', flex: 1 },
-    statVal: { fontSize: 18, fontWeight: '800', color: '#1e293b', marginTop: 4 },
-    statLab: { fontSize: 12, color: '#94a3b8', fontWeight: '600' },
+    statVal: { fontSize: 18, fontWeight: '800', color: c.text, marginTop: 4 },
+    statLab: { fontSize: 12, color: c.textMuted, fontWeight: '600' },
     infoSection: { marginBottom: 32 },
-    sectionTitle: { fontSize: 18, fontWeight: '800', color: '#1e293b', marginBottom: 16 },
+    sectionTitle: { fontSize: 18, fontWeight: '800', color: c.text, marginBottom: 16 },
     infoGrid: { gap: 12 },
-    infoItem: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
-    infoLabel: { fontSize: 15, color: '#64748b', fontWeight: '600' },
-    infoValue: { fontSize: 15, color: '#1e293b', fontWeight: '700' },
-    exerciseDetailCard: { backgroundColor: '#f8fafc', padding: 16, borderRadius: 16, marginBottom: 16 },
+    infoItem: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted },
+    infoLabel: { fontSize: 15, color: c.textMuted, fontWeight: '600' },
+    infoValue: { fontSize: 15, color: c.text, fontWeight: '700' },
+    exerciseDetailCard: { backgroundColor: c.surfaceMuted, padding: 16, borderRadius: 16, marginBottom: 16 },
     logButton: {
         backgroundColor: '#2563eb',
         paddingHorizontal: 16,
@@ -982,18 +983,18 @@ const styles = StyleSheet.create({
     equipmentList: { gap: 8 },
     equipmentItem: { flexDirection: 'row', alignItems: 'center', gap: 10 },
     equipmentDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#2563eb', flexShrink: 0 },
-    equipmentDotOptional: { backgroundColor: '#94a3b8' },
-    equipmentText: { fontSize: 15, color: '#64748b', fontWeight: '600', flex: 1 },
-    equipmentTextOptional: { color: '#94a3b8', fontWeight: '500' },
-    equipmentOrLabel: { fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 4, marginBottom: 2 },
+    equipmentDotOptional: { backgroundColor: c.textMuted },
+    equipmentText: { fontSize: 15, color: c.textMuted, fontWeight: '600', flex: 1 },
+    equipmentTextOptional: { color: c.textMuted, fontWeight: '500' },
+    equipmentOrLabel: { fontSize: 11, fontWeight: '700', color: c.textMuted, textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 4, marginBottom: 2 },
     // Instructions
-    instructionsBox: { backgroundColor: '#ffffff', padding: 12, borderRadius: 12, marginTop: 8 },
-    instructionsTitle: { fontSize: 14, fontWeight: '800', color: '#1e293b', marginBottom: 12 },
+    instructionsBox: { backgroundColor: c.surface, padding: 12, borderRadius: 12, marginTop: 8 },
+    instructionsTitle: { fontSize: 14, fontWeight: '800', color: c.text, marginBottom: 12 },
     instructionRow: { flexDirection: 'row', gap: 12, marginBottom: 12, alignItems: 'flex-start' },
     instructionNumWrap: { alignItems: 'center', width: 22, flexShrink: 0, paddingTop: 2 },
     instructionNum: { fontSize: 13, fontWeight: '900', color: '#2563eb', lineHeight: 18 },
     instructionNumUnderline: { width: 14, height: 3, borderRadius: 2, backgroundColor: '#2563eb', marginTop: 2 },
-    instructionItem: { fontSize: 13, color: '#475569', lineHeight: 20, flex: 1 },
+    instructionItem: { fontSize: 13, color: c.text, lineHeight: 20, flex: 1 },
     musclesBox: { flexDirection: 'row', gap: 12, marginTop: 8 },
     muscleGroup: { flex: 1, backgroundColor: '#eff6ff', padding: 12, borderRadius: 12 },
     muscleGroupTitle: { fontSize: 13, fontWeight: '800', color: '#2563eb', marginBottom: 6 },
@@ -1003,17 +1004,17 @@ const styles = StyleSheet.create({
     progressValue: { fontSize: 24, fontWeight: '900', color: '#15803d' },
     progressLabel: { fontSize: 12, color: '#16a34a', fontWeight: '600', marginTop: 4 },
     historySectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-    historyRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
-    historyDate: { fontSize: 14, fontWeight: '700', color: '#1e293b', width: 100 },
+    historyRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted },
+    historyDate: { fontSize: 14, fontWeight: '700', color: c.text, width: 100 },
     historyDetails: { flex: 1 },
-    historyText: { fontSize: 13, color: '#64748b', fontWeight: '600' },
-    blurBlock: { marginTop: 12, borderRadius: 16, overflow: 'hidden', borderWidth: 1, borderColor: '#e2e8f0', minHeight: 140, justifyContent: 'center', backgroundColor: '#ffffff' },
+    historyText: { fontSize: 13, color: c.textMuted, fontWeight: '600' },
+    blurBlock: { marginTop: 12, borderRadius: 16, overflow: 'hidden', borderWidth: 1, borderColor: c.border, minHeight: 140, justifyContent: 'center', backgroundColor: c.surface },
     blurOverlay: { alignItems: 'center', padding: 18 },
-    blurTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a', marginBottom: 6 },
-    blurText: { color: '#475569', fontWeight: '700', textAlign: 'center', lineHeight: 18 },
+    blurTitle: { fontSize: 18, fontWeight: '900', color: c.text, marginBottom: 6 },
+    blurText: { color: c.text, fontWeight: '700', textAlign: 'center', lineHeight: 18 },
     blurBtn: { marginTop: 12, backgroundColor: '#2563eb', borderRadius: 14, paddingVertical: 12, paddingHorizontal: 16 },
     blurBtnText: { color: '#ffffff', fontWeight: '900' },
-    bottomAction: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingHorizontal: 24, backgroundColor: '#ffffff', borderTopWidth: 1, borderTopColor: '#f1f5f9' },
+    bottomAction: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingHorizontal: 24, backgroundColor: c.surface, borderTopWidth: 1, borderTopColor: c.surfaceMuted },
     startButton: { backgroundColor: '#2563eb', height: 64, borderRadius: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, shadowColor: '#2563eb', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16 },
     startButtonText: { color: '#ffffff', fontSize: 18, fontWeight: '900' },
 
@@ -1022,8 +1023,11 @@ const styles = StyleSheet.create({
     videoModal: { width: width * 0.72, alignItems: 'stretch' },
     videoHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
     videoTitle: { color: '#ffffff', fontSize: 15, fontWeight: '800', flex: 1, marginRight: 12 },
-    videoPlayer: { width: '100%', aspectRatio: 9 / 16, backgroundColor: '#ffffff', borderRadius: 20 },
-    videoPlayerPlaceholder: { width: '100%', aspectRatio: 9 / 16, backgroundColor: '#f1f5f9', borderRadius: 20, justifyContent: 'center', alignItems: 'center', gap: 12 },
-    videoPlaceholderText: { color: '#1e293b', fontSize: 16, fontWeight: '700' },
-    videoPlaceholderSub: { color: '#64748b', fontSize: 13, textAlign: 'center', paddingHorizontal: 16 },
+    videoPlayer: { width: '100%', aspectRatio: 9 / 16, backgroundColor: c.surface, borderRadius: 20 },
+    videoPlayerPlaceholder: { width: '100%', aspectRatio: 9 / 16, backgroundColor: c.surfaceMuted, borderRadius: 20, justifyContent: 'center', alignItems: 'center', gap: 12 },
+    videoPlaceholderText: { color: c.text, fontSize: 16, fontWeight: '700' },
+    videoPlaceholderSub: { color: c.textMuted, fontSize: 13, textAlign: 'center', paddingHorizontal: 16 },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

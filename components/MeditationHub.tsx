@@ -24,6 +24,8 @@ import { SoundEffect, triggerSound } from '../utils/soundEffects';
 import { getBottomContentPadding } from '@/utils/layout';
 import { MEDITATION_FILTERS } from '../constants/meditationFilters';
 
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+
 const { width } = Dimensions.get('window');
 
 interface MeditationHubProps {
@@ -32,6 +34,8 @@ interface MeditationHubProps {
 }
 
 export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language?.split('-')[0] || 'en';
   const insets = useSafeAreaInsets();
@@ -313,25 +317,25 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.surfaceMuted },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: 20, paddingBottom: 16, paddingTop: 10,
-    backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9',
+    backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted,
   },
-  headerGreeting: { fontSize: 13, fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5 },
-  headerTitle: { fontSize: 24, fontWeight: '800', color: '#0f172a', marginTop: 2 },
-  closeButton: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#f1f5f9', justifyContent: 'center', alignItems: 'center' },
+  headerGreeting: { fontSize: 13, fontWeight: '700', color: c.textMuted, textTransform: 'uppercase', letterSpacing: 0.5 },
+  headerTitle: { fontSize: 24, fontWeight: '800', color: c.text, marginTop: 2 },
+  closeButton: { width: 40, height: 40, borderRadius: 20, backgroundColor: c.surfaceMuted, justifyContent: 'center', alignItems: 'center' },
   
   categoryScroll: { paddingHorizontal: 20, gap: 10, paddingVertical: 16 },
   categoryPill: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20,
-    backgroundColor: '#fff', borderWidth: 1, borderColor: '#e2e8f0',
+    backgroundColor: c.surface, borderWidth: 1, borderColor: c.border,
   },
   categoryPillActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
-  categoryPillText: { fontSize: 14, fontWeight: '600', color: '#475569' },
+  categoryPillText: { fontSize: 14, fontWeight: '600', color: c.text },
   categoryPillTextActive: { color: '#fff' },
 
   heroCard: {
@@ -345,33 +349,33 @@ const styles = StyleSheet.create({
   heroDuration: { color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: '600' },
   heroPlay: {
     position: 'absolute', right: 20, bottom: 20,
-    width: 48, height: 48, borderRadius: 24, backgroundColor: '#fff',
+    width: 48, height: 48, borderRadius: 24, backgroundColor: c.surface,
     justifyContent: 'center', alignItems: 'center',
     shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8,
   },
 
   section: { marginBottom: 28 },
-  sectionTitle: { fontSize: 18, fontWeight: '800', color: '#0f172a', marginHorizontal: 20, marginBottom: 14 },
+  sectionTitle: { fontSize: 18, fontWeight: '800', color: c.text, marginHorizontal: 20, marginBottom: 14 },
   horizontalScroll: { paddingHorizontal: 20, gap: 14 },
 
   squareCard: { width: 140 },
-  squareCardImg: { width: 140, height: 140, borderRadius: 20, backgroundColor: '#e2e8f0' },
+  squareCardImg: { width: 140, height: 140, borderRadius: 20, backgroundColor: c.border },
   squarePlay: {
     position: 'absolute', right: 10, top: 104,
     width: 28, height: 28, borderRadius: 14, backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)',
   },
-  squareCardTitle: { fontSize: 14, fontWeight: '700', color: '#0f172a', marginTop: 10, lineHeight: 18 },
-  squareCardSub: { fontSize: 12, color: '#64748b', marginTop: 4 },
+  squareCardTitle: { fontSize: 14, fontWeight: '700', color: c.text, marginTop: 10, lineHeight: 18 },
+  squareCardSub: { fontSize: 12, color: c.textMuted, marginTop: 4 },
 
   soundscapeCard: { width: 110, alignItems: 'center', gap: 8 },
   soundscapeIconBox: {
-    width: 80, height: 80, borderRadius: 40, backgroundColor: '#fff',
+    width: 80, height: 80, borderRadius: 40, backgroundColor: c.surface,
     justifyContent: 'center', alignItems: 'center',
-    borderWidth: 1, borderColor: '#e2e8f0',
+    borderWidth: 1, borderColor: c.border,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 6,
   },
-  soundscapeTitle: { fontSize: 13, fontWeight: '600', color: '#475569', textAlign: 'center' },
+  soundscapeTitle: { fontSize: 13, fontWeight: '600', color: c.text, textAlign: 'center' },
   soundscapePlay: {
     width: 28, height: 28, borderRadius: 14, backgroundColor: '#eff6ff',
     justifyContent: 'center', alignItems: 'center',
@@ -379,13 +383,16 @@ const styles = StyleSheet.create({
   },
 
   listCard: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff',
-    borderRadius: 16, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0',
+    flexDirection: 'row', alignItems: 'center', backgroundColor: c.surface,
+    borderRadius: 16, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: c.border,
   },
-  listCardImg: { width: 64, height: 64, borderRadius: 12, backgroundColor: '#e2e8f0' },
+  listCardImg: { width: 64, height: 64, borderRadius: 12, backgroundColor: c.border },
   listCardInfo: { flex: 1, marginLeft: 14, justifyContent: 'center' },
-  listCardTitle: { fontSize: 15, fontWeight: '700', color: '#0f172a', marginBottom: 4 },
-  listCardSub: { fontSize: 12, color: '#64748b', marginBottom: 6 },
-  listCardDuration: { fontSize: 11, fontWeight: '600', color: '#94a3b8' },
+  listCardTitle: { fontSize: 15, fontWeight: '700', color: c.text, marginBottom: 4 },
+  listCardSub: { fontSize: 12, color: c.textMuted, marginBottom: 6 },
+  listCardDuration: { fontSize: 11, fontWeight: '600', color: c.textMuted },
   listCardPlay: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#eff6ff', justifyContent: 'center', alignItems: 'center', marginLeft: 10 },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

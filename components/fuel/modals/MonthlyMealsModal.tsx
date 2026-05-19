@@ -33,6 +33,8 @@ import { useUser } from '@clerk/clerk-expo';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useTranslation } from 'react-i18next';
 
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+
 const { width } = Dimensions.get('window');
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -691,23 +693,23 @@ function MealCard({
     </View>
   );
 }
-const mcS = StyleSheet.create({
+const createMcS = (c: ThemeColors) => StyleSheet.create({
   card: {
-    backgroundColor: '#fff', borderRadius: 16, padding: 16,
-    marginBottom: 12, borderWidth: 1, borderColor: '#f1f5f9',
+    backgroundColor: c.surface, borderRadius: 16, padding: 16,
+    marginBottom: 12, borderWidth: 1, borderColor: c.surfaceMuted,
     shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
   },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   typeBadge: { borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
   typeText: { fontSize: 12, fontWeight: '800' },
-  cals: { fontSize: 15, fontWeight: '800', color: '#0f172a' },
+  cals: { fontSize: 15, fontWeight: '800', color: c.text },
   macroRow: { flexDirection: 'row', gap: 12, marginBottom: 10 },
   macroItem: { alignItems: 'center' },
   macroVal: { fontSize: 14, fontWeight: '700' },
-  macroLabel: { fontSize: 10, color: '#94a3b8', fontWeight: '600' },
+  macroLabel: { fontSize: 10, color: c.textMuted, fontWeight: '600' },
   suggestions: { gap: 2, marginBottom: 12 },
-  suggestion: { fontSize: 12, color: '#475569', lineHeight: 17 },
+  suggestion: { fontSize: 12, color: c.text, lineHeight: 17 },
   actions: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 8 },
   swapBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
@@ -716,7 +718,7 @@ const mcS = StyleSheet.create({
     borderWidth: 1, borderColor: '#fde68a',
   },
   swapBtnText: { fontSize: 11, fontWeight: '700', color: '#d97706' },
-  swapBtnLocked: { backgroundColor: '#f8fafc', borderColor: '#e2e8f0' },
+  swapBtnLocked: { backgroundColor: c.surfaceMuted, borderColor: c.border },
   logBtn: {
     paddingHorizontal: 18, paddingVertical: 8,
     borderRadius: 10, backgroundColor: '#2563eb',
@@ -727,6 +729,9 @@ const mcS = StyleSheet.create({
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
 export default function MealHubScreen() {
+  const { colors: themeColors } = useTheme();
+  const ms = useMemo(() => createMs(themeColors), [themeColors]);
+  const mcS = useMemo(() => createMcS(themeColors), [themeColors]);
   const router  = useRouter();
   const insets  = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
@@ -1043,20 +1048,20 @@ export default function MealHubScreen() {
   );
 }
 
-const ms = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+const createMs = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.surfaceMuted },
 
   header: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     paddingHorizontal: 20, paddingVertical: 14,
-    borderBottomWidth: 1, borderBottomColor: '#f1f5f9', backgroundColor: '#fff',
+    borderBottomWidth: 1, borderBottomColor: c.surfaceMuted, backgroundColor: c.surface,
   },
   backBtn: {
     width: 36, height: 36, borderRadius: 18,
-    backgroundColor: '#f1f5f9', justifyContent: 'center', alignItems: 'center',
+    backgroundColor: c.surfaceMuted, justifyContent: 'center', alignItems: 'center',
   },
-  headerTitle: { fontSize: 17, fontWeight: '800', color: '#0f172a' },
-  headerSub:   { fontSize: 11, color: '#94a3b8' },
+  headerTitle: { fontSize: 17, fontWeight: '800', color: c.text },
+  headerSub:   { fontSize: 11, color: c.textMuted },
   proBadge: {
     backgroundColor: '#fef9c3', borderRadius: 12,
     paddingHorizontal: 10, paddingVertical: 4,
@@ -1083,16 +1088,16 @@ const ms = StyleSheet.create({
   progressText: { fontSize: 10, color: 'rgba(255,255,255,0.45)', fontWeight: '600' },
 
   // Day picker (sticky)
-  dayPickerWrap: { backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9', zIndex: 10 },
+  dayPickerWrap: { backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted, zIndex: 10 },
   dayPicker: { paddingHorizontal: 20, paddingVertical: 12, gap: 8 },
   dayPill: {
     width: 36, height: 36, borderRadius: 18,
-    backgroundColor: '#f1f5f9', justifyContent: 'center', alignItems: 'center',
+    backgroundColor: c.surfaceMuted, justifyContent: 'center', alignItems: 'center',
     borderWidth: 1.5, borderColor: 'transparent',
   },
   dayPillSelected: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
   dayPillToday:    { borderColor: '#2563eb' },
-  dayPillNum:      { fontSize: 12, fontWeight: '800', color: '#475569' },
+  dayPillNum:      { fontSize: 12, fontWeight: '800', color: c.text },
   dayPillNumSelected: { color: '#fff' },
 
   // Day summary
@@ -1101,8 +1106,8 @@ const ms = StyleSheet.create({
     paddingHorizontal: 20, paddingVertical: 14,
   },
   daySummaryLeft: {},
-  daySummaryTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
-  daySummarySub:   { fontSize: 12, color: '#64748b', marginTop: 2 },
+  daySummaryTitle: { fontSize: 18, fontWeight: '900', color: c.text },
+  daySummarySub:   { fontSize: 12, color: c.textMuted, marginTop: 2 },
   todayTag: {
     backgroundColor: '#dcfce7', borderRadius: 20,
     paddingHorizontal: 12, paddingVertical: 5,
@@ -1111,7 +1116,7 @@ const ms = StyleSheet.create({
 
   mealsSection: { paddingHorizontal: 20 },
   emptyDay: { alignItems: 'center', paddingVertical: 40, gap: 12 },
-  emptyDayText: { fontSize: 15, color: '#94a3b8', fontWeight: '600' },
+  emptyDayText: { fontSize: 15, color: c.textMuted, fontWeight: '600' },
 
   // Swap preferences modal
   prefOverlay: {
@@ -1121,35 +1126,35 @@ const ms = StyleSheet.create({
     padding: 18,
   },
   prefCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     padding: 16,
   },
   prefHeader: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  prefTitle: { flex: 1, fontSize: 16, fontWeight: '900', color: '#0f172a' },
+  prefTitle: { flex: 1, fontSize: 16, fontWeight: '900', color: c.text },
   prefClose: {
     width: 34,
     height: 34,
     borderRadius: 12,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  prefSub: { marginTop: 6, color: '#475569', fontWeight: '700', lineHeight: 19 },
-  prefLabel: { marginTop: 14, fontSize: 12, fontWeight: '900', color: '#0f172a' },
+  prefSub: { marginTop: 6, color: c.text, fontWeight: '700', lineHeight: 19 },
+  prefLabel: { marginTop: 14, fontSize: 12, fontWeight: '900', color: c.text },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 },
   chip: {
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 999,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   chipActive: { backgroundColor: '#111827', borderColor: '#111827' },
-  chipText: { fontSize: 12, fontWeight: '800', color: '#334155' },
+  chipText: { fontSize: 12, fontWeight: '800', color: c.text },
   chipTextActive: { color: '#ffffff' },
   prefPrimary: {
     marginTop: 16,
@@ -1181,3 +1186,6 @@ const ms = StyleSheet.create({
   },
   upsellCtaText: { color: '#c4b5fd', fontWeight: '800', fontSize: 13 },
 });
+// Static module-scope fallbacks (default theme) for helper components.
+const mcS = createMcS(THEMES.default.colors);
+const ms = createMs(THEMES.default.colors);

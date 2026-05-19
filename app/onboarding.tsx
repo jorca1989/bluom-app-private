@@ -600,7 +600,10 @@ export default function OnboardingScreen() {
         commitmentLevel: answers.commitmentLevel,
         preferredUnits: { weight: units.weight, height: units.height, volume: units.volume || 'ml' },
         preferredLanguage: currentLang,
-        preferredTheme: activeTheme,
+        // Note: preferredTheme is intentionally NOT in this bulk payload — it is
+        // persisted separately via setActiveTheme() in the onboarding theme popup
+        // through `users.updateUser`. Adding it here would crash if the deployed
+        // Convex `onboardUser` validator hasn't been redeployed yet.
         twelveMonthGoal: answers.goal,
       };
 

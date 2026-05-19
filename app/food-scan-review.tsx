@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -26,6 +26,7 @@ type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 
 export default function FoodScanReviewScreen() {
   const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -190,61 +191,61 @@ function Row({ label, value, onChange }: { label: string; value: string; onChang
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F4F0' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   header: {
     paddingHorizontal: 16,
     paddingBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: '#F5F4F0',
+    backgroundColor: c.bg,
     borderBottomWidth: 0,
   },
   headerBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
-  headerSub: { marginTop: 2, fontSize: 12, fontWeight: '700', color: '#64748b' },
+  headerTitle: { fontSize: 18, fontWeight: '900', color: c.text },
+  headerSub: { marginTop: 2, fontSize: 12, fontWeight: '700', color: c.textMuted },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     marginBottom: 12,
   },
-  cardTitle: { fontSize: 14, fontWeight: '900', color: '#0f172a', marginBottom: 10 },
+  cardTitle: { fontSize: 14, fontWeight: '900', color: c.text, marginBottom: 10 },
   input: {
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
-    color: '#0f172a',
-    backgroundColor: '#ffffff',
+    color: c.text,
+    backgroundColor: c.surface,
   },
-  hint: { marginTop: 8, color: '#64748b', fontWeight: '600', lineHeight: 18 },
+  hint: { marginTop: 8, color: c.textMuted, fontWeight: '600', lineHeight: 18 },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 10 },
-  rowLabel: { flex: 1, color: '#334155', fontWeight: '800' },
+  rowLabel: { flex: 1, color: c.text, fontWeight: '800' },
   rowInput: {
     width: 120,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
     textAlign: 'right',
     fontSize: 16,
     fontWeight: '800',
-    color: '#0f172a',
-    backgroundColor: '#ffffff',
+    color: c.text,
+    backgroundColor: c.surface,
   },
   primaryBtn: {
     marginTop: 8,
@@ -267,9 +268,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   mealOptionActive: {
     backgroundColor: '#3b82f6',
@@ -278,7 +279,7 @@ const styles = StyleSheet.create({
   mealOptionText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#64748b',
+    color: c.textMuted,
   },
   mealOptionTextActive: {
     color: '#ffffff',
@@ -286,3 +287,6 @@ const styles = StyleSheet.create({
 });
 
 
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

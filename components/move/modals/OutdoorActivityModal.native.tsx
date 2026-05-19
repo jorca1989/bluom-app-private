@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 type Props = {
   visible: boolean;
@@ -9,6 +11,8 @@ type Props = {
 };
 
 export default function OutdoorActivityModal({ visible, onClose }: Props) {
+  const { colors: themeColors } = useTheme();
+  const s = useMemo(() => createS(themeColors), [themeColors]);
   const insets = useSafeAreaInsets();
   const [Loaded, setLoaded] = useState<React.ComponentType<any> | null>(null);
   const [failed, setFailed] = useState(false);
@@ -71,8 +75,8 @@ export default function OutdoorActivityModal({ visible, onClose }: Props) {
   );
 }
 
-const s = StyleSheet.create({
-  wrap: { flex: 1, backgroundColor: '#f8fafc' },
+const createS = (c: ThemeColors) => StyleSheet.create({
+  wrap: { flex: 1, backgroundColor: c.surfaceMuted },
   header: {
     paddingHorizontal: 20,
     paddingBottom: 12,
@@ -80,13 +84,16 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  title: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
-  close: { width: 36, height: 36, borderRadius: 12, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
+  title: { fontSize: 18, fontWeight: '900', color: c.text },
+  close: { width: 36, height: 36, borderRadius: 12, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
   body: { flex: 1, paddingHorizontal: 20, paddingTop: 16, gap: 12 },
-  bodyTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
-  bodyText: { fontSize: 13, color: '#475569', lineHeight: 19 },
-  cmdBox: { backgroundColor: '#0f172a', borderRadius: 14, padding: 14, gap: 6 },
-  cmd: { color: '#e2e8f0', fontFamily: 'monospace', fontSize: 12, fontWeight: '700' },
+  bodyTitle: { fontSize: 18, fontWeight: '900', color: c.text },
+  bodyText: { fontSize: 13, color: c.text, lineHeight: 19 },
+  cmdBox: { backgroundColor: c.text, borderRadius: 14, padding: 14, gap: 6 },
+  cmd: { color: c.border, fontFamily: 'monospace', fontSize: 12, fontWeight: '700' },
   primary: { backgroundColor: '#2563eb', borderRadius: 14, paddingVertical: 14, alignItems: 'center', marginTop: 10 },
   primaryText: { color: '#fff', fontSize: 14, fontWeight: '900' },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const s = createS(THEMES.default.colors);

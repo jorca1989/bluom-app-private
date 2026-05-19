@@ -1,6 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
 import { Check } from 'lucide-react-native';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -23,6 +25,8 @@ export default function Toast({
   title,
   emoji,
 }: ToastProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(-100)).current;
 
@@ -101,13 +105,13 @@ export default function Toast({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     position: 'absolute',
     top: 60,
     left: 16,
     right: 16,
-    backgroundColor: '#1e293b',
+    backgroundColor: c.text,
     borderRadius: 16,
     padding: 16,
     flexDirection: 'row',
@@ -147,7 +151,9 @@ const styles = StyleSheet.create({
   message: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#94a3b8',
+    color: c.textMuted,
     lineHeight: 20,
   },
 });
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

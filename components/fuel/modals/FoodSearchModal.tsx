@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, FlatList, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -6,6 +6,8 @@ import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { useTranslation } from 'react-i18next';
 import { useAction, useQuery } from 'convex/react';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 
@@ -32,6 +34,8 @@ export default function FoodSearchModal({
   onOpenAddFood,
   onOpenCreateRecipe,
 }: FoodSearchModalProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<'search' | 'recipes' | 'create'>(initialTab);
   const [searchQuery, setSearchQuery] = useState('');
@@ -302,33 +306,33 @@ export default function FoodSearchModal({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   modalContainer: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   closeBtn: {
     padding: 6,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 20,
   },
   tabsRow: {
     flexDirection: 'row',
     paddingHorizontal: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: c.surfaceMuted,
   },
   tab: {
     flex: 1,
@@ -344,7 +348,7 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#64748b',
+    color: c.textMuted,
     textAlign: 'center',
   },
   tabTextActive: {
@@ -353,14 +357,14 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
   },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -370,7 +374,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 12,
     fontSize: 16,
-    color: '#0f172a',
+    color: c.text,
   },
   loadingState: {
     flex: 1,
@@ -386,12 +390,12 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     marginTop: 16,
   },
   emptySub: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     textAlign: 'center',
     marginTop: 8,
   },
@@ -399,9 +403,9 @@ const styles = StyleSheet.create({
     marginTop: 24,
     paddingVertical: 12,
     paddingHorizontal: 20,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 16,
   },
   inlineCreateBtnTxt: {
@@ -415,21 +419,21 @@ const styles = StyleSheet.create({
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     padding: 16,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: c.surfaceMuted,
   },
   listIconWrap: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: c.surfaceMuted,
   },
   listIconWrapRecipe: {
     width: 40,
@@ -449,12 +453,12 @@ const styles = StyleSheet.create({
   listTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 2,
   },
   listSub: {
     fontSize: 13,
-    color: '#64748b',
+    color: c.textMuted,
   },
   listRight: {
     alignItems: 'flex-end',
@@ -462,25 +466,25 @@ const styles = StyleSheet.create({
   listCal: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   listCalUnit: {
     fontSize: 11,
-    color: '#64748b',
+    color: c.textMuted,
   },
   sourcePill: {
     marginTop: 6,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 999,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   sourceText: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#64748b',
+    color: c.textMuted,
     letterSpacing: 0.4,
   },
   createScroll: {
@@ -492,11 +496,11 @@ const styles = StyleSheet.create({
   actionCardRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     padding: 20,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: c.surfaceMuted,
   },
   actionIconCard: {
     width: 50,
@@ -512,12 +516,15 @@ const styles = StyleSheet.create({
   actionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 4,
   },
   actionSub: {
     fontSize: 13,
-    color: '#64748b',
+    color: c.textMuted,
     lineHeight: 18,
   },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

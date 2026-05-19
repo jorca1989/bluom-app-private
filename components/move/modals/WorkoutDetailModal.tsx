@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,8 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { getLocalizedExerciseName } from '@/utils/localize';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 export interface PlannedExercise {
   id: string;
@@ -63,6 +65,8 @@ export default function WorkoutDetailModal({
   onDeleteExercise,
   isPro = false,
 }: WorkoutDetailModalProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = React.useState(initialTab);
@@ -217,8 +221,8 @@ export default function WorkoutDetailModal({
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.surface },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -226,24 +230,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: c.surfaceMuted,
   },
   iconBtn: { padding: 8, marginLeft: -8 },
-  headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#0f172a' },
+  headerTitle: { fontSize: 18, fontWeight: 'bold', color: c.text },
 
-  tabsWrap: { borderBottomWidth: 1, borderBottomColor: '#f1f5f9', backgroundColor: '#ffffff' },
+  tabsWrap: { borderBottomWidth: 1, borderBottomColor: c.surfaceMuted, backgroundColor: c.surface },
   tabsRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 4 },
   tab: { paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: 3, borderBottomColor: 'transparent' },
   tabActive: { borderBottomColor: '#06b6d4' },
-  tabText: { fontSize: 14, fontWeight: '600', color: '#94a3b8' },
+  tabText: { fontSize: 14, fontWeight: '600', color: c.textMuted },
   tabTextActive: { color: '#06b6d4', fontWeight: 'bold' },
 
   scroll: { flex: 1 },
   scrollContent: { paddingBottom: 20 },
 
   titleArea: { alignItems: 'center', paddingHorizontal: 20, paddingTop: 24, paddingBottom: 12 },
-  mainTitle: { fontSize: 24, fontWeight: 'bold', color: '#0f172a', marginBottom: 6, textAlign: 'center' },
-  subTitle: { fontSize: 14, color: '#475569', textAlign: 'center' },
+  mainTitle: { fontSize: 24, fontWeight: 'bold', color: c.text, marginBottom: 6, textAlign: 'center' },
+  subTitle: { fontSize: 14, color: c.text, textAlign: 'center' },
 
   infoBanner: {
     flexDirection: 'row',
@@ -262,13 +266,13 @@ const styles = StyleSheet.create({
   list: { paddingHorizontal: 16, gap: 10 },
 
   exCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 16,
     padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: c.surfaceMuted,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
@@ -278,10 +282,10 @@ const styles = StyleSheet.create({
   thumbBox: {
     width: 60,
     height: 60,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -290,8 +294,8 @@ const styles = StyleSheet.create({
   },
   thumbImage: { width: '100%', height: '100%' },
   cardBody: { flex: 1 },
-  exName: { fontSize: 15, fontWeight: '600', color: '#0f172a', marginBottom: 4 },
-  exDetails: { fontSize: 13, color: '#64748b', fontWeight: '500' },
+  exName: { fontSize: 15, fontWeight: '600', color: c.text, marginBottom: 4 },
+  exDetails: { fontSize: 13, color: c.textMuted, fontWeight: '500' },
   equipment: { color: '#06b6d4', fontWeight: '600' },
   cardRight: { flexDirection: 'row', alignItems: 'center', gap: 8, marginLeft: 8 },
   deleteBtn: { padding: 4 },
@@ -303,9 +307,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderStyle: 'dashed',
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     gap: 6,
   },
   addExBtnText: { color: '#3b82f6', fontSize: 14, fontWeight: 'bold' },
@@ -314,8 +318,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#f1f5f9',
-    backgroundColor: '#ffffff',
+    borderTopColor: c.surfaceMuted,
+    backgroundColor: c.surface,
   },
   startBtn: {
     backgroundColor: '#3b82f6',
@@ -333,3 +337,5 @@ const styles = StyleSheet.create({
   },
   startBtnText: { color: '#ffffff', fontSize: 16, fontWeight: 'bold' },
 });
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

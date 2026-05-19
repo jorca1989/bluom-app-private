@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, Alert, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,6 +7,8 @@ import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { useTranslation } from 'react-i18next';
 
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+
 interface AddFoodModalProps {
   visible: boolean;
   onClose: () => void;
@@ -14,6 +16,8 @@ interface AddFoodModalProps {
 }
 
 export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const { t } = useTranslation();
   const createFood = useMutation(api.foodCatalog.createFood);
 
@@ -299,10 +303,10 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   modalContainer: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -310,16 +314,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: c.surfaceMuted,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   closeButton: {
     padding: 4,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 20,
   },
   modalContent: {
@@ -342,7 +346,7 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: c.border,
   },
   stepDotActive: {
     backgroundColor: '#3b82f6',
@@ -355,7 +359,7 @@ const styles = StyleSheet.create({
   stepLine: {
     width: 40,
     height: 2,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: c.border,
     marginHorizontal: 4,
   },
   stepLineActive: {
@@ -364,12 +368,12 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     textAlign: 'center',
   },
   stepSubtitle: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     textAlign: 'center',
     marginTop: -16,
   },
@@ -379,19 +383,19 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#334155',
+    color: c.text,
   },
   required: {
     color: '#ef4444',
   },
   input: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 16,
     padding: 16,
     fontSize: 16,
-    color: '#0f172a',
+    color: c.text,
   },
   servingSelector: {
     flexDirection: 'row',
@@ -401,9 +405,9 @@ const styles = StyleSheet.create({
   servingOption: {
     paddingVertical: 10,
     paddingHorizontal: 16,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 12,
   },
   servingOptionActive: {
@@ -412,7 +416,7 @@ const styles = StyleSheet.create({
   },
   servingOptionText: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: '500',
   },
   servingOptionTextActive: {
@@ -435,7 +439,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   buttonDisabled: {
-    backgroundColor: '#94a3b8',
+    backgroundColor: c.textMuted,
     opacity: 0.7,
   },
   macroGrid: {
@@ -445,9 +449,9 @@ const styles = StyleSheet.create({
   },
   macroCard: {
     width: '48%',
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 16,
     padding: 16,
     alignItems: 'center',
@@ -459,20 +463,20 @@ const styles = StyleSheet.create({
   macroLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#64748b',
+    color: c.textMuted,
     marginBottom: 8,
   },
   macroInput: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     textAlign: 'center',
     width: '100%',
     marginVertical: 4,
   },
   macroUnit: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: c.textMuted,
   },
   buttonRow: {
     flexDirection: 'row',
@@ -480,7 +484,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   secondaryButton: {
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 16,
@@ -488,7 +492,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   secondaryButtonText: {
-    color: '#475569',
+    color: c.text,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -497,32 +501,32 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   reviewCard: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     overflow: 'hidden',
   },
   reviewHeader: {
     padding: 24,
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-    backgroundColor: '#ffffff',
+    borderBottomColor: c.border,
+    backgroundColor: c.surface,
   },
   reviewName: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 4,
   },
   reviewBrand: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     marginBottom: 12,
   },
   reviewBadge: {
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 20,
@@ -530,7 +534,7 @@ const styles = StyleSheet.create({
   reviewBadgeText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#475569',
+    color: c.text,
   },
   reviewMacros: {
     flexDirection: 'row',
@@ -545,17 +549,17 @@ const styles = StyleSheet.create({
   reviewMacroValue: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 4,
   },
   reviewMacroLabel: {
     fontSize: 11,
-    color: '#64748b',
+    color: c.textMuted,
   },
   reviewMacroDivider: {
     width: 1,
     height: 24,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: c.border,
   },
   errorText: {
     color: '#ef4444',
@@ -563,3 +567,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 import { View, Text, TouchableOpacity, TextInput, Alert, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -32,6 +32,7 @@ function Row({ label, value, onChange }: { label: string; value: string; onChang
 
 export default function SugarScanResultScreen() {
   const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
@@ -283,47 +284,47 @@ export default function SugarScanResultScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F4F0' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   header: {
     paddingHorizontal: 16,
     paddingBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: '#F5F4F0',
+    backgroundColor: c.bg,
     borderBottomWidth: 0,
   },
   headerBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
-  headerSub: { marginTop: 2, fontSize: 12, fontWeight: '700', color: '#64748b' },
+  headerTitle: { fontSize: 18, fontWeight: '900', color: c.text },
+  headerSub: { marginTop: 2, fontSize: 12, fontWeight: '700', color: c.textMuted },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     marginBottom: 12,
   },
-  cardTitle: { fontSize: 14, fontWeight: '900', color: '#0f172a', marginBottom: 10 },
+  cardTitle: { fontSize: 14, fontWeight: '900', color: c.text, marginBottom: 10 },
   input: {
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
-    color: '#0f172a',
-    backgroundColor: '#ffffff',
+    color: c.text,
+    backgroundColor: c.surface,
   },
-  hint: { marginTop: 8, color: '#64748b', fontWeight: '600', lineHeight: 18, fontSize: 12 },
+  hint: { marginTop: 8, color: c.textMuted, fontWeight: '600', lineHeight: 18, fontSize: 12 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -331,29 +332,29 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 10,
   },
-  rowLabel: { flex: 1, color: '#334155', fontWeight: '800' },
+  rowLabel: { flex: 1, color: c.text, fontWeight: '800' },
   rowInput: {
     width: 120,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
     textAlign: 'right',
     fontSize: 16,
     fontWeight: '800',
-    color: '#0f172a',
-    backgroundColor: '#ffffff',
+    color: c.text,
+    backgroundColor: c.surface,
   },
   textArea: {
     minHeight: 90,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 12,
     padding: 12,
     fontSize: 14,
-    color: '#0f172a',
-    backgroundColor: '#fff',
+    color: c.text,
+    backgroundColor: c.surface,
     textAlignVertical: 'top',
   },
   // Hidden sugars
@@ -371,11 +372,11 @@ const styles = StyleSheet.create({
   sugarPill: { backgroundColor: '#ffe4e6', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 999 },
   sugarPillText: { color: '#be123c', fontWeight: '700', fontSize: 12 },
   // Smart alternative
-  alternativeText: { color: '#334155', fontWeight: '600', lineHeight: 20 },
+  alternativeText: { color: c.text, fontWeight: '600', lineHeight: 20 },
   blurContainer: { marginTop: 4, borderRadius: 12, overflow: 'hidden' },
   blurOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
-  proTitle: { fontSize: 14, fontWeight: '900', color: '#0f172a' },
-  proSubtitle: { color: '#475569', fontWeight: '600', marginTop: 4, lineHeight: 18 },
+  proTitle: { fontSize: 14, fontWeight: '900', color: c.text },
+  proSubtitle: { color: c.text, fontWeight: '600', marginTop: 4, lineHeight: 18 },
   proBtn: { marginTop: 12, backgroundColor: '#2563eb', borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
   proBtnText: { color: '#ffffff', fontWeight: '900' },
   // Save
@@ -401,20 +402,20 @@ const styles = StyleSheet.create({
   },
   mealChip: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderWidth: 1.5,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 14,
     paddingVertical: 12,
     alignItems: 'center',
     gap: 2,
   },
   mealChipLetter: { fontSize: 18, fontWeight: '900', color: '#f97316' },
-  mealChipLabel: { fontSize: 10, fontWeight: '700', color: '#64748b', textAlign: 'center' },
+  mealChipLabel: { fontSize: 10, fontWeight: '700', color: c.textMuted, textAlign: 'center' },
   // Save Sugar Log
   saveBtn: {
     marginTop: 12,
-    backgroundColor: '#0f172a',
+    backgroundColor: c.text,
     borderRadius: 16,
     paddingVertical: 16,
     flexDirection: 'row',
@@ -424,3 +425,6 @@ const styles = StyleSheet.create({
   },
   saveBtnText: { color: '#ffffff', fontWeight: '900', fontSize: 16 },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

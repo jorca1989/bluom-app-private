@@ -7,7 +7,7 @@
  * Non-selected days show a faint ring with their own fill fraction.
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,8 @@ import {
   Dimensions,
 } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -236,7 +238,7 @@ const DayStrip = ({
 
 export default DayStrip;
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     paddingVertical: 10,
   },
@@ -255,7 +257,7 @@ const styles = StyleSheet.create({
   dayLabel: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#94a3b8',
+    color: c.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -291,3 +293,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#3b82f6',
   },
 });
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

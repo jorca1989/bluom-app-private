@@ -19,6 +19,8 @@ import { api } from '@/convex/_generated/api';
 import { useUser as useClerkUser } from '@clerk/clerk-expo';
 import { getLocalizedExerciseName, getLocalizedField } from '@/utils/localize';
 
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+
 export interface ExerciseLibraryItem {
   _id: string;
   name: string | { en: string; pt?: string; nl?: string; es?: string; de?: string; fr?: string };
@@ -63,6 +65,8 @@ export default function ExerciseSearchModal({
   onSearchChange,
   onExerciseSelect
 }: ExerciseSearchModalProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const [activeTab, setActiveTab] = useState<Tab>('search');
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const { user: clerkUser } = useClerkUser();
@@ -364,8 +368,8 @@ export default function ExerciseSearchModal({
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.surface },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -374,14 +378,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   iconBtn: { padding: 8, marginLeft: -8 },
-  headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#0f172a' },
+  headerTitle: { fontSize: 18, fontWeight: 'bold', color: c.text },
   searchContainer: { paddingHorizontal: 20, marginBottom: 12 },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderWidth: 1,
-    borderColor: '#cbd5e1',
+    borderColor: c.border,
     borderRadius: 24,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -391,12 +395,12 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
-  searchInput: { flex: 1, marginLeft: 12, fontSize: 16, color: '#0f172a' },
+  searchInput: { flex: 1, marginLeft: 12, fontSize: 16, color: c.text },
   // Tabs — 3 across
   tabsRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: c.surfaceMuted,
     paddingHorizontal: 16,
   },
   tab: {
@@ -410,13 +414,13 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   tabActive: { borderBottomColor: '#06b6d4' },
-  tabText: { fontSize: 13, fontWeight: '600', color: '#94a3b8' },
+  tabText: { fontSize: 13, fontWeight: '600', color: c.textMuted },
   tabTextActive: { color: '#06b6d4' },
   content: { flex: 1 },
   sectionHeader: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     paddingHorizontal: 20,
     paddingVertical: 14,
   },
@@ -427,14 +431,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     paddingTop: 60,
   },
-  emptyText: { marginTop: 16, fontSize: 15, color: '#64748b', fontWeight: '600' },
-  emptySubText: { marginTop: 8, fontSize: 13, color: '#94a3b8', textAlign: 'center', lineHeight: 18 },
+  emptyText: { marginTop: 16, fontSize: 15, color: c.textMuted, fontWeight: '600' },
+  emptySubText: { marginTop: 8, fontSize: 13, color: c.textMuted, textAlign: 'center', lineHeight: 18 },
   listContent: { paddingHorizontal: 20, paddingBottom: 60 },
 
   // Exercise type filter
   typeFilterWrap: {
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: c.surfaceMuted,
     paddingVertical: 10,
   },
   typeFilterScroll: {
@@ -445,18 +449,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 7,
     borderRadius: 20,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   typePillActive: {
-    backgroundColor: '#0f172a',
-    borderColor: '#0f172a',
+    backgroundColor: c.text,
+    borderColor: c.text,
   },
   typePillText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#64748b',
+    color: c.textMuted,
   },
   typePillTextActive: {
     color: '#ffffff',
@@ -468,23 +472,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: c.surfaceMuted,
     gap: 12,
   },
   listThumb: {
     width: 52,
     height: 52,
     borderRadius: 12,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
   },
   thumbImage: { width: '100%', height: '100%' },
   listBody: { flex: 1 },
-  listTitle: { fontSize: 15, fontWeight: '600', color: '#0f172a', marginBottom: 4 },
+  listTitle: { fontSize: 15, fontWeight: '600', color: c.text, marginBottom: 4 },
   listMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  listSub: { fontSize: 12, color: '#94a3b8' },
+  listSub: { fontSize: 12, color: c.textMuted },
   typeChip: {
     backgroundColor: '#f0f9ff',
     paddingHorizontal: 7,
@@ -501,14 +505,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: c.surfaceMuted,
     gap: 12,
   },
   savedThumb: {
     width: 64,
     height: 64,
     borderRadius: 14,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
@@ -524,12 +528,12 @@ const styles = StyleSheet.create({
   savedWorkoutTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0f172a',
+    color: c.text,
     flex: 1,
     marginRight: 8,
   },
-  savedWorkoutSub: { fontSize: 12, color: '#64748b', marginBottom: 3 },
-  savedWorkoutExercise: { fontSize: 11, color: '#94a3b8' },
+  savedWorkoutSub: { fontSize: 12, color: c.textMuted, marginBottom: 3 },
+  savedWorkoutExercise: { fontSize: 11, color: c.textMuted },
 
   // Muscle groups grid
   muscleGrid: { paddingHorizontal: 12, paddingBottom: 60 },
@@ -540,7 +544,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     justifyContent: 'flex-end',
-    backgroundColor: '#1e293b',
+    backgroundColor: c.text,
   },
   muscleCardImage: {
     ...StyleSheet.absoluteFillObject,
@@ -562,3 +566,5 @@ const styles = StyleSheet.create({
     textShadowRadius: 3,
   },
 });
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

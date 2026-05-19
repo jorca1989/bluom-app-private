@@ -1,9 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { SoundEffect, triggerSound } from '@/utils/soundEffects';
 import { useTranslation } from 'react-i18next';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 export function ProUpgradeModal(props: {
   visible: boolean;
@@ -57,7 +59,7 @@ export function ProUpgradeModal(props: {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(15,23,42,0.55)',
@@ -68,10 +70,10 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     maxWidth: 420,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     padding: 16,
   },
   header: { flexDirection: 'row', alignItems: 'center', gap: 10 },
@@ -85,16 +87,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: { flex: 1, fontSize: 16, fontWeight: '900', color: '#0f172a' },
+  title: { flex: 1, fontSize: 16, fontWeight: '900', color: c.text },
   closeIcon: {
     width: 34,
     height: 34,
     borderRadius: 12,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  message: { marginTop: 10, color: '#475569', fontWeight: '700', lineHeight: 19 },
+  message: { marginTop: 10, color: c.text, fontWeight: '700', lineHeight: 19 },
   upgradeBtn: {
     marginTop: 14,
     backgroundColor: '#2563eb',
@@ -108,7 +110,10 @@ const styles = StyleSheet.create({
   },
   upgradeText: { color: '#ffffff', fontWeight: '900', fontSize: 15 },
   closeLink: { marginTop: 10, alignItems: 'center', paddingVertical: 8 },
-  closeLinkText: { color: '#64748b', fontWeight: '800' },
+  closeLinkText: { color: c.textMuted, fontWeight: '800' },
 });
 
 
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

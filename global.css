@@ -4,6 +4,7 @@
 
 /* ──────────────────────────────────────────────────────────────────────────────
    Multi-Theme System (NativeWind v4)
+   Cards (surface) are tonal variations of the bg — never pure white except on default.
    --------------------------------------------------------------------------- */
 @layer base {
   :root,
@@ -26,11 +27,11 @@
     --brand-bg: #FDE7EF;
     --brand-bg-gradient-from: #FDE7EF;
     --brand-bg-gradient-to: #FDE7EF;
-    --brand-surface: #FFFFFF;
-    --brand-surface-muted: #FFF5F8;
-    --brand-text: #1E293B;
-    --brand-text-muted: #6B6770;
-    --brand-border: #F4D2DF;
+    --brand-surface: #FAD3DF;
+    --brand-surface-muted: #F4C2D2;
+    --brand-text: #3A1E2A;
+    --brand-text-muted: #7A5560;
+    --brand-border: #F0BCCD;
     --brand-primary: #D6336C;
     --brand-accent: #D6336C;
     --brand-on-primary: #FFFFFF;
@@ -41,18 +42,18 @@
     --brand-bg: #DFFFD0;
     --brand-bg-gradient-from: #DFFFD0;
     --brand-bg-gradient-to: #DFFFD0;
-    --brand-surface: #FFFFFF;
-    --brand-surface-muted: #F2FFEC;
-    --brand-text: #1E293B;
+    --brand-surface: #CCF2BA;
+    --brand-surface-muted: #B8E5A4;
+    --brand-text: #1F3A26;
     --brand-text-muted: #4F6E58;
-    --brand-border: #C8E8B8;
+    --brand-border: #A8D894;
     --brand-primary: #3A8A5A;
     --brand-accent: #3A8A5A;
     --brand-on-primary: #FFFFFF;
     --brand-scheme: light;
   }
 
-  /* DARK THEME — no whitish cards, surfaces are slightly lighter than bg */
+  /* DARK THEME — Navy: cards are lighter navy, distinguishable from bg */
   .theme-navy {
     --brand-bg: #1D375A;
     --brand-bg-gradient-from: #1D375A;
@@ -68,18 +69,18 @@
     --brand-scheme: dark;
   }
 
-  /* DARK THEME — gradient pure black */
+  /* DARK THEME — Obsidian: cards are dark grey, distinguishable from pure black */
   .theme-black {
     --brand-bg: #000000;
     --brand-bg-gradient-from: #000000;
     --brand-bg-gradient-to: #1B1A1A;
-    --brand-surface: #0B0B0B;
-    --brand-surface-muted: #120F0F;
+    --brand-surface: #1A1A1A;
+    --brand-surface-muted: #262626;
     --brand-text: #F5F5F5;
     --brand-text-muted: #A1A1A6;
-    --brand-border: #1F1F1F;
+    --brand-border: #2B2B2B;
     --brand-primary: #F5F5F5;
-    --brand-accent: #0A0A0C;
+    --brand-accent: #1A1A1A;
     --brand-on-primary: #000000;
     --brand-scheme: dark;
   }
@@ -88,11 +89,11 @@
     --brand-bg: #EFEAFE;
     --brand-bg-gradient-from: #EFEAFE;
     --brand-bg-gradient-to: #EFEAFE;
-    --brand-surface: #FFFFFF;
-    --brand-surface-muted: #F7F4FF;
-    --brand-text: #1E1B2E;
+    --brand-surface: #E0D6FA;
+    --brand-surface-muted: #D0C4F4;
+    --brand-text: #241E3F;
     --brand-text-muted: #6B6485;
-    --brand-border: #DCD3F4;
+    --brand-border: #C6B8F0;
     --brand-primary: #6D28D9;
     --brand-accent: #6D28D9;
     --brand-on-primary: #FFFFFF;

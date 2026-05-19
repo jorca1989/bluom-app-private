@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import React, { useState, useRef, useMemo } from 'react';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import {
     View,
@@ -47,6 +47,7 @@ const getJournalPrompts = (t: any) => [
 
 export default function ReflectionsHub() {
   const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
     const { t } = useTranslation();
     const router = useRouter();
     const { user: clerkUser } = useUser();
@@ -528,10 +529,10 @@ export default function ReflectionsHub() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f8fafc',
+        backgroundColor: c.surfaceMuted,
     },
     header: {
         flexDirection: 'row',
@@ -539,19 +540,19 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 16,
         paddingVertical: 12,
-        backgroundColor: '#fff',
+        backgroundColor: c.surface,
         borderBottomWidth: 1,
-        borderBottomColor: '#e2e8f0',
+        borderBottomColor: c.border,
     },
     backButton: {
         padding: 8,
         borderRadius: 20,
-        backgroundColor: '#f1f5f9',
+        backgroundColor: c.surfaceMuted,
     },
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#0f172a',
+        color: c.text,
     },
     tabsContainer: {
         flexDirection: 'row',
@@ -565,19 +566,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingVertical: 12,
         borderRadius: 12,
-        backgroundColor: '#fff',
+        backgroundColor: c.surface,
         borderWidth: 1,
-        borderColor: '#e2e8f0',
+        borderColor: c.border,
         gap: 8,
     },
     activeTab: {
-        backgroundColor: '#1e293b',
-        borderColor: '#1e293b',
+        backgroundColor: c.text,
+        borderColor: c.text,
     },
     tabText: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#64748b',
+        color: c.textMuted,
     },
     activeTabText: {
         color: '#fff',
@@ -586,7 +587,7 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     card: {
-        backgroundColor: '#fff',
+        backgroundColor: c.surface,
         borderRadius: 20,
         padding: 20,
         shadowColor: '#000',
@@ -639,7 +640,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#64748b',
+        color: c.textMuted,
         marginBottom: 8,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
@@ -653,28 +654,28 @@ const styles = StyleSheet.create({
     lineNumber: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#cbd5e1',
+        color: c.border,
         width: 20,
     },
     lineInput: {
         flex: 1,
-        backgroundColor: '#f8fafc',
+        backgroundColor: c.surfaceMuted,
         borderWidth: 1,
-        borderColor: '#e2e8f0',
+        borderColor: c.border,
         borderRadius: 10,
         paddingHorizontal: 12,
         paddingVertical: 10,
         fontSize: 16,
-        color: '#334155',
+        color: c.text,
     },
     textArea: {
-        backgroundColor: '#f8fafc',
+        backgroundColor: c.surfaceMuted,
         borderWidth: 1,
-        borderColor: '#e2e8f0',
+        borderColor: c.border,
         borderRadius: 12,
         padding: 12,
         fontSize: 16,
-        color: '#334155',
+        color: c.text,
         minHeight: 120,
     },
     saveButton: {
@@ -709,12 +710,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     thoughtsList: {
-        backgroundColor: '#f8fafc',
+        backgroundColor: c.surfaceMuted,
         borderRadius: 12,
         padding: 12,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: '#e2e8f0',
+        borderColor: c.border,
     },
     thoughtItem: {
         flexDirection: 'row',
@@ -724,7 +725,7 @@ const styles = StyleSheet.create({
     },
     thoughtText: {
         fontSize: 14,
-        color: '#475569',
+        color: c.text,
         flex: 1,
         marginRight: 8,
     },
@@ -755,12 +756,12 @@ const styles = StyleSheet.create({
     recentHeader: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#334155',
+        color: c.text,
         marginBottom: 12,
         paddingHorizontal: 4,
     },
     recentCard: {
-        backgroundColor: '#fff',
+        backgroundColor: c.surface,
         borderRadius: 12,
         padding: 16,
         marginBottom: 10,
@@ -773,13 +774,13 @@ const styles = StyleSheet.create({
     },
     recentDate: {
         fontSize: 12,
-        color: '#94a3b8',
+        color: c.textMuted,
         marginBottom: 6,
         fontWeight: '600',
     },
     recentText: {
         fontSize: 14,
-        color: '#475569',
+        color: c.text,
         lineHeight: 20,
     },
     // Modals/Overlays
@@ -793,7 +794,7 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     insightCard: {
-        backgroundColor: '#fff',
+        backgroundColor: c.surface,
         width: '100%',
         borderRadius: 24,
         padding: 24,
@@ -816,19 +817,19 @@ const styles = StyleSheet.create({
     },
     insightSection: {
         borderBottomWidth: 1,
-        borderBottomColor: '#f1f5f9',
+        borderBottomColor: c.surfaceMuted,
         paddingVertical: 12,
     },
     insightLabel: {
         fontSize: 12,
         fontWeight: '700',
-        color: '#94a3b8',
+        color: c.textMuted,
         letterSpacing: 1,
         marginBottom: 6,
     },
     insightBody: {
         fontSize: 16,
-        color: '#334155',
+        color: c.text,
         lineHeight: 24,
         fontWeight: '500',
     },
@@ -838,7 +839,7 @@ const styles = StyleSheet.create({
         gap: 16,
     },
     loadingText: {
-        color: '#64748b',
+        color: c.textMuted,
         fontWeight: '500',
     },
     errorText: {
@@ -861,7 +862,7 @@ const styles = StyleSheet.create({
     moodTitle: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#1e293b',
+        color: c.text,
         textAlign: 'center',
         marginBottom: 32,
     },
@@ -881,14 +882,17 @@ const styles = StyleSheet.create({
     moodLabel: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#64748b',
+        color: c.textMuted,
     },
     skipBtn: {
         padding: 12,
     },
     skipText: {
-        color: '#94a3b8',
+        color: c.textMuted,
         fontSize: 14,
         fontWeight: '500',
     }
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

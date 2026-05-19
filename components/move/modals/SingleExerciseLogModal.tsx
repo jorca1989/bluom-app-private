@@ -4,6 +4,8 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+
 export interface LogSetData {
   id: string;
   /** Added weight in kg (e.g. vest/belt). For BW sets, this is the "+" weight. */
@@ -34,6 +36,8 @@ export default function SingleExerciseLogModal({
   onClose,
   onSave
 }: SingleExerciseLogModalProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [sets, setSets] = useState<LogSetData[]>([]);
@@ -302,10 +306,10 @@ export default function SingleExerciseLogModal({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
   },
   header: {
     flexDirection: 'row',
@@ -314,13 +318,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-    backgroundColor: '#ffffff',
+    borderBottomColor: c.border,
+    backgroundColor: c.surface,
   },
   headerTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   iconBtn: {
     padding: 8,
@@ -333,7 +337,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   finishBtnDisabled: {
-    backgroundColor: '#cbd5e1',
+    backgroundColor: c.border,
   },
   finishBtnText: {
     color: '#ffffff',
@@ -341,7 +345,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   finishBtnTextDisabled: {
-    color: '#94a3b8',
+    color: c.textMuted,
   },
   scroll: {
     flex: 1,
@@ -352,10 +356,10 @@ const styles = StyleSheet.create({
   },
   exerciseBlock: {
     marginBottom: 16,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     overflow: 'hidden',
   },
   exHeaderRow: {
@@ -363,13 +367,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: c.surfaceMuted,
   },
   exNumBadge: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -377,13 +381,13 @@ const styles = StyleSheet.create({
   exNumBadgeText: {
     fontSize: 13,
     fontWeight: 'bold',
-    color: '#64748b',
+    color: c.textMuted,
   },
   exThumb: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -391,13 +395,13 @@ const styles = StyleSheet.create({
   exThumbText: {
     fontSize: 13,
     fontWeight: 'bold',
-    color: '#64748b',
+    color: c.textMuted,
   },
   exName: {
     flex: 1,
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   exTypePill: {
     alignSelf: 'flex-start',
@@ -405,12 +409,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 999,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     fontSize: 11,
     fontWeight: '700',
-    color: '#64748b',
+    color: c.textMuted,
   },
   exExpandedContent: {
     padding: 16,
@@ -418,7 +422,7 @@ const styles = StyleSheet.create({
   videoPlaceholder: {
     width: '100%',
     height: 160,
-    backgroundColor: '#0f172a',
+    backgroundColor: c.text,
     borderRadius: 12,
     marginBottom: 20,
     overflow: 'hidden',
@@ -440,7 +444,7 @@ const styles = StyleSheet.create({
   },
   setsColHead: {
     fontSize: 12,
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: 'bold',
   },
   setRow: {
@@ -454,29 +458,29 @@ const styles = StyleSheet.create({
     width: 40,
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   setField: {
     flex: 1,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 8,
     paddingVertical: 10,
     paddingHorizontal: 12,
     textAlign: 'center',
     fontSize: 16,
     fontWeight: '600',
-    color: '#0f172a',
+    color: c.text,
     marginHorizontal: 5,
   },
   hybridInputContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 8,
     marginHorizontal: 5,
     overflow: 'hidden',
@@ -484,7 +488,7 @@ const styles = StyleSheet.create({
   bwBadge: {
     paddingHorizontal: 8,
     paddingVertical: 6,
-    backgroundColor: '#cbd5e1',
+    backgroundColor: c.border,
     borderRadius: 6,
     marginLeft: 6,
   },
@@ -504,7 +508,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     fontWeight: '600',
-    color: '#0f172a',
+    color: c.text,
   },
   deleteSetBtn: {
     width: 34,
@@ -518,43 +522,43 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
   addSetBtn: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
     marginTop: 12,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderStyle: 'dashed',
   },
   addSetBtnText: {
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: '600',
     fontSize: 14,
   },
   cardioContainer: {
     padding: 16,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   cardioLabel: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#475569',
+    color: c.text,
     marginBottom: 8,
   },
   cardioInput: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderWidth: 1,
-    borderColor: '#cbd5e1',
+    borderColor: c.border,
     borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 16,
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 16,
   },
   caloriesRow: {
@@ -575,7 +579,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 12,
     fontWeight: '700',
-    color: '#64748b',
+    color: c.textMuted,
     textAlign: 'center',
   },
   volumeSummary: {
@@ -602,3 +606,6 @@ const styles = StyleSheet.create({
     color: '#2563eb',
   },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

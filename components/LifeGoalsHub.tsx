@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput, Dimensions, Alert, Linking, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery, useMutation } from 'convex/react';
@@ -7,6 +7,8 @@ import { Id } from '@/convex/_generated/dataModel';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useTranslation } from 'react-i18next';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+
 // import DateTimePicker from '@react-native-community/datetimepicker';
 
 const { width } = Dimensions.get('window');
@@ -21,6 +23,8 @@ interface LifeGoalsHubProps {
 const CATEGORIES = ['All', 'Work', 'Travel', 'Health', 'Personal'] as const;
 
 export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<Tab>('pending');
     const [showAddModal, setShowAddModal] = useState(false);
@@ -296,55 +300,58 @@ function getCategoryColor(cat: string) {
     }
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f8fafc' },
-    header: { flexDirection: 'row', justifyContent: 'space-between', padding: 20, alignItems: 'center', backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
-    headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#1e293b' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+    container: { flex: 1, backgroundColor: c.surfaceMuted },
+    header: { flexDirection: 'row', justifyContent: 'space-between', padding: 20, alignItems: 'center', backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted },
+    headerTitle: { fontSize: 20, fontWeight: 'bold', color: c.text },
     closeButton: { padding: 4 },
 
     tabsContainer: { flexDirection: 'row', padding: 16, gap: 12 },
-    tab: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20, backgroundColor: '#e2e8f0' },
-    activeTab: { backgroundColor: '#1e293b' },
-    tabText: { fontSize: 14, fontWeight: '600', color: '#64748b' },
+    tab: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20, backgroundColor: c.border },
+    activeTab: { backgroundColor: c.text },
+    tabText: { fontSize: 14, fontWeight: '600', color: c.textMuted },
     activeTabText: { color: '#fff' },
 
     catFilter: { maxHeight: 50, marginBottom: 10 },
-    catChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: '#fff', borderWidth: 1, borderColor: '#e2e8f0', marginRight: 8 },
-    catChipActive: { backgroundColor: '#f1f5f9', borderColor: '#94a3b8' },
-    catChipText: { fontSize: 12, color: '#64748b' },
-    catChipTextActive: { color: '#1e293b', fontWeight: '600' },
+    catChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: c.surface, borderWidth: 1, borderColor: c.border, marginRight: 8 },
+    catChipActive: { backgroundColor: c.surfaceMuted, borderColor: c.textMuted },
+    catChipText: { fontSize: 12, color: c.textMuted },
+    catChipTextActive: { color: c.text, fontWeight: '600' },
 
     content: { flex: 1, padding: 20 },
-    goalCard: { backgroundColor: '#fff', borderRadius: 16, padding: 16, marginBottom: 16, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 },
+    goalCard: { backgroundColor: c.surface, borderRadius: 16, padding: 16, marginBottom: 16, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 },
     cardHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
     tag: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
     tagText: { fontSize: 10, fontWeight: '700', textTransform: 'uppercase' },
-    goalTitle: { fontSize: 16, fontWeight: '600', color: '#1e293b', marginBottom: 4 },
-    goalDesc: { fontSize: 14, color: '#64748b', marginBottom: 12 },
+    goalTitle: { fontSize: 16, fontWeight: '600', color: c.text, marginBottom: 4 },
+    goalDesc: { fontSize: 14, color: c.textMuted, marginBottom: 12 },
     metaRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
     metaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-    metaText: { fontSize: 12, color: '#64748b' },
-    actionButton: { backgroundColor: '#f1f5f9', paddingVertical: 8, borderRadius: 8, alignItems: 'center', padding: 8 },
-    actionButtonText: { color: '#1e293b', fontWeight: '600', fontSize: 12 },
+    metaText: { fontSize: 12, color: c.textMuted },
+    actionButton: { backgroundColor: c.surfaceMuted, paddingVertical: 8, borderRadius: 8, alignItems: 'center', padding: 8 },
+    actionButtonText: { color: c.text, fontWeight: '600', fontSize: 12 },
 
     emptyState: { alignItems: 'center', marginTop: 60 },
-    emptyText: { color: '#94a3b8', marginTop: 12 },
+    emptyText: { color: c.textMuted, marginTop: 12 },
 
     fab: { position: 'absolute', bottom: 30, right: 30, width: 56, height: 56, borderRadius: 28, backgroundColor: '#2563eb', justifyContent: 'center', alignItems: 'center', shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 5 },
 
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-    modalContent: { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, height: '85%' },
-    modalHeader: { padding: 20, borderBottomWidth: 1, borderBottomColor: '#f1f5f9', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    modalContent: { backgroundColor: c.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, height: '85%' },
+    modalHeader: { padding: 20, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     modalTitle: { fontSize: 18, fontWeight: 'bold' },
-    label: { fontSize: 14, fontWeight: '600', color: '#1e293b', marginBottom: 6, marginTop: 12 },
-    input: { backgroundColor: '#f8fafc', padding: 12, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0', fontSize: 16 },
+    label: { fontSize: 14, fontWeight: '600', color: c.text, marginBottom: 6, marginTop: 12 },
+    input: { backgroundColor: c.surfaceMuted, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: c.border, fontSize: 16 },
 
-    typeButton: { flex: 1, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0', alignItems: 'center' },
+    typeButton: { flex: 1, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: c.border, alignItems: 'center' },
     typeButtonActive: { borderColor: '#2563eb', backgroundColor: '#eff6ff' },
-    typeText: { color: '#64748b' },
+    typeText: { color: c.textMuted },
     typeTextActive: { color: '#2563eb', fontWeight: '600' },
 
-    dateButton: { padding: 12, backgroundColor: '#f8fafc', borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0' },
+    dateButton: { padding: 12, backgroundColor: c.surfaceMuted, borderRadius: 12, borderWidth: 1, borderColor: c.border },
     mainButton: { backgroundColor: '#2563eb', padding: 16, borderRadius: 16, alignItems: 'center', marginTop: 30, marginBottom: 40 },
     mainButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

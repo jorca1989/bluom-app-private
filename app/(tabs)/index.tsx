@@ -887,6 +887,8 @@ export default function HomeScreen() {
 // ─────────────────────────────────────────────────────────────
 
 function MiniBar({ label, pct, color }: { label: string; pct: number; color: string }) {
+  const { colors } = useTheme();
+  const mb = useMemo(() => createMb(colors), [colors]);
   return (
     <View style={mb.row}>
       <Text style={mb.lbl}>{label}</Text>
@@ -921,6 +923,8 @@ function KPICard({
   value: string; unit?: string; sub: string; progress: number; barColor: string; iconColor?: string;
   tag?: React.ReactNode;
 }) {
+  const { colors } = useTheme();
+  const kpi = useMemo(() => createKpi(colors), [colors]);
   return (
     <View style={[kpi.card, { backgroundColor: bg }]}>
       <View style={kpi.head}>

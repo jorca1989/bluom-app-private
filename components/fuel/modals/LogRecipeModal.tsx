@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 
@@ -31,6 +33,8 @@ export default function LogRecipeModal({
   onCancel,
   onClose,
 }: LogRecipeModalProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   if (!visible || !recipe) return null;
@@ -127,14 +131,14 @@ export default function LogRecipeModal({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(15, 23, 42, 0.6)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
     paddingHorizontal: 24,
@@ -154,11 +158,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   closeBtn: {
     padding: 8,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 20,
   },
   successView: {
@@ -177,27 +181,27 @@ const styles = StyleSheet.create({
   successTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 8,
   },
   successSub: {
     fontSize: 15,
-    color: '#64748b',
+    color: c.textMuted,
   },
   body: {
     gap: 24,
   },
   recipeCard: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 20,
     padding:  20,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   recipeName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 12,
   },
   macrosRow: {
@@ -206,17 +210,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   macroPill: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: c.surfaceMuted,
   },
   macroPillTxt: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#475569',
+    color: c.text,
   },
   field: {
     gap: 12,
@@ -224,7 +228,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#334155',
+    color: c.text,
   },
   mealSelector: {
     flexDirection: 'row',
@@ -235,7 +239,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 12,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
   },
   mealOptionActive: {
     backgroundColor: '#3b82f6',
@@ -243,7 +247,7 @@ const styles = StyleSheet.create({
   mealText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#475569',
+    color: c.text,
   },
   mealTextActive: {
     color: '#ffffff',
@@ -253,15 +257,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     padding: 8,
   },
   qtyBtn: {
     padding: 12,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -274,7 +278,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   btnRow: {
     flexDirection: 'row',
@@ -285,12 +289,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 16,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
   },
   cancelBtnTxt: {
-    color: '#475569',
+    color: c.text,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -307,3 +311,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

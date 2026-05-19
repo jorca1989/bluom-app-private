@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform, Linking } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Video, ResizeMode } from 'expo-av';
 import { getLocalizedExerciseName } from '@/utils/localize';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 export interface SetData {
   id: string;
@@ -42,6 +44,8 @@ export default function ActiveWorkoutModal({
   onAddExercise,
   onDeleteExercise
 }: ActiveWorkoutModalProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
   const [timeSpent, setTimeSpent] = useState(0);
@@ -366,10 +370,10 @@ export default function ActiveWorkoutModal({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   header: {
     flexDirection: 'row',
@@ -378,7 +382,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: c.surfaceMuted,
   },
   iconBtn: {
     padding: 8,
@@ -395,7 +399,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   finishBtnDisabled: {
-    backgroundColor: '#cbd5e1',
+    backgroundColor: c.border,
   },
   finishBtnText: {
     color: '#ffffff',
@@ -403,7 +407,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   finishBtnTextDisabled: {
-    color: '#94a3b8',
+    color: c.textMuted,
   },
   scroll: {
     flex: 1,
@@ -414,9 +418,9 @@ const styles = StyleSheet.create({
   },
   statsBanner: {
     flexDirection: 'row',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 16,
     padding: 16,
     marginBottom: 24,
@@ -427,14 +431,14 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: '600',
     marginBottom: 4,
   },
   statValue: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   statValueBlue: {
     fontSize: 16,
@@ -443,10 +447,10 @@ const styles = StyleSheet.create({
   },
   exerciseBlock: {
     marginBottom: 16,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     overflow: 'hidden',
   },
   exHeaderRow: {
@@ -456,13 +460,13 @@ const styles = StyleSheet.create({
   },
   exHeaderRowExpanded: {
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: c.surfaceMuted,
   },
   exNumBadge: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -470,13 +474,13 @@ const styles = StyleSheet.create({
   exNumBadgeText: {
     fontSize: 13,
     fontWeight: 'bold',
-    color: '#64748b',
+    color: c.textMuted,
   },
   exName: {
     flex: 1,
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   exExpandedContent: {
     padding: 16,
@@ -492,12 +496,12 @@ const styles = StyleSheet.create({
   videoPlayerInline: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   videoPlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -516,7 +520,7 @@ const styles = StyleSheet.create({
   },
   setsColHead: {
     fontSize: 12,
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: 'bold',
   },
   setRow: {
@@ -527,43 +531,43 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   setRowCompleted: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
   },
   setNum: {
     width: 40,
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   setPrev: {
     flex: 1,
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
   },
   setField: {
     width: 60,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 8,
     textAlign: 'center',
     fontSize: 16,
     fontWeight: '600',
-    color: '#0f172a',
+    color: c.text,
     marginHorizontal: 5,
   },
   setFieldCompleted: {
     backgroundColor: 'transparent',
     borderWidth: 0,
-    color: '#64748b',
+    color: c.textMuted,
   },
   checkBtn: {
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 10,
@@ -579,9 +583,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderStyle: 'dashed',
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     marginHorizontal: 16,
     marginBottom: 20,
   },
@@ -595,17 +599,17 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   addSetBtn: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
     marginTop: 12,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderStyle: 'dashed',
   },
   addSetBtnText: {
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -636,7 +640,7 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   restCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 24,
     padding: 32,
     width: 320,
@@ -650,13 +654,13 @@ const styles = StyleSheet.create({
   restTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#64748b',
+    color: c.textMuted,
     marginBottom: 16,
   },
   restTimeBig: {
     fontSize: 48,
     fontWeight: '900',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 32,
   },
   restControls: {
@@ -668,14 +672,14 @@ const styles = StyleSheet.create({
     width: 60,
     height: 48,
     borderRadius: 16,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
   },
   restAdjustNum: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#475569',
+    color: c.text,
   },
   restReadyBtn: {
     backgroundColor: '#3b82f6',
@@ -690,7 +694,7 @@ const styles = StyleSheet.create({
   },
   restTurnOffText: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: c.textMuted,
     fontWeight: '500',
   },
   exVolumeRow: {
@@ -707,7 +711,7 @@ const styles = StyleSheet.create({
   },
   exVolumeText: {
     fontSize: 13,
-    color: '#475569',
+    color: c.text,
     fontWeight: '600',
   },
   exVolumeVal: {
@@ -715,3 +719,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import {
   View,
@@ -89,10 +89,10 @@ function StatChip({ label, value, color }: { label: string; value: string; color
     </View>
   );
 }
-const chip = StyleSheet.create({
+const createChip = (c: ThemeColors) => StyleSheet.create({
   wrap: { alignItems: 'center', paddingVertical: 8, paddingHorizontal: 10, borderRadius: 12, borderWidth: 1.5, backgroundColor: '#fafafa', minWidth: 62 },
   value: { fontSize: 14, fontWeight: '800' },
-  label: { fontSize: 9, color: '#94a3b8', fontWeight: '600', marginTop: 2, textTransform: 'uppercase' },
+  label: { fontSize: 9, color: c.textMuted, fontWeight: '600', marginTop: 2, textTransform: 'uppercase' },
 });
 
 function ProBadge() {
@@ -103,7 +103,7 @@ function ProBadge() {
     </View>
   );
 }
-const badge = StyleSheet.create({
+const createBadge = (c: ThemeColors) => StyleSheet.create({
   wrap: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: '#fef9c3', borderRadius: 10, paddingHorizontal: 8, paddingVertical: 3 },
   text: { fontSize: 10, fontWeight: '900', color: '#d97706' },
 });
@@ -150,18 +150,18 @@ function SectionCard({ onPress, accentColor, iconBg, icon, title, subtitle, isPr
     </TouchableOpacity>
   );
 }
-const sc = StyleSheet.create({
+const createSc = (c: ThemeColors) => StyleSheet.create({
   card: {
-    backgroundColor: '#fff', borderRadius: 20, marginBottom: 16,
-    borderWidth: 1, borderColor: '#e2e8f0',
+    backgroundColor: c.surface, borderRadius: 20, marginBottom: 16,
+    borderWidth: 1, borderColor: c.border,
     shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 10, elevation: 2,
     overflow: 'hidden',
   },
   header: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 18, paddingBottom: 14 },
   iconCircle: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 16, fontWeight: '800', color: '#1e293b' },
-  sub: { fontSize: 12, color: '#94a3b8', fontWeight: '600', marginTop: 2 },
-  divider: { height: 1, backgroundColor: '#f1f5f9', marginHorizontal: 18 },
+  title: { fontSize: 16, fontWeight: '800', color: c.text },
+  sub: { fontSize: 12, color: c.textMuted, fontWeight: '600', marginTop: 2 },
+  divider: { height: 1, backgroundColor: c.surfaceMuted, marginHorizontal: 18 },
   cta: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     gap: 4, margin: 14, borderRadius: 12, borderWidth: 1, paddingVertical: 10,
@@ -251,14 +251,14 @@ function NutritionPreview({
     </View>
   );
 }
-const np = StyleSheet.create({
+const createNp = (c: ThemeColors) => StyleSheet.create({
   wrap: { paddingHorizontal: 18, paddingTop: 14, paddingBottom: 4 },
   macroRow: { flexDirection: 'row', gap: 6, marginBottom: 12 },
   mealRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 7 },
   dot: { width: 7, height: 7, borderRadius: 4 },
-  mealType: { fontSize: 13, fontWeight: '700', color: '#1e293b', width: 76 },
+  mealType: { fontSize: 13, fontWeight: '700', color: c.text, width: 76 },
   mealKcal: { fontSize: 12, fontWeight: '700', color: '#f59e0b', width: 62 },
-  mealMacro: { fontSize: 11, color: '#94a3b8', flex: 1 },
+  mealMacro: { fontSize: 11, color: c.textMuted, flex: 1 },
   countdown: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     backgroundColor: 'rgba(96,165,250,0.1)', borderRadius: 8,
@@ -346,20 +346,20 @@ function FitnessPreview({ currentWeekIndex }: { currentWeekIndex: number }) {
     </View>
   );
 }
-const fp = StyleSheet.create({
+const createFp = (c: ThemeColors) => StyleSheet.create({
   wrap: { paddingHorizontal: 18, paddingTop: 14, paddingBottom: 4 },
   weekRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
   weekPill: { flex: 1, borderRadius: 12, padding: 10, alignItems: 'center', gap: 3, opacity: 0.65 },
   weekPillActive: { opacity: 1, borderWidth: 2, borderColor: 'rgba(255,255,255,0.45)' },
   weekNum: { fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.7)', letterSpacing: 0.8 },
   weekTheme: { fontSize: 11, fontWeight: '700', color: '#fff' },
-  activeDot: { width: 5, height: 5, borderRadius: 3, backgroundColor: '#fff', marginTop: 2 },
-  activeDetail: { backgroundColor: '#f8fafc', borderRadius: 12, padding: 12 },
-  activeWeekLabel: { fontSize: 13, fontWeight: '800', color: '#1e293b', marginBottom: 6 },
+  activeDot: { width: 5, height: 5, borderRadius: 3, backgroundColor: c.surface, marginTop: 2 },
+  activeDetail: { backgroundColor: c.surfaceMuted, borderRadius: 12, padding: 12 },
+  activeWeekLabel: { fontSize: 13, fontWeight: '800', color: c.text, marginBottom: 6 },
   focusTags: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 6 },
-  focusTag: { backgroundColor: '#e2e8f0', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 3 },
-  focusTagText: { fontSize: 11, fontWeight: '600', color: '#475569' },
-  dayCount: { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
+  focusTag: { backgroundColor: c.border, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 3 },
+  focusTagText: { fontSize: 11, fontWeight: '600', color: c.text },
+  dayCount: { fontSize: 11, color: c.textMuted, fontWeight: '600' },
 });
 
 // ─── Mental health preview (consistent with mental-health-plan.tsx WEEK_THEMES) ─
@@ -442,7 +442,7 @@ function MentalHealthPreview({ currentDay }: { currentDay: number }) {
     </View>
   );
 }
-const mhp = StyleSheet.create({
+const createMhp = (c: ThemeColors) => StyleSheet.create({
   wrap: { paddingHorizontal: 18, paddingTop: 14, paddingBottom: 4 },
   weekRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
   weekPill: { flex: 1, borderRadius: 12, padding: 10, alignItems: 'center', gap: 2 },
@@ -476,11 +476,11 @@ function ProLockedOverlay({ onPress }: { onPress: () => void }) {
     </View>
   );
 }
-const lo = StyleSheet.create({
+const createLo = (c: ThemeColors) => StyleSheet.create({
   wrap: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.88)', borderRadius: 20 },
-  badge: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#1e293b', alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
-  title: { fontSize: 15, fontWeight: '800', color: '#1e293b' },
-  sub: { fontSize: 12, color: '#64748b', marginTop: 4, textAlign: 'center', paddingHorizontal: 24 },
+  badge: { width: 40, height: 40, borderRadius: 20, backgroundColor: c.text, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
+  title: { fontSize: 15, fontWeight: '800', color: c.text },
+  sub: { fontSize: 12, color: c.textMuted, marginTop: 4, textAlign: 'center', paddingHorizontal: 24 },
   btn: { marginTop: 14, backgroundColor: '#2563eb', paddingHorizontal: 28, paddingVertical: 12, borderRadius: 14 },
   btnText: { color: '#fff', fontWeight: '800', fontSize: 14 },
 });
@@ -489,6 +489,14 @@ const lo = StyleSheet.create({
 
 export default function PersonalizedPlanScreen() {
   const { colors: themeColors } = useTheme();
+  const s = useMemo(() => createS(themeColors), [themeColors]);
+  const lo = useMemo(() => createLo(themeColors), [themeColors]);
+  const mhp = useMemo(() => createMhp(themeColors), [themeColors]);
+  const fp = useMemo(() => createFp(themeColors), [themeColors]);
+  const np = useMemo(() => createNp(themeColors), [themeColors]);
+  const sc = useMemo(() => createSc(themeColors), [themeColors]);
+  const badge = useMemo(() => createBadge(themeColors), [themeColors]);
+  const chip = useMemo(() => createChip(themeColors), [themeColors]);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
@@ -673,13 +681,13 @@ export default function PersonalizedPlanScreen() {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F4F0' },
+const createS = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   scroll: { paddingHorizontal: 20, paddingTop: 12 },
 
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
-  backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: 20, fontWeight: '800', color: '#1e293b' },
+  backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
+  headerTitle: { fontSize: 20, fontWeight: '800', color: c.text },
 
   // Hero
   hero: { borderRadius: 22, padding: 22, marginBottom: 24, overflow: 'hidden' },
@@ -699,7 +707,7 @@ const s = StyleSheet.create({
   overallFill: { height: '100%', backgroundColor: '#a78bfa', borderRadius: 3 },
   overallText: { fontSize: 11, color: 'rgba(255,255,255,0.5)', fontWeight: '600' },
 
-  sectionLabel: { fontSize: 13, fontWeight: '800', color: '#94a3b8', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 14 },
+  sectionLabel: { fontSize: 13, fontWeight: '800', color: c.textMuted, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 14 },
 
   // Upsell
   upsell: { borderRadius: 22, padding: 22, marginTop: 4, overflow: 'hidden' },
@@ -715,7 +723,17 @@ const s = StyleSheet.create({
 
   // Quick links
   quickLinks: { flexDirection: 'row', gap: 10, marginTop: 20 },
-  quickLink: { flex: 1, alignItems: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 16, paddingVertical: 14, borderWidth: 1, borderColor: '#e2e8f0' },
+  quickLink: { flex: 1, alignItems: 'center', gap: 8, backgroundColor: c.surface, borderRadius: 16, paddingVertical: 14, borderWidth: 1, borderColor: c.border },
   quickLinkIcon: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  quickLinkText: { fontSize: 11, fontWeight: '700', color: '#475569' },
+  quickLinkText: { fontSize: 11, fontWeight: '700', color: c.text },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const chip = createChip(THEMES.default.colors);
+const badge = createBadge(THEMES.default.colors);
+const sc = createSc(THEMES.default.colors);
+const np = createNp(THEMES.default.colors);
+const fp = createFp(THEMES.default.colors);
+const mhp = createMhp(THEMES.default.colors);
+const lo = createLo(THEMES.default.colors);
+const s = createS(THEMES.default.colors);

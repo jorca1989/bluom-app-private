@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 import {
     View,
     Text,
@@ -71,6 +71,9 @@ function MiniBar({ label, value, max, color }: { label: string; value: number; m
 
 export default function MoveInsightsScreen() {
   const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
+  const barStyles = useMemo(() => createBarStyles(themeColors), [themeColors]);
+  const statStyles = useMemo(() => createStatStyles(themeColors), [themeColors]);
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const { user: clerkUser } = useClerkUser();
@@ -321,56 +324,61 @@ export default function MoveInsightsScreen() {
     );
 }
 
-const statStyles = StyleSheet.create({
+const createStatStyles = (c: ThemeColors) => StyleSheet.create({
     row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, gap: 12 },
     iconBox: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
     textCol: { flex: 1 },
-    label: { fontSize: 12, fontWeight: '700', color: '#64748b', marginBottom: 2 },
-    value: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
-    sub: { fontSize: 11, color: '#94a3b8', marginTop: 2 },
+    label: { fontSize: 12, fontWeight: '700', color: c.textMuted, marginBottom: 2 },
+    value: { fontSize: 18, fontWeight: '900', color: c.text },
+    sub: { fontSize: 11, color: c.textMuted, marginTop: 2 },
     trendPill: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 10 },
     trendText: { fontSize: 10, fontWeight: '700' },
 });
 
-const barStyles = StyleSheet.create({
+const createBarStyles = (c: ThemeColors) => StyleSheet.create({
     row: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 10 },
-    label: { width: 90, fontSize: 12, fontWeight: '600', color: '#475569' },
-    bg: { flex: 1, height: 8, backgroundColor: '#f1f5f9', borderRadius: 4, overflow: 'hidden' },
+    label: { width: 90, fontSize: 12, fontWeight: '600', color: c.text },
+    bg: { flex: 1, height: 8, backgroundColor: c.surfaceMuted, borderRadius: 4, overflow: 'hidden' },
     fill: { height: '100%', borderRadius: 4 },
-    val: { width: 24, fontSize: 12, fontWeight: '700', color: '#475569', textAlign: 'right' },
+    val: { width: 24, fontSize: 12, fontWeight: '700', color: c.text, textAlign: 'right' },
 });
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f8fafc' },
-    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+    container: { flex: 1, backgroundColor: c.surfaceMuted },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted },
     backBtn: { padding: 8, marginLeft: -8 },
-    headerTitle: { fontSize: 18, fontWeight: '800', color: '#0f172a' },
+    headerTitle: { fontSize: 18, fontWeight: '800', color: c.text },
     scroll: { flex: 1 },
     content: { padding: 20, gap: 16 },
-    card: { backgroundColor: '#ffffff', borderRadius: 20, padding: 20, borderWidth: 1, borderColor: '#f1f5f9', marginBottom: 16 },
+    card: { backgroundColor: c.surface, borderRadius: 20, padding: 20, borderWidth: 1, borderColor: c.surfaceMuted, marginBottom: 16 },
     cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
-    cardTitle: { fontSize: 16, fontWeight: '800', color: '#0f172a' },
-    divider: { height: 1, backgroundColor: '#f1f5f9' },
+    cardTitle: { fontSize: 16, fontWeight: '800', color: c.text },
+    divider: { height: 1, backgroundColor: c.surfaceMuted },
     chartContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 120, marginTop: 20, marginBottom: 16, paddingHorizontal: 4 },
     chartBarWrapper: { alignItems: 'center', flex: 1 },
     chartBar: { width: 20, backgroundColor: '#2563eb', borderRadius: 4, minHeight: 6 },
-    chartDay: { fontSize: 11, color: '#94a3b8', marginTop: 6, fontWeight: '600' },
-    weeklyStatsRow: { flexDirection: 'row', justifyContent: 'space-around', paddingTop: 16, borderTopWidth: 1, borderTopColor: '#f1f5f9' },
+    chartDay: { fontSize: 11, color: c.textMuted, marginTop: 6, fontWeight: '600' },
+    weeklyStatsRow: { flexDirection: 'row', justifyContent: 'space-around', paddingTop: 16, borderTopWidth: 1, borderTopColor: c.surfaceMuted },
     weeklyStatItem: { alignItems: 'center' },
-    weeklyStatVal: { fontSize: 18, fontWeight: '900', color: '#0f172a', marginBottom: 2 },
-    weeklyStatLab: { fontSize: 12, color: '#94a3b8', fontWeight: '600' },
+    weeklyStatVal: { fontSize: 18, fontWeight: '900', color: c.text, marginBottom: 2 },
+    weeklyStatLab: { fontSize: 12, color: c.textMuted, fontWeight: '600' },
     bestDayCard: { flexDirection: 'row', alignItems: 'center', gap: 16, backgroundColor: '#fffbeb', borderColor: '#fde68a' },
     bestDayLabel: { fontSize: 11, fontWeight: '700', color: '#92400e', marginBottom: 2 },
-    bestDayValue: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
+    bestDayValue: { fontSize: 18, fontWeight: '900', color: c.text },
     bestDaySub: { fontSize: 11, color: '#78350f', marginTop: 2 },
-    emptyCard: { backgroundColor: '#ffffff', borderRadius: 20, padding: 40, alignItems: 'center', borderWidth: 1, borderColor: '#f1f5f9' },
-    emptyTitle: { fontSize: 15, fontWeight: '700', color: '#475569', marginTop: 16, marginBottom: 8 },
-    emptySub: { fontSize: 12, color: '#94a3b8', textAlign: 'center', lineHeight: 18 },
-    proLockOverlay: { position: 'absolute', top: 0, left: -10, right: -10, bottom: -10, backgroundColor: '#f8fafc', borderRadius: 20, justifyContent: 'center', alignItems: 'center', zIndex: 10 },
-    lockContent: { alignItems: 'center', backgroundColor: '#ffffff', borderRadius: 30, padding: 30, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 20, elevation: 10, borderWidth: 1, borderColor: '#f1f5f9', width: '90%' },
+    emptyCard: { backgroundColor: c.surface, borderRadius: 20, padding: 40, alignItems: 'center', borderWidth: 1, borderColor: c.surfaceMuted },
+    emptyTitle: { fontSize: 15, fontWeight: '700', color: c.text, marginTop: 16, marginBottom: 8 },
+    emptySub: { fontSize: 12, color: c.textMuted, textAlign: 'center', lineHeight: 18 },
+    proLockOverlay: { position: 'absolute', top: 0, left: -10, right: -10, bottom: -10, backgroundColor: c.surfaceMuted, borderRadius: 20, justifyContent: 'center', alignItems: 'center', zIndex: 10 },
+    lockContent: { alignItems: 'center', backgroundColor: c.surface, borderRadius: 30, padding: 30, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 20, elevation: 10, borderWidth: 1, borderColor: c.surfaceMuted, width: '90%' },
     lockIconCircle: { width: 64, height: 64, borderRadius: 32, backgroundColor: '#eff6ff', justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
-    lockTitle: { fontSize: 19, fontWeight: '900', color: '#0f172a', marginBottom: 8, textAlign: 'center' },
-    lockSubtitle: { fontSize: 13, color: '#64748b', textAlign: 'center', lineHeight: 20, marginBottom: 24 },
+    lockTitle: { fontSize: 19, fontWeight: '900', color: c.text, marginBottom: 8, textAlign: 'center' },
+    lockSubtitle: { fontSize: 13, color: c.textMuted, textAlign: 'center', lineHeight: 20, marginBottom: 24 },
     lockUpgradeBtn: { backgroundColor: '#2563eb', paddingHorizontal: 32, paddingVertical: 14, borderRadius: 16 },
     lockUpgradeText: { color: '#ffffff', fontWeight: '800', fontSize: 15 },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const statStyles = createStatStyles(THEMES.default.colors);
+const barStyles = createBarStyles(THEMES.default.colors);
+const styles = createStyles(THEMES.default.colors);

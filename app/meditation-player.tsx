@@ -12,7 +12,7 @@
  *  4. SeekBar stays accurate in any orientation.
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   View,
@@ -49,6 +49,8 @@ import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
 import BreathingAnimation from '../components/BreathingAnimation';
 import { Soundscape } from '../utils/soundscapes';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 // ─────────────────────────────────────────────────────────────
 // Spinner
@@ -176,10 +178,10 @@ function SeekBar({ positionMs, durationMs, onSeekStart, onSeekEnd, formatTime, e
   );
 }
 
-const sbStyles = StyleSheet.create({
+const createSbStyles = (c: ThemeColors) => StyleSheet.create({
   container: { width: '100%', marginBottom: 20 },
   trackHitArea: { height: 44, justifyContent: 'center' },
-  track: { height: TRACK_H, backgroundColor: '#e2e8f0', borderRadius: TRACK_H / 2, overflow: 'hidden' },
+  track: { height: TRACK_H, backgroundColor: c.border, borderRadius: TRACK_H / 2, overflow: 'hidden' },
   trackFill: { height: '100%', backgroundColor: '#3b82f6', borderRadius: TRACK_H / 2 },
   thumb: {
     position: 'absolute', width: THUMB_NORMAL, height: THUMB_NORMAL,
@@ -189,7 +191,7 @@ const sbStyles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.35, shadowRadius: 4,
   },
   timeRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2, marginTop: 6 },
-  time: { fontSize: 13, color: '#64748b', fontWeight: '500' },
+  time: { fontSize: 13, color: c.textMuted, fontWeight: '500' },
 });
 
 // ─────────────────────────────────────────────────────────────
@@ -217,6 +219,9 @@ export default function MeditationPlayerScreen({
   visible, onClose, soundscape, audioUrl, videoUrl,
   sessionTitle, coverImage, visualType, duration, logId,
 }: MeditationPlayerProps) {
+  const { colors: themeColors } = useTheme();
+  const playerStyles = useMemo(() => createPlayerStyles(themeColors), [themeColors]);
+  const sbStyles = useMemo(() => createSbStyles(themeColors), [themeColors]);
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { width, height } = useWindowDimensions();
@@ -652,42 +657,42 @@ export default function MeditationPlayerScreen({
 // ─────────────────────────────────────────────────────────────
 // Styles
 // ─────────────────────────────────────────────────────────────
-const playerStyles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+const createPlayerStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.surfaceMuted },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingBottom: 14,
-    backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#e5e7eb',
+    backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: '#e5e7eb',
   },
   headerTitleContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   closeButton: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
-  headerTitle: { flex: 1, fontSize: 18, fontWeight: '700', color: '#1e293b', textAlign: 'center' },
+  headerTitle: { flex: 1, fontSize: 18, fontWeight: '700', color: c.text, textAlign: 'center' },
   body: { flexGrow: 1 },
 
   // Visual
   animationContainer: { alignItems: 'center', marginBottom: 8 },
-  breathingText: { fontSize: 24, fontWeight: '600', color: '#1e293b', marginTop: 28, marginBottom: 4 },
-  instructionsText: { fontSize: 14, color: '#64748b', textAlign: 'center', paddingHorizontal: 24, lineHeight: 20 },
+  breathingText: { fontSize: 24, fontWeight: '600', color: c.text, marginTop: 28, marginBottom: 4 },
+  instructionsText: { fontSize: 14, color: c.textMuted, textAlign: 'center', paddingHorizontal: 24, lineHeight: 20 },
   coverContainer: {
     alignItems: 'center', justifyContent: 'center', borderRadius: 20,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     shadowColor: '#000', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.12, shadowRadius: 24,
     elevation: 6, overflow: Platform.OS === 'android' ? 'hidden' : 'visible',
   },
-  coverFallbackText: { marginTop: 12, color: '#94a3b8', fontSize: 14 },
+  coverFallbackText: { marginTop: 12, color: c.textMuted, fontSize: 14 },
 
   // Controls
   controlsWrap: { width: '100%', alignItems: 'center' },
   controls: { flexDirection: 'row', alignItems: 'center', gap: 32, marginBottom: 16 },
   skipButton: { alignItems: 'center', gap: 3, paddingHorizontal: 4, paddingVertical: 8 },
-  skipLabel: { fontSize: 11, color: '#94a3b8', fontWeight: '700', letterSpacing: 0.3 },
+  skipLabel: { fontSize: 11, color: c.textMuted, fontWeight: '700', letterSpacing: 0.3 },
   playButton: {
     width: 72, height: 72, borderRadius: 36, backgroundColor: '#3b82f6',
     justifyContent: 'center', alignItems: 'center',
     elevation: 8, shadowColor: '#2563eb', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 10,
   },
   playButtonLoading: { backgroundColor: '#93c5fd' },
-  bufferingLabel: { fontSize: 12, color: '#94a3b8', marginBottom: 8, marginTop: -4, letterSpacing: 0.2 },
+  bufferingLabel: { fontSize: 12, color: c.textMuted, marginBottom: 8, marginTop: -4, letterSpacing: 0.2 },
   completeButton: {
     marginTop: 4, paddingHorizontal: 36, paddingVertical: 14, borderRadius: 30,
     backgroundColor: '#10b981', elevation: 4,
@@ -695,3 +700,7 @@ const playerStyles = StyleSheet.create({
   },
   completeButtonText: { color: '#fff', fontWeight: '700', fontSize: 16, letterSpacing: 0.2 },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const sbStyles = createSbStyles(THEMES.default.colors);
+const playerStyles = createPlayerStyles(THEMES.default.colors);

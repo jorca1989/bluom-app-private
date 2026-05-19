@@ -14,6 +14,8 @@ import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useUser as useAppUser } from '@/context/UserContext';
 import { useCelebration } from '@/context/CelebrationContext';
 
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
+
 // --- Ketosis State Logic ---
 function getKetosisState(netCarbs: number, t: any): { state: string; color: string; bgColor: string } {
   if (netCarbs < 25) return { state: t('metabolic.deepKetosis', 'Deep Ketosis'), color: '#7c3aed', bgColor: '#f5f3ff' }; // Violet
@@ -22,6 +24,7 @@ function getKetosisState(netCarbs: number, t: any): { state: string; color: stri
 }
 
 export default function MetabolicHub() {
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();

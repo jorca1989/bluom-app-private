@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 import {
   View,
   Text,
@@ -68,6 +68,7 @@ const CATEGORY_META: Record<ShoppingDoc['category'], { emoji: string; color: str
 
 export default function ShoppingListScreen() {
   const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -429,8 +430,8 @@ export default function ShoppingListScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F4F0' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
 
   /* Header */
   header: {
@@ -444,15 +445,15 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   headerCenter: { flex: 1 },
-  title: { fontSize: 22, fontWeight: '800', color: '#0f172a' },
-  headerSub: { fontSize: 12, fontWeight: '600', color: '#94a3b8', marginTop: 1 },
+  title: { fontSize: 22, fontWeight: '800', color: c.text },
+  headerSub: { fontSize: 12, fontWeight: '600', color: c.textMuted, marginTop: 1 },
   addBtn: {
     width: 38,
     height: 38,
@@ -474,7 +475,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 6,
     borderRadius: 99,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: c.border,
     overflow: 'hidden',
   },
   progressFill: {
@@ -486,7 +487,7 @@ const styles = StyleSheet.create({
 
   /* Shared */
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 },
-  muted: { color: '#94a3b8', fontWeight: '600' },
+  muted: { color: c.textMuted, fontWeight: '600' },
 
   /* Empty */
   emptyWrap: {
@@ -499,12 +500,12 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 24,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 8,
@@ -512,11 +513,11 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   emptyEmoji: { fontSize: 36 },
-  emptyTitle: { fontSize: 20, fontWeight: '800', color: '#0f172a', textAlign: 'center' },
+  emptyTitle: { fontSize: 20, fontWeight: '800', color: c.text, textAlign: 'center' },
   emptySub: {
     marginTop: 8,
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: '500',
     textAlign: 'center',
     lineHeight: 20,
@@ -552,7 +553,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   sectionEmoji: { fontSize: 16 },
-  sectionTitle: { fontSize: 13, fontWeight: '800', color: '#475569', textTransform: 'uppercase', letterSpacing: 0.5, flex: 1 },
+  sectionTitle: { fontSize: 13, fontWeight: '800', color: c.text, textTransform: 'uppercase', letterSpacing: 0.5, flex: 1 },
   sectionPill: {
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -562,7 +563,7 @@ const styles = StyleSheet.create({
 
   /* Row */
   row: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 14,
     paddingVertical: 13,
     paddingHorizontal: 14,
@@ -584,10 +585,10 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 7,
     borderWidth: 2,
-    borderColor: '#cbd5e1',
+    borderColor: c.border,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   checkboxDone: { backgroundColor: '#3b82f6', borderColor: '#3b82f6' },
   rowBody: {
@@ -597,16 +598,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 8,
   },
-  name: { flex: 1, fontSize: 15, fontWeight: '700', color: '#0f172a' },
-  nameDone: { textDecorationLine: 'line-through', color: '#94a3b8' },
+  name: { flex: 1, fontSize: 15, fontWeight: '700', color: c.text },
+  nameDone: { textDecorationLine: 'line-through', color: c.textMuted },
   qtyBadge: {
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 3,
   },
-  qty: { fontSize: 12, fontWeight: '800', color: '#475569' },
-  qtyDone: { color: '#cbd5e1' },
+  qty: { fontSize: 12, fontWeight: '800', color: c.text },
+  qtyDone: { color: c.border },
 
   /* Swipe delete */
   deleteAction: {
@@ -627,19 +628,19 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     paddingHorizontal: 20,
     paddingTop: 12,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   modalHandle: {
     width: 36,
     height: 4,
     borderRadius: 99,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: c.border,
     alignSelf: 'center',
     marginBottom: 16,
   },
@@ -649,12 +650,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 16,
   },
-  modalTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
+  modalTitle: { fontSize: 18, fontWeight: '900', color: c.text },
   modalClose: {
     width: 32,
     height: 32,
     borderRadius: 10,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -662,19 +663,19 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     fontSize: 11,
     fontWeight: '900',
-    color: '#94a3b8',
+    color: c.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
   input: {
-    backgroundColor: '#F5F4F0',
+    backgroundColor: c.bg,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     paddingHorizontal: 14,
     paddingVertical: 13,
     fontSize: 16,
-    color: '#0f172a',
+    color: c.text,
     fontWeight: '700',
     marginBottom: 14,
   },
@@ -691,3 +692,6 @@ const styles = StyleSheet.create({
   },
   saveBtnText: { color: '#ffffff', fontSize: 15, fontWeight: '900' },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -37,6 +37,7 @@ function wellnessMoodFromKey(key: (typeof MOODS)[number]['value'] | ''): 2 | 3 |
 
 export default function SugarControlScreen() {
   const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
@@ -292,39 +293,39 @@ function Choice({
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.surface },
   header: {
     paddingHorizontal: 16,
     paddingBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: c.border,
   },
   headerBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
-  headerSub: { marginTop: 2, fontSize: 12, fontWeight: '700', color: '#64748b' },
+  headerTitle: { fontSize: 18, fontWeight: '900', color: c.text },
+  headerSub: { marginTop: 2, fontSize: 12, fontWeight: '700', color: c.textMuted },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     marginBottom: 12,
   },
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
-  cardTitle: { flex: 1, fontSize: 14, fontWeight: '900', color: '#0f172a' },
-  cardSub: { marginTop: 8, color: '#64748b', fontWeight: '600', lineHeight: 18 },
+  cardTitle: { flex: 1, fontSize: 14, fontWeight: '900', color: c.text },
+  cardSub: { marginTop: 8, color: c.textMuted, fontWeight: '600', lineHeight: 18 },
   pill: {
     backgroundColor: '#eef2ff',
     color: '#4338ca',
@@ -339,7 +340,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     height: 12,
     borderRadius: 999,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: c.border,
     overflow: 'hidden',
   },
   progressFill: {
@@ -348,8 +349,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#2563eb',
   },
   progressRow: { marginTop: 8, flexDirection: 'row', justifyContent: 'space-between' },
-  progressLeft: { color: '#0f172a', fontWeight: '900' },
-  progressRight: { color: '#64748b', fontWeight: '800' },
+  progressLeft: { color: c.text, fontWeight: '900' },
+  progressRight: { color: c.textMuted, fontWeight: '800' },
   secondaryBtn: {
     marginTop: 12,
     borderWidth: 1,
@@ -368,14 +369,14 @@ const styles = StyleSheet.create({
   choice: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    backgroundColor: '#ffffff',
+    borderColor: c.border,
+    backgroundColor: c.surface,
     borderRadius: 14,
     paddingVertical: 12,
     alignItems: 'center',
   },
-  choiceText: { fontWeight: '900', color: '#0f172a' },
-  smallLabel: { color: '#334155', fontWeight: '900' },
+  choiceText: { fontWeight: '900', color: c.text },
+  smallLabel: { color: c.text, fontWeight: '900' },
   moodRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 },
   moodChip: {
     flexDirection: 'row',
@@ -385,23 +386,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    backgroundColor: '#ffffff',
+    borderColor: c.border,
+    backgroundColor: c.surface,
   },
   moodChipActive: { borderColor: '#2563eb', backgroundColor: '#eff6ff' },
   moodEmoji: { fontSize: 16 },
-  moodText: { color: '#334155', fontWeight: '900', fontSize: 12 },
+  moodText: { color: c.text, fontWeight: '900', fontSize: 12 },
   moodTextActive: { color: '#2563eb' },
   textArea: {
     marginTop: 8,
     minHeight: 110,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 14,
     padding: 12,
     fontSize: 14,
-    color: '#0f172a',
-    backgroundColor: '#fff',
+    color: c.text,
+    backgroundColor: c.surface,
   },
   primaryBtn: {
     marginTop: 12,
@@ -418,3 +419,6 @@ const styles = StyleSheet.create({
 });
 
 
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

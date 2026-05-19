@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,6 +11,8 @@ import { useUser } from '@clerk/clerk-expo';
 import { useUser as useAppUser } from '@/context/UserContext';
 import { getBottomContentPadding } from '@/utils/layout';
 
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
+
 type Message = {
   role: 'user' | 'coach';
   content: string;
@@ -19,6 +21,7 @@ type Message = {
 };
 
 export default function AiCoachScreen() {
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();

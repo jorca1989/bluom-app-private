@@ -12,6 +12,8 @@ import { CircularProgress } from '@/components/CircularProgress';
 import { getBottomContentPadding } from '@/utils/layout';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
+
 const { width } = Dimensions.get('window');
 
 const getFastingProtocols = (t: any) => [
@@ -34,6 +36,7 @@ const getEducationCards = (t: any) => [
 ];
 
 export default function FastingScreen() {
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();

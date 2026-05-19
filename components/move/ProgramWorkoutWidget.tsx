@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import WorkoutDayCard from './WorkoutDayCard';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 interface ExerciseThumb {
   id: string;
@@ -56,6 +58,8 @@ export default function ProgramWorkoutWidget({
   onStartWorkout,
   onViewWorkout
 }: ProgramWorkoutWidgetProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const { t } = useTranslation();
   return (
     <View style={styles.card}>
@@ -115,14 +119,14 @@ export default function ProgramWorkoutWidget({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 24,
     marginHorizontal: 24,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     overflow: 'hidden',
   },
   content: {
@@ -149,12 +153,12 @@ const styles = StyleSheet.create({
   programTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 2,
   },
   programSubtitle: {
     fontSize: 13,
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: '500',
   },
   progressContainer: {
@@ -168,7 +172,7 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 14,
-    color: '#0f172a',
+    color: c.text,
     fontWeight: '600',
   },
   progressPercent: {
@@ -178,7 +182,7 @@ const styles = StyleSheet.create({
   },
   progressBarBg: {
     height: 6,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 3,
     overflow: 'hidden',
   },
@@ -189,12 +193,12 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     width: '100%',
   },
   workoutsContainer: {
     paddingVertical: 8,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
   },
   scrollContent: {
     paddingHorizontal: 12,
@@ -202,3 +206,6 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   }
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

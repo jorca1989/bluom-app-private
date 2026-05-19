@@ -1,4 +1,4 @@
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 /**
  * app/womens-health.tsx
  * ─────────────────────────────────────────────────────────────
@@ -371,6 +371,7 @@ const SYMPTOMS_KEYS = [
 // ─────────────────────────────────────────────────────────────
 export default function WomensHealthScreen() {
   const { colors: themeColors } = useTheme();
+  const s = useMemo(() => createS(themeColors), [themeColors]);
   const router   = useRouter();
   const insets   = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
@@ -1213,60 +1214,60 @@ export default function WomensHealthScreen() {
 // ─────────────────────────────────────────────────────────────
 // STYLES
 // ─────────────────────────────────────────────────────────────
-const s = StyleSheet.create({
+const createS = (c: ThemeColors) => StyleSheet.create({
   screen:  { flex: 1, backgroundColor: '#fdf2f8' },
 
   // Quiz
-  quizScreen:   { flex: 1, backgroundColor: '#fff' },
+  quizScreen:   { flex: 1, backgroundColor: c.surface },
   quizTopBar:   { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 },
   quizBack:     { width: 36, height: 36, borderRadius: 18, backgroundColor: '#fdf2f8', alignItems: 'center', justifyContent: 'center' },
   quizProgress: { flex: 1, height: 5, backgroundColor: '#fce7f3', borderRadius: 3, overflow: 'hidden' },
   quizProgressFill: { height: '100%', backgroundColor: '#e11d48', borderRadius: 3 },
-  quizStepNum:  { fontSize: 12, fontWeight: '700', color: '#94a3b8', width: 32, textAlign: 'right' },
+  quizStepNum:  { fontSize: 12, fontWeight: '700', color: c.textMuted, width: 32, textAlign: 'right' },
   quizHero:     { paddingHorizontal: 20, paddingBottom: 4 },
   quizHeroBg:   { borderRadius: 20, padding: 20 },
   quizHeroEmoji:{ fontSize: 44, marginBottom: 10 },
-  quizHeroTitle:{ fontSize: 24, fontWeight: '900', color: '#0f172a', marginBottom: 8 },
-  quizHeroSub:  { fontSize: 14, color: '#64748b', lineHeight: 21 },
-  quizKnowBox:  { marginTop: 16, backgroundColor: '#fff', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: '#fce7f3' },
+  quizHeroTitle:{ fontSize: 24, fontWeight: '900', color: c.text, marginBottom: 8 },
+  quizHeroSub:  { fontSize: 14, color: c.textMuted, lineHeight: 21 },
+  quizKnowBox:  { marginTop: 16, backgroundColor: c.surface, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: '#fce7f3' },
   quizKnowTitle:{ fontSize: 12, fontWeight: '800', color: '#be185d', marginBottom: 8 },
-  quizKnowItem: { fontSize: 13, color: '#1e293b', marginBottom: 4, fontWeight: '500' },
+  quizKnowItem: { fontSize: 13, color: c.text, marginBottom: 4, fontWeight: '500' },
   quizBody:     { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 60 },
   quizEmoji:    { fontSize: 44, marginBottom: 10 },
-  quizQuestion: { fontSize: 22, fontWeight: '800', color: '#0f172a', marginBottom: 20, lineHeight: 30 },
+  quizQuestion: { fontSize: 22, fontWeight: '800', color: c.text, marginBottom: 20, lineHeight: 30 },
   quizOptions:  { gap: 10 },
   quizOption:   { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#fdf2f8', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#fce7f3' },
   quizOptionIcon: { fontSize: 22 },
-  quizOptionLabel:{ flex: 1, fontSize: 15, fontWeight: '600', color: '#1e293b' },
+  quizOptionLabel:{ flex: 1, fontSize: 15, fontWeight: '600', color: c.text },
 
   // Header
-  header:     { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 8, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#fce7f3' },
+  header:     { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 8, backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: '#fce7f3' },
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: '#fdf2f8', alignItems: 'center', justifyContent: 'center' },
-  headerTitle:{ fontSize: 17, fontWeight: '900', color: '#0f172a' },
-  headerSub:  { fontSize: 11, color: '#94a3b8', fontWeight: '600', marginTop: 1 },
+  headerTitle:{ fontSize: 17, fontWeight: '900', color: c.text },
+  headerSub:  { fontSize: 11, color: c.textMuted, fontWeight: '600', marginTop: 1 },
   stageBtn:   { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#fdf2f8', paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1, borderColor: '#fce7f3' },
   stageBtnEmoji: { fontSize: 16 },
   infoBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: '#ecfdf5', alignItems: 'center', justifyContent: 'center' },
 
   // Tabs
-  tabBar:   { flexDirection: 'row', backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#fce7f3' },
+  tabBar:   { flexDirection: 'row', backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: '#fce7f3' },
   tab:      { flex: 1, alignItems: 'center', paddingVertical: 10, gap: 3 },
   tabActive:{ borderBottomWidth: 2, borderBottomColor: '#e11d48' },
   tabEmoji: { fontSize: 14 },
-  tabLabel: { fontSize: 10, fontWeight: '700', color: '#94a3b8' },
+  tabLabel: { fontSize: 10, fontWeight: '700', color: c.textMuted },
   tabLabelActive: { color: '#e11d48', fontWeight: '800' },
 
   scroll: { paddingHorizontal: 16, paddingTop: 14 },
 
-  sectionTitle: { fontSize: 16, fontWeight: '800', color: '#0f172a', marginBottom: 10 },
-  insightsSub:  { fontSize: 13, color: '#64748b', marginBottom: 14, lineHeight: 19 },
+  sectionTitle: { fontSize: 16, fontWeight: '800', color: c.text, marginBottom: 10 },
+  insightsSub:  { fontSize: 13, color: c.textMuted, marginBottom: 14, lineHeight: 19 },
 
   // Setup banner
   setupBanner:  { backgroundColor: '#fdf2f8', borderRadius: 18, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: '#fce7f3' },
   setupTitle:   { fontSize: 16, fontWeight: '800', color: '#9d174d', marginBottom: 4 },
   setupSub:     { fontSize: 13, color: '#be185d', marginBottom: 12, fontWeight: '500' },
   setupInputRow:{ flexDirection: 'row', gap: 10 },
-  setupInput:   { flex: 1, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: '#fce7f3', padding: 12, fontSize: 15, color: '#0f172a' },
+  setupInput:   { flex: 1, backgroundColor: c.surface, borderRadius: 12, borderWidth: 1, borderColor: '#fce7f3', padding: 12, fontSize: 15, color: c.text },
   setupSaveBtn: { backgroundColor: '#e11d48', borderRadius: 12, paddingHorizontal: 18, justifyContent: 'center' },
   setupSaveTxt: { color: '#fff', fontWeight: '800', fontSize: 14 },
 
@@ -1283,146 +1284,149 @@ const s = StyleSheet.create({
   scoreVal:     { fontSize: 18, fontWeight: '900', color: '#fff' },
   scoreLbl:     { fontSize: 9, color: 'rgba(255,255,255,0.6)', fontWeight: '700' },
   pregnancyBar: { height: 5, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 3, overflow: 'hidden', marginBottom: 6 },
-  pregnancyBarFill: { height: '100%', backgroundColor: '#fff', borderRadius: 3 },
+  pregnancyBarFill: { height: '100%', backgroundColor: c.surface, borderRadius: 3 },
   pregnancyBarLbl: { fontSize: 11, color: 'rgba(255,255,255,0.6)', fontWeight: '600', textAlign: 'right' },
 
   // Sync cards
   syncScroll: { marginBottom: 16 },
   syncCard:   { width: 160, borderRadius: 16, borderWidth: 1, padding: 14, marginRight: 10 },
-  syncCardTitle: { fontSize: 13, fontWeight: '800', color: '#1e293b', marginBottom: 6 },
-  syncCardBody:  { fontSize: 12, color: '#475569', lineHeight: 17 },
+  syncCardTitle: { fontSize: 13, fontWeight: '800', color: c.text, marginBottom: 6 },
+  syncCardBody:  { fontSize: 12, color: c.text, lineHeight: 17 },
 
   // Action tiles
-  actionTile:  { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff', borderRadius: 16, padding: 14, marginBottom: 10, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
+  actionTile:  { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: c.surface, borderRadius: 16, padding: 14, marginBottom: 10, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
   actionIcon:  { width: 44, height: 44, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
-  actionLabel: { fontSize: 15, fontWeight: '700', color: '#0f172a' },
-  actionSub:   { fontSize: 11, color: '#94a3b8', marginTop: 1 },
+  actionLabel: { fontSize: 15, fontWeight: '700', color: c.text },
+  actionSub:   { fontSize: 11, color: c.textMuted, marginTop: 1 },
   proChip:     { backgroundColor: '#fef9c3', borderRadius: 8, paddingHorizontal: 7, paddingVertical: 3, marginRight: 4 },
   proChipTxt:  { fontSize: 10, fontWeight: '800', color: '#92400e' },
 
   // Insights
-  insightCard: { backgroundColor: '#fff', borderRadius: 16, padding: 16, marginBottom: 12, borderLeftWidth: 4, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
+  insightCard: { backgroundColor: c.surface, borderRadius: 16, padding: 16, marginBottom: 12, borderLeftWidth: 4, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
   insightTop:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 },
   insightEmoji:{ fontSize: 22, marginTop: 2 },
-  insightTitle:{ fontSize: 15, fontWeight: '800', color: '#0f172a', marginBottom: 4 },
+  insightTitle:{ fontSize: 15, fontWeight: '800', color: c.text, marginBottom: 4 },
   priorityBadge: { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
   priorityTxt:   { fontSize: 10, fontWeight: '700' },
-  insightBody: { fontSize: 13, color: '#475569', lineHeight: 19 },
+  insightBody: { fontSize: 13, color: c.text, lineHeight: 19 },
   insightLink: { marginTop: 10 },
   insightLinkTxt: { fontSize: 12, fontWeight: '700', color: '#e11d48' },
 
   // Pro blur
-  proBlurWrap: { borderRadius: 18, overflow: 'hidden', backgroundColor: '#fff', marginBottom: 14, borderWidth: 1, borderColor: '#fce7f3' },
+  proBlurWrap: { borderRadius: 18, overflow: 'hidden', backgroundColor: c.surface, marginBottom: 14, borderWidth: 1, borderColor: '#fce7f3' },
   proBlurContent: { alignItems: 'center', justifyContent: 'center', paddingVertical: 24, paddingHorizontal: 20 },
-  proBlurTitle: { fontSize: 16, fontWeight: '800', color: '#0f172a', marginBottom: 6, textAlign: 'center' },
-  proBlurSub:   { fontSize: 13, color: '#64748b', textAlign: 'center', marginBottom: 14, lineHeight: 19 },
+  proBlurTitle: { fontSize: 16, fontWeight: '800', color: c.text, marginBottom: 6, textAlign: 'center' },
+  proBlurSub:   { fontSize: 13, color: c.textMuted, textAlign: 'center', marginBottom: 14, lineHeight: 19 },
   proBlurBtn:   { backgroundColor: '#e11d48', borderRadius: 14, paddingVertical: 12, paddingHorizontal: 24 },
   proBlurBtnTxt:{ color: '#fff', fontWeight: '800', fontSize: 14 },
 
   // Learn
-  articleCard:      { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 16, padding: 14, marginBottom: 10, gap: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
+  articleCard:      { flexDirection: 'row', alignItems: 'center', backgroundColor: c.surface, borderRadius: 16, padding: 14, marginBottom: 10, gap: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
   articleCardLeft:  { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
   articleCardEmoji: { fontSize: 28 },
-  articleCardCategory: { fontSize: 10, color: '#94a3b8', fontWeight: '700', textTransform: 'uppercase', marginBottom: 3 },
-  articleCardTitle: { fontSize: 14, fontWeight: '700', color: '#0f172a', lineHeight: 19 },
-  articleHeader:    { flexDirection: 'row', gap: 12, padding: 20, borderBottomWidth: 1, borderBottomColor: '#f1f5f9', backgroundColor: '#fff' },
-  articleCategory:  { fontSize: 11, color: '#94a3b8', fontWeight: '700', textTransform: 'uppercase', marginBottom: 4 },
-  articleTitle:     { fontSize: 20, fontWeight: '900', color: '#0f172a', lineHeight: 26 },
-  articleClose:     { width: 34, height: 34, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
-  articleBody:      { fontSize: 15, color: '#334155', lineHeight: 24, marginBottom: 20 },
-  articleDisclaimer:{ flexDirection: 'row', gap: 8, backgroundColor: '#f8fafc', borderRadius: 12, padding: 12 },
-  articleDisclaimerTxt: { flex: 1, fontSize: 11, color: '#94a3b8', lineHeight: 16 },
+  articleCardCategory: { fontSize: 10, color: c.textMuted, fontWeight: '700', textTransform: 'uppercase', marginBottom: 3 },
+  articleCardTitle: { fontSize: 14, fontWeight: '700', color: c.text, lineHeight: 19 },
+  articleHeader:    { flexDirection: 'row', gap: 12, padding: 20, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted, backgroundColor: c.surface },
+  articleCategory:  { fontSize: 11, color: c.textMuted, fontWeight: '700', textTransform: 'uppercase', marginBottom: 4 },
+  articleTitle:     { fontSize: 20, fontWeight: '900', color: c.text, lineHeight: 26 },
+  articleClose:     { width: 34, height: 34, borderRadius: 10, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
+  articleBody:      { fontSize: 15, color: c.text, lineHeight: 24, marginBottom: 20 },
+  articleDisclaimer:{ flexDirection: 'row', gap: 8, backgroundColor: c.surfaceMuted, borderRadius: 12, padding: 12 },
+  articleDisclaimerTxt: { flex: 1, fontSize: 11, color: c.textMuted, lineHeight: 16 },
 
-  privacyRow:   { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff', borderRadius: 16, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#dcfce7' },
-  privacyTitle: { fontSize: 14, fontWeight: '700', color: '#0f172a' },
-  privacySub:   { fontSize: 11, color: '#94a3b8', marginTop: 1 },
+  privacyRow:   { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: c.surface, borderRadius: 16, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#dcfce7' },
+  privacyTitle: { fontSize: 14, fontWeight: '700', color: c.text },
+  privacySub:   { fontSize: 11, color: c.textMuted, marginTop: 1 },
   retakeBtn:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, padding: 14 },
   retakeTxt:    { fontSize: 13, fontWeight: '700', color: '#e11d48' },
 
   // Calendar
   calendarGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
-  calDay:       { width: (SW - 48 - 54) / 7, height: (SW - 48 - 54) / 7, borderRadius: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff', borderWidth: 1, borderColor: '#f1f5f9' },
-  calDayNum:    { fontSize: 12, fontWeight: '700', color: '#475569' },
+  calDay:       { width: (SW - 48 - 54) / 7, height: (SW - 48 - 54) / 7, borderRadius: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: c.surface, borderWidth: 1, borderColor: c.surfaceMuted },
+  calDayNum:    { fontSize: 12, fontWeight: '700', color: c.text },
   phaseLegend:  { gap: 6, marginBottom: 16 },
   legendItem:   { flexDirection: 'row', alignItems: 'center', gap: 8 },
   legendDot:    { width: 10, height: 10, borderRadius: 5 },
-  legendTxt:    { fontSize: 13, fontWeight: '600', color: '#334155' },
-  legendDays:   { color: '#94a3b8', fontWeight: '500' },
-  phaseDiveCard:{ backgroundColor: '#fff', borderRadius: 18, padding: 16, borderLeftWidth: 4, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1, marginBottom: 14 },
+  legendTxt:    { fontSize: 13, fontWeight: '600', color: c.text },
+  legendDays:   { color: c.textMuted, fontWeight: '500' },
+  phaseDiveCard:{ backgroundColor: c.surface, borderRadius: 18, padding: 16, borderLeftWidth: 4, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1, marginBottom: 14 },
   phaseDiveName:{ fontSize: 16, fontWeight: '800', marginBottom: 6 },
-  phaseDiveBody:{ fontSize: 13, color: '#64748b', lineHeight: 19, marginBottom: 14 },
+  phaseDiveBody:{ fontSize: 13, color: c.textMuted, lineHeight: 19, marginBottom: 14 },
   phaseDiveGrid:{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  phaseDiveItem:{ width: '47%', backgroundColor: '#f8fafc', borderRadius: 12, padding: 12 },
+  phaseDiveItem:{ width: '47%', backgroundColor: c.surfaceMuted, borderRadius: 12, padding: 12 },
   phaseDiveEmoji:{ fontSize: 20, marginBottom: 4 },
-  phaseDiveItemLabel: { fontSize: 10, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', marginBottom: 3 },
-  phaseDiveItemVal:   { fontSize: 12, color: '#334155', lineHeight: 17 },
+  phaseDiveItemLabel: { fontSize: 10, fontWeight: '800', color: c.textMuted, textTransform: 'uppercase', marginBottom: 3 },
+  phaseDiveItemVal:   { fontSize: 12, color: c.text, lineHeight: 17 },
 
   // Trimester
-  trimesterBlock: { backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 10 },
+  trimesterBlock: { backgroundColor: c.surface, borderRadius: 14, padding: 14, marginBottom: 10 },
   trimesterTitle: { fontSize: 14, fontWeight: '800', color: '#be185d', marginBottom: 4 },
-  trimesterRange: { fontSize: 13, color: '#64748b', lineHeight: 19 },
+  trimesterRange: { fontSize: 13, color: c.textMuted, lineHeight: 19 },
 
   // History
-  historyRow:    { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, padding: 12, marginBottom: 8, gap: 12 },
-  historyDate:   { fontSize: 12, fontWeight: '700', color: '#94a3b8', width: 80 },
+  historyRow:    { flexDirection: 'row', alignItems: 'center', backgroundColor: c.surface, borderRadius: 12, padding: 12, marginBottom: 8, gap: 12 },
+  historyDate:   { fontSize: 12, fontWeight: '700', color: c.textMuted, width: 80 },
   historyStats:  { flex: 1, flexDirection: 'row', gap: 10 },
-  historyStat:   { fontSize: 12, color: '#334155', fontWeight: '600' },
+  historyStat:   { fontSize: 12, color: c.text, fontWeight: '600' },
 
-  emptyTxt: { fontSize: 13, color: '#94a3b8', textAlign: 'center', paddingVertical: 30, fontStyle: 'italic' },
+  emptyTxt: { fontSize: 13, color: c.textMuted, textAlign: 'center', paddingVertical: 30, fontStyle: 'italic' },
 
   // Bio modal
-  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
-  modalTitle:  { fontSize: 20, fontWeight: '900', color: '#0f172a' },
-  modalClose:  { width: 34, height: 34, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
+  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted },
+  modalTitle:  { fontSize: 20, fontWeight: '900', color: c.text },
+  modalClose:  { width: 34, height: 34, borderRadius: 10, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
   moodSync:    { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#f5f3ff', borderRadius: 12, padding: 12, marginBottom: 16 },
   moodSyncTxt: { fontSize: 13, color: '#7e22ce', fontWeight: '600' },
-  bioLabel:    { fontSize: 12, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10, marginTop: 14 },
+  bioLabel:    { fontSize: 12, fontWeight: '800', color: c.textMuted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10, marginTop: 14 },
   dotRow:      { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
-  dot:         { width: 32, height: 32, borderRadius: 16, borderWidth: 1, borderColor: '#e2e8f0', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc' },
+  dot:         { width: 32, height: 32, borderRadius: 16, borderWidth: 1, borderColor: c.border, alignItems: 'center', justifyContent: 'center', backgroundColor: c.surfaceMuted },
   dotActive:   { backgroundColor: '#e11d48', borderColor: '#e11d48' },
-  dotTxt:      { fontSize: 12, fontWeight: '700', color: '#64748b' },
+  dotTxt:      { fontSize: 12, fontWeight: '700', color: c.textMuted },
   dotTxtActive:{ color: '#fff' },
   symptomGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 4 },
-  symChip:     { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1, borderColor: '#e2e8f0', backgroundColor: '#f8fafc' },
+  symChip:     { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1, borderColor: c.border, backgroundColor: c.surfaceMuted },
   symChipActive:{ backgroundColor: '#fdf2f8', borderColor: '#e11d48' },
-  symChipTxt:  { fontSize: 12, fontWeight: '600', color: '#475569' },
+  symChipTxt:  { fontSize: 12, fontWeight: '600', color: c.text },
   symChipTxtActive: { color: '#e11d48', fontWeight: '700' },
   flowRow:     { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-  flowChip:    { paddingHorizontal: 14, paddingVertical: 9, borderRadius: 20, borderWidth: 1, borderColor: '#e2e8f0', backgroundColor: '#f8fafc' },
+  flowChip:    { paddingHorizontal: 14, paddingVertical: 9, borderRadius: 20, borderWidth: 1, borderColor: c.border, backgroundColor: c.surfaceMuted },
   flowChipActive:{ backgroundColor: '#e11d48', borderColor: '#e11d48' },
-  flowTxt:     { fontSize: 13, fontWeight: '600', color: '#475569' },
+  flowTxt:     { fontSize: 13, fontWeight: '600', color: c.text },
   saveBtn:     { backgroundColor: '#e11d48', borderRadius: 16, paddingVertical: 15, alignItems: 'center', marginTop: 20 },
   saveBtnTxt:  { color: '#fff', fontSize: 16, fontWeight: '800' },
 
   // Supplement modal
-  suppIntro:   { fontSize: 13, color: '#64748b', lineHeight: 19, marginBottom: 16 },
-  suppCard:    { backgroundColor: '#fff', borderRadius: 16, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
+  suppIntro:   { fontSize: 13, color: c.textMuted, lineHeight: 19, marginBottom: 16 },
+  suppCard:    { backgroundColor: c.surface, borderRadius: 16, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
   suppTop:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
-  suppName:    { fontSize: 16, fontWeight: '800', color: '#0f172a' },
+  suppName:    { fontSize: 16, fontWeight: '800', color: c.text },
   evidenceBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
   evidenceTxt: { fontSize: 10, fontWeight: '800' },
-  suppDose:    { fontSize: 12, color: '#94a3b8', fontWeight: '600', marginBottom: 6 },
-  suppReason:  { fontSize: 13, color: '#475569', lineHeight: 19 },
-  suppDisclaimer: { flexDirection: 'row', gap: 8, backgroundColor: '#f8fafc', borderRadius: 12, padding: 12, marginTop: 8 },
-  suppDisclaimerTxt: { flex: 1, fontSize: 11, color: '#94a3b8', lineHeight: 16 },
+  suppDose:    { fontSize: 12, color: c.textMuted, fontWeight: '600', marginBottom: 6 },
+  suppReason:  { fontSize: 13, color: c.text, lineHeight: 19 },
+  suppDisclaimer: { flexDirection: 'row', gap: 8, backgroundColor: c.surfaceMuted, borderRadius: 12, padding: 12, marginTop: 8 },
+  suppDisclaimerTxt: { flex: 1, fontSize: 11, color: c.textMuted, lineHeight: 16 },
 
   // Pelvic modal
-  pelvicTitle: { fontSize: 26, fontWeight: '900', color: '#0f172a', textAlign: 'center', marginBottom: 6 },
-  pelvicSub:   { fontSize: 13, color: '#64748b', textAlign: 'center', marginBottom: 32, lineHeight: 19 },
+  pelvicTitle: { fontSize: 26, fontWeight: '900', color: c.text, textAlign: 'center', marginBottom: 6 },
+  pelvicSub:   { fontSize: 13, color: c.textMuted, textAlign: 'center', marginBottom: 32, lineHeight: 19 },
   timerCircle: { width: 220, height: 220, borderRadius: 110, borderWidth: 6, alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
-  timerTime:   { fontSize: 48, fontWeight: '900', color: '#0f172a' },
+  timerTime:   { fontSize: 48, fontWeight: '900', color: c.text },
   timerMsg:    { fontSize: 14, fontWeight: '700', color: '#e11d48', marginTop: 4, letterSpacing: 1 },
-  pelvicInstructions: { fontSize: 13, color: '#64748b', textAlign: 'center', marginBottom: 24, lineHeight: 19, paddingHorizontal: 20 },
+  pelvicInstructions: { fontSize: 13, color: c.textMuted, textAlign: 'center', marginBottom: 24, lineHeight: 19, paddingHorizontal: 20 },
   pelvicBtn:   { paddingHorizontal: 40, paddingVertical: 16, borderRadius: 20 },
   pelvicBtnTxt:{ color: '#fff', fontWeight: '800', fontSize: 17 },
 
   // Stage selector
   stageOverlay:  { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', padding: 20 },
-  stageCard:     { backgroundColor: '#fff', borderRadius: 22, padding: 20 },
-  stageTitle:    { fontSize: 20, fontWeight: '900', color: '#0f172a', marginBottom: 16 },
-  stageOption:   { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 14, backgroundColor: '#f8fafc', marginBottom: 8 },
+  stageCard:     { backgroundColor: c.surface, borderRadius: 22, padding: 20 },
+  stageTitle:    { fontSize: 20, fontWeight: '900', color: c.text, marginBottom: 16 },
+  stageOption:   { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 14, backgroundColor: c.surfaceMuted, marginBottom: 8 },
   stageOptionActive: { backgroundColor: '#fdf2f8', borderWidth: 1, borderColor: '#fce7f3' },
   stageEmoji:    { fontSize: 22 },
-  stageLabel:    { flex: 1, fontSize: 15, fontWeight: '600', color: '#334155' },
+  stageLabel:    { flex: 1, fontSize: 15, fontWeight: '600', color: c.text },
   stageCancelBtn:{ alignItems: 'center', padding: 14, marginTop: 4 },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const s = createS(THEMES.default.colors);

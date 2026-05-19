@@ -1,4 +1,6 @@
-import React, { useRef, useCallback, useState, useEffect } from 'react';
+import React, { useRef, useCallback, useState, useEffect, useMemo } from 'react';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+
 import {
   View,
   Text,
@@ -20,6 +22,8 @@ interface HeightRulerProps {
 }
 
 export default function HeightRuler({ units, initialValue, onValueChange }: HeightRulerProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const values = React.useMemo(() => {
     if (units === 'cm') {
       const vals: number[] = [];
@@ -159,9 +163,9 @@ export default function HeightRuler({ units, initialValue, onValueChange }: Heig
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: { alignItems: 'center', paddingVertical: 12 },
-  currentValue: { fontSize: 36, fontWeight: '900', color: '#1e293b', marginBottom: 12 },
+  currentValue: { fontSize: 36, fontWeight: '900', color: c.text, marginBottom: 12 },
   rulerContainer: { height: RULER_HEIGHT, width: width * 0.75, overflow: 'hidden', position: 'relative' },
   centerLine: {
     position: 'absolute',
@@ -176,5 +180,7 @@ const styles = StyleSheet.create({
   rulerText: { flex: 1, textAlign: 'center' },
   tickContainer: { width: 50, alignItems: 'flex-end' },
   tick: { borderRadius: 2 },
-  helperText: { marginTop: 8, fontSize: 13, color: '#94a3b8', fontWeight: '500' },
+  helperText: { marginTop: 8, fontSize: 13, color: c.textMuted, fontWeight: '500' },
 });
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

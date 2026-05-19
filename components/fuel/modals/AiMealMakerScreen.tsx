@@ -12,7 +12,7 @@
  *   <Stack.Screen name="ai-meal-maker" options={{ headerShown: false }} />
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   TextInput, Modal, ActivityIndicator, Alert,
@@ -30,6 +30,8 @@ import { Platform } from 'react-native';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import { useTranslation } from 'react-i18next';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -96,6 +98,8 @@ function getRecipeImage(query: string): string {
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
 export default function AiMealMakerScreen() {
+  const { colors: themeColors } = useTheme();
+  const st = useMemo(() => createSt(themeColors), [themeColors]);
   const router   = useRouter();
   const insets   = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
@@ -702,21 +706,21 @@ export default function AiMealMakerScreen() {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const st = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+const createSt = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.surfaceMuted },
 
   header: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     paddingHorizontal: 20, paddingVertical: 14,
-    borderBottomWidth: 1, borderBottomColor: '#f1f5f9',
-    backgroundColor: '#fff',
+    borderBottomWidth: 1, borderBottomColor: c.surfaceMuted,
+    backgroundColor: c.surface,
   },
   backBtn: {
     width: 36, height: 36, borderRadius: 18,
-    backgroundColor: '#f1f5f9', justifyContent: 'center', alignItems: 'center',
+    backgroundColor: c.surfaceMuted, justifyContent: 'center', alignItems: 'center',
   },
-  headerTitle: { fontSize: 17, fontWeight: '800', color: '#0f172a', flex: 1 },
-  headerSub:   { fontSize: 11, color: '#94a3b8' },
+  headerTitle: { fontSize: 17, fontWeight: '800', color: c.text, flex: 1 },
+  headerSub:   { fontSize: 11, color: c.textMuted },
   newBtn: { backgroundColor: '#eff6ff', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
   newBtnText: { fontSize: 12, fontWeight: '800', color: '#2563eb' },
 
@@ -735,15 +739,15 @@ const st = StyleSheet.create({
   // Mode cards
   modeCard: {
     flexDirection: 'row', alignItems: 'center', gap: 14,
-    backgroundColor: '#fff', borderRadius: 18, padding: 18,
-    borderWidth: 1, borderColor: '#f1f5f9',
+    backgroundColor: c.surface, borderRadius: 18, padding: 18,
+    borderWidth: 1, borderColor: c.surfaceMuted,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05, shadowRadius: 6, elevation: 2,
   },
   modeIcon: { width: 52, height: 52, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
   modeText:  { flex: 1 },
-  modeTitle: { fontSize: 16, fontWeight: '800', color: '#0f172a', marginBottom: 3 },
-  modeSub:   { fontSize: 12, color: '#64748b', lineHeight: 17 },
+  modeTitle: { fontSize: 16, fontWeight: '800', color: c.text, marginBottom: 3 },
+  modeSub:   { fontSize: 12, color: c.textMuted, lineHeight: 17 },
 
   // Camera
   cameraOverlay: {
@@ -762,24 +766,24 @@ const st = StyleSheet.create({
     width: 72, height: 72, borderRadius: 36,
     backgroundColor: 'rgba(255,255,255,0.3)',
     justifyContent: 'center', alignItems: 'center',
-    borderWidth: 2, borderColor: '#fff',
+    borderWidth: 2, borderColor: c.surface,
   },
-  captureBtnInner: { width: 56, height: 56, borderRadius: 28, backgroundColor: '#fff' },
+  captureBtnInner: { width: 56, height: 56, borderRadius: 28, backgroundColor: c.surface },
 
   // Permission
   permissionWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 },
-  permissionText: { fontSize: 16, fontWeight: '600', color: '#475569' },
+  permissionText: { fontSize: 16, fontWeight: '600', color: c.text },
   permissionBtn:  { backgroundColor: '#2563eb', paddingHorizontal: 24, paddingVertical: 14, borderRadius: 14 },
   permissionBtnText: { color: '#fff', fontWeight: '800', fontSize: 15 },
 
   // Text input
-  inputLabel: { fontSize: 15, fontWeight: '700', color: '#0f172a' },
+  inputLabel: { fontSize: 15, fontWeight: '700', color: c.text },
   textarea: {
-    backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#e2e8f0',
-    borderRadius: 16, padding: 16, fontSize: 15, color: '#0f172a',
+    backgroundColor: c.surface, borderWidth: 1.5, borderColor: c.border,
+    borderRadius: 16, padding: 16, fontSize: 15, color: c.text,
     minHeight: 130, lineHeight: 22,
   },
-  inputHint: { fontSize: 12, color: '#94a3b8' },
+  inputHint: { fontSize: 12, color: c.textMuted },
 
   primaryBtn: {
     backgroundColor: '#2563eb', flexDirection: 'row', alignItems: 'center',
@@ -791,10 +795,10 @@ const st = StyleSheet.create({
 
   // Detected box
   detectedBox: {
-    backgroundColor: '#fff', borderRadius: 16, padding: 16,
-    borderWidth: 1, borderColor: '#e2e8f0', gap: 10,
+    backgroundColor: c.surface, borderRadius: 16, padding: 16,
+    borderWidth: 1, borderColor: c.border, gap: 10,
   },
-  detectedLabel: { fontSize: 13, fontWeight: '700', color: '#475569' },
+  detectedLabel: { fontSize: 13, fontWeight: '700', color: c.text },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
@@ -803,28 +807,28 @@ const st = StyleSheet.create({
   },
   chipText: { fontSize: 12, fontWeight: '700', color: '#2563eb' },
 
-  sectionLabel: { fontSize: 13, fontWeight: '800', color: '#475569', textTransform: 'uppercase', letterSpacing: 0.5 },
+  sectionLabel: { fontSize: 13, fontWeight: '800', color: c.text, textTransform: 'uppercase', letterSpacing: 0.5 },
 
   // Options
   optionChip: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     paddingHorizontal: 14, paddingVertical: 10,
-    borderRadius: 20, borderWidth: 1.5, borderColor: '#e2e8f0', backgroundColor: '#fff',
+    borderRadius: 20, borderWidth: 1.5, borderColor: c.border, backgroundColor: c.surface,
   },
   optionChipActive: { borderColor: '#2563eb', backgroundColor: '#eff6ff' },
   optionChipIcon:   { fontSize: 16 },
-  optionChipText:   { fontSize: 13, fontWeight: '600', color: '#475569' },
+  optionChipText:   { fontSize: 13, fontWeight: '600', color: c.text },
   optionChipTextActive: { color: '#1d4ed8' },
 
   goalGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
   goalChip: {
     width: (width - 60) / 3, paddingVertical: 12,
-    borderRadius: 14, borderWidth: 1.5, borderColor: '#e2e8f0',
-    backgroundColor: '#fff', alignItems: 'center', gap: 4,
+    borderRadius: 14, borderWidth: 1.5, borderColor: c.border,
+    backgroundColor: c.surface, alignItems: 'center', gap: 4,
   },
   goalChipActive: { borderColor: '#2563eb', backgroundColor: '#eff6ff' },
   goalIcon: { fontSize: 22 },
-  goalText: { fontSize: 11, fontWeight: '700', color: '#475569', textAlign: 'center' },
+  goalText: { fontSize: 11, fontWeight: '700', color: c.text, textAlign: 'center' },
   goalTextActive: { color: '#1d4ed8' },
 
   // Generating
@@ -843,32 +847,32 @@ const st = StyleSheet.create({
   recipeImage: { width: '100%', height: 240 },
   recipeBody:  { padding: 20, gap: 16 },
   recipeTitleRow: { gap: 6 },
-  recipeTitle: { fontSize: 26, fontWeight: '900', color: '#0f172a', lineHeight: 32 },
+  recipeTitle: { fontSize: 26, fontWeight: '900', color: c.text, lineHeight: 32 },
   recipeTag: {
     alignSelf: 'flex-start', backgroundColor: '#eff6ff',
     borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4,
   },
   recipeTagText: { fontSize: 10, fontWeight: '700', color: '#2563eb' },
-  recipeDesc:    { fontSize: 14, color: '#64748b', lineHeight: 20 },
+  recipeDesc:    { fontSize: 14, color: c.textMuted, lineHeight: 20 },
   recipeMeta:    { flexDirection: 'row', gap: 16 },
   recipeMetaItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  recipeMetaText: { fontSize: 13, color: '#64748b' },
+  recipeMetaText: { fontSize: 13, color: c.textMuted },
 
   macroRow: { flexDirection: 'row', gap: 10 },
   macroCard: {
-    flex: 1, backgroundColor: '#f8fafc', borderRadius: 14,
+    flex: 1, backgroundColor: c.surfaceMuted, borderRadius: 14,
     padding: 12, alignItems: 'center', gap: 4,
-    borderWidth: 1, borderColor: '#f1f5f9',
+    borderWidth: 1, borderColor: c.surfaceMuted,
   },
   macroVal:   { fontSize: 16, fontWeight: '900' },
-  macroLabel: { fontSize: 10, color: '#94a3b8', fontWeight: '600' },
+  macroLabel: { fontSize: 10, color: c.textMuted, fontWeight: '600' },
 
-  sectionTitle: { fontSize: 17, fontWeight: '800', color: '#0f172a' },
+  sectionTitle: { fontSize: 17, fontWeight: '800', color: c.text },
 
   ingredientList: { gap: 8 },
   ingredientRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   ingredientDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#2563eb', marginTop: 6 },
-  ingredientText: { flex: 1, fontSize: 14, color: '#334155', lineHeight: 20 },
+  ingredientText: { flex: 1, fontSize: 14, color: c.text, lineHeight: 20 },
 
   stepRow: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
   stepNum: {
@@ -876,7 +880,7 @@ const st = StyleSheet.create({
     justifyContent: 'center', alignItems: 'center', flexShrink: 0,
   },
   stepNumText: { fontSize: 12, fontWeight: '900', color: '#fff' },
-  stepText: { flex: 1, fontSize: 14, color: '#334155', lineHeight: 21, paddingTop: 4 },
+  stepText: { flex: 1, fontSize: 14, color: c.text, lineHeight: 21, paddingTop: 4 },
 
   ctaRow: { flexDirection: 'row', gap: 10, marginTop: 8 },
   ctaSecondary: {
@@ -900,3 +904,5 @@ const st = StyleSheet.create({
   },
   toastText: { fontSize: 14, fontWeight: '700', color: '#15803d' },
 });
+// Static module-scope fallbacks (default theme) for helper components.
+const st = createSt(THEMES.default.colors);

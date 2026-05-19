@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   View, Text, TouchableOpacity, ScrollView,
@@ -10,6 +10,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { getBottomContentPadding } from '@/utils/layout';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
 
 // ─── Feature categories ─────────────────────────────────────
 const FEATURE_CATEGORIES = [
@@ -48,6 +50,7 @@ const STATIC_POSTS = [
 ];
 
 export default function LibraryScreen() {
+  const { colors: themeColors } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();

@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedExerciseName } from '@/utils/localize';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 interface ExerciseThumb {
   id: string;
@@ -27,6 +29,8 @@ export default function WorkoutDayCard({
   onStartWorkout,
   onViewWorkout
 }: WorkoutDayCardProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const { t, i18n } = useTranslation();
 
   // For visual truncation if more than 3 exercises
@@ -82,9 +86,9 @@ export default function WorkoutDayCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 24,
     padding: 16,
     width: 280,
@@ -128,27 +132,27 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   skipBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   skipText: {
     fontSize: 13,
-    color: '#475569',
+    color: c.text,
     fontWeight: '500',
     marginRight: 2,
   },
   subtitle: {
     fontSize: 14,
-    color: '#475569',
+    color: c.text,
     marginBottom: 20,
     lineHeight: 20,
   },
@@ -163,7 +167,7 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 12,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
@@ -177,18 +181,18 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 12,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
   },
   excessText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#64748b',
+    color: c.textMuted,
   },
   countText: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: '500',
     marginBottom: 24,
   },
@@ -213,13 +217,13 @@ const styles = StyleSheet.create({
   primaryBtnArrow: {
     width: 32,
     height: 32,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
   secondaryBtn: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 16,
     paddingVertical: 14,
     flexDirection: 'row',
@@ -230,6 +234,9 @@ const styles = StyleSheet.create({
   secondaryBtnText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#0f172a',
+    color: c.text,
   },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

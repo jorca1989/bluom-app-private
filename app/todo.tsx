@@ -1,4 +1,4 @@
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 /**
  * Bluom Productivity Hub  —  app/todo.tsx
  * ─────────────────────────────────────────────
@@ -147,6 +147,7 @@ const FREE_LIMIT = 3;
 // ─────────────────────────────────────────────────────────────
 export default function ProductivityHub() {
   const { colors: themeColors } = useTheme();
+  const s = useMemo(() => createS(themeColors), [themeColors]);
   const { t } = useTranslation();
   const router   = useRouter();
   const insets   = useSafeAreaInsets();
@@ -987,30 +988,30 @@ export default function ProductivityHub() {
 // ─────────────────────────────────────────────────────────────
 // STYLES
 // ─────────────────────────────────────────────────────────────
-const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#F5F4F0' },
+const createS = (c: ThemeColors) => StyleSheet.create({
+  screen: { flex: 1, backgroundColor: c.bg },
 
   // ── Quiz ──
-  quizScreen:     { flex: 1, backgroundColor: '#fff' },
+  quizScreen:     { flex: 1, backgroundColor: c.surface },
   quizTopBar:     { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 },
-  quizBack:       { width: 36, height: 36, borderRadius: 18, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
-  quizProgressTrack: { flex: 1, height: 5, backgroundColor: '#f1f5f9', borderRadius: 3, overflow: 'hidden' },
+  quizBack:       { width: 36, height: 36, borderRadius: 18, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
+  quizProgressTrack: { flex: 1, height: 5, backgroundColor: c.surfaceMuted, borderRadius: 3, overflow: 'hidden' },
   quizProgressFill:  { height: '100%', backgroundColor: '#2563eb', borderRadius: 3 },
-  quizStepLabel:  { fontSize: 12, fontWeight: '700', color: '#94a3b8', width: 32, textAlign: 'right' },
+  quizStepLabel:  { fontSize: 12, fontWeight: '700', color: c.textMuted, width: 32, textAlign: 'right' },
   quizHero:       { paddingHorizontal: 24, paddingTop: 8, paddingBottom: 24 },
   quizHeroBadge:  { alignSelf: 'flex-start', backgroundColor: '#eff6ff', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 5, marginBottom: 12 },
   quizHeroBadgeText: { fontSize: 10, fontWeight: '900', color: '#2563eb', letterSpacing: 0.8 },
-  quizHeroTitle:  { fontSize: 28, fontWeight: '900', color: '#0f172a', lineHeight: 34, marginBottom: 10 },
-  quizHeroSub:    { fontSize: 14, color: '#64748b', lineHeight: 21, fontWeight: '500' },
+  quizHeroTitle:  { fontSize: 28, fontWeight: '900', color: c.text, lineHeight: 34, marginBottom: 10 },
+  quizHeroSub:    { fontSize: 14, color: c.textMuted, lineHeight: 21, fontWeight: '500' },
   quizBody:       { paddingHorizontal: 24, paddingBottom: 60 },
   quizEmoji:      { fontSize: 44, marginBottom: 12, marginTop: 8 },
-  quizQuestion:   { fontSize: 22, fontWeight: '800', color: '#0f172a', marginBottom: 24, lineHeight: 30 },
+  quizQuestion:   { fontSize: 22, fontWeight: '800', color: c.text, marginBottom: 24, lineHeight: 30 },
   quizOptions:    { gap: 10 },
-  quizOption:     { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#f8fafc', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#e2e8f0' },
+  quizOption:     { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: c.surfaceMuted, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: c.border },
   quizOptionIcon: { fontSize: 22 },
-  quizOptionLabel:{ flex: 1, fontSize: 16, fontWeight: '600', color: '#1e293b' },
-  quizWeekGoalHint: { fontSize: 12, color: '#94a3b8', fontWeight: '500', marginBottom: 8 },
-  quizTextInput:  { backgroundColor: '#f8fafc', borderRadius: 16, borderWidth: 1, borderColor: '#e2e8f0', padding: 16, fontSize: 16, color: '#1e293b', minHeight: 120, marginBottom: 16 },
+  quizOptionLabel:{ flex: 1, fontSize: 16, fontWeight: '600', color: c.text },
+  quizWeekGoalHint: { fontSize: 12, color: c.textMuted, fontWeight: '500', marginBottom: 8 },
+  quizTextInput:  { backgroundColor: c.surfaceMuted, borderRadius: 16, borderWidth: 1, borderColor: c.border, padding: 16, fontSize: 16, color: c.text, minHeight: 120, marginBottom: 16 },
   quizNextBtn:    { backgroundColor: '#2563eb', borderRadius: 16, paddingVertical: 16, alignItems: 'center' },
   quizNextTxt:    { color: '#fff', fontSize: 17, fontWeight: '800' },
   quizKnowBox:    { marginTop: 28, backgroundColor: '#f0fdf4', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#bbf7d0' },
@@ -1019,39 +1020,39 @@ const s = StyleSheet.create({
   quizKnowSub:    { fontSize: 11, color: '#4ade80', marginTop: 6, fontWeight: '600' },
 
   // ── Top Bar ──
-  topBar:   { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 8, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
-  backBtn:  { width: 36, height: 36, borderRadius: 18, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
-  topTitle: { fontSize: 17, fontWeight: '900', color: '#0f172a' },
-  topSub:   { fontSize: 11, color: '#94a3b8', fontWeight: '600', marginTop: 1 },
-  topIcon:  { width: 36, height: 36, borderRadius: 11, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
+  topBar:   { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 8, backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted },
+  backBtn:  { width: 36, height: 36, borderRadius: 18, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
+  topTitle: { fontSize: 17, fontWeight: '900', color: c.text },
+  topSub:   { fontSize: 11, color: c.textMuted, fontWeight: '600', marginTop: 1 },
+  topIcon:  { width: 36, height: 36, borderRadius: 11, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
   topIconActive: { backgroundColor: '#ecfdf5' },
 
   scroll: { paddingHorizontal: 16, paddingTop: 12 },
 
   // ── Banner ──
-  banner:         { backgroundColor: '#fff', borderRadius: 18, padding: 16, marginBottom: 12, flexDirection: 'row', alignItems: 'center', shadowColor: '#2563eb', shadowOpacity: 0.05, shadowRadius: 8, elevation: 1 },
+  banner:         { backgroundColor: c.surface, borderRadius: 18, padding: 16, marginBottom: 12, flexDirection: 'row', alignItems: 'center', shadowColor: '#2563eb', shadowOpacity: 0.05, shadowRadius: 8, elevation: 1 },
   bannerLeft:     { flex: 1 },
-  bannerGreeting: { fontSize: 15, fontWeight: '800', color: '#0f172a' },
-  bannerGoal:     { fontSize: 12, color: '#64748b', marginTop: 3, fontWeight: '600' },
-  bannerReset:    { width: 30, height: 30, borderRadius: 8, backgroundColor: '#f8fafc', alignItems: 'center', justifyContent: 'center' },
+  bannerGreeting: { fontSize: 15, fontWeight: '800', color: c.text },
+  bannerGoal:     { fontSize: 12, color: c.textMuted, marginTop: 3, fontWeight: '600' },
+  bannerReset:    { width: 30, height: 30, borderRadius: 8, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
 
   // ── Free limit ──
-  limitBar:   { backgroundColor: '#fff', borderRadius: 14, padding: 12, marginBottom: 12, gap: 6 },
-  limitTrack: { height: 4, backgroundColor: '#f1f5f9', borderRadius: 2, overflow: 'hidden' },
+  limitBar:   { backgroundColor: c.surface, borderRadius: 14, padding: 12, marginBottom: 12, gap: 6 },
+  limitTrack: { height: 4, backgroundColor: c.surfaceMuted, borderRadius: 2, overflow: 'hidden' },
   limitFill:  { height: '100%', backgroundColor: '#2563eb', borderRadius: 2 },
-  limitTxt:   { fontSize: 11, color: '#64748b', fontWeight: '600' },
+  limitTxt:   { fontSize: 11, color: c.textMuted, fontWeight: '600' },
 
   // ── Tips ──
   tipsSection:    { marginBottom: 14 },
-  tipsTitle:      { fontSize: 13, fontWeight: '800', color: '#1e293b', marginBottom: 8 },
-  tipCard:        { width: SW * 0.72, backgroundColor: '#fff', borderRadius: 16, padding: 14, marginRight: 10, borderWidth: 1, borderColor: '#e2e8f0' },
-  tipTxt:         { fontSize: 13, color: '#334155', lineHeight: 19, fontWeight: '500', marginBottom: 8 },
+  tipsTitle:      { fontSize: 13, fontWeight: '800', color: c.text, marginBottom: 8 },
+  tipCard:        { width: SW * 0.72, backgroundColor: c.surface, borderRadius: 16, padding: 14, marginRight: 10, borderWidth: 1, borderColor: c.border },
+  tipTxt:         { fontSize: 13, color: c.text, lineHeight: 19, fontWeight: '500', marginBottom: 8 },
   tipAction:      { flexDirection: 'row', alignItems: 'center', gap: 4 },
   tipActionTxt:   { fontSize: 12, color: '#2563eb', fontWeight: '700' },
 
   // ── Categories ──
   catScroll: { marginBottom: 14 },
-  catTab:    { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 20, backgroundColor: '#fff', marginRight: 8, borderWidth: 1, borderColor: '#e2e8f0' },
+  catTab:    { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 20, backgroundColor: c.surface, marginRight: 8, borderWidth: 1, borderColor: c.border },
   catTabEmoji: { fontSize: 14 },
   catTabLabel: { fontSize: 13, fontWeight: '700' },
   catBadge:  { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 },
@@ -1059,17 +1060,17 @@ const s = StyleSheet.create({
 
   // ── Task list ──
   taskList:     { gap: 8, marginBottom: 20 },
-  taskRow:      { flexDirection: 'row', alignItems: 'flex-start', backgroundColor: '#fff', borderRadius: 16, padding: 14, gap: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
+  taskRow:      { flexDirection: 'row', alignItems: 'flex-start', backgroundColor: c.surface, borderRadius: 16, padding: 14, gap: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
   taskRowDone:  { opacity: 0.55 },
-  taskCheck:    { width: 24, height: 24, borderRadius: 8, borderWidth: 2, borderColor: '#cbd5e1', alignItems: 'center', justifyContent: 'center', marginTop: 1 },
-  taskText:     { fontSize: 15, fontWeight: '600', color: '#0f172a', marginBottom: 5 },
-  taskTextDone: { textDecorationLine: 'line-through', color: '#94a3b8' },
+  taskCheck:    { width: 24, height: 24, borderRadius: 8, borderWidth: 2, borderColor: c.border, alignItems: 'center', justifyContent: 'center', marginTop: 1 },
+  taskText:     { fontSize: 15, fontWeight: '600', color: c.text, marginBottom: 5 },
+  taskTextDone: { textDecorationLine: 'line-through', color: c.textMuted },
   taskMeta:     { flexDirection: 'row', flexWrap: 'wrap', gap: 6, alignItems: 'center' },
   taskPriBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 7, paddingVertical: 3, borderRadius: 6 },
   taskPriDot:   { width: 5, height: 5, borderRadius: 3 },
   taskPriTxt:   { fontSize: 10, fontWeight: '700' },
-  taskDue:      { fontSize: 10, color: '#64748b', fontWeight: '600' },
-  taskEst:      { fontSize: 10, color: '#64748b', fontWeight: '600' },
+  taskDue:      { fontSize: 10, color: c.textMuted, fontWeight: '600' },
+  taskEst:      { fontSize: 10, color: c.textMuted, fontWeight: '600' },
   taskAi:       { fontSize: 10, color: '#8b5cf6', fontWeight: '700' },
   taskLink:     { fontSize: 12 },
   taskEdit:     { padding: 4 },
@@ -1080,14 +1081,14 @@ const s = StyleSheet.create({
   // ── Empty ──
   empty:      { alignItems: 'center', paddingVertical: 40, gap: 8 },
   emptyEmoji: { fontSize: 40 },
-  emptyTitle: { fontSize: 16, fontWeight: '800', color: '#94a3b8' },
-  emptySub:   { fontSize: 13, color: '#cbd5e1', textAlign: 'center' },
+  emptyTitle: { fontSize: 16, fontWeight: '800', color: c.textMuted },
+  emptySub:   { fontSize: 13, color: c.border, textAlign: 'center' },
 
   // ── Upsell ──
-  upsell:     { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 18, padding: 16, gap: 14, borderWidth: 1.5, borderColor: '#dbeafe', marginBottom: 8 },
+  upsell:     { flexDirection: 'row', alignItems: 'center', backgroundColor: c.surface, borderRadius: 18, padding: 16, gap: 14, borderWidth: 1.5, borderColor: '#dbeafe', marginBottom: 8 },
   upsellLeft: { flex: 1 },
-  upsellTitle:{ fontSize: 14, fontWeight: '800', color: '#1e293b' },
-  upsellSub:  { fontSize: 12, color: '#64748b', marginTop: 3, lineHeight: 17 },
+  upsellTitle:{ fontSize: 14, fontWeight: '800', color: c.text },
+  upsellSub:  { fontSize: 12, color: c.textMuted, marginTop: 3, lineHeight: 17 },
   upsellArrow:{ width: 34, height: 34, borderRadius: 17, backgroundColor: '#eff6ff', alignItems: 'center', justifyContent: 'center' },
 
   // ── FAB ──
@@ -1095,11 +1096,11 @@ const s = StyleSheet.create({
   fabBtn: { width: 58, height: 58, borderRadius: 29, backgroundColor: '#2563eb', alignItems: 'center', justifyContent: 'center', shadowColor: '#2563eb', shadowOpacity: 0.35, shadowRadius: 12, elevation: 8 },
 
   // ── Add Modal ──
-  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
-  modalTitle:  { fontSize: 18, fontWeight: '900', color: '#0f172a', flex: 1 },
-  modalClose:  { width: 34, height: 34, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
-  addInput:    { backgroundColor: '#f8fafc', borderRadius: 14, borderWidth: 1, borderColor: '#e2e8f0', padding: 14, fontSize: 15, color: '#0f172a', fontWeight: '600', marginBottom: 16 },
-  addLabel:    { fontSize: 11, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 },
+  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted },
+  modalTitle:  { fontSize: 18, fontWeight: '900', color: c.text, flex: 1 },
+  modalClose:  { width: 34, height: 34, borderRadius: 10, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
+  addInput:    { backgroundColor: c.surfaceMuted, borderRadius: 14, borderWidth: 1, borderColor: c.border, padding: 14, fontSize: 15, color: c.text, fontWeight: '600', marginBottom: 16 },
+  addLabel:    { fontSize: 11, fontWeight: '800', color: c.textMuted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 },
   priorityRow: { flexDirection: 'row', gap: 8, marginBottom: 20, flexWrap: 'wrap' },
   priorityChip:{ flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, borderWidth: 1.5 },
   priorityDot: { width: 7, height: 7, borderRadius: 4 },
@@ -1112,28 +1113,31 @@ const s = StyleSheet.create({
   // ── Detail Modal ──
   detailBadge:   { flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, alignSelf: 'flex-start' },
   detailBadgeTxt:{ fontSize: 13, fontWeight: '700' },
-  detailMeta:    { fontSize: 13, color: '#475569', fontWeight: '600' },
-  detailNotes:   { backgroundColor: '#f8fafc', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#e2e8f0' },
-  detailNotesTxt:{ fontSize: 14, color: '#334155', lineHeight: 20 },
-  integrationRow:{ flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#f8fafc', borderRadius: 14, padding: 14 },
+  detailMeta:    { fontSize: 13, color: c.text, fontWeight: '600' },
+  detailNotes:   { backgroundColor: c.surfaceMuted, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: c.border },
+  detailNotesTxt:{ fontSize: 14, color: c.text, lineHeight: 20 },
+  integrationRow:{ flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: c.surfaceMuted, borderRadius: 14, padding: 14 },
   integrationIcon:{ width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  integrationLabel: { fontSize: 11, color: '#94a3b8', fontWeight: '700', textTransform: 'uppercase' },
-  integrationValue: { fontSize: 13, color: '#1e293b', fontWeight: '600', marginTop: 1 },
+  integrationLabel: { fontSize: 11, color: c.textMuted, fontWeight: '700', textTransform: 'uppercase' },
+  integrationValue: { fontSize: 13, color: c.text, fontWeight: '600', marginTop: 1 },
   deleteBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, justifyContent: 'center', paddingVertical: 14, borderRadius: 14, borderWidth: 1, borderColor: '#fecaca', backgroundColor: '#fef2f2', marginTop: 8 },
   deleteBtnTxt:  { color: '#ef4444', fontWeight: '700', fontSize: 14 },
 
   // ── Partner Modal ──
   partnerOverlay: { flex: 1, backgroundColor: 'rgba(15,23,42,0.4)', justifyContent: 'flex-end' },
-  partnerCard:    { backgroundColor: '#fff', borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 24 },
+  partnerCard:    { backgroundColor: c.surface, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 24 },
   partnerCardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
-  partnerTitle:   { fontSize: 20, fontWeight: '900', color: '#0f172a' },
+  partnerTitle:   { fontSize: 20, fontWeight: '900', color: c.text },
   partnerAvatar:  { width: 72, height: 72, borderRadius: 36, backgroundColor: '#ecfdf5', alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-  partnerSynced:  { fontSize: 17, fontWeight: '800', color: '#0f172a' },
-  partnerSyncedSub: { fontSize: 13, color: '#64748b', marginTop: 4, textAlign: 'center' },
+  partnerSynced:  { fontSize: 17, fontWeight: '800', color: c.text },
+  partnerSyncedSub: { fontSize: 13, color: c.textMuted, marginTop: 4, textAlign: 'center' },
   unlinkBtn:      { marginTop: 20, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 14, borderWidth: 1, borderColor: '#fecaca', backgroundColor: '#fef2f2' },
   unlinkTxt:      { color: '#ef4444', fontWeight: '700', fontSize: 14 },
-  partnerDesc:    { fontSize: 14, color: '#64748b', marginBottom: 16, lineHeight: 20 },
-  partnerInput:   { backgroundColor: '#f8fafc', borderRadius: 14, borderWidth: 1, borderColor: '#e2e8f0', padding: 14, fontSize: 15, color: '#0f172a', marginBottom: 14 },
-  partnerLinkBtn: { backgroundColor: '#0f172a', borderRadius: 14, paddingVertical: 16, alignItems: 'center' },
+  partnerDesc:    { fontSize: 14, color: c.textMuted, marginBottom: 16, lineHeight: 20 },
+  partnerInput:   { backgroundColor: c.surfaceMuted, borderRadius: 14, borderWidth: 1, borderColor: c.border, padding: 14, fontSize: 15, color: c.text, marginBottom: 14 },
+  partnerLinkBtn: { backgroundColor: c.text, borderRadius: 14, paddingVertical: 16, alignItems: 'center' },
   partnerLinkTxt: { color: '#fff', fontSize: 15, fontWeight: '800' },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const s = createS(THEMES.default.colors);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -6,6 +6,8 @@ import { useMutation, useAction, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { useTranslation } from 'react-i18next';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 interface CreateRecipeModalProps {
   visible: boolean;
@@ -17,6 +19,8 @@ interface CreateRecipeModalProps {
 const UNIT_OPTIONS = ['g', 'ml', 'cup', 'tbsp', 'tsp', 'piece'] as const;
 
 export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, userId }: CreateRecipeModalProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const createRecipe = useMutation(api.recipes.createRecipe);
@@ -500,10 +504,10 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   modalContainer: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -511,16 +515,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: c.surfaceMuted,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   closeBtn: {
     padding: 4,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 20,
   },
   modalContent: {
@@ -535,39 +539,39 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#334155',
+    color: c.text,
   },
   required: {
     color: '#ef4444',
   },
   input: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 16,
     padding: 16,
     fontSize: 16,
-    color: '#0f172a',
+    color: c.text,
   },
   switchRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     padding: 16,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   checkbox: {
     width: 24,
     height: 24,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: '#cbd5e1',
+    borderColor: c.border,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   checkboxActive: {
     backgroundColor: '#3b82f6',
@@ -575,22 +579,22 @@ const styles = StyleSheet.create({
   },
   hintText: {
     fontSize: 14,
-    color: '#334155',
+    color: c.text,
     fontWeight: '600',
   },
   textArea: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 16,
     padding: 16,
     fontSize: 14,
-    color: '#0f172a',
+    color: c.text,
     height: 140,
   },
   subtext: {
     fontSize: 12,
-    color: '#64748b',
+    color: c.textMuted,
   },
   primaryButton: {
     backgroundColor: '#3b82f6',
@@ -610,7 +614,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   secondaryButton: {
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 16,
@@ -618,7 +622,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   secondaryButtonText: {
-    color: '#475569',
+    color: c.text,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -647,28 +651,28 @@ const styles = StyleSheet.create({
     padding: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderStyle: 'dashed'
   },
   emptyText: {
-    color: '#0f172a',
+    color: c.text,
     fontWeight: '600',
     fontSize: 16,
     marginTop: 12,
   },
   emptySubtext: {
-    color: '#64748b',
+    color: c.textMuted,
     fontSize: 13,
     marginTop: 4,
   },
   ingredientCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     padding: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -691,23 +695,23 @@ const styles = StyleSheet.create({
   ingTitle: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 2,
   },
   ingMeta: {
     fontSize: 12,
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: '500',
   },
   ingOriginal: {
     fontSize: 11,
-    color: '#94a3b8',
+    color: c.textMuted,
     marginTop: 4,
     fontStyle: 'italic',
   },
   iconBtn: {
     padding: 4,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 12,
     marginLeft: 4,
   },
@@ -718,12 +722,12 @@ const styles = StyleSheet.create({
   searchLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#334155',
+    color: c.text,
   },
   searchInput: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderWidth: 1,
-    borderColor: '#cbd5e1',
+    borderColor: c.border,
     borderRadius: 12,
     padding: 12,
     fontSize: 14,
@@ -736,7 +740,7 @@ const styles = StyleSheet.create({
   },
   qtyInput: {
     width: 60,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 12,
     paddingVertical: 8,
     textAlign: 'center',
@@ -750,9 +754,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 12,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   unitChipActive: {
     backgroundColor: '#eff6ff',
@@ -760,7 +764,7 @@ const styles = StyleSheet.create({
   },
   unitChipText: {
     fontSize: 13,
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: '500',
   },
   unitChipTextActive: {
@@ -773,7 +777,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: '#f1f5f9',
+    borderTopColor: c.surfaceMuted,
   },
   totalItem: {
     alignItems: 'center',
@@ -781,24 +785,24 @@ const styles = StyleSheet.create({
   totalVal: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   totalLbl: {
     fontSize: 11,
-    color: '#64748b',
+    color: c.textMuted,
     marginTop: 2,
   },
   reviewWidget: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 24,
     padding: 24,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   reviewLabel: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#64748b',
+    color: c.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginBottom: 8,
@@ -806,16 +810,16 @@ const styles = StyleSheet.create({
   reviewTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 4,
   },
   reviewSub: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
   },
   macrosDivider: {
     height: 1,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: c.border,
     marginVertical: 16,
   },
   macrosGrid: {
@@ -826,24 +830,27 @@ const styles = StyleSheet.create({
   },
   macroStat: {
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     padding: 10,
     borderRadius: 16,
     flex: 1,
     minWidth: 0,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: c.surfaceMuted,
   },
   macroStatVal: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 2,
     textAlign: 'center',
   },
   macroStatLbl: {
     fontSize: 10,
-    color: '#64748b',
+    color: c.textMuted,
     textAlign: 'center',
   },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

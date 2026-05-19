@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+
 interface WaterTrackerProps {
   currentOz: number;
   goalOz: number;
@@ -57,9 +59,9 @@ const WaterTracker = ({ currentOz, goalOz, onAddWater, isMetric }: WaterTrackerP
 
 export default WaterTracker;
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 24,
     padding: 16,
     marginBottom: 16,
@@ -69,7 +71,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 2,
     borderWidth: 1,
-    borderColor: '#f1f5f9'
+    borderColor: c.surfaceMuted
   },
   header: {
     flexDirection: 'row',
@@ -88,11 +90,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   subtitle: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
   },
   glassesContainer: {
     flexDirection: 'row',
@@ -112,8 +114,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(59, 130, 246, 0.15)', // Blue 500 at 15% opacity
   },
   glassEmpty: {
-    backgroundColor: '#f8fafc', // Slate 50
+    backgroundColor: c.surfaceMuted, // Slate 50
     borderWidth: 1,
-    borderColor: '#f1f5f9', // Slate 100
+    borderColor: c.surfaceMuted, // Slate 100
   },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

@@ -18,7 +18,7 @@
  */
 
 import React, { useMemo, useState, useRef } from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
@@ -106,13 +106,13 @@ function WeightSparkline({ data, useLbs }: { data: Array<{ weightKg: number; dat
     </View>
   );
 }
-const spark = StyleSheet.create({
+const createSpark = (c: ThemeColors) => StyleSheet.create({
   wrap: { marginTop: 4 },
   chart: { flexDirection: 'row', alignItems: 'flex-end', height: 70, gap: 2 },
   barWrap: { justifyContent: 'flex-end' },
   bar: { borderRadius: 2 },
   labels: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
-  label: { fontSize: 10, color: '#64748b', fontWeight: '600' },
+  label: { fontSize: 10, color: c.textMuted, fontWeight: '600' },
 });
 
 /** Section header */
@@ -136,14 +136,14 @@ function SectionHeader({ icon, title, sub, proLocked }: { icon: string; title: s
     </View>
   );
 }
-const sh = StyleSheet.create({
+const createSh = (c: ThemeColors) => StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 },
   iconWrap: {
     width: 32, height: 32, borderRadius: 8,
     backgroundColor: '#eff6ff', justifyContent: 'center', alignItems: 'center',
   },
-  title: { fontSize: 16, fontWeight: '800', color: '#0f172a', letterSpacing: -0.3 },
-  sub: { fontSize: 11, color: '#64748b', marginTop: 1 },
+  title: { fontSize: 16, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
+  sub: { fontSize: 11, color: c.textMuted, marginTop: 1 },
   proBadge: {
     backgroundColor: '#fef9c3', borderRadius: 8,
     paddingHorizontal: 6, paddingVertical: 2,
@@ -159,14 +159,14 @@ function GlassCard({ children, style }: { children: React.ReactNode; style?: any
     </View>
   );
 }
-const gc = StyleSheet.create({
+const createGc = (c: ThemeColors) => StyleSheet.create({
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 20,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
@@ -192,7 +192,7 @@ function ProLock({ onUpgrade }: { onUpgrade: () => void }) {
     </TouchableOpacity>
   );
 }
-const pl = StyleSheet.create({
+const createPl = (c: ThemeColors) => StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(255,255,255,0.85)',
@@ -202,8 +202,8 @@ const pl = StyleSheet.create({
     padding: 24,
   },
   inner: { alignItems: 'center', gap: 8 },
-  title: { fontSize: 16, fontWeight: '900', color: '#0f172a' },
-  sub: { fontSize: 12, color: '#475569', textAlign: 'center', lineHeight: 17 },
+  title: { fontSize: 16, fontWeight: '900', color: c.text },
+  sub: { fontSize: 12, color: c.text, textAlign: 'center', lineHeight: 17 },
   btn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     backgroundColor: '#2563eb', borderRadius: 20,
@@ -218,6 +218,12 @@ type ActiveModal = 'weight' | 'measurements' | 'scan' | 'history_measurements' |
 
 export default function WeightManagementScreen() {
   const { colors: themeColors } = useTheme();
+  const m = useMemo(() => createM(themeColors), [themeColors]);
+  const s = useMemo(() => createS(themeColors), [themeColors]);
+  const pl = useMemo(() => createPl(themeColors), [themeColors]);
+  const gc = useMemo(() => createGc(themeColors), [themeColors]);
+  const sh = useMemo(() => createSh(themeColors), [themeColors]);
+  const spark = useMemo(() => createSpark(themeColors), [themeColors]);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { convexUser, isPro, promptUpgrade } = useAccessControl();
@@ -1108,23 +1114,23 @@ export default function WeightManagementScreen() {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F4F0' },
+const createS = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   scroll: { flex: 1 },
 
   // Header
   headerGrad: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     paddingHorizontal: 20, paddingVertical: 16,
-    borderBottomWidth: 1, borderBottomColor: '#e2e8f0',
+    borderBottomWidth: 1, borderBottomColor: c.border,
   },
   backBtn: {
     width: 34, height: 34, borderRadius: 17,
-    backgroundColor: '#ffffff', justifyContent: 'center', alignItems: 'center',
-    borderWidth: 1, borderColor: '#e2e8f0'
+    backgroundColor: c.surface, justifyContent: 'center', alignItems: 'center',
+    borderWidth: 1, borderColor: c.border
   },
-  headerTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a', flex: 1, letterSpacing: -0.5 },
-  headerSub: { fontSize: 11, color: '#475569' },
+  headerTitle: { fontSize: 20, fontWeight: '900', color: c.text, flex: 1, letterSpacing: -0.5 },
+  headerSub: { fontSize: 11, color: c.text },
   proChip: {
     backgroundColor: '#fef9c3', borderRadius: 10,
     paddingHorizontal: 8, paddingVertical: 3,
@@ -1135,10 +1141,10 @@ const s = StyleSheet.create({
   aiPromptBox: {
     alignItems: 'center',
     padding: 30,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     marginTop: 20,
   },
   aiIconCircle: {
@@ -1149,8 +1155,8 @@ const s = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  aiTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a', marginBottom: 8 },
-  aiSub: { fontSize: 13, color: '#475569', textAlign: 'center', lineHeight: 20, marginBottom: 24 },
+  aiTitle: { fontSize: 20, fontWeight: '900', color: c.text, marginBottom: 8 },
+  aiSub: { fontSize: 13, color: c.text, textAlign: 'center', lineHeight: 20, marginBottom: 24 },
   aiStartBtn: {
     backgroundColor: '#2563eb',
     paddingHorizontal: 32,
@@ -1165,23 +1171,23 @@ const s = StyleSheet.create({
     alignItems: 'center',
   },
   scanningText: { color: '#2563eb', fontSize: 18, fontWeight: '800', marginTop: 20 },
-  scanningSub: { color: '#475569', fontSize: 12, marginTop: 4 },
+  scanningSub: { color: c.text, fontSize: 12, marginTop: 4 },
 
   // Hero card
   heroRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
   heroCol: { alignItems: 'flex-start' },
-  heroColLabel: { fontSize: 9, fontWeight: '800', color: '#64748b', letterSpacing: 1.2 },
-  heroColValue: { fontSize: 22, fontWeight: '900', color: '#0f172a', marginTop: 2 },
-  heroColUnit: { fontSize: 11, color: '#475569', fontWeight: '600' },
+  heroColLabel: { fontSize: 9, fontWeight: '800', color: c.textMuted, letterSpacing: 1.2 },
+  heroColValue: { fontSize: 22, fontWeight: '900', color: c.text, marginTop: 2 },
+  heroColUnit: { fontSize: 11, color: c.text, fontWeight: '600' },
   editGoalBtn: { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 4 },
   editGoalText: { fontSize: 10, color: '#2563eb', fontWeight: '700' },
 
   arcWrap: { alignItems: 'center' },
   arcOuter: {
     width: 80, height: 40, borderRadius: 40,
-    backgroundColor: '#f1f5f9', overflow: 'hidden',
+    backgroundColor: c.surfaceMuted, overflow: 'hidden',
     justifyContent: 'center', alignItems: 'center',
-    borderWidth: 1, borderColor: '#e2e8f0',
+    borderWidth: 1, borderColor: c.border,
     position: 'relative',
   },
   arcFill: {
@@ -1189,12 +1195,12 @@ const s = StyleSheet.create({
     backgroundColor: '#2563eb', opacity: 0.7,
   },
   arcPct: { fontSize: 14, fontWeight: '900', color: '#2563eb', zIndex: 1 },
-  arcLabel: { fontSize: 8, color: '#475569', zIndex: 1 },
+  arcLabel: { fontSize: 8, color: c.text, zIndex: 1 },
 
   currentRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  currentLabel: { fontSize: 9, fontWeight: '800', color: '#64748b', letterSpacing: 1.2 },
-  currentValue: { fontSize: 36, fontWeight: '900', color: '#0f172a', letterSpacing: -1 },
-  currentUnit: { fontSize: 16, fontWeight: '600', color: '#475569' },
+  currentLabel: { fontSize: 9, fontWeight: '800', color: c.textMuted, letterSpacing: 1.2 },
+  currentValue: { fontSize: 36, fontWeight: '900', color: c.text, letterSpacing: -1 },
+  currentUnit: { fontSize: 16, fontWeight: '600', color: c.text },
   trendBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     borderRadius: 20, paddingHorizontal: 10, paddingVertical: 6,
@@ -1212,7 +1218,7 @@ const s = StyleSheet.create({
 
   // BMI
   bmiRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 20, marginBottom: 16 },
-  bmiNum: { fontSize: 40, fontWeight: '900', color: '#0f172a', lineHeight: 44 },
+  bmiNum: { fontSize: 40, fontWeight: '900', color: c.text, lineHeight: 44 },
   bmiCat: { fontSize: 13, fontWeight: '700', marginTop: 2 },
   bmiChart: { flex: 1 },
   bmiBar: {
@@ -1222,53 +1228,53 @@ const s = StyleSheet.create({
   bmiSegment: { flex: 1, height: '100%' },
   bmiPointer: {
     position: 'absolute', top: -3, width: 4, height: 16,
-    backgroundColor: '#0f172a', borderRadius: 2,
+    backgroundColor: c.text, borderRadius: 2,
     transform: [{ translateX: -2 }],
   },
   bmiBarLabels: { flexDirection: 'row', justifyContent: 'space-between' },
-  bmiBarLabel: { fontSize: 9, color: '#64748b', fontWeight: '600' },
+  bmiBarLabel: { fontSize: 9, color: c.textMuted, fontWeight: '600' },
   bmiLegend: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 12 },
   bmiLegendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   bmiLegendDot: { width: 8, height: 8, borderRadius: 4 },
-  bmiLegendText: { fontSize: 10, color: '#475569', fontWeight: '600' },
+  bmiLegendText: { fontSize: 10, color: c.text, fontWeight: '600' },
   idealBox: {
-    backgroundColor: '#f8fafc', borderRadius: 10, padding: 12,
-    borderWidth: 1, borderColor: '#e2e8f0',
+    backgroundColor: c.surfaceMuted, borderRadius: 10, padding: 12,
+    borderWidth: 1, borderColor: c.border,
   },
-  idealLabel: { fontSize: 10, color: '#475569', fontWeight: '600', marginBottom: 2 },
+  idealLabel: { fontSize: 10, color: c.text, fontWeight: '600', marginBottom: 2 },
   idealValue: { fontSize: 13, color: '#2563eb', fontWeight: '800' },
 
   // KPI strip
   kpiStrip: { flexDirection: 'row', gap: 10, marginBottom: 16 },
   kpiCard: {
-    flex: 1, backgroundColor: '#ffffff', borderRadius: 16, padding: 14,
-    alignItems: 'center', gap: 2, borderWidth: 1, borderColor: '#e2e8f0',
+    flex: 1, backgroundColor: c.surface, borderRadius: 16, padding: 14,
+    alignItems: 'center', gap: 2, borderWidth: 1, borderColor: c.border,
   },
-  kpiVal: { fontSize: 20, fontWeight: '900', color: '#0f172a' },
-  kpiUnit: { fontSize: 9, color: '#64748b', fontWeight: '600' },
-  kpiLabel: { fontSize: 9, color: '#475569', textAlign: 'center' },
+  kpiVal: { fontSize: 20, fontWeight: '900', color: c.text },
+  kpiUnit: { fontSize: 9, color: c.textMuted, fontWeight: '600' },
+  kpiLabel: { fontSize: 9, color: c.text, textAlign: 'center' },
 
   // Measurements
   measureGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 14 },
   measureItem: {
-    width: (width - 80) / 4, backgroundColor: '#f8fafc',
+    width: (width - 80) / 4, backgroundColor: c.surfaceMuted,
     borderRadius: 10, padding: 10, alignItems: 'center',
-    borderWidth: 1, borderColor: '#e2e8f0',
+    borderWidth: 1, borderColor: c.border,
   },
-  measureVal: { fontSize: 14, fontWeight: '900', color: '#0f172a' },
-  measureLbl: { fontSize: 9, color: '#475569', textAlign: 'center', marginTop: 2 },
+  measureVal: { fontSize: 14, fontWeight: '900', color: c.text },
+  measureLbl: { fontSize: 9, color: c.text, textAlign: 'center', marginTop: 2 },
   measureFormGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
 
   // Scan grid
   scanGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 14 },
   scanItem: {
-    width: (width - 80) / 3, backgroundColor: '#f8fafc',
+    width: (width - 80) / 3, backgroundColor: c.surfaceMuted,
     borderRadius: 12, padding: 12, alignItems: 'center',
-    borderWidth: 1, borderColor: '#e2e8f0',
+    borderWidth: 1, borderColor: c.border,
   },
-  scanVal: { fontSize: 16, fontWeight: '900', color: '#0f172a' },
+  scanVal: { fontSize: 16, fontWeight: '900', color: c.text },
   scanUnit: { fontSize: 9, color: '#2563eb', fontWeight: '700' },
-  scanLbl: { fontSize: 9, color: '#475569', textAlign: 'center', marginTop: 2 },
+  scanLbl: { fontSize: 9, color: c.text, textAlign: 'center', marginTop: 2 },
 
   // Photos
   photoThumb: { alignItems: 'center', gap: 4, position: 'relative' },
@@ -1284,18 +1290,18 @@ const s = StyleSheet.create({
     width: 24, height: 24, borderRadius: 12,
     justifyContent: 'center', alignItems: 'center',
   },
-  photoDate: { fontSize: 9, color: '#475569' },
+  photoDate: { fontSize: 9, color: c.text },
   photoActions: { flexDirection: 'row', gap: 8 },
   photoBtn: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5,
-    borderRadius: 12, paddingVertical: 11, borderWidth: 1, borderColor: '#e2e8f0',
-    backgroundColor: '#ffffff',
+    borderRadius: 12, paddingVertical: 11, borderWidth: 1, borderColor: c.border,
+    backgroundColor: c.surface,
   },
-  photoBtnText: { fontSize: 12, fontWeight: '700', color: '#475569' },
+  photoBtnText: { fontSize: 12, fontWeight: '700', color: c.text },
 
   // Misc
   emptyChart: { alignItems: 'center', paddingVertical: 24, gap: 8 },
-  emptyText: { fontSize: 12, color: '#64748b', textAlign: 'center' },
+  emptyText: { fontSize: 12, color: c.textMuted, textAlign: 'center' },
 
   secondaryBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
@@ -1305,32 +1311,32 @@ const s = StyleSheet.create({
   secondaryBtnText: { fontSize: 13, fontWeight: '800', color: '#2563eb' },
 });
 
-const m = StyleSheet.create({
+const createM = (c: ThemeColors) => StyleSheet.create({
   backdrop: {
     flex: 1, backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: '#ffffff', borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    backgroundColor: c.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24,
     padding: 24, paddingBottom: 40,
-    borderTopWidth: 1, borderColor: '#e2e8f0',
+    borderTopWidth: 1, borderColor: c.border,
   },
-  sheetTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a', marginBottom: 16 },
+  sheetTitle: { fontSize: 18, fontWeight: '900', color: c.text, marginBottom: 16 },
 
-  container: { flex: 1, backgroundColor: '#ffffff' },
+  container: { flex: 1, backgroundColor: c.surface },
   modalHeader: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingVertical: 16,
-    borderBottomWidth: 1, borderBottomColor: '#e2e8f0',
+    borderBottomWidth: 1, borderBottomColor: c.border,
   },
-  modalTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
+  modalTitle: { fontSize: 18, fontWeight: '900', color: c.text },
   body: { padding: 20, paddingBottom: 60 },
 
-  label: { fontSize: 13, fontWeight: '700', color: '#475569', marginBottom: 8 },
-  hint: { fontSize: 11, color: '#64748b', marginBottom: 16, fontStyle: 'italic' },
+  label: { fontSize: 13, fontWeight: '700', color: c.text, marginBottom: 8 },
+  hint: { fontSize: 11, color: c.textMuted, marginBottom: 16, fontStyle: 'italic' },
   input: {
-    backgroundColor: '#f8fafc', borderWidth: 1, borderColor: '#e2e8f0',
-    borderRadius: 14, padding: 14, fontSize: 16, color: '#0f172a',
+    backgroundColor: c.surfaceMuted, borderWidth: 1, borderColor: c.border,
+    borderRadius: 14, padding: 14, fontSize: 16, color: c.text,
     marginBottom: 16,
   },
   saveBtn: {
@@ -1344,42 +1350,50 @@ const m = StyleSheet.create({
   btnRow: { flexDirection: 'row', gap: 12 },
   cancel: {
     flex: 1, borderRadius: 14, paddingVertical: 14, alignItems: 'center',
-    borderWidth: 1, borderColor: '#e2e8f0', backgroundColor: '#ffffff',
+    borderWidth: 1, borderColor: c.border, backgroundColor: c.surface,
   },
-  cancelText: { fontSize: 15, fontWeight: '700', color: '#64748b' },
+  cancelText: { fontSize: 15, fontWeight: '700', color: c.textMuted },
   confirm: { flex: 1, backgroundColor: '#2563eb', borderRadius: 14, paddingVertical: 14, alignItems: 'center' },
   confirmText: { fontSize: 15, fontWeight: '800', color: '#fff' },
 
   measureFieldWrap: { width: (width - 60) / 2 },
-  measureFieldLabel: { fontSize: 11, fontWeight: '700', color: '#475569', marginBottom: 5 },
+  measureFieldLabel: { fontSize: 11, fontWeight: '700', color: c.text, marginBottom: 5 },
   measureInput: {
-    backgroundColor: '#f8fafc', borderWidth: 1, borderColor: '#e2e8f0',
-    borderRadius: 10, padding: 10, fontSize: 15, color: '#0f172a',
+    backgroundColor: c.surfaceMuted, borderWidth: 1, borderColor: c.border,
+    borderRadius: 10, padding: 10, fontSize: 15, color: c.text,
   },
 
   sourceRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
   sourceChip: {
     paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20,
-    borderWidth: 1, borderColor: '#e2e8f0', backgroundColor: '#f8fafc',
+    borderWidth: 1, borderColor: c.border, backgroundColor: c.surfaceMuted,
   },
   sourceChipActive: { borderColor: '#2563eb', backgroundColor: '#eff6ff' },
-  sourceChipText: { fontSize: 12, fontWeight: '700', color: '#64748b', textTransform: 'capitalize' },
+  sourceChipText: { fontSize: 12, fontWeight: '700', color: c.textMuted, textTransform: 'capitalize' },
   sourceChipTextActive: { color: '#2563eb' },
 
   historyCard: {
-    backgroundColor: '#ffffff', borderWidth: 1, borderColor: '#e2e8f0',
+    backgroundColor: c.surface, borderWidth: 1, borderColor: c.border,
     borderRadius: 16, padding: 16, marginBottom: 12,
   },
   historyHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start',
-    borderBottomWidth: 1, borderBottomColor: '#f1f5f9', paddingBottom: 10, marginBottom: 12,
+    borderBottomWidth: 1, borderBottomColor: c.surfaceMuted, paddingBottom: 10, marginBottom: 12,
   },
-  historyDate: { fontSize: 14, fontWeight: '800', color: '#0f172a' },
+  historyDate: { fontSize: 14, fontWeight: '800', color: c.text },
   historyGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   historyItem: {
-    width: (width - 80) / 3, backgroundColor: '#f8fafc',
-    borderRadius: 8, padding: 8, alignItems: 'center', borderWidth: 1, borderColor: '#f1f5f9'
+    width: (width - 80) / 3, backgroundColor: c.surfaceMuted,
+    borderRadius: 8, padding: 8, alignItems: 'center', borderWidth: 1, borderColor: c.surfaceMuted
   },
-  historyVal: { fontSize: 13, fontWeight: '900', color: '#0f172a' },
-  historyLbl: { fontSize: 9, color: '#64748b', textAlign: 'center', marginTop: 2 },
+  historyVal: { fontSize: 13, fontWeight: '900', color: c.text },
+  historyLbl: { fontSize: 9, color: c.textMuted, textAlign: 'center', marginTop: 2 },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const spark = createSpark(THEMES.default.colors);
+const sh = createSh(THEMES.default.colors);
+const gc = createGc(THEMES.default.colors);
+const pl = createPl(THEMES.default.colors);
+const s = createS(THEMES.default.colors);
+const m = createM(THEMES.default.colors);

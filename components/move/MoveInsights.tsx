@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -6,6 +6,8 @@ import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useUser as useClerkUser } from '@clerk/clerk-expo';
 import { useTranslation } from 'react-i18next';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 interface MoveInsightsProps {
   isPro: boolean;
@@ -16,6 +18,8 @@ function toIsoDate(d: Date) { return d.toISOString().slice(0, 10); }
 function addDays(d: Date, n: number) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
 
 export default function MoveInsights({ isPro, onUpgradePress }: MoveInsightsProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const router = useRouter();
   const { user: clerkUser } = useClerkUser();
   const { t } = useTranslation();
@@ -84,17 +88,17 @@ export default function MoveInsights({ isPro, onUpgradePress }: MoveInsightsProp
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   wrapper: { marginHorizontal: 24, marginBottom: 16 },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 16,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -107,8 +111,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#eff6ff',
     justifyContent: 'center', alignItems: 'center',
   },
-  title: { fontSize: 15, fontWeight: '800', color: '#0f172a', marginBottom: 3 },
-  sub: { fontSize: 12, color: '#64748b', fontWeight: '500' },
+  title: { fontSize: 15, fontWeight: '800', color: c.text, marginBottom: 3 },
+  sub: { fontSize: 12, color: c.textMuted, fontWeight: '500' },
   right: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   proBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 3,
@@ -116,3 +120,5 @@ const styles = StyleSheet.create({
   },
   proBadgeText: { fontSize: 9, fontWeight: '900', color: '#92400e' },
 });
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

@@ -23,6 +23,8 @@ import { getBottomContentPadding } from '@/utils/layout';
 import { useUser as useAppUser } from '@/context/UserContext';
 import { useTranslation } from 'react-i18next';
 
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+
 const { width } = Dimensions.get('window');
 
 interface GamesHubProps {
@@ -71,6 +73,8 @@ const games: GameDef[] = [
 ];
 
 export default function GamesHub({ userId, onClose }: GamesHubProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -3033,15 +3037,15 @@ function PatternRecognitionGame({ onBack, onComplete }: { onBack: () => void; on
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
-  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#1e293b' },
-  headerSubtitle: { fontSize: 14, color: '#64748b', marginTop: 4 },
-  closeButton: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#f1f5f9', justifyContent: 'center', alignItems: 'center' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.surfaceMuted },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
+  headerTitle: { fontSize: 24, fontWeight: 'bold', color: c.text },
+  headerSubtitle: { fontSize: 14, color: c.textMuted, marginTop: 4 },
+  closeButton: { width: 40, height: 40, borderRadius: 20, backgroundColor: c.surfaceMuted, justifyContent: 'center', alignItems: 'center' },
   content: { flex: 1, padding: 20 },
   limitRow: { marginBottom: 10 },
-  limitText: { color: '#64748b', fontWeight: '600' },
+  limitText: { color: c.textMuted, fontWeight: '600' },
   gamesGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
   gameCard: { width: (width - 60) / 2, padding: 16, borderRadius: 12, marginBottom: 12, alignItems: 'center' },
   gameEmoji: { fontSize: 32, marginBottom: 8 },
@@ -3052,24 +3056,24 @@ const styles = StyleSheet.create({
   gameContainer: { paddingVertical: 8 },
   backButton: { marginBottom: 12 },
   backButtonText: { fontSize: 16, color: '#6366f1', fontWeight: '700' },
-  gameTitle: { fontSize: 24, fontWeight: '800', color: '#1e293b', marginBottom: 6 },
-  gameSubtitle: { fontSize: 14, color: '#64748b', marginBottom: 12 },
+  gameTitle: { fontSize: 24, fontWeight: '800', color: c.text, marginBottom: 6 },
+  gameSubtitle: { fontSize: 14, color: c.textMuted, marginBottom: 12 },
   gameButton: { paddingVertical: 14, paddingHorizontal: 18, borderRadius: 12, alignItems: 'center', marginVertical: 8 },
   gameButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
   warningText: { color: '#ef4444', fontWeight: '700', textAlign: 'center', marginTop: 12 },
   buttonRow: { flexDirection: 'row', gap: 12, marginTop: 12 },
 
   reactionBox: { padding: 28, borderRadius: 16, alignItems: 'center', justifyContent: 'center', minHeight: 160 },
-  reactionMessage: { fontSize: 22, fontWeight: '800', color: '#1e293b', marginBottom: 6, textAlign: 'center' },
-  reactionTime: { fontSize: 14, color: '#64748b' },
+  reactionMessage: { fontSize: 22, fontWeight: '800', color: c.text, marginBottom: 6, textAlign: 'center' },
+  reactionTime: { fontSize: 14, color: c.textMuted },
 
   breathingContainer: { alignItems: 'center', marginVertical: 18 },
   breathingCircle: { width: 160, height: 160, borderRadius: 80, backgroundColor: '#e0f2fe', alignItems: 'center', justifyContent: 'center' },
-  breathingPhase: { marginTop: 12, fontSize: 18, fontWeight: '800', color: '#1e293b' },
+  breathingPhase: { marginTop: 12, fontSize: 18, fontWeight: '800', color: c.text },
 
   memoryGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', marginTop: 10 },
   memoryColor: { width: 110, height: 110, borderRadius: 14, margin: 8 },
-  memoryColorActive: { transform: [{ scale: 1.08 }], borderWidth: 3, borderColor: '#fff' },
+  memoryColorActive: { transform: [{ scale: 1.08 }], borderWidth: 3, borderColor: c.surface },
   memoryColorDisabled: { opacity: 0.6 },
 
   balanceBar: { height: 16, backgroundColor: '#e5e7eb', borderRadius: 8, marginVertical: 18, position: 'relative' },
@@ -3077,22 +3081,25 @@ const styles = StyleSheet.create({
 
   soonPill: { marginTop: 10, backgroundColor: 'rgba(255,255,255,0.22)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 },
   soonPillText: { color: '#fff', fontWeight: '800', fontSize: 10 },
-  comingSoonCard: { borderWidth: 2, borderRadius: 16, padding: 16, alignItems: 'center', backgroundColor: '#fff' },
+  comingSoonCard: { borderWidth: 2, borderRadius: 16, padding: 16, alignItems: 'center', backgroundColor: c.surface },
   comingSoonEmoji: { fontSize: 44, marginBottom: 8 },
 
   grid16: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 12, justifyContent: 'center' },
-  gridCell: { width: (width - 80) / 4, height: (width - 80) / 4, borderRadius: 14, backgroundColor: '#fff', margin: 6, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#e2e8f0' },
+  gridCell: { width: (width - 80) / 4, height: (width - 80) / 4, borderRadius: 14, backgroundColor: c.surface, margin: 6, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: c.border },
   gridEmoji: { fontSize: 28 },
   grid20: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 12, justifyContent: 'center' },
-  gridCell20: { width: (width - 80) / 5, height: (width - 80) / 5, borderRadius: 12, backgroundColor: '#fff', margin: 5, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#e2e8f0' },
-  bigCard: { backgroundColor: '#fff', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#e2e8f0' },
-  bigCardTitle: { fontSize: 14, fontWeight: '800', color: '#64748b' },
-  bigCardValue: { fontSize: 32, fontWeight: '900', color: '#1e293b', marginTop: 8, letterSpacing: 2, textAlign: 'center' },
-  inputBox: { marginTop: 12, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 12, padding: 12, fontSize: 18 },
-  playfield: { height: 360, borderRadius: 16, backgroundColor: '#fff', borderWidth: 1, borderColor: '#e2e8f0', marginTop: 12 },
+  gridCell20: { width: (width - 80) / 5, height: (width - 80) / 5, borderRadius: 12, backgroundColor: c.surface, margin: 5, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: c.border },
+  bigCard: { backgroundColor: c.surface, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: c.border },
+  bigCardTitle: { fontSize: 14, fontWeight: '800', color: c.textMuted },
+  bigCardValue: { fontSize: 32, fontWeight: '900', color: c.text, marginTop: 8, letterSpacing: 2, textAlign: 'center' },
+  inputBox: { marginTop: 12, borderWidth: 1, borderColor: c.border, borderRadius: 12, padding: 12, fontSize: 18 },
+  playfield: { height: 360, borderRadius: 16, backgroundColor: c.surface, borderWidth: 1, borderColor: c.border, marginTop: 12 },
   targetDot: { position: 'absolute', width: 64, height: 64, borderRadius: 32, backgroundColor: '#ec4899', alignItems: 'center', justifyContent: 'center' },
   targetDotText: { fontSize: 28 },
-  waveBox: { marginTop: 12, backgroundColor: '#fff', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#e2e8f0', alignItems: 'center' },
+  waveBox: { marginTop: 12, backgroundColor: c.surface, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: c.border, alignItems: 'center' },
   waveCircle: { width: 160, height: 160, borderRadius: 80, backgroundColor: '#dbeafe', alignItems: 'center', justifyContent: 'center' },
   waveEmoji: { fontSize: 56 },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

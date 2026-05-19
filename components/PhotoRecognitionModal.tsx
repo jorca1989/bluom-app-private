@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, ActivityIndicator, Platform, Alert, Dimensions } from 'react-native';
 
 const { width } = Dimensions.get('window');
@@ -11,6 +11,8 @@ import { useRouter } from 'expo-router';
 import { api } from '@/convex/_generated/api';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useTranslation } from 'react-i18next';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 type RecognizedFood = {
   name: string;
@@ -29,6 +31,8 @@ interface PhotoRecognitionModalProps {
 }
 
 export default function PhotoRecognitionModal({ visible, onClose, onRecognized, meal, isPro = false }: PhotoRecognitionModalProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
@@ -265,7 +269,7 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000000',
@@ -338,7 +342,7 @@ const styles = StyleSheet.create({
     borderRadius: 38,
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     borderWidth: 4,
-    borderColor: '#ffffff',
+    borderColor: c.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -346,7 +350,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   galleryIconBtn: {
     width: 44,
@@ -369,7 +373,7 @@ const styles = StyleSheet.create({
   },
   resultsOverlay: {
     flex: 1,
-    backgroundColor: '#F5F4F0',
+    backgroundColor: c.bg,
   },
   resultsHeader: {
     paddingHorizontal: 16,
@@ -377,28 +381,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: '#F5F4F0',
+    backgroundColor: c.bg,
   },
   resultsHeaderBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  resultsTitle: { fontSize: 18, fontWeight: '900', color: '#0f172a' },
-  resultsSub: { marginTop: 2, fontSize: 12, fontWeight: '700', color: '#64748b' },
+  resultsTitle: { fontSize: 18, fontWeight: '900', color: c.text },
+  resultsSub: { marginTop: 2, fontSize: 12, fontWeight: '700', color: c.textMuted },
   permContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,
   },
-  permTitle: { fontSize: 20, fontWeight: '900', color: '#0f172a' },
-  permSub: { fontSize: 14, color: '#64748b', textAlign: 'center', paddingHorizontal: 40 },
+  permTitle: { fontSize: 20, fontWeight: '900', color: c.text },
+  permSub: { fontSize: 14, color: c.textMuted, textAlign: 'center', paddingHorizontal: 40 },
   permBtn: {
-    backgroundColor: '#0f172a',
+    backgroundColor: c.text,
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 16,
@@ -406,7 +410,7 @@ const styles = StyleSheet.create({
   },
   permBtnText: { color: '#ffffff', fontWeight: 'bold' },
   analysisCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 24,
     padding: 24,
     marginHorizontal: 20,
@@ -426,14 +430,14 @@ const styles = StyleSheet.create({
   analysisTitle: {
     fontSize: 20,
     fontWeight: '900',
-    color: '#0f172a',
+    color: c.text,
   },
   resultActions: {
     flexDirection: 'column',
     gap: 10,
   },
   retakeBtn: {
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     paddingVertical: 14,
     borderRadius: 16,
     alignItems: 'center',
@@ -441,7 +445,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
   },
-  retakeText: { color: '#475569', fontWeight: 'bold', fontSize: 15 },
+  retakeText: { color: c.text, fontWeight: 'bold', fontSize: 15 },
   analyzeBtn: {
     flexDirection: 'row',
     backgroundColor: '#3b82f6',
@@ -460,3 +464,6 @@ const styles = StyleSheet.create({
   disabledBtn: { opacity: 0.6 },
   errorText: { color: '#ef4444', marginBottom: 12, textAlign: 'center', fontWeight: '600' },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

@@ -13,7 +13,7 @@
  * and the correct permissions are declared in app.json (RECORD_AUDIO / NSMicrophoneUsageDescription).
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
   Modal, ScrollView, ActivityIndicator, Alert,
@@ -29,6 +29,8 @@ import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useTranslation } from 'react-i18next';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -75,6 +77,8 @@ export default function VoiceLogModal({
   defaultMeal = 'Lunch', platform = 'ios',
   isPro = false,
 }: Props) {
+  const { colors: themeColors } = useTheme();
+  const s = useMemo(() => createS(themeColors), [themeColors]);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
@@ -441,18 +445,18 @@ function blobToBase64(blob: Blob): Promise<string> {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+const createS = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.surface },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingVertical: 16,
-    borderBottomWidth: 1, borderBottomColor: '#f1f5f9',
+    borderBottomWidth: 1, borderBottomColor: c.surfaceMuted,
   },
   closeBtn: {
     width: 36, height: 36, borderRadius: 18,
-    backgroundColor: '#f8fafc', justifyContent: 'center', alignItems: 'center',
+    backgroundColor: c.surfaceMuted, justifyContent: 'center', alignItems: 'center',
   },
-  headerTitle: { fontSize: 18, fontWeight: '800', color: '#0f172a' },
+  headerTitle: { fontSize: 18, fontWeight: '800', color: c.text },
 
   body: { padding: 20 },
 
@@ -478,8 +482,8 @@ const s = StyleSheet.create({
 
   // Processing
   processingSection: { alignItems: 'center', paddingVertical: 60, gap: 16 },
-  processingTitle: { fontSize: 18, fontWeight: '800', color: '#0f172a' },
-  processingSub: { fontSize: 13, color: '#64748b' },
+  processingTitle: { fontSize: 18, fontWeight: '800', color: c.text },
+  processingSub: { fontSize: 13, color: c.textMuted },
 
   // Review
   reviewSection: { gap: 14 },
@@ -489,47 +493,47 @@ const s = StyleSheet.create({
   },
   transcriptText: { flex: 1, fontSize: 13, color: '#5b21b6', lineHeight: 18, fontStyle: 'italic' },
 
-  reviewHeading: { fontSize: 16, fontWeight: '800', color: '#0f172a' },
+  reviewHeading: { fontSize: 16, fontWeight: '800', color: c.text },
 
   emptyParsed: { alignItems: 'center', paddingVertical: 30, gap: 12 },
   emptyParsedText: { fontSize: 14, color: '#ef4444', fontWeight: '600' },
 
   itemCard: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#f8fafc', borderRadius: 14, padding: 14, gap: 10,
-    borderWidth: 1, borderColor: '#e2e8f0',
+    backgroundColor: c.surfaceMuted, borderRadius: 14, padding: 14, gap: 10,
+    borderWidth: 1, borderColor: c.border,
   },
   itemLeft:  { flex: 1 },
-  itemName:  { fontSize: 14, fontWeight: '700', color: '#0f172a' },
-  itemQty:   { fontSize: 12, color: '#64748b', marginTop: 2 },
+  itemName:  { fontSize: 14, fontWeight: '700', color: c.text },
+  itemQty:   { fontSize: 12, color: c.textMuted, marginTop: 2 },
   itemMacros:{ alignItems: 'flex-end' },
-  itemCal:   { fontSize: 15, fontWeight: '800', color: '#0f172a' },
-  itemMacroSub: { fontSize: 10, color: '#94a3b8', marginTop: 2 },
+  itemCal:   { fontSize: 15, fontWeight: '800', color: c.text },
+  itemMacroSub: { fontSize: 10, color: c.textMuted, marginTop: 2 },
   removeBtn: { padding: 4 },
 
   totalRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    backgroundColor: '#0f172a', borderRadius: 14, padding: 14,
+    backgroundColor: c.text, borderRadius: 14, padding: 14,
   },
   totalLabel: { fontSize: 14, fontWeight: '700', color: 'rgba(255,255,255,0.7)' },
   totalCal:   { fontSize: 18, fontWeight: '900', color: '#fff' },
 
-  mealSelectorLabel: { fontSize: 12, fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5 },
+  mealSelectorLabel: { fontSize: 12, fontWeight: '700', color: c.textMuted, textTransform: 'uppercase', letterSpacing: 0.5 },
   mealSelector: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
   mealChip: {
     paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20,
-    borderWidth: 1.5, borderColor: '#e2e8f0', backgroundColor: '#f8fafc',
+    borderWidth: 1.5, borderColor: c.border, backgroundColor: c.surfaceMuted,
   },
-  mealChipText: { fontSize: 13, fontWeight: '700', color: '#475569' },
+  mealChipText: { fontSize: 13, fontWeight: '700', color: c.text },
 
   actionRow: { flexDirection: 'row', gap: 10, marginTop: 4 },
   retrySmall: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     paddingHorizontal: 16, paddingVertical: 14,
-    borderRadius: 14, borderWidth: 1.5, borderColor: '#e2e8f0',
-    backgroundColor: '#f8fafc',
+    borderRadius: 14, borderWidth: 1.5, borderColor: c.border,
+    backgroundColor: c.surfaceMuted,
   },
-  retrySmallText: { fontSize: 13, fontWeight: '700', color: '#64748b' },
+  retrySmallText: { fontSize: 13, fontWeight: '700', color: c.textMuted },
   confirmBtn: {
     flex: 1, backgroundColor: '#2563eb', borderRadius: 14,
     paddingVertical: 14, alignItems: 'center', justifyContent: 'center',
@@ -539,8 +543,10 @@ const s = StyleSheet.create({
   confirmBtnText: { fontSize: 15, fontWeight: '800', color: '#fff' },
 
   retryBtn: {
-    backgroundColor: '#f1f5f9', paddingHorizontal: 20, paddingVertical: 12,
+    backgroundColor: c.surfaceMuted, paddingHorizontal: 20, paddingVertical: 12,
     borderRadius: 12, marginTop: 4,
   },
-  retryBtnText: { fontSize: 14, fontWeight: '700', color: '#475569' },
+  retryBtnText: { fontSize: 14, fontWeight: '700', color: c.text },
 });
+// Static module-scope fallbacks (default theme) for helper components.
+const s = createS(THEMES.default.colors);

@@ -139,6 +139,8 @@ function MenuRow({
   onPress: () => void;
   badge?: string;
 }) {
+  const { colors } = useTheme();
+  const s = useMemo(() => createS(colors), [colors]);
   return (
     <TouchableOpacity style={s.menuRow} onPress={onPress} activeOpacity={0.75}>
       <View style={[s.menuIcon, { backgroundColor: iconBg }]}>{icon}</View>
@@ -149,7 +151,7 @@ function MenuRow({
       {badge && (
         <View style={s.menuBadge}><Text style={s.menuBadgeTxt}>{badge}</Text></View>
       )}
-      <Ionicons name="chevron-forward" size={16} color="#cbd5e1" />
+      <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
     </TouchableOpacity>
   );
 }
@@ -158,6 +160,8 @@ function MenuRow({
 // SECTION WRAPPER
 // ─────────────────────────────────────────────────────────────
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const { colors } = useTheme();
+  const s = useMemo(() => createS(colors), [colors]);
   return (
     <View style={s.section}>
       <Text style={s.sectionTitle}>{title}</Text>

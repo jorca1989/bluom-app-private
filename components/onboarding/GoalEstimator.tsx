@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { TrendingUp, Calendar, Target, Zap } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 interface EstimatorProps {
   currentWeight: number;
@@ -18,6 +20,8 @@ export default function GoalEstimator({
   commitmentLevel,
   units,
 }: EstimatorProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const { t } = useTranslation();
 
   const weightDiff = Math.abs(currentWeight - targetWeight);
@@ -115,29 +119,32 @@ export default function GoalEstimator({
   );
 }
 
-const styles = StyleSheet.create({
-  container: { backgroundColor: '#fff', borderRadius: 24, padding: 24, borderWidth: 1, borderColor: '#e2e8f0' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { backgroundColor: c.surface, borderRadius: 24, padding: 24, borderWidth: 1, borderColor: c.border },
   header: { alignItems: 'center', marginBottom: 28 },
   iconCircle: { width: 64, height: 64, borderRadius: 32, backgroundColor: '#eff6ff', alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
-  title: { fontSize: 24, fontWeight: '800', color: '#1e293b', marginBottom: 8 },
-  subtitle: { fontSize: 14, color: '#64748b' },
+  title: { fontSize: 24, fontWeight: '800', color: c.text, marginBottom: 8 },
+  subtitle: { fontSize: 14, color: c.textMuted },
   timelineCard: { backgroundColor: '#eff6ff', borderRadius: 20, padding: 28, alignItems: 'center', marginBottom: 20, borderWidth: 2, borderColor: '#2563eb' },
   timelineValue: { fontSize: 30, fontWeight: '900', color: '#2563eb', marginBottom: 6 },
-  timelineLabel: { fontSize: 14, fontWeight: '600', color: '#64748b' },
+  timelineLabel: { fontSize: 14, fontWeight: '600', color: c.textMuted },
   statsGrid: { flexDirection: 'row', gap: 12, marginBottom: 20 },
-  statCard: { flex: 1, backgroundColor: '#f8fafc', borderRadius: 16, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: '#e2e8f0' },
-  statValue: { fontSize: 18, fontWeight: '800', color: '#1e293b', marginTop: 6, marginBottom: 2 },
-  statLabel: { fontSize: 12, color: '#64748b', textAlign: 'center' },
-  graphContainer: { backgroundColor: '#f8fafc', borderRadius: 16, padding: 16, marginBottom: 20, borderWidth: 1, borderColor: '#e2e8f0' },
-  graphTitle: { fontSize: 14, fontWeight: '700', color: '#334155', marginBottom: 12, textAlign: 'center' },
+  statCard: { flex: 1, backgroundColor: c.surfaceMuted, borderRadius: 16, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: c.border },
+  statValue: { fontSize: 18, fontWeight: '800', color: c.text, marginTop: 6, marginBottom: 2 },
+  statLabel: { fontSize: 12, color: c.textMuted, textAlign: 'center' },
+  graphContainer: { backgroundColor: c.surfaceMuted, borderRadius: 16, padding: 16, marginBottom: 20, borderWidth: 1, borderColor: c.border },
+  graphTitle: { fontSize: 14, fontWeight: '700', color: c.text, marginBottom: 12, textAlign: 'center' },
   graphRow: { flexDirection: 'row', height: 100 },
   graphYAxis: { justifyContent: 'space-between', marginRight: 8, paddingBottom: 18 },
-  graphYLabel: { fontSize: 10, color: '#94a3b8', fontWeight: '600' },
+  graphYLabel: { fontSize: 10, color: c.textMuted, fontWeight: '600' },
   graphBars: { flex: 1, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-around' },
   graphBarCol: { alignItems: 'center', flex: 1, height: '100%', justifyContent: 'flex-end' },
   graphBar: { width: 20, borderRadius: 6, minHeight: 8 },
-  graphBarLabel: { fontSize: 9, color: '#94a3b8', marginTop: 4, fontWeight: '600' },
+  graphBarLabel: { fontSize: 9, color: c.textMuted, marginTop: 4, fontWeight: '600' },
   commitmentBadge: { backgroundColor: '#fef3c7', paddingVertical: 12, paddingHorizontal: 20, borderRadius: 12, alignItems: 'center', marginBottom: 16 },
   commitmentText: { fontSize: 14, fontWeight: '700', color: '#92400e' },
-  disclaimer: { fontSize: 12, color: '#64748b', textAlign: 'center', lineHeight: 18, fontStyle: 'italic' },
+  disclaimer: { fontSize: 12, color: c.textMuted, textAlign: 'center', lineHeight: 18, fontStyle: 'italic' },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

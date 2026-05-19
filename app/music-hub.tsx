@@ -5,7 +5,10 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAudio, Track } from '@/context/AudioContext';
 
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
+
 export default function MusicHubScreen() {
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { playTrack, currentTrack, isPlaying } = useAudio();

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 import { useWindowDimensions } from 'react-native'; // dynamic width for responsive grid
 import {
   View,
@@ -176,14 +176,14 @@ function LogMealModal({
   );
 }
 
-const lmStyles = StyleSheet.create({
+const createLmStyles = (c: ThemeColors) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.45)',
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
@@ -193,24 +193,24 @@ const lmStyles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: c.border,
     alignSelf: 'center',
     marginBottom: 20,
   },
   title: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#1e293b',
+    color: c.text,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     marginBottom: 20,
   },
   macroRow: {
     flexDirection: 'row',
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 16,
     padding: 16,
     marginBottom: 24,
@@ -219,12 +219,12 @@ const lmStyles = StyleSheet.create({
   },
   macroItem: { alignItems: 'center' },
   macroVal: { fontSize: 18, fontWeight: '700' },
-  macroLabel: { fontSize: 11, color: '#94a3b8', marginTop: 2 },
-  macroDivider: { width: 1, height: 32, backgroundColor: '#e2e8f0' },
+  macroLabel: { fontSize: 11, color: c.textMuted, marginTop: 2 },
+  macroDivider: { width: 1, height: 32, backgroundColor: c.border },
   pickerLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#64748b',
+    color: c.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginBottom: 12,
@@ -243,7 +243,7 @@ const lmStyles = StyleSheet.create({
     padding: 12,
     borderRadius: 14,
     borderWidth: 2,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     backgroundColor: '#fafafa',
   },
   mealTileActive: {
@@ -260,7 +260,7 @@ const lmStyles = StyleSheet.create({
   mealName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#475569',
+    color: c.text,
   },
   mealNameActive: { color: '#1d4ed8' },
   actions: { flexDirection: 'row', gap: 12 },
@@ -269,10 +269,10 @@ const lmStyles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     alignItems: 'center',
   },
-  cancelText: { fontSize: 15, fontWeight: '600', color: '#64748b' },
+  cancelText: { fontSize: 15, fontWeight: '600', color: c.textMuted },
   logBtn: {
     flex: 2,
     paddingVertical: 14,
@@ -292,6 +292,8 @@ const lmStyles = StyleSheet.create({
 // ─── Main Screen ──────────────────────────────────────────────
 export default function RecipesScreen() {
   const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
+  const lmStyles = useMemo(() => createLmStyles(themeColors), [themeColors]);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser, isLoaded: isClerkLoaded } = useClerkUser();
@@ -715,9 +717,9 @@ export default function RecipesScreen() {
 }
 
 // ─── Styles (original + new additions) ───────────────────────
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F4F0' },
-  detailContainer: { flex: 1, backgroundColor: '#F5F4F0' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
+  detailContainer: { flex: 1, backgroundColor: c.bg },
   scrollView: { flex: 1 },
   header: {
     paddingHorizontal: 24,
@@ -727,17 +729,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   detailHeader: { paddingHorizontal: 24, paddingBottom: 8 },
-  title: { fontSize: 24, fontWeight: 'bold', color: '#1e293b' },
+  title: { fontSize: 24, fontWeight: 'bold', color: c.text },
   backButton: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  backText: { fontSize: 14, color: '#1e293b' },
+  backText: { fontSize: 14, color: c.text },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     marginHorizontal: 24,
     marginBottom: 16,
     padding: 24,
     borderRadius: 20, // Increased border radius
     borderWidth: 1, // Added border for definition on white
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05, // Lighter shadow on white
@@ -747,37 +749,37 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 14, // Slightly increased
     paddingHorizontal: 16,
     marginBottom: 16,
     height: 50,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   searchIcon: { marginRight: 12 },
-  searchInput: { flex: 1, fontSize: 16, color: '#1e293b' },
+  searchInput: { flex: 1, fontSize: 16, color: c.text },
   categoriesScroll: { marginHorizontal: -4 },
   categoryChip: {
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   categoryChipActive: {
     backgroundColor: '#2563eb',
     borderColor: '#2563eb',
   },
-  categoryChipText: { fontSize: 14, color: '#64748b', fontWeight: '600' },
+  categoryChipText: { fontSize: 14, color: c.textMuted, fontWeight: '600' },
   categoryChipTextActive: { color: '#ffffff', fontWeight: '700' },
   loadingContainer: { paddingVertical: 48, alignItems: 'center' },
-  loadingText: { marginTop: 16, fontSize: 16, color: '#64748b' },
+  loadingText: { marginTop: 16, fontSize: 16, color: c.textMuted },
   emptyContainer: { paddingVertical: 48, alignItems: 'center' },
-  emptyText: { fontSize: 18, fontWeight: '600', color: '#64748b', marginTop: 16 },
-  emptySubtext: { fontSize: 14, color: '#94a3b8', marginTop: 8, textAlign: 'center', paddingHorizontal: 24 },
+  emptyText: { fontSize: 18, fontWeight: '600', color: c.textMuted, marginTop: 16 },
+  emptySubtext: { fontSize: 14, color: c.textMuted, marginTop: 8, textAlign: 'center', paddingHorizontal: 24 },
 
   // ── REFACTORED GALLERY ──────────────────────────────────────
   recipesGrid: {
@@ -787,7 +789,7 @@ const styles = StyleSheet.create({
     gap: 16, // Better spacing
   },
   recipeCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 20, // More rounded
     marginBottom: 0, // Using gap instead
     shadowColor: '#000',
@@ -797,7 +799,7 @@ const styles = StyleSheet.create({
     elevation: 6,
     overflow: 'hidden',
     borderWidth: 2, // Thicker border
-    borderColor: '#cbd5e1', // Darker border for better visibility
+    borderColor: c.border, // Darker border for better visibility
   },
   recipeCardImageContainer: {
     width: '100%',
@@ -811,18 +813,18 @@ const styles = StyleSheet.create({
   recipeCardImagePlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#f1f5f9', // Lighter placeholder
+    backgroundColor: c.surfaceMuted, // Lighter placeholder
     justifyContent: 'center',
     alignItems: 'center',
   },
   recipeCardContent: {
     padding: 14, // Increased padding
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   recipeCardTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 10,
     lineHeight: 20,
   },
@@ -831,11 +833,11 @@ const styles = StyleSheet.create({
     gap: 12, // Better spacing
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#f1f5f9',
+    borderTopColor: c.surfaceMuted,
   },
   macro: {
     fontSize: 12,
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: '600',
   },
 
@@ -849,19 +851,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  recipeTitle: { fontSize: 24, fontWeight: 'bold', color: '#1e293b', marginBottom: 8 },
-  recipeDescription: { fontSize: 14, color: '#64748b' },
+  recipeTitle: { fontSize: 24, fontWeight: 'bold', color: c.text, marginBottom: 8 },
+  recipeDescription: { fontSize: 14, color: c.textMuted },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 16, marginTop: 12 },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  metaText: { fontSize: 14, color: '#64748b' },
-  cardTitle: { fontSize: 18, fontWeight: '600', color: '#1e293b', marginBottom: 16 },
+  metaText: { fontSize: 14, color: c.textMuted },
+  cardTitle: { fontSize: 18, fontWeight: '600', color: c.text, marginBottom: 16 },
   nutritionGrid: { flexDirection: 'row', justifyContent: 'space-around' },
   nutritionItem: { alignItems: 'center' },
   nutritionValue: { fontSize: 24, fontWeight: 'bold', marginBottom: 4 },
-  nutritionLabel: { fontSize: 12, color: '#64748b' },
+  nutritionLabel: { fontSize: 12, color: c.textMuted },
   ingredientItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 12 },
   ingredientDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#3b82f6' },
-  ingredientText: { fontSize: 14, color: '#1e293b', flex: 1 },
+  ingredientText: { fontSize: 14, color: c.text, flex: 1 },
   instructionItem: { flexDirection: 'row', marginBottom: 16, gap: 12 },
   instructionNumber: {
     width: 32,
@@ -873,7 +875,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   instructionNumberText: { fontSize: 14, fontWeight: 'bold', color: '#ffffff' },
-  instructionText: { fontSize: 14, color: '#1e293b', flex: 1, paddingTop: 6 },
+  instructionText: { fontSize: 14, color: c.text, flex: 1, paddingTop: 6 },
 
   // ── NEW: Action buttons row ──────────────────────────────────
   actionButtonsRow: {
@@ -924,8 +926,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   lockedOverlay: { alignItems: 'center', gap: 8 },
-  lockedTitle: { fontSize: 16, fontWeight: '900', color: '#0f172a' },
-  lockedText: { color: '#475569', fontWeight: '700', textAlign: 'center', lineHeight: 18 },
+  lockedTitle: { fontSize: 16, fontWeight: '900', color: c.text },
+  lockedText: { color: c.text, fontWeight: '700', textAlign: 'center', lineHeight: 18 },
   lockedBtn: {
     marginTop: 8,
     backgroundColor: '#3b82f6',
@@ -939,3 +941,7 @@ const styles = StyleSheet.create({
   },
   lockedBtnText: { color: '#ffffff', fontWeight: '900' },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const lmStyles = createLmStyles(THEMES.default.colors);
+const styles = createStyles(THEMES.default.colors);

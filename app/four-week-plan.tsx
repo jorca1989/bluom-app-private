@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 import {
   View,
   Text,
@@ -28,6 +28,7 @@ const WEEK_COLORS = ['#1e293b', '#4c1d95', '#065f46', '#92400e'];
 
 export default function FourWeekPlanScreen() {
   const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useClerkUser();
@@ -298,25 +299,25 @@ export default function FourWeekPlanScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.surfaceMuted },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: c.surfaceMuted,
   },
   backBtn: { padding: 8, marginLeft: -8 },
-  headerTitle: { fontSize: 18, fontWeight: '800', color: '#0f172a' },
-  headerSub: { fontSize: 12, color: '#64748b', marginTop: 2 },
+  headerTitle: { fontSize: 18, fontWeight: '800', color: c.text },
+  headerSub: { fontSize: 12, color: c.textMuted, marginTop: 2 },
   content: { padding: 16, gap: 16 },
 
   heroCard: {
-    backgroundColor: '#0f172a',
+    backgroundColor: c.text,
     borderRadius: 20,
     padding: 24,
   },
@@ -363,19 +364,22 @@ const styles = StyleSheet.create({
   goProText: { color: '#ffffff', fontWeight: '800', fontSize: 14 },
 
   proCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 16,
     padding: 20,
     borderWidth: 1,
     borderColor: '#fde68a',
   },
   proCardHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
-  proCardTitle: { fontSize: 16, fontWeight: '800', color: '#0f172a' },
-  proCardSub: { fontSize: 13, color: '#64748b', lineHeight: 19, marginBottom: 16 },
+  proCardTitle: { fontSize: 16, fontWeight: '800', color: c.text },
+  proCardSub: { fontSize: 13, color: c.textMuted, lineHeight: 19, marginBottom: 16 },
   proCardBtn: {
-    backgroundColor: '#f8fafc', borderRadius: 12,
+    backgroundColor: c.surfaceMuted, borderRadius: 12,
     paddingVertical: 12, alignItems: 'center',
-    borderWidth: 1, borderColor: '#e2e8f0',
+    borderWidth: 1, borderColor: c.border,
   },
   proCardBtnText: { fontSize: 14, fontWeight: '700', color: '#2563eb' },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

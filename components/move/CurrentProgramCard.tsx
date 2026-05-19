@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 interface CurrentProgramCardProps {
   programName?: string;
@@ -22,6 +24,8 @@ export default function CurrentProgramCard({
   totalWeeks = 4,
   progressPercent = 0,
 }: CurrentProgramCardProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const { t } = useTranslation();
   
   const displayProgramName = programName || t('move.your4WeekProgram', 'Your 4-Week Program');
@@ -58,14 +62,14 @@ export default function CurrentProgramCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 24,
     marginHorizontal: 24,
     marginBottom: 0,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
   },
   content: {
     padding: 24,
@@ -90,12 +94,12 @@ const styles = StyleSheet.create({
   programTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 4,
   },
   programSubtitle: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: '500',
   },
   progressContainer: {
@@ -109,7 +113,7 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 15,
-    color: '#0f172a',
+    color: c.text,
     fontWeight: '600',
   },
   progressPercent: {
@@ -119,7 +123,7 @@ const styles = StyleSheet.create({
   },
   progressBarBg: {
     height: 8,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 4,
     overflow: 'hidden',
   },
@@ -129,3 +133,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

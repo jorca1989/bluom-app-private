@@ -22,6 +22,8 @@ import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
 
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+
 const { width } = Dimensions.get('window');
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -557,7 +559,7 @@ function WeekCard({
     </TouchableOpacity>
   );
 }
-const wcS = StyleSheet.create({
+const createWcS = (c: ThemeColors) => StyleSheet.create({
   card: {
     width: 162, borderRadius: 20, padding: 16, minHeight: 130,
     justifyContent: 'flex-end', gap: 2,
@@ -570,7 +572,7 @@ const wcS = StyleSheet.create({
   tagline: { fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 2 },
   dot: {
     position: 'absolute', top: 12, right: 12,
-    width: 8, height: 8, borderRadius: 4, backgroundColor: '#fff',
+    width: 8, height: 8, borderRadius: 4, backgroundColor: c.surface,
   },
 });
 
@@ -607,10 +609,10 @@ function DayRow({
     </TouchableOpacity>
   );
 }
-const drS = StyleSheet.create({
+const createDrS = (c: ThemeColors) => StyleSheet.create({
   row: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#fff', borderRadius: 14, padding: 14,
+    backgroundColor: c.surface, borderRadius: 14, padding: 14,
     marginBottom: 8, gap: 12,
     shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
@@ -619,14 +621,14 @@ const drS = StyleSheet.create({
   completedRow: { opacity: 0.65 },
   dayBadge: {
     width: 36, height: 36, borderRadius: 10,
-    backgroundColor: '#f1f5f9', justifyContent: 'center', alignItems: 'center',
+    backgroundColor: c.surfaceMuted, justifyContent: 'center', alignItems: 'center',
   },
   todayBadge: { backgroundColor: '#8b5cf6' },
   completedBadge: { backgroundColor: '#22c55e' },
-  dayNum: { fontSize: 13, fontWeight: '800', color: '#475569' },
+  dayNum: { fontSize: 13, fontWeight: '800', color: c.text },
   info: { flex: 1 },
-  title: { fontSize: 14, fontWeight: '700', color: '#0f172a' },
-  meta: { fontSize: 11, color: '#94a3b8', marginTop: 1 },
+  title: { fontSize: 14, fontWeight: '700', color: c.text },
+  meta: { fontSize: 11, color: c.textMuted, marginTop: 1 },
   pillars: { flexDirection: 'row', gap: 4, marginRight: 4 },
   pillarDot: { width: 7, height: 7, borderRadius: 4 },
 });
@@ -658,20 +660,20 @@ function ActivityCard({ activity }: { activity: DayActivity }) {
     </View>
   );
 }
-const acS = StyleSheet.create({
+const createAcS = (c: ThemeColors) => StyleSheet.create({
   card: {
-    backgroundColor: '#f8fafc', borderRadius: 16, padding: 16, marginBottom: 12,
+    backgroundColor: c.surfaceMuted, borderRadius: 16, padding: 16, marginBottom: 12,
     borderLeftWidth: 3, borderLeftColor: '#8b5cf6',
   },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   pillarBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 4 },
   pillarText: { fontSize: 10, fontWeight: '700' },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  duration: { fontSize: 11, color: '#64748b' },
+  duration: { fontSize: 11, color: c.textMuted },
   intDot: { width: 6, height: 6, borderRadius: 3 },
   intText: { fontSize: 10, fontWeight: '600' },
-  title: { fontSize: 15, fontWeight: '800', color: '#0f172a', marginBottom: 6 },
-  desc: { fontSize: 13, color: '#475569', lineHeight: 19, marginBottom: 10 },
+  title: { fontSize: 15, fontWeight: '800', color: c.text, marginBottom: 6 },
+  desc: { fontSize: 13, color: c.text, lineHeight: 19, marginBottom: 10 },
   whyBox: { flexDirection: 'row', gap: 6, alignItems: 'flex-start', backgroundColor: '#ede9fe', borderRadius: 8, padding: 10 },
   why: { flex: 1, fontSize: 11, color: '#5b21b6', lineHeight: 16, fontStyle: 'italic' },
 });
@@ -733,7 +735,7 @@ function DayDetailModal({
     </Modal>
   );
 }
-const ddS = StyleSheet.create({
+const createDdS = (c: ThemeColors) => StyleSheet.create({
   header: { padding: 24, paddingTop: 16, paddingBottom: 28 },
   closeBtn: {
     width: 34, height: 34, borderRadius: 17,
@@ -749,7 +751,7 @@ const ddS = StyleSheet.create({
     borderLeftWidth: 3, borderLeftColor: '#d97706',
   },
   affirmText: { flex: 1, fontSize: 14, color: '#92400e', fontStyle: 'italic', lineHeight: 20, fontWeight: '600' },
-  sectionTitle: { fontSize: 17, fontWeight: '800', color: '#0f172a', marginBottom: 12 },
+  sectionTitle: { fontSize: 17, fontWeight: '800', color: c.text, marginBottom: 12 },
   reflectionBox: { backgroundColor: '#f0fdf4', borderRadius: 14, padding: 16, marginTop: 8, borderLeftWidth: 3, borderLeftColor: '#16a34a' },
   reflectionLabel: { fontSize: 13, fontWeight: '700', color: '#15803d', marginBottom: 8 },
   reflectionPrompt: { fontSize: 14, color: '#166534', lineHeight: 20, fontStyle: 'italic' },
@@ -761,6 +763,12 @@ const ddS = StyleSheet.create({
 // ─── Main Screen ───────────────────────────────────────────────────────────────
 
 export default function MentalHealthPlanScreen() {
+  const { colors: themeColors } = useTheme();
+  const ps = useMemo(() => createPs(themeColors), [themeColors]);
+  const ddS = useMemo(() => createDdS(themeColors), [themeColors]);
+  const acS = useMemo(() => createAcS(themeColors), [themeColors]);
+  const drS = useMemo(() => createDrS(themeColors), [themeColors]);
+  const wcS = useMemo(() => createWcS(themeColors), [themeColors]);
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -994,8 +1002,8 @@ export default function MentalHealthPlanScreen() {
   );
 }
 
-const ps = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+const createPs = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.surfaceMuted },
 
   // Hero
   hero: {
@@ -1039,15 +1047,15 @@ const ps = StyleSheet.create({
   todayFocus: { fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 4 },
   todayRight: { alignItems: 'center' },
   startBtn: {
-    backgroundColor: '#fff', borderRadius: 14,
+    backgroundColor: c.surface, borderRadius: 14,
     paddingVertical: 10, paddingHorizontal: 16,
     flexDirection: 'row', alignItems: 'center', gap: 6,
   },
   startBtnText: { fontSize: 13, fontWeight: '800', color: '#7c3aed' },
 
   section: { paddingHorizontal: 20 },
-  sectionTitle: { fontSize: 18, fontWeight: '800', color: '#0f172a', letterSpacing: -0.3 },
-  sectionSub: { fontSize: 12, color: '#64748b', marginTop: 2, marginBottom: 14 },
+  sectionTitle: { fontSize: 18, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
+  sectionSub: { fontSize: 12, color: c.textMuted, marginTop: 2, marginBottom: 14 },
 
   // Pillar grid
   pillarsGrid: { flexDirection: 'row', gap: 10 },
@@ -1093,3 +1101,10 @@ const ps = StyleSheet.create({
   },
   researchText: { flex: 1, fontSize: 11, color: '#6d28d9', lineHeight: 17 },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const wcS = createWcS(THEMES.default.colors);
+const drS = createDrS(THEMES.default.colors);
+const acS = createAcS(THEMES.default.colors);
+const ddS = createDdS(THEMES.default.colors);
+const ps = createPs(THEMES.default.colors);

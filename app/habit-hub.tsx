@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import {
     View,
@@ -111,6 +111,7 @@ const DEFAULT_HABIT_NAME_MAP: Record<string, string> = {
 
 export default function HabitHubScreen() {
   const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
     const { t } = useTranslation();
     const router = useRouter();
     const insets = useSafeAreaInsets();
@@ -577,10 +578,10 @@ export default function HabitHubScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f8fafc',
+        backgroundColor: c.surfaceMuted,
     },
     header: {
         paddingHorizontal: 20,
@@ -588,24 +589,24 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#ffffff',
+        backgroundColor: c.surface,
         borderBottomWidth: 1,
-        borderBottomColor: '#f1f5f9',
+        borderBottomColor: c.surfaceMuted,
     },
     backButton: {
         padding: 8,
         borderRadius: 12,
-        backgroundColor: '#f1f5f9',
+        backgroundColor: c.surfaceMuted,
     },
     title: {
         fontSize: 20,
         fontWeight: '800',
-        color: '#0f172a',
+        color: c.text,
     },
     segmentedControl: {
         flexDirection: 'row',
         margin: 20,
-        backgroundColor: '#e2e8f0',
+        backgroundColor: c.border,
         borderRadius: 12,
         padding: 4,
     },
@@ -616,7 +617,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     activeSegment: {
-        backgroundColor: '#ffffff',
+        backgroundColor: c.surface,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
@@ -626,10 +627,10 @@ const styles = StyleSheet.create({
     segmentText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#64748b',
+        color: c.textMuted,
     },
     activeSegmentText: {
-        color: '#0f172a',
+        color: c.text,
         fontWeight: '700',
     },
     content: {
@@ -639,13 +640,13 @@ const styles = StyleSheet.create({
     placeholderText: {
         textAlign: 'center',
         marginTop: 40,
-        color: '#94a3b8',
+        color: c.textMuted,
         fontSize: 16,
     },
     cardTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#1e293b',
+        color: c.text,
     },
     cardHeader: {
         flexDirection: 'row',
@@ -655,7 +656,7 @@ const styles = StyleSheet.create({
     },
     habitsSubtitle: {
         fontSize: 13,
-        color: '#64748b',
+        color: c.textMuted,
         marginTop: 2,
     },
     addHabitButton: {
@@ -677,11 +678,11 @@ const styles = StyleSheet.create({
     progressBarText: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#64748b',
+        color: c.textMuted,
     },
     progressBar: {
         height: 8,
-        backgroundColor: '#e2e8f0',
+        backgroundColor: c.border,
         borderRadius: 4,
         overflow: 'hidden',
     },
@@ -699,7 +700,7 @@ const styles = StyleSheet.create({
     categoryTitle: {
         fontSize: 11,
         fontWeight: '700',
-        color: '#94a3b8',
+        color: c.textMuted,
         marginBottom: 8,
         letterSpacing: 0.5,
     },
@@ -707,12 +708,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#ffffff',
+        backgroundColor: c.surface,
         padding: 12,
         borderRadius: 16,
         marginBottom: 8,
         borderWidth: 1,
-        borderColor: '#f1f5f9',
+        borderColor: c.surfaceMuted,
     },
     habitLeft: {
         flexDirection: 'row',
@@ -725,10 +726,10 @@ const styles = StyleSheet.create({
         height: 24,
         borderRadius: 8,
         borderWidth: 2,
-        borderColor: '#e2e8f0',
+        borderColor: c.border,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#ffffff',
+        backgroundColor: c.surface,
     },
     habitCheckboxCompleted: {
         backgroundColor: '#22c55e',
@@ -747,16 +748,16 @@ const styles = StyleSheet.create({
     habitName: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#1e293b',
+        color: c.text,
     },
     habitStreak: {
         fontSize: 12,
-        color: '#64748b',
+        color: c.textMuted,
         marginTop: 2,
     },
     modalContent: {
         flex: 1,
-        backgroundColor: '#ffffff',
+        backgroundColor: c.surface,
     },
     modalHeader: {
         flexDirection: 'row',
@@ -764,12 +765,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
         borderBottomWidth: 1,
-        borderBottomColor: '#f1f5f9',
+        borderBottomColor: c.surfaceMuted,
     },
     modalTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#0f172a',
+        color: c.text,
     },
     modalScroll: {
         padding: 20,
@@ -780,17 +781,17 @@ const styles = StyleSheet.create({
     inputLabel: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#475569',
+        color: c.text,
         marginBottom: 8,
     },
     input: {
-        backgroundColor: '#f8fafc',
+        backgroundColor: c.surfaceMuted,
         borderRadius: 12,
         padding: 16,
         borderWidth: 1,
-        borderColor: '#e2e8f0',
+        borderColor: c.border,
         fontSize: 16,
-        color: '#0f172a',
+        color: c.text,
     },
     modalButton: {
         padding: 16,
@@ -812,7 +813,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 20,
-        backgroundColor: '#f1f5f9',
+        backgroundColor: c.surfaceMuted,
     },
     categoryOptionSelected: {
         backgroundColor: '#2563eb',
@@ -820,7 +821,7 @@ const styles = StyleSheet.create({
     categoryOptionText: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#64748b',
+        color: c.textMuted,
     },
     categoryOptionTextSelected: {
         color: '#ffffff',
@@ -833,7 +834,7 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 18,
-        backgroundColor: '#f1f5f9',
+        backgroundColor: c.surfaceMuted,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -843,13 +844,13 @@ const styles = StyleSheet.create({
     dayOptionText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#64748b',
+        color: c.textMuted,
     },
     dayOptionTextSelected: {
         color: '#ffffff',
     },
     breakCard: {
-        backgroundColor: '#1e293b',
+        backgroundColor: c.text,
         borderRadius: 20,
         padding: 20,
         marginBottom: 16,
@@ -869,7 +870,7 @@ const styles = StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 14,
-        backgroundColor: '#334155',
+        backgroundColor: c.text,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -881,7 +882,7 @@ const styles = StyleSheet.create({
     statusBadge: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#334155',
+        backgroundColor: c.text,
         paddingHorizontal: 10,
         paddingVertical: 6,
         borderRadius: 20,
@@ -893,21 +894,21 @@ const styles = StyleSheet.create({
         borderRadius: 3,
     },
     statusText: {
-        color: '#cbd5e1',
+        color: c.border,
         fontSize: 12,
         fontWeight: '600',
     },
     freedomClockContainer: {
-        backgroundColor: '#0f172a',
+        backgroundColor: c.text,
         borderRadius: 16,
         padding: 16,
         alignItems: 'center',
         marginBottom: 20,
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: c.text,
     },
     freedomLabel: {
-        color: '#64748b',
+        color: c.textMuted,
         fontSize: 10,
         fontWeight: '700',
         letterSpacing: 1,
@@ -930,13 +931,13 @@ const styles = StyleSheet.create({
     clockUnit: {
         fontSize: 10,
         fontWeight: '700',
-        color: '#64748b',
+        color: c.textMuted,
         marginTop: -2,
     },
     clockSeparator: {
         fontSize: 28,
         fontWeight: '300',
-        color: '#475569',
+        color: c.text,
         marginBottom: 12,
     },
     impactRow: {
@@ -944,7 +945,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 20,
-        backgroundColor: '#334155',
+        backgroundColor: c.text,
         borderRadius: 12,
         padding: 12,
     },
@@ -952,7 +953,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     impactLabel: {
-        color: '#94a3b8',
+        color: c.textMuted,
         fontSize: 12,
         fontWeight: '600',
     },
@@ -979,7 +980,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
     relapseText: {
-        color: '#64748b',
+        color: c.textMuted,
         fontSize: 12,
         fontWeight: '600',
         textDecorationLine: 'underline',
@@ -992,7 +993,7 @@ const styles = StyleSheet.create({
     emptyStateText: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#64748b',
+        color: c.textMuted,
         marginTop: 16,
         marginBottom: 24,
     },
@@ -1008,7 +1009,7 @@ const styles = StyleSheet.create({
     },
     helperText: {
         fontSize: 12,
-        color: '#64748b',
+        color: c.textMuted,
         marginTop: 4,
         fontStyle: 'italic',
     },
@@ -1022,7 +1023,7 @@ const styles = StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 12,
-        backgroundColor: '#f1f5f9',
+        backgroundColor: c.surfaceMuted,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
@@ -1036,3 +1037,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

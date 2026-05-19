@@ -45,6 +45,8 @@ function KpiCard({
   label: string; labelColor?: string; value: string; sub: string;
   progress?: number; barColor?: string;
 }) {
+  const { colors } = useTheme();
+  const kpiStyles = useMemo(() => createKpiStyles(colors), [colors]);
   return (
     <View style={kpiStyles.card}>
       <View style={kpiStyles.head}>
@@ -91,6 +93,8 @@ const createKpiStyles = (c: ThemeColors) => StyleSheet.create({
 function QuickActionBtn({
   icon, label, color, bg, onPress,
 }: { icon: string; label: string; color: string; bg: string; onPress: () => void }) {
+  const { colors } = useTheme();
+  const qaStyles = useMemo(() => createQaStyles(colors), [colors]);
   return (
     <TouchableOpacity style={[qaStyles.btn, { backgroundColor: bg }]} onPress={onPress} activeOpacity={0.8}>
       <Ionicons name={icon as any} size={20} color={color} />
@@ -113,6 +117,8 @@ function HubCard({
   icon: string; label: string; sub?: string;
   gradient: readonly [string, string]; onPress: () => void;
 }) {
+  const { colors } = useTheme();
+  const hubStyles = useMemo(() => createHubStyles(colors), [colors]);
   return (
     <TouchableOpacity style={hubStyles.wrap} onPress={onPress} activeOpacity={0.85}>
       <LinearGradient

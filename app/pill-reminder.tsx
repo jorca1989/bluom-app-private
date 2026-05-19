@@ -4,7 +4,7 @@
  * 4 tabs: Today | Calendar | History | Settings
  */
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Modal, TextInput, Alert, Animated, Switch, Dimensions,
@@ -55,6 +55,7 @@ function calcStreak(history: any[], schedules: any[]): number {
 
 export default function PillReminderScreen() {
   const { colors: themeColors } = useTheme();
+  const s = useMemo(() => createS(themeColors), [themeColors]);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
@@ -491,75 +492,78 @@ export default function PillReminderScreen() {
   );
 }
 
-const s = StyleSheet.create({
+const createS = (c: ThemeColors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#fdf2f8' },
-  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 10, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#fce7f3' },
+  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 10, backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: '#fce7f3' },
   backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#fdf2f8', alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: 17, fontWeight: '900', color: '#0f172a' },
-  headerSub: { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
+  headerTitle: { fontSize: 17, fontWeight: '900', color: c.text },
+  headerSub: { fontSize: 11, color: c.textMuted, fontWeight: '600' },
   streakBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#fff7ed', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: '#fed7aa' },
   streakEmoji: { fontSize: 14 },
   streakVal: { fontSize: 15, fontWeight: '900', color: '#ea580c' },
-  tabBar: { flexDirection: 'row', backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#fce7f3' },
+  tabBar: { flexDirection: 'row', backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: '#fce7f3' },
   tab: { flex: 1, paddingVertical: 12, alignItems: 'center' },
   tabActive: { borderBottomWidth: 2, borderBottomColor: '#e11d48' },
-  tabLabel: { fontSize: 11, fontWeight: '700', color: '#94a3b8' },
+  tabLabel: { fontSize: 11, fontWeight: '700', color: c.textMuted },
   tabLabelActive: { color: '#e11d48', fontWeight: '800' },
   scroll: { paddingHorizontal: 16, paddingTop: 16 },
-  sectionTitle: { fontSize: 15, fontWeight: '800', color: '#0f172a', marginBottom: 10, marginTop: 4 },
-  emptyTxt: { fontSize: 13, color: '#94a3b8', textAlign: 'center', paddingVertical: 30, fontStyle: 'italic' },
+  sectionTitle: { fontSize: 15, fontWeight: '800', color: c.text, marginBottom: 10, marginTop: 4 },
+  emptyTxt: { fontSize: 13, color: c.textMuted, textAlign: 'center', paddingVertical: 30, fontStyle: 'italic' },
   statsRow: { flexDirection: 'row', gap: 10, marginBottom: 16 },
-  statCard: { flex: 1, backgroundColor: '#fff', borderRadius: 14, padding: 14, alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
+  statCard: { flex: 1, backgroundColor: c.surface, borderRadius: 14, padding: 14, alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
   statVal: { fontSize: 22, fontWeight: '900', color: '#e11d48' },
-  statLbl: { fontSize: 10, color: '#94a3b8', fontWeight: '700', marginTop: 2 },
-  pillCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff', borderRadius: 16, padding: 14, marginBottom: 10, borderLeftWidth: 4, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
+  statLbl: { fontSize: 10, color: c.textMuted, fontWeight: '700', marginTop: 2 },
+  pillCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: c.surface, borderRadius: 16, padding: 14, marginBottom: 10, borderLeftWidth: 4, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
   pillDot: { width: 14, height: 14, borderRadius: 7 },
-  pillName: { fontSize: 15, fontWeight: '700', color: '#0f172a' },
-  pillTime: { fontSize: 11, color: '#94a3b8', marginTop: 2 },
+  pillName: { fontSize: 15, fontWeight: '700', color: c.text },
+  pillTime: { fontSize: 11, color: c.textMuted, marginTop: 2 },
   takeBtnWrap: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   statusBadge: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 },
-  pillHistCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 8, borderLeftWidth: 4 },
-  pillHistStats: { fontSize: 12, color: '#64748b', marginTop: 2 },
+  pillHistCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: c.surface, borderRadius: 14, padding: 14, marginBottom: 8, borderLeftWidth: 4 },
+  pillHistStats: { fontSize: 12, color: c.textMuted, marginTop: 2 },
   deleteBtn: { padding: 6 },
   // Calendar
   calNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  calNavBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#fce7f3' },
-  calNavTitle: { fontSize: 16, fontWeight: '800', color: '#0f172a' },
+  calNavBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: c.surface, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#fce7f3' },
+  calNavTitle: { fontSize: 16, fontWeight: '800', color: c.text },
   calDowRow: { flexDirection: 'row', marginBottom: 6 },
-  calDow: { flex: 1, textAlign: 'center', fontSize: 11, fontWeight: '800', color: '#94a3b8' },
+  calDow: { flex: 1, textAlign: 'center', fontSize: 11, fontWeight: '800', color: c.textMuted },
   calGrid: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 14 },
   calCell: { width: `${100/7}%`, aspectRatio: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 2 },
   calCellToday: { backgroundColor: '#fdf2f8', borderRadius: 100 },
-  calDayNum: { fontSize: 13, fontWeight: '600', color: '#334155' },
+  calDayNum: { fontSize: 13, fontWeight: '600', color: c.text },
   dotRow: { flexDirection: 'row', gap: 1.5, flexWrap: 'wrap', justifyContent: 'center', marginTop: 1 },
   calDot: { width: 5, height: 5, borderRadius: 3 },
-  calDotMore: { fontSize: 7, color: '#94a3b8', fontWeight: '700' },
+  calDotMore: { fontSize: 7, color: c.textMuted, fontWeight: '700' },
   calLegend: { flexDirection: 'row', gap: 14, justifyContent: 'center', marginBottom: 14 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   legendDot: { width: 10, height: 10, borderRadius: 5 },
-  legendTxt: { fontSize: 11, color: '#64748b', fontWeight: '600' },
+  legendTxt: { fontSize: 11, color: c.textMuted, fontWeight: '600' },
   // Heatmap
   heatmapGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 3, marginBottom: 20 },
   heatCell: { width: (SW - 32 - 87) / 13, height: (SW - 32 - 87) / 13, borderRadius: 3 },
   // Settings form
-  formCard: { backgroundColor: '#fff', borderRadius: 18, padding: 16, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
-  formLabel: { fontSize: 11, fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8, marginTop: 14 },
-  input: { backgroundColor: '#f8fafc', borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0', padding: 13, fontSize: 15, color: '#0f172a', marginBottom: 4 },
+  formCard: { backgroundColor: c.surface, borderRadius: 18, padding: 16, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },
+  formLabel: { fontSize: 11, fontWeight: '800', color: c.textMuted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8, marginTop: 14 },
+  input: { backgroundColor: c.surfaceMuted, borderRadius: 12, borderWidth: 1, borderColor: c.border, padding: 13, fontSize: 15, color: c.text, marginBottom: 4 },
   colorRow: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
   colorSwatch: { width: 32, height: 32, borderRadius: 16 },
   shapeRow: { flexDirection: 'row', gap: 8 },
-  shapeChip: { flex: 1, paddingVertical: 9, borderRadius: 10, borderWidth: 1, borderColor: '#e2e8f0', alignItems: 'center', backgroundColor: '#f8fafc' },
+  shapeChip: { flex: 1, paddingVertical: 9, borderRadius: 10, borderWidth: 1, borderColor: c.border, alignItems: 'center', backgroundColor: c.surfaceMuted },
   shapeChipActive: { backgroundColor: '#e11d48', borderColor: '#e11d48' },
-  shapeChipTxt: { fontSize: 13, fontWeight: '700', color: '#475569' },
+  shapeChipTxt: { fontSize: 13, fontWeight: '700', color: c.text },
   daysRow: { flexDirection: 'row', gap: 6 },
-  dayChip: { flex: 1, paddingVertical: 9, borderRadius: 10, borderWidth: 1, borderColor: '#e2e8f0', alignItems: 'center', backgroundColor: '#f8fafc' },
+  dayChip: { flex: 1, paddingVertical: 9, borderRadius: 10, borderWidth: 1, borderColor: c.border, alignItems: 'center', backgroundColor: c.surfaceMuted },
   dayChipActive: { backgroundColor: '#e11d48', borderColor: '#e11d48' },
-  dayChipTxt: { fontSize: 12, fontWeight: '700', color: '#475569' },
+  dayChipTxt: { fontSize: 12, fontWeight: '700', color: c.text },
   addBtn: { backgroundColor: '#e11d48', borderRadius: 14, paddingVertical: 14, alignItems: 'center', marginTop: 16 },
   addBtnTxt: { color: '#fff', fontWeight: '800', fontSize: 15 },
-  notifRow: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 14 },
-  notifLabel: { flex: 1, fontSize: 14, fontWeight: '700', color: '#0f172a' },
-  sheetHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
-  sheetTitle: { fontSize: 18, fontWeight: '800', color: '#0f172a' },
-  sheetClose: { width: 32, height: 32, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
+  notifRow: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: c.surface, borderRadius: 14, padding: 14, marginBottom: 14 },
+  notifLabel: { flex: 1, fontSize: 14, fontWeight: '700', color: c.text },
+  sheetHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted },
+  sheetTitle: { fontSize: 18, fontWeight: '800', color: c.text },
+  sheetClose: { width: 32, height: 32, borderRadius: 10, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const s = createS(THEMES.default.colors);

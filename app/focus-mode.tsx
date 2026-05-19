@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { View, Text, TouchableOpacity, Animated, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -7,7 +7,10 @@ import { useTranslation } from 'react-i18next';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
+
 export default function FocusModeScreen() {
+  const { colors: themeColors } = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
   const { isPro, promptUpgrade } = useAccessControl();

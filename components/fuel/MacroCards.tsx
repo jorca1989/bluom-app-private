@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+
 export interface MacroItem {
   name: string;
   emoji: string;
@@ -56,7 +58,7 @@ const MacroCards = ({ macros }: MacroCardsProps) => {
 
 export default MacroCards;
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -64,11 +66,11 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 20,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: c.surfaceMuted,
   },
   header: {
     flexDirection: 'row',
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     fontWeight: '500',
-    color: '#64748b',
+    color: c.textMuted,
   },
   values: {
     flexDirection: 'row',
@@ -93,11 +95,11 @@ const styles = StyleSheet.create({
   current: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
   },
   goal: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: c.textMuted,
     marginLeft: 2,
   },
   track: {
@@ -110,3 +112,6 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

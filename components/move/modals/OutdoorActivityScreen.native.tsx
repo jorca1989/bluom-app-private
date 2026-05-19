@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 /**
  * OutdoorActivityScreen (Stubbed)
@@ -10,6 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
  * and expo-location for App Store compliance.
  */
 export default function OutdoorActivityScreen({ visible, onClose }: any) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   if (!visible) return null;
 
   return (
@@ -29,10 +33,12 @@ export default function OutdoorActivityScreen({ visible, onClose }: any) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.surfaceMuted },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20 },
-  title: { fontSize: 18, fontWeight: '700', color: '#0f172a' },
+  title: { fontSize: 18, fontWeight: '700', color: c.text },
   content: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40 },
-  text: { marginTop: 20, fontSize: 16, color: '#64748b', textAlign: 'center' },
+  text: { marginTop: 20, fontSize: 16, color: c.textMuted, textAlign: 'center' },
 });
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);

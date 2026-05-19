@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { Image } from 'expo-image';
 import { Video, ResizeMode } from 'expo-av';
@@ -7,6 +7,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedExerciseName } from '@/utils/localize';
+
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 interface ExerciseDetailModalProps {
   visible: boolean;
@@ -25,6 +27,8 @@ export default function ExerciseDetailModal({
   onClose,
   onUpgradePress
 }: ExerciseDetailModalProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const { t, i18n } = useTranslation();
   if (!visible || !exercise) return null;
   // 4-week plan exercises are always unlocked
@@ -208,10 +212,10 @@ export default function ExerciseDetailModal({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
   },
   header: {
     flexDirection: 'row',
@@ -220,19 +224,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: c.surfaceMuted,
   },
   closeBtn: {
     padding: 8,
     borderRadius: 20,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
   },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: c.text,
     marginHorizontal: 16,
   },
   scroll: { flex: 1 },
@@ -242,7 +246,7 @@ const styles = StyleSheet.create({
   exTitle: {
     fontSize: 26,
     fontWeight: '900',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 14,
   },
   chipRow: {
@@ -283,12 +287,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 12,
   },
   paragraph: {
     fontSize: 15,
-    color: '#475569',
+    color: c.text,
     lineHeight: 24,
   },
 
@@ -298,8 +302,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    backgroundColor: '#f8fafc',
+    borderColor: c.border,
+    backgroundColor: c.surfaceMuted,
   },
   lockedContent: {
     padding: 20,
@@ -312,13 +316,13 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     aspectRatio: 1 / 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: c.surfaceMuted,
     overflow: 'hidden',
   },
   mediaBoxBlurred: {
@@ -334,7 +338,7 @@ const styles = StyleSheet.create({
   mediaPlaceholderText: {
     marginTop: 8,
     fontSize: 13,
-    color: '#94a3b8',
+    color: c.textMuted,
     fontWeight: '500',
   },
 
@@ -363,7 +367,7 @@ const styles = StyleSheet.create({
   instructionText: {
     flex: 1,
     fontSize: 14,
-    color: '#475569',
+    color: c.text,
     lineHeight: 22,
   },
 
@@ -401,7 +405,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   lockCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     padding: 28,
     borderRadius: 24,
     alignItems: 'center',
@@ -412,18 +416,18 @@ const styles = StyleSheet.create({
     elevation: 8,
     width: '90%',
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     gap: 10,
   },
   lockTitle: {
     fontSize: 18,
     fontWeight: '900',
-    color: '#0f172a',
+    color: c.text,
     textAlign: 'center',
   },
   lockSub: {
     fontSize: 13,
-    color: '#64748b',
+    color: c.textMuted,
     textAlign: 'center',
     lineHeight: 20,
     paddingHorizontal: 4,
@@ -451,3 +455,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
 });
+
+// Static module-scope fallbacks (default theme) for helper components.
+const styles = createStyles(THEMES.default.colors);
