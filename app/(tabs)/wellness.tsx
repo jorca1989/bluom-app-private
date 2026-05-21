@@ -35,7 +35,7 @@ const WELLNESS_WIDGETS: { id: WellnessWidgetId; emoji: string; labelKey: string 
   { id: 'moodTrend',    emoji: '📈', labelKey: 'wellness.widgets.moodTrend' },
 ];
 const WELLNESS_WIDGETS_KEY = 'bluom_wellness_widgets_v1';
-const wellCBtn = { width: 36, height: 36, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center' as const, justifyContent: 'center' as const, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 };
+// wellCBtn is now generated inside the component to be theme-aware
 
 // ─── KPI Card ─────────────────────────────────────────────────────────────────
 function KpiCard({
@@ -155,12 +155,13 @@ const createHubStyles = (c: ThemeColors) => StyleSheet.create({
 
 // ─── Section Header ────────────────────────────────────────────────────────────
 function SectionHeader({ title, sub }: { title: string; sub?: string }) {
+  const { colors } = useTheme();
   return (
     <View style={{ marginBottom: 14 }}>
-      <Text style={{ fontSize: 18, fontWeight: '800', color: '#0f172a', letterSpacing: -0.3 }}>
+      <Text style={{ fontSize: 18, fontWeight: '800', color: colors.text, letterSpacing: -0.3 }}>
         {title}
       </Text>
-      {sub && <Text style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{sub}</Text>}
+      {sub && <Text style={{ fontSize: 12, color: colors.textMuted, marginTop: 2 }}>{sub}</Text>}
     </View>
   );
 }
@@ -282,43 +283,51 @@ export default function WellnessScreen() {
 
   const bottomPad = getBottomContentPadding(insets.bottom, 0) + TAB_BAR_HEIGHT;
 
+  // Theme-aware gear button
+  const wellCBtn = {
+    width: 36, height: 36, borderRadius: 11,
+    backgroundColor: themeColors.surface,
+    alignItems: 'center' as const, justifyContent: 'center' as const,
+    shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2,
+  };
+
   return (
     <SafeAreaView style={[s.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
       <ScrollView contentContainerStyle={{ paddingTop: 12, paddingBottom: bottomPad }} showsVerticalScrollIndicator={false}>
 
         {/* Widget Config Modal */}
         <Modal visible={showWellnessConfig} animationType="slide" presentationStyle="pageSheet">
-          <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['top']}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
-              <Text style={{ fontSize: 18, fontWeight: '800', color: '#0f172a' }}>{t('wellness.widgets.title', 'Wellness Sections')}</Text>
+          <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top']}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: themeColors.border }}>
+              <Text style={{ fontSize: 18, fontWeight: '800', color: themeColors.text }}>{t('wellness.widgets.title', 'Wellness Sections')}</Text>
               <TouchableOpacity onPress={() => setShowWellnessConfig(false)}>
-                <Ionicons name="close" size={22} color="#475569" />
+                <Ionicons name="close" size={22} color={themeColors.textMuted} />
               </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#f8fafc' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: themeColors.border }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                   <Text style={{ fontSize: 20 }}>🌙</Text>
                   <View>
-                    <Text style={{ fontSize: 15, fontWeight: '700', color: '#0f172a' }}>{t('common.darkMode', 'Dark Mode')}</Text>
-                    <Text style={{ fontSize: 12, color: '#94a3b8' }}>{t('common.darkModeDesc', 'Switches the whole app to a dark palette')}</Text>
+                    <Text style={{ fontSize: 15, fontWeight: '700', color: themeColors.text }}>{t('common.darkMode', 'Dark Mode')}</Text>
+                    <Text style={{ fontSize: 12, color: themeColors.textMuted }}>{t('common.darkModeDesc', 'Switches the whole app to a dark palette')}</Text>
                   </View>
                 </View>
                 <Switch
                   data-testid="wellness-darkmode-toggle"
                   value={wellnessIsDarkMode}
                   onValueChange={(v) => wellnessSetTheme(v ? 'black' : 'default')}
-                  trackColor={{ true: '#059669', false: '#e2e8f0' }}
+                  trackColor={{ true: '#059669', false: themeColors.surfaceMuted }}
                   thumbColor="#fff"
                 />
               </View>
               {WELLNESS_WIDGETS.map(w => (
-                <View key={w.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f8fafc' }}>
+                <View key={w.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: themeColors.border }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                     <Text style={{ fontSize: 20 }}>{w.emoji}</Text>
-                    <Text style={{ fontSize: 15, fontWeight: '600', color: '#1e293b' }}>{t(w.labelKey, w.id)}</Text>
+                    <Text style={{ fontSize: 15, fontWeight: '600', color: themeColors.text }}>{t(w.labelKey, w.id)}</Text>
                   </View>
-                  <Switch value={isWW(w.id)} onValueChange={() => toggleWellnessWidget(w.id)} trackColor={{ true: '#059669', false: '#e2e8f0' }} thumbColor="#fff" />
+                  <Switch value={isWW(w.id)} onValueChange={() => toggleWellnessWidget(w.id)} trackColor={{ true: '#059669', false: themeColors.surfaceMuted }} thumbColor="#fff" />
                 </View>
               ))}
             </ScrollView>

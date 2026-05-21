@@ -19,7 +19,7 @@ import {
 } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
-import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -60,6 +60,8 @@ interface DayCircleProps {
 }
 
 function DayCircle({ day, isSelected, isToday, fill, onPress }: DayCircleProps) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const animatedFill = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -101,7 +103,7 @@ function DayCircle({ day, isSelected, isToday, fill, onPress }: DayCircleProps) 
     ? goalMet ? '#059669' : '#1d4ed8'
     : isToday
     ? '#3b82f6'
-    : '#64748b';
+    : themeColors.textMuted;
 
   return (
     <TouchableOpacity
@@ -189,6 +191,8 @@ const DayStrip = ({
   fillFraction = 0,
   fillMap = {},
 }: DayStripProps) => {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const scrollRef = useRef<ScrollView>(null);
 
   // Scroll selected day into view
@@ -293,5 +297,3 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: '#3b82f6',
   },
 });
-// Static module-scope fallbacks (default theme) for helper components.
-const styles = createStyles(THEMES.default.colors);

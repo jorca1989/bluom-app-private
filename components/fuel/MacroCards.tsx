@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
 
 export interface MacroItem {
   name: string;
@@ -17,6 +17,8 @@ interface MacroCardsProps {
 }
 
 const MacroCards = ({ macros }: MacroCardsProps) => {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   return (
     <View style={styles.container}>
       {macros.map((macro) => {
@@ -113,5 +115,3 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
 });
 
-// Static module-scope fallbacks (default theme) for helper components.
-const styles = createStyles(THEMES.default.colors);

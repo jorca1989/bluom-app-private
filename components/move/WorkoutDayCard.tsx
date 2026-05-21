@@ -13,12 +13,13 @@ interface ExerciseThumb {
 }
 
 interface WorkoutDayCardProps {
-  dayTitle: string; 
+  dayTitle: string;
   muscleGroups: string; // e.g., "Quads, Hamstrings, Glutes, Calves, Abs"
   exercises: ExerciseThumb[];
   isUpNext?: boolean;
   onStartWorkout: () => void;
   onViewWorkout: () => void;
+  width?: number;
 }
 
 export default function WorkoutDayCard({
@@ -27,18 +28,20 @@ export default function WorkoutDayCard({
   exercises,
   isUpNext = false,
   onStartWorkout,
-  onViewWorkout
+  onViewWorkout,
+  width,
 }: WorkoutDayCardProps) {
   const { colors: themeColors } = useTheme();
   const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const { t, i18n } = useTranslation();
+  const displayTitle = t(`workouts.labels.${dayTitle}`, dayTitle) as string;
 
   // For visual truncation if more than 3 exercises
   const displayExercises = exercises.slice(0, 3);
   const excessCount = Math.max(0, exercises.length - 3);
 
   return (
-    <View style={[styles.card, isUpNext && styles.cardActive]}>
+    <View style={[styles.card, isUpNext && styles.cardActive, width ? { width } : {}]}>
       {isUpNext && (
         <View style={styles.badgeRow}>
           <View style={styles.badge}>
@@ -49,7 +52,7 @@ export default function WorkoutDayCard({
       )}
 
       <View style={styles.headerRow}>
-        <Text style={styles.title}>{dayTitle}</Text>
+        <Text style={styles.title}>{displayTitle}</Text>
       </View>
       {/* muscleGroups removed — duplicate of title */}
 
@@ -57,9 +60,9 @@ export default function WorkoutDayCard({
         {displayExercises.map((ex, i) => (
           <View key={ex.id || i} style={styles.thumbBox}>
             {ex.thumbnailUrl ? (
-               <Image source={{ uri: ex.thumbnailUrl }} style={styles.thumbImage} resizeMode="contain" />
+              <Image source={{ uri: ex.thumbnailUrl }} style={styles.thumbImage} resizeMode="contain" />
             ) : (
-               <Ionicons name="barbell-outline" size={24} color="#94a3b8" />
+              <Ionicons name="barbell-outline" size={24} color="#94a3b8" />
             )}
           </View>
         ))}
@@ -69,7 +72,7 @@ export default function WorkoutDayCard({
           </View>
         )}
       </View>
-      
+
       <Text style={[styles.countText, { textAlign: 'center' }]}>{t('move.exercisesCount', '{{count}} exercises', { count: exercises.length })}</Text>
 
       <View style={styles.actionsBox}>

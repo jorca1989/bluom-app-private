@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SoundEffect, triggerSound } from '@/utils/soundEffects';
 import { useTranslation } from 'react-i18next';
 
-import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
 
 export function ProUpgradeModal(props: {
   visible: boolean;
@@ -18,6 +18,8 @@ export function ProUpgradeModal(props: {
 }) {
   const { visible, title, message, onClose, onUpgrade, upgradeLabel, soundEffect } = props;
   const insets = useSafeAreaInsets();
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const { t } = useTranslation();
 
   const prevVisibleRef = useRef<boolean>(false);
@@ -112,8 +114,3 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   closeLink: { marginTop: 10, alignItems: 'center', paddingVertical: 8 },
   closeLinkText: { color: c.textMuted, fontWeight: '800' },
 });
-
-
-
-// Static module-scope fallbacks (default theme) for helper components.
-const styles = createStyles(THEMES.default.colors);

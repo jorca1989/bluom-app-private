@@ -78,7 +78,7 @@ export default function MoveInsightsScreen() {
     const insets = useSafeAreaInsets();
     const { user: clerkUser } = useClerkUser();
     const [showUpgrade, setShowUpgrade] = useState(false);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const convexUser = useQuery(
         api.users.getUserByClerkId,
@@ -145,7 +145,10 @@ export default function MoveInsightsScreen() {
         const maxType = typeEntries[0]?.[1] ?? 1;
 
         const typeLabels: Record<string, string> = {
-            strength: 'Strength', cardio: 'Cardio', hiit: 'HIIT', yoga: 'Yoga / Mindful',
+            strength: t('workouts.categories.strength', 'Strength'),
+            cardio: t('workouts.categories.cardio', 'Cardio'),
+            hiit: t('workouts.categories.hiit', 'HIIT'),
+            yoga: t('workouts.categories.yoga', 'Yoga / Mindful'),
         };
         const typeColors: Record<string, string> = {
             strength: '#3b82f6', cardio: '#f59e0b', hiit: '#ef4444', yoga: '#10b981',
@@ -155,7 +158,7 @@ export default function MoveInsightsScreen() {
         tw.forEach((e: any) => { dayCounts[e.date] = (dayCounts[e.date] ?? 0) + 1; });
         const bestDay = Object.entries(dayCounts).sort((a, b) => b[1] - a[1])[0];
         const bestDayLabel = bestDay
-            ? new Date(bestDay[0] + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long' })
+            ? new Date(bestDay[0] + 'T12:00:00').toLocaleDateString(i18n.language, { weekday: 'long' })
             : null;
 
         const maxWeight = Math.max(0, ...tw.map((e: any) => e.weight ?? 0));
@@ -178,7 +181,7 @@ export default function MoveInsightsScreen() {
             calDelta,
             hasData: tw.length > 0,
         };
-    }, [thisWeekEntries, lastWeekEntries]);
+    }, [thisWeekEntries, lastWeekEntries, i18n.language, t]);
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
@@ -317,8 +320,8 @@ export default function MoveInsightsScreen() {
                 visible={showUpgrade}
                 onClose={() => setShowUpgrade(false)}
                 onUpgrade={() => { setShowUpgrade(false); router.push('/premium'); }}
-                title="Unlock Pro Insights"
-                message="Get week-over-week trends, personal bests, and streak analysis."
+                title={t('move.unlockProAnalysis', 'Unlock Pro Insights')}
+                message={t('move.unlockProDesc', 'Get week-over-week trends, personal bests, and streak analysis.')}
             />
         </SafeAreaView>
     );

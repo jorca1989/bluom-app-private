@@ -598,7 +598,7 @@ export default function HomeScreen() {
   const wKPIs = () => (
     <View style={s.kpiGrid}>
       <KPICard
-        bg="#ffffff" iconColor="#2563eb" labelColor="#1e40af"
+        bg={themeColors.surface} iconColor="#2563eb" labelColor="#1e40af"
         icon={<Footprints size={17} color="#2563eb" />}
         label={t('home.kpis.steps', 'Steps')} value={steps.toLocaleString()} sub="/ 10,000"
         progress={steps / 100} barColor="#2563eb"
@@ -623,13 +623,13 @@ export default function HomeScreen() {
         ) : null}
       />
       <KPICard
-        bg="#ffffff" iconColor="#06b6d4" labelColor="#0e7490"
+        bg={themeColors.surface} iconColor="#06b6d4" labelColor="#0e7490"
         icon={<Droplets size={17} color="#06b6d4" />}
         label={t('home.kpis.water', 'Water')} value={`${waterDisplay}`} unit={waterUnit} sub={`/ ${waterGoalDisplay}${waterUnit}`}
         progress={(waterOz / waterGoalOz) * 100} barColor="#06b6d4"
       />
       <TouchableOpacity
-        style={[s.kpiCard, { backgroundColor: '#ffffff' }]}
+        style={[s.kpiCard, { backgroundColor: themeColors.surface }]}
         onPress={() => router.push('/wellness' as any)} activeOpacity={0.8}
       >
         <View style={s.kpiHead}>
@@ -640,7 +640,7 @@ export default function HomeScreen() {
         <Text style={s.kpiSub}>{moodLog ? t('home.kpis.logged', 'Logged') : t('home.kpis.tapToLog', 'Tap to log')}</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[s.kpiCard, { backgroundColor: '#ffffff' }]}
+        style={[s.kpiCard, { backgroundColor: themeColors.surface }]}
         onPress={() => router.push('/weightmanagement' as any)} activeOpacity={0.8}
       >
         <View style={s.kpiHead}>
@@ -658,12 +658,12 @@ export default function HomeScreen() {
       <Text style={s.cardTitle}>{t('home.quick.label', 'Quick Log')}</Text>
       <View style={s.qaRow}>
         {[
-          { icon: Utensils, label: t('home.quick.meal', 'Meal'), path: '/fuel', color: '#16a34a', bg: '#f0fdf4' },
-          { icon: Dumbbell, label: t('home.quick.workout', 'Workout'), path: '/move', color: '#2563eb', bg: '#eff6ff' },
-          { icon: Droplets, label: t('home.quick.water', 'Water'), path: '/fuel', color: '#06b6d4', bg: '#ecfeff' },
-          { icon: Moon, label: t('home.quick.sleep', 'Sleep'), path: '/wellness', color: '#8b5cf6', bg: '#f5f3ff' },
-          { icon: Smile, label: t('home.quick.mood', 'Mood'), path: '/wellness', color: '#f59e0b', bg: '#fffbeb' },
-          { icon: Footprints, label: t('home.quick.steps', 'Steps'), path: '/move', color: '#f97316', bg: '#fff7ed' },
+          { icon: Utensils, label: t('home.quick.meal', 'Meal'), path: '/fuel', color: '#16a34a', bg: 'rgba(22,163,74,0.13)' },
+          { icon: Dumbbell, label: t('home.quick.workout', 'Workout'), path: '/move', color: '#2563eb', bg: 'rgba(37,99,235,0.12)' },
+          { icon: Droplets, label: t('home.quick.water', 'Water'), path: '/fuel', color: '#06b6d4', bg: 'rgba(6,182,212,0.12)' },
+          { icon: Moon, label: t('home.quick.sleep', 'Sleep'), path: '/wellness', color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
+          { icon: Smile, label: t('home.quick.mood', 'Mood'), path: '/wellness', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
+          { icon: Footprints, label: t('home.quick.steps', 'Steps'), path: '/move', color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
         ].map(a => (
           <TouchableOpacity key={a.label} style={s.qaItem} onPress={() => router.push(a.path as any)} activeOpacity={0.75}>
             <View style={[s.qaIcon, { backgroundColor: a.bg }]}>
@@ -713,22 +713,22 @@ export default function HomeScreen() {
 
   const wDiscover = () => {
     const discoverItems = [
-      { icon: MessageSquare, label: t('home.discover.aiCoach', 'AI Coach'), path: '/ai-coach', color: '#2563eb', bg: '#eff6ff' },
+      { icon: MessageSquare, label: t('home.discover.aiCoach', 'AI Coach'), path: '/ai-coach', color: '#2563eb', bg: 'rgba(37,99,235,0.12)' },
       {
         icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♀</Text>,
-        label: t('home.discover.women', 'Women'), path: '/womens-health', color: '#db2777', bg: '#fdf2f8'
+        label: t('home.discover.women', 'Women'), path: '/womens-health', color: '#db2777', bg: 'rgba(219,39,119,0.12)'
       },
       {
         icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♂</Text>,
-        label: t('home.discover.men', 'Men'), path: '/mens-health', color: '#3b82f6', bg: '#eff6ff'
+        label: t('home.discover.men', 'Men'), path: '/mens-health', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)'
       },
-      { icon: Clock, label: t('home.discover.fasting', 'Fasting'), path: '/fasting', color: '#f59e0b', bg: '#fffbeb' },
-      { icon: BookOpen, label: t('home.discover.library', 'Library'), path: '/library', color: '#10b981', bg: '#ecfdf5' },
-      { icon: CheckCircle, label: t('home.discover.tasks', 'Tasks'), path: '/todo', color: '#8b5cf6', bg: '#f5f3ff' },
-      { icon: Timer, label: t('home.discover.focus', 'Focus'), path: '/focus-mode', color: '#3b82f6', bg: '#eff6ff' },
-      { icon: Utensils, label: t('home.discover.recipes', 'Recipes'), path: '/recipes', color: '#f97316', bg: '#fff7ed' },
-      { icon: Play, label: t('home.discover.workouts', 'Workouts'), path: '/workouts', color: '#16a34a', bg: '#f0fdf4' },
-      { icon: TrendingDown, label: t('home.discover.metabolic', 'Metabolic'), path: '/sugar-dashboard', color: '#ef4444', bg: '#fee2e2' },
+      { icon: Clock, label: t('home.discover.fasting', 'Fasting'), path: '/fasting', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
+      { icon: BookOpen, label: t('home.discover.library', 'Library'), path: '/library', color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+      { icon: CheckCircle, label: t('home.discover.tasks', 'Tasks'), path: '/todo', color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
+      { icon: Timer, label: t('home.discover.focus', 'Focus'), path: '/focus-mode', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
+      { icon: Utensils, label: t('home.discover.recipes', 'Recipes'), path: '/recipes', color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
+      { icon: Play, label: t('home.discover.workouts', 'Workouts'), path: '/workouts', color: '#16a34a', bg: 'rgba(22,163,74,0.12)' },
+      { icon: TrendingDown, label: t('home.discover.metabolic', 'Metabolic'), path: '/sugar-dashboard', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
     ];
 
     const shown = showAllDiscover ? discoverItems : discoverItems.slice(0, 6);
@@ -776,7 +776,7 @@ export default function HomeScreen() {
         <View style={s.modHeader}>
           <Text style={s.modTitle}>{t('home.customize.title', 'Customize Dashboard')}</Text>
           <TouchableOpacity onPress={() => setShowCustomize(false)} style={s.modClose}>
-            <X size={19} color="#1e293b" />
+            <X size={19} color={themeColors.text} />
           </TouchableOpacity>
         </View>
         <Text style={s.modSub}>{t('home.customize.sub', 'Toggle cards to personalize your home screen.')}</Text>
@@ -794,7 +794,7 @@ export default function HomeScreen() {
               data-testid="home-darkmode-toggle"
               value={homeIsDarkMode}
               onValueChange={(v) => homeSetTheme(v ? 'black' : 'default')}
-              trackColor={{ true: '#2563eb', false: '#e2e8f0' }}
+              trackColor={{ true: '#2563eb', false: themeColors.surfaceMuted }}
               thumbColor="#fff"
             />
           </View>
@@ -810,7 +810,7 @@ export default function HomeScreen() {
               <Switch
                 value={enabledWidgets.has(w.id)}
                 onValueChange={() => toggleWidget(w.id)}
-                trackColor={{ true: '#2563eb', false: '#e2e8f0' }}
+                trackColor={{ true: '#2563eb', false: themeColors.surfaceMuted }}
                 thumbColor="#fff"
               />
             </View>

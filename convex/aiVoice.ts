@@ -48,9 +48,21 @@ export const parseVoiceFoodLog = action({
         : process.env.GEMINI_API_KEY_IOS;
 
     const lang = args.language ?? 'en';
-    const langInstruction = lang !== 'en'
-      ? `\n- Return the food "name" in ${lang === 'pt' ? 'European Portuguese' : lang} language. Note: the unit must always remain a standard english string, e.g. "g", "ml", "cup", "tbsp", "piece", "serving".`
-      : '';
+    const LANG_NAMES: Record<string, string> = {
+      'en': 'English',
+      'pt': 'European Portuguese',
+      'fr': 'French',
+      'de': 'German',
+      'es': 'Spanish',
+      'it': 'Italian',
+      'nl': 'Dutch',
+      'pl': 'Polish',
+      'da': 'Danish',
+      'sv': 'Swedish',
+      'no': 'Norwegian',
+    };
+    const langName = LANG_NAMES[lang] ?? 'English';
+    const langInstruction = `\n- Return ALL food item "name" fields in ${langName}. IMPORTANT: Respond ONLY in ${langName}. Do not use any other language. Note: the unit must always remain a standard English string ("g", "ml", "cup", "tbsp", "piece", "serving").`;
 
     const prompt =
       `You are a nutrition assistant. The user has recorded themselves describing what they just ate.

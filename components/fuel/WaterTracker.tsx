@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 
-import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
 
 interface WaterTrackerProps {
   currentOz: number;
@@ -16,6 +16,8 @@ const TOTAL_GLASSES = 8;
 
 const WaterTracker = ({ currentOz, goalOz, onAddWater, isMetric }: WaterTrackerProps) => {
   const { t } = useTranslation();
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   // Assume each glass is goalOz / 8. Or just use 8 glasses for the standard ~64oz.
   // For simplicity, keeping the logic from screenshot: 8 glasses total.
   const glassOz = goalOz / TOTAL_GLASSES; 
@@ -120,5 +122,3 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
 });
 
-// Static module-scope fallbacks (default theme) for helper components.
-const styles = createStyles(THEMES.default.colors);

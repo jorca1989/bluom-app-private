@@ -283,7 +283,7 @@ export default function ReflectionsHub() {
         <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top', 'bottom']}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color="#1e293b" />
+                    <Ionicons name="arrow-back" size={24} color={themeColors.text} />
                 </TouchableOpacity>
 
                 <View style={styles.headerCenter}>
@@ -377,14 +377,14 @@ export default function ReflectionsHub() {
                     style={[styles.tab, activeTab === 'gratitude' && styles.activeTab]}
                     onPress={() => setActiveTab('gratitude')}
                 >
-                    <Ionicons name="heart" size={20} color={activeTab === 'gratitude' ? '#fff' : '#64748b'} />
+                    <Ionicons name="heart" size={20} color={activeTab === 'gratitude' ? themeColors.onPrimary : themeColors.textMuted} />
                     <Text style={[styles.tabText, activeTab === 'gratitude' && styles.activeTabText]}>{t('wellness.reflections.gratitudeTab', 'Gratidão')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.tab, activeTab === 'journal' && styles.activeTab]}
                     onPress={() => setActiveTab('journal')}
                 >
-                    <Ionicons name="book" size={20} color={activeTab === 'journal' ? '#fff' : '#64748b'} />
+                    <Ionicons name="book" size={20} color={activeTab === 'journal' ? themeColors.onPrimary : themeColors.textMuted} />
                     <Text style={[styles.tabText, activeTab === 'journal' && styles.activeTabText]}>{t('wellness.reflections.journalTab', 'Diário')}</Text>
                 </TouchableOpacity>
             </View>
@@ -572,8 +572,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
         gap: 8,
     },
     activeTab: {
-        backgroundColor: c.text,
-        borderColor: c.text,
+        backgroundColor: c.primary,
+        borderColor: c.primary,
     },
     tabText: {
         fontSize: 16,
@@ -581,7 +581,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
         color: c.textMuted,
     },
     activeTabText: {
-        color: '#fff',
+        color: c.onPrimary,
     },
     content: {
         padding: 16,

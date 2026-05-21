@@ -666,14 +666,14 @@ export default function MensHealthScreen() {
       {/* Article modal */}
       {showArticle && (
         <Modal visible animationType="slide" presentationStyle="pageSheet">
-          <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+          <View style={{ flex: 1, backgroundColor: themeColors.bg }}>
             <View style={[s.articleHeader, { paddingTop: insets.top + 16 }]}>
               <View style={{ flex: 1 }}>
                 <Text style={s.articleCategory}>{showArticle.emoji} {t(`mensHealth.categories.${showArticle.category}`, showArticle.category)} · {showArticle.time}</Text>
                 <Text style={s.articleTitle}>{t(`mensHealth.articles.${showArticle.id}.title`, showArticle.title)}</Text>
               </View>
               <TouchableOpacity onPress={() => setShowArticle(null)} style={s.articleClose}>
-                <Ionicons name="close" size={20} color="#475569" />
+                <Ionicons name="close" size={20} color={themeColors.textMuted} />
               </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
@@ -689,12 +689,12 @@ export default function MensHealthScreen() {
 
       {/* Vitality Check-in Modal */}
       <Modal visible={showVitality} animationType="slide" presentationStyle="pageSheet">
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }} edges={['top']}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top']}>
           <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 60 }} showsVerticalScrollIndicator={false}>
             <View style={s.modalHeader}>
               <Text style={s.modalTitle}>{t('mensHealth.vitalityCheckin','Registo de Vitalidade')}</Text>
               <TouchableOpacity onPress={() => setShowVitality(false)} style={s.modalClose}>
-                <Ionicons name="close" size={20} color="#475569" />
+                <Ionicons name="close" size={20} color={themeColors.textMuted} />
               </TouchableOpacity>
             </View>
 
@@ -747,14 +747,14 @@ export default function MensHealthScreen() {
 
       {/* Pelvic Protocol Modal */}
       <Modal visible={showPelvic} animationType="slide" presentationStyle="pageSheet">
-        <View style={{ flex: 1, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <Text style={s.pelvicTitle}>{t('mensHealth.pelvicTitle','Protocolo de Poder Pélvico')}</Text>
-          <Text style={s.pelvicSub}>{t('mensHealth.pelvicSub','Melhora a função erétil, controlo urinário, desempenho sexual e estabilidade do core.')}</Text>
-          <Animated.View style={[s.timerCircle, { transform: [{ scale: pulseAnim }], borderColor: kegelActive ? '#60a5fa' : '#e2e8f0', backgroundColor: kegelActive ? 'rgba(96,165,250,0.1)' : '#f1f5f9' }]}>
-            <Text style={s.timerTime}>{String(Math.floor(kegelSecs / 60)).padStart(2, '0')}:{String(kegelSecs % 60).padStart(2, '0')}</Text>
-            <Text style={[s.timerMsg, { color: kegelActive ? '#60a5fa' : '#64748b' }]}>{kegelMsg}</Text>
+        <View style={{ flex: 1, backgroundColor: themeColors.bg, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <Text style={[s.pelvicTitle, { color: themeColors.text }]}>{t('mensHealth.pelvicTitle','Protocolo de Poder Pélvico')}</Text>
+          <Text style={[s.pelvicSub, { color: themeColors.textMuted }]}>{t('mensHealth.pelvicSub','Melhora a função erétil, controlo urinário, desempenho sexual e estabilidade do core.')}</Text>
+          <Animated.View style={[s.timerCircle, { transform: [{ scale: pulseAnim }], borderColor: kegelActive ? '#60a5fa' : themeColors.border, backgroundColor: kegelActive ? 'rgba(96,165,250,0.12)' : themeColors.surfaceMuted }]}>
+            <Text style={[s.timerTime, { color: themeColors.text }]}>{String(Math.floor(kegelSecs / 60)).padStart(2, '0')}:{String(kegelSecs % 60).padStart(2, '0')}</Text>
+            <Text style={[s.timerMsg, { color: kegelActive ? '#60a5fa' : themeColors.textMuted }]}>{kegelMsg}</Text>
           </Animated.View>
-          <Text style={s.pelvicInstructions}>{t('mensHealth.pelvicInstructions','Contrai 5s → Relaxa 5s → Repete. 10–15 ciclos. Prática diária dá resultados em 4–6 semanas.')}</Text>
+          <Text style={[s.pelvicInstructions, { color: themeColors.textMuted }]}>{t('mensHealth.pelvicInstructions','Contrai 5s → Relaxa 5s → Repete. 10–15 ciclos. Prática diária dá resultados em 4–6 semanas.')}</Text>
           <View style={s.pelvicActions}>
             {!kegelActive ? (
               <TouchableOpacity style={[s.pelvicStartBtn, { backgroundColor: mc.gradient[0] }]} onPress={() => setKegelActive(true)}>
@@ -766,7 +766,7 @@ export default function MensHealthScreen() {
               </TouchableOpacity>
             )}
             <TouchableOpacity onPress={() => { setKegelActive(false); setShowPelvic(false); }} style={{ marginTop: 16 }}>
-              <Text style={{ color: '#64748b', fontWeight: '600' }}>{t('common.cancel', 'Cancel')}</Text>
+              <Text style={{ color: themeColors.textMuted, fontWeight: '600' }}>{t('common.cancel', 'Cancel')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -774,25 +774,25 @@ export default function MensHealthScreen() {
 
       {/* Supplement Stack Modal */}
       <Modal visible={showSupps} animationType="slide" presentationStyle="pageSheet">
-        <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
-          <View style={[s.modalHeader, { paddingTop: insets.top + 16, paddingHorizontal: 20, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: '#e2e8f0' }]}>
+        <View style={{ flex: 1, backgroundColor: themeColors.bg }}>
+          <View style={[s.modalHeader, { paddingTop: insets.top + 16, paddingHorizontal: 20, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: themeColors.border }]}>
             <View style={{ flex: 1 }}>
               <Text style={s.modalTitle}>{t('mensHealth.yourStack', 'Your Stack')}</Text>
               <Text style={[s.modalSub, { marginTop: 2 }]}>{mc.emoji} {t(`mensHealth.${profile?.trainingMode || 'natural'}`, mc.label)} {t('mensHealth.protocolShort', 'protocol')} · {supps.length} {t('mensHealth.compounds', 'compounds')}</Text>
             </View>
             <TouchableOpacity onPress={() => setShowSupps(false)} style={s.modalClose}>
-              <Ionicons name="close" size={20} color="#475569" />
+              <Ionicons name="close" size={20} color={themeColors.textMuted} />
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
 
             <View style={{ marginTop: 10 }}>
               {!isPro && (
-                <View style={{ marginBottom: 16, padding: 16, borderRadius: 16, backgroundColor: '#f1f5f9', flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <View style={{ marginBottom: 16, padding: 16, borderRadius: 16, backgroundColor: themeColors.surfaceMuted, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                   <Ionicons name="lock-closed" size={24} color="#fcd34d" />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 15, fontWeight: '800', color: '#1e293b' }}>{t('mensHealth.unlockStack','Desbloqueia o Teu Stack')}</Text>
-                    <Text style={{ fontSize: 13, color: '#94a3b8', marginTop: 2 }}>{t('mensHealth.upgradeToPro','Atualizar para Pro')} to see personalised recommendations tailored to your goals.</Text>
+                    <Text style={{ fontSize: 15, fontWeight: '800', color: themeColors.text }}>{t('mensHealth.unlockStack','Desbloqueia o Teu Stack')}</Text>
+                    <Text style={{ fontSize: 13, color: themeColors.textMuted, marginTop: 2 }}>{t('mensHealth.upgradeToPro','Atualizar para Pro')} to see personalised recommendations tailored to your goals.</Text>
                   </View>
                   <TouchableOpacity onPress={() => { setShowSupps(false); router.push('/premium' as any); }}>
                     <Text style={{ color: mc.accent, fontWeight: '700' }}>{t('common.upgrade', 'Upgrade')}</Text>
@@ -839,11 +839,11 @@ export default function MensHealthScreen() {
 
       {/* Health Markers Modal (Enhanced) */}
       <Modal visible={showMarkers} animationType="slide" presentationStyle="pageSheet">
-        <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+        <View style={{ flex: 1, backgroundColor: themeColors.bg }}>
           <View style={[s.modalHeader, { paddingTop: insets.top + 16, paddingHorizontal: 20, paddingBottom: 16 }]}>
             <Text style={s.modalTitle}>{t('mensHealth.healthMarkers', 'Health Markers')}</Text>
             <TouchableOpacity onPress={() => setShowMarkers(false)} style={s.modalClose}>
-              <Ionicons name="close" size={20} color="#475569" />
+              <Ionicons name="close" size={20} color={themeColors.textMuted} />
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
@@ -879,11 +879,11 @@ export default function MensHealthScreen() {
 
       {/* Peak Week Modal (Athlete) */}
       <Modal visible={showPeakWeek} animationType="slide" presentationStyle="pageSheet">
-        <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+        <View style={{ flex: 1, backgroundColor: themeColors.bg }}>
           <View style={[s.modalHeader, { paddingTop: insets.top + 16, paddingHorizontal: 20, paddingBottom: 16 }]}>
             <Text style={s.modalTitle}>{t('mensHealth.peakWeekProtocol', 'Peak Week Protocol')}</Text>
             <TouchableOpacity onPress={() => setShowPeakWeek(false)} style={s.modalClose}>
-              <Ionicons name="close" size={20} color="#475569" />
+              <Ionicons name="close" size={20} color={themeColors.textMuted} />
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
@@ -920,9 +920,9 @@ export default function MensHealthScreen() {
       </Modal>
 
       {/* ── HEADER ── */}
-      <LinearGradient colors={['#ffffff', '#F5F4F0']} style={s.header}>
+      <LinearGradient colors={[themeColors.surface, themeColors.bg]} style={s.header}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
-          <Ionicons name="arrow-back" size={20} color="#1e293b" />
+          <Ionicons name="arrow-back" size={20} color={themeColors.text} />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={s.headerTitle}>{t('mensHealth.optimizationHub', 'Optimization Hub')}</Text>

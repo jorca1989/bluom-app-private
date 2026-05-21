@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { getLocalizedExerciseName } from '@/utils/localize';
+import { getLanguageCode, getLocalizedExerciseName, getLocalizedListField } from '@/utils/localize';
 
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
@@ -34,7 +34,7 @@ export default function ExerciseDetailModal({
   // 4-week plan exercises are always unlocked
   const canSeeDetails = isPro || freeAccess;
 
-  const lang = i18n.language;
+  const lang = getLanguageCode(i18n.language);
   const exerciseName = getLocalizedExerciseName(exercise.name, lang);
 
   // Support multi-type array (exerciseTypes) — fall back to single type
@@ -44,8 +44,7 @@ export default function ExerciseDetailModal({
 
   const difficulty = exercise.difficulty || exercise.level || null;
   // Use localized instructions if available (set via admin), fall back to default
-  const instructions: string[] =
-    (exercise.instructionsLocalizations as any)?.[lang] ?? exercise.instructions ?? [];
+  const instructions = getLocalizedListField(exercise, 'instructions', lang);
   const primaryMuscles: string[] = exercise.primaryMuscles ?? exercise.muscleGroups ?? [];
   const secondaryMuscles: string[] = exercise.secondaryMuscles ?? [];
   const videoUrl: string | null = exercise.videoUrl ?? exercise.thumbnailUrl ?? null;
@@ -56,7 +55,7 @@ export default function ExerciseDetailModal({
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-            <Ionicons name="close" size={24} color="#0f172a" />
+            <Ionicons name="close" size={24} color={themeColors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle} numberOfLines={1}>{exerciseName as string}</Text>
           <View style={{ width: 40 }} />
@@ -92,10 +91,10 @@ export default function ExerciseDetailModal({
               {videoUrl ? (
                 <View style={[styles.mediaBox, !canSeeDetails && styles.mediaBoxBlurred]}>
                   {videoUrl.toLowerCase().endsWith('.gif') ? (
-                    <Image 
-                      source={{ uri: videoUrl }} 
-                      style={styles.mediaImage} 
-                      contentFit="cover" 
+                    <Image
+                      source={{ uri: videoUrl }}
+                      style={styles.mediaImage}
+                      contentFit="cover"
                     />
                   ) : (
                     <Video
@@ -401,7 +400,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.82)',
+    backgroundColor: c.bg === '#ffffff' || c.bg === '#fafafa' ? 'rgba(255,255,255,0.85)' : 'rgba(15,23,42,0.88)',
     padding: 20,
   },
   lockCard: {

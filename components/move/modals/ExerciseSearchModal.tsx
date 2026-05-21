@@ -132,7 +132,7 @@ export default function ExerciseSearchModal({
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose} style={styles.iconBtn} hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
-            <Ionicons name="chevron-back" size={28} color="#0f172a" />
+            <Ionicons name="chevron-back" size={28} color={themeColors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{t('move.exerciseLibrary', 'Exercise Library')}</Text>
           <View style={{ width: 44 }} />
@@ -141,7 +141,7 @@ export default function ExerciseSearchModal({
         {/* Search Input */}
         <View style={styles.searchContainer}>
           <View style={styles.searchBox}>
-            <Ionicons name="search" size={20} color="#0f172a" />
+            <Ionicons name="search" size={20} color={themeColors.text} />
             <TextInput
               style={styles.searchInput}
               placeholder={t('move.searchPlaceholder', 'Search (e.g. Push Up)')}
@@ -454,8 +454,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     borderColor: c.border,
   },
   typePillActive: {
-    backgroundColor: c.text,
-    borderColor: c.text,
+    backgroundColor: '#06b6d4',
+    borderColor: '#06b6d4',
   },
   typePillText: {
     fontSize: 13,

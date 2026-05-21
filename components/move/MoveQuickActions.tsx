@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/context/ThemeContext';
 
 interface MoveQuickActionsProps {
   onAddWorkout: () => void;
@@ -17,38 +18,32 @@ export default function MoveQuickActions({
   onViewPlan,
 }: MoveQuickActionsProps) {
   const { t } = useTranslation();
+  const { colors: c } = useTheme();
+
+  const actions = [
+    { icon: 'library', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)', label: t('move.exerciseLibrary', 'Exercise Library'), onPress: onAddWorkout },
+    { icon: 'footsteps', color: '#10b981', bg: 'rgba(16,185,129,0.15)', label: t('move.addStepsAction', 'Add Steps'), onPress: onAddSteps },
+    { icon: 'add-circle', color: '#f97316', bg: 'rgba(249,115,22,0.15)', label: t('move.customExercise', 'Custom Exercise'), onPress: onCustomExercise },
+  ];
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.sectionTitle}>{t('move.quickActions', 'Quick Actions')}</Text>
-      
+    <View style={[styles.container, { backgroundColor: c.surface }]}>
+      <Text style={[styles.sectionTitle, { color: c.text }]}>{t('move.quickActions', 'Quick Actions')}</Text>
       <View style={styles.row}>
-        <TouchableOpacity style={styles.actionItem} onPress={onAddWorkout} activeOpacity={0.7}>
-          <View style={[styles.iconCircle, { backgroundColor: '#eff6ff' }]}>
-            <Ionicons name="library" size={24} color="#3b82f6" />
-          </View>
-          <Text style={styles.actionTitle}>{t('move.exerciseLibrary', 'Exercise Library')}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.actionItem} onPress={onAddSteps} activeOpacity={0.7}>
-          <View style={[styles.iconCircle, { backgroundColor: '#ecfdf5' }]}>
-            <Ionicons name="footsteps" size={24} color="#10b981" />
-          </View>
-          <Text style={styles.actionTitle}>{t('move.addStepsAction', 'Add Steps')}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.actionItem} onPress={onCustomExercise} activeOpacity={0.7}>
-          <View style={[styles.iconCircle, { backgroundColor: '#fff7ed' }]}>
-            <Ionicons name="add-circle" size={24} color="#f97316" />
-          </View>
-          <Text style={styles.actionTitle}>{t('move.customExercise', 'Criar Exercicio')}</Text>
-        </TouchableOpacity>
-
+        {actions.map((a) => (
+          <TouchableOpacity key={a.label} style={styles.actionItem} onPress={a.onPress} activeOpacity={0.7}>
+            <View style={[styles.iconCircle, { backgroundColor: a.bg }]}>
+              <Ionicons name={a.icon as any} size={24} color={a.color} />
+            </View>
+            <Text style={[styles.actionTitle, { color: c.textMuted }]}>{a.label}</Text>
+          </TouchableOpacity>
+        ))}
         {onViewPlan && (
           <TouchableOpacity style={styles.actionItem} onPress={onViewPlan} activeOpacity={0.7}>
-            <View style={[styles.iconCircle, { backgroundColor: '#f3e8ff' }]}>
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(168,85,247,0.15)' }]}>
               <Ionicons name="calendar-outline" size={24} color="#a855f7" />
             </View>
-            <Text style={styles.actionTitle}>{t('move.aiPlan', 'AI Plan')}</Text>
+            <Text style={[styles.actionTitle, { color: c.textMuted }]}>{t('move.aiPlan', 'AI Plan')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -61,7 +56,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
     marginBottom: 16,
-    backgroundColor: '#ffffff',
     marginHorizontal: 24,
     borderRadius: 24,
     shadowColor: '#000',
@@ -73,7 +67,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#0f172a',
     marginBottom: 20,
   },
   row: {
@@ -97,7 +90,6 @@ const styles = StyleSheet.create({
   actionTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#334155',
     textAlign: 'center',
   },
 });

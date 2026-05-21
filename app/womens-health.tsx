@@ -610,14 +610,14 @@ export default function WomensHealthScreen() {
       {/* Article Modal */}
       {showArticle && (
         <Modal visible animationType="slide" presentationStyle="pageSheet">
-          <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['top']}>
+          <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top']}>
             <View style={s.articleHeader}>
               <View style={{ flex: 1 }}>
                 <Text style={s.articleCategory}>{showArticle.emoji} {showArticle.category} · {showArticle.time}</Text>
                 <Text style={s.articleTitle}>{showArticle.title}</Text>
               </View>
               <TouchableOpacity onPress={() => setShowArticle(null)} style={s.articleClose}>
-                <Ionicons name="close" size={20} color="#1e293b" />
+                <Ionicons name="close" size={20} color={themeColors.textMuted} />
               </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
@@ -633,11 +633,11 @@ export default function WomensHealthScreen() {
 
       {/* Bio-Log Modal */}
       <Modal visible={showBioModal} animationType="slide" presentationStyle="pageSheet">
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['top']}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top']}>
           <View style={s.modalHeader}>
             <Text style={s.modalTitle}>{t('womensHealth.dailyBioLog', 'Registo Bio Diário')}</Text>
             <TouchableOpacity onPress={() => setShowBioModal(false)} style={s.modalClose}>
-              <Ionicons name="close" size={20} color="#1e293b" />
+              <Ionicons name="close" size={20} color={themeColors.textMuted} />
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
@@ -779,19 +779,19 @@ export default function WomensHealthScreen() {
 
       {/* Pelvic Modal */}
       <Modal visible={showPelvicModal} animationType="slide" presentationStyle="pageSheet">
-        <View style={{ flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <Text style={s.pelvicTitle}>{t('womensHealth.pelvicTitle', 'Protocolo de Poder Pélvico')}</Text>
-          <Text style={s.pelvicSub}>{t('womensHealth.pelvicSub', 'Fortalece o pavimento pélvico, reduz cólicas e apoia o core')}</Text>
-          <Animated.View style={[s.timerCircle, { transform: [{ scale: pulseAnim }], borderColor: kegelActive ? '#e11d48' : '#e2e8f0', backgroundColor: kegelActive ? '#fef2f2' : '#f8fafc' }]}>
-            <Text style={s.timerTime}>{String(Math.floor(kegelSecs / 60)).padStart(2,'0')}:{String(kegelSecs % 60).padStart(2,'0')}</Text>
-            <Text style={s.timerMsg}>{kegelMsg}</Text>
+        <View style={{ flex: 1, backgroundColor: themeColors.bg, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <Text style={[s.pelvicTitle, { color: themeColors.text }]}>{t('womensHealth.pelvicTitle', 'Protocolo de Poder Pélvico')}</Text>
+          <Text style={[s.pelvicSub, { color: themeColors.textMuted }]}>{t('womensHealth.pelvicSub', 'Fortalece o pavimento pélvico, reduz cólicas e apoia o core')}</Text>
+          <Animated.View style={[s.timerCircle, { transform: [{ scale: pulseAnim }], borderColor: kegelActive ? '#e11d48' : themeColors.border, backgroundColor: kegelActive ? 'rgba(225,29,72,0.1)' : themeColors.surfaceMuted }]}>
+            <Text style={[s.timerTime, { color: themeColors.text }]}>{String(Math.floor(kegelSecs / 60)).padStart(2,'0')}:{String(kegelSecs % 60).padStart(2,'0')}</Text>
+            <Text style={[s.timerMsg, { color: kegelActive ? '#e11d48' : themeColors.textMuted }]}>{kegelMsg}</Text>
           </Animated.View>
-          <Text style={s.pelvicInstructions}>{t('womensHealth.pelvicInstructions', 'Contrai 5s → Relaxa 5s → Repete. Faz 10 ciclos por sessão.')}</Text>
-          <TouchableOpacity style={[s.pelvicBtn, { backgroundColor: kegelActive ? '#1e293b' : '#e11d48' }]} onPress={() => setKegelActive(p => !p)}>
+          <Text style={[s.pelvicInstructions, { color: themeColors.textMuted }]}>{t('womensHealth.pelvicInstructions', 'Contrai 5s → Relaxa 5s → Repete. Faz 10 ciclos por sessão.')}</Text>
+          <TouchableOpacity style={[s.pelvicBtn, { backgroundColor: kegelActive ? themeColors.text : '#e11d48' }]} onPress={() => setKegelActive(p => !p)}>
             <Text style={s.pelvicBtnTxt}>{kegelActive ? t('womensHealth.stopSession', 'Parar Sessão') : t('womensHealth.startTimer', 'Iniciar Timer')}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => { setKegelActive(false); setShowPelvicModal(false); }} style={{ marginTop: 16 }}>
-            <Text style={{ color: '#94a3b8', fontWeight: '600' }}>{t('common.close', 'Fechar')}</Text>
+            <Text style={{ color: themeColors.textMuted, fontWeight: '600' }}>{t('common.close', 'Fechar')}</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -1187,8 +1187,8 @@ export default function WomensHealthScreen() {
 
       {/* Privacy modal */}
       <Modal visible={showPrivacy} animationType="slide" presentationStyle="pageSheet">
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#fff', padding: 24 }} edges={['top']}>
-          <Text style={{ fontSize: 26, fontWeight: '900', color: '#0f172a', marginBottom: 20 }}>{t('womensHealth.privacyFirst','A Tua Privacidade em Primeiro')}</Text>
+        <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg, padding: 24 }} edges={['top']}>
+          <Text style={{ fontSize: 26, fontWeight: '900', color: themeColors.text, marginBottom: 20 }}>{t('womensHealth.privacyFirst','A Tua Privacidade em Primeiro')}</Text>
           {[
             { icon: 'shield-checkmark', color: '#10b981', title: t('womensHealth.priv1Title','Zero Venda a Terceiros'), body: t('womensHealth.priv1Body','Os teus dados de saúde íntima não são vendidos a anunciantes, seguradoras ou corretores de dados.') },
             { icon: 'lock-closed',      color: '#2563eb', title: t('womensHealth.priv2Title','Encriptado de Ponta a Ponta'), body: t('womensHealth.priv2Body','Todos os dados de saúde sensíveis estão encriptados em repouso e em trânsito. Só tu tens acesso ao teu histórico.') },
@@ -1197,8 +1197,8 @@ export default function WomensHealthScreen() {
             <View key={i} style={{ flexDirection: 'row', gap: 14, marginBottom: 20 }}>
               <Ionicons name={item.icon as any} size={28} color={item.color} />
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: '#0f172a', marginBottom: 4 }}>{item.title}</Text>
-                <Text style={{ fontSize: 14, color: '#64748b', lineHeight: 20 }}>{item.body}</Text>
+                <Text style={{ fontSize: 16, fontWeight: '700', color: themeColors.text, marginBottom: 4 }}>{item.title}</Text>
+                <Text style={{ fontSize: 14, color: themeColors.textMuted, lineHeight: 20 }}>{item.body}</Text>
               </View>
             </View>
           ))}
@@ -1215,13 +1215,13 @@ export default function WomensHealthScreen() {
 // STYLES
 // ─────────────────────────────────────────────────────────────
 const createS = (c: ThemeColors) => StyleSheet.create({
-  screen:  { flex: 1, backgroundColor: '#fdf2f8' },
+  screen:  { flex: 1, backgroundColor: c.bg },
 
   // Quiz
   quizScreen:   { flex: 1, backgroundColor: c.surface },
   quizTopBar:   { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 },
-  quizBack:     { width: 36, height: 36, borderRadius: 18, backgroundColor: '#fdf2f8', alignItems: 'center', justifyContent: 'center' },
-  quizProgress: { flex: 1, height: 5, backgroundColor: '#fce7f3', borderRadius: 3, overflow: 'hidden' },
+  quizBack:     { width: 36, height: 36, borderRadius: 18, backgroundColor: c.surface, alignItems: 'center', justifyContent: 'center' },
+  quizProgress: { flex: 1, height: 5, backgroundColor: c.border, borderRadius: 3, overflow: 'hidden' },
   quizProgressFill: { height: '100%', backgroundColor: '#e11d48', borderRadius: 3 },
   quizStepNum:  { fontSize: 12, fontWeight: '700', color: c.textMuted, width: 32, textAlign: 'right' },
   quizHero:     { paddingHorizontal: 20, paddingBottom: 4 },
@@ -1236,21 +1236,21 @@ const createS = (c: ThemeColors) => StyleSheet.create({
   quizEmoji:    { fontSize: 44, marginBottom: 10 },
   quizQuestion: { fontSize: 22, fontWeight: '800', color: c.text, marginBottom: 20, lineHeight: 30 },
   quizOptions:  { gap: 10 },
-  quizOption:   { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#fdf2f8', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#fce7f3' },
+  quizOption:   { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: c.surface, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: c.border },
   quizOptionIcon: { fontSize: 22 },
   quizOptionLabel:{ flex: 1, fontSize: 15, fontWeight: '600', color: c.text },
 
   // Header
-  header:     { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 8, backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: '#fce7f3' },
-  backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: '#fdf2f8', alignItems: 'center', justifyContent: 'center' },
+  header:     { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 8, backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: c.border },
+  backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
   headerTitle:{ fontSize: 17, fontWeight: '900', color: c.text },
   headerSub:  { fontSize: 11, color: c.textMuted, fontWeight: '600', marginTop: 1 },
-  stageBtn:   { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#fdf2f8', paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1, borderColor: '#fce7f3' },
+  stageBtn:   { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: c.surfaceMuted, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1, borderColor: c.border },
   stageBtnEmoji: { fontSize: 16 },
   infoBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: '#ecfdf5', alignItems: 'center', justifyContent: 'center' },
 
   // Tabs
-  tabBar:   { flexDirection: 'row', backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: '#fce7f3' },
+  tabBar:   { flexDirection: 'row', backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: c.border },
   tab:      { flex: 1, alignItems: 'center', paddingVertical: 10, gap: 3 },
   tabActive:{ borderBottomWidth: 2, borderBottomColor: '#e11d48' },
   tabEmoji: { fontSize: 14 },

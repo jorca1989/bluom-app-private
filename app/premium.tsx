@@ -221,7 +221,7 @@ export default function PremiumScreen() {
         
         {/* Semi-dark overall overlay + fade-to-background transition */}
         <LinearGradient
-          colors={['rgba(15,23,42,0.3)', 'rgba(15,23,42,0.45)', 'rgba(15,23,42,0.75)', BG]}
+          colors={['rgba(15,23,42,0.3)', 'rgba(15,23,42,0.45)', 'rgba(15,23,42,0.75)', themeColors.bg]}
           locations={[0, 0.5, 0.8, 1]}
           style={StyleSheet.absoluteFillObject}
         />
@@ -403,14 +403,8 @@ export default function PremiumScreen() {
 const HERO_HEIGHT = height * 0.52;
 const GOLD = '#d4af37';
 const GOLD_LIGHT = '#f0d060';
-const BG = '#f8fafc';
-const CARD = '#ffffff';
-const BORDER = '#e2e8f0';
-const TEXT = '#0f172a';
-const MUTED = '#64748b';
-
 const createStyles = (c: ThemeColors) => StyleSheet.create({
-  root: { flex: 1, backgroundColor: BG },
+  root: { flex: 1, backgroundColor: c.bg },
   center: { alignItems: 'center', justifyContent: 'center' },
 
   // Hero
@@ -477,7 +471,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
 
   // Content card
   contentCard: {
-    backgroundColor: BG,
+    backgroundColor: c.bg,
     zIndex: 2,
     paddingTop: 8,
   },
@@ -496,13 +490,13 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: '900',
-    color: TEXT,
+    color: c.text,
     marginBottom: 20,
   },
 
   divider: {
     height: 1,
-    backgroundColor: BORDER,
+    backgroundColor: c.border,
     marginHorizontal: 24,
   },
 
@@ -515,30 +509,30 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   compareItem: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: CARD,
+    backgroundColor: c.surface,
     borderRadius: 14,
     paddingVertical: 16,
     borderWidth: 1,
-    borderColor: BORDER,
+    borderColor: c.border,
   },
   compareHighlight: {
     borderColor: GOLD,
     backgroundColor: 'rgba(212,175,55,0.08)',
   },
   compareEmoji: { fontSize: 24, marginBottom: 6 },
-  compareAmount: { fontSize: 13, fontWeight: '900', color: TEXT, marginBottom: 2 },
-  compareLabel: { fontSize: 10, fontWeight: '700', color: MUTED },
+  compareAmount: { fontSize: 13, fontWeight: '900', color: c.text, marginBottom: 2 },
+  compareLabel: { fontSize: 10, fontWeight: '700', color: c.textMuted },
   comparePlus: { alignItems: 'center' },
-  comparePlusText: { fontSize: 18, fontWeight: '300', color: MUTED },
+  comparePlusText: { fontSize: 18, fontWeight: '300', color: c.textMuted },
   compareEquals: { alignItems: 'center' },
-  compareEqualsText: { fontSize: 18, fontWeight: '300', color: MUTED },
+  compareEqualsText: { fontSize: 18, fontWeight: '300', color: c.textMuted },
 
   // Plan cards
   planCard: {
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: BORDER,
-    backgroundColor: CARD,
+    borderColor: c.border,
+    backgroundColor: c.surface,
     marginBottom: 12,
     overflow: 'hidden',
   },
@@ -557,9 +551,9 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   bestBadgeText: { fontSize: 10, fontWeight: '900', color: '#0a0a0f', letterSpacing: 1.5 },
   planRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16 },
-  planTitle: { fontSize: 17, fontWeight: '900', color: TEXT, marginBottom: 4 },
-  planSub: { fontSize: 12, fontWeight: '600', color: MUTED, lineHeight: 16 },
-  planPrice: { fontSize: 20, fontWeight: '900', color: TEXT },
+  planTitle: { fontSize: 17, fontWeight: '900', color: c.text, marginBottom: 4 },
+  planSub: { fontSize: 12, fontWeight: '600', color: c.textMuted, lineHeight: 16 },
+  planPrice: { fontSize: 20, fontWeight: '900', color: c.text },
   planPriceGold: { color: GOLD_LIGHT },
   planNote: { fontSize: 11, fontWeight: '700', color: GOLD, marginTop: 2 },
   planCta: {
@@ -575,7 +569,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   planCtaTextDark: { color: c.text },
 
   upgradingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 8 },
-  upgradingText: { fontSize: 13, color: MUTED },
+  upgradingText: { fontSize: 13, color: c.textMuted },
 
   // Social proof
   socialProof: { alignItems: 'center', paddingVertical: 16 },
@@ -588,21 +582,21 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     gap: 14,
     paddingVertical: 13,
     borderBottomWidth: 1,
-    borderBottomColor: BORDER,
+    borderBottomColor: c.border,
   },
   featureIconWrap: {
     width: 42,
     height: 42,
     borderRadius: 12,
-    backgroundColor: CARD,
+    backgroundColor: c.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: BORDER,
+    borderColor: c.border,
   },
   featureEmoji: { fontSize: 20 },
-  featureTitle: { fontSize: 14, fontWeight: '800', color: TEXT, marginBottom: 2 },
-  featureDesc: { fontSize: 12, color: MUTED, lineHeight: 16 },
+  featureTitle: { fontSize: 14, fontWeight: '800', color: c.text, marginBottom: 2 },
+  featureDesc: { fontSize: 12, color: c.textMuted, lineHeight: 16 },
   featureCheck: {
     width: 22,
     height: 22,
@@ -621,7 +615,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     marginHorizontal: 24,
     marginTop: 8,
   },
-  ghostBtnText: { fontSize: 13, fontWeight: '700', color: MUTED },
+  ghostBtnText: { fontSize: 13, fontWeight: '700', color: c.textMuted },
 
   // Gold button
   goldBtn: {
@@ -636,14 +630,14 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   // Pro already
   proAlready: { padding: 32, alignItems: 'center' },
   proAlreadyTitle: { fontSize: 22, fontWeight: '900', color: GOLD, marginBottom: 8 },
-  proAlreadySub: { fontSize: 15, color: MUTED, textAlign: 'center', marginBottom: 8 },
+  proAlreadySub: { fontSize: 15, color: c.textMuted, textAlign: 'center', marginBottom: 8 },
 
   // Legal
   legal: { paddingHorizontal: 24, paddingTop: 24, alignItems: 'center' },
-  legalText: { fontSize: 10, color: MUTED, textAlign: 'center', lineHeight: 15, marginBottom: 12 },
+  legalText: { fontSize: 10, color: c.textMuted, textAlign: 'center', lineHeight: 15, marginBottom: 12 },
   legalLinks: { flexDirection: 'row', alignItems: 'center' },
   legalLink: { fontSize: 11, fontWeight: '700', color: '#3b82f6' },
-  legalDot: { color: MUTED, paddingHorizontal: 4 },
+  legalDot: { color: c.textMuted, paddingHorizontal: 4 },
 
 });
 

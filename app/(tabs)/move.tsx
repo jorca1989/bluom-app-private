@@ -56,14 +56,15 @@ import type { ThemeColors } from '@/context/ThemeContext';
 // WIDGET TOGGLE SYSTEM
 // ─────────────────────────────────────────────────────────────
 type MoveWidgetId = 'kpis' | 'swipeable' | 'quickActions' | 'todayActivities' | 'moveInsights' | 'proBanner';
-const MOVE_WIDGETS: { id: MoveWidgetId; emoji: string; labelKey: string }[] = [
-  { id: 'kpis',            emoji: '📊', labelKey: 'move.widgets.kpis' },
-  { id: 'swipeable',       emoji: '🗓️', labelKey: 'move.widgets.swipeable' },
-  { id: 'quickActions',    emoji: '⚡', labelKey: 'move.widgets.quickActions' },
-  { id: 'todayActivities', emoji: '🏃', labelKey: 'move.widgets.todayActivities' },
-  { id: 'moveInsights',    emoji: '📈', labelKey: 'move.widgets.moveInsights' },
-  { id: 'proBanner',       emoji: '🔒', labelKey: 'move.widgets.proBanner' },
+const MOVE_WIDGETS: { id: MoveWidgetId; emoji: string; labelKey: string; defaultLabel: string }[] = [
+  { id: 'kpis',            emoji: '📊', labelKey: 'move.widgets.kpis', defaultLabel: 'Activity KPIs' },
+  { id: 'swipeable',       emoji: '🗓️', labelKey: 'move.widgets.swipeable', defaultLabel: 'Workout Plan' },
+  { id: 'quickActions',    emoji: '⚡', labelKey: 'move.widgets.quickActions', defaultLabel: 'Quick Actions' },
+  { id: 'todayActivities', emoji: '🏃', labelKey: 'move.widgets.todayActivities', defaultLabel: "Today's Activities" },
+  { id: 'moveInsights',    emoji: '📈', labelKey: 'move.widgets.moveInsights', defaultLabel: 'Move Insights' },
+  { id: 'proBanner',       emoji: '🔒', labelKey: 'move.widgets.blueprintCompleteBanner', defaultLabel: 'Blueprint complete upgrade banner' },
 ];
+const ALL_MOVE_WIDGET_IDS = MOVE_WIDGETS.map(w => w.id);
 const MOVE_WIDGETS_KEY = 'bluom_move_widgets_v1';
 
 const safeNumber = (val: string | number, fallback = 0) => {
@@ -110,8 +111,7 @@ export default function MoveScreen() {
   const mwStyles = useMemo(() => createMwStyles(themeColors), [themeColors]);
 
   // ── Widget config ──
-  const allMoveWidgetIds = MOVE_WIDGETS.map(w => w.id);
-  const [visibleMoveWidgets, setVisibleMoveWidgets] = useState<Set<MoveWidgetId>>(new Set(allMoveWidgetIds));
+  const [visibleMoveWidgets, setVisibleMoveWidgets] = useState<Set<MoveWidgetId>>(new Set(ALL_MOVE_WIDGET_IDS));
   const [showMoveWidgetConfig, setShowMoveWidgetConfig] = useState(false);
 
   useEffect(() => {
@@ -119,8 +119,11 @@ export default function MoveScreen() {
       try {
         const raw = await SecureStore.getItemAsync(MOVE_WIDGETS_KEY);
         if (raw) {
-          const parsed: MoveWidgetId[] = JSON.parse(raw);
-          setVisibleMoveWidgets(new Set(parsed));
+          const parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed)) return;
+          const savedWidgets = parsed.filter((id): id is MoveWidgetId => ALL_MOVE_WIDGET_IDS.includes(id));
+          const newDefaultWidgets = ALL_MOVE_WIDGET_IDS.filter(id => !parsed.includes(id));
+          setVisibleMoveWidgets(new Set([...savedWidgets, ...newDefaultWidgets]));
         }
       } catch { /* ignore */ }
     })();
@@ -810,11 +813,11 @@ export default function MoveScreen() {
 
       {/* ── WIDGET CONFIG MODAL ── */}
       <Modal visible={showMoveWidgetConfig} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowMoveWidgetConfig(false)}>
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['top']}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top']}>
           <View style={mwStyles.header}>
             <Text style={mwStyles.title}>{t('move.widgets.title', 'Widget Config')}</Text>
             <TouchableOpacity onPress={() => setShowMoveWidgetConfig(false)} style={mwStyles.close}>
-              <Ionicons name="close" size={20} color="#1e293b" />
+              <Ionicons name="close" size={20} color={themeColors.text} />
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 20, gap: 0, paddingBottom: 40 }}>
@@ -827,7 +830,7 @@ export default function MoveScreen() {
                 data-testid="move-darkmode-toggle"
                 value={moveIsDarkMode}
                 onValueChange={(v) => moveSetTheme(v ? 'black' : 'default')}
-                trackColor={{ true: '#6366f1', false: '#e2e8f0' }}
+                trackColor={{ true: '#6366f1', false: themeColors.surfaceMuted }}
                 thumbColor="#fff"
               />
             </View>
@@ -836,11 +839,11 @@ export default function MoveScreen() {
               <View key={w.id}>
                 <View style={mwStyles.row}>
                   <Text style={mwStyles.emoji}>{w.emoji}</Text>
-                  <Text style={mwStyles.label}>{t(w.labelKey, w.id)}</Text>
+                  <Text style={mwStyles.label}>{t(w.labelKey, w.defaultLabel)}</Text>
                   <Switch
                     value={isMW(w.id)}
                     onValueChange={() => toggleMoveWidget(w.id)}
-                    trackColor={{ true: '#2563eb', false: '#e2e8f0' }}
+                    trackColor={{ true: '#2563eb', false: themeColors.surfaceMuted }}
                     thumbColor="#fff"
                   />
                 </View>
@@ -874,7 +877,7 @@ export default function MoveScreen() {
                 <Text style={styles.subtitle}>{t('move.subtitle', 'Track your workouts and activity')}</Text>
               </View>
               <TouchableOpacity style={mwStyles.gearBtn} onPress={() => setShowMoveWidgetConfig(true)} activeOpacity={0.75}>
-                <Settings2 size={17} color="#475569" />
+                <Settings2 size={17} color={themeColors.textMuted} />
               </TouchableOpacity>
             </View>
           </View>

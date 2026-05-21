@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 
-import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
 
 interface CalorieSummaryProps {
   consumed: number;
@@ -12,6 +12,8 @@ interface CalorieSummaryProps {
 
 const CalorieSummary = ({ consumed, goal }: CalorieSummaryProps) => {
   const { t } = useTranslation();
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const remaining = goal - consumed;
   const progress = Math.min(Math.max(consumed / (goal || 1), 0), 1); // Clamp to 0-1
 
@@ -152,5 +154,3 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
 });
 
-// Static module-scope fallbacks (default theme) for helper components.
-const styles = createStyles(THEMES.default.colors);

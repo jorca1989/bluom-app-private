@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ import { Mail, Lock, LogIn, Eye, EyeOff } from 'lucide-react-native';
 import { MASTER_ADMINS } from '@/convex/permissions';
 import AppleSignInButton from '@/components/AppleSignInButton';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 function isAdminEmail(email: string) {
   const e = String(email ?? '').toLowerCase().trim();
@@ -32,6 +32,7 @@ export default function LoginScreen() {
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
   const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -162,13 +163,13 @@ export default function LoginScreen() {
           <View style={styles.form}>
             {mfaPending ? (
               <View style={{ marginBottom: 16 }}>
-                <Text style={{ color: '#334155', fontWeight: '700', marginBottom: 8 }}>
+                <Text style={{ color: themeColors.text, fontWeight: '700', marginBottom: 8 }}>
                   {t('auth.login.mfaTitle', 'Enter the code from your email')}
                 </Text>
                 <TextInput
                   style={styles.input}
                   placeholder={t('auth.login.mfaPlaceholder', 'Email code')}
-                  placeholderTextColor="#94a3b8"
+                  placeholderTextColor={themeColors.textMuted}
                   value={mfaCode}
                   onChangeText={setMfaCode}
                   keyboardType="number-pad"
@@ -191,17 +192,17 @@ export default function LoginScreen() {
                   </LinearGradient>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => { setMfaPending(false); setMfaCode(''); }} disabled={loading} style={{ marginTop: 12, alignItems: 'center' }}>
-                  <Text style={{ color: '#2563eb', fontWeight: '700' }}>{t('auth.login.back', 'Back')}</Text>
+                  <Text style={{ color: themeColors.primary, fontWeight: '700' }}>{t('auth.login.back', 'Back')}</Text>
                 </TouchableOpacity>
               </View>
             ) : (
               <>
                 <View style={styles.inputContainer}>
-                  <View style={styles.inputIconWrapper}><Mail size={20} color="#64748b" /></View>
+                  <View style={styles.inputIconWrapper}><Mail size={20} color={themeColors.textMuted} /></View>
                   <TextInput
                     style={styles.input}
                     placeholder={t('auth.login.emailPlaceholder', 'Email')}
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor={themeColors.textMuted}
                     value={email}
                     onChangeText={setEmail}
                     autoCapitalize="none"
@@ -212,11 +213,11 @@ export default function LoginScreen() {
                 </View>
 
                 <View style={styles.inputContainer}>
-                  <View style={styles.inputIconWrapper}><Lock size={20} color="#64748b" /></View>
+                  <View style={styles.inputIconWrapper}><Lock size={20} color={themeColors.textMuted} /></View>
                   <TextInput
                     style={styles.input}
                     placeholder={t('auth.login.passwordPlaceholder', 'Password')}
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor={themeColors.textMuted}
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry={!showPassword}
@@ -225,7 +226,7 @@ export default function LoginScreen() {
                     editable={!loading}
                   />
                   <TouchableOpacity style={styles.eyeIconWrapper} onPress={() => setShowPassword(!showPassword)} disabled={loading}>
-                    {showPassword ? <EyeOff size={20} color="#64748b" /> : <Eye size={20} color="#64748b" />}
+                    {showPassword ? <EyeOff size={20} color={themeColors.textMuted} /> : <Eye size={20} color={themeColors.textMuted} />}
                   </TouchableOpacity>
                 </View>
 
@@ -263,30 +264,32 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   keyboardView: { flex: 1 },
   scrollContent: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 40, paddingBottom: 40 },
   header: { marginBottom: 40 },
-  title: { fontSize: 32, fontWeight: 'bold', color: '#1e293b', marginBottom: 8 },
-  subtitle: { fontSize: 16, color: '#64748b', lineHeight: 24 },
+  title: { fontSize: 32, fontWeight: 'bold', color: c.text, marginBottom: 8 },
+  subtitle: { fontSize: 16, color: c.textMuted, lineHeight: 24 },
   errorContainer: { backgroundColor: '#fee2e2', padding: 12, borderRadius: 8, marginBottom: 24 },
   errorText: { color: '#dc2626', fontSize: 14, textAlign: 'center' },
   form: { flex: 1 },
-  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f8fafc', borderRadius: 12, marginBottom: 16, paddingHorizontal: 16, borderWidth: 1, borderColor: '#e2e8f0' },
+  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: c.surface, borderRadius: 12, marginBottom: 16, paddingHorizontal: 16, borderWidth: 1, borderColor: c.border },
   inputIconWrapper: { marginRight: 12 },
   eyeIconWrapper: { marginLeft: 12, padding: 4 },
-  input: { flex: 1, height: 56, fontSize: 16, color: '#1e293b' },
-  primaryButton: { marginTop: 8, marginBottom: 24, borderRadius: 12, overflow: 'hidden', shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
+  input: { flex: 1, height: 56, fontSize: 16, color: c.text },
+  primaryButton: { marginTop: 8, marginBottom: 24, borderRadius: 12, overflow: 'hidden', shadowColor: c.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
   gradientButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16, gap: 8 },
   primaryButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
   buttonDisabled: { opacity: 0.6 },
   divider: { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: '#e2e8f0' },
-  dividerText: { paddingHorizontal: 16, color: '#94a3b8', fontSize: 14 },
-  googleButton: { backgroundColor: '#ffffff', borderWidth: 1, borderColor: '#e2e8f0', paddingVertical: 16, borderRadius: 12, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 },
-  googleButtonText: { color: '#1e293b', fontSize: 16, fontWeight: '600' },
+  dividerLine: { flex: 1, height: 1, backgroundColor: c.border },
+  dividerText: { paddingHorizontal: 16, color: c.textMuted, fontSize: 14 },
+  googleButton: { backgroundColor: c.surface, borderWidth: 1, borderColor: c.border, paddingVertical: 16, borderRadius: 12, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 },
+  googleButtonText: { color: c.text, fontSize: 16, fontWeight: '600' },
   footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 32 },
-  footerText: { fontSize: 14, color: '#64748b' },
-  footerLink: { fontSize: 14, color: '#2563eb', fontWeight: '600' },
+  footerText: { fontSize: 14, color: c.textMuted },
+  footerLink: { fontSize: 14, color: c.primary, fontWeight: '600' },
 });
+
+const styles = createStyles(THEMES.default.colors);

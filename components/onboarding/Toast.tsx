@@ -86,7 +86,7 @@ export default function Toast({
         {emoji ? (
           <Text style={styles.emoji}>{emoji}</Text>
         ) : (
-          <Check size={20} color="#fff" strokeWidth={3} />
+          <Check size={20} color={themeColors.onPrimary} strokeWidth={3} />
         )}
       </View>
 
@@ -111,7 +111,9 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     top: 60,
     left: 16,
     right: 16,
-    backgroundColor: c.text,
+    backgroundColor: c.surface,
+    borderWidth: 1,
+    borderColor: c.border,
     borderRadius: 16,
     padding: 16,
     flexDirection: 'row',
@@ -127,14 +129,14 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#10b981',
+    backgroundColor: c.primary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
     flexShrink: 0,
   },
   iconCircleEmoji: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: c.surfaceMuted,
   },
   emoji: {
     fontSize: 20,
@@ -145,7 +147,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#fff',
+    color: c.text,
     marginBottom: 2,
   },
   message: {

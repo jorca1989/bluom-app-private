@@ -11,6 +11,7 @@ import { useUser } from '@clerk/clerk-expo';
 import { useTranslation } from 'react-i18next';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import { FREE_4_WEEK_PLAN, getWeekRoutineDays } from '@/utils/fourWeekPlanData';
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
 
 type WeekTemplate = {
   title: string;
@@ -78,29 +79,45 @@ export default function FourWeekPlanWeekScreen() {
   const { user: clerkUser } = useUser();
   const { isPro } = useAccessControl();
   const { t } = useTranslation();
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
 
   const activePlans = useQuery(api.plans.getActivePlans, clerkUser?.id ? {} : 'skip');
 
   const weekIndex = useMemo(() => {
     const n = parseInt(String(params.week ?? '1'), 10);
     if (!Number.isFinite(n) || n < 1) return 0;
-    // Rotate for Pro users: week 5 → index 0, week 6 → index 1, etc.
     return (n - 1) % 4;
   }, [params.week]);
 
+  const translateWorkoutLabel = React.useCallback((value?: string) => {
+    if (!value) return '';
+    return t(`workouts.labels.${value}`, value) as string;
+  }, [t]);
+
+  const translateMuscleList = React.useCallback((value?: string) => {
+    if (!value) return '';
+    return value
+      .split(',')
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .map((part) => t(`workouts.muscles.${part}`, translateWorkoutLabel(part)) as string)
+      .join(', ');
+  }, [t, translateWorkoutLabel]);
+
   const week = useMemo(() => {
-    // If Pro and we have an AI plan, we use the AI split for ALL weeks in this view
-    // (In a more advanced version, we'd have 4 different AI weeks)
     if (isPro && activePlans?.fitnessPlan?.workouts) {
       const split = activePlans.fitnessPlan.workoutSplit || 'Personalised Plan';
       return {
         title: t('common.weekNum', 'Week {{num}}', { num: weekIndex + 1 }),
-        subtitle: t(`db.${split.replace(/\s+/g, '')}`, split),
+        subtitle: translateWorkoutLabel(split),
         colors: WEEK_TEMPLATES[weekIndex].colors,
         days: activePlans.fitnessPlan.workouts.map((w: any, idx: number) => ({
           dayNum: idx + 1,
-          dayTitle: t(`db.${(w.focus || w.day || `Workout ${idx + 1}`).replace(/\s+/g, '')}`, w.focus || w.day || `Workout ${idx + 1}`),
-          muscleGroups: t(`workouts.muscles.${w.focus || w.day || 'Full Body'}`, w.muscleGroups || w.focus || 'Full Body'),
+          dayTitle: translateWorkoutLabel(w.focus || w.day || `Workout ${idx + 1}`),
+          muscleGroups: Array.isArray(w.muscleGroups)
+            ? translateMuscleList(w.muscleGroups.join(', '))
+            : translateMuscleList(w.muscleGroups || w.focus || 'Full Body'),
         })),
       };
     }
@@ -108,53 +125,53 @@ export default function FourWeekPlanWeekScreen() {
     return {
       ...template,
       title: t('common.weekNum', 'Week {{num}}', { num: weekIndex + 1 }),
-      subtitle: t(`db.${template.subtitle.toLowerCase()}`, template.subtitle),
+      subtitle: translateWorkoutLabel(template.subtitle),
       days: template.days.map((d: any) => ({
         ...d,
-        dayTitle: t(`db.${d.dayTitle.replace(/\s+/g, '').toLowerCase()}`, d.dayTitle),
-        muscleGroups: t(`db.${d.muscleGroups.replace(/[\s,\/]+/g, '').toLowerCase()}`, d.muscleGroups),
+        dayTitle: translateWorkoutLabel(d.dayTitle),
+        muscleGroups: translateMuscleList(d.muscleGroups),
       }))
     };
-  }, [isPro, activePlans, weekIndex]);
+  }, [isPro, activePlans, weekIndex, t, translateMuscleList, translateWorkoutLabel]);
 
   const bottomPad = useMemo(() => getBottomContentPadding(insets.bottom, 18), [insets.bottom]);
 
   return (
-    <SafeAreaView style={s.container} edges={['top', 'bottom']}>
-      <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.85}>
-          <Ionicons name="chevron-back" size={22} color="#0f172a" />
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top', 'bottom']}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.85}>
+          <Ionicons name="chevron-back" size={22} color={themeColors.text} />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <Text style={s.hTitle}>{week.title}</Text>
-          <Text style={s.hSub}>{week.subtitle}</Text>
+          <Text style={styles.hTitle}>{week.title}</Text>
+          <Text style={styles.hSub}>{week.subtitle}</Text>
         </View>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomPad }}>
-        <View style={s.body}>
-          <LinearGradient colors={week.colors} style={s.hero}>
-            <Text style={s.heroTitle}>{t('move.yourWeekOverview', 'Your week overview')}</Text>
-            <Text style={s.heroSub}>{t('move.weekOverviewDesc', 'Use this as a simple guide. Pro gets a personalised plan that adapts and swaps exercises.')}</Text>
+        <View style={styles.body}>
+          <LinearGradient colors={week.colors} style={styles.hero}>
+            <Text style={styles.heroTitle}>{t('move.yourWeekOverview', 'Your week overview')}</Text>
+            <Text style={styles.heroSub}>{t('move.weekOverviewDesc', 'Use this as a simple guide. Pro gets a personalised plan that adapts and swaps exercises.')}</Text>
           </LinearGradient>
 
-          <View style={s.dayList}>
+          <View style={styles.dayList}>
             {week.days.map((d: any) => (
-              <View key={d.dayNum} style={s.dayCard}>
-                <View style={s.dayHeader}>
-                  <View style={s.dayBadge}>
-                    <Text style={s.dayBadgeText}>{t('move.dayNum', 'Day {{num}}', { num: d.dayNum })}</Text>
+              <View key={d.dayNum} style={styles.dayCard}>
+                <View style={styles.dayHeader}>
+                  <View style={styles.dayBadge}>
+                    <Text style={styles.dayBadgeText}>{t('common.dayNum', 'Day {{num}}', { num: d.dayNum })}</Text>
                   </View>
-                  <Text style={s.dayFocus}>{d.dayTitle}</Text>
+                  <Text style={styles.dayFocus}>{d.dayTitle}</Text>
                 </View>
-                <Text style={s.dayMuscleGroups}>{d.muscleGroups}</Text>
+                <Text style={styles.dayMuscleGroups}>{d.muscleGroups}</Text>
               </View>
             ))}
           </View>
 
-          <TouchableOpacity activeOpacity={0.92} onPress={() => router.push('/(tabs)/move')} style={s.openMoveBtn}>
-            <LinearGradient colors={['#0ea5e9', '#6366f1']} style={s.openMoveCard}>
-              <Text style={s.openMoveText}>{t('move.openMove', 'Open Move')}</Text>
+          <TouchableOpacity activeOpacity={0.92} onPress={() => router.push('/(tabs)/move')} style={styles.openMoveBtn}>
+            <LinearGradient colors={['#0ea5e9', '#6366f1']} style={styles.openMoveCard}>
+              <Text style={styles.openMoveText}>{t('move.openMove', 'Open Move')}</Text>
               <Ionicons name="arrow-forward" size={18} color="#ffffff" />
             </LinearGradient>
           </TouchableOpacity>
@@ -164,8 +181,8 @@ export default function FourWeekPlanWeekScreen() {
   );
 }
 
-const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -173,28 +190,28 @@ const s = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-    backgroundColor: '#ffffff',
+    borderBottomColor: c.surfaceMuted,
+    backgroundColor: c.surface,
   },
   backBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  hTitle: { fontSize: 17, fontWeight: '900', color: '#0f172a' },
-  hSub: { marginTop: 2, fontSize: 11, fontWeight: '700', color: '#94a3b8' },
+  hTitle: { fontSize: 17, fontWeight: '900', color: c.text },
+  hSub: { marginTop: 2, fontSize: 11, fontWeight: '700', color: c.textMuted },
   body: { paddingHorizontal: 20, paddingTop: 18, gap: 14 },
   hero: { borderRadius: 22, padding: 18, overflow: 'hidden' },
   heroTitle: { fontSize: 18, fontWeight: '900', color: '#ffffff' },
   heroSub: { marginTop: 6, fontSize: 12, fontWeight: '700', color: 'rgba(255,255,255,0.7)', lineHeight: 18 },
   dayList: { gap: 10 },
   dayCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: c.border,
     borderRadius: 18,
     padding: 14,
   },
@@ -203,15 +220,15 @@ const s = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 999,
-    backgroundColor: '#0f172a',
+    backgroundColor: c.text,
   },
-  dayBadgeText: { fontSize: 11, fontWeight: '900', color: '#ffffff' },
-  dayFocus: { flex: 1, fontSize: 13, fontWeight: '900', color: '#0f172a' },
-  dayMuscleGroups: { fontSize: 12, fontWeight: '700', color: '#64748b', marginTop: 2, marginLeft: 2 },
+  dayBadgeText: { fontSize: 11, fontWeight: '900', color: c.bg },
+  dayFocus: { flex: 1, fontSize: 13, fontWeight: '900', color: c.text },
+  dayMuscleGroups: { fontSize: 12, fontWeight: '700', color: c.textMuted, marginTop: 2, marginLeft: 2 },
   dayItems: { gap: 8 },
   itemRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#94a3b8' },
-  itemText: { fontSize: 12, fontWeight: '700', color: '#475569' },
+  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: c.textMuted },
+  itemText: { fontSize: 12, fontWeight: '700', color: c.textMuted },
   openMoveBtn: { marginTop: 8 },
   openMoveCard: {
     borderRadius: 18,
@@ -223,4 +240,3 @@ const s = StyleSheet.create({
   },
   openMoveText: { fontSize: 13, fontWeight: '900', color: '#ffffff' },
 });
-

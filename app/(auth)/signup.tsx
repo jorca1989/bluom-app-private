@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -18,13 +18,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, UserPlus, Eye, EyeOff } from 'lucide-react-native';
 import AppleSignInButton from '@/components/AppleSignInButton';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
 export default function SignupScreen() {
   const { t } = useTranslation();
   const { signUp, setActive, isLoaded } = useSignUp();
   const router = useRouter();
   const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
 
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -130,7 +131,7 @@ export default function SignupScreen() {
               <>
                 <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
                   <View style={[styles.inputContainer, { flex: 1, marginBottom: 0 }]}>
-                    <UserPlus size={20} color="#64748b" style={{ marginRight: 12 }} />
+                    <UserPlus size={20} color={themeColors.textMuted} style={{ marginRight: 12 }} />
                     <TextInput
                       style={styles.input}
                       placeholder={t('auth.signup.firstNamePlaceholder', 'First Name')}
@@ -151,7 +152,7 @@ export default function SignupScreen() {
                 </View>
 
                 <View style={styles.inputContainer}>
-                  <Mail size={20} color="#64748b" style={{ marginRight: 12 }} />
+                  <Mail size={20} color={themeColors.textMuted} style={{ marginRight: 12 }} />
                   <TextInput
                     style={styles.input}
                     placeholder={t('auth.signup.emailPlaceholder', 'Email')}
@@ -163,7 +164,7 @@ export default function SignupScreen() {
                 </View>
 
                 <View style={styles.inputContainer}>
-                  <Lock size={20} color="#64748b" style={{ marginRight: 12 }} />
+                  <Lock size={20} color={themeColors.textMuted} style={{ marginRight: 12 }} />
                   <TextInput
                     style={styles.input}
                     placeholder={t('auth.signup.passwordPlaceholder', 'Password')}
@@ -173,7 +174,7 @@ export default function SignupScreen() {
                     autoCapitalize="none"
                   />
                   <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <EyeOff size={20} color="#64748b" /> : <Eye size={20} color="#64748b" />}
+                    {showPassword ? <EyeOff size={20} color={themeColors.textMuted} /> : <Eye size={20} color={themeColors.textMuted} />}
                   </TouchableOpacity>
                 </View>
 
@@ -200,26 +201,28 @@ export default function SignupScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   keyboardView: { flex: 1 },
   scrollContent: { paddingHorizontal: 24, paddingTop: 40, paddingBottom: 40 },
   header: { marginBottom: 40 },
-  title: { fontSize: 32, fontWeight: 'bold', color: '#1e293b' },
-  subtitle: { fontSize: 16, color: '#64748b' },
+  title: { fontSize: 32, fontWeight: 'bold', color: c.text },
+  subtitle: { fontSize: 16, color: c.textMuted },
   errorContainer: { backgroundColor: '#fee2e2', padding: 12, borderRadius: 8, marginBottom: 24 },
   errorText: { color: '#dc2626', textAlign: 'center' },
   form: { flex: 1 },
-  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f8fafc', borderRadius: 12, marginBottom: 16, paddingHorizontal: 16, borderWidth: 1, borderColor: '#e2e8f0' },
-  input: { flex: 1, height: 56, fontSize: 16, color: '#1e293b' },
+  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: c.surface, borderRadius: 12, marginBottom: 16, paddingHorizontal: 16, borderWidth: 1, borderColor: c.border },
+  input: { flex: 1, height: 56, fontSize: 16, color: c.text },
   codeInput: { textAlign: 'center', fontSize: 24, letterSpacing: 8 },
   primaryButton: { borderRadius: 12, overflow: 'hidden' },
   gradientButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16, gap: 8 },
   primaryButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
   divider: { flexDirection: 'row', alignItems: 'center', marginTop: 14, marginBottom: 14 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: '#e2e8f0' },
-  dividerText: { paddingHorizontal: 16, color: '#94a3b8', fontSize: 14, fontWeight: '600' },
+  dividerLine: { flex: 1, height: 1, backgroundColor: c.border },
+  dividerText: { paddingHorizontal: 16, color: c.textMuted, fontSize: 14, fontWeight: '600' },
   footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 20, paddingBottom: 40 },
-  footerText: { fontSize: 14, color: '#64748b' },
-  footerLink: { fontSize: 14, color: '#2563eb', fontWeight: '600' },
+  footerText: { fontSize: 14, color: c.textMuted },
+  footerLink: { fontSize: 14, color: c.primary, fontWeight: '600' },
 });
+
+const styles = createStyles(THEMES.default.colors);

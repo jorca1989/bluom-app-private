@@ -81,7 +81,7 @@ const FUEL_WIDGETS: { id: FuelWidgetId; emoji: string; labelKey: string }[] = [
   { id: 'utilities',    emoji: '🔧', labelKey: 'fuel.widgets.utilities' },
 ];
 const FUEL_WIDGETS_KEY = 'bluom_fuel_widgets_v1';
-const fuelCBtn = { width: 36, height: 36, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center' as const, justifyContent: 'center' as const, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 };
+// fuelCBtn is now generated inside the component to be theme-aware
 
 export default function FuelScreen() {
   const router = useRouter();
@@ -93,6 +93,14 @@ export default function FuelScreen() {
   const tabletMaxWidth = Math.min(1000, Math.max(0, windowWidth - 32));
   const { colors: themeColors } = useTheme();
   const { theme: fuelActiveTheme, setTheme: fuelSetTheme } = useTheme();
+
+  const fuelCBtn = {
+    width: 36, height: 36, borderRadius: 11,
+    backgroundColor: themeColors.surface,
+    alignItems: 'center' as const, justifyContent: 'center' as const,
+    shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2,
+  };
+
   const fuelIsDarkMode = fuelActiveTheme === 'black' || fuelActiveTheme === 'navy';
   const styles = useMemo(() => createStyles(themeColors), [themeColors]);
 
@@ -381,38 +389,38 @@ export default function FuelScreen() {
           
           {/* Widget Config Modal */}
           <Modal visible={showFuelConfig} animationType="slide" presentationStyle="pageSheet">
-            <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['top']}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
-                <Text style={{ fontSize: 18, fontWeight: '800', color: '#0f172a' }}>{t('fuel.widgets.title', 'Fuel Sections')}</Text>
-                <TouchableOpacity onPress={() => setShowFuelConfig(false)}>
-                  <Ionicons name="close" size={22} color="#475569" />
+            <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top']}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: themeColors.border }}>
+                <Text style={{ fontSize: 18, fontWeight: '800', color: themeColors.text }}>{t('fuel.widgets.title', 'Fuel Sections')}</Text>
+                <TouchableOpacity onPress={() => setShowFuelConfig(false)} style={{ width: 34, height: 34, borderRadius: 10, backgroundColor: themeColors.surfaceMuted, alignItems: 'center', justifyContent: 'center' }}>
+                  <Ionicons name="close" size={22} color={themeColors.textMuted} />
                 </TouchableOpacity>
               </View>
               <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
                 {/* Dark mode — wired to Theme system */}
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#f8fafc' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: themeColors.border }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                     <Text style={{ fontSize: 20 }}>🌙</Text>
                     <View>
-                      <Text style={{ fontSize: 15, fontWeight: '700', color: '#0f172a' }}>{t('common.darkMode', 'Dark Mode')}</Text>
-                      <Text style={{ fontSize: 12, color: '#94a3b8' }}>{t('common.darkModeDesc', 'Switches the whole app to a dark palette')}</Text>
+                      <Text style={{ fontSize: 15, fontWeight: '700', color: themeColors.text }}>{t('common.darkMode', 'Dark Mode')}</Text>
+                      <Text style={{ fontSize: 12, color: themeColors.textMuted }}>{t('common.darkModeDesc', 'Switches the whole app to a dark palette')}</Text>
                     </View>
                   </View>
                   <Switch
                     data-testid="fuel-darkmode-toggle"
                     value={fuelIsDarkMode}
                     onValueChange={(v) => fuelSetTheme(v ? 'black' : 'default')}
-                    trackColor={{ true: '#2563eb', false: '#e2e8f0' }}
+                    trackColor={{ true: '#2563eb', false: themeColors.surfaceMuted }}
                     thumbColor="#fff"
                   />
                 </View>
                 {FUEL_WIDGETS.map(w => (
-                  <View key={w.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f8fafc' }}>
+                  <View key={w.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: themeColors.border }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                       <Text style={{ fontSize: 20 }}>{w.emoji}</Text>
-                      <Text style={{ fontSize: 15, fontWeight: '600', color: '#1e293b' }}>{t(w.labelKey, w.id)}</Text>
+                      <Text style={{ fontSize: 15, fontWeight: '600', color: themeColors.text }}>{t(w.labelKey, w.id)}</Text>
                     </View>
-                    <Switch value={isFW(w.id)} onValueChange={() => toggleFuelWidget(w.id)} trackColor={{ true: '#2563eb', false: '#e2e8f0' }} thumbColor="#fff" />
+                    <Switch value={isFW(w.id)} onValueChange={() => toggleFuelWidget(w.id)} trackColor={{ true: '#2563eb', false: themeColors.surfaceMuted }} thumbColor="#fff" />
                   </View>
                 ))}
               </ScrollView>
@@ -428,7 +436,7 @@ export default function FuelScreen() {
               position="bottom"
             />
             <TouchableOpacity onPress={() => setShowFuelConfig(true)} style={fuelCBtn} activeOpacity={0.75}>
-              <Settings2 size={17} color="#475569" />
+              <Settings2 size={17} color={themeColors.textMuted} />
             </TouchableOpacity>
           </View>
 
@@ -535,7 +543,7 @@ export default function FuelScreen() {
                 <View style={styles.extraMealLeft}>
                   <View style={[styles.extraMealIconWrap, isPro ? styles.extraMealIconWrapPro : styles.extraMealIconWrapLocked]}>
                     {isPro
-                      ? <Ionicons name="add" size={22} color="#2563eb" />
+                      ? <Ionicons name="add" size={22} color={themeColors.primary} />
                       : <Ionicons name="lock-closed" size={18} color="#94a3b8" />
                     }
                   </View>
@@ -555,7 +563,7 @@ export default function FuelScreen() {
                   </View>
                 )}
                 {isPro && (
-                  <Ionicons name="chevron-forward" size={18} color="#2563eb" />
+                  <Ionicons name="chevron-forward" size={18} color={themeColors.primary} />
                 )}
               </TouchableOpacity>
             </View>
@@ -787,8 +795,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     borderStyle: 'dashed',
   },
   extraMealCardPro: {
-    backgroundColor: '#eff6ff',
-    borderColor: '#bfdbfe',
+    backgroundColor: c.surface,
+    borderColor: c.primary + '55',
     borderStyle: 'dashed',
   },
   extraMealLeft: {
@@ -805,7 +813,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     alignItems: 'center',
   },
   extraMealIconWrapPro: {
-    backgroundColor: '#dbeafe',
+    backgroundColor: c.primary + '22',
   },
   extraMealIconWrapLocked: {
     backgroundColor: c.surfaceMuted,

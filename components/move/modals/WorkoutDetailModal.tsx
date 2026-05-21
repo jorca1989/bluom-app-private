@@ -79,8 +79,21 @@ export default function WorkoutDetailModal({
 
   const dayIndex = activeTab - 1;
   const currentDay = routineDays[dayIndex] ?? null;
-  const displayTitle = currentDay?.dayTitle ?? t('common.dayNum', 'Day {{num}}', { num: activeTab });
-  const displayMuscleGroup = currentDay?.muscleGroups ?? '';
+  const translateWorkoutLabel = React.useCallback((value?: string) => {
+    if (!value) return '';
+    return t(`workouts.labels.${value}`, value) as string;
+  }, [t]);
+  const translateMuscleList = React.useCallback((value?: string) => {
+    if (!value) return '';
+    return value
+      .split(',')
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .map((part) => t(`workouts.muscles.${part}`, translateWorkoutLabel(part)) as string)
+      .join(', ');
+  }, [t, translateWorkoutLabel]);
+  const displayTitle = currentDay?.dayTitle ? translateWorkoutLabel(currentDay.dayTitle) : t('common.dayNum', 'Day {{num}}', { num: activeTab });
+  const displayMuscleGroup = translateMuscleList(currentDay?.muscleGroups);
   const displayExercises = currentDay?.exercises ?? [];
 
   return (
@@ -91,7 +104,7 @@ export default function WorkoutDetailModal({
         {/* Header — explicit paddingTop guards against clipping during modal slide-in on any device */}
         <View style={[styles.header, { paddingTop: Math.max(insets.top, 44) }]}>
           <TouchableOpacity onPress={onClose} style={styles.iconBtn}>
-            <Ionicons name="chevron-back" size={28} color="#0f172a" />
+            <Ionicons name="chevron-back" size={28} color={themeColors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>
             {isPreviewMode ? t('move.dayPreview', 'Day {{day}} Preview', { day: activeTab }) : t('move.weekOverview', 'Week Overview')}

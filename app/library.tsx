@@ -81,35 +81,35 @@ export default function LibraryScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['top', 'bottom']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top', 'bottom']}>
       {/* ── Header ── */}
-      <View style={{ paddingHorizontal: 20, paddingTop: Math.max(insets.top, 12) + 8, paddingBottom: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: Math.max(insets.top, 12) + 8, paddingBottom: 12, backgroundColor: themeColors.surface, borderBottomWidth: 1, borderBottomColor: themeColors.border }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 }}>
           <TouchableOpacity
             onPress={() => router.back()}
-            style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: themeColors.surfaceMuted, alignItems: 'center', justifyContent: 'center' }}
           >
-            <Ionicons name="arrow-back" size={20} color="#1e293b" />
+            <Ionicons name="arrow-back" size={20} color={themeColors.text} />
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 20, fontWeight: '900', color: '#1e293b' }}>📚 {t('wellness.library.title', 'Bluom Library')}</Text>
-            <Text style={{ fontSize: 12, color: '#64748b', fontWeight: '600', marginTop: 1 }}>{t('wellness.library.subtitle', 'Curated Knowledge')}</Text>
+            <Text style={{ fontSize: 20, fontWeight: '900', color: themeColors.text }}>📚 {t('wellness.library.title', 'Bluom Library')}</Text>
+            <Text style={{ fontSize: 12, color: themeColors.textMuted, fontWeight: '600', marginTop: 1 }}>{t('wellness.library.subtitle', 'Curated Knowledge')}</Text>
           </View>
         </View>
 
         {/* Search */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#f1f5f9', borderRadius: 14, paddingHorizontal: 14, paddingVertical: 10, gap: 8 }}>
-          <Ionicons name="search-outline" size={16} color="#94a3b8" />
+        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: themeColors.surfaceMuted, borderRadius: 14, paddingHorizontal: 14, paddingVertical: 10, gap: 8 }}>
+          <Ionicons name="search-outline" size={16} color={themeColors.textMuted} />
           <TextInput
             value={search}
             onChangeText={setSearch}
             placeholder={t('wellness.library.search', 'Search articles...')}
-            placeholderTextColor="#94a3b8"
-            style={{ flex: 1, fontSize: 14, color: '#1e293b', padding: 0 }}
+            placeholderTextColor={themeColors.textMuted}
+            style={{ flex: 1, fontSize: 14, color: themeColors.text, padding: 0 }}
           />
           {search ? (
             <TouchableOpacity onPress={() => setSearch('')}>
-              <Ionicons name="close-circle" size={16} color="#94a3b8" />
+              <Ionicons name="close-circle" size={16} color={themeColors.textMuted} />
             </TouchableOpacity>
           ) : null}
         </View>
@@ -119,7 +119,7 @@ export default function LibraryScreen() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={{ maxHeight: 52, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}
+        style={{ maxHeight: 52, backgroundColor: themeColors.surface, borderBottomWidth: 1, borderBottomColor: themeColors.border }}
         contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 10, gap: 8 }}
       >
         {FEATURE_CATEGORIES.map(cat => {
@@ -128,10 +128,10 @@ export default function LibraryScreen() {
             <TouchableOpacity
               key={cat.id}
               onPress={() => setSelectedCat(cat.id)}
-              style={{ flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: active ? cat.color : '#f1f5f9' }}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: active ? cat.color : themeColors.surfaceMuted }}
             >
               <Text style={{ fontSize: 13 }}>{cat.emoji}</Text>
-              <Text style={{ fontSize: 12, fontWeight: '700', color: active ? '#fff' : '#64748b' }}>{cat.label}</Text>
+              <Text style={{ fontSize: 12, fontWeight: '700', color: active ? '#fff' : themeColors.textMuted }}>{cat.label}</Text>
             </TouchableOpacity>
           );
         })}
@@ -150,7 +150,7 @@ export default function LibraryScreen() {
             <Text style={{ fontSize: 13, color: '#cbd5e1', marginTop: 6 }}>{t('wellness.library.noResultsSub', 'Try a different category or search term')}</Text>
           </View>
         ) : (
-          filtered.map((post) => <ArticleCard key={(post as any)._id} post={post as any} onPress={() => openPost(post)} />)
+          filtered.map((post) => <ArticleCard key={(post as any)._id} post={post as any} onPress={() => openPost(post)} themeColors={themeColors} />)
         )}
       </ScrollView>
     </SafeAreaView>
@@ -158,7 +158,7 @@ export default function LibraryScreen() {
 }
 
 // ─── Article Card – 1 per row ────────────────────────────────
-function ArticleCard({ post, onPress }: { post: any; onPress: () => void }) {
+function ArticleCard({ post, onPress, themeColors }: { post: any; onPress: () => void; themeColors: any }) {
   const catColor = FEATURE_CATEGORIES.find(c => c.id === post.category)?.color ?? '#2563eb';
   const emoji    = (post as any).emoji ?? '📖';
   const timeStr  = (post as any).time ?? (post.content ? `${Math.max(1, Math.ceil((post.content?.length ?? 0) / 800))} min` : '');
@@ -167,7 +167,7 @@ function ArticleCard({ post, onPress }: { post: any; onPress: () => void }) {
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.88}
-      style={{ backgroundColor: '#fff', borderRadius: 20, overflow: 'hidden', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 }}
+      style={{ backgroundColor: themeColors.surface, borderRadius: 20, overflow: 'hidden', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 }}
     >
       {/* Image */}
       {post.featuredImage ? (

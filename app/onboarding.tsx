@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import {
@@ -47,7 +47,7 @@ import { setPendingRouteAfterOnboarding } from './_layout';
 import HeightRuler from '@/components/onboarding/HeightRuler';
 import Toast from '@/components/onboarding/Toast';
 import GoalEstimator from '@/components/onboarding/GoalEstimator';
-import { useTheme, THEMES, THEME_ORDER, type ThemeKey } from '@/context/ThemeContext';
+import { useTheme, THEMES, THEME_ORDER, type ThemeColors, type ThemeKey } from '@/context/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 const WELCOME_LOGO = require('../assets/images/logo.png');
@@ -391,6 +391,7 @@ export default function OnboardingScreen() {
 
   // Theme picker on welcome slide 3
   const { theme: activeTheme, setTheme: setActiveTheme, colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const [pendingThemePick, setPendingThemePick] = useState<ThemeKey | null>(null);
 
   const LANG_OPTIONS = [
@@ -640,7 +641,7 @@ export default function OnboardingScreen() {
           value={val}
           onChangeText={(t) => handleAnswer(q.id, t)}
           keyboardType={q.type === 'number' ? 'numeric' : 'default'}
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={themeColors.textMuted}
         />
       );
     }
@@ -662,7 +663,7 @@ export default function OnboardingScreen() {
                 activeOpacity={0.7}
               >
                 <Text
-                  style={[styles.optionText, isSelected && { color: '#2563eb', fontWeight: '700' }]}
+                  style={[styles.optionText, isSelected && { color: themeColors.primary, fontWeight: '700' }]}
                   numberOfLines={2}
                 >
                   {label}
@@ -673,11 +674,11 @@ export default function OnboardingScreen() {
                       onPress={(e) => { e.stopPropagation(); Alert.alert(label, info); }}
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                     >
-                      <Info size={18} color={isSelected ? '#2563eb' : '#94a3b8'} />
+                      <Info size={18} color={isSelected ? themeColors.primary : themeColors.textMuted} />
                     </TouchableOpacity>
                   )}
                   <View style={[styles.radioCircle, isSelected && styles.radioCircleSelected]}>
-                    {isSelected && <Check size={12} color="#fff" />}
+                    {isSelected && <Check size={12} color={themeColors.onPrimary} />}
                   </View>
                 </View>
               </TouchableOpacity>
@@ -698,13 +699,13 @@ export default function OnboardingScreen() {
             return (
               <TouchableOpacity
                 key={value || index}
-                style={[styles.chip, isSelected && { borderColor: '#2563eb', backgroundColor: '#eff6ff', borderWidth: 1 }]}
+                style={[styles.chip, isSelected && { borderColor: themeColors.primary, backgroundColor: themeColors.surfaceMuted, borderWidth: 1 }]}
                 onPress={() => {
                   if (isSelected) handleAnswer(q.id, selected.filter(s => s !== value));
                   else handleAnswer(q.id, [...selected, value]);
                 }}
               >
-                <Text style={[styles.chipText, isSelected && { color: '#2563eb', fontWeight: '700' }]}>{label}</Text>
+                <Text style={[styles.chipText, isSelected && { color: themeColors.primary, fontWeight: '700' }]}>{label}</Text>
               </TouchableOpacity>
             );
           })}
@@ -743,7 +744,7 @@ export default function OnboardingScreen() {
 
   const renderEstimator = () => (
     <Modal visible={showEstimator} animationType="slide">
-      <SafeAreaView style={[styles.fullscreen, { backgroundColor: '#fff' }]}>
+      <SafeAreaView style={styles.fullscreen}>
         <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 120 }}>
           <GoalEstimator
             currentWeight={parseFloat(answers.weight) || 70}
@@ -756,7 +757,7 @@ export default function OnboardingScreen() {
         <View style={[styles.estimatorFooter, { paddingBottom: insets.bottom + 20 }]}>
           <TouchableOpacity style={styles.primaryBtn} onPress={handleEstimatorContinue}>
             <Text style={styles.primaryBtnText}>{t('onboarding.nav.continue', 'Continue')}</Text>
-            <ChevronRight size={20} color="#fff" />
+            <ChevronRight size={20} color={themeColors.onPrimary} />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -805,8 +806,8 @@ export default function OnboardingScreen() {
                 </View>
                 <BlurView intensity={90} tint="light" style={StyleSheet.absoluteFill} />
                 <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
-                  <Lock size={14} color="#1e293b" />
-                  <Text style={{ fontSize: 11, fontWeight: '800', color: '#1e293b' }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+                  <Lock size={14} color={themeColors.text} />
+                  <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
                 </View>
               </View>
             </PillarCard>
@@ -820,15 +821,15 @@ export default function OnboardingScreen() {
                   t('onboarding.results.week3', 'Week 3 · Peak'),
                   t('onboarding.results.week4', 'Week 4 · Recovery'),
                 ].map((week, i) => (
-                  <View key={i} style={[styles.planWeekRow, { backgroundColor: i % 2 === 0 ? '#f8fafc' : '#fff' }]}>
+                  <View key={i} style={[styles.planWeekRow, { backgroundColor: i % 2 === 0 ? themeColors.surfaceMuted : themeColors.surface }]}>
                     <Text style={styles.planWeekNum}>W{i + 1}</Text>
                     <Text style={styles.planWeekLabel}>{week}</Text>
                   </View>
                 ))}
                 <BlurView intensity={80} tint="light" style={StyleSheet.absoluteFill} />
                 <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
-                  <Lock size={14} color="#1e293b" />
-                  <Text style={{ fontSize: 11, fontWeight: '800', color: '#1e293b' }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+                  <Lock size={14} color={themeColors.text} />
+                  <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
                 </View>
               </View>
             </PillarCard>
@@ -842,15 +843,15 @@ export default function OnboardingScreen() {
                   t('onboarding.results.mental3', 'Mindset & Reframe'),
                   t('onboarding.results.mental4', 'Integration Week'),
                 ].map((theme, i) => (
-                  <View key={i} style={[styles.planWeekRow, { backgroundColor: i % 2 === 0 ? '#f0fdf4' : '#fff' }]}>
+                  <View key={i} style={[styles.planWeekRow, { backgroundColor: i % 2 === 0 ? themeColors.surfaceMuted : themeColors.surface }]}>
                     <Text style={[styles.planWeekNum, { color: '#059669' }]}>W{i + 1}</Text>
                     <Text style={styles.planWeekLabel}>{theme}</Text>
                   </View>
                 ))}
                 <BlurView intensity={80} tint="light" style={StyleSheet.absoluteFill} />
                 <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
-                  <Lock size={14} color="#1e293b" />
-                  <Text style={{ fontSize: 11, fontWeight: '800', color: '#1e293b' }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+                  <Lock size={14} color={themeColors.text} />
+                  <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
                 </View>
               </View>
             </PillarCard>
@@ -860,7 +861,7 @@ export default function OnboardingScreen() {
           <View style={styles.resultsFooter}>
             <TouchableOpacity style={styles.primaryBtn} onPress={handleFinalSubmit} disabled={isSubmitting}>
               {isSubmitting
-                ? <ActivityIndicator color="#fff" />
+                ? <ActivityIndicator color={themeColors.onPrimary} />
                 : <Text style={styles.primaryBtnText}>{t('onboarding.results.continueToPlan', 'Continue to Plan')}</Text>
               }
             </TouchableOpacity>
@@ -881,39 +882,39 @@ export default function OnboardingScreen() {
               {currentWelcomeSlide === 0 && (
                 <>
                   <Image source={WELCOME_LOGO} style={{ width: 140, height: 40, marginBottom: 40 }} resizeMode="contain" />
-                  <Text style={[styles.welcomeTitle, { color: '#1e293b' }]}>{t('onboarding.welcome.slide1Title', 'Your Life, Optimized.')}</Text>
-                  <Text style={[styles.welcomeSubtitle, { color: '#2563EB' }]}>{t('onboarding.welcome.slide1Sub', 'AI Life Management')}</Text>
+                  <Text style={styles.welcomeTitle}>{t('onboarding.welcome.slide1Title', 'Your Life, Optimized.')}</Text>
+                  <Text style={styles.welcomeSubtitle}>{t('onboarding.welcome.slide1Sub', 'AI Life Management')}</Text>
                   <Text style={styles.welcomeDesc}>{t('onboarding.welcome.slide1Desc', 'Welcome to Bluom. The only system that integrates your Nutrition, Movement, and Mind into one seamless flow.')}</Text>
                 </>
               )}
               {currentWelcomeSlide === 1 && (
                 <>
                   <View style={{ flexDirection: 'row', gap: 12, marginBottom: 40 }}>
-                    <View style={[styles.pillarCard, { borderColor: '#2563EB', backgroundColor: '#eff6ff' }]}>
-                      <Ionicons name="sunny" size={28} color="#2563EB" />
-                      <Text style={[styles.pillarText, { color: '#2563EB' }]}>{t('onboarding.welcome.pillarNutrition', 'Nutrition')}</Text>
+                    <View style={styles.pillarCard}>
+                      <Ionicons name="sunny" size={28} color={themeColors.primary} />
+                      <Text style={styles.pillarText}>{t('onboarding.welcome.pillarNutrition', 'Nutrition')}</Text>
                     </View>
-                    <View style={[styles.pillarCard, { borderColor: '#2563EB', backgroundColor: '#eff6ff' }]}>
-                      <Ionicons name="barbell" size={28} color="#2563EB" />
-                      <Text style={[styles.pillarText, { color: '#2563EB' }]}>{t('onboarding.welcome.pillarMove', 'Treino')}</Text>
+                    <View style={styles.pillarCard}>
+                      <Ionicons name="barbell" size={28} color={themeColors.primary} />
+                      <Text style={styles.pillarText}>{t('onboarding.welcome.pillarMove', 'Treino')}</Text>
                     </View>
-                    <View style={[styles.pillarCard, { borderColor: '#2563EB', backgroundColor: '#eff6ff' }]}>
-                      <Ionicons name="leaf" size={28} color="#2563EB" />
-                      <Text style={[styles.pillarText, { color: '#2563EB' }]}>{t('onboarding.welcome.pillarMind', 'Mind')}</Text>
+                    <View style={styles.pillarCard}>
+                      <Ionicons name="leaf" size={28} color={themeColors.primary} />
+                      <Text style={styles.pillarText}>{t('onboarding.welcome.pillarMind', 'Mind')}</Text>
                     </View>
                   </View>
-                  <Text style={[styles.welcomeTitle, { color: '#1e293b' }]}>{t('onboarding.welcome.slide2Title', 'A Complete Ecosystem')}</Text>
-                  <Text style={[styles.welcomeSubtitle, { color: '#2563EB' }]}>{t('onboarding.welcome.slide2Sub', 'Beyond the Pillars')}</Text>
+                  <Text style={styles.welcomeTitle}>{t('onboarding.welcome.slide2Title', 'A Complete Ecosystem')}</Text>
+                  <Text style={styles.welcomeSubtitle}>{t('onboarding.welcome.slide2Sub', 'Beyond the Pillars')}</Text>
                   <Text style={styles.welcomeDesc}>{t('onboarding.welcome.slide2Desc', "Includes specialized protocols for Men & Women's health, Productivity architecture, and Mindset & Meditation.")}</Text>
                 </>
               )}
               {currentWelcomeSlide === 2 && (
                 <>
-                  <View style={[styles.iconCircle, { backgroundColor: '#eff6ff' }]}>
-                    <Sparkles size={60} color="#2563EB" />
+                  <View style={styles.iconCircle}>
+                    <Sparkles size={60} color={themeColors.primary} />
                   </View>
-                  <Text style={[styles.welcomeTitle, { color: '#1e293b' }]}>{t('onboarding.welcome.slide3Title', 'Your Blueprint')}</Text>
-                  <Text style={[styles.welcomeSubtitle, { color: '#2563EB' }]}>{t('onboarding.welcome.slide3Sub', 'Ready to Evolve?')}</Text>
+                  <Text style={styles.welcomeTitle}>{t('onboarding.welcome.slide3Title', 'Your Blueprint')}</Text>
+                  <Text style={styles.welcomeSubtitle}>{t('onboarding.welcome.slide3Sub', 'Ready to Evolve?')}</Text>
                   <Text style={styles.welcomeDesc}>{t('onboarding.welcome.slide3Desc', 'Answer a few quick questions to get your custom nutrition plan and workout recommendations.')}</Text>
 
                   {/* ── Inline Theme Picker ─────────────────────────────── */}
@@ -975,7 +976,7 @@ export default function OnboardingScreen() {
                     onPress={() => handleLangChange(lang.code)}
                   >
                     <Text style={styles.langFlag}>{lang.flag}</Text>
-                    <Text style={[styles.langCode, currentLang === lang.code && { color: '#2563eb', fontWeight: '800' }]}>{lang.label}</Text>
+                    <Text style={[styles.langCode, currentLang === lang.code && { color: themeColors.primary, fontWeight: '800' }]}>{lang.label}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -1011,7 +1012,7 @@ export default function OnboardingScreen() {
           {/* Header */}
           <View style={styles.header}>
             <TouchableOpacity onPress={handleBack} disabled={currentGroupIndex === 0}>
-              <Ionicons name="chevron-back" size={24} color={currentGroupIndex === 0 ? '#cbd5e1' : '#1e293b'} />
+              <Ionicons name="chevron-back" size={24} color={currentGroupIndex === 0 ? themeColors.textMuted : themeColors.primary} />
             </TouchableOpacity>
             <View style={styles.progressTrack}>
               <View style={[styles.progressBar, { width: `${((currentGroupIndex + 1) / STEP_GROUPS.length) * 100}%` }]} />
@@ -1044,7 +1045,7 @@ export default function OnboardingScreen() {
 
             <TouchableOpacity style={styles.nextBtn} onPress={handleNext}>
               <Text style={styles.nextBtnText}>{t('onboarding.nav.continue', 'Continue')}</Text>
-              <ChevronRight size={20} color="#fff" />
+              <ChevronRight size={20} color={themeColors.onPrimary} />
             </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>
@@ -1131,107 +1132,109 @@ export default function OnboardingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  fullscreen: { flex: 1, backgroundColor: '#fff' },
-  container: { flex: 1, backgroundColor: '#ffffff' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  fullscreen: { flex: 1, backgroundColor: c.bg },
+  container: { flex: 1, backgroundColor: c.bg },
   scrollContent: { padding: 24, paddingBottom: 100 },
 
-  iconCircle: { width: 120, height: 120, borderRadius: 60, alignItems: 'center', justifyContent: 'center', marginBottom: 40 },
-  welcomeTitle: { fontSize: 32, fontWeight: '800', color: '#1e293b', textAlign: 'center', marginBottom: 12 },
-  welcomeSubtitle: { fontSize: 18, fontWeight: '600', color: '#6366f1', textAlign: 'center', marginBottom: 16 },
-  welcomeDesc: { fontSize: 16, color: '#64748b', textAlign: 'center', lineHeight: 24, paddingHorizontal: 20 },
+  iconCircle: { width: 120, height: 120, borderRadius: 60, alignItems: 'center', justifyContent: 'center', marginBottom: 40, backgroundColor: c.surfaceMuted },
+  welcomeTitle: { fontSize: 32, fontWeight: '800', color: c.text, textAlign: 'center', marginBottom: 12 },
+  welcomeSubtitle: { fontSize: 18, fontWeight: '600', color: c.primary, textAlign: 'center', marginBottom: 16 },
+  welcomeDesc: { fontSize: 16, color: c.textMuted, textAlign: 'center', lineHeight: 24, paddingHorizontal: 20 },
   dotsContainer: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 32, marginTop: 48 },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#e2e8f0' },
-  activeDot: { backgroundColor: '#2563eb', width: 20 },
-  welcomeBtn: { backgroundColor: '#2563eb', marginHorizontal: 30, padding: 18, borderRadius: 16, alignItems: 'center', marginBottom: 40 },
-  welcomeBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: c.surfaceMuted },
+  activeDot: { backgroundColor: c.primary, width: 20 },
+  welcomeBtn: { backgroundColor: c.primary, marginHorizontal: 30, padding: 18, borderRadius: 16, alignItems: 'center', marginBottom: 40 },
+  welcomeBtnText: { color: c.onPrimary, fontSize: 18, fontWeight: 'bold' },
 
-  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16, gap: 16, backgroundColor: '#fff' },
-  progressTrack: { flex: 1, height: 6, backgroundColor: '#e2e8f0', borderRadius: 3, overflow: 'hidden' },
-  progressBar: { height: '100%', backgroundColor: '#2563eb' },
-  unitToggleBtn: { backgroundColor: '#eff6ff', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
-  unitToggleText: { fontSize: 12, fontWeight: '800', color: '#2563eb' },
+  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16, gap: 16, backgroundColor: c.bg },
+  progressTrack: { flex: 1, height: 6, backgroundColor: c.surfaceMuted, borderRadius: 3, overflow: 'hidden' },
+  progressBar: { height: '100%', backgroundColor: c.primary },
+  unitToggleBtn: { backgroundColor: c.surfaceMuted, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
+  unitToggleText: { fontSize: 12, fontWeight: '800', color: c.primary },
 
   groupHeader: { marginBottom: 32 },
-  groupTitle: { fontSize: 28, fontWeight: '800', color: '#1e293b', marginBottom: 8 },
-  groupDesc: { fontSize: 16, color: '#64748b' },
+  groupTitle: { fontSize: 28, fontWeight: '800', color: c.text, marginBottom: 8 },
+  groupDesc: { fontSize: 16, color: c.textMuted },
 
   questionsList: { gap: 32 },
   questionBlock: {},
-  qLabel: { fontSize: 18, fontWeight: '600', color: '#334155', marginBottom: 4 },
-  qSub: { fontSize: 14, color: '#94a3b8', marginBottom: 16 },
+  qLabel: { fontSize: 18, fontWeight: '600', color: c.text, marginBottom: 4 },
+  qSub: { fontSize: 14, color: c.textMuted, marginBottom: 16 },
 
-  textInput: { backgroundColor: '#fff', padding: 16, borderRadius: 16, fontSize: 16, borderWidth: 1, borderColor: '#e2e8f0', color: '#1e293b', shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4, elevation: 1 },
-  unitInputRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#e2e8f0', overflow: 'hidden', shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4, elevation: 1 },
-  unitLabel: { paddingHorizontal: 16, fontSize: 16, color: '#64748b', fontWeight: '600', backgroundColor: '#f1f5f9', height: '100%', textAlignVertical: 'center', paddingTop: 16 },
+  textInput: { backgroundColor: c.surface, padding: 16, borderRadius: 16, fontSize: 16, borderWidth: 1, borderColor: c.border, color: c.text, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4, elevation: 1 },
+  unitInputRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: c.surface, borderRadius: 16, borderWidth: 1, borderColor: c.border, overflow: 'hidden', shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4, elevation: 1 },
+  unitLabel: { paddingHorizontal: 16, fontSize: 16, color: c.primary, fontWeight: '600', backgroundColor: c.surfaceMuted, height: '100%', textAlignVertical: 'center', paddingTop: 16 },
 
   optionsContainer: { gap: 10, marginTop: 12 },
-  optionCard: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 16, paddingHorizontal: 18, backgroundColor: '#fff', borderRadius: 14, borderWidth: 1.5, borderColor: '#e2e8f0' },
-  optionCardSelected: { borderColor: '#2563eb', borderWidth: 2, backgroundColor: '#f0f5ff' },
+  optionCard: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 16, paddingHorizontal: 18, backgroundColor: c.surface, borderRadius: 14, borderWidth: 1.5, borderColor: c.border },
+  optionCardSelected: { borderColor: c.primary, borderWidth: 2, backgroundColor: c.surfaceMuted },
   optionRight: { flexDirection: 'row', alignItems: 'center', gap: 10, marginLeft: 12, flexShrink: 0 },
-  radioCircle: { width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, borderColor: '#cbd5e1', alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' },
-  radioCircleSelected: { borderColor: '#2563eb', backgroundColor: '#2563eb' },
-  pillarCard: { width: 100, height: 140, borderRadius: 16, borderWidth: 2, justifyContent: 'center', alignItems: 'center', gap: 8, padding: 4 },
-  pillarText: { fontWeight: '700', fontSize: 14 },
-  optionText: { flex: 1, fontSize: 16, color: '#334155', fontWeight: '500' },
+  radioCircle: { width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, borderColor: c.border, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' },
+  radioCircleSelected: { borderColor: c.primary, backgroundColor: c.primary },
+  pillarCard: { width: 100, height: 140, borderRadius: 16, borderWidth: 2, borderColor: c.primary, backgroundColor: c.surfaceMuted, justifyContent: 'center', alignItems: 'center', gap: 8, padding: 4 },
+  pillarText: { fontWeight: '700', fontSize: 14, color: c.primary },
+  optionText: { flex: 1, fontSize: 16, color: c.text, fontWeight: '500' },
 
   chipContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  chip: { paddingVertical: 10, paddingHorizontal: 16, backgroundColor: '#fff', borderRadius: 20, borderWidth: 1, borderColor: '#e2e8f0', shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 },
-  chipText: { fontSize: 14, color: '#475569', fontWeight: '600' },
+  chip: { paddingVertical: 10, paddingHorizontal: 16, backgroundColor: c.surface, borderRadius: 20, borderWidth: 1, borderColor: c.border, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 },
+  chipText: { fontSize: 14, color: c.text, fontWeight: '600' },
 
-  nextBtn: { marginTop: 40, backgroundColor: '#2563eb', padding: 20, borderRadius: 20, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, shadowColor: '#2563eb', shadowOpacity: 0.3, shadowRadius: 10, elevation: 5 },
-  nextBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  nextBtn: { marginTop: 40, backgroundColor: c.primary, padding: 20, borderRadius: 20, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, shadowColor: c.primary, shadowOpacity: 0.3, shadowRadius: 10, elevation: 5 },
+  nextBtnText: { color: c.onPrimary, fontSize: 18, fontWeight: 'bold' },
 
-  estimatorFooter: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#fff', padding: 20, borderTopWidth: 1, borderTopColor: '#e2e8f0', shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 8, elevation: 10 },
+  estimatorFooter: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: c.bg, padding: 20, borderTopWidth: 1, borderTopColor: c.border, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 8, elevation: 10 },
 
-  resultsContainer: { flex: 1, backgroundColor: '#ffffff' },
-  resultsHeader: { fontSize: 32, fontWeight: '900', color: '#1e293b', marginBottom: 8, textAlign: 'center' },
-  resultsSub: { fontSize: 16, color: '#64748b', textAlign: 'center', marginBottom: 40 },
+  resultsContainer: { flex: 1, backgroundColor: c.bg },
+  resultsHeader: { fontSize: 32, fontWeight: '900', color: c.text, marginBottom: 8, textAlign: 'center' },
+  resultsSub: { fontSize: 16, color: c.textMuted, textAlign: 'center', marginBottom: 40 },
   macroCard: { alignItems: 'center', marginBottom: 40 },
-  calorieCircle: { width: 220, height: 220, borderRadius: 110, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: 8, borderColor: '#ec4899', shadowColor: '#ec4899', shadowOpacity: 0.2, shadowRadius: 20, elevation: 10 },
-  calorieVal: { fontSize: 56, fontWeight: '900', color: '#1e293b' },
-  calorieLabel: { fontSize: 16, color: '#64748b', fontWeight: '600', marginTop: 4 },
+  calorieCircle: { width: 220, height: 220, borderRadius: 110, backgroundColor: c.surface, alignItems: 'center', justifyContent: 'center', borderWidth: 8, borderColor: c.primary, shadowColor: c.primary, shadowOpacity: 0.2, shadowRadius: 20, elevation: 10 },
+  calorieVal: { fontSize: 56, fontWeight: '900', color: c.text },
+  calorieLabel: { fontSize: 16, color: c.textMuted, fontWeight: '600', marginTop: 4 },
 
-  proSection: { borderRadius: 24, overflow: 'hidden', height: 200, backgroundColor: '#fff', marginBottom: 40 },
+  proSection: { borderRadius: 24, overflow: 'hidden', height: 200, backgroundColor: c.surface, marginBottom: 40 },
   blurContainer: { flex: 1, padding: 30, justifyContent: 'center' },
   macroRow: { flexDirection: 'row', justifyContent: 'space-between' },
   macroItem: { alignItems: 'center' },
-  macroVal: { fontSize: 28, fontWeight: 'bold', color: '#334155', marginBottom: 8 },
+  macroVal: { fontSize: 28, fontWeight: 'bold', color: c.text, marginBottom: 8 },
 
   lockOverlay: { flex: 1, backgroundColor: 'rgba(30, 41, 59, 0.7)', justifyContent: 'center', alignItems: 'center', padding: 20 },
   proBadge: { backgroundColor: '#fbbf24', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, marginBottom: 8 },
   proText: { fontSize: 12, fontWeight: '900', color: '#78350f' },
   lockText: { color: '#fff', textAlign: 'center', marginTop: 12, fontWeight: '600', fontSize: 15 },
 
-  primaryBtn: { backgroundColor: '#2563eb', padding: 20, borderRadius: 20, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8 },
-  primaryBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  primaryBtn: { backgroundColor: c.primary, padding: 20, borderRadius: 20, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8 },
+  primaryBtnText: { color: c.onPrimary, fontSize: 18, fontWeight: 'bold' },
 
   // Results footer
-  resultsFooter: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#fff', padding: 20, borderTopWidth: 1, borderTopColor: '#e2e8f0', shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8, elevation: 10 },
+  resultsFooter: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: c.bg, padding: 20, borderTopWidth: 1, borderTopColor: c.border, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8, elevation: 10 },
 
   // 3-Pillar result cards
-  pillarResultCard: { backgroundColor: '#fff', borderRadius: 20, padding: 20, marginBottom: 16, borderLeftWidth: 4, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
+  pillarResultCard: { backgroundColor: c.surface, borderRadius: 20, padding: 20, marginBottom: 16, borderLeftWidth: 4, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
   pillarResultHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
   pillarResultTitle: { fontSize: 18, fontWeight: '800' },
   pillarCalRow: { flexDirection: 'row', alignItems: 'baseline', gap: 6 },
-  pillarCalVal: { fontSize: 40, fontWeight: '900', color: '#1e293b' },
-  pillarCalLabel: { fontSize: 14, color: '#64748b', fontWeight: '600' },
-  macroLabel: { fontSize: 12, color: '#64748b', fontWeight: '600' },
+  pillarCalVal: { fontSize: 40, fontWeight: '900', color: c.text },
+  pillarCalLabel: { fontSize: 14, color: c.textMuted, fontWeight: '600' },
+  macroLabel: { fontSize: 12, color: c.textMuted, fontWeight: '600' },
   planWeekRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 14 },
   planWeekNum: { fontSize: 12, fontWeight: '900', color: '#7c3aed', width: 24 },
-  planWeekLabel: { fontSize: 13, fontWeight: '600', color: '#334155' },
+  planWeekLabel: { fontSize: 13, fontWeight: '600', color: c.text },
 
   // Language FAB
   langFab: {
     width: 48, height: 48, borderRadius: 24,
-    backgroundColor: 'rgba(255,255,255,0.95)',
+    backgroundColor: c.surface,
     alignItems: 'center', justifyContent: 'center',
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15, shadowRadius: 6, elevation: 4,
   },
   langFabFlag: { fontSize: 24 },
   langPickerPopup: {
-    backgroundColor: 'rgba(255,255,255,0.97)',
+    backgroundColor: c.surface,
+    borderWidth: 1,
+    borderColor: c.border,
     borderRadius: 16,
     paddingVertical: 6,
     paddingHorizontal: 4,
@@ -1244,13 +1247,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 8,
     paddingVertical: 9, paddingHorizontal: 12, borderRadius: 10,
   },
-  langOptionActive: { backgroundColor: '#eff6ff' },
+  langOptionActive: { backgroundColor: c.surfaceMuted },
   langFlag: { fontSize: 18 },
-  langCode: { fontSize: 13, fontWeight: '600', color: '#475569' },
+  langCode: { fontSize: 13, fontWeight: '600', color: c.text },
 
   // Theme picker (welcome slide 3)
   themePickerWrap: { marginTop: 28, alignItems: 'center', width: '100%' },
-  themePickerLabel: { fontSize: 14, fontWeight: '600', color: '#475569', marginBottom: 14 },
+  themePickerLabel: { fontSize: 14, fontWeight: '600', color: c.text, marginBottom: 14 },
   themePickerRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'center' },
   themePickerSwatch: {
     width: 44,
@@ -1285,10 +1288,12 @@ const styles = StyleSheet.create({
   themeConfirmCard: {
     width: '100%',
     maxWidth: 360,
-    backgroundColor: '#fff',
+    backgroundColor: c.surface,
     borderRadius: 24,
     padding: 22,
     alignItems: 'stretch',
+    borderWidth: 1,
+    borderColor: c.border,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.18,
@@ -1319,36 +1324,43 @@ const styles = StyleSheet.create({
   themeConfirmTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#1e293b',
+    color: c.text,
     marginBottom: 6,
     textAlign: 'center',
   },
   themeConfirmDesc: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 18,
   },
-  themeConfirmActions: { flexDirection: 'row', gap: 10 },
+  themeConfirmActions: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
   themeConfirmBtn: {
-    flex: 1,
+    flexGrow: 1,
+    flexBasis: 132,
+    minHeight: 52,
     paddingVertical: 14,
+    paddingHorizontal: 12,
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },
   themeConfirmBtnSecondary: {
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
   },
   themeConfirmBtnSecondaryText: {
-    color: '#475569',
+    color: c.text,
     fontSize: 15,
     fontWeight: '700',
+    textAlign: 'center',
   },
   themeConfirmBtnPrimary: {},
   themeConfirmBtnPrimaryText: {
     fontSize: 15,
     fontWeight: '800',
+    textAlign: 'center',
   },
 });
+
+const styles = createStyles(THEMES.default.colors);

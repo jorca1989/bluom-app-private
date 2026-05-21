@@ -527,6 +527,7 @@ GENERIC_WEEK['flexible'] = GENERIC_WEEK['balanced'];
 
 /** Build a 28-day plan from the 7-day rotating pattern */
 function build30DayPlan(dietKey: DietKey, lang: string): DayTemplate[] {
+  // Use Portuguese templates for pt, use English for everything else
   const dict = lang.startsWith('pt') ? GENERIC_WEEK_PT : GENERIC_WEEK;
   const weekPatterns = dict[dietKey] ?? dict['balanced'];
   return Array.from({ length: 28 }, (_, i) => ({
@@ -538,11 +539,11 @@ function build30DayPlan(dietKey: DietKey, lang: string): DayTemplate[] {
 // ─── Diet + goal colour themes ────────────────────────────────────────────────
 
 const DIET_META: Record<DietKey, { label: string; labelKey: string; color: string; bg: string; icon: string }> = {
-  high_protein: { label: 'Alta Proteína',  labelKey: 'meals.diet.high_protein',  color: '#ef4444', bg: '#fee2e2', icon: 'barbell-outline' },
-  low_carb:     { label: 'Baixo Carb',      labelKey: 'meals.diet.low_carb',      color: '#d97706', bg: '#fef3c7', icon: 'leaf-outline' },
-  balanced:     { label: 'Equilibrado',      labelKey: 'meals.diet.balanced',      color: '#2563eb', bg: '#dbeafe', icon: 'nutrition-outline' },
-  plant_based:  { label: 'Base Vegetal',     labelKey: 'meals.diet.plant_based',   color: '#16a34a', bg: '#dcfce7', icon: 'flower-outline' },
-  flexible:     { label: 'Flexível',         labelKey: 'meals.diet.flexible',      color: '#8b5cf6', bg: '#ede9fe', icon: 'shuffle-outline' },
+  high_protein: { label: 'High Protein',  labelKey: 'meals.diet.high_protein',  color: '#ef4444', bg: '#fee2e2', icon: 'barbell-outline' },
+  low_carb:     { label: 'Low Carb',       labelKey: 'meals.diet.low_carb',      color: '#d97706', bg: '#fef3c7', icon: 'leaf-outline' },
+  balanced:     { label: 'Balanced',        labelKey: 'meals.diet.balanced',      color: '#2563eb', bg: '#dbeafe', icon: 'nutrition-outline' },
+  plant_based:  { label: 'Plant Based',     labelKey: 'meals.diet.plant_based',   color: '#16a34a', bg: '#dcfce7', icon: 'flower-outline' },
+  flexible:     { label: 'Flexible',        labelKey: 'meals.diet.flexible',      color: '#8b5cf6', bg: '#ede9fe', icon: 'shuffle-outline' },
 };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -566,6 +567,8 @@ function MealCard({
   swapLoading: boolean;
   onSwapPress: (dayIndex: number, mealIndex: number, mealType: string) => void;
 }) {
+  const { colors: themeColors } = useTheme();
+  const mcS = useMemo(() => createMcS(themeColors), [themeColors]);
   const logFoodEntry = useMutation(api.food.logFoodEntry);
   const today = new Date().toISOString().split('T')[0];
   const [logging, setLogging] = useState(false);
@@ -835,7 +838,7 @@ export default function MealHubScreen() {
             <View style={ms.prefHeader}>
               <Text style={ms.prefTitle}>{t('meals.prefsTitle', 'Swap preferences')}</Text>
               <TouchableOpacity onPress={() => setSwapPrefsOpen(false)} style={ms.prefClose} activeOpacity={0.85}>
-                <Ionicons name="close" size={18} color="#64748b" />
+                <Ionicons name="close" size={18} color={themeColors.textMuted} />
               </TouchableOpacity>
             </View>
             <Text style={ms.prefSub}>{t('meals.prefsSub', "Pick a vibe — we'll swap this meal to match.")}</Text>
@@ -900,7 +903,7 @@ export default function MealHubScreen() {
       {/* Header */}
       <View style={ms.header}>
         <TouchableOpacity onPress={() => router.back()} style={ms.backBtn}>
-          <Ionicons name="chevron-back" size={22} color="#0f172a" />
+          <Ionicons name="chevron-back" size={22} color={themeColors.text} />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={ms.headerTitle}>{t('meals.hubTitle', 'Meal Hub')}</Text>

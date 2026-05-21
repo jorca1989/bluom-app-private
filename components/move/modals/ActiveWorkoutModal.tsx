@@ -145,14 +145,14 @@ export default function ActiveWorkoutModal({
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
-      <View style={[styles.container, { backgroundColor: '#ffffff' }]}>
+      <View style={styles.container}>
         {/* Header - Aligned to match Exercise Library (+10 offset) */}
         <View style={[styles.header, { paddingTop: insets.top + 10, paddingBottom: 16 }]}>
           <TouchableOpacity onPress={onClose} style={styles.iconBtn}>
-            <Ionicons name="chevron-down" size={28} color="#0f172a" />
+            <Ionicons name="chevron-down" size={28} color={themeColors.text} />
           </TouchableOpacity>
           <View style={styles.timerCenter}>
-            <Ionicons name="timer-outline" size={20} color="#64748b" />
+            <Ionicons name="timer-outline" size={20} color={themeColors.textMuted} />
           </View>
           <TouchableOpacity 
             style={[styles.finishBtn, !canFinish && styles.finishBtnDisabled]} 

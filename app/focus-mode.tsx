@@ -79,10 +79,10 @@ export default function FocusModeScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F5F4F0]">
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }}>
       <View className="px-6 py-4 flex-row items-center justify-between">
-        <TouchableOpacity onPress={handleBack} className="w-10 h-10 rounded-full bg-white border border-slate-200 items-center justify-center">
-          <Ionicons name="close" size={22} color="#0f172a" />
+        <TouchableOpacity onPress={handleBack} style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: themeColors.surface, borderWidth: 1, borderColor: themeColors.border, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name="close" size={22} color={themeColors.text} />
         </TouchableOpacity>
         <Text className="text-slate-600 font-bold tracking-widest uppercase text-xs">
           {t('focusMode.title', 'Focus Mode')}
@@ -93,13 +93,13 @@ export default function FocusModeScreen() {
       <View className="flex-1 items-center justify-center px-10">
         <Animated.View style={{ opacity: fadeAnim }} className="w-64 h-64 rounded-full border-2 border-blue-400/30 items-center justify-center">
           <View className="w-56 h-56 rounded-full bg-blue-500/10 items-center justify-center">
-            <Text className="text-slate-900 text-6xl font-black font-mono tracking-tighter">
+            <Text style={{ color: themeColors.text, fontSize: 60, fontWeight: '900', fontVariant: ['tabular-nums'] }}>
               {formatTime(seconds)}
             </Text>
           </View>
         </Animated.View>
 
-        <Text className="text-slate-600 font-bold mt-12 text-center text-lg italic">
+        <Text style={{ color: themeColors.textMuted, fontWeight: '700', marginTop: 48, textAlign: 'center', fontSize: 17, fontStyle: 'italic' }}>
           {isActive
             ? t('focusMode.quote', '"Deep work is the superpower of the 21st century."')
             : t('focusMode.readyPrompt', 'Ready to dive in?')}

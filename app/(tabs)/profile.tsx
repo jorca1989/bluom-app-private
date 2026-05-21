@@ -343,11 +343,11 @@ export default function ProfileScreen() {
     <SafeAreaView style={[s.screen, { backgroundColor: themeColors.bg }]} edges={['top']}>
       {/* ── WIDGET CONFIG MODAL ── */}
       <Modal visible={showProfileWidgetConfig} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowProfileWidgetConfig(false)}>
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['top']}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top']}>
           <View style={s.wcHeader}>
             <Text style={s.wcTitle}>{t('profile.widgets.title', 'Widget Config')}</Text>
             <TouchableOpacity onPress={() => setShowProfileWidgetConfig(false)} style={s.wcClose}>
-              <Ionicons name="close" size={20} color="#1e293b" />
+              <Ionicons name="close" size={20} color={themeColors.text} />
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 20, gap: 0, paddingBottom: 40 }}>
@@ -361,7 +361,7 @@ export default function ProfileScreen() {
                 data-testid="profile-darkmode-toggle"
                 value={isDarkMode}
                 onValueChange={(v) => setTheme(v ? 'black' : 'default')}
-                trackColor={{ true: '#6366f1', false: '#e2e8f0' }}
+                trackColor={{ true: '#6366f1', false: themeColors.surfaceMuted }}
                 thumbColor="#fff"
               />
             </View>
@@ -374,7 +374,7 @@ export default function ProfileScreen() {
                   <Switch
                     value={isPW(w.id)}
                     onValueChange={() => toggleProfileWidget(w.id)}
-                    trackColor={{ true: '#2563eb', false: '#e2e8f0' }}
+                    trackColor={{ true: '#2563eb', false: themeColors.surfaceMuted }}
                     thumbColor="#fff"
                   />
                 </View>
@@ -387,11 +387,11 @@ export default function ProfileScreen() {
 
       {/* ── AVATAR PICKER MODAL ── */}
       <Modal visible={showAvatarPick} animationType="slide" presentationStyle="pageSheet">
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['top']}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top']}>
           <View style={s.pickerHeader}>
             <Text style={s.pickerTitle}>{t('profile.chooseAvatar', 'Choose your Avatar')}</Text>
             <TouchableOpacity onPress={() => setShowAvatarPick(false)} style={s.pickerClose}>
-              <Ionicons name="close" size={20} color="#1e293b" />
+              <Ionicons name="close" size={20} color={themeColors.text} />
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 20, gap: 20, paddingBottom: Math.max(insets.bottom, 24) + 16 }}>
@@ -511,7 +511,7 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* ── HERO CARD ── */}
-        {isPW('hero') && <LinearGradient colors={['#0f172a', '#1e293b']} style={s.heroCard}>
+        {isPW('hero') && <LinearGradient colors={[themeColors.primary, themeColors.accent]} style={s.heroCard}>
           {/* Avatar */}
           <TouchableOpacity
             style={s.avatarWrap}

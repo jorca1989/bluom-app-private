@@ -17,6 +17,7 @@ import {
   ALL_ACHIEVEMENTS,
   RARITY_CONFIG,
 } from '@/convex/Achievementsconfig';
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
 
 // ── XP needed for next level ──
 function xpForLevel(level: number): number {
@@ -24,16 +25,16 @@ function xpForLevel(level: number): number {
 }
 
 // ── Badge icon circle ──
-function BadgeIcon({ badgeId, unlocked }: { badgeId: string; unlocked: boolean }) {
+function BadgeIcon({ badgeId, unlocked, themeColors }: { badgeId: string; unlocked: boolean; themeColors: ThemeColors }) {
   const def = ALL_ACHIEVEMENTS.find(a => a.id === badgeId);
   if (!def) return null;
   const rc = RARITY_CONFIG[def.rarity];
   return (
-    <View style={[ac.badgeCircle, { backgroundColor: unlocked ? rc.bg : '#f1f5f9' }]}>
+    <View style={[ac.badgeCircle, { backgroundColor: unlocked ? `${rc.color}28` : themeColors.surfaceMuted }]}>
       <Text style={[ac.badgeEmoji, !unlocked && { opacity: 0.3 }]}>{def.icon}</Text>
       {!unlocked && (
         <View style={ac.lockOverlay}>
-          <Text style={{ fontSize: 8, color: '#94a3b8' }}>🔒</Text>
+          <Text style={{ fontSize: 8, color: themeColors.textMuted }}>🔒</Text>
         </View>
       )}
     </View>
@@ -41,7 +42,7 @@ function BadgeIcon({ badgeId, unlocked }: { badgeId: string; unlocked: boolean }
 }
 
 // ── Badge with label ──
-function BadgeWithLabel({ badgeId, unlocked }: { badgeId: string; unlocked: boolean }) {
+function BadgeWithLabel({ badgeId, unlocked, themeColors }: { badgeId: string; unlocked: boolean; themeColors: ThemeColors }) {
   const def = ALL_ACHIEVEMENTS.find(a => a.id === badgeId);
   if (!def) return null;
   const { t } = useTranslation();
@@ -49,15 +50,15 @@ function BadgeWithLabel({ badgeId, unlocked }: { badgeId: string; unlocked: bool
   const title = t(`achievements.${def.id}.title`, def.title);
   return (
     <View style={ac.badgeItem}>
-      <View style={[ac.badgeCircle, { backgroundColor: unlocked ? rc.bg : '#f1f5f9' }]}>
+      <View style={[ac.badgeCircle, { backgroundColor: unlocked ? `${rc.color}28` : themeColors.surfaceMuted }]}>
         <Text style={[ac.badgeEmoji, !unlocked && { opacity: 0.3 }]}>{def.icon}</Text>
         {!unlocked && (
           <View style={ac.lockOverlay}>
-            <Text style={{ fontSize: 8, color: '#94a3b8' }}>🔒</Text>
+            <Text style={{ fontSize: 8, color: themeColors.textMuted }}>🔒</Text>
           </View>
         )}
       </View>
-      <Text style={[ac.badgeLabel, !unlocked && { color: '#cbd5e1' }]} numberOfLines={1}>
+      <Text style={[ac.badgeLabel, { color: unlocked ? themeColors.textMuted : themeColors.border }]} numberOfLines={1}>
         {title}
       </Text>
     </View>
@@ -71,6 +72,7 @@ interface Props {
 export default function AchievementsCard({ userId }: Props) {
   const router = useRouter();
   const { t } = useTranslation();
+  const { colors: themeColors } = useTheme();
 
   const dbAchievements = useQuery(
     api.achievements.getUserAchievements,
@@ -104,42 +106,42 @@ export default function AchievementsCard({ userId }: Props) {
 
   return (
     <TouchableOpacity
-      style={ac.card}
+      style={[ac.card, { backgroundColor: themeColors.surface }]}
       onPress={() => router.push('/achievements' as any)}
       activeOpacity={0.92}
     >
       {/* Header: count + level | See all */}
       <View style={ac.headerRow}>
-        <Text style={ac.headerText}>
-          <Text style={ac.headerCount}>{unlockedCount} {t('home.achievements.unlocked', 'desbloqueadas')}</Text>
+        <Text style={[ac.headerText, { color: themeColors.textMuted }]}>
+          <Text style={[ac.headerCount, { color: themeColors.text }]}>{unlockedCount} {t('home.achievements.unlocked', 'desbloqueadas')}</Text>
           {'  ·  '}
-          <Text style={ac.headerLevel}>{t('home.achievements.level', 'Nível')} {level}</Text>
+          <Text style={[ac.headerLevel, { color: themeColors.textMuted }]}>{t('home.achievements.level', 'Nível')} {level}</Text>
         </Text>
         <TouchableOpacity
           onPress={() => router.push('/achievements' as any)}
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={ac.seeAll}>{t('home.achievements.seeAll', 'See all')}</Text>
+          <Text style={[ac.seeAll, { color: themeColors.primary }]}>{t('home.achievements.seeAll', 'See all')}</Text>
         </TouchableOpacity>
       </View>
 
       {/* Badge icons row with labels */}
       <View style={ac.badgesRow}>
         {displayBadges.map(b => (
-          <BadgeWithLabel key={b.id} badgeId={b.id} unlocked={b.unlocked} />
+          <BadgeWithLabel key={b.id} badgeId={b.id} unlocked={b.unlocked} themeColors={themeColors} />
         ))}
       </View>
 
       {/* XP progress bar */}
-      <View style={ac.xpSection}>
+      <View style={[ac.xpSection, { borderTopColor: themeColors.border }]}>
         <View style={ac.xpRow}>
-          <Text style={ac.xpText}>
-            <Text style={ac.xpVal}>{xp.toLocaleString()} XP</Text>
+          <Text style={[ac.xpText, { color: themeColors.text }]}>
+            <Text style={[ac.xpVal, { color: themeColors.text }]}>{xp.toLocaleString()} XP</Text>
           </Text>
-          <Text style={ac.xpGoal}>{t('home.achievements.lvl', 'Lvl')} {level + 1} {t('home.achievements.at', 'at')} {xpForNext.toLocaleString()}</Text>
+          <Text style={[ac.xpGoal, { color: themeColors.textMuted }]}>{t('home.achievements.lvl', 'Lvl')} {level + 1} {t('home.achievements.at', 'at')} {xpForNext.toLocaleString()}</Text>
         </View>
-        <View style={ac.xpBar}>
+        <View style={[ac.xpBar, { backgroundColor: themeColors.surfaceMuted }]}>
           <View style={[ac.xpBarFill, { width: `${xpPct}%` as any }]} />
         </View>
       </View>
@@ -152,7 +154,6 @@ export default function AchievementsCard({ userId }: Props) {
 // ─────────────────────────────────────────────────────────────
 const ac = StyleSheet.create({
   card: {
-    backgroundColor: '#ffffff',
     borderRadius: 20,
     padding: 18,
     marginBottom: 12,
@@ -172,23 +173,19 @@ const ac = StyleSheet.create({
   },
   headerText: {
     fontSize: 15,
-    color: '#64748b',
     fontWeight: '600',
   },
   headerCount: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#0f172a',
   },
   headerLevel: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#64748b',
   },
   seeAll: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#2563eb',
   },
 
   // Badge row
@@ -216,7 +213,6 @@ const ac = StyleSheet.create({
   badgeLabel: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#475569',
     textAlign: 'center',
   },
   lockOverlay: {
@@ -228,7 +224,6 @@ const ac = StyleSheet.create({
   // XP bar
   xpSection: {
     borderTopWidth: 1,
-    borderTopColor: '#f1f5f9',
     paddingTop: 14,
   },
   xpRow: {
@@ -239,20 +234,16 @@ const ac = StyleSheet.create({
   },
   xpText: {
     fontSize: 14,
-    color: '#0f172a',
   },
   xpVal: {
     fontWeight: '900',
-    color: '#0f172a',
   },
   xpGoal: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#94a3b8',
   },
   xpBar: {
     height: 8,
-    backgroundColor: '#f1f5f9',
     borderRadius: 4,
     overflow: 'hidden',
   },

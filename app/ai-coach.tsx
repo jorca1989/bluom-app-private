@@ -172,14 +172,14 @@ export default function AiCoachScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#ffffff]" edges={['top', 'bottom']}>
-      <View className="px-4 pb-3 flex-row items-center gap-3 border-b border-slate-100 bg-white" style={{ paddingTop: Math.max(insets.top, 12) + 8 }}>
-        <TouchableOpacity onPress={() => router.back()} className="w-10 h-10 rounded-xl bg-slate-50 items-center justify-center">
-          <Ionicons name="arrow-back" size={20} color="#0f172a" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top', 'bottom']}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingBottom: 12, backgroundColor: themeColors.surface, borderBottomWidth: 1, borderBottomColor: themeColors.border, paddingTop: Math.max(insets.top, 12) + 8 }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: themeColors.surfaceMuted, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name="arrow-back" size={20} color={themeColors.text} />
         </TouchableOpacity>
         <View className="flex-1">
-          <Text className="text-slate-900 font-black text-lg">{t('aiCoach.title', 'AI Coach')}</Text>
-          <Text className="text-slate-500 font-bold text-xs">{t('aiCoach.subtitle', 'Precision Health Expert')}</Text>
+          <Text style={{ color: themeColors.text, fontWeight: '900', fontSize: 17 }}>{t('aiCoach.title', 'AI Coach')}</Text>
+          <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 11 }}>{t('aiCoach.subtitle', 'Precision Health Expert')}</Text>
         </View>
         {!(appUser.isPro || appUser.isAdmin) && (
           <View className="bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
@@ -205,17 +205,24 @@ export default function AiCoachScreen() {
               <TouchableOpacity
                 onPress={() => m.isQuickQuestion && handleSend(m.prompt)}
                 disabled={!m.isQuickQuestion}
-                className={`max-w-[85%] rounded-2xl p-4 ${m.role === 'user' ? 'bg-blue-600 rounded-tr-none' : m.isQuickQuestion ? 'bg-blue-50 border-2 border-blue-200 rounded-tl-none' : 'bg-slate-100 rounded-tl-none'}`}
+                style={[
+                  { maxWidth: '85%', borderRadius: 16, padding: 14 },
+                  m.role === 'user'
+                    ? { backgroundColor: themeColors.primary, borderTopRightRadius: 4 }
+                    : m.isQuickQuestion
+                    ? { backgroundColor: 'rgba(59,130,246,0.08)', borderWidth: 1.5, borderColor: 'rgba(59,130,246,0.2)', borderTopLeftRadius: 4 }
+                    : { backgroundColor: themeColors.surface, borderTopLeftRadius: 4 },
+                ]}
               >
                 {m.role === 'coach' && !m.isQuickQuestion ? (
                   <Markdown
                     style={{
-                      body: { color: '#1f2937', lineHeight: 22, fontSize: 14, fontWeight: '600' },
+                      body: { color: themeColors.text, lineHeight: 22, fontSize: 14, fontWeight: '600' },
                       paragraph: { marginTop: 0, marginBottom: 10 },
                       list_item: { marginBottom: 6 },
-                      heading1: { fontSize: 18, fontWeight: '900', marginBottom: 8, color: '#0f172a' },
-                      heading2: { fontSize: 16, fontWeight: '900', marginBottom: 8, color: '#0f172a' },
-                      heading3: { fontSize: 15, fontWeight: '900', marginBottom: 6, color: '#0f172a' },
+                      heading1: { fontSize: 18, fontWeight: '900', marginBottom: 8, color: themeColors.text },
+                      heading2: { fontSize: 16, fontWeight: '900', marginBottom: 8, color: themeColors.text },
+                      heading3: { fontSize: 15, fontWeight: '900', marginBottom: 6, color: themeColors.text },
                       strong: { fontWeight: '900' },
                       bullet_list: { marginBottom: 8 },
                       ordered_list: { marginBottom: 8 },
@@ -226,7 +233,12 @@ export default function AiCoachScreen() {
                     {m.content}
                   </Markdown>
                 ) : (
-                  <Text className={`font-semibold ${m.role === 'user' ? 'text-white' : m.isQuickQuestion ? 'text-blue-700' : 'text-slate-800'}`}>
+                  <Text style={[
+                    { fontWeight: '600' },
+                    m.role === 'user' ? { color: '#ffffff' }
+                    : m.isQuickQuestion ? { color: themeColors.primary }
+                    : { color: themeColors.text }
+                  ]}>
                     {m.content}
                   </Text>
                 )}
@@ -241,14 +253,14 @@ export default function AiCoachScreen() {
           ))}
           {loading && (
             <View className="mb-4 flex-row justify-start">
-              <View className="bg-slate-100 rounded-2xl rounded-tl-none p-4">
+              <View style={{ backgroundColor: themeColors.surface, borderRadius: 16, borderTopLeftRadius: 4, padding: 14 }}>
                 <ActivityIndicator size="small" color="#2563eb" />
               </View>
             </View>
           )}
         </ScrollView>
 
-        <View className="bg-white border-t border-slate-100" style={{ paddingBottom: Math.max(insets.bottom, 12) }}>
+        <View style={{ backgroundColor: themeColors.surface, borderTopWidth: 1, borderTopColor: themeColors.border, paddingBottom: Math.max(insets.bottom, 12) }}>
           {/* Emoji Ice Breakers */}
           <ScrollView
             horizontal
@@ -272,7 +284,7 @@ export default function AiCoachScreen() {
 
           <View className="px-4 pb-3 flex-row items-center gap-2">
             <TextInput
-              className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-900 font-semibold"
+              style={{ flex: 1, backgroundColor: themeColors.surfaceMuted, borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 12, color: themeColors.text, fontWeight: '600', fontSize: 14 }}
               placeholder={t('aiCoach.placeholder', 'Ask me anything...')}
               placeholderTextColor="#94a3b8"
               value={input}
@@ -283,7 +295,7 @@ export default function AiCoachScreen() {
             <TouchableOpacity
               onPress={() => handleSend()}
               disabled={loading || !input.trim()}
-              className={`w-12 h-12 rounded-2xl items-center justify-center ${loading || !input.trim() ? 'bg-slate-200' : 'bg-blue-600'}`}
+              style={{ width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: loading || !input.trim() ? themeColors.surfaceMuted : themeColors.primary }}
             >
               <Ionicons name="send" size={20} color="#fff" />
             </TouchableOpacity>

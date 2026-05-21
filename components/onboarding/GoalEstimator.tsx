@@ -59,14 +59,14 @@ export default function GoalEstimator({
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.iconCircle}>
-          <Target size={32} color="#2563eb" />
+          <Target size={32} color={themeColors.primary} />
         </View>
         <Text style={styles.title}>{t('onboarding.estimator.title')}</Text>
         <Text style={styles.subtitle}>{t('onboarding.estimator.subtitle')}</Text>
       </View>
 
       <View style={styles.timelineCard}>
-        <Calendar size={40} color="#2563eb" style={{ marginBottom: 12 }} />
+        <Calendar size={40} color={themeColors.primary} style={{ marginBottom: 12 }} />
         <Text style={styles.timelineValue}>{timelineText}</Text>
         <Text style={styles.timelineLabel}>{t('onboarding.estimator.estimatedTime')}</Text>
       </View>
@@ -101,7 +101,7 @@ export default function GoalEstimator({
               const isLast = i === milestones.length - 1;
               return (
                 <View key={i} style={styles.graphBarCol}>
-                  <View style={[styles.graphBar, { height: `${barPercent}%`, backgroundColor: isLast ? '#10b981' : '#2563eb', opacity: isLast ? 1 : 0.3 + (i / milestones.length) * 0.7 }]} />
+                  <View style={[styles.graphBar, { height: `${barPercent}%`, backgroundColor: isLast ? '#10b981' : themeColors.primary, opacity: isLast ? 1 : 0.3 + (i / milestones.length) * 0.7 }]} />
                   <Text style={styles.graphBarLabel}>{m.week === 0 ? t('onboarding.estimator.now') : `${t('onboarding.estimator.wk')} ${m.week}`}</Text>
                 </View>
               );
@@ -122,11 +122,11 @@ export default function GoalEstimator({
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: { backgroundColor: c.surface, borderRadius: 24, padding: 24, borderWidth: 1, borderColor: c.border },
   header: { alignItems: 'center', marginBottom: 28 },
-  iconCircle: { width: 64, height: 64, borderRadius: 32, backgroundColor: '#eff6ff', alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
+  iconCircle: { width: 64, height: 64, borderRadius: 32, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
   title: { fontSize: 24, fontWeight: '800', color: c.text, marginBottom: 8 },
   subtitle: { fontSize: 14, color: c.textMuted },
-  timelineCard: { backgroundColor: '#eff6ff', borderRadius: 20, padding: 28, alignItems: 'center', marginBottom: 20, borderWidth: 2, borderColor: '#2563eb' },
-  timelineValue: { fontSize: 30, fontWeight: '900', color: '#2563eb', marginBottom: 6 },
+  timelineCard: { backgroundColor: c.surfaceMuted, borderRadius: 20, padding: 28, alignItems: 'center', marginBottom: 20, borderWidth: 2, borderColor: c.primary },
+  timelineValue: { fontSize: 30, fontWeight: '900', color: c.primary, marginBottom: 6 },
   timelineLabel: { fontSize: 14, fontWeight: '600', color: c.textMuted },
   statsGrid: { flexDirection: 'row', gap: 12, marginBottom: 20 },
   statCard: { flex: 1, backgroundColor: c.surfaceMuted, borderRadius: 16, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: c.border },
@@ -141,8 +141,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   graphBarCol: { alignItems: 'center', flex: 1, height: '100%', justifyContent: 'flex-end' },
   graphBar: { width: 20, borderRadius: 6, minHeight: 8 },
   graphBarLabel: { fontSize: 9, color: c.textMuted, marginTop: 4, fontWeight: '600' },
-  commitmentBadge: { backgroundColor: '#fef3c7', paddingVertical: 12, paddingHorizontal: 20, borderRadius: 12, alignItems: 'center', marginBottom: 16 },
-  commitmentText: { fontSize: 14, fontWeight: '700', color: '#92400e' },
+  commitmentBadge: { backgroundColor: c.surfaceMuted, paddingVertical: 12, paddingHorizontal: 20, borderRadius: 12, alignItems: 'center', marginBottom: 16 },
+  commitmentText: { fontSize: 14, fontWeight: '700', color: c.primary },
   disclaimer: { fontSize: 12, color: c.textMuted, textAlign: 'center', lineHeight: 18, fontStyle: 'italic' },
 });
 

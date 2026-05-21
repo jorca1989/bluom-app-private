@@ -103,3 +103,7 @@ export function getLocalizedExerciseName(
   const code = lang?.split('-')[0] ?? 'en';
   return name[code] ?? name.en ?? '';
 }
+
+export function getLanguageCode(lang: string | undefined | null): string {
+  return lang?.split('-')[0] ?? 'en';
+}

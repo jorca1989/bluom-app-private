@@ -56,6 +56,21 @@ export default function FourWeekPlanScreen() {
   const [showExerciseDetail, setShowExerciseDetail] = useState(false);
   const [selectedExerciseForDetail, setSelectedExerciseForDetail] = useState<any>(null);
 
+  const translateWorkoutLabel = React.useCallback((value?: string) => {
+    if (!value) return '';
+    return t(`workouts.labels.${value}`, value) as string;
+  }, [t]);
+
+  const translateMuscleList = React.useCallback((value?: string) => {
+    if (!value) return '';
+    return value
+      .split(',')
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .map((part) => t(`workouts.muscles.${part}`, translateWorkoutLabel(part)) as string)
+      .join(', ');
+  }, [t, translateWorkoutLabel]);
+
   // ── Resolve days: AI plan > static plan ─────────────────────────────────────
   // The AI plan's `workouts` represents ONE week's template, repeated for all 4 weeks.
   const aiWorkouts = activePlans?.fitnessPlan?.workouts;
@@ -68,10 +83,10 @@ export default function FourWeekPlanScreen() {
       if (aiWorkouts && aiWorkouts.length > 0) {
         return aiWorkouts.map((w: any, i: number) => ({
           dayNum: i + 1,
-          dayTitle: t(`db.${(w.focus || w.day || `Workout ${i + 1}`).replace(/\s+/g, '')}`, w.focus || w.day || `Workout ${i + 1}`),
+          dayTitle: translateWorkoutLabel(w.focus || w.day || `Workout ${i + 1}`),
           muscleGroups: Array.isArray(w.muscleGroups)
-            ? w.muscleGroups.join(', ')
-            : t(`db.${(w.muscleGroups || w.focus || 'FullBody').replace(/\s+/g, '')}`, w.muscleGroups || w.focus || 'Full Body'),
+            ? translateMuscleList(w.muscleGroups.join(', '))
+            : translateMuscleList(w.muscleGroups || w.focus || 'Full Body'),
           exercises: (w.exercises || []).map((ex: any, j: number) => ({
             id: `ai-w${weekIdx + 1}-d${i + 1}-e${j}`,
             name: ex.name || 'Exercise',
@@ -92,11 +107,11 @@ export default function FourWeekPlanScreen() {
       // 3. Static fallback — use rotated index for Week 5+ cycling
       return getWeekRoutineDays(rotatedIdx).map(day => ({
         ...day,
-        dayTitle: t(`db.${day.dayTitle.replace(/\s+/g, '').toLowerCase()}`, day.dayTitle),
-        muscleGroups: t(`db.${day.muscleGroups.replace(/[\s,\/]+/g, '').toLowerCase()}`, day.muscleGroups),
+        dayTitle: translateWorkoutLabel(day.dayTitle),
+        muscleGroups: translateMuscleList(day.muscleGroups),
       }));
     };
-  }, [aiWorkouts, dbWorkouts, convexUser]);
+  }, [aiWorkouts, dbWorkouts, convexUser, translateMuscleList, translateWorkoutLabel, t]);
 
   // For week card theme — use AI plan split name or static theme
   const getWeekTheme = (weekIdx: number): string => {
@@ -106,7 +121,7 @@ export default function FourWeekPlanScreen() {
     }
     const rotatedIdx = weekIdx % 4;
     const theme = FREE_4_WEEK_PLAN[rotatedIdx]?.theme || 'Phase';
-    return t(`db.${theme.toLowerCase()}`, theme);
+    return translateWorkoutLabel(theme);
   };
 
   const handleViewWeek = (weekIndex: number) => {
@@ -140,7 +155,7 @@ export default function FourWeekPlanScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['bottom']}>
       <View style={[styles.header, { paddingTop: Math.max(insets.top, 44) }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={26} color="#0f172a" />
+          <Ionicons name="chevron-back" size={26} color={themeColors.text} />
         </TouchableOpacity>
         <View>
           <Text style={styles.headerTitle}>{t('move.fourWeekPlan', '4-Week Plan')}</Text>
@@ -317,17 +332,19 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   content: { padding: 16, gap: 16 },
 
   heroCard: {
-    backgroundColor: c.text,
+    backgroundColor: c.surface,
     borderRadius: 20,
     padding: 24,
+    borderWidth: 1,
+    borderColor: c.border,
   },
   heroBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     marginBottom: 12,
   },
-  heroBadgeText: { fontSize: 11, fontWeight: '900', color: '#a5b4fc', letterSpacing: 1 },
-  heroTitle: { fontSize: 26, fontWeight: '900', color: '#ffffff', marginBottom: 10 },
-  heroSub: { fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 20 },
+  heroBadgeText: { fontSize: 11, fontWeight: '900', color: '#6366f1', letterSpacing: 1 },
+  heroTitle: { fontSize: 26, fontWeight: '900', color: c.text, marginBottom: 10 },
+  heroSub: { fontSize: 14, color: c.textMuted, lineHeight: 20 },
 
   weekGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   weekCard: {
@@ -381,5 +398,3 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   proCardBtnText: { fontSize: 14, fontWeight: '700', color: '#2563eb' },
 });
 
-// Static module-scope fallbacks (default theme) for helper components.
-const styles = createStyles(THEMES.default.colors);

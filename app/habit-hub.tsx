@@ -302,7 +302,7 @@ export default function HabitHubScreen() {
         <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color="#1e293b" />
+                    <Ionicons name="arrow-back" size={24} color={themeColors.text} />
                 </TouchableOpacity>
                 <Text style={styles.title}>{t('wellness.habits.title', 'Behavioral Hub')}</Text>
                 <View style={{ width: 40 }} />
@@ -473,7 +473,7 @@ export default function HabitHubScreen() {
                     <View style={styles.modalHeader}>
                         <Text style={styles.modalTitle}>{t('wellness.habits.addNewHabit', 'Add New Habit')}</Text>
                         <TouchableOpacity onPress={() => setShowHabitModal(false)}>
-                            <Ionicons name="close" size={24} color="#1e293b" />
+                            <Ionicons name="close" size={24} color={themeColors.text} />
                         </TouchableOpacity>
                     </View>
                     <View style={styles.modalScroll}>
@@ -528,7 +528,7 @@ export default function HabitHubScreen() {
                     <View style={styles.modalHeader}>
                         <Text style={styles.modalTitle}>{t('wellness.habits.addBreakHabit', 'Add Habit to Break')}</Text>
                         <TouchableOpacity onPress={() => setShowBreakHabitModal(false)}>
-                            <Ionicons name="close" size={24} color="#1e293b" />
+                            <Ionicons name="close" size={24} color={themeColors.text} />
                         </TouchableOpacity>
                     </View>
                     <View style={styles.modalScroll}>
@@ -850,15 +850,15 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
         color: '#ffffff',
     },
     breakCard: {
-        backgroundColor: c.text,
-        borderRadius: 20,
+        backgroundColor: '#1e293b', // Sleek slate-800 card as in Image 1
+        borderRadius: 24,
         padding: 20,
         marginBottom: 16,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 5,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        elevation: 6,
     },
     breakCardHeader: {
         flexDirection: 'row',
@@ -870,7 +870,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 14,
-        backgroundColor: c.text,
+        backgroundColor: '#273549', // Sleek dark overlay
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -882,8 +882,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     statusBadge: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: c.text,
-        paddingHorizontal: 10,
+        backgroundColor: 'rgba(255, 255, 255, 0.08)', // Beautiful translucent pill
+        paddingHorizontal: 12,
         paddingVertical: 6,
         borderRadius: 20,
         gap: 6,
@@ -894,36 +894,38 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
         borderRadius: 3,
     },
     statusText: {
-        color: c.border,
+        color: '#e2e8f0',
         fontSize: 12,
         fontWeight: '600',
     },
     freedomClockContainer: {
-        backgroundColor: c.text,
-        borderRadius: 16,
-        padding: 16,
+        backgroundColor: '#0f172a', // Sleek deep slate-900 clock container
+        borderRadius: 18,
+        padding: 20,
         alignItems: 'center',
         marginBottom: 20,
         borderWidth: 1,
-        borderColor: c.text,
+        borderColor: '#1e293b',
     },
     freedomLabel: {
-        color: c.textMuted,
-        fontSize: 10,
+        color: '#64748b', // Slate-500
+        fontSize: 11,
         fontWeight: '700',
-        letterSpacing: 1,
-        marginBottom: 8,
+        letterSpacing: 1.5,
+        marginBottom: 12,
     },
     clockRow: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
         gap: 12,
     },
     clockItem: {
         alignItems: 'center',
+        minWidth: 50,
     },
     clockValue: {
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: '900',
         color: '#ffffff',
         fontVariant: ['tabular-nums'],
@@ -931,44 +933,45 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     clockUnit: {
         fontSize: 10,
         fontWeight: '700',
-        color: c.textMuted,
-        marginTop: -2,
+        color: '#64748b',
+        marginTop: 2,
     },
     clockSeparator: {
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: '300',
-        color: c.text,
-        marginBottom: 12,
+        color: '#334155', // Slate-700 separator
+        marginTop: -16, // Center align the colon separator with numeric labels
     },
     impactRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 20,
-        backgroundColor: c.text,
-        borderRadius: 12,
-        padding: 12,
+        backgroundColor: '#273549', // Sleek dark slate-700 impact container
+        borderRadius: 16,
+        padding: 16,
     },
     impactItem: {
         flex: 1,
     },
     impactLabel: {
-        color: c.textMuted,
+        color: '#94a3b8', // Slate-400
         fontSize: 12,
         fontWeight: '600',
+        marginBottom: 4,
     },
     impactValue: {
-        color: '#22c55e',
-        fontSize: 18,
+        color: '#22c55e', // Beautiful neon green as in Image 1
+        fontSize: 20,
         fontWeight: '800',
     },
     emergencyButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#ef4444',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 8,
+        backgroundColor: '#ef4444', // Red button
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 10,
         gap: 6,
     },
     emergencyText: {
@@ -980,7 +983,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
         alignSelf: 'center',
     },
     relapseText: {
-        color: c.textMuted,
+        color: '#94a3b8', // Slate-400
         fontSize: 12,
         fontWeight: '600',
         textDecorationLine: 'underline',

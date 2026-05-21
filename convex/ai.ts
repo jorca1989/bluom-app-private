@@ -116,6 +116,7 @@ export const recognizeFoodFromImage = action({
         : process.env.GEMINI_API_KEY_IOS;
     const lang = args.language ?? 'en';
     const LANG_NAMES: Record<string, string> = {
+      'en': 'English',
       'pt': 'European Portuguese',
       'fr': 'French',
       'de': 'German',
@@ -127,10 +128,8 @@ export const recognizeFoodFromImage = action({
       'sv': 'Swedish',
       'no': 'Norwegian',
     };
-    const langName = LANG_NAMES[lang] ?? lang;
-    const langInstruction = lang !== 'en'
-      ? `\n- Return the food "name" in ${langName} language.`
-      : '';
+    const langName = LANG_NAMES[lang] ?? 'English';
+    const langInstruction = `\n- Return the food "name" in ${langName}. IMPORTANT: Respond ONLY in ${langName}. Do not use any other language.`;
     const prompt =
       'Analyze this food image. Provide the Food Name, estimated Calories, Protein, Carbs, and Fats. Return ONLY a JSON object.\n' +
       'Exact shape:\n' +
@@ -251,6 +250,7 @@ export const scanSugarProductFromImage = action({
 
     const lang = args.language ?? 'en';
     const LANG_NAMES: Record<string, string> = {
+      'en': 'English',
       'pt': 'European Portuguese',
       'fr': 'French',
       'de': 'German',
@@ -262,10 +262,8 @@ export const scanSugarProductFromImage = action({
       'sv': 'Swedish',
       'no': 'Norwegian',
     };
-    const langName = LANG_NAMES[lang] ?? lang;
-    const langInstruction = lang !== 'en'
-      ? `\n- Return ALL string values in the JSON (including productName, hiddenSugarsFound, smartAlternative, and notes) in ${langName} language.`
-      : '';
+    const langName = LANG_NAMES[lang] ?? 'English';
+    const langInstruction = `\n- Return ALL string values in the JSON (productName, hiddenSugarsFound, smartAlternative, notes) in ${langName}. IMPORTANT: Respond ONLY in ${langName}. Do not use any other language.`;
 
     const prompt =
       'You are a nutrition expert and sugar-awareness coach.\n' +
@@ -381,8 +379,17 @@ export const generateAiRecipe = action({
     allergies: v.optional(v.array(v.string())),
     dislikes: v.optional(v.array(v.string())),
     requestText: v.optional(v.string()),
+    language: v.optional(v.string()),
   },
   handler: async (_ctx, args) => {
+    const LANG_NAMES: Record<string, string> = {
+      'en': 'English', 'pt': 'European Portuguese', 'fr': 'French',
+      'de': 'German', 'es': 'Spanish', 'it': 'Italian', 'nl': 'Dutch',
+      'pl': 'Polish', 'da': 'Danish', 'sv': 'Swedish', 'no': 'Norwegian',
+    };
+    const lang = args.language ?? 'en';
+    const langName = LANG_NAMES[lang] ?? 'English';
+    const langInstruction = `\nIMPORTANT: Respond ONLY in ${langName}. All text fields (title, description, steps, tags, ingredient names) must be in ${langName}. Do not use any other language.`;
     const prompt = `Create a single recipe that matches these macro targets (within ~5%):
 Calories: ${args.calories}
 Protein: ${args.protein}g
@@ -392,7 +399,7 @@ Meal type: ${args.mealType ?? "lunch"}
 Diet type: ${args.dietType ?? "balanced"}
 Allergies: ${(args.allergies ?? []).join(", ") || "none"}
 Dislikes / avoid: ${(args.dislikes ?? []).join(", ") || "none"}
-${args.requestText ? `Special request: ${args.requestText}` : ""}
+${args.requestText ? `Special request: ${args.requestText}` : ""}${langInstruction}
 
 CRITICAL STRICT CONSTRAINTS:
 1. You MUST generate ONLY valid, machine-readable JSON.

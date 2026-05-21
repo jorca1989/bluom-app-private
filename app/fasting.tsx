@@ -135,14 +135,14 @@ export default function FastingScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F5F4F0]" edges={['top', 'bottom']}>
-      <View className="px-4 pb-3 flex-row items-center gap-3 bg-white border-b border-slate-200" style={{ paddingTop: Math.max(insets.top, 12) + 8 }}>
-        <TouchableOpacity onPress={() => router.back()} className="w-10 h-10 rounded-xl bg-slate-100 items-center justify-center">
-          <Ionicons name="arrow-back" size={20} color="#0f172a" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top', 'bottom']}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingBottom: 12, backgroundColor: themeColors.surface, borderBottomWidth: 1, borderBottomColor: themeColors.border, paddingTop: Math.max(insets.top, 12) + 8 }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: themeColors.surfaceMuted, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name="arrow-back" size={20} color={themeColors.text} />
         </TouchableOpacity>
         <View className="flex-1">
-          <Text className="text-slate-900 font-black text-lg">{t('fasting.title', 'Jejum')}</Text>
-          <Text className="text-slate-500 font-bold text-xs">{t('fasting.subtitle', 'Precision fasting intelligence')}</Text>
+          <Text style={{ color: themeColors.text, fontWeight: '900', fontSize: 17 }}>{t('fasting.title', 'Jejum')}</Text>
+          <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 11 }}>{t('fasting.subtitle', 'Precision fasting intelligence')}</Text>
         </View>
       </View>
 
@@ -150,7 +150,7 @@ export default function FastingScreen() {
         className="flex-1 px-4 pt-6"
         contentContainerStyle={{ paddingBottom: getBottomContentPadding(insets.bottom, 24) }}
       >
-        <View className="bg-white rounded-[40px] p-10 items-center border border-slate-100 shadow-sm overflow-hidden">
+        <View style={{ backgroundColor: themeColors.surface, borderRadius: 40, padding: 40, alignItems: 'center', borderWidth: 1, borderColor: themeColors.border, overflow: 'hidden' }}>
           <View className="relative items-center justify-center">
             <CircularProgress
               progress={activeLog ? progress : 0}
@@ -205,8 +205,8 @@ export default function FastingScreen() {
                 <TouchableOpacity
                   key={protocol.id}
                   onPress={() => handleProtocolSelect(protocol.id)}
-                  className={`p-4 rounded-2xl border flex-row items-center justify-between ${selectedProtocol === protocol.id ? 'bg-blue-50 border-blue-600' : 'bg-white border-slate-200'
-                    }`}
+                  className={`p-4 rounded-2xl border flex-row items-center justify-between ${selectedProtocol === protocol.id ? 'bg-blue-50 border-blue-600' : ''}`}
+                  style={{ backgroundColor: selectedProtocol === protocol.id ? '#eff6ff' : themeColors.surface, borderColor: selectedProtocol === protocol.id ? '#2563eb' : themeColors.border }}
                 >
                   <View className="flex-row items-center gap-3">
                     <Text className={`font-black ${selectedProtocol === protocol.id ? 'text-blue-600' : 'text-slate-500'}`}>
@@ -230,10 +230,10 @@ export default function FastingScreen() {
         )}
 
         {/* Metabolic Phases */}
-        <View className="mt-8 bg-white rounded-3xl overflow-hidden relative border border-slate-200">
-          <View className="p-6 pb-2">
-            <Text className="text-slate-900 font-black text-lg">{t('fasting.metabolicPhases', 'Metabolic Phases')}</Text>
-            <Text className="text-slate-400 font-medium text-xs mb-4">{t('fasting.tapToLearn', 'Tap to learn what happens inside you')}</Text>
+        <View style={{ backgroundColor: themeColors.surface, borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: themeColors.border, marginTop: 32 }}>
+          <View style={{ padding: 24, paddingBottom: 8 }}>
+            <Text style={{ color: themeColors.text, fontWeight: '900', fontSize: 18 }}>{t('fasting.metabolicPhases', 'Metabolic Phases')}</Text>
+            <Text style={{ color: themeColors.textMuted, fontWeight: '500', fontSize: 12, marginBottom: 16, marginTop: 4 }}>{t('fasting.tapToLearn', 'Tap to learn what happens inside you')}</Text>
           </View>
 
           <View className="px-4 pb-6 space-y-3">
@@ -241,23 +241,22 @@ export default function FastingScreen() {
               <TouchableOpacity
                 key={index}
                 onPress={() => router.push(`/library/${phase.slug}`)}
-                className={`flex-row items-center justify-between p-4 rounded-2xl border ${currentPhase?.label === phase.label ? 'bg-blue-50/50 border-blue-100' : 'bg-white border-slate-100'
-                  }`}
+                style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, borderRadius: 16, borderWidth: 1, backgroundColor: currentPhase?.label === phase.label ? 'rgba(59,130,246,0.08)' : themeColors.surfaceMuted, borderColor: currentPhase?.label === phase.label ? '#bfdbfe' : themeColors.border, marginBottom: 10 }}
               >
                 <View className="flex-row items-center gap-4 flex-1">
                   <View style={{ backgroundColor: phase.color }} className="w-3 h-3 rounded-full shadow-sm" />
-                  <View className="flex-1">
-                    <Text className={`font-black text-base ${currentPhase?.label === phase.label ? 'text-slate-900' : 'text-slate-500'}`}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontWeight: '900', fontSize: 15, color: currentPhase?.label === phase.label ? themeColors.text : themeColors.textMuted }}>
                       {phase.label}
                     </Text>
-                    <Text className="text-slate-400 font-medium text-xs">{phase.description}</Text>
+                    <Text style={{ color: themeColors.textMuted, fontWeight: '500', fontSize: 11 }}>{phase.description}</Text>
                   </View>
                 </View>
-                <View className="items-end">
-                  <Text className={`font-bold text-xs ${currentPhase?.label === phase.label ? 'text-blue-600' : 'text-slate-300'}`}>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={{ fontWeight: '700', fontSize: 11, color: currentPhase?.label === phase.label ? themeColors.primary : themeColors.border }}>
                     {phase.time}
                   </Text>
-                  <Ionicons name="chevron-forward" size={16} color={currentPhase?.label === phase.label ? '#3b82f6' : '#cbd5e1'} />
+                  <Ionicons name="chevron-forward" size={16} color={currentPhase?.label === phase.label ? themeColors.primary : themeColors.border} />
                 </View>
               </TouchableOpacity>
             ))}
@@ -265,13 +264,13 @@ export default function FastingScreen() {
 
           {/* Pro Gate for Metabolic Phases */}
           {!isPro && (
-            <View className="absolute inset-0 items-center justify-center z-50" style={{ backgroundColor: '#ffffff' }}>
-              <View className="bg-white p-6 rounded-3xl items-center shadow-lg w-[85%] border border-slate-200">
-                <Ionicons name="lock-closed" size={32} color="#3b82f6" className="mb-4" />
-                <Text className="text-slate-900 font-black text-lg text-center mb-2">{t('fasting.unlockVision', 'Unlock Metabolic View')}</Text>
-                <Text className="text-slate-500 text-center text-sm mb-6">{t('fasting.unlockVisionDesc', 'See which fat-burning phase you are in.')}</Text>
-                <TouchableOpacity onPress={() => promptUpgrade(t('fasting.seeMetabolicState', 'See your metabolic state in real-time.'))} className="bg-blue-600 px-6 py-3 rounded-full shadow-blue-200">
-                  <Text className="font-bold text-white uppercase tracking-wider text-xs">{t('fasting.upgradeUnlock', 'Upgrade to Unlock')}</Text>
+            <View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: themeColors.bg, borderRadius: 24, alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 24 }}>
+              <View style={{ backgroundColor: themeColors.surface, padding: 24, borderRadius: 24, alignItems: 'center', width: '85%', borderWidth: 1, borderColor: themeColors.border }}>
+                <Ionicons name="lock-closed" size={32} color={themeColors.primary} />
+                <Text style={{ color: themeColors.text, fontWeight: '900', fontSize: 17, textAlign: 'center', marginTop: 12, marginBottom: 8 }}>{t('fasting.unlockVision', 'Unlock Metabolic View')}</Text>
+                <Text style={{ color: themeColors.textMuted, textAlign: 'center', fontSize: 13, marginBottom: 24 }}>{t('fasting.unlockVisionDesc', 'See which fat-burning phase you are in.')}</Text>
+                <TouchableOpacity onPress={() => promptUpgrade(t('fasting.seeMetabolicState', 'See your metabolic state in real-time.'))} style={{ backgroundColor: themeColors.primary, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 24 }}>
+                  <Text style={{ fontWeight: '700', color: themeColors.onPrimary, textTransform: 'uppercase', letterSpacing: 1, fontSize: 12 }}>{t('fasting.upgradeUnlock', 'Upgrade to Unlock')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -279,23 +278,22 @@ export default function FastingScreen() {
         </View>
 
         {/* Educational Resources */}
-        <View className="mt-8 mb-4">
-          <Text className="text-slate-900 font-black text-lg mb-4 px-2">{t('fasting.fastingScience', 'Fasting Science')}</Text>
+        <View style={{ marginTop: 32, marginBottom: 16 }}>
+          <Text style={{ color: themeColors.text, fontWeight: '900', fontSize: 18, marginBottom: 16, paddingHorizontal: 8 }}>{t('fasting.fastingScience', 'Fasting Science')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="gap-3" contentContainerStyle={{ paddingHorizontal: 4 }}>
             {educationCards.map((card, index) => (
               <TouchableOpacity
                 key={index}
                 onPress={() => router.push(`/library/${card.slug}`)}
-                className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm"
-                style={{ width: width - 64 }}
+              style={{ width: width - 64, backgroundColor: themeColors.surface, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: themeColors.border, marginRight: 12 }}
                 activeOpacity={0.8}
               >
-                <View className="flex-row items-center gap-3 mb-3">
-                  <Text className="text-2xl">{card.icon}</Text>
-                  <Text className="text-slate-900 font-black text-sm flex-1">{card.title}</Text>
-                  <Ionicons name="arrow-forward" size={16} color="#cbd5e1" />
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                  <Text style={{ fontSize: 24 }}>{card.icon}</Text>
+                  <Text style={{ color: themeColors.text, fontWeight: '900', fontSize: 13, flex: 1 }}>{card.title}</Text>
+                  <Ionicons name="arrow-forward" size={16} color={themeColors.border} />
                 </View>
-                <Text className="text-slate-600 font-bold text-xs leading-5" numberOfLines={3}>{card.content}</Text>
+                <Text style={{ color: themeColors.textMuted, fontWeight: '600', fontSize: 11, lineHeight: 18 }} numberOfLines={3}>{card.content}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>

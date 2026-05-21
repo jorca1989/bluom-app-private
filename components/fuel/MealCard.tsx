@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 
-import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
 
 export interface FoodItem {
   id: string; // Convex _id
@@ -25,6 +25,8 @@ interface MealCardProps {
 
 const MealCard = ({ title, icon, time, foods, onAddPress, onDeletePress }: MealCardProps) => {
   const { t } = useTranslation();
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const totals = foods.reduce(
     (acc, f) => ({
       cal: acc.cal + f.cal,
@@ -206,5 +208,3 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
 });
 
-// Static module-scope fallbacks (default theme) for helper components.
-const styles = createStyles(THEMES.default.colors);

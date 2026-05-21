@@ -33,11 +33,15 @@ export const generateAiMealFromIngredients = action({
     const apiKey = getGeminiKey(args.platform);
 
     const lang = args.language ?? 'en';
-    const langInstruction = lang !== 'en'
-      ? `\n- IMPORTANT: Write ALL text fields (title, description, steps, ingredient names, tags) in ${lang === 'pt' ? 'European Portuguese' : lang} language.`
-      : '';
+    const LANG_NAMES: Record<string, string> = {
+      'en': 'English', 'pt': 'European Portuguese', 'fr': 'French',
+      'de': 'German', 'es': 'Spanish', 'it': 'Italian', 'nl': 'Dutch',
+      'pl': 'Polish', 'da': 'Danish', 'sv': 'Swedish', 'no': 'Norwegian',
+    };
+    const langName = LANG_NAMES[lang] ?? 'English';
+    const langInstruction = `IMPORTANT: You MUST write ALL text fields (title, description, steps, ingredient names, tags, imageSearchQuery) in ${langName}. Do not use any other language.\n\n`;
 
-    const prompt = `You are a professional chef and nutritionist.
+    const prompt = `${langInstruction}You are a professional chef and nutritionist.
 Create ONE recipe using these ingredients (you may add basic pantry staples):
 Ingredients: ${args.ingredients.join(", ")}
 Cuisine: ${args.cuisine !== "Any" ? args.cuisine : "any globally-inspired"}
@@ -65,7 +69,7 @@ Rules:
 - All numbers must be plain numbers (no strings).
 - steps array: 4-8 steps, each a clear single action.
 - tags: 2-4 relevant tags (e.g. "High Protein", "Quick", "Mediterranean").
-- Output MUST be valid JSON only.${langInstruction}`;
+- Output MUST be valid JSON only.`;
 
     let text = "";
     try {

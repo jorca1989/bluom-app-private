@@ -38,10 +38,10 @@ interface ProgramWorkoutWidgetProps {
   onViewWorkout: (index: number) => void;
 }
 
-const CARD_WIDTH = 280;
+const { width: SCREEN_W } = Dimensions.get('window');
+const CARD_WIDTH = Math.min(320, SCREEN_W - 80);
 const CARD_GAP = 12; // marginHorizontal 6 on both sides
 const SNAP_INTERVAL = CARD_WIDTH + CARD_GAP;
-const { width: SCREEN_W } = Dimensions.get('window');
 const WIDGET_WIDTH = SCREEN_W - 48; // widget has marginHorizontal: 24
 const SIDE_PADDING = Math.max(0, (WIDGET_WIDTH - SNAP_INTERVAL) / 2);
 
@@ -98,9 +98,9 @@ export default function ProgramWorkoutWidget({
           horizontal
           showsHorizontalScrollIndicator={false}
           decelerationRate="fast"
-          snapToInterval={280 + 12} // width + gap
+          snapToInterval={SNAP_INTERVAL} // width + gap
           snapToAlignment="center"
-          contentContainerStyle={[styles.scrollContent, { gap: 12, paddingHorizontal: (SCREEN_W - 48 - 280) / 2 }]}
+          contentContainerStyle={[styles.scrollContent, { gap: 12, paddingHorizontal: (SCREEN_W - 48 - CARD_WIDTH) / 2 }]}
         >
           {workouts.map((day, idx) => (
             <WorkoutDayCard
@@ -111,6 +111,7 @@ export default function ProgramWorkoutWidget({
               isUpNext={idx === 0}
               onStartWorkout={() => onStartWorkout(idx)}
               onViewWorkout={() => onViewWorkout(idx)}
+              width={CARD_WIDTH}
             />
           ))}
         </ScrollView>

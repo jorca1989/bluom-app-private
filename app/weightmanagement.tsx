@@ -568,9 +568,9 @@ export default function WeightManagementScreen() {
     <SafeAreaView style={[s.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
 
       {/* ── Header ── */}
-      <LinearGradient colors={['#F5F4F0', '#F5F4F0']} style={s.headerGrad}>
+      <LinearGradient colors={[themeColors.surface, themeColors.bg]} style={s.headerGrad}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
-          <Ionicons name="chevron-back" size={22} color="#0f172a" />
+          <Ionicons name="chevron-back" size={22} color={themeColors.text} />
         </TouchableOpacity>
         <View>
           <Text style={s.headerTitle}>{t('weightMgmt.title', 'Métricas Corporais')}</Text>

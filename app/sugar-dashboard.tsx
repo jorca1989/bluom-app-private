@@ -176,14 +176,14 @@ export default function MetabolicHub() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F5F4F0]" edges={['top', 'bottom']}>
-      <View className="px-4 pb-3 flex-row items-center gap-3 bg-white border-b border-slate-200" style={{ paddingTop: Math.max(insets.top, 12) + 8 }}>
-        <TouchableOpacity onPress={() => router.back()} activeOpacity={0.85} className="w-10 h-10 rounded-full bg-slate-100 items-center justify-center">
-          <Ionicons name="arrow-back" size={20} color="#0f172a" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top', 'bottom']}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingBottom: 12, backgroundColor: themeColors.surface, borderBottomWidth: 1, borderBottomColor: themeColors.border, paddingTop: Math.max(insets.top, 12) + 8 }}>
+        <TouchableOpacity onPress={() => router.back()} activeOpacity={0.85} style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: themeColors.surfaceMuted, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name="arrow-back" size={20} color={themeColors.text} />
         </TouchableOpacity>
-        <View className="flex-1">
-          <Text className="text-slate-900 font-extrabold text-lg">{t('metabolic.title', 'Metabolic Hub')}</Text>
-          <Text className="text-slate-500 font-bold text-xs">{t('metabolic.subtitle', 'Glucose vs Ketones • Command Center')}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={{ color: themeColors.text, fontWeight: '800', fontSize: 17 }}>{t('metabolic.title', 'Metabolic Hub')}</Text>
+          <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 11 }}>{t('metabolic.subtitle', 'Glucose vs Ketones • Command Center')}</Text>
         </View>
         <TouchableOpacity onPress={() => setShowGreenList(true)} activeOpacity={0.8} onLongPress={handleDevLog}>
           <Ionicons name="document-text-outline" size={24} color="#64748b" />
@@ -209,42 +209,42 @@ export default function MetabolicHub() {
         {/* --- New KPI Grid --- */}
         <View className="flex-row gap-3 mb-4">
           {/* Net Carbs */}
-          <View className="flex-1 bg-white border border-slate-200 rounded-2xl p-4">
-            <Text className="text-slate-500 font-bold text-[10px] uppercase tracking-wider mb-1">{t('metabolic.netCarbs', 'Net Carbs')}</Text>
+          <View style={{ flex: 1, backgroundColor: themeColors.surface, borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, padding: 16 }}>
+            <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4 }}>{t('metabolic.netCarbs', 'Net Carbs')}</Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-slate-900 font-black text-2xl">{Math.round(netCarbs)}</Text>
-              <Text className="text-slate-400 font-bold text-xs">g</Text>
+              <Text style={{ color: themeColors.text, fontWeight: '900', fontSize: 24 }}>{Math.round(netCarbs)}</Text>
+              <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 12 }}>g</Text>
             </View>
-            <Text className="text-slate-400 font-semibold text-[10px] mt-1">{Math.round(carbs)}c - {Math.round(fiber)}f</Text>
+            <Text style={{ color: themeColors.textMuted, fontWeight: '600', fontSize: 10, marginTop: 4 }}>{Math.round(carbs)}c - {Math.round(fiber)}f</Text>
           </View>
 
           {/* Fat/Carb Ratio */}
-          <View className="flex-1 bg-white border border-slate-200 rounded-2xl p-4">
-            <Text className="text-slate-500 font-bold text-[10px] uppercase tracking-wider mb-1">{t('metabolic.fatCarbRatio', 'Fat/Carb %')}</Text>
+          <View style={{ flex: 1, backgroundColor: themeColors.surface, borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, padding: 16 }}>
+            <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4 }}>{t('metabolic.fatCarbRatio', 'Fat/Carb %')}</Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-slate-900 font-black text-2xl">{fatPercentage}</Text>
-              <Text className="text-slate-400 font-bold text-xs">%</Text>
+              <Text style={{ color: themeColors.text, fontWeight: '900', fontSize: 24 }}>{fatPercentage}</Text>
+              <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 12 }}>%</Text>
             </View>
-            <Text className="text-slate-400 font-semibold text-[10px] mt-1">{t('metabolic.fatDominance', 'Fat Dominance')}</Text>
+            <Text style={{ color: themeColors.textMuted, fontWeight: '600', fontSize: 10, marginTop: 4 }}>{t('metabolic.fatDominance', 'Fat Dominance')}</Text>
           </View>
 
           {/* Net Carb Budget */}
-          <View className="flex-1 bg-white border border-slate-200 rounded-2xl p-4">
-            <Text className="text-slate-500 font-bold text-[10px] uppercase tracking-wider mb-1">{t('metabolic.netCarbsLeft', 'Net Carbs Left')}</Text>
+          <View style={{ flex: 1, backgroundColor: themeColors.surface, borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, padding: 16 }}>
+            <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4 }}>{t('metabolic.netCarbsLeft', 'Net Carbs Left')}</Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className={`font-black text-2xl ${netCarbsRemaining < 5 ? 'text-rose-600' : 'text-emerald-600'}`}>{Math.round(netCarbsRemaining)}</Text>
-              <Text className="text-slate-400 font-bold text-xs">g</Text>
+              <Text style={{ color: netCarbsRemaining < 5 ? '#e11d48' : '#059669', fontWeight: '900', fontSize: 24 }}>{Math.round(netCarbsRemaining)}</Text>
+              <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 12 }}>g</Text>
             </View>
-            <Text className="text-slate-400 font-semibold text-[10px] mt-1">{t('metabolic.ofBudget', 'of {{budget}}g Budget', { budget: netCarbBudget })}</Text>
+            <Text style={{ color: themeColors.textMuted, fontWeight: '600', fontSize: 10, marginTop: 4 }}>{t('metabolic.ofBudget', 'of {{budget}}g Budget', { budget: netCarbBudget })}</Text>
           </View>
         </View>
 
         {/* --- Brain Rewiring (Preserved) --- */}
-        <View className="bg-white border border-slate-200 rounded-2xl p-4 mb-4">
+        <View style={{ backgroundColor: themeColors.surface, borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, padding: 16, marginBottom: 16 }}>
           <View className="flex-row items-center justify-between">
             <View className="flex-1 mr-2">
-              <Text className="text-slate-900 font-extrabold text-base">{t('sugarControl.meterTitle', 'Brain Rewiring Meter')}</Text>
-              <Text className="text-slate-500 font-bold text-xs mt-1">{t('metabolic.resetStreak', '90‑day reset streak')}</Text>
+              <Text style={{ color: themeColors.text, fontWeight: '800', fontSize: 15 }}>{t('sugarControl.meterTitle', 'Brain Rewiring Meter')}</Text>
+              <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 12, marginTop: 4 }}>{t('metabolic.resetStreak', '90‑day reset streak')}</Text>
             </View>
             <View className="bg-orange-50 border border-orange-200 rounded-full px-3 py-1 flex-row items-center gap-1">
               <Ionicons name="flame" size={14} color="#f97316" />
@@ -254,12 +254,12 @@ export default function MetabolicHub() {
           <View className="flex-row items-center gap-4 mt-4">
             <View className="items-center justify-center">
               <CircularProgress progress={(progress?.progress ?? 0)} size={80} strokeWidth={8} />
-              <View className="absolute items-center justify-center">
-                <Text className="text-slate-900 font-black text-lg">{pct}%</Text>
+              <View style={{ alignItems: 'center', justifyContent: 'center', position: 'absolute' }}>
+          <Text style={{ color: themeColors.text, fontWeight: '900', fontSize: 18 }}>{pct}%</Text>
               </View>
             </View>
             <View className="flex-1">
-              <Text className="text-slate-700 font-semibold leading-5 text-sm">
+              <Text style={{ color: themeColors.text, fontWeight: '600', lineHeight: 20, fontSize: 13 }}>
                 {t('metabolic.consistencyDesc', 'Consistency rewires dopamine pathways. Keep stacking sugar-free days.')}
               </Text>
             </View>
@@ -287,45 +287,45 @@ export default function MetabolicHub() {
         <TouchableOpacity
           onPress={() => setShowCheckIn(true)}
           activeOpacity={0.9}
-          className="bg-white border-2 border-slate-200 rounded-3xl px-5 py-4 flex-row items-center justify-center gap-2"
+          style={{ backgroundColor: themeColors.surface, borderWidth: 2, borderColor: themeColors.border, borderRadius: 24, paddingHorizontal: 20, paddingVertical: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}
         >
-          <Ionicons name="create-outline" size={20} color="#0f172a" />
-          <Text className="text-slate-900 font-extrabold text-base">{t('metabolic.logDailyStatus', 'Log Daily Status')}</Text>
+          <Ionicons name="create-outline" size={20} color={themeColors.text} />
+          <Text style={{ color: themeColors.text, fontWeight: '800', fontSize: 15 }}>{t('metabolic.logDailyStatus', 'Log Daily Status')}</Text>
         </TouchableOpacity>
 
       </ScrollView>
 
       {/* --- Daily Check-in Modal --- */}
       <Modal visible={showCheckIn} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowCheckIn(false)}>
-        <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-          <View className="px-4 py-4 flex-row justify-between items-center border-b border-slate-100">
-            <Text className="text-xl font-black text-slate-900">{t('metabolic.dailyCheckin', 'Daily Check-in')}</Text>
+        <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top']}>
+          <View style={{ paddingHorizontal: 16, paddingVertical: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: themeColors.border }}>
+            <Text style={{ fontSize: 20, fontWeight: '900', color: themeColors.text }}>{t('metabolic.dailyCheckin', 'Daily Check-in')}</Text>
             <TouchableOpacity onPress={() => setShowCheckIn(false)}>
-              <Ionicons name="close-circle" size={28} color="#94a3b8" />
+              <Ionicons name="close-circle" size={28} color={themeColors.textMuted} />
             </TouchableOpacity>
           </View>
-          <ScrollView className="p-5">
-            <Text className="text-slate-500 font-bold mb-4">{t('metabolic.didYouStaySugarFree', 'Did you stay sugar-free today?')}</Text>
-            <View className="flex-row gap-3 mb-6">
+          <ScrollView style={{ padding: 20 }}>
+            <Text style={{ color: themeColors.textMuted, fontWeight: '700', marginBottom: 16 }}>{t('metabolic.didYouStaySugarFree', 'Did you stay sugar-free today?')}</Text>
+            <View style={{ flexDirection: 'row', gap: 12, marginBottom: 24 }}>
               <TouchableOpacity
                 onPress={() => setCheckInSugarFree(true)}
                 activeOpacity={0.85}
-                className={`flex-1 rounded-2xl border-2 px-4 py-6 items-center ${checkInSugarFree === true ? 'bg-emerald-50 border-emerald-500' : 'bg-slate-50 border-transparent'}`}
+                style={{ flex: 1, borderRadius: 16, borderWidth: 2, paddingHorizontal: 16, paddingVertical: 24, alignItems: 'center', backgroundColor: checkInSugarFree === true ? 'rgba(16,185,129,0.12)' : themeColors.surfaceMuted, borderColor: checkInSugarFree === true ? '#10b981' : 'transparent' }}
               >
-                <Ionicons name="shield-checkmark" size={32} color={checkInSugarFree === true ? '#10b981' : '#94a3b8'} className="mb-2" />
-                <Text className={`font-black ${checkInSugarFree === true ? 'text-emerald-700' : 'text-slate-500'}`}>{t('sugarControl.sugarFree', 'Sugar Free')}</Text>
+                <Ionicons name="shield-checkmark" size={32} color={checkInSugarFree === true ? '#10b981' : themeColors.textMuted} style={{ marginBottom: 8 }} />
+                <Text style={{ fontWeight: '900', color: checkInSugarFree === true ? '#10b981' : themeColors.textMuted }}>{t('sugarControl.sugarFree', 'Sugar Free')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setCheckInSugarFree(false)}
                 activeOpacity={0.85}
-                className={`flex-1 rounded-2xl border-2 px-4 py-6 items-center ${checkInSugarFree === false ? 'bg-rose-50 border-rose-500' : 'bg-slate-50 border-transparent'}`}
+                style={{ flex: 1, borderRadius: 16, borderWidth: 2, paddingHorizontal: 16, paddingVertical: 24, alignItems: 'center', backgroundColor: checkInSugarFree === false ? 'rgba(244,63,94,0.12)' : themeColors.surfaceMuted, borderColor: checkInSugarFree === false ? '#f43f5e' : 'transparent' }}
               >
-                <Ionicons name="alert-circle" size={32} color={checkInSugarFree === false ? '#f43f5e' : '#94a3b8'} className="mb-2" />
-                <Text className={`font-black ${checkInSugarFree === false ? 'text-rose-700' : 'text-slate-500'}`}>{t('sugarControl.hadSugar', 'Had Sugar')}</Text>
+                <Ionicons name="alert-circle" size={32} color={checkInSugarFree === false ? '#f43f5e' : themeColors.textMuted} style={{ marginBottom: 8 }} />
+                <Text style={{ fontWeight: '900', color: checkInSugarFree === false ? '#f43f5e' : themeColors.textMuted }}>{t('sugarControl.hadSugar', 'Had Sugar')}</Text>
               </TouchableOpacity>
             </View>
 
-            <Text className="text-slate-900 font-bold mb-2">{t('sugarControl.notes', 'Notes')}</Text>
+            <Text style={{ color: themeColors.text, fontWeight: '700', marginBottom: 8 }}>{t('sugarControl.notes', 'Notes')}</Text>
             <TextInput
               value={checkInNotes}
               onChangeText={setCheckInNotes}
@@ -333,7 +333,8 @@ export default function MetabolicHub() {
               multiline
               numberOfLines={4}
               textAlignVertical="top"
-              className="bg-slate-50 rounded-xl p-4 text-slate-900 border border-slate-200 h-32"
+              placeholderTextColor={themeColors.textMuted}
+              style={{ backgroundColor: themeColors.surfaceMuted, borderRadius: 12, padding: 16, color: themeColors.text, borderWidth: 1, borderColor: themeColors.border, height: 128 }}
             />
 
             <TouchableOpacity
@@ -350,11 +351,11 @@ export default function MetabolicHub() {
       {/* --- Keto Green List Modal --- */}
       <Modal visible={showGreenList} animationType="fade" transparent onRequestClose={() => setShowGreenList(false)}>
         <View className="flex-1 bg-black/50 justify-center p-4">
-          <View className="bg-white rounded-3xl p-6 h-[70%]">
+          <View style={{ backgroundColor: themeColors.surface, borderRadius: 24, padding: 24, height: '70%' as any }}>
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-2xl font-black text-slate-900">{t('metabolic.greenList', 'Keto Green List')}</Text>
+              <Text style={{ fontSize: 22, fontWeight: '900', color: themeColors.text }}>{t('metabolic.greenList', 'Keto Green List')}</Text>
               <TouchableOpacity onPress={() => setShowGreenList(false)}>
-                <Ionicons name="close" size={24} color="#0f172a" />
+                <Ionicons name="close" size={24} color={themeColors.text} />
               </TouchableOpacity>
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>

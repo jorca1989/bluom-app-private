@@ -141,7 +141,7 @@ export default function SingleExerciseLogModal({
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose} style={styles.iconBtn}>
-            <Ionicons name="chevron-down" size={28} color="#0f172a" />
+            <Ionicons name="chevron-down" size={28} color={themeColors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{mode === 'duration' ? t('move.logActivity', 'Log Activity') : t('move.logWorkout', 'Log Workout')}</Text>
           <TouchableOpacity 

@@ -138,7 +138,7 @@ export default function AiMealMakerScreen() {
 
   const handleTakePhoto = async () => {
     if (!isPro) {
-      setUpgradeMessage('AI photo scanning is a Pro feature.');
+      setUpgradeMessage(t('aiChef.photoScanProRequired', 'AI photo scanning is a Pro feature.'));
       setShowUpgrade(true);
       return;
     }
@@ -198,7 +198,7 @@ export default function AiMealMakerScreen() {
 
   const handleGenerate = async () => {
     if (!isPro) {
-      setUpgradeMessage('AI recipe generation is a Pro feature.');
+      setUpgradeMessage(t('aiChef.recipeGenerationProRequired', 'AI recipe generation is a Pro feature.'));
       setShowUpgrade(true);
       return;
     }
@@ -224,7 +224,7 @@ export default function AiMealMakerScreen() {
 
   const handleSaveRecipe = async () => {
     if (!isPro) {
-      setUpgradeMessage('Saving AI recipes is a Pro feature.');
+      setUpgradeMessage(t('aiChef.saveRecipeProRequired', 'Saving AI recipes is a Pro feature.'));
       setShowUpgrade(true);
       return;
     }
@@ -270,7 +270,7 @@ export default function AiMealMakerScreen() {
 
   const handleLogMeal = async () => {
     if (!isPro) {
-      setUpgradeMessage('Logging AI recipes is a Pro feature.');
+      setUpgradeMessage(t('aiChef.logRecipeProRequired', 'Logging AI recipes is a Pro feature.'));
       setShowUpgrade(true);
       return;
     }
@@ -357,7 +357,7 @@ export default function AiMealMakerScreen() {
             style={st.modeCard}
             onPress={async () => {
               if (!isPro) {
-                setUpgradeMessage('AI photo scanning is a Pro feature.');
+                setUpgradeMessage(t('aiChef.photoScanProRequired', 'AI photo scanning is a Pro feature.'));
                 setShowUpgrade(true);
                 return;
               }
@@ -380,7 +380,7 @@ export default function AiMealMakerScreen() {
             style={st.modeCard}
             onPress={() => {
               if (!isPro) {
-                setUpgradeMessage('AI recipe generation is a Pro feature.');
+                setUpgradeMessage(t('aiChef.recipeGenerationProRequired', 'AI recipe generation is a Pro feature.'));
                 setShowUpgrade(true);
                 return;
               }
@@ -493,7 +493,7 @@ export default function AiMealMakerScreen() {
                 >
                   <Text style={st.optionChipIcon}>{c.icon}</Text>
                   <Text style={[st.optionChipText, selectedCuisine === c.label && st.optionChipTextActive]}>
-                    {t(`aiChef.cuisines.${c.label.replace(' ', '')}`, c.label)}
+                    {t(`aiChef.cuisines.${c.label.replace(/\s+/g, '')}`, c.label)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -530,7 +530,7 @@ export default function AiMealMakerScreen() {
             <ActivityIndicator size="large" color="#a78bfa" />
             <Text style={st.generatingTitle}>{t('aiChef.craftingRecipe', 'Crafting your recipe…')}</Text>
             <Text style={st.generatingSub}>
-              {t('aiChef.usingFlavours', 'Using')} {selectedCuisine !== 'Any' ? t(`aiChef.cuisines.${selectedCuisine.replace(' ', '')}`, selectedCuisine) : t('aiChef.global', 'global')} {t('aiChef.flavours', 'flavours')} · {
+              {t('aiChef.usingFlavours', 'Using')} {selectedCuisine !== 'Any' ? t(`aiChef.cuisines.${selectedCuisine.replace(/\s+/g, '')}`, selectedCuisine) : t('aiChef.global', 'global')} {t('aiChef.flavours', 'flavours')} · {
                 t(`aiChef.goals.${selectedGoal}`, GOAL_OPTIONS.find(g => g.value === selectedGoal)?.label ?? 'Balanced')
               }
             </Text>
