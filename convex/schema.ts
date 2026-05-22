@@ -446,14 +446,14 @@ export default defineSchema({
     categories: v.optional(v.array(v.string())), // multi-category tags
     status: v.optional(v.string()), // 'published' | 'draft'
     isPremium: v.optional(v.boolean()),
-    titleLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
-    descriptionLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
+    titleLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()), bg: v.optional(v.string()), da: v.optional(v.string()), el: v.optional(v.string()), lt: v.optional(v.string()), lv: v.optional(v.string()), no: v.optional(v.string()), pl: v.optional(v.string()), ro: v.optional(v.string()), sv: v.optional(v.string()), tr: v.optional(v.string()) })),
+    descriptionLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()), bg: v.optional(v.string()), da: v.optional(v.string()), el: v.optional(v.string()), lt: v.optional(v.string()), lv: v.optional(v.string()), no: v.optional(v.string()), pl: v.optional(v.string()), ro: v.optional(v.string()), sv: v.optional(v.string()), tr: v.optional(v.string()) })),
     ingredients: v.optional(v.array(v.string())),
     instructions: v.optional(v.array(v.string())),
-    ingredientsLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())) })),
-    instructionsLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())) })),
+    ingredientsLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())), bg: v.optional(v.array(v.string())), da: v.optional(v.array(v.string())), el: v.optional(v.array(v.string())), lt: v.optional(v.array(v.string())), lv: v.optional(v.array(v.string())), no: v.optional(v.array(v.string())), pl: v.optional(v.array(v.string())), ro: v.optional(v.array(v.string())), sv: v.optional(v.array(v.string())), tr: v.optional(v.array(v.string())) })),
+    instructionsLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())), bg: v.optional(v.array(v.string())), da: v.optional(v.array(v.string())), el: v.optional(v.array(v.string())), lt: v.optional(v.array(v.string())), lv: v.optional(v.array(v.string())), no: v.optional(v.array(v.string())), pl: v.optional(v.array(v.string())), ro: v.optional(v.array(v.string())), sv: v.optional(v.array(v.string())), tr: v.optional(v.array(v.string())) })),
     shoppingListItems: v.optional(v.array(v.string())),
-    shoppingListLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())) })),
+    shoppingListLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())), bg: v.optional(v.array(v.string())), da: v.optional(v.array(v.string())), el: v.optional(v.array(v.string())), lt: v.optional(v.array(v.string())), lv: v.optional(v.array(v.string())), no: v.optional(v.array(v.string())), pl: v.optional(v.array(v.string())), ro: v.optional(v.array(v.string())), sv: v.optional(v.array(v.string())), tr: v.optional(v.array(v.string())) })),
     createdAt: v.float64(),
     updatedAt: v.float64(),
   })
@@ -615,11 +615,11 @@ export default defineSchema({
     title: v.string(),
     category: v.string(),
     duration: v.float64(), // minutes
-    titleLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
-    descriptionLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
+    titleLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()), bg: v.optional(v.string()), da: v.optional(v.string()), el: v.optional(v.string()), lt: v.optional(v.string()), lv: v.optional(v.string()), no: v.optional(v.string()), pl: v.optional(v.string()), ro: v.optional(v.string()), sv: v.optional(v.string()), tr: v.optional(v.string()) })),
+    descriptionLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()), bg: v.optional(v.string()), da: v.optional(v.string()), el: v.optional(v.string()), lt: v.optional(v.string()), lv: v.optional(v.string()), no: v.optional(v.string()), pl: v.optional(v.string()), ro: v.optional(v.string()), sv: v.optional(v.string()), tr: v.optional(v.string()) })),
     description: v.string(),
     audioUrl: v.optional(v.string()),
-    audioUrls: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
+    audioUrls: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()), bg: v.optional(v.string()), da: v.optional(v.string()), el: v.optional(v.string()), lt: v.optional(v.string()), lv: v.optional(v.string()), no: v.optional(v.string()), pl: v.optional(v.string()), ro: v.optional(v.string()), sv: v.optional(v.string()), tr: v.optional(v.string()) })),
     videoUrl: v.optional(v.string()),
     coverImage: v.optional(v.string()),
     coverImageLandscape: v.optional(v.string()),
@@ -851,8 +851,8 @@ export default defineSchema({
     // Gender-specific thumbnails — shown in browse cards based on user's biologicalSex
     thumbnailMale: v.optional(v.string()),
     thumbnailFemale: v.optional(v.string()),
-    titleLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
-    descriptionLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
+    titleLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()), bg: v.optional(v.string()), da: v.optional(v.string()), el: v.optional(v.string()), lt: v.optional(v.string()), lv: v.optional(v.string()), no: v.optional(v.string()), pl: v.optional(v.string()), ro: v.optional(v.string()), sv: v.optional(v.string()), tr: v.optional(v.string()) })),
+    descriptionLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()), bg: v.optional(v.string()), da: v.optional(v.string()), el: v.optional(v.string()), lt: v.optional(v.string()), lv: v.optional(v.string()), no: v.optional(v.string()), pl: v.optional(v.string()), ro: v.optional(v.string()), sv: v.optional(v.string()), tr: v.optional(v.string()) })),
     videoUrl: v.optional(v.string()),
     // Gender-specific video variants — shown based on user's biologicalSex
     videoUrlMale: v.optional(v.string()),
@@ -878,11 +878,11 @@ export default defineSchema({
         sets: v.optional(v.float64()),
         description: v.string(),
         instructions: v.optional(v.array(v.string())), // Numbered step-by-step instructions
-        instructionsLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())) })),
+        instructionsLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())), bg: v.optional(v.array(v.string())), da: v.optional(v.array(v.string())), el: v.optional(v.array(v.string())), lt: v.optional(v.array(v.string())), lv: v.optional(v.array(v.string())), no: v.optional(v.array(v.string())), pl: v.optional(v.array(v.string())), ro: v.optional(v.array(v.string())), sv: v.optional(v.array(v.string())), tr: v.optional(v.array(v.string())) })),
         primaryMuscles: v.optional(v.array(v.string())), // e.g. ["Chest", "Shoulders"]
-        primaryMusclesLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
+        primaryMusclesLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())), bg: v.optional(v.array(v.string())), da: v.optional(v.array(v.string())), el: v.optional(v.array(v.string())), lt: v.optional(v.array(v.string())), lv: v.optional(v.array(v.string())), no: v.optional(v.array(v.string())), pl: v.optional(v.array(v.string())), ro: v.optional(v.array(v.string())), sv: v.optional(v.array(v.string())), tr: v.optional(v.array(v.string())) })),
         secondaryMuscles: v.optional(v.array(v.string())), // e.g. ["Triceps", "Core"]
-        secondaryMusclesLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
+        secondaryMusclesLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())), bg: v.optional(v.array(v.string())), da: v.optional(v.array(v.string())), el: v.optional(v.array(v.string())), lt: v.optional(v.array(v.string())), lv: v.optional(v.array(v.string())), no: v.optional(v.array(v.string())), pl: v.optional(v.array(v.string())), ro: v.optional(v.array(v.string())), sv: v.optional(v.array(v.string())), tr: v.optional(v.array(v.string())) })),
         exerciseType: v.optional(v.string()), // e.g. "Strength", "Cardio", "HIIT"
         exerciseTypes: v.optional(v.array(v.string())), // multi-type for calorie calc
       })

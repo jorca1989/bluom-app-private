@@ -17,6 +17,7 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Dumbbell, Plus, Search, Trash2, Edit3, X, Image as ImageIcon, Filter } from 'lucide-react-native';
 import { R2_CONFIG } from '@/utils/r2Config';
+import { ADMIN_TRANSLATION_LANGUAGES } from '@/constants/adminLanguages';
 
 // ─── Shared constants (must match ExerciseSearchModal + app/workouts.tsx) ────
 export const EXERCISE_CATEGORIES = [
@@ -38,9 +39,13 @@ export const ALL_MUSCLE_GROUPS = [
 
 const PAGE_SIZE = 50;
 
+const localizedEmptyFields = (prefix: string) => Object.fromEntries(
+    ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`${prefix}_${code}`, ''])
+);
+
 const EMPTY_FORM = {
     name: '',
-    name_pt: '', name_es: '', name_fr: '', name_de: '', name_nl: '',
+    ...localizedEmptyFields('name'),
     categories: ['Strength'] as string[],  // multi-select
     met: '6.0',
     caloriesPerMinute: '0',
@@ -142,7 +147,7 @@ export default function ExerciseLibraryManager() {
     const [page, setPage] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingExercise, setEditingExercise] = useState<any>(null);
-    const [form, setForm] = useState({ ...EMPTY_FORM });
+    const [form, setForm] = useState<any>({ ...EMPTY_FORM });
 
     const allExercises = useQuery(api.exercises.listAll, {
         search: search.trim() || undefined,
@@ -170,11 +175,10 @@ export default function ExerciseLibraryManager() {
         try {
             const cats = form.categories.length ? form.categories : ['Strength'];
             const nameObj: Record<string, string> = { en: form.name.trim() };
-            if (form.name_pt.trim()) nameObj.pt = form.name_pt.trim();
-            if (form.name_es.trim()) nameObj.es = form.name_es.trim();
-            if (form.name_fr.trim()) nameObj.fr = form.name_fr.trim();
-            if (form.name_de.trim()) nameObj.de = form.name_de.trim();
-            if (form.name_nl.trim()) nameObj.nl = form.name_nl.trim();
+            for (const { code } of ADMIN_TRANSLATION_LANGUAGES) {
+                const value = String(form[`name_${code}`] ?? '').trim();
+                if (value) nameObj[code] = value;
+            }
             const payload: any = {
                 name: nameObj,
                 category: cats[0],            // primary category (backward-compat)
@@ -243,7 +247,7 @@ export default function ExerciseLibraryManager() {
         const nameObj = typeof ex.name === 'object' ? ex.name : { en: ex.name ?? '' };
         setForm({
             name: nameObj.en ?? '',
-            name_pt: nameObj.pt ?? '', name_es: nameObj.es ?? '', name_fr: nameObj.fr ?? '', name_de: nameObj.de ?? '', name_nl: nameObj.nl ?? '',
+            ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`name_${code}`, nameObj[code] ?? ''])),
             categories: ex.categories ?? (ex.category ? [ex.category] : ['Strength']),
             met: String(ex.met ?? '6.0'),
             caloriesPerMinute: String(ex.caloriesPerMinute ?? '0'),
@@ -252,6 +256,19 @@ export default function ExerciseLibraryManager() {
         });
         setIsModalOpen(true);
     };
+
+    const extraLanguageInputs = () =>
+        ADMIN_TRANSLATION_LANGUAGES.slice(5).map(({ code, label, name }) => (
+            <React.Fragment key={code}>
+                <Text style={styles.label}>Name ({label})</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder={`${name} exercise name...`}
+                    value={form[`name_${code}`] ?? ''}
+                    onChangeText={v => setForm((f: any) => ({ ...f, [`name_${code}`]: v }))}
+                />
+            </React.Fragment>
+        ));
 
     const openNew = () => {
         setEditingExercise(null);
@@ -391,17 +408,18 @@ export default function ExerciseLibraryManager() {
 
                     <ScrollView style={styles.form} keyboardShouldPersistTaps="handled">
                         <Text style={styles.label}>{t('admin.exerciseName', 'Exercise Name *')} (EN)</Text>
-                        <TextInput style={styles.input} value={form.name} onChangeText={t => setForm(f => ({ ...f, name: t }))} placeholder={t('admin.exerciseNamePlaceholder', 'e.g. Barbell Squat')} />
+                        <TextInput style={styles.input} value={form.name} onChangeText={t => setForm((f: any) => ({ ...f, name: t }))} placeholder={t('admin.exerciseNamePlaceholder', 'e.g. Barbell Squat')} />
                         <Text style={styles.label}>Name (PT)</Text>
-                        <TextInput style={styles.input} placeholder="ex. Agachamento com Barra" value={form.name_pt} onChangeText={v => setForm(f => ({ ...f, name_pt: v }))} />
+                        <TextInput style={styles.input} placeholder="ex. Agachamento com Barra" value={form.name_pt} onChangeText={v => setForm((f: any) => ({ ...f, name_pt: v }))} />
                         <Text style={styles.label}>Name (ES)</Text>
-                        <TextInput style={styles.input} placeholder="ej. Sentadilla con Barra" value={form.name_es} onChangeText={v => setForm(f => ({ ...f, name_es: v }))} />
+                        <TextInput style={styles.input} placeholder="ej. Sentadilla con Barra" value={form.name_es} onChangeText={v => setForm((f: any) => ({ ...f, name_es: v }))} />
                         <Text style={styles.label}>Name (FR)</Text>
-                        <TextInput style={styles.input} placeholder="ex. Squat avec Barre" value={form.name_fr} onChangeText={v => setForm(f => ({ ...f, name_fr: v }))} />
+                        <TextInput style={styles.input} placeholder="ex. Squat avec Barre" value={form.name_fr} onChangeText={v => setForm((f: any) => ({ ...f, name_fr: v }))} />
                         <Text style={styles.label}>Name (DE)</Text>
-                        <TextInput style={styles.input} placeholder="z.B. Kniebeuge mit Stange" value={form.name_de} onChangeText={v => setForm(f => ({ ...f, name_de: v }))} />
+                        <TextInput style={styles.input} placeholder="z.B. Kniebeuge mit Stange" value={form.name_de} onChangeText={v => setForm((f: any) => ({ ...f, name_de: v }))} />
                         <Text style={styles.label}>Name (NL)</Text>
-                        <TextInput style={styles.input} placeholder="bijv. Squat met Stang" value={form.name_nl} onChangeText={v => setForm(f => ({ ...f, name_nl: v }))} />
+                        <TextInput style={styles.input} placeholder="bijv. Squat met Stang" value={form.name_nl} onChangeText={v => setForm((f: any) => ({ ...f, name_nl: v }))} />
+                        {extraLanguageInputs()}
 
                         <Text style={styles.label}>{t('admin.thumbnailUrl', 'Thumbnail URL (R2)')}</Text>
                         {!!form.thumbnailUrl && (
@@ -410,7 +428,7 @@ export default function ExerciseLibraryManager() {
                         <TextInput
                             style={styles.input}
                             value={form.thumbnailUrl}
-                            onChangeText={t => setForm(f => ({ ...f, thumbnailUrl: t }))}
+                            onChangeText={t => setForm((f: any) => ({ ...f, thumbnailUrl: t }))}
                             placeholder={`${R2_CONFIG.exerciseLibraryBaseUrl}/exercises/squat.gif`}
                             autoCapitalize="none"
                             keyboardType="url"
@@ -425,9 +443,9 @@ export default function ExerciseLibraryManager() {
                                         key={c}
                                         onPress={() => {
                                             const next = active
-                                                ? form.categories.filter(x => x !== c)
+                                                ? form.categories.filter((x: any) => x !== c)
                                                 : [...form.categories, c];
-                                            setForm(f => ({ ...f, categories: next }));
+                                            setForm((f: any) => ({ ...f, categories: next }));
                                         }}
                                         style={[styles.pill, active && styles.pillActive]}
                                     >
@@ -445,11 +463,11 @@ export default function ExerciseLibraryManager() {
                         <View style={{ flexDirection: 'row', gap: 14 }}>
                             <View style={{ flex: 1 }}>
                                 <Text style={styles.label}>MET Value *</Text>
-                                <TextInput style={styles.input} keyboardType="decimal-pad" value={form.met} onChangeText={t => setForm(f => ({ ...f, met: t }))} placeholder="6.0" />
+                                <TextInput style={styles.input} keyboardType="decimal-pad" value={form.met} onChangeText={t => setForm((f: any) => ({ ...f, met: t }))} placeholder="6.0" />
                             </View>
                             <View style={{ flex: 1 }}>
                                 <Text style={styles.label}>Cal/Min</Text>
-                                <TextInput style={styles.input} keyboardType="decimal-pad" value={form.caloriesPerMinute} onChangeText={t => setForm(f => ({ ...f, caloriesPerMinute: t }))} placeholder="0" />
+                                <TextInput style={styles.input} keyboardType="decimal-pad" value={form.caloriesPerMinute} onChangeText={t => setForm((f: any) => ({ ...f, caloriesPerMinute: t }))} placeholder="0" />
                             </View>
                         </View>
 
@@ -457,10 +475,10 @@ export default function ExerciseLibraryManager() {
                         <Text style={{ fontSize: 11, color: '#94a3b8', marginBottom: 8 }}>{t('admin.muscleGroupFilterHint', 'Tap to select — avoid typos')}</Text>
                         {form.muscleGroups.length > 0 && (
                             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
-                                {form.muscleGroups.map(m => (
+                                {form.muscleGroups.map((m: any) => (
                                     <View key={m} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#059669', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4, gap: 4 }}>
                                         <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>{m}</Text>
-                                        <TouchableOpacity onPress={() => setForm(f => ({ ...f, muscleGroups: f.muscleGroups.filter(x => x !== m) }))}>
+                                        <TouchableOpacity onPress={() => setForm((f: any) => ({ ...f, muscleGroups: f.muscleGroups.filter((x: any) => x !== m) }))}>
                                             <X size={12} color="#fff" />
                                         </TouchableOpacity>
                                     </View>
@@ -469,7 +487,7 @@ export default function ExerciseLibraryManager() {
                         )}
                         <MuscleGroupPicker
                             selected={form.muscleGroups}
-                            onChange={v => setForm(f => ({ ...f, muscleGroups: v }))}
+                            onChange={v => setForm((f: any) => ({ ...f, muscleGroups: v }))}
                         />
                     </ScrollView>
                 </View>

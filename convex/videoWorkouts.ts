@@ -9,6 +9,34 @@ const listLocalizationsValidator = v.optional(v.object({
     fr: v.optional(v.array(v.string())),
     de: v.optional(v.array(v.string())),
     nl: v.optional(v.array(v.string())),
+    bg: v.optional(v.array(v.string())),
+    da: v.optional(v.array(v.string())),
+    el: v.optional(v.array(v.string())),
+    lt: v.optional(v.array(v.string())),
+    lv: v.optional(v.array(v.string())),
+    no: v.optional(v.array(v.string())),
+    pl: v.optional(v.array(v.string())),
+    ro: v.optional(v.array(v.string())),
+    sv: v.optional(v.array(v.string())),
+    tr: v.optional(v.array(v.string())),
+}));
+
+const stringListLocalizationsValidator = v.optional(v.object({
+    pt: v.optional(v.array(v.string())),
+    es: v.optional(v.array(v.string())),
+    fr: v.optional(v.array(v.string())),
+    de: v.optional(v.array(v.string())),
+    nl: v.optional(v.array(v.string())),
+    bg: v.optional(v.array(v.string())),
+    da: v.optional(v.array(v.string())),
+    el: v.optional(v.array(v.string())),
+    lt: v.optional(v.array(v.string())),
+    lv: v.optional(v.array(v.string())),
+    no: v.optional(v.array(v.string())),
+    pl: v.optional(v.array(v.string())),
+    ro: v.optional(v.array(v.string())),
+    sv: v.optional(v.array(v.string())),
+    tr: v.optional(v.array(v.string())),
 }));
 
 const exerciseValidator = v.object({
@@ -20,7 +48,9 @@ const exerciseValidator = v.object({
     instructions: v.optional(v.array(v.string())),
     instructionsLocalizations: listLocalizationsValidator,
     primaryMuscles: v.optional(v.array(v.string())),
+    primaryMusclesLocalizations: stringListLocalizationsValidator,
     secondaryMuscles: v.optional(v.array(v.string())),
+    secondaryMusclesLocalizations: stringListLocalizationsValidator,
     exerciseType: v.optional(v.string()),
     exerciseTypes: v.optional(v.array(v.string())), // multi-type support
 });
@@ -32,6 +62,16 @@ const localizationsValidator = v.optional(v.object({
     fr: v.optional(v.string()),
     de: v.optional(v.string()),
     nl: v.optional(v.string()),
+    bg: v.optional(v.string()),
+    da: v.optional(v.string()),
+    el: v.optional(v.string()),
+    lt: v.optional(v.string()),
+    lv: v.optional(v.string()),
+    no: v.optional(v.string()),
+    pl: v.optional(v.string()),
+    ro: v.optional(v.string()),
+    sv: v.optional(v.string()),
+    tr: v.optional(v.string()),
 }));
 
 // ─── Admin Mutations ──────────────────────────────────────────────────────────

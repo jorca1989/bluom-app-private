@@ -66,6 +66,7 @@ function FieldAccordion({ title, children }: { title: string; children: React.Re
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { R2_CONFIG } from '@/utils/r2Config';
+import { ADMIN_TRANSLATION_LANGUAGES } from '@/constants/adminLanguages';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const EXERCISE_TYPES = ['Strength', 'Powerlifting', 'Hypertrophy', 'Isolation', 'Compound', 'Unilateral', 'Cardio', 'Conditioning', 'HIIT', 'Yoga', 'Pilates', 'Flexibility', 'Core', 'Women', 'Functional/Mobility', 'Warm-up/Activation', 'Post-workout Stretch', 'Calisthenics/Bodyweight', 'Plyometrics', 'Balance', 'Proprioception', 'Rehab', 'Prehab', 'Posture', 'Stability', 'Anti-Extension', 'Anti-Lateral Flexion', 'Hip Hinge'];
@@ -82,19 +83,23 @@ const ALL_MUSCLE_GROUPS = [
     'Neck', 'Serratus'
 ];
 
+const localizedEmptyFields = (...prefixes: string[]) => Object.fromEntries(
+    prefixes.flatMap(prefix => ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`${prefix}_${code}`, '']))
+);
+
 const EMPTY_FORM = {
     exerciseName: '',
-    title_pt: '', title_es: '', title_fr: '', title_de: '', title_nl: '',
+    ...localizedEmptyFields('title'),
     exerciseDescription: '',
-    desc_pt: '', desc_es: '', desc_fr: '', desc_de: '', desc_nl: '',
+    ...localizedEmptyFields('desc'),
     // Multi-select types — stored as array
     exerciseTypes: ['Strength'] as string[],
     instructions: '',
-    instr_pt: '', instr_es: '', instr_fr: '', instr_de: '', instr_nl: '',
+    ...localizedEmptyFields('instr'),
     primaryMuscles: '',
-    pm_pt: '', pm_es: '', pm_fr: '', pm_de: '', pm_nl: '',
+    ...localizedEmptyFields('pm'),
     secondaryMuscles: '',
-    sm_pt: '', sm_es: '', sm_fr: '', sm_de: '', sm_nl: '',
+    ...localizedEmptyFields('sm'),
     // Muscle group filter tags for workouts.tsx Browse by Muscle Group
     muscleGroupTags: [] as string[],
     equipment: '',
@@ -216,7 +221,7 @@ export default function WorkoutsManager() {
     const [showFilters, setShowFilters] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingWorkout, setEditingWorkout] = useState<any>(null);
-    const [form, setForm] = useState({ ...EMPTY_FORM });
+    const [form, setForm] = useState<any>({ ...EMPTY_FORM });
 
     const allWorkouts = useQuery(api.videoWorkouts.list, { search });
     const workouts = useMemo(() => {
@@ -234,7 +239,19 @@ export default function WorkoutsManager() {
     const updateWorkout = useMutation(api.videoWorkouts.updateWorkout);
     const deleteWorkout = useMutation(api.videoWorkouts.deleteWorkout);
 
-    const setField = (key: string, val: any) => setForm(f => ({ ...f, [key]: val }));
+    const setField = (key: string, val: any) => setForm((f: any) => ({ ...f, [key]: val }));
+    const extraLanguageInputs = (prefix: string, options: { multiline?: boolean; height?: number; placeholder?: string } = {}) =>
+        ADMIN_TRANSLATION_LANGUAGES.slice(5).map(({ code, label, name }) => (
+            <LangAccordion key={`${prefix}_${code}`} title={`${label} ${name}`}>
+                <TextInput
+                    style={[styles.input, options.multiline && { height: options.height ?? 90 }]}
+                    multiline={options.multiline}
+                    value={form[`${prefix}_${code}`] ?? ''}
+                    onChangeText={v => setField(`${prefix}_${code}`, v)}
+                    placeholder={options.placeholder ?? `${name} translation...`}
+                />
+            </LangAccordion>
+        ));
 
     // ── Build payload ────────────────────────────────────────────────────────
     const buildPayload = () => {
@@ -242,39 +259,36 @@ export default function WorkoutsManager() {
         const primaryCategory = types[0]; // backward-compat primary
 
         const equipmentArray = form.equipment
-            .split(',').map(e => e.trim()).filter(e => e.length > 0);
+            .split(',').map((e: string) => e.trim()).filter((e: string) => e.length > 0);
         const optionalEquipmentArray = form.optionalEquipment
-            .split(',').map(e => e.trim()).filter(e => e.length > 0);
+            .split(',').map((e: string) => e.trim()).filter((e: string) => e.length > 0);
 
-        const buildLocalizations = (pt: string, es: string, fr: string, de: string, nl: string) => {
+        const buildLocalizations = (prefix: string) => {
             const obj: Record<string, string> = {};
-            if (pt.trim()) obj.pt = pt.trim();
-            if (es.trim()) obj.es = es.trim();
-            if (fr.trim()) obj.fr = fr.trim();
-            if (de.trim()) obj.de = de.trim();
-            if (nl.trim()) obj.nl = nl.trim();
+            for (const { code } of ADMIN_TRANSLATION_LANGUAGES) {
+                const value = String(form[`${prefix}_${code}`] ?? '').trim();
+                if (value) obj[code] = value;
+            }
             return Object.keys(obj).length > 0 ? obj : undefined;
         };
 
         const parseLines = (s: string) => s.split('\n').map(l => l.trim()).filter(Boolean);
-        const buildListLocalizations = (pt: string, es: string, fr: string, de: string, nl: string) => {
+        const buildListLocalizations = (prefix: string) => {
             const obj: Record<string, string[]> = {};
-            if (pt.trim()) obj.pt = parseLines(pt);
-            if (es.trim()) obj.es = parseLines(es);
-            if (fr.trim()) obj.fr = parseLines(fr);
-            if (de.trim()) obj.de = parseLines(de);
-            if (nl.trim()) obj.nl = parseLines(nl);
+            for (const { code } of ADMIN_TRANSLATION_LANGUAGES) {
+                const value = String(form[`${prefix}_${code}`] ?? '').trim();
+                if (value) obj[code] = parseLines(value);
+            }
             return Object.keys(obj).length > 0 ? obj : undefined;
         };
 
         const parseCommas = (s: string) => s.split(',').map(l => l.trim()).filter(Boolean);
-        const buildCommaListLocalizations = (pt: string, es: string, fr: string, de: string, nl: string) => {
+        const buildCommaListLocalizations = (prefix: string) => {
             const obj: Record<string, string[]> = {};
-            if (pt.trim()) obj.pt = parseCommas(pt);
-            if (es.trim()) obj.es = parseCommas(es);
-            if (fr.trim()) obj.fr = parseCommas(fr);
-            if (de.trim()) obj.de = parseCommas(de);
-            if (nl.trim()) obj.nl = parseCommas(nl);
+            for (const { code } of ADMIN_TRANSLATION_LANGUAGES) {
+                const value = String(form[`${prefix}_${code}`] ?? '').trim();
+                if (value) obj[code] = parseCommas(value);
+            }
             return Object.keys(obj).length > 0 ? obj : undefined;
         };
 
@@ -284,14 +298,14 @@ export default function WorkoutsManager() {
                 description: form.exerciseDescription.trim(),
                 duration: 0,
                 instructions: form.instructions
-                    .split('\n').map(i => i.trim()).filter(i => i.length > 0),
-                instructionsLocalizations: buildListLocalizations(form.instr_pt, form.instr_es, form.instr_fr, form.instr_de, form.instr_nl),
+                    .split('\n').map((i: string) => i.trim()).filter((i: string) => i.length > 0),
+                instructionsLocalizations: buildListLocalizations('instr'),
                 primaryMuscles: form.primaryMuscles
-                    .split(',').map(m => m.trim()).filter(m => m.length > 0),
-                primaryMusclesLocalizations: buildCommaListLocalizations(form.pm_pt, form.pm_es, form.pm_fr, form.pm_de, form.pm_nl),
+                    .split(',').map((m: string) => m.trim()).filter((m: string) => m.length > 0),
+                primaryMusclesLocalizations: buildCommaListLocalizations('pm'),
                 secondaryMuscles: form.secondaryMuscles
-                    .split(',').map(m => m.trim()).filter(m => m.length > 0),
-                secondaryMusclesLocalizations: buildCommaListLocalizations(form.sm_pt, form.sm_es, form.sm_fr, form.sm_de, form.sm_nl),
+                    .split(',').map((m: string) => m.trim()).filter((m: string) => m.length > 0),
+                secondaryMusclesLocalizations: buildCommaListLocalizations('sm'),
                 exerciseType: primaryCategory,
                 exerciseTypes: types,
                 reps: undefined,
@@ -301,9 +315,9 @@ export default function WorkoutsManager() {
 
         return {
             title: form.exerciseName.trim(),
-            titleLocalizations: buildLocalizations(form.title_pt, form.title_es, form.title_fr, form.title_de, form.title_nl),
+            titleLocalizations: buildLocalizations('title'),
             description: form.exerciseDescription.trim(),
-            descriptionLocalizations: buildLocalizations(form.desc_pt, form.desc_es, form.desc_fr, form.desc_de, form.desc_nl),
+            descriptionLocalizations: buildLocalizations('desc'),
             thumbnail: form.thumbnail.trim(),
             thumbnailMale: form.hasGenderVariants ? (form.thumbnailMale.trim() || undefined) : undefined,
             thumbnailFemale: form.hasGenderVariants ? (form.thumbnailFemale.trim() || undefined) : undefined,
@@ -379,28 +393,16 @@ export default function WorkoutsManager() {
         setEditingWorkout(w);
         setForm({
             exerciseName: ex.name ?? w.title ?? '',
-            title_pt: tl.pt || '', title_es: tl.es || '', title_fr: tl.fr || '', title_de: tl.de || '', title_nl: tl.nl || '',
+            ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`title_${code}`, tl[code] || ''])),
             exerciseDescription: ex.description ?? w.description ?? '',
-            desc_pt: dl.pt || '', desc_es: dl.es || '', desc_fr: dl.fr || '', desc_de: dl.de || '', desc_nl: dl.nl || '',
+            ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`desc_${code}`, dl[code] || ''])),
             exerciseTypes: w.categories ?? (ex.exerciseTypes ?? (ex.exerciseType ? [ex.exerciseType] : ['Strength'])),
             instructions: (ex.instructions ?? []).join('\n'),
-            instr_pt: (ex.instructionsLocalizations?.pt ?? []).join('\n'),
-            instr_es: (ex.instructionsLocalizations?.es ?? []).join('\n'),
-            instr_fr: (ex.instructionsLocalizations?.fr ?? []).join('\n'),
-            instr_de: (ex.instructionsLocalizations?.de ?? []).join('\n'),
-            instr_nl: (ex.instructionsLocalizations?.nl ?? []).join('\n'),
+            ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`instr_${code}`, (ex.instructionsLocalizations?.[code] ?? []).join('\n')])),
             primaryMuscles: (ex.primaryMuscles ?? []).join(', '),
-            pm_pt: (ex.primaryMusclesLocalizations?.pt ?? []).join(', '),
-            pm_es: (ex.primaryMusclesLocalizations?.es ?? []).join(', '),
-            pm_fr: (ex.primaryMusclesLocalizations?.fr ?? []).join(', '),
-            pm_de: (ex.primaryMusclesLocalizations?.de ?? []).join(', '),
-            pm_nl: (ex.primaryMusclesLocalizations?.nl ?? []).join(', '),
+            ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`pm_${code}`, (ex.primaryMusclesLocalizations?.[code] ?? []).join(', ')])),
             secondaryMuscles: (ex.secondaryMuscles ?? []).join(', '),
-            sm_pt: (ex.secondaryMusclesLocalizations?.pt ?? []).join(', '),
-            sm_es: (ex.secondaryMusclesLocalizations?.es ?? []).join(', '),
-            sm_fr: (ex.secondaryMusclesLocalizations?.fr ?? []).join(', '),
-            sm_de: (ex.secondaryMusclesLocalizations?.de ?? []).join(', '),
-            sm_nl: (ex.secondaryMusclesLocalizations?.nl ?? []).join(', '),
+            ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`sm_${code}`, (ex.secondaryMusclesLocalizations?.[code] ?? []).join(', ')])),
             muscleGroupTags: w.muscleGroupTags ?? [],
             equipment: (w.equipment ?? []).join(', '),
             optionalEquipment: (w.optionalEquipment ?? []).join(', '),
@@ -615,6 +617,7 @@ export default function WorkoutsManager() {
                             <LangAccordion title="🇳🇱 NL">
                                 <TextInput style={styles.input} placeholder="bijv. Buikrol" value={form.title_nl} onChangeText={v => setField('title_nl', v)} />
                             </LangAccordion>
+                            {extraLanguageInputs('title')}
                         </FieldAccordion>
 
                         {/* Exercise Description — Accordion */}
@@ -637,6 +640,7 @@ export default function WorkoutsManager() {
                             <LangAccordion title="🇳🇱 NL">
                                 <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschrijving in het Nederlands..." value={form.desc_nl} onChangeText={v => setField('desc_nl', v)} />
                             </LangAccordion>
+                            {extraLanguageInputs('desc', { multiline: true, height: 70 })}
                         </FieldAccordion>
 
                         {/* Exercise Type — multi-select */}
@@ -674,6 +678,7 @@ export default function WorkoutsManager() {
                             <LangAccordion title="🇳🇱 NL">
                                 <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_nl} onChangeText={v => setField('instr_nl', v)} placeholder={"Kniel neer en grijp het wiel...\nCore aanspannen...\n..."} />
                             </LangAccordion>
+                            {extraLanguageInputs('instr', { multiline: true, height: 110 })}
                         </FieldAccordion>
 
                         {/* Primary Muscles — Accordion */}
@@ -701,6 +706,7 @@ export default function WorkoutsManager() {
                             <LangAccordion title="🇳🇱 NL">
                                 <TextInput style={styles.input} placeholder="bijv. Buikspieren, Core" value={form.pm_nl} onChangeText={v => setField('pm_nl', v)} />
                             </LangAccordion>
+                            {extraLanguageInputs('pm', { placeholder: 'Comma-separated translated muscle names...' })}
                         </FieldAccordion>
 
                         {/* Secondary Muscles — Accordion */}
@@ -728,6 +734,7 @@ export default function WorkoutsManager() {
                             <LangAccordion title="🇳🇱 NL">
                                 <TextInput style={styles.input} placeholder="bijv. Onderrug" value={form.sm_nl} onChangeText={v => setField('sm_nl', v)} />
                             </LangAccordion>
+                            {extraLanguageInputs('sm', { placeholder: 'Comma-separated translated muscle names...' })}
                         </FieldAccordion>
 
                         {/* Muscle Group Tags — for the Browse by Muscle Group filter cards */}

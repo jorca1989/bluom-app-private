@@ -200,7 +200,7 @@ export default function WorkoutsScreen() {
     const handleToggleSave = async () => {
         if (!convexUser?._id || !mountedWorkout?._id) return;
         try {
-            await toggleSave({ userId: convexUser._id, workoutId: selectedWorkout._id });
+            await toggleSave({ userId: convexUser._id, workoutId: mountedWorkout._id });
         } catch {
             Alert.alert('Error', 'Failed to save workout');
         }

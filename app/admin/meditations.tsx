@@ -33,6 +33,7 @@ import { api } from '@/convex/_generated/api';
 import { useTranslation } from 'react-i18next';
 import { MEDITATION_FILTERS } from '@/constants/meditationFilters';
 import { R2_CONFIG } from '@/utils/r2Config';
+import { ADMIN_TRANSLATION_LANGUAGES } from '@/constants/adminLanguages';
 
 // ── Reusable accordion for multilanguage fields ──────────────
 function LangAccordion({ title, children }: { title: string; children: React.ReactNode }) {
@@ -67,6 +68,11 @@ function FieldAccordion({ title, children }: { title: string; children: React.Re
     );
 }
 
+const EXTRA_MEDITATION_LANGUAGES = ADMIN_TRANSLATION_LANGUAGES.filter(({ code }) => !['pt', 'es', 'de', 'nl'].includes(code));
+const localizedEmptyFields = (...prefixes: string[]) => Object.fromEntries(
+    prefixes.flatMap(prefix => EXTRA_MEDITATION_LANGUAGES.map(({ code }) => [`${prefix}_${code}`, '']))
+);
+
 export default function MeditationsManager() {
     const { t } = useTranslation();
     const { user } = useUser();
@@ -97,7 +103,7 @@ export default function MeditationsManager() {
         type: 'meditation' as 'meditation' | 'soundscape',
     };
 
-    const [form, setForm] = useState(emptyForm);
+    const [form, setForm] = useState<any>(emptyForm);
     const [filterCat, setFilterCat] = useState('All');
     const [filterType, setFilterType] = useState('All'); // meditation | soundscape | All
     const [filterTier, setFilterTier] = useState('All'); // All | Pro | Free
@@ -127,8 +133,10 @@ export default function MeditationsManager() {
         setForm({
             title: session.title,
             titlePt: tl.pt ?? '', titleEs: tl.es ?? '', titleNl: tl.nl ?? '', titleDe: tl.de ?? '',
+            ...Object.fromEntries(EXTRA_MEDITATION_LANGUAGES.map(({ code }) => [`title_${code}`, tl[code] ?? ''])),
             description: session.description || '',
             descPt: dl.pt ?? '', descEs: dl.es ?? '', descNl: dl.nl ?? '', descDe: dl.de ?? '',
+            ...Object.fromEntries(EXTRA_MEDITATION_LANGUAGES.map(({ code }) => [`desc_${code}`, dl[code] ?? ''])),
             filters: [session.category, ...(session.tags || [])].filter(Boolean),
             duration: String(session.duration || 10),
             audioUrl: session.audioUrl || '',
@@ -143,6 +151,19 @@ export default function MeditationsManager() {
         });
         setIsModalOpen(true);
     };
+
+    const extraLanguageInputs = (prefix: 'title' | 'desc', options: { multiline?: boolean; height?: number } = {}) =>
+        EXTRA_MEDITATION_LANGUAGES.map(({ code, label, name }) => (
+            <LangAccordion key={`${prefix}_${code}`} title={`${label} ${name}`}>
+                <TextInput
+                    style={[styles.input, options.multiline && { height: options.height ?? 80, textAlignVertical: 'top' }]}
+                    multiline={options.multiline}
+                    value={form[`${prefix}_${code}`] ?? ''}
+                    onChangeText={v => setForm((p: any) => ({ ...p, [`${prefix}_${code}`]: v }))}
+                    placeholder={`${name} ${prefix}...`}
+                />
+            </LangAccordion>
+        ));
 
     const handleSave = async () => {
         try {
@@ -165,18 +186,22 @@ export default function MeditationsManager() {
                 return;
             }
             
-            const titleLocalizations = {
+            const titleLocalizations: Record<string, string | undefined> = {
                 pt: form.titlePt.trim() || undefined,
                 es: form.titleEs.trim() || undefined,
                 nl: form.titleNl.trim() || undefined,
                 de: form.titleDe.trim() || undefined,
             };
-            const descriptionLocalizations = {
+            const descriptionLocalizations: Record<string, string | undefined> = {
                 pt: form.descPt.trim() || undefined,
                 es: form.descEs.trim() || undefined,
                 nl: form.descNl.trim() || undefined,
                 de: form.descDe.trim() || undefined,
             };
+            for (const { code } of EXTRA_MEDITATION_LANGUAGES) {
+                titleLocalizations[code] = String(form[`title_${code}`] ?? '').trim() || undefined;
+                descriptionLocalizations[code] = String(form[`desc_${code}`] ?? '').trim() || undefined;
+            }
             const commonArgs = {
                 title,
                 category: form.type === 'soundscape' ? 'soundscape' : primaryCategory,
@@ -423,7 +448,7 @@ export default function MeditationsManager() {
                                 <TouchableOpacity
                                     key={ty}
                                     style={[styles.typeOption, form.type === ty && styles.typeOptionActive]}
-                                    onPress={() => setForm(p => ({ ...p, type: ty as any }))}
+                                    onPress={() => setForm((p: any) => ({ ...p, type: ty as any }))}
                                 >
                                     <Text style={[styles.typeText, form.type === ty && styles.typeTextActive]}>
                                         {t(`admin.${ty}`, ty).charAt(0).toUpperCase() + t(`admin.${ty}`, ty).slice(1)}
@@ -434,38 +459,40 @@ export default function MeditationsManager() {
 
                         <FieldAccordion title={`📝 ${t('admin.titleLabel', 'Title')} *`}>
                             <LangAccordion title="🇬🇧 EN (required)">
-                                <TextInput style={styles.input} value={form.title} onChangeText={t => setForm(p => ({ ...p, title: t }))} placeholder={t('admin.titlePlaceholder', 'e.g. Deep Sleep Journey')} />
+                                <TextInput style={styles.input} value={form.title} onChangeText={t => setForm((p: any) => ({ ...p, title: t }))} placeholder={t('admin.titlePlaceholder', 'e.g. Deep Sleep Journey')} />
                             </LangAccordion>
                             <LangAccordion title="🇧🇷 PT">
-                                <TextInput style={styles.input} value={form.titlePt} onChangeText={v => setForm(p => ({ ...p, titlePt: v }))} placeholder="Título em português..." />
+                                <TextInput style={styles.input} value={form.titlePt} onChangeText={v => setForm((p: any) => ({ ...p, titlePt: v }))} placeholder="Título em português..." />
                             </LangAccordion>
                             <LangAccordion title="🇪🇸 ES">
-                                <TextInput style={styles.input} value={form.titleEs} onChangeText={v => setForm(p => ({ ...p, titleEs: v }))} placeholder="Título en español..." />
+                                <TextInput style={styles.input} value={form.titleEs} onChangeText={v => setForm((p: any) => ({ ...p, titleEs: v }))} placeholder="Título en español..." />
                             </LangAccordion>
                             <LangAccordion title="🇩🇪 DE">
-                                <TextInput style={styles.input} value={form.titleDe} onChangeText={v => setForm(p => ({ ...p, titleDe: v }))} placeholder="Titel auf Deutsch..." />
+                                <TextInput style={styles.input} value={form.titleDe} onChangeText={v => setForm((p: any) => ({ ...p, titleDe: v }))} placeholder="Titel auf Deutsch..." />
                             </LangAccordion>
                             <LangAccordion title="🇳🇱 NL">
-                                <TextInput style={styles.input} value={form.titleNl} onChangeText={v => setForm(p => ({ ...p, titleNl: v }))} placeholder="Titel in het Nederlands..." />
+                                <TextInput style={styles.input} value={form.titleNl} onChangeText={v => setForm((p: any) => ({ ...p, titleNl: v }))} placeholder="Titel in het Nederlands..." />
                             </LangAccordion>
+                            {extraLanguageInputs('title')}
                         </FieldAccordion>
 
                         <FieldAccordion title={`📋 ${t('admin.description', 'Description')} ${form.type === 'soundscape' ? t('admin.optional', '(Optional)') : ''}`}>
                             <LangAccordion title="🇬🇧 EN">
-                                <TextInput style={[styles.input, { height: 100, textAlignVertical: 'top' }]} multiline value={form.description} onChangeText={t => setForm(p => ({ ...p, description: t }))} placeholder={t('admin.descriptionPlaceholder', 'What this session helps with...')} />
+                                <TextInput style={[styles.input, { height: 100, textAlignVertical: 'top' }]} multiline value={form.description} onChangeText={t => setForm((p: any) => ({ ...p, description: t }))} placeholder={t('admin.descriptionPlaceholder', 'What this session helps with...')} />
                             </LangAccordion>
                             <LangAccordion title="🇧🇷 PT">
-                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descPt} onChangeText={v => setForm(p => ({ ...p, descPt: v }))} placeholder="Descrição em português..." />
+                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descPt} onChangeText={v => setForm((p: any) => ({ ...p, descPt: v }))} placeholder="Descrição em português..." />
                             </LangAccordion>
                             <LangAccordion title="🇪🇸 ES">
-                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descEs} onChangeText={v => setForm(p => ({ ...p, descEs: v }))} placeholder="Descripción en español..." />
+                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descEs} onChangeText={v => setForm((p: any) => ({ ...p, descEs: v }))} placeholder="Descripción en español..." />
                             </LangAccordion>
                             <LangAccordion title="🇩🇪 DE">
-                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descDe} onChangeText={v => setForm(p => ({ ...p, descDe: v }))} placeholder="Beschreibung auf Deutsch..." />
+                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descDe} onChangeText={v => setForm((p: any) => ({ ...p, descDe: v }))} placeholder="Beschreibung auf Deutsch..." />
                             </LangAccordion>
                             <LangAccordion title="🇳🇱 NL">
-                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descNl} onChangeText={v => setForm(p => ({ ...p, descNl: v }))} placeholder="Beschrijving in het Nederlands..." />
+                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descNl} onChangeText={v => setForm((p: any) => ({ ...p, descNl: v }))} placeholder="Beschrijving in het Nederlands..." />
                             </LangAccordion>
+                            {extraLanguageInputs('desc', { multiline: true, height: 80 })}
                         </FieldAccordion>
 
                         {form.type === 'meditation' && (
@@ -477,7 +504,7 @@ export default function MeditationsManager() {
                                         return (
                                             <TouchableOpacity
                                                 key={filter.id}
-                                                onPress={() => setForm(p => ({ ...p, filters: sel ? p.filters.filter(t => t !== filter.id) : [...p.filters, filter.id] }))}
+                                                onPress={() => setForm((p: any) => ({ ...p, filters: sel ? p.filters.filter((t: any) => t !== filter.id) : [...p.filters, filter.id] }))}
                                                 style={{ borderWidth: 1, borderColor: sel ? filter.color : '#e2e8f0', backgroundColor: sel ? `${filter.color}15` : '#fff', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 6 }}
                                             >
                                                 <Text>{filter.emoji}</Text>
@@ -492,7 +519,7 @@ export default function MeditationsManager() {
                         {form.type === 'meditation' && (
                             <>
                                 <Text style={styles.label}>{t('admin.durationMinutes', 'Duration (minutes)')}</Text>
-                                <TextInput style={styles.input} value={form.duration} onChangeText={t => setForm(p => ({ ...p, duration: t }))} keyboardType="numeric" placeholder="10" />
+                                <TextInput style={styles.input} value={form.duration} onChangeText={t => setForm((p: any) => ({ ...p, duration: t }))} keyboardType="numeric" placeholder="10" />
                             </>
                         )}
 
@@ -502,7 +529,7 @@ export default function MeditationsManager() {
                                 <Music size={16} color="#3b82f6" />
                                 <Text style={[styles.label, { margin: 0, color: '#3b82f6' }]}>{t('admin.audioUrlLabel', 'Audio URL (MP3 / AAC)')}</Text>
                             </View>
-                            <TextInput style={styles.input} value={form.audioUrl} onChangeText={t => setForm(p => ({ ...p, audioUrl: t }))} placeholder={`${R2_CONFIG.generalBaseUrl}/meditations/track.mp3`} autoCapitalize="none" keyboardType="url" />
+                            <TextInput style={styles.input} value={form.audioUrl} onChangeText={t => setForm((p: any) => ({ ...p, audioUrl: t }))} placeholder={`${R2_CONFIG.generalBaseUrl}/meditations/track.mp3`} autoCapitalize="none" keyboardType="url" />
                         </View>
 
                         {/* Video URL — NEW */}
@@ -517,7 +544,7 @@ export default function MeditationsManager() {
                             <TextInput
                                 style={styles.input}
                                 value={form.videoUrl}
-                                onChangeText={t => setForm(p => ({ ...p, videoUrl: t }))}
+                                onChangeText={t => setForm((p: any) => ({ ...p, videoUrl: t }))}
                                 placeholder={`${R2_CONFIG.workoutBaseUrl}/meditations/video.mp4`}
                                 autoCapitalize="none"
                                 keyboardType="url"
@@ -528,11 +555,11 @@ export default function MeditationsManager() {
                         </View>
 
                         <Text style={styles.label}>{t('admin.coverImageSquare', 'Cover Image Square URL')}</Text>
-                        <TextInput style={styles.input} value={form.coverImage} onChangeText={t => setForm(p => ({ ...p, coverImage: t }))} placeholder={`${R2_CONFIG.generalBaseUrl}/meditations/square.png`} autoCapitalize="none" keyboardType="url" />
+                        <TextInput style={styles.input} value={form.coverImage} onChangeText={t => setForm((p: any) => ({ ...p, coverImage: t }))} placeholder={`${R2_CONFIG.generalBaseUrl}/meditations/square.png`} autoCapitalize="none" keyboardType="url" />
 
                         <View style={{ marginTop: 16 }}>
                             <Text style={[styles.label, { marginTop: 0 }]}>{t('admin.coverImageLandscape', 'Cover Image Landscape URL')}</Text>
-                            <TextInput style={styles.input} value={form.coverImageLandscape} onChangeText={t => setForm(p => ({ ...p, coverImageLandscape: t }))} placeholder={`${R2_CONFIG.generalBaseUrl}/meditations/landscape.png`} autoCapitalize="none" keyboardType="url" />
+                            <TextInput style={styles.input} value={form.coverImageLandscape} onChangeText={t => setForm((p: any) => ({ ...p, coverImageLandscape: t }))} placeholder={`${R2_CONFIG.generalBaseUrl}/meditations/landscape.png`} autoCapitalize="none" keyboardType="url" />
                             <Text style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>{t('admin.landscapeHint', 'Used exclusively for the massive Recommended/Featured hero card in the Hub.')}</Text>
                         </View>
 
@@ -543,7 +570,7 @@ export default function MeditationsManager() {
                                 <TouchableOpacity
                                     key={vt}
                                     style={[styles.typeOption, form.visualType === vt && styles.typeOptionActive]}
-                                    onPress={() => setForm(p => ({ ...p, visualType: vt as any }))}
+                                    onPress={() => setForm((p: any) => ({ ...p, visualType: vt as any }))}
                                 >
                                     <Text style={[styles.typeText, form.visualType === vt && styles.typeTextActive]}>
                                         {vt === 'animation' ? t('admin.vtAnimation', 'Animation') : t('admin.vtThumbnail', 'Thumbnail')}
@@ -558,7 +585,7 @@ export default function MeditationsManager() {
                                 <TouchableOpacity
                                     key={st}
                                     style={[styles.typeOption, form.status === st && styles.typeOptionActive]}
-                                    onPress={() => setForm(p => ({ ...p, status: st }))}
+                                    onPress={() => setForm((p: any) => ({ ...p, status: st }))}
                                 >
                                     <Text style={[styles.typeText, form.status === st && styles.typeTextActive]}>
                                         {t(`admin.${st}`, st).charAt(0).toUpperCase() + t(`admin.${st}`, st).slice(1)}
@@ -569,7 +596,7 @@ export default function MeditationsManager() {
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20 }}>
                             <Text style={{ fontWeight: '800', color: '#64748b', textTransform: 'uppercase', fontSize: 13 }}>{t('admin.proOnly', 'Pro only')}</Text>
-                            <Switch value={form.isPremium} onValueChange={v => setForm(p => ({ ...p, isPremium: v }))} trackColor={{ true: '#2563eb' }} />
+                            <Switch value={form.isPremium} onValueChange={v => setForm((p: any) => ({ ...p, isPremium: v }))} trackColor={{ true: '#2563eb' }} />
                         </View>
                         
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20, marginBottom: 40 }}>
@@ -577,7 +604,7 @@ export default function MeditationsManager() {
                                 <Text style={{ fontWeight: '800', color: '#64748b', textTransform: 'uppercase', fontSize: 13 }}>{t('admin.featuredLabel', 'Featured ✨')}</Text>
                                 <Text style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>{t('admin.featuredHint', 'Pin to the swipable Featured carousel at top of Hub')}</Text>
                             </View>
-                            <Switch value={form.isFeatured} onValueChange={v => setForm(p => ({ ...p, isFeatured: v }))} trackColor={{ true: '#f59e0b' }} />
+                            <Switch value={form.isFeatured} onValueChange={v => setForm((p: any) => ({ ...p, isFeatured: v }))} trackColor={{ true: '#f59e0b' }} />
                         </View>
 
                     </ScrollView>
