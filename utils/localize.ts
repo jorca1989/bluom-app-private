@@ -78,7 +78,10 @@ export function getLocalizedListField(
 ): string[] {
   if (!doc) return [];
   const code = lang?.split('-')[0] ?? 'en';
-  const localizations = doc[`${field}Localizations`];
+  const primaryLocalizations = doc[`${field}Localizations`];
+  const aliasLocalizations = field === 'shoppingListItems' ? doc.shoppingListLocalizations : undefined;
+  const localizations =
+    primaryLocalizations?.[code]?.length ? primaryLocalizations : aliasLocalizations ?? primaryLocalizations;
   if (code !== 'en' && localizations && localizations[code] && Array.isArray(localizations[code]) && localizations[code].length > 0) {
     return localizations[code];
   }

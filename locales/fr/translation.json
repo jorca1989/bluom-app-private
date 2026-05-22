@@ -867,41 +867,41 @@
         "sport": "Team / Combat Sport"
       },
       "q": {
-        "trainingMode": "How would you describe your approach?",
-        "primaryGoal": "What is your primary goal right now?",
-        "yearsTraining": "How long have you been training seriously?",
-        "competitionFocus": "Do you compete or plan to?"
+        "trainingMode": "Comment décrirais-tu ton approche ?",
+        "primaryGoal": "Quel est ton objectif principal maintenant ?",
+        "yearsTraining": "Depuis combien de temps t'entraînes-tu sérieusement ?",
+        "competitionFocus": "Es-tu en compétition ou prévois-tu de l’être ?"
       },
       "hint": {
-        "trainingMode": "Be honest — your guidance is personalised and private."
+        "trainingMode": "Sois honnête : tes conseils restent personnalisés et privés."
       },
-      "natural": "Natural Athlete",
-      "naturalDesc": "No performance-enhancing drugs",
-      "enhanced": "Enhanced / PED User",
-      "enhancedDesc": "Using or considering anabolic compounds",
-      "athlete": "Competitive Athlete",
-      "athleteDesc": "Competing or prepping to compete",
-      "muscle": "Build Muscle",
-      "muscleDesc": "Hypertrophy & size",
-      "strength": "Increase Strength",
-      "strengthDesc": "Raw power & 1RM",
-      "fat_loss": "Shred & Cut",
-      "fat_lossDesc": "Fat loss, preserve muscle",
-      "performance": "Athletic Performance",
-      "performanceDesc": "Speed, power, conditioning",
-      "longevity": "Longevity & Health",
-      "longevityDesc": "Long-term optimisation",
-      "recomp": "Body Recomposition",
-      "recompDesc": "Build muscle, lose fat simultaneously",
-      "beginner": "Under 1 year",
-      "intermediate": "1–3 years",
-      "advanced": "3–7 years",
-      "veteran": "7+ years",
-      "none": "No — training for myself",
-      "bodybuilding": "Bodybuilding / Physique",
-      "powerlifting": "Powerlifting / Strongman",
-      "crossfit": "CrossFit / Functional",
-      "sport": "Team / Combat Sport"
+      "natural": "Athlète naturel",
+      "naturalDesc": "Aucun produit améliorant la performance",
+      "enhanced": "Enhanced / utilisateur de PED",
+      "enhancedDesc": "Utilise ou envisage des composés anabolisants",
+      "athlete": "Athlète compétitif",
+      "athleteDesc": "En compétition ou en préparation",
+      "muscle": "Développer du muscle",
+      "muscleDesc": "Hypertrophie et volume",
+      "strength": "Gagner en force",
+      "strengthDesc": "Puissance brute et 1RM",
+      "fat_loss": "Sécher",
+      "fat_lossDesc": "Perte de graisse, maintien du muscle",
+      "performance": "Performance sportive",
+      "performanceDesc": "Vitesse, puissance, conditionnement",
+      "longevity": "Longévité et santé",
+      "longevityDesc": "Optimisation long terme",
+      "recomp": "Recomposition corporelle",
+      "recompDesc": "Construire du muscle et perdre du gras",
+      "beginner": "Moins d'un an",
+      "intermediate": "1-3 ans",
+      "advanced": "3-7 ans",
+      "veteran": "7 ans et plus",
+      "none": "Non, je m'entraîne pour moi",
+      "bodybuilding": "Bodybuilding / physique",
+      "powerlifting": "Powerlifting / strongman",
+      "crossfit": "CrossFit / fonctionnel",
+      "sport": "Sport collectif / combat"
     },
     "restartTitle": "Relancer",
     "restartMsg": "Refaire ?",
@@ -1174,12 +1174,12 @@
     },
     "habits": {
       "title": "Habitudes",
-      "buildHabits": "Créer",
+      "buildHabits": "Créer des habitudes",
       "breakHabits": "Arrêter",
       "dailyHabits": "Quotidien",
       "completedCount": "{{completed}}/{{total}}",
       "todaysProgress": "Aujourd'hui",
-      "dayStreak": "{{streak}}j",
+      "dayStreak": "{{count}} jour",
       "statusFree": "Libre",
       "statusRelapsed": "Rechute",
       "freedomClock": "TEMPS LIBRE",
@@ -1207,7 +1207,7 @@
       "catMindfulness": "Zen",
       "catSocial": "Social",
       "catLearning": "Savoir",
-      "defWater": "Boire 2 litres d'eau",
+      "defWater": "Boire 1.5 litres d'eau",
       "defVitamins": "Prendre mes vitamines quotidiennes",
       "defNature": "Passer du temps dehors dans la nature",
       "defSleep": "Dormir au moins 8 heures",
@@ -1227,7 +1227,9 @@
       "deletePrompt": "Sûr ?",
       "resetTimerTitle": "Reset ?",
       "resetTimerPrompt": "Are you sure you want to reset your progress for {{name}}?",
-      "relapseAction": "Craquage"
+      "relapseAction": "Craquage",
+      "dayStreak_one": "{{count}} jour",
+      "dayStreak_other": "{{count}} jours"
     },
     "reflections": {
       "gratitudeTab": "Reconnaissance",
@@ -1826,39 +1828,39 @@
       "lutealLate": "Lutéale (Fin)"
     },
     "phaseDesc": {
-      "menstrual": "Le corps élimine la paroi utérine. Estrogènes bas.",
-      "follicular": "Montée d'énergie et de clarté.",
-      "ovulation": "Pic d'estrogène. Libido au top.",
-      "lutealEarly": "Hausse progestérone.",
-      "lutealLate": "Fenêtre SPM."
+      "menstrual": "La muqueuse utérine se détache. Les taux d'œstrogènes et de progestérone sont à leur niveau le plus bas.",
+      "follicular": "Le taux de FSH augmente, les follicules se développent, le taux d'œstrogènes grimpe. L'énergie et la clarté d'esprit s'améliorent.",
+      "ovulation": "La poussée de LH déclenche la libération de l'ovule. Les taux d'œstrogènes atteignent leur pic. Vous vous sentez au mieux de votre forme.",
+      "lutealEarly": "Le taux de progestérone augmente avec la formation du corps jaune. La température corporelle augmente.",
+      "lutealLate": "Période de progestation. La progestérone diminue en l'absence de fécondation. La sensibilité au cortisol augmente."
     },
     "phaseEnergy": {
-      "menstrual": "Basse",
-      "follicular": "En hausse",
-      "ovulation": "Maximum",
-      "lutealEarly": "Stable",
-      "lutealLate": "En baisse"
+      "menstrual": "Faible — honneur et repose",
+      "follicular": "Le lever du soleil — idéal pour un nouveau départ",
+      "ovulation": "Niveau maximal — capacité physique maximale",
+      "lutealEarly": "Stable — effort soutenu",
+      "lutealLate": "Faible à modéré — ralentir"
     },
     "phaseWorkout": {
-      "menstrual": "Yoga, marche",
-      "follicular": "Force, HIIT",
-      "ovulation": "Records, intensité",
-      "lutealEarly": "Pilates, vélo",
-      "lutealLate": "Marche, doux"
+      "menstrual": "Yoga doux, promenades, étirements",
+      "follicular": "Musculation, HIIT, cardio",
+      "ovulation": "Records personnels, cardio intense",
+      "lutealEarly": "Musculation modérée, Pilates, vélo",
+      "lutealLate": "Cardio léger, yoga, marche"
     },
     "phaseNutrition": {
-      "menstrual": "Fer, lentilles, viande rouge",
-      "follicular": "Glucides complexes",
-      "ovulation": "Antioxydants, Zinc",
-      "lutealEarly": "Magnésium, noix",
-      "lutealLate": "Moins de sel & sucre."
+      "menstrual": "Aliments riches en fer : lentilles, légumes verts à feuilles, viande rouge",
+      "follicular": "« Glucides complexes, aliments fermentés, protéines maigres »",
+      "ovulation": "Antioxydants, aliments riches en zinc (graines de courge, huîtres)",
+      "lutealEarly": "Magnésium (chocolat noir, fruits à coque), vitamine B6 pour le moral",
+      "lutealLate": "Réduisez votre consommation de sel et de sucre. Privilégiez les aliments riches en tryptophane (dinde, œufs) pour stimuler la sérotonine."
     },
     "phaseMood": {
-      "menstrual": "Introspective",
-      "follicular": "Optimiste",
-      "ovulation": "Confiante",
-      "lutealEarly": "Focus",
-      "lutealLate": "Sensible"
+      "menstrual": "Introspectif, émotionnel",
+      "follicular": "Optimiste, motivé, sociable",
+      "ovulation": "Sûr de soi, charismatique, communicatif",
+      "lutealEarly": "Concentré, soucieux du détail, souffre parfois de ballonnements",
+      "lutealLate": "Sensible, irritable, en quête de réconfort"
     },
     "phaseHormone": {
       "menstrual": "Bas",
@@ -2143,35 +2145,63 @@
         "menopauseDesc": "12+ months without a period"
       },
       "birthControl": {
-        "question": "Are you using hormonal birth control?",
-        "none": "No — Natural Cycle",
+        "question": "Utilises-tu une contraception hormonale ?",
+        "none": "Non",
         "noneDesc": "No hormones or copper IUD",
-        "pill": "Combination Pill / Ring",
+        "pill": "Pilule combinée ou microprogestative",
         "pillDesc": "Suppresses ovulation",
-        "iud": "Hormonal IUD / Implant",
+        "iud": "DIU hormonal",
         "iudDesc": "Progestin only (Mirena, Nexplanon)",
         "mini_pill": "Mini-Pill",
-        "mini_pillDesc": "Progestin only pill"
+        "mini_pillDesc": "Progestin only pill",
+        "implant": "Implant ou injection",
+        "other": "Autre méthode"
       },
       "periodPain": {
-        "question": "How severe is your period pain?",
-        "none": "Mild / None",
-        "moderate": "Moderate",
+        "question": "Comment sont tes douleurs menstruelles ?",
+        "none": "Aucune douleur",
+        "moderate": "Modérées, elles me gênent",
         "moderateDesc": "Needs occasional painkillers",
-        "severe": "Severe",
-        "severeDesc": "Impacts daily life/work"
+        "severe": "Sévères ou invalidantes",
+        "severeDesc": "Impacts daily life/work",
+        "mild": "Légères et gérables"
       },
       "mainFocus": {
-        "question": "What is your main hormonal focus?",
+        "question": "Quel est ton objectif principal en ce moment ?",
         "cycle_syncing": "Cycle Syncing",
         "cycle_syncingDesc": "Optimise training/diet to phases",
-        "fertility": "Fertility Support",
+        "fertility": "Fertilité et conception",
         "fertilityDesc": "Preparing for pregnancy",
         "pms": "PMS / PMDD Relief",
         "pmsDesc": "Reduce mood swings and pain",
-        "perimenopause": "Perimenopause Support",
-        "perimenopauseDesc": "Manage symptoms"
+        "perimenopause": "Symptômes de périménopause",
+        "perimenopauseDesc": "Manage symptoms",
+        "cycle_health": "Santé et régularité du cycle",
+        "energy": "Énergie hormonale et humeur",
+        "skin_hormones": "Peau et acné hormonale",
+        "weight_hormones": "Équilibre hormonal du poids"
+      },
+      "cycleRegularity": {
+        "question": "Comment décrirais-tu ton cycle ?",
+        "regular": "Régulier (24-35 jours)",
+        "irregular": "Irrégulier / imprévisible",
+        "unknown": "Je ne suis pas sûre"
       }
+    },
+    "symptomsList": {
+      "breast_tenderness": "Seins sensibles",
+      "acne_breakout": "Poussée d'acné",
+      "back_pain": "Mal de dos",
+      "nausea": "Nausées",
+      "insomnia": "Insomnie",
+      "hot_flashes": "Bouffées de chaleur",
+      "spotting": "Saignements légers",
+      "heavy_flow": "Flux abondant",
+      "brain_fog": "Brouillard mental",
+      "anxiety": "Anxiété",
+      "food_cravings": "Envies alimentaires",
+      "joint_pain": "Douleurs articulaires",
+      "discharge_change": "Changement des pertes"
     }
   },
   "premium": {
@@ -2315,20 +2345,20 @@
     "faq": "FAQ"
   },
   "focusMode": {
-    "title": "Focus",
-    "complete": "Fini !",
-    "completeMsg": "Take a break, you earned it.",
-    "stayFocused": "Stay Focused",
-    "endEarly": "Are you sure you want to end your focus session early?",
-    "endSession": "End Session",
-    "upgradeMsg": "Upgrade to unlock deep focus sessions.",
-    "quote": "\"Deep work is the superpower of the 21st century.\"",
-    "readyPrompt": "Ready to dive in?",
-    "pause": "Pause",
-    "start": "Go",
-    "tagline": "Stay Focused • Bloom Deep",
-    "proTitle": "Focus Mode Pro",
-    "proMessage": "Upgrade to Pro to access deep focus sessions and productivity tracking."
+    "title": "Mode Focus",
+    "complete": "Focus terminé !",
+    "completeMsg": "Prends une pause, tu l'as méritée.",
+    "stayFocused": "Reste concentré",
+    "endEarly": "Veux-tu vraiment arrêter ta session de focus maintenant ?",
+    "endSession": "Arrêter la session",
+    "upgradeMsg": "Passe à Pro pour débloquer les sessions de focus profond.",
+    "quote": "\"Le travail profond est le super-pouvoir du XXIe siècle.\"",
+    "readyPrompt": "Prêt à te concentrer ?",
+    "pause": "Mettre en pause",
+    "start": "Commencer",
+    "tagline": "Reste concentré • Blüom en profondeur",
+    "proTitle": "Mode Focus Pro",
+    "proMessage": "Passe à Pro pour accéder aux sessions de focus profond et au suivi de productivité."
   },
   "achievements": {
     "first_meal_log": {

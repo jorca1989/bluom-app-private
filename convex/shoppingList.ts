@@ -26,21 +26,29 @@ function normalizeName(name: string) {
   return singular;
 }
 
+function normalizeForCategory(name: string) {
+  return (name ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ");
+}
+
 function guessCategory(nameLower: string): ShoppingCategory {
-  const n = nameLower;
-  if (/(apple|banana|berry|berries|avocado|lettuce|spinach|kale|tomato|onion|garlic|pepper|cucumber|carrot|broccoli|lemon|lime|orange|potato|sweet potato)/.test(n))
+  const n = normalizeForCategory(nameLower);
+  if (/(apple|banana|berry|berries|avocado|lettuce|spinach|kale|tomato|onion|garlic|pepper|cucumber|carrot|broccoli|lemon|lime|orange|potato|sweet potato|fruit|vegetable|pomme|banane|baie|framboise|fraise|avocat|laitue|epinard|tomate|oignon|ail|poivron|concombre|carotte|citron|orange|pomme de terre|patate douce|legume|maca|abacate|alface|espinafre|cebola|alho|pimento|pepino|cenoura|limao|batata|batata doce|fruta|verdura|manzana|aguacate|lechuga|espinaca|cebolla|ajo|pimiento|zanahoria|limon|patata|verdura|apfel|beere|erdbeere|avocado|salat|spinat|zwiebel|knoblauch|paprika|gurke|karotte|zitrone|kartoffel|susskartoffel|obst|gemuse|appel|bes|aardbei|sla|spinazie|ui|knoflook|paprika|komkommer|wortel|citroen|aardappel|zoete aardappel|groente)/.test(n))
     return "Produce";
-  if (/(milk|cheese|yogurt|butter|cream|cottage|mozzarella|parmesan)/.test(n)) return "Dairy";
-  if (/(chicken|beef|pork|turkey|bacon|sausage|ham|steak)/.test(n)) return "Meat";
-  if (/(salmon|tuna|shrimp|prawn|cod|tilapia|fish)/.test(n)) return "Seafood";
-  if (/(bread|bagel|bun|tortilla|wrap|pita|croissant)/.test(n)) return "Bakery";
-  if (/(rice|pasta|oat|oats|flour|sugar|salt|peppercorn|spice|cumin|paprika|oil|olive oil|vinegar|beans|lentil|chickpea|sauce|broth|stock)/.test(n))
+  if (/(milk|cheese|yogurt|yoghurt|butter|cream|cottage|mozzarella|parmesan|lait|fromage|yaourt|beurre|creme|leite|queijo|iogurte|manteiga|nata|leche|queso|yogur|mantequilla|crema|milch|kase|joghurt|butter|sahne|melk|kaas|yoghurt|room)/.test(n)) return "Dairy";
+  if (/(chicken|beef|pork|turkey|bacon|sausage|ham|steak|poulet|boeuf|porc|dinde|saucisse|jambon|frango|vaca|porco|peru|salsicha|presunto|pollo|ternera|cerdo|pavo|salchicha|jamon|huhn|rind|schwein|pute|speck|wurst|schinken|kip|rund|varken|kalkoen|worst|spek)/.test(n)) return "Meat";
+  if (/(salmon|tuna|shrimp|prawn|cod|tilapia|fish|saumon|thon|crevette|cabillaud|poisson|salmao|atum|camarao|bacalhau|peixe|salmon|atun|gamba|camaron|bacalao|pescado|lachs|thunfisch|garnele|kabeljau|fisch|zalm|tonijn|garnaal|kabeljauw|vis)/.test(n)) return "Seafood";
+  if (/(bread|bagel|bun|tortilla|wrap|pita|croissant|pain|baguette|brioche|pao|tortilha|pan|bollo|brot|brotchen|brood|wrap)/.test(n)) return "Bakery";
+  if (/(rice|pasta|oat|oats|flour|sugar|salt|peppercorn|spice|cumin|paprika|oil|olive oil|vinegar|beans|lentil|chickpea|sauce|broth|stock|riz|pates|avoine|farine|sucre|sel|poivre|epice|huile|huile d'olive|vinaigre|haricot|lentille|pois chiche|bouillon|arroz|massa|aveia|farinha|acucar|sal|pimenta|especiaria|oleo|azeite|vinagre|feijao|lentilha|grao de bico|caldo|pasta|avena|harina|azucar|sal|pimienta|aceite|aceite de oliva|vinagre|frijol|alubia|lenteja|garbanzo|caldo|reis|nudel|hafer|mehl|zucker|salz|pfeffer|gewurz|ol|olivenol|essig|bohne|linse|kichererbse|bruhe|bruehe|rijst|havermout|bloem|suiker|zout|peper|kruid|olie|olijfolie|azijn|boon|linze|kikkererwt|bouillon)/.test(n))
     return "Pantry";
-  if (/(ice cream|frozen|pizza)/.test(n)) return "Frozen";
-  if (/(water|sparkling|soda|juice|coffee|tea)/.test(n)) return "Beverages";
-  if (/(chip|chips|cracker|crackers|snack|nuts|protein bar|bar)/.test(n)) return "Snacks";
-  if (/(detergent|soap|dish|paper towel|toilet paper|cleaner|trash bag)/.test(n)) return "Household";
-  if (/(shampoo|conditioner|toothpaste|deodorant|lotion)/.test(n)) return "Personal Care";
+  if (/(ice cream|frozen|pizza|glace|surgele|congele|gelado|congelado|helado|gefroren|eis|diepvries)/.test(n)) return "Frozen";
+  if (/(water|sparkling|soda|juice|coffee|tea|eau|petillante|jus|cafe|the|agua|sumo|cafe|cha|agua|zumo|kaffee|tee|wasser|sap|koffie|thee)/.test(n)) return "Beverages";
+  if (/(chip|chips|cracker|crackers|snack|nuts|protein bar|bar|noix|amande|noisette|barre proteinee|frutos secos|barra proteica|nuez|almendra|barrita|nusse|mandel|eiweissriegel|noten|amandel|proteinereep|proteienereep)/.test(n)) return "Snacks";
+  if (/(detergent|soap|dish|paper towel|toilet paper|cleaner|trash bag|lessive|savon|vaisselle|essuie-tout|papier toilette|nettoyant|sac poubelle|detergente|sabao|loica|papel higienico|limpador|saco do lixo|jabon|lavavajillas|papel de cocina|limpiador|bolsa de basura|waschmittel|seife|spulmittel|kuchenrolle|toilettenpapier|reiniger|mullsack|zeep|afwas|keukenpapier|toiletpapier|reiniger|vuilniszak)/.test(n)) return "Household";
+  if (/(shampoo|conditioner|toothpaste|deodorant|lotion|shampoing|apres-shampoing|dentifrice|deodorant|creme|champô|amaciador|pasta de dentes|desodorizante|locao|champu|acondicionador|pasta dental|desodorante|lotion|zahnpasta|deodorant|bodylotion|tandpasta|deodorant)/.test(n)) return "Personal Care";
   return "Other";
 }
 
@@ -213,5 +221,3 @@ export const deleteItem = mutation({
     await ctx.db.delete(args.itemId);
   },
 });
-
-

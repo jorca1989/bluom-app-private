@@ -211,7 +211,7 @@ export default function ShoppingListScreen() {
       {/* ── Header ── */}
       <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 4 }]}>
         <TouchableOpacity style={styles.headerIcon} onPress={() => router.back()} activeOpacity={0.7}>
-          <Ionicons name="arrow-back" size={22} color="#0f172a" />
+          <Ionicons name="arrow-back" size={22} color="#ffffff" />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.title}>{t('shopping.title', 'Shopping List')}</Text>
@@ -445,11 +445,11 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: c.surface,
+    backgroundColor: '#2563eb',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: c.border,
+    borderColor: '#2563eb',
   },
   headerCenter: { flex: 1 },
   title: { fontSize: 22, fontWeight: '800', color: c.text },

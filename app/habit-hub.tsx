@@ -373,7 +373,13 @@ export default function HabitHubScreen() {
                                                 ? t(DEFAULT_HABIT_NAME_MAP[habit.name], habit.name)
                                                 : habit.name}
                                         </Text>
-                                                        <Text style={styles.habitStreak}>{t('wellness.habits.dayStreak', '{{streak}} day streak', { streak: habit.streak })}</Text>
+                                                        <Text style={styles.habitStreak}>
+                                                            {t('wellness.habits.dayStreak', {
+                                                                count: habit.streak,
+                                                                streak: habit.streak,
+                                                                defaultValue: '{{count}} day streak',
+                                                            })}
+                                                        </Text>
                                                     </View>
                                                 </View>
                                                 <TouchableOpacity onPress={() => handleDeleteHabit(habit._id)}>

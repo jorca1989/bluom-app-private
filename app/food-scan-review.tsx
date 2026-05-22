@@ -96,7 +96,7 @@ export default function FoodScanReviewScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top', 'bottom']}>
       <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) + 8 }]}>
         <TouchableOpacity style={styles.headerBtn} onPress={() => router.back()} activeOpacity={0.8}>
-          <Ionicons name="arrow-back" size={22} color="#1e293b" />
+          <Ionicons name="arrow-back" size={22} color="#ffffff" />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={styles.headerTitle}>{t('foodReview.title', 'Review Macros')}</Text>
@@ -206,7 +206,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: c.surfaceMuted,
+    backgroundColor: '#2563eb',
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -8,7 +8,6 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  Image,
   Modal,
   ActivityIndicator,
   Alert,
@@ -16,6 +15,7 @@ import {
   Platform,
   StatusBar,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -344,6 +344,11 @@ export default function RecipesScreen() {
     return map;
   }, [recipes]);
 
+  const selectedRecipeImageSource = useMemo(
+    () => selectedRecipe ? getRecipeImageSource(selectedRecipe) : null,
+    [selectedRecipe?._id, selectedRecipe?.imageUrl, selectedRecipe?.title]
+  );
+
   const n = (value: unknown, fallback = 0) => {
     const num = typeof value === 'number' ? value : Number(value);
     return Number.isFinite(num) ? num : fallback;
@@ -473,7 +478,10 @@ export default function RecipesScreen() {
                       <Image
                         source={imageSource}
                         style={styles.recipeCardImage}
-                        resizeMode="cover"
+                        contentFit="cover"
+                        cachePolicy="memory-disk"
+                        recyclingKey={recipe._id}
+                        transition={120}
                       />
                     ) : (
                       <View style={styles.recipeCardImagePlaceholder}>
@@ -517,16 +525,20 @@ export default function RecipesScreen() {
               </View>
 
               <View style={styles.recipeImageContainer}>
-                {(() => {
-                  const detailImg = getRecipeImageSource(selectedRecipe);
-                  return detailImg ? (
-                    <Image source={detailImg} style={styles.recipeImage} resizeMode="cover" />
-                  ) : (
-                    <View style={styles.recipeImagePlaceholder}>
-                      <Ionicons name="restaurant" size={48} color="#94a3b8" />
-                    </View>
-                  );
-                })()}
+                {selectedRecipeImageSource ? (
+                  <Image
+                    source={selectedRecipeImageSource}
+                    style={styles.recipeImage}
+                    contentFit="cover"
+                    cachePolicy="memory-disk"
+                    recyclingKey={selectedRecipe._id}
+                    transition={120}
+                  />
+                ) : (
+                  <View style={styles.recipeImagePlaceholder}>
+                    <Ionicons name="restaurant" size={48} color="#94a3b8" />
+                  </View>
+                )}
               </View>
 
               <View style={styles.card}>

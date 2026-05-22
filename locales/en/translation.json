@@ -872,31 +872,31 @@
         "competitionFocus": "Do you compete or plan to?"
       },
       "hint": {
-        "trainingMode": "Be honest — your guidance is personalised and private."
+        "trainingMode": "Be honest: your guidance is personalised and private."
       },
       "natural": "Natural Athlete",
       "naturalDesc": "No performance-enhancing drugs",
       "enhanced": "Enhanced / PED User",
       "enhancedDesc": "Using or considering anabolic compounds",
       "athlete": "Competitive Athlete",
-      "athleteDesc": "Competing or prepping to compete",
+      "athleteDesc": "Competing or preparing to compete",
       "muscle": "Build Muscle",
-      "muscleDesc": "Hypertrophy & size",
+      "muscleDesc": "Hypertrophy and size",
       "strength": "Increase Strength",
-      "strengthDesc": "Raw power & 1RM",
-      "fat_loss": "Shred & Cut",
+      "strengthDesc": "Raw power and 1RM",
+      "fat_loss": "Shred and Cut",
       "fat_lossDesc": "Fat loss, preserve muscle",
       "performance": "Athletic Performance",
       "performanceDesc": "Speed, power, conditioning",
-      "longevity": "Longevity & Health",
+      "longevity": "Longevity and Health",
       "longevityDesc": "Long-term optimisation",
       "recomp": "Body Recomposition",
-      "recompDesc": "Build muscle, lose fat simultaneously",
+      "recompDesc": "Build muscle and lose fat at the same time",
       "beginner": "Under 1 year",
-      "intermediate": "1–3 years",
-      "advanced": "3–7 years",
+      "intermediate": "1-3 years",
+      "advanced": "3-7 years",
       "veteran": "7+ years",
-      "none": "No — training for myself",
+      "none": "No, training for myself",
       "bodybuilding": "Bodybuilding / Physique",
       "powerlifting": "Powerlifting / Strongman",
       "crossfit": "CrossFit / Functional",
@@ -2142,35 +2142,63 @@
         "menopauseDesc": "12+ months without a period"
       },
       "birthControl": {
-        "question": "Are you using hormonal birth control?",
-        "none": "No — Natural Cycle",
+        "question": "Do you use hormonal birth control?",
+        "none": "No",
         "noneDesc": "No hormones or copper IUD",
-        "pill": "Combination Pill / Ring",
+        "pill": "Combined or mini pill",
         "pillDesc": "Suppresses ovulation",
-        "iud": "Hormonal IUD / Implant",
+        "iud": "Hormonal IUD",
         "iudDesc": "Progestin only (Mirena, Nexplanon)",
         "mini_pill": "Mini-Pill",
-        "mini_pillDesc": "Progestin only pill"
+        "mini_pillDesc": "Progestin only pill",
+        "implant": "Implant or injection",
+        "other": "Other method"
       },
       "periodPain": {
-        "question": "How severe is your period pain?",
-        "none": "Mild / None",
-        "moderate": "Moderate",
+        "question": "How are your period cramps?",
+        "none": "No pain",
+        "moderate": "Moderate, they affect me",
         "moderateDesc": "Needs occasional painkillers",
-        "severe": "Severe",
-        "severeDesc": "Impacts daily life/work"
+        "severe": "Severe or disabling",
+        "severeDesc": "Impacts daily life/work",
+        "mild": "Mild and manageable"
       },
       "mainFocus": {
-        "question": "What is your main hormonal focus?",
+        "question": "What is your main focus right now?",
         "cycle_syncing": "Cycle Syncing",
         "cycle_syncingDesc": "Optimise training/diet to phases",
-        "fertility": "Fertility Support",
+        "fertility": "Fertility and conception",
         "fertilityDesc": "Preparing for pregnancy",
         "pms": "PMS / PMDD Relief",
         "pmsDesc": "Reduce mood swings and pain",
-        "perimenopause": "Perimenopause Support",
-        "perimenopauseDesc": "Manage symptoms"
+        "perimenopause": "Perimenopause symptoms",
+        "perimenopauseDesc": "Manage symptoms",
+        "cycle_health": "Cycle health and regularity",
+        "energy": "Hormonal energy and mood",
+        "skin_hormones": "Skin and hormonal acne",
+        "weight_hormones": "Hormonal weight balance"
+      },
+      "cycleRegularity": {
+        "question": "How would you describe your cycle?",
+        "regular": "Regular (24-35 days)",
+        "irregular": "Irregular / unpredictable",
+        "unknown": "I am not sure"
       }
+    },
+    "symptomsList": {
+      "breast_tenderness": "Breast tenderness",
+      "acne_breakout": "Acne breakout",
+      "back_pain": "Back pain",
+      "nausea": "Nausea",
+      "insomnia": "Insomnia",
+      "hot_flashes": "Hot flashes",
+      "spotting": "Spotting",
+      "heavy_flow": "Heavy flow",
+      "brain_fog": "Brain fog",
+      "anxiety": "Anxiety",
+      "food_cravings": "Food cravings",
+      "joint_pain": "Joint pain",
+      "discharge_change": "Discharge changes"
     }
   },
   "premium": {
@@ -2217,17 +2245,19 @@
   },
   "focusMode": {
     "title": "Focus Mode",
-    "complete": "Session Complete!",
-    "completeMsg": "Take a break, you've earned it.",
+    "complete": "Focus complete!",
+    "completeMsg": "Take a break, you earned it.",
     "stayFocused": "Stay focused",
-    "endEarly": "Are you sure you want to end early?",
-    "endSession": "End Session",
-    "upgradeMsg": "Upgrade to Pro to unlock deep focus sessions.",
+    "endEarly": "Are you sure you want to end your focus session early?",
+    "endSession": "End session",
+    "upgradeMsg": "Upgrade to unlock deep focus sessions.",
     "quote": "\"Deep work is the superpower of the 21st century.\"",
-    "readyPrompt": "Ready for a deep dive?",
-    "pause": "Pause Session",
+    "readyPrompt": "Ready to dive in?",
+    "pause": "Pause",
     "start": "Start",
-    "tagline": "Focus • Thrive Deeply"
+    "tagline": "Stay focused • Blüom deep",
+    "proTitle": "Focus Mode Pro",
+    "proMessage": "Upgrade to Pro to access deep focus sessions and productivity tracking."
   },
   "achievements": {
     "first_meal_log": {
