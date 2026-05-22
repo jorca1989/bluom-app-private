@@ -520,7 +520,7 @@ export default function WellnessScreen() {
           <View style={[s.modalHeader, { paddingTop: Math.max(insets.top, 16) }]}>
             <Text style={s.modalTitle}>{t('wellness.analyticsTitle', 'Wellness Analytics')}</Text>
             <TouchableOpacity onPress={() => setShowInsightsModal(false)} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Ionicons name="close" size={28} color="#0f172a" />
+              <Ionicons name="close" size={28} color={themeColors.text} />
             </TouchableOpacity>
           </View>
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 24 }}>
@@ -545,7 +545,7 @@ export default function WellnessScreen() {
           <View style={[s.modalHeader, { paddingTop: Math.max(insets.top, 16) }]}>
             <Text style={s.modalTitle}>{t('wellness.logSleepTitle', 'Log Sleep')}</Text>
             <TouchableOpacity onPress={() => setShowSleepModal(false)} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Ionicons name="close" size={28} color="#0f172a" />
+              <Ionicons name="close" size={28} color={themeColors.text} />
             </TouchableOpacity>
           </View>
           <View style={{ padding: 24 }}>
@@ -567,7 +567,7 @@ export default function WellnessScreen() {
           <View style={[s.modalHeader, { paddingTop: Math.max(insets.top, 16) }]}>
             <Text style={s.modalTitle}>{t('wellness.howFeeling', 'How are you feeling?')}</Text>
             <TouchableOpacity onPress={() => setShowMoodModal(false)} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Ionicons name="close" size={28} color="#0f172a" />
+              <Ionicons name="close" size={28} color={themeColors.text} />
             </TouchableOpacity>
           </View>
           <View style={{ padding: 24, gap: 12 }}>

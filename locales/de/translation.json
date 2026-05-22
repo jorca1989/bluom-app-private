@@ -137,7 +137,8 @@
       "swipeable": "Trainingsplan",
       "quickActions": "Schnellaktionen",
       "todayActivities": "Heutige Aktivitäten",
-      "moveInsights": "Bewegungs-Insights"
+      "moveInsights": "Bewegungs-Insights",
+      "proBanner": "Pro-Banner"
     },
     "title": "Bewegung",
     "subtitle": "Verfolge deine Workouts und Aktivitäten",
@@ -276,7 +277,17 @@
     "fullBodyFocus": "Ganzkörper / gemischt",
     "openMove": "Move öffnen",
     "yourWeekOverview": "Deine Wochenübersicht",
-    "weekOverviewDesc": "Nutze dies als einfache Orientierung. Pro bietet einen personalisierten Plan, der sich anpasst und Übungen austauscht."
+    "weekOverviewDesc": "Nutze dies als einfache Orientierung. Pro bietet einen personalisierten Plan, der sich anpasst und Übungen austauscht.",
+    "fourWeekPlan": "4-Wochen-Plan",
+    "fourWeekPlanDesc": "Eine kostenlose Vorlage, die Sie in Bewegung bringt.",
+    "freeTemplate": "KOSTENLOSE VORLAGE",
+    "startWithStructure": "Beginnen Sie mit der Struktur.",
+    "followRoutine": "Befolgen Sie diese 4-wöchige Routine, um Schwung aufzubauen.",
+    "proPlanAdapts": "Ihr personalisierter Plan passt sich Ihrem Fortschritt an.",
+    "freeUsers28Days": "Kostenlose Benutzer erhalten einen vollständigen 28-Tage-Plan. Upgraden Sie auf Pro, um Ihre Reise fortzusetzen.",
+    "viewWeek": "Woche ansehen",
+    "personalisedTraining": "Personalisiertes Training",
+    "upgradeDetail": "Führen Sie ein Upgrade auf Pro durch, um Übungen zu Ihrem Plan hinzuzufügen oder daraus zu entfernen."
   },
   "tabs": {
     "home": "Home",
@@ -371,7 +382,11 @@
       "meals": "Mahlzeiten",
       "quickActions": "Schnellaktionen",
       "utilities": "Dienstprogramme"
-    }
+    },
+    "protein": "Protein",
+    "carbs": "Kohlenhydrate",
+    "fat": "Fett",
+    "caloriesShort": "cal"
   },
   "modals": {
     "pro": {
@@ -451,7 +466,26 @@
       "searchIng": "Suchen, um eine Zutat hinzuzufügen...",
       "noIng": "Keine Zutaten hinzugefügt",
       "totalMacros": "Gesamt-Makros (pro Portion)",
-      "save": "Rezept speichern"
+      "save": "Rezept speichern",
+      "name": "Rezeptname",
+      "namePlaceholder": "z.B. Hähnchenpfanne",
+      "makesServings_one": "Ergibt {{count}} Portion",
+      "makesServings_other": "Ergibt {{count}} Portionen",
+      "makesServings": "Ergibt {{count}} Portionen",
+      "noIngredients": "Keine Zutaten hinzugefügt.",
+      "goBack": "Bitte gehen Sie zurück und fügen Sie Zutaten hinzu.",
+      "perServing": "Nährwertangaben pro Portion",
+      "recipe": "Rezept",
+      "saveRecipe": "Rezept speichern",
+      "bulkImport": "Massenimport für Zutaten verwenden?",
+      "pasteIngredients": "Fügen Sie Ihre Zutaten ein oder geben Sie sie ein (eine pro Zeile):",
+      "autoMatchHint": "Wir werden versuchen, sie automatisch den Lebensmitteln in der Datenbank zuzuordnen.",
+      "nextIngredients": "Als nächstes: Zutaten",
+      "nextReview": "Weiter: Rezension",
+      "matching": "Passend zu Ihren Zutaten...",
+      "foundFrom": "Gefunden von:",
+      "searchManually": "Suchen Sie manuell nach einer besseren Übereinstimmung:",
+      "error": "Rezept konnte nicht gespeichert werden."
     },
     "logRecipe": {
       "title": "Mahlzeit erfassen",
@@ -831,14 +865,64 @@
         "powerlifting": "Powerlifting / Strongman",
         "crossfit": "CrossFit / Functional",
         "sport": "Team / Combat Sport"
-      }
+      },
+      "q": {
+        "trainingMode": "How would you describe your approach?",
+        "primaryGoal": "What is your primary goal right now?",
+        "yearsTraining": "How long have you been training seriously?",
+        "competitionFocus": "Do you compete or plan to?"
+      },
+      "hint": {
+        "trainingMode": "Be honest — your guidance is personalised and private."
+      },
+      "natural": "Natural Athlete",
+      "naturalDesc": "No performance-enhancing drugs",
+      "enhanced": "Enhanced / PED User",
+      "enhancedDesc": "Using or considering anabolic compounds",
+      "athlete": "Competitive Athlete",
+      "athleteDesc": "Competing or prepping to compete",
+      "muscle": "Build Muscle",
+      "muscleDesc": "Hypertrophy & size",
+      "strength": "Increase Strength",
+      "strengthDesc": "Raw power & 1RM",
+      "fat_loss": "Shred & Cut",
+      "fat_lossDesc": "Fat loss, preserve muscle",
+      "performance": "Athletic Performance",
+      "performanceDesc": "Speed, power, conditioning",
+      "longevity": "Longevity & Health",
+      "longevityDesc": "Long-term optimisation",
+      "recomp": "Body Recomposition",
+      "recompDesc": "Build muscle, lose fat simultaneously",
+      "beginner": "Under 1 year",
+      "intermediate": "1–3 years",
+      "advanced": "3–7 years",
+      "veteran": "7+ years",
+      "none": "No — training for myself",
+      "bodybuilding": "Bodybuilding / Physique",
+      "powerlifting": "Powerlifting / Strongman",
+      "crossfit": "CrossFit / Functional",
+      "sport": "Team / Combat Sport"
     },
     "restartTitle": "Restart Quiz",
     "restartMsg": "This will clear your current profile and restart the questionnaire. Continue?",
     "restartConfirm": "Restart",
     "modeProtocolBadge": "{{mode}} Protocol",
     "protocolShort": "protocol",
-    "compounds": "compounds"
+    "compounds": "compounds",
+    "stackLoggedMsg": "Nahrungsergänzungsmittelaufnahme aufgezeichnet.",
+    "upgradeToPro": "Für Pro aktualisieren",
+    "vitalitySubline": "Antrieb · Erholung · Fokus",
+    "supplementStack": "Ergänzungsstapel",
+    "pillarDriveShort": "V",
+    "pillarRecoveryShort": "R",
+    "pillarFocusShort": "F",
+    "personalisedInsights": "Persönliche Einblicke",
+    "bloodWorkTitle": "Analysiert die Sangue Periodicas",
+    "bloodWorkBody": "Atletas verbesserte die Überwachung von Lipiden, Blutkriterium und Leberenzymen alle 8 Wochen.",
+    "cardioTitle": "Herz-Kreislauf-Erkrankung mit Priorität Nr. 1",
+    "cardioBody": "Das Cardio LISS 4x/Semana ist erforderlich, um den arteriellen und hämatologischen Druck zu erhöhen.",
+    "unlockDeepAnalytics": "Desbloqueia Análise Hormonal Profunda",
+    "unlockDeepAnalyticsSub": "Insights com IA, die sich an Ihre Geschichte, Padrões und Sintomas Registas anpassen."
   },
   "todo": {
     "title": "Produktivitäts-Zentrum",
@@ -1014,7 +1098,16 @@
     "units": {
       "kg": "kg",
       "minKm": "min/km"
-    }
+    },
+    "couldNotSave": "Konnte nicht gespeichert werden.",
+    "logged": "protokolliert",
+    "saved": "Gespeichert",
+    "unlockWithPro": "Mit Pro freischalten",
+    "viewProPlans": "Pro-Pläne anzeigen",
+    "clear": "Klar",
+    "back": "Zurück",
+    "notReady": "Nicht bereit",
+    "upgradeToPro": "Upgrade auf Pro"
   },
   "wellness": {
     "title": "Wellness",
@@ -1856,6 +1949,31 @@
         "name": "Magnesium-L-Threonat",
         "reason": "Überwindet Blut-Hirn-Schranke; verbessert Tiefschlaf und senkt Angst",
         "timing": "30 Min vor dem Schlafen"
+      },
+      "myoInositol": {
+        "name": "Myo-Inositol",
+        "reason": "Unterstützt die Eizellenqualität, die Regelmäßigkeit des Eisprungs und die Insulinsensitivität",
+        "timing": "Morgens und abends mit Essen aufteilen"
+      },
+      "coQ10": {
+        "name": "CoQ10 (Ubiquinol)",
+        "reason": "Verbessert die mitochondriale Energie in Eiern; wichtig über 35",
+        "timing": "Zu den Mahlzeiten"
+      },
+      "blackCohosh": {
+        "name": "Traubensilberkerze",
+        "reason": "Linderung von Hitzewallungen und Stimmungssymptomen; beste Evidenz in der frühen Menopause",
+        "timing": "Morgens und abends"
+      },
+      "calcium": {
+        "name": "Kalzium + D3",
+        "reason": "Schutz der Knochendichte bei Östrogenabfall",
+        "timing": "Geteilter Morgen und Abend"
+      },
+      "vitD3K2": {
+        "name": "Vitamin D3 + K2",
+        "reason": "Die meisten Frauen haben einen Mangel; entscheidend für die Immunfunktion, die Stimmung und die Knochengesundheit",
+        "timing": "Morgens mit einer fetthaltigen Mahlzeit"
       }
     },
     "loggedTitle": "Erfasst ✓",
@@ -1946,7 +2064,115 @@
     "priv3Body": "Wir nutzen deine Gesundheitsdaten nicht, um Werbeprofile zu erstellen. Punkt.",
     "restartTitle": "Fragebogen neu starten",
     "restartMsg": "Dies löscht dein aktuelles Profil und startet den Fragebogen neu. Fortfahren?",
-    "restartConfirm": "Neustart"
+    "restartConfirm": "Neustart",
+    "articles": {
+      "art1": {
+        "title": "Östrogendominanz: Anzeichen und Lösungen",
+        "category": "Hormone",
+        "time": "5 Min",
+        "body": "Wenn Östrogen im Verhältnis zu Progesteron unverhältnismäßig hoch ist, kann es zu starken Monatsblutungen, Gewichtszunahme im Hüftbereich, Stimmungsschwankungen und Brustspannen kommen. Schlüsselstrategien: Plastik (Xenoöstrogene) reduzieren, Leberentgiftung mit Kreuzblütlern unterstützen und Zink + B6-Lebensmittel einbeziehen."
+      },
+      "art2": {
+        "title": "Zyklussynchronisierung: Trainieren Sie in jeder Phase intelligenter",
+        "category": "Fitness",
+        "time": "7 Min",
+        "body": "Follikel- und Ovulationsphase: stark anstrengen – Kraft, HIIT, PRs. Lutealphase: mäßig – Pilates, Schwimmen. Menstruationsphase: sanft – Yoga, Gehen. Die Anpassung Ihres Trainings an Ihre Hormone verringert das Verletzungsrisiko und verbessert die Anpassung."
+      },
+      "art3": {
+        "title": "Cortisol und Ihr Zyklus: Der versteckte Link",
+        "category": "Wellness",
+        "time": "4 Min",
+        "body": "Chronischer Stress erhöht Cortisol, was die Progesteronproduktion direkt unterdrückt. Dies führt zu kürzeren Lutealphasen, einer PMS-Verstärkung und Zyklusunregelmäßigkeiten. Evidenzbasierte Tools: 4-7-8-Atmung, Adaptogene (Ashwagandha) und Schlafkonsistenz."
+      },
+      "art4": {
+        "title": "Darmgesundheit und Östrogenstoffwechsel",
+        "category": "Ernährung",
+        "time": "6 Min",
+        "body": "Das Östrobolom – Darmbakterien, die Östrogen verarbeiten – ist von entscheidender Bedeutung. Eine schlechte Darmgesundheit führt dazu, dass Östrogen rezirkuliert statt ausgeschieden wird, was zu hormonellen Ungleichgewichten führt. Priorisieren: Ballaststoffe (30 g/Tag), fermentierte Lebensmittel, Alkohol reduzieren."
+      },
+      "art5": {
+        "title": "Eisen, Müdigkeit und Ihre Periode",
+        "category": "Ernährung",
+        "time": "4 Min",
+        "body": "Menstruierende Frauen verlieren in jedem Zyklus 20–80 ml Blut. Eisenmangel ist weltweit der häufigste Nährstoffmangel und führt direkt zu Müdigkeit, Konzentrationsschwäche und verminderter sportlicher Leistung. Testen Sie Ihr Ferritin, nicht nur Hämoglobin."
+      },
+      "art6": {
+        "title": "Progesteron: Das ruhige Hormon",
+        "category": "Hormone",
+        "time": "5 Min",
+        "body": "Progesteron ist Ihr Körper\\"
+      },
+      "art7": {
+        "title": "PCOS: Jenseits der Grundlagen",
+        "category": "Gesundheit",
+        "time": "8 Min",
+        "body": "Das polyzystische Ovarialsyndrom betrifft 1 von 10 Frauen. Wichtige Säulen des Managements: Blutzuckerregulierung (Reduzierung raffinierter Kohlenhydrate), Krafttraining zur Verbesserung der Insulinsensitivität, Inositol-Supplementierung (Evidenzgrad A) und Stressbewältigung."
+      },
+      "art8": {
+        "title": "Schilddrüse und weibliche Fruchtbarkeit",
+        "category": "Gesundheit",
+        "time": "5 Min",
+        "body": "Hypothyreose betrifft bis zu dreimal mehr Frauen als Männer und ist eine der häufigsten nicht diagnostizierten Ursachen für Unfruchtbarkeit, unregelmäßige Zyklen und postnatale Depression. Lassen Sie TSH, T3 und T4 testen – nicht nur TSH allein."
+      }
+    },
+    "suppIntro": "Personalisiert aufgrund Ihrer Zyklusphase, des Stressniveaus, der Kontrazeptivmethode, des Gesundheitszustands und der Idee.",
+    "suppLocked": "Sperrung der Personalisierung für kostenlose Nutzer.",
+    "suppDisclaimer": "Konsultieren Sie immer einen Arzt, bevor Sie mit der Einnahme neuer Nahrungsergänzungsmittel beginnen, insbesondere während der Schwangerschaft.",
+    "tabInsights": "Einblicke",
+    "setupTitlePreg": "👶 Acompanha a tua gravidez",
+    "setupTitleCycle": "🌸 Desbloqueia os teus Insights do ciclo",
+    "week": "Semana",
+    "menopauseTracker": "Monitor de Menopause",
+    "menopauseDesc": "Registrierte Fronten, Humor und Klangveränderungen. Ihr Vierbeiner ist hormonell wichtig.",
+    "vitStack": "Vitalitätsstapel",
+    "personalisedSupps": "personalisierte Ergänzungen",
+    "insightsSub": "Personalisierbar je nach Profil, Zyklusphase, Stressniveau, Klang und Hitzefokus.",
+    "insightsEmpty": "Vollständiger Teil Ihres Bio-Registers, um personalisierte Einblicke zu erhalten.",
+    "priorityHigh": "⚠️ Priorität",
+    "priorityNote": "💡 Hinweis",
+    "takeAction": "Tomar ação",
+    "librarySub": "Guias basiert auf der Wissenschaft, um die Hormone von Mulher zu schädigen.",
+    "quiz": {
+      "lifeStage": {
+        "question": "What is your current phase of life?",
+        "cycle": "Menstruating",
+        "cycleDesc": "Regular or irregular cycles",
+        "perimenopause": "Perimenopause",
+        "perimenopauseDesc": "Experiencing transition symptoms",
+        "menopause": "Post-Menopause",
+        "menopauseDesc": "12+ months without a period"
+      },
+      "birthControl": {
+        "question": "Are you using hormonal birth control?",
+        "none": "No — Natural Cycle",
+        "noneDesc": "No hormones or copper IUD",
+        "pill": "Combination Pill / Ring",
+        "pillDesc": "Suppresses ovulation",
+        "iud": "Hormonal IUD / Implant",
+        "iudDesc": "Progestin only (Mirena, Nexplanon)",
+        "mini_pill": "Mini-Pill",
+        "mini_pillDesc": "Progestin only pill"
+      },
+      "periodPain": {
+        "question": "How severe is your period pain?",
+        "none": "Mild / None",
+        "moderate": "Moderate",
+        "moderateDesc": "Needs occasional painkillers",
+        "severe": "Severe",
+        "severeDesc": "Impacts daily life/work"
+      },
+      "mainFocus": {
+        "question": "What is your main hormonal focus?",
+        "cycle_syncing": "Cycle Syncing",
+        "cycle_syncingDesc": "Optimise training/diet to phases",
+        "fertility": "Fertility Support",
+        "fertilityDesc": "Preparing for pregnancy",
+        "pms": "PMS / PMDD Relief",
+        "pmsDesc": "Reduce mood swings and pain",
+        "perimenopause": "Perimenopause Support",
+        "perimenopauseDesc": "Manage symptoms"
+      }
+    }
   },
   "premium": {
     "heroTitle": "Deine Biologie,",
@@ -1995,7 +2221,18 @@
     "featFitnessTitle": "Personalisierter Fitnessplan",
     "featFitnessDesc": "Progressives 4-Wochen-Trainingsprogramm, angepasst an deinen Zeitplan",
     "featMentalTitle": "Mentaler Gesundheitsplan",
-    "featMentalDesc": "Wöchentliche Mindset-Themen, Stressprotokolle und Meditationen"
+    "featMentalDesc": "Wöchentliche Mindset-Themen, Stressprotokolle und Meditationen",
+    "title": "Bluom Pro",
+    "subtitle": "Entfalten Sie Ihr volles Potenzial",
+    "features": {
+      "ai": "Personalisiertes KI-Coaching",
+      "fasting": "Erweiterte Fastenprotokolle",
+      "insights": "Tiefe hormonelle Einblicke",
+      "scans": "Unbegrenzte KI-Lebensmittelscans",
+      "sugar": "Zuckerdetektor und Alternativen"
+    },
+    "upgrade": "Jetzt upgraden",
+    "plans": "Pläne anzeigen"
   },
   "settings": {
     "title": "Einstellungen",
@@ -2048,7 +2285,15 @@
     "fatG": "Tägliches Fett (g)",
     "updateGoals": "Ziele aktualisieren",
     "themeColor": "Designfarbe",
-    "themeColorDesc": "Wähle eine Palette, die zu deiner Stimmung passt. Änderungen werden sofort übernommen."
+    "themeColorDesc": "Wähle eine Palette, die zu deiner Stimmung passt. Änderungen werden sofort übernommen.",
+    "profile": "Profil",
+    "notifications": "Benachrichtigungen",
+    "privacy": "Privatsphäre",
+    "help": "Hilfe und Support",
+    "logout": "Abmelden",
+    "version": "Version {{version}}",
+    "connectedDevices": "Verbundene Geräte",
+    "healthConnect": "Gesundheitsintegration"
   },
   "support": {
     "title": "Support & Feedback",
@@ -2064,7 +2309,10 @@
     "successMsg": "Dein Ticket wurde empfangen. Wir melden uns in Kürze bei dir.",
     "errorTitle": "Fehler",
     "errorMsg": "Ticket konnte nicht gesendet werden. Versuche es später erneut.",
-    "footer": "Bluom Life Management"
+    "footer": "Bluom Life Management",
+    "howCanWeHelp": "Wie können wir helfen?",
+    "contact": "Kontaktieren Sie uns",
+    "faq": "FAQ"
   },
   "focusMode": {
     "title": "Fokus-Modus",
@@ -2913,7 +3161,9 @@
       "mental3": "Mindset & Reframing",
       "mental4": "Integrationswoche",
       "continueToPlan": "Weiter zum Plan"
-    }
+    },
+    "completePrompt": "Bitte schließen Sie zunächst das Onboarding ab.",
+    "completePromptShopping": "Bitte schließen Sie das Onboarding ab, um die Einkaufsliste nutzen zu können."
   },
   "pillReminder": {
     "title": "Pillen-Erinnerung",
@@ -2984,7 +3234,7 @@
     "musclesTab": "Muskeln",
     "savedWorkouts": "Gespeicherte Workouts",
     "noSavedWorkouts": "Noch keine gespeicherten Workouts",
-    "noSavedSub": "",
+    "noSavedSub": "Tippen Sie bei einem beliebigen Training auf das Lesezeichensymbol, um es hier zu speichern",
     "mainEx": "Hauptübung",
     "categories": {
       "Strength": "Kraft",
@@ -3183,7 +3433,40 @@
       "Foam Roller": "Faszienrolle",
       "Step": "Step",
       "Box": "Box"
-    }
+    },
+    "rating": "Bewertung",
+    "level": "Niveau",
+    "equipment": "Ausrüstung",
+    "exerciseDetails": "Übungsdetails",
+    "instructions": "Anweisungen",
+    "primaryMuscles": "Hauptmuskeln",
+    "secondaryMuscles": "Sekundärmuskeln",
+    "logExercise": "Übung Speichern",
+    "sets": "Sätze",
+    "reps": "Wdh",
+    "min": "Min",
+    "title": "Trainingseinheiten",
+    "subtitle": "Geführte Videoroutinen",
+    "searchPlaceholder": "Workouts suchen...",
+    "browse": "Durchsuchen",
+    "noRoutines": "Keine Routinen gefunden",
+    "noRoutinesSub": "Versuchen Sie es mit einem anderen Typ oder löschen Sie den Muskelfilter",
+    "browseByMuscle": "Durchsuchen Sie nach Muskelgruppe",
+    "clearFilter": "Filter löschen:",
+    "noSaved": "Noch keine gespeicherten Trainingseinheiten",
+    "premium": "PRÄMIE",
+    "proRequired": "Pro erforderlich – nur Vorschau",
+    "orAlternatively": "oder alternativ:",
+    "workoutProgress": "Trainingsfortschritt",
+    "maxWeight": "Maximales Gewicht",
+    "maxVolume": "Maximale Lautstärke",
+    "sessions": "Sitzungen",
+    "workoutHistory": "Trainingsverlauf",
+    "upgradeToPro": "Upgrade auf Pro",
+    "unlockVideoDesc": "Schalten Sie das vollständige Trainingsvideo + Aufschlüsselung frei.",
+    "noVideo": "Keine Video-URL konfiguriert",
+    "addVideo": "Fügen Sie im Admin-Bereich eine Video-URL hinzu",
+    "proMessage": "Dieses Training ist gesperrt. Upgraden Sie auf Pro, um auf Premium-Trainingsvideos und vollständige Aufschlüsselungen zuzugreifen."
   },
   "meals": {
     "breakfast": "Fruehstueck",
@@ -3314,5 +3597,195 @@
       "bulk": "Aufbau",
       "comfort": "Wohlfuehlessen"
     }
-  }
+  },
+  "recipes": {
+    "logToMeal": "Zu Mahlzeit loggen",
+    "chooseAMeal": "Mahlzeit wählen",
+    "logToMealBtn": "Loggen zu {{meal}}",
+    "loggedTitle": "✅ Gespeichert!",
+    "loggedMsg": "{{title}} für {{meal}} heute gespeichert.",
+    "stayHere": "Hier bleiben",
+    "viewFuel": "Ernährung ansehen",
+    "logError": "Fehler beim Speichern. Bitte erneut versuchen.",
+    "title": "Rezepte",
+    "searchPlaceholder": "Rezepte suchen...",
+    "categories": {
+      "All": "Alle",
+      "Breakfast": "Frühstück",
+      "Lunch": "Mittagessen",
+      "Dinner": "Abendessen",
+      "Snacks": "Snacks",
+      "Desserts": "Desserts",
+      "Vegetarian": "Vegetarisch",
+      "High Protein": "High Protein",
+      "Low Carb": "Low Carb"
+    },
+    "loadingRecipes": "Lade Rezepte...",
+    "noRecipes": "Noch keine Rezepte",
+    "noRecipesDesc": "Rezepte werden hier angezeigt.",
+    "kcal": "kcal",
+    "backToList": "Zurück zu Rezepten",
+    "min": "Min",
+    "servings": "Portionen",
+    "logAsMeal": "Als Mahlzeit loggen",
+    "shoppingList": "Einkaufsliste",
+    "keepBrowsing": "Weiter stöbern",
+    "viewList": "Liste ansehen",
+    "nutritionFacts": "Nährwerte (pro Portion)",
+    "calories": "Kalorien",
+    "protein": "Protein",
+    "carbs": "Kohlenhydrate",
+    "fat": "Fett",
+    "ingredients": "Zutaten",
+    "ingredientsLocked": "Zutaten gesperrt",
+    "ingredientsLockedDesc": "Upgrade auf Pro für Zutaten.",
+    "instructions": "Zubereitung",
+    "instructionsLocked": "Zubereitung gesperrt",
+    "instructionsLockedDesc": "Upgrade auf Pro für Schritte.",
+    "proUpsell": "Upgrade auf Pro, um Rezepte, Anweisungen und Einkaufsliste freizuschalten."
+  },
+  "Goal Check": "Sie haben ausgewählt",
+  "Error": "Profil konnte nicht gespeichert werden. Bitte überprüfen Sie Ihre Verbindung.",
+  "metabolic": {
+    "deepKetosis": "Tiefe Ketose",
+    "nutritionalKetosis": "Ernährungsketose",
+    "glucoseBurning": "Glukoseverbrennung",
+    "dailyCheckin": "Täglicher Check-in",
+    "title": "Stoffwechselzentrum",
+    "subtitle": "Glukose vs. Ketone • Kommandozentrale",
+    "currentState": "Aktueller Stand",
+    "netCarbs": "Netto-Kohlenhydrate",
+    "fatCarbRatio": "Fett/Kohlenhydrate %",
+    "fatDominance": "Fette Dominanz",
+    "netCarbsLeft": "Verbleibende Nettokohlenhydrate",
+    "ofBudget": "von {{budget}}g Budget",
+    "resetStreak": "90-tägige Reset-Serie",
+    "consistencyDesc": "Konsistenz verdrahtet die Dopaminwege neu. Stapeln Sie weiterhin zuckerfreie Tage.",
+    "scanFood": "Lebensmittel scannen",
+    "scanFoodDesc": "Erkennen Sie versteckte Zucker und Makros",
+    "logDailyStatus": "Täglichen Status protokollieren",
+    "didYouStaySugarFree": "Bist du heute zuckerfrei geblieben?",
+    "greenList": "Grüne Keto-Liste",
+    "greenListIntro": "Halten Sie sich an diese Lebensmittel, um in der tiefen/ernährungsbedingten Ketose zu bleiben.",
+    "healthyFats": "Gesunde Fette",
+    "healthyFatsList": "• Avocado/Avocadoöl\\n• Olivenöl/Kokosöl\\n• Butter/Ghee\\n• MCT-Öl",
+    "proteins": "Proteine",
+    "proteinsList": "• Fetter Fisch (Lachs, Makrele)\\n• Eier (ganz)\\n• Rindfleisch/Steak (fette Stücke)\\n• Hähnchenschenkel (mit Haut)",
+    "lowCarbVeggies": "Low-Carb-Gemüse",
+    "lowCarbVeggiesList": "• Spinat / Grünkohl\\n• Brokkoli / Blumenkohl\\n• Zucchini\\n• Spargel",
+    "avoid": "Vermeiden/einschränken",
+    "avoidList": "• Brot, Nudeln, Reis\\n• Kartoffeln\\n• Zuckerhaltige Früchte (Bananen, Weintrauben)\\n• Verarbeitete Snacks",
+    "proMessage": "Upgraden Sie auf Pro, um erstklassige Metabolic-Einblicke freizuschalten."
+  },
+  "Wait": "Benutzer lädt...",
+  "Dev": "Protokollierte Testmakros: 10 g Kohlenhydrate, 15 g Fett",
+  "sugarControl": {
+    "checkinNeededBody": "Wählen Sie „Zuckerfrei“ oder „Mit Zucker“.",
+    "savedTitle": "Gespeichert",
+    "savedBody": "Täglicher Check-in eingespart.",
+    "meterTitle": "Messgerät für die Neuverkabelung des Gehirns",
+    "dStreak": "d Streak",
+    "sugarFree": "Zuckerfrei",
+    "hadSugar": "Hatte Zucker",
+    "notes": "Notizen",
+    "notesPlaceholder": "Wie fühlen Sie sich? Auslöser?",
+    "saving": "Sparen...",
+    "saveCheckin": "Check-in speichern",
+    "startedTitle": "Begonnen",
+    "startedBody": "Ihr 90-Tage-Reset hat begonnen. Einen Tag nach dem anderen.",
+    "errorStart": "Die Herausforderung konnte nicht gestartet werden.",
+    "checkinNeeded": "Einchecken erforderlich",
+    "title": "Zuckerkontrolle",
+    "subtitle": "90-Tage-Reset • tägliche Check-ins",
+    "bonusActive": "Glukosestabilitätsbonus aktiv",
+    "bonusBody": "Du",
+    "meterSub": "Aufeinanderfolgende Tage wurden als zuckerfrei protokolliert. Weiter so.",
+    "days": "Tage",
+    "startReset": "90-Tage-Reset starten/neu starten",
+    "dailyCheckin": "Täglicher Check-in",
+    "howDidTodayGo": "Wie ist es heute gelaufen?",
+    "mood": "Stimmung"
+  },
+  "Saved": "Gespeichert für den heutigen Zucker-Check-in.",
+  "admin": {
+    "errorRequiredName": "Übungsname ist erforderlich",
+    "errorSave": "Übung konnte nicht gespeichert werden",
+    "deleteConfirm": "Löschen",
+    "deleteTitle": "Übung löschen",
+    "delete": "Löschen",
+    "calisthenicsBodyweight": "Körpergewicht",
+    "library": "Übungsbibliothek",
+    "manageExercises": "Verwalten Sie Übungen für Trainingspläne",
+    "new": "Neu",
+    "searchLibrary": "Bibliothek durchsuchen...",
+    "reset": "Zurücksetzen",
+    "type": "TYP",
+    "difficulty": "SCHWIERIGKEIT",
+    "muscleGroup": "MUSKELGRUPPE",
+    "results": "Ergebnisse",
+    "noExercisesYet": "Noch keine Übungen",
+    "editExercise": "Übung bearbeiten",
+    "newExercise": "Neue Übung",
+    "save": "Speichern",
+    "exerciseName": "Übungsname",
+    "exerciseNamePlaceholder": "z.B. Ab-Wheel-Rollout, Langhantel-Kniebeuge",
+    "exerciseDescription": "Beschreibung",
+    "exerciseDescriptionPlaceholder": "Worauf zielt diese Übung ab?",
+    "exerciseTypeLabel": "Übungstyp (alles Zutreffende auswählen)",
+    "instructionsLabel": "Anweisungen",
+    "instructionsHint": "Diese erscheinen als nummerierte Liste in der App",
+    "instructionsPlaceholder": "Knien Sie sich hin und greifen Sie das Rad schulterbreit.\\nSpreizen Sie den Rumpf und atmen Sie aus.\\nRollen Sie nach vorne, bis die Hüften gestreckt sind.\\nZiehen Sie sich langsam zurück, um zu beginnen",
+    "primaryMuscles": "Primäre Muskeln",
+    "secondaryMuscles": "Sekundäre Muskeln",
+    "muscleGroupFilterTags": "MUSKELGRUPPEN-FILTER-TAGS",
+    "muscleGroupFilterHint": "Diese kennzeichnen diese Übung mit den Karten „Nach Muskelgruppe durchsuchen“ auf der Registerkarte „Workouts“.",
+    "requiredEquipment": "Erforderliche Ausrüstung (durch Kommas getrennt)",
+    "optionalEquipment": "Optionale / alternative Ausstattung (durch Kommas getrennt)",
+    "optionalEquipmentHint": "Die hier aufgeführten Elemente werden angezeigt als",
+    "difficultyLabel": "Schwierigkeit",
+    "thumbnailUrl": "Miniaturbild-URL – Fallback/Unisex (R2)",
+    "videoUrl": "Video-URL – Fallback/Unisex (R2)",
+    "thumbnailsVideosGender": "THUMBNAILS & VIDEOS NACH GESCHLECHT",
+    "genderToggleHint": "Aktivieren Sie den Schalter, um separate Miniaturansichten und Videos für ♂-Männer und ♀-Frauen hochzuladen. Die App wählt basierend auf dem Benutzer die richtige Version aus.",
+    "hasGenderVariants": "Hat Geschlechtsvarianten (♂ / ♀)",
+    "maleThumbnail": "♂ Männliches Miniaturbild (R2)",
+    "maleVideo": "♂ Männliche Video-URL (R2)",
+    "femaleThumbnail": "♀ Weibliches Miniaturbild (R2)",
+    "femaleVideo": "♀ Weibliche Video-URL (R2)",
+    "fallbackVideo": "Fallback-/Unisex-Video-URL (R2)",
+    "fallbackVideoHint": "Wird angezeigt, wenn keine Geschlechtsvariante vorhanden ist oder als Standard."
+  },
+  "shopping": {
+    "loading": "Laden...",
+    "signIn": "Bitte melden Sie sich an, um die Einkaufsliste zu nutzen",
+    "upgradePrompt": "Der kostenlose Plan ist auf 2 Artikel begrenzt. Upgraden Sie unbegrenzt.",
+    "missingItemTitle": "Fehlender Artikel",
+    "missingItemMsg": "Geben Sie zunächst einen Artikelnamen ein.",
+    "errorAdd": "Artikel konnte nicht hinzugefügt werden. Bitte versuchen Sie es erneut.",
+    "clearTitle": "Klar abgeschlossen",
+    "title": "Einkaufsliste",
+    "done": "Erledigt",
+    "clearDoneBtn": "Klar erledigt",
+    "loadingList": "Deine Liste wird geladen...",
+    "emptyTitle": "Ihre Liste ist leer",
+    "emptySub": "Fügen Sie Elemente manuell hinzu oder ziehen Sie sie direkt aus einem Rezept.",
+    "addFirst": "Erstes Element hinzufügen",
+    "browseRecipes": "Durchsuchen Sie Rezepte",
+    "errorDelete": "Element konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+    "errorUpdate": "Artikel konnte nicht aktualisiert werden.",
+    "upgradeTitle": "Upgrade auf Pro",
+    "upgradeMsg": "Kostenlose Benutzer können bis zu 2 Artikel hinzufügen. Upgraden Sie für unbegrenzte Artikel und synchronisieren Sie sie geräteübergreifend.",
+    "viewPro": "Pro-Pläne anzeigen",
+    "addItem": "Artikel hinzufügen",
+    "itemName": "Artikelname",
+    "namePlaceholder": "z.B. Eier",
+    "quantity": "Menge",
+    "qtyPlaceholder": "z.B. 6",
+    "addToList": "Zur Liste hinzufügen",
+    "clearMsg": "${done.length} markiertes Element entfernen${done.length > 1 ?",
+    "addedTitle": "Zur Einkaufsliste hinzugefügt",
+    "addedMsg": "{{created}} neue Artikel hinzugefügt und {{merged}} Artikel zusammengeführt."
+  },
+  "No ingredients": "Bei diesem Rezept müssen keine Zutaten hinzugefügt werden.",
+  "Success": "Übung protokolliert!"
 }

@@ -137,7 +137,8 @@
       "swipeable": "Trainingsplan",
       "quickActions": "Snelle acties",
       "todayActivities": "Activiteiten vandaag",
-      "moveInsights": "Bewegingsinzichten"
+      "moveInsights": "Bewegingsinzichten",
+      "proBanner": "Pro-banner"
     },
     "title": "Bewegen",
     "subtitle": "Volg je trainingen en activiteiten",
@@ -276,7 +277,17 @@
     "fullBodyFocus": "Volledig lichaam / gemengd",
     "openMove": "Open Move",
     "yourWeekOverview": "Je weekoverzicht",
-    "weekOverviewDesc": "Gebruik dit als eenvoudige gids. Pro krijgt een persoonlijk plan dat zich aanpast en oefeningen wisselt."
+    "weekOverviewDesc": "Gebruik dit als eenvoudige gids. Pro krijgt een persoonlijk plan dat zich aanpast en oefeningen wisselt.",
+    "fourWeekPlan": "4 wekenplan",
+    "fourWeekPlanDesc": "Een gratis sjabloon om u op weg te helpen.",
+    "freeTemplate": "GRATIS SJABLOON",
+    "startWithStructure": "Begin met structuur.",
+    "followRoutine": "Volg deze routine van vier weken om momentum op te bouwen.",
+    "proPlanAdapts": "Uw gepersonaliseerde plan past zich aan naarmate u vordert.",
+    "freeUsers28Days": "Gratis gebruikers krijgen een volledige blauwdruk van 28 dagen. Upgrade naar Pro om uw reis voort te zetten.",
+    "viewWeek": "Week bekijken",
+    "personalisedTraining": "Gepersonaliseerde training",
+    "upgradeDetail": "Upgrade naar Pro om oefeningen aan uw plan toe te voegen of te verwijderen."
   },
   "tabs": {
     "home": "Home",
@@ -371,7 +382,11 @@
       "meals": "Maaltijden",
       "quickActions": "Snelle acties",
       "utilities": "Hulpmiddelen"
-    }
+    },
+    "protein": "Eiwit",
+    "carbs": "Koolhydraten",
+    "fat": "Vet",
+    "caloriesShort": "cal"
   },
   "modals": {
     "pro": {
@@ -451,7 +466,26 @@
       "searchIng": "Zoek om een ingrediënt toe te voegen...",
       "noIng": "Geen ingrediënten toegevoegd",
       "totalMacros": "Totale macro's (per portie)",
-      "save": "Recept opslaan"
+      "save": "Recept opslaan",
+      "name": "Receptnaam",
+      "namePlaceholder": "bijv. Kip Roerbak",
+      "makesServings_one": "Maakt {{count}} porties",
+      "makesServings_other": "Maakt {{count}} porties",
+      "makesServings": "Maakt {{count}} porties",
+      "noIngredients": "Geen ingrediënten toegevoegd.",
+      "goBack": "Ga terug en voeg ingrediënten toe.",
+      "perServing": "Voedingsinformatie per portie",
+      "recipe": "Recept",
+      "saveRecipe": "Recept opslaan",
+      "bulkImport": "Bulkimport gebruiken voor ingrediënten?",
+      "pasteIngredients": "Plak of typ uw ingrediënten (één per regel):",
+      "autoMatchHint": "We zullen proberen ze automatisch te matchen met voedingsmiddelen in de database.",
+      "nextIngredients": "Volgende: Ingrediënten",
+      "nextReview": "Volgende: recensie",
+      "matching": "Passend bij uw ingrediënten...",
+      "foundFrom": "Gevonden van:",
+      "searchManually": "Handmatig zoeken naar een betere match:",
+      "error": "Kan recept niet opslaan."
     },
     "logRecipe": {
       "title": "Maaltijd registreren",
@@ -825,7 +859,43 @@
         "powerlifting": "Powerlifting / Strongman",
         "crossfit": "CrossFit / Functioneel",
         "sport": "Team- / Vechtsport"
-      }
+      },
+      "q": {
+        "trainingMode": "How would you describe your approach?",
+        "primaryGoal": "What is your primary goal right now?",
+        "yearsTraining": "How long have you been training seriously?",
+        "competitionFocus": "Do you compete or plan to?"
+      },
+      "hint": {
+        "trainingMode": "Be honest — your guidance is personalised and private."
+      },
+      "natural": "Natural Athlete",
+      "naturalDesc": "No performance-enhancing drugs",
+      "enhanced": "Enhanced / PED User",
+      "enhancedDesc": "Using or considering anabolic compounds",
+      "athlete": "Competitive Athlete",
+      "athleteDesc": "Competing or prepping to compete",
+      "muscle": "Build Muscle",
+      "muscleDesc": "Hypertrophy & size",
+      "strength": "Increase Strength",
+      "strengthDesc": "Raw power & 1RM",
+      "fat_loss": "Shred & Cut",
+      "fat_lossDesc": "Fat loss, preserve muscle",
+      "performance": "Athletic Performance",
+      "performanceDesc": "Speed, power, conditioning",
+      "longevity": "Longevity & Health",
+      "longevityDesc": "Long-term optimisation",
+      "recomp": "Body Recomposition",
+      "recompDesc": "Build muscle, lose fat simultaneously",
+      "beginner": "Under 1 year",
+      "intermediate": "1–3 years",
+      "advanced": "3–7 years",
+      "veteran": "7+ years",
+      "none": "No — training for myself",
+      "bodybuilding": "Bodybuilding / Physique",
+      "powerlifting": "Powerlifting / Strongman",
+      "crossfit": "CrossFit / Functional",
+      "sport": "Team / Combat Sport"
     },
     "restartTitle": "Quiz herstarten",
     "restartMsg": "Dit wist je huidige profiel. Doorgaan?",
@@ -838,7 +908,21 @@
       "bloodworkBody": "Enhanced atleten moeten lipiden, leverwaarden en hematocriet monitoren.",
       "cardioTitle": "Cardiovasculaire gezondheid is prioriteit #1",
       "cardioBody": "Cardio (zone 2) 4x per week is niet-onderhandelbaar."
-    }
+    },
+    "stackLoggedMsg": "Supplementinname geregistreerd.",
+    "upgradeToPro": "Geschikt voor Pro",
+    "vitalitySubline": "Drive · Herstel · Focus",
+    "supplementStack": "Supplementstapel",
+    "pillarDriveShort": "V",
+    "pillarRecoveryShort": "R",
+    "pillarFocusShort": "F",
+    "personalisedInsights": "Inzichten personaliseren",
+    "bloodWorkTitle": "Analyses van de Sangue Periodicas",
+    "bloodWorkBody": "Atleten verbeterden hun lipide-, bloed- en leverfunctie tot ongeveer 8 dagen.",
+    "cardioTitle": "Saúde Cardiovasculair en Prioridade #1",
+    "cardioBody": "Cardio LISS 4x/semana is obrigerend om arteriële en hematologische druk te veroorzaken.",
+    "unlockDeepAnalytics": "Analyseer de hormonale diepgang",
+    "unlockDeepAnalyticsSub": "Inzichten die zich aanpassen aan de geschiedenis, padrões en sintomas registraties."
   },
   "todo": {
     "title": "Productiviteitscentrum",
@@ -1014,7 +1098,16 @@
     "units": {
       "kg": "kg",
       "minKm": "min/km"
-    }
+    },
+    "couldNotSave": "Kan niet opslaan.",
+    "logged": "ingelogd",
+    "saved": "Opgeslagen",
+    "unlockWithPro": "Ontgrendel met Pro",
+    "viewProPlans": "Bekijk Pro-abonnementen",
+    "clear": "Duidelijk",
+    "back": "Rug",
+    "notReady": "Niet klaar",
+    "upgradeToPro": "Upgrade naar Pro"
   },
   "wellness": {
     "title": "Welzijn",
@@ -1262,7 +1355,103 @@
         "d7Title": "Vier Week 1",
         "d7Focus": "Reflectie",
         "d7Affirm": "Ik erken elke stap die ik zet.",
-        "d7Reflect": "Wat was je grootste overwinning deze week?"
+        "d7Reflect": "Wat was je grootste overwinning deze week?",
+        "d4Title": "Rust & Integreer",
+        "d4Focus": "Herstel",
+        "d4Affirm": "Rust is productief. Ik eer mijn behoefte aan stilte.",
+        "d4Reflect": "Wat zuigt jouw energie weg? Wat herstelt het?",
+        "d5Title": "Moed",
+        "d5Focus": "Zelfexpressie",
+        "d5Affirm": "Mijn stem is belangrijk. Ik druk mij met vertrouwen uit.",
+        "d5Reflect": "Wat zou je zeggen als angst je niet in de weg stond?",
+        "d6Title": "Waarden Inchecken",
+        "d6Focus": "Doel",
+        "d6Affirm": "Ik leef in lijn met wat voor mij het belangrijkst is.",
+        "d6Reflect": "Noem uw top 3 waarden. Weerspiegelde jouw week ze?",
+        "d8Title": "Stress-audit",
+        "d8Focus": "Spanning",
+        "d8Affirm": "Ik kan moeilijke dingen aan.",
+        "d8Reflect": "Wat geeft jou op dit moment de meeste stress? Is het urgent, belangrijk, allebei of geen van beide?",
+        "d9Title": "Herkaderen",
+        "d9Focus": "Cognitie",
+        "d9Affirm": "Ik kies hoe ik mijn wereld interpreteer.",
+        "d9Reflect": "Neem een ​​stressvolle gedachte. Wat is een andere manier om het te zien?",
+        "d10Title": "Emotionele etikettering",
+        "d10Focus": "Emoties",
+        "d10Affirm": "Mijn gevoelens zijn geldige boodschappers.",
+        "d10Reflect": "Welke emotie heb je vermeden? Wat probeert het je misschien te vertellen?",
+        "d11Title": "Grenzen",
+        "d11Focus": "Grenzen",
+        "d11Affirm": "Mijn ‘nee’ is een daad van zelfrespect.",
+        "d11Reflect": "Waar in je leven heb je een stevigere grens nodig?",
+        "d12Title": "Zelfcompassie",
+        "d12Focus": "Zelf",
+        "d12Affirm": "Ik behandel mezelf met de vriendelijkheid die ik anderen geef.",
+        "d12Reflect": "Wat zou je tegen een vriend zeggen die meemaakt wat jij meemaakt?",
+        "d13Title": "Sociale batterij",
+        "d13Focus": "Energie",
+        "d13Affirm": "Ik bescherm mijn energie zonder schuldgevoel.",
+        "d13Reflect": "Welke relaties geven jou energie? Welke putten het uit?",
+        "d14Title": "Week 2 Reflectie",
+        "d14Focus": "Beoordeling",
+        "d14Affirm": "Groei kost tijd. Ik ben geduldig met mezelf.",
+        "d14Reflect": "Hoe ben je gegroeid sinds dag 1?",
+        "d15Title": "Nieuwsgierigheid",
+        "d15Focus": "Leren",
+        "d15Affirm": "Nieuwsgierigheid is mijn superkracht.",
+        "d15Reflect": "Welk onderwerp heb je altijd al willen leren, maar bleef je uitstellen?",
+        "d16Title": "Angstladder",
+        "d16Focus": "Moed",
+        "d16Affirm": "Ik loop naar datgene waar ik bang voor ben, stap voor stap.",
+        "d16Reflect": "Wat is een klein ding dat je uit angst hebt vermeden?",
+        "d17Title": "Stroom staat",
+        "d17Focus": "Betrokkenheid",
+        "d17Affirm": "Als ik de tijd uit het oog verlies, leef ik het meest.",
+        "d17Reflect": "Wanneer ben je voor het laatst ergens helemaal in opgegaan? Wat was je aan het doen?",
+        "d18Title": "Betekenis Audit",
+        "d18Focus": "Doel",
+        "d18Affirm": "Mijn leven is betekenisvol omdat ik ervoor kies om het zo te maken.",
+        "d18Reflect": "Wat zou jouw leven zinvoller maken?",
+        "d19Title": "Sterke punten",
+        "d19Focus": "Identiteit",
+        "d19Affirm": "Mijn sterke punten zijn de unieke geschenken die ik de wereld bied.",
+        "d19Reflect": "Waar ben jij van nature goed in, wat anderen vaak opmerken?",
+        "d20Title": "Vergiffenis",
+        "d20Focus": "Uitgave",
+        "d20Affirm": "Vergeving is een geschenk dat ik mezelf geef.",
+        "d20Reflect": "Tegen wie of wat koester je wrok? Hoe zou het voelen om het vrij te geven?",
+        "d21Title": "Week 3 Terugblik",
+        "d21Focus": "Reflectie",
+        "d21Affirm": "Ik ben niet wie ik was. Ik word wie ik wil zijn.",
+        "d21Reflect": "Wat verraste je aan jezelf in week 3?",
+        "d22Title": "Gewoontestapel",
+        "d22Focus": "Systemen",
+        "d22Affirm": "Mijn routines zijn de architectuur van mijn beste zelf.",
+        "d22Reflect": "Welke 3 oefeningen uit dit programma wil jij voor altijd behouden?",
+        "d23Title": "Identiteitsverschuiving",
+        "d23Focus": "Identiteit",
+        "d23Affirm": "Ik ben de persoon die ik gekozen heb te worden.",
+        "d23Reflect": "Schrijf uw nieuwe identiteitsverklaring op: \"Ik ben iemand die ____.\"",
+        "d24Title": "Ondersteuningssysteem",
+        "d24Focus": "Gemeenschap",
+        "d24Affirm": "Ik ben omringd door mensen die willen dat ik floreer.",
+        "d24Reflect": "Wie in uw leven ondersteunt uw reis naar geestelijke gezondheid?",
+        "d25Title": "Toekomstig zelf",
+        "d25Focus": "Visie",
+        "d25Affirm": "Mijn toekomstige zelf is het waard om vandaag in te investeren.",
+        "d25Reflect": "Schrijf over een jaar een brief van je toekomstige zelf.",
+        "d26Title": "Onderhoudsplan",
+        "d26Focus": "Duurzaamheid",
+        "d26Affirm": "Ik heb het gereedschap. Ik kies ervoor om ze te gebruiken.",
+        "d26Reflect": "Wat ga je doen als het weer moeilijk wordt?",
+        "d27Title": "Dankbaarheidsceremonie",
+        "d27Focus": "Dankbaarheid",
+        "d27Affirm": "Ik ben trots op het werk dat ik heb gedaan.",
+        "d27Reflect": "Waar ben jij het meest trots op deze maand?",
+        "d28Title": "Nieuw begin",
+        "d28Focus": "Continuïteit",
+        "d28Affirm": "Elke dag is een nieuw begin.",
+        "d28Reflect": "Hoe ziet het volgende hoofdstuk van je leven eruit?"
       },
       "activities": {
         "d1a1Title": "5-4-3-2-1 Aarding",
@@ -1272,7 +1461,134 @@
         "d4a2Title": "Digitale Zonsondergang",
         "d4a2Desc": "Geen schermen 1 uur voor het slapen.",
         "d5a3Title": "Koude Douche",
-        "d5a3Desc": "Eindig je douche met 2 minuten koud water."
+        "d5a3Desc": "Eindig je douche met 2 minuten koud water.",
+        "d1a1Why": "Activeert het parasympathische zenuwstelsel binnen 90 seconden.",
+        "d1a2Why": "Vermindert cortisol tot 25% (Stanford Neuroscience, 2023).",
+        "d1a3Title": "Dankbaarheid zaad",
+        "d1a3Desc": "Schrijf vandaag 3 heel specifieke dingen op waar je dankbaar voor bent.",
+        "d1a3Why": "Dankbaarheid activeert de mediale prefrontale cortex, waardoor angst wordt verminderd.",
+        "d2a1Title": "Progressieve spierontspanning",
+        "d2a1Desc": "Span elke spiergroep gedurende 5 seconden en laat los gedurende 30 seconden. Begin bij de voeten en eindig bij het gezicht.",
+        "d2a1Why": "Vermindert fysieke spanning die mentale stress weerspiegelt.",
+        "d2a2Title": "Ochtendpagina's",
+        "d2a2Desc": "Schrijf onmiddellijk na het ontwaken drie pagina's over de stroom van bewustzijn. Geen bewerking.",
+        "d2a2Why": "Verwijdert mentale ‘ruis’ en brengt onbewuste zorgen aan het licht.",
+        "d3a1Title": "Stuur een vriendelijk bericht",
+        "d3a1Desc": "Sms of bel iemand die je waardeert. Geen agenda. Gewoon warmte.",
+        "d3a1Why": "Bij vriendelijke daden komt oxytocine vrij, waardoor cortisol voor beide partijen wordt verlaagd.",
+        "d3a2Title": "Liefdevolle meditatie",
+        "d3a2Desc": "Wens jezelf in stilte welzijn → een geliefde → een neutraal persoon → een moeilijk persoon.",
+        "d3a2Why": "Verhoogt positieve emoties en sociale verbondenheid (Fredrickson, 2008).",
+        "d4a1Title": "Yoga Nidra (NSDR)",
+        "d4a1Desc": "Ga liggen. Volg een niet-slaap-diepe-rustprotocol. Blijf wakker maar volledig ontspannen.",
+        "d4a1Why": "Herstelt het dopaminegehalte vergelijkbaar met een dutje van 90 minuten (Huberman Lab, 2021).",
+        "d4a2Why": "Blauw licht vertraagt ​​de melatonineproductie tot wel 3 uur. Zonder dit stijgt de slaapkwaliteit met 34%.",
+        "d5a1Title": "Spiegel werk",
+        "d5a1Desc": "Kijk in je ogen in een spiegel. Zeg 3 affirmaties hardop. Merk ongemak op zonder oordeel.",
+        "d5a1Why": "Verhoogt zelfcompassie en vermindert schaamte (Neff, 2021).",
+        "d5a2Title": "Creatieve sprint",
+        "d5a2Desc": "Teken, schrijf, zing, dans – alles wat creatief is. Geen doel. Geen publiek. Gewoon expressie.",
+        "d5a2Why": "Het maken van kunst vermindert cortisol met wel 75% in 45 minuten (Stuckey & Nobel, 2010).",
+        "d5a3Why": "Geeft 200-300% noradrenaline vrij – een natuurlijk antidepressivum (Shevchuk, 2008).",
+        "d6a1Title": "Waarden in kaart brengen",
+        "d6a1Desc": "Noem 10 dingen die je waardeert. Rangschik ze. Schrijf deze week één actie ter ere van elke top 3.",
+        "d6a1Why": "Waardenverheldering is een kerntechniek van ACT die de psychologische inflexibiliteit vermindert.",
+        "d6a2Title": "Avond bodyscan-meditatie",
+        "d6a2Desc": "Ga liggen. Breng langzaam het bewustzijn naar elk lichaamsdeel, van de voeten tot de kruin.",
+        "d6a2Why": "Vermindert de ernst van slapeloosheid met 58% (Ong et al., 2014).",
+        "d7a1Title": "Wekelijks overzicht",
+        "d7a1Desc": "Schrijf: 3 overwinningen, 1 uitdaging, 1 les en 1 intentie voor volgende week.",
+        "d7a1Why": "Reflecterend dagboekschrijven consolideert neurologische leerpatronen.",
+        "d7a2Title": "Beloningsritueel",
+        "d7a2Desc": "Doe één ding puur uit plezier: een film, een maaltijd, een wandeling met iemand van wie je houdt.",
+        "d7a2Why": "Beloningsvoorspelling versterkt gewoontevorming (Deci & Ryan, Self-Determination Theory).",
+        "d8a1Title": "Cirkels van controle",
+        "d8a1Desc": "Teken een cirkel. Binnen = dingen waar je controle over hebt. Buiten = dingen die je niet kunt. Verplaats je zorgen.",
+        "d8a1Why": "Vermindert angst en vergroot keuzevrijheid (Covey, 2004).",
+        "d8a2Title": "WOOP-doelstelling",
+        "d8a2Desc": "Wens → Resultaat → Obstakel → Plan. Schrijf één WOOP voor de week.",
+        "d8a2Why": "WOOP verdubbelt bijna het behalen van doelen vergeleken met alleen positief denken (Oettingen, 2014).",
+        "d9a1Title": "Cognitieve herkadering",
+        "d9a1Desc": "Neem je meest stressvolle gedachte. Schrijf: Bewijs voor → Bewijs tegen → Alternatieve visie.",
+        "d9a1Why": "Kern-CBT-techniek. Vermindert depressieve symptomen tot 40% (Beck, 2011).",
+        "d9a2Title": "4-7-8 Ademwerk",
+        "d9a2Desc": "Adem 4s in, houd 7s vast, adem 8s uit. Herhaal 4 cycli.",
+        "d9a2Why": "Activeert de nervus vagus, waardoor het zenuwstelsel in rust en vertering komt.",
+        "d10a1Title": "Oefening met het Emotiewiel",
+        "d10a1Desc": "Gebruik een emotiewiel om je gevoelens nauwkeurig te benoemen. Ga verder dan ‘slecht’ of ‘verdrietig’.",
+        "d10a1Why": "Het labelen van emoties vermindert de activering van de amygdala onmiddellijk (Lieberman, 2007).",
+        "d10a2Title": "Bewegingsgeneeskunde",
+        "d10a2Desc": "Elke beweging die je leuk vindt. Concentreer u op hoe uw lichaam voelt, niet op prestaties.",
+        "d10a2Why": "Lichaamsbeweging is bij milde tot matige depressies even effectief als antidepressiva (Blumenthal, 2007).",
+        "d11a1Title": "Grensscript",
+        "d11a1Desc": "Schrijf één grens op die je deze week moet stellen. Oefen het drie keer hardop uitspreken.",
+        "d11a1Why": "Assertiviteitstraining vermindert sociale angst en verbetert de relatietevredenheid.",
+        "d11a2Title": "NSDR Rest-protocol",
+        "d11a2Desc": "Ga liggen. Volg een bodyscan of Yoga Nidra audio.",
+        "d11a2Why": "Herstelt de alertheid zonder cafeïne; verbetert de cognitieve prestaties in de middag met 20%.",
+        "d12a1Title": "Zelfcompassiebrief",
+        "d12a1Desc": "Schrijf een brief aan jezelf over een huidige strijd – alsof je aan je beste vriend schrijft.",
+        "d12a1Why": "Schrijven met zelfcompassie vermindert schaamte en zelfkritiek (Neff & Germer, 2013).",
+        "d12a2Title": "Genieten van de praktijk",
+        "d12a2Desc": "Haal een positieve herinnering tien minuten lang in levendige details terug. Schrijf op wat je voelde.",
+        "d12a2Why": "Genieten vergroot het positieve effect en breidt de voordelen van goede ervaringen uit.",
+        "d13a1Title": "Energie-audit",
+        "d13a1Desc": "Maak een lijst van alle mensen/activiteiten van de afgelopen week. Beoordeel elk +/- op uw energie.",
+        "d13a1Why": "Bewust energiebeheer voorkomt burn-out (Loehr & Schwartz, 2003).",
+        "d13a2Title": "Digitaal Detoxuurtje",
+        "d13a2Desc": "Eén uur met alle meldingen uitgeschakeld. Wees volledig aanwezig met één analoge activiteit.",
+        "d13a2Why": "Telefoonvrije perioden verminderen de angstscores met 23% (Duke University, 2021).",
+        "d14a1Title": "Week 2 Journaal",
+        "d14a1Desc": "Overwinningen → Uitdagingen → Opgemerkte patronen → Eén verplichting voor week 3.",
+        "d14a1Why": "Gestructureerde reflectie integreert het leren en bereidt de hersenen voor op de volgende fase van verandering.",
+        "d15a1Title": "Leer gedurende 30 minuten",
+        "d15a1Desc": "Kies één onderwerp. Lees, kijk of luister 30 minuten zonder afleiding.",
+        "d15a1Why": "Neuroplasticiteit piekt bij gefocust, nieuw leren – 30 minuten is optimaal voor retentie.",
+        "d15a2Title": "Teach-Back-methode",
+        "d15a2Desc": "Leg in eenvoudige woorden uit wat je zojuist hebt geleerd, alsof je het tegen een tienjarige zegt.",
+        "d15a2Why": "De Feynman-techniek onthult hiaten in het begrip en verdiept de geheugencodering.",
+        "d16a1Title": "Bouw je angstladder",
+        "d16a1Desc": "Identificeer je angst. Verdeel het in 10 stappen, van gemakkelijk naar moeilijk. Zet vandaag nog stap 1.",
+        "d16a1Why": "Geleidelijke blootstelling vermindert systematisch de vermijdings- en angstreacties (CGT).",
+        "d17a1Title": "Stroomactiviteit",
+        "d17a1Desc": "Doe één activiteit waardoor je de tijd uit het oog verliest. Verwijder alle afleidingen.",
+        "d17a1Why": "Flow state activeert tegelijkertijd dopamine, noradrenaline en endorfines.",
+        "d18a1Title": "Ikigai-kaarten",
+        "d18a1Desc": "Teken het Ikigai-diagram: waar je van houdt, waar je goed in bent, wat de wereld nodig heeft, kan worden betaald.",
+        "d18a1Why": "Ikigai-uitlijning voorspelt levenstevredenheid en een lang leven (Okinawa Blue Zone-onderzoek).",
+        "d19a1Title": "VIA Sterkte Reflectie",
+        "d19a1Desc": "Maak een lijst van je top 5 karaktersterkten. Schrijf een manier op die je deze week hebt gebruikt.",
+        "d19a1Why": "Het dagelijks gebruiken van topsterktes vermindert de depressie met 40% (Seligman, PERMA-model).",
+        "d20a1Title": "Vergevingsbrief",
+        "d20a1Desc": "Schrijf een vergevingsbrief – u hoeft deze niet te versturen. Focus op je eigen release.",
+        "d20a1Why": "Vergeving vermindert vijandigheid, bloeddruk en depressiescores aanzienlijk.",
+        "d21a1Title": "Vieringsritueel",
+        "d21a1Desc": "Herlees uw bijdrage van Dag 1 opnieuw. Schrijf: Wie je was → Wie je nu bent. Vier het verschil.",
+        "d21a1Why": "Voltooiingsrituelen verankeren de winst en motiveren voortdurende gedragsverandering.",
+        "d22a1Title": "Gewoontestapelplan",
+        "d22a1Desc": "Schrijf 3 gewoontes op: Trigger → Nieuw gedrag → Beloning. Stapel ze op bestaande routines.",
+        "d22a1Why": "Het stapelen van gewoontes heeft een succespercentage van 91% vergeleken met solo-gewoontevorming (Fogg, BJ, 2020).",
+        "d23a1Title": "Schrijven van identiteitsverklaringen",
+        "d23a1Desc": "Schrijf vijf 'Ik ben'-uitspraken op die beschrijven wie je aan het worden bent. Lees ze dagelijks.",
+        "d23a1Why": "Op identiteit gebaseerde gewoonten zijn twee keer duurzamer dan op resultaten gebaseerde doelen (Clear, Atomic Habits).",
+        "d24a1Title": "Ondersteuningskaart",
+        "d24a1Desc": "Teken uw steunkaart: emotionele, praktische, professionele en sociale contacten.",
+        "d24a1Why": "Sociale steun is de sterkste voorspeller van veerkracht (Southwick & Charney, 2012).",
+        "d25a1Title": "Toekomstige zelfbrief",
+        "d25a1Desc": "Schrijf vanuit je toekomstige zelf (12 maanden vooruit). Wat heb je gedaan? Wie ben je?",
+        "d25a1Why": "Toekomstige zelfvisualisatie verhoogt de huidige zelfregulering met 30% (Hershfield, 2011).",
+        "d26a1Title": "Persoonlijk Crisisplan",
+        "d26a1Desc": "Schrijf uw crisisplan voor de geestelijke gezondheidszorg: waarschuwingssignalen, triggers, interventies, mensen die u moet bellen.",
+        "d26a1Why": "Het hebben van een schriftelijk plan vermindert de duur en impact van crises op het gebied van de geestelijke gezondheidszorg.",
+        "d26a2Title": "Mentale repetitie",
+        "d26a2Desc": "Speel mentaal een zware dag na. Wat doe je eerst? Seconde? Wie bel je?",
+        "d26a2Why": "Mentale repetitie bereidt de neurale paden voor om automatisch coping-reacties uit te voeren.",
+        "d27a1Title": "Bedankbriefjes",
+        "d27a1Desc": "Schrijf bedankbriefjes aan mensen die je deze maand hebben gesteund. Stuur er minstens één.",
+        "d27a1Why": "Uitgedrukte dankbaarheid verdiept relaties en verhoogt de scores voor persoonlijk welzijn.",
+        "d28a1Title": "Reflectie en hernieuwde toewijding",
+        "d28a1Desc": "Herlees uw bijdrage van Dag 1 opnieuw. Schrijf: Wie je was → Wie je bent → Wie je wordt. Stel intenties voor maand 2 in.",
+        "d28a1Why": "Narratieve continuïteit ondersteunt identiteitsintegratie en duurzame gedragsverandering."
       }
     },
     "widgets": {
@@ -1291,14 +1607,38 @@
       "anxiety": "Angstverlichting",
       "stoicism": "Stoïcisme",
       "weight-loss": "Gewichtsverlies",
-      "gym-motivation": "Gym motivatie"
+      "gym-motivation": "Gym motivatie",
+      "sovereignty": "Soevereiniteit en macht",
+      "strategic-mindset": "Strategische mentaliteit",
+      "breathwork": "Ademwerk",
+      "biohacking": "Biohacken",
+      "psychology": "Psychologie",
+      "charisma": "Charisma",
+      "modern-man": "Moderne mens",
+      "modern-woman": "Moderne vrouw",
+      "shadow-work": "Schaduwwerk",
+      "frame-control": "Framecontrole",
+      "machiavelli": "Machiavelli",
+      "dark-psychology": "Donkere psychologie",
+      "muscle": "Spierbouwer"
     },
     "soundscapes": {
       "rain": "Regen",
       "forest": "Bos",
       "ocean": "Oceaangolven",
       "whiteNoise": "Witte ruis",
-      "fireplace": "Haardvuur"
+      "fireplace": "Haardvuur",
+      "brownNoise": "Bruine ruis",
+      "waterfall": "Waterval",
+      "river": "Rivier",
+      "wind": "Wind",
+      "city": "Stadssfeer",
+      "pinkNoise": "Roze ruis",
+      "riverFlow": "Rivierstroom",
+      "underwaterHum": "Onderwater Hum",
+      "dropletEcho": "Druppel echo",
+      "slowRain": "Langzame regen",
+      "lakeAmbience": "Meer sfeer"
     },
     "gamesHub": {
       "title": "Gamecentrum",
@@ -1308,7 +1648,52 @@
       "game_reaction_name": "Wacht op Groen",
       "game_reaction_desc": "Test reactiesnelheid",
       "game_sequence-recall_name": "Volgorde Geheugen",
-      "game_stroop-challenge_name": "Stroop Uitdaging"
+      "game_stroop-challenge_name": "Stroop Uitdaging",
+      "gamesImproved": "Spellen worden verbeterd",
+      "activelyEnhancing": "We verbeteren actief de spelkwaliteit en voegen nieuwe toe!",
+      "premiumUnlimited": "Premium: onbeperkt spelen",
+      "backToGames": "← Terug naar Spellen",
+      "upgradeToPro": "Upgrade naar Pro",
+      "upgradeMessage": "Gratis gebruikers kunnen 2 games per dag spelen. Upgrade naar Pro voor onbeperkt spelen en voortgangsregistratie.",
+      "viewProPlans": "Bekijk Pro-abonnementen",
+      "game_balance_name": "Evenwicht",
+      "game_balance_desc": "Blijf gecentreerd",
+      "game_spot-difference_name": "Snelheidswedstrijd",
+      "game_spot-difference_desc": "Overeenkomen met de vorige kaart",
+      "game_sequence-recall_desc": "Onthoud cijfers",
+      "game_focus-frenzy_name": "Focus-razernij",
+      "game_focus-frenzy_desc": "Klik snel op doelen",
+      "game_wave-rider_name": "Golf Ruiter",
+      "game_wave-rider_desc": "Adem met golven",
+      "game_focus-shift_name": "Focusverschuiving",
+      "game_focus-shift_desc": "Wissel van taak",
+      "game_visual-filter_name": "Visueel filter",
+      "game_visual-filter_desc": "Vind verborgen doel",
+      "game_task-switcher_name": "Taakwisselaar",
+      "game_task-switcher_desc": "Snel schakelen",
+      "game_attention-trainer_name": "Trainer opgelet",
+      "game_attention-trainer_desc": "Klik op doelen",
+      "game_relaxing-ripples_name": "Ontspannende rimpelingen",
+      "game_relaxing-ripples_desc": "Creëer rimpelingen",
+      "game_calm-colors_name": "Rustige kleuren",
+      "game_calm-colors_desc": "Kleur ademen",
+      "game_stroop-challenge_desc": "Kleur versus woord",
+      "game_memory-matrix-2_name": "Geheugenmatrix",
+      "game_memory-matrix-2_desc": "Raster geheugen",
+      "game_word-scramble_name": "Woordzoeker",
+      "game_word-scramble_desc": "Ontcijfer woorden",
+      "game_math-bingo-2_name": "Wiskundebingo",
+      "game_math-bingo-2_desc": "Wiskunde oplossen",
+      "game_anagram-challenge_name": "Anagram",
+      "game_anagram-challenge_desc": "Anagrammen oplossen",
+      "game_finger-tapping_name": "Vinger tikken",
+      "game_finger-tapping_desc": "Tik op reeks",
+      "game_n-back_name": "N-Back-geheugen",
+      "game_n-back_desc": "Werkgeheugen",
+      "game_rhythm-tap-2_name": "Ritme tik",
+      "game_rhythm-tap-2_desc": "Tik om te verslaan",
+      "game_pattern-recognition_name": "Patroonovereenkomst",
+      "game_pattern-recognition_desc": "Volledige reeksen"
     },
     "lifeGoalsHub": {
       "title": "Levensdoelen",
@@ -1319,7 +1704,29 @@
       "cat_Work": "Werk",
       "cat_Travel": "Reizen",
       "cat_Health": "Gezondheid",
-      "cat_Personal": "Persoonlijk"
+      "cat_Personal": "Persoonlijk",
+      "link": "Link",
+      "markAchieved": "Mark bereikt",
+      "noGoals": "Geen doelen gevonden. Voeg er een toe!",
+      "labelTitle": "Titel",
+      "phVisitJapan": "bijv. Bezoek Japan",
+      "labelCategory": "Categorie",
+      "labelType": "Type",
+      "standardGoal": "Standaard doel",
+      "savingsGoal": "Besparingsdoel",
+      "targetCost": "Doelkosten (optioneel)",
+      "targetDate": "Streefdatum (JJJJ-MM-DD)",
+      "webLink": "Weblink (optioneel)",
+      "description": "Beschrijving (optioneel)",
+      "createGoal": "Doel creëren",
+      "congrats": "Gefeliciteerd!",
+      "achievedMsg": "Je hebt een levensdoel bereikt! 🎉",
+      "deleteGoal": "Doel verwijderen",
+      "areYouSure": "Weet je het zeker?",
+      "errNoTitle": "Voer een doeltitel in.",
+      "successAdded": "Doel succesvol toegevoegd!",
+      "errFailed": "Kan doel niet toevoegen.",
+      "cat_All": "Alle"
     }
   },
   "profile": {
@@ -1371,6 +1778,43 @@
       "male": "Man",
       "female": "Vrouw",
       "other": "Anders"
+    },
+    "hair": "Haar",
+    "hairColor": "Haarkleur",
+    "eyes": "Ogen",
+    "mouth": "Mond",
+    "brows": "Wenkbrauwen",
+    "beard": "Baard & Snor",
+    "skinTone": "Huidskleur",
+    "sectionAdmin": "Debug-beheerder",
+    "upgrade": "✦ Upgraden",
+    "myBlueprintSub": "Voedings-, fitness- en welzijnsplan",
+    "sugarControlSub": "90 dagen reset + dagelijkse check-ins",
+    "restartGoal": "Doel opnieuw starten",
+    "restartGoalSub": "Reset biometrie en onboarding",
+    "weightJourneySub": "Logboeken, metingen en voortgangsfoto's",
+    "hormonal": "Hormonaal plan en dagelijkse protocollen",
+    "fastingTrackerSub": "Protocollen, timers en streaks",
+    "aiCoachSub": "Uw precisiegezondheidsspecialist",
+    "moveSub": "Trainingen, stappen en oefenlogboek",
+    "fuelSub": "Maaltijdplan en voedselregistratie",
+    "wellnessSub": "Stemming, slaap en meditatie",
+    "productivitySub": "Taken, focus en doelen",
+    "librarySub": "Samengestelde kennis en protocollen",
+    "achievements": "Prestaties",
+    "achievementsUnlocked": "ontgrendeld",
+    "helpFeedback": "Hulp en feedback",
+    "settingsSub": "Eenheden, doelen, meldingen",
+    "footer": "Geoptimaliseerd leven",
+    "widgets": {
+      "title": "Widgetconfiguratie",
+      "hero": "Profielkaart",
+      "achievements": "Prestaties",
+      "stats": "Statistieken",
+      "account": "Rekening",
+      "health": "Gezondheid en monitoring",
+      "tools": "Hulpmiddelen",
+      "support": "Steun"
     }
   },
   "womensHealth": {
@@ -1429,7 +1873,23 @@
       "fertilityTitle": "Vruchtbaarheidsvenster open",
       "fertilityBody": "Je bent in je maximale vruchtbaarheidsvenster.",
       "sleepTitle": "Slaaptekort verstoort hormonen",
-      "sleepBody": "Minder dan 7 uur slaap verhoogt cortisol en onderdrukt progesteron."
+      "sleepBody": "Minder dan 7 uur slaap verhoogt cortisol en onderdrukt progesteron.",
+      "stressLutealTitle": "Hoge stress + late luteale = risico",
+      "stressLutealBody": "Uw stressniveau in combinatie met het PMS-venster kan cortisol versterken en de symptomen verergeren. Geef vandaag prioriteit aan een cortisolreductieoefening.",
+      "estrogenTitle": "Oestrogeen stijgt = mentale kracht",
+      "estrogenBody": "Serotonine en dopamine zijn in deze fase verhoogd. Een geweldig venster om moeilijke gesprekken, presentaties of creatieve projecten in te plannen.",
+      "lowCarbTitle": "Koolhydraatarm + hormonen",
+      "lowCarbBody": "Zeer koolhydraatarme diëten kunnen LH en FSH onderdrukken, waardoor onregelmatige of uitblijvende menstruaties ontstaan. Als uw cyclus onregelmatig is, overweeg dan een carb-cycling-aanpak.",
+      "painTitle": "Ernstige pijn vereist onderzoek",
+      "painBody": "Ernstige menstruatiepijn is niet normaal en kan duiden op endometriose, vleesbomen of adenomyose. Wij raden u ten zeerste aan om met een arts of gynaecoloog te praten.",
+      "pillTitle": "Uitputting van pillen en voedingsstoffen",
+      "pillBody": "De combinatiepil kan B6, B12, foliumzuur, magnesium en zink uitputten. Overweeg een B-complexsupplement en regelmatig testen.",
+      "athleticTitle": "Kijk uit naar de atletische triade",
+      "athleticBody": "Trainen met hoge intensiteit kan oestrogeen onderdrukken en uw cyclus verstoren (RED-S). Houd uw menstruatie in de gaten; elke verstoring is een waarschuwingssignaal van uw lichaam.",
+      "periTitle": "De perimenopauze kan beginnen",
+      "periBody": "Hormonale schommelingen beginnen vaak eind jaren dertig, zelfs bij regelmatige menstruaties. Houd stemmings-, slaap- en cyclusveranderingen nauwlettend bij.",
+      "calorieTitle": "Caloriebeperking en hormonen",
+      "calorieBody": "Agressieve calorietekorten onderdrukken leptine en schildklierhormonen, waardoor het gewichtsverlies mogelijk wordt vertraagd en cycli worden verstoord. Synchroniseer de trainingsintensiteit met uw cyclus."
     },
     "supps": {
       "magnesium": {
@@ -1446,6 +1906,56 @@
         "name": "Omega-3 (EPA/DHA)",
         "reason": "Ontstekingsremmend; vermindert menstruatiepijn",
         "timing": "Bij de maaltijd"
+      },
+      "vitD3": {
+        "name": "Vitamine D3",
+        "reason": "Een tekort dat verband houdt met ernstige dysmenorroe",
+        "timing": "Met een vette maaltijd"
+      },
+      "bComplex": {
+        "name": "B-complex (B6, B12, foliumzuur)",
+        "reason": "Orale anticonceptiva verminderen de B-vitamines – essentieel voor de stemming en methylatie",
+        "timing": "Ochtend met eten"
+      },
+      "zinc": {
+        "name": "Zink",
+        "reason": "Anticonceptiepil put zink uit, waardoor de immuniteit en de huid worden aangetast",
+        "timing": "Met diner"
+      },
+      "ashwagandha": {
+        "name": "Ashwagandha KSM-66",
+        "reason": "Klinisch bewezen adaptogeen voor cortisolreductie en hormonale balans",
+        "timing": "Bij het avondeten of voor het slapen gaan"
+      },
+      "magLThreonate": {
+        "name": "Magnesium L-Threonaat",
+        "reason": "Overschrijdt de bloed-hersenbarrière; verbetert de diepe slaap en vermindert nachtelijke angst",
+        "timing": "30 minuten voor het slapengaan"
+      },
+      "myoInositol": {
+        "name": "Myo-Inositol",
+        "reason": "Ondersteunt de eikwaliteit, de regelmaat van de ovulatie en de insulinegevoeligheid",
+        "timing": "Verdeel de ochtend en de avond met eten"
+      },
+      "coQ10": {
+        "name": "CoQ10 (Ubiquinol)",
+        "reason": "Verbetert de mitochondriale energie in eieren; belangrijk boven de 35",
+        "timing": "Met maaltijden"
+      },
+      "blackCohosh": {
+        "name": "Zwartkaars",
+        "reason": "Verlichting van opvliegers en stemmingssymptomen; beste bewijs in de vroege menopauze",
+        "timing": "Ochtend en avond"
+      },
+      "calcium": {
+        "name": "Calcium + D3",
+        "reason": "Bescherming van de botdichtheid tijdens oestrogeenafname",
+        "timing": "Ochtend en avond verdelen"
+      },
+      "vitD3K2": {
+        "name": "Vitamine D3 + K2",
+        "reason": "De meeste vrouwen hebben een tekort; cruciaal voor de immuunfunctie, het humeur en de gezondheid van de botten",
+        "timing": "Ochtend met een vette maaltijd"
       }
     },
     "lifeStage": "Levensfase",
@@ -1478,7 +1988,191 @@
     "tri2": "Week 14–27 · Energie terug, baby beweegt",
     "tri3": "Week 28–40 · Groei, voorbereiding bevalling",
     "privacyTitle": "Jouw data is van jou",
-    "privacySub": "Wij verkopen nooit je intieme gezondheidsdata."
+    "privacySub": "Wij verkopen nooit je intieme gezondheidsdata.",
+    "phaseHormone": {
+      "menstrual": "Oestrogeen en progesteron laag",
+      "follicular": "Oestrogeen stijgt, FSH actief",
+      "ovulation": "LH-piek + oestrogeen op piek",
+      "lutealEarly": "Progesteron stijgt",
+      "lutealLate": "Progesteron + oestrogeen vallen"
+    },
+    "milestone": {
+      "0": "Hart klopt",
+      "1": "Vingers vormen zich",
+      "2": "Eerste trappen mogelijk",
+      "3": "Het gehoor ontwikkelt zich",
+      "4": "Baby kan dromen",
+      "5": "Longen worden volwassen",
+      "6": "Oefenen met ademhalen",
+      "7": "Bijna volledige termijn",
+      "default": "Sterk groeien"
+    },
+    "loggedTitle": "Gelogd ✓",
+    "loggedMsg": "Uw dagelijkse biomarkers zijn opgeslagen.",
+    "saveError": "Kan niet opslaan. Probeer het opnieuw.",
+    "blueprintTitle": "Jouw hormonale blauwdruk",
+    "blueprintSub": "4 vragen om jouw cyclusinzichten, supplementen en hormonale begeleiding te personaliseren.",
+    "alreadyPersonalised": "✦ Al gepersonaliseerd vanuit jouw profiel",
+    "articleDisclaimer": "Dit is educatieve inhoud, geen medisch advies. Raadpleeg een zorgverlener voor persoonlijke begeleiding.",
+    "dailyBioLog": "Dagelijks biologboek",
+    "moodSynced": "Stemming gesynchroniseerd vanuit Wellness",
+    "energyToday": "Energie vandaag (1–10)",
+    "symptoms": "Symptomen",
+    "babyMovement": "Babybeweging vandaag (1–10)",
+    "hotFlash": "Ernst van opvliegers (1–10)",
+    "saveBioLog": "Biolog opslaan",
+    "vitalityStack": "Uw vitaliteitsstapel",
+    "pillReminder": "Anticonceptie en pilherinnering",
+    "pillReminderSub": "Volg uw medicijnen en supplementen veilig",
+    "unlockStack": "Ontgrendel uw vitaminestapel",
+    "unlockStackSub": "Bekijk uw persoonlijke supplementaanbevelingen voor uw cyclusfase.",
+    "pelvicTitle": "Bekkenkrachtprotocol",
+    "pelvicSub": "Versterk uw bekkenbodem, verminder krampen en ondersteun uw core",
+    "pelvicInstructions": "Contract 5s → Relax 5s → Herhaal. Voer 10 cycli per sessie uit.",
+    "stopSession": "Sessie stoppen",
+    "startTimer": "Starttimer",
+    "stage": {
+      "cycle": "Cyclus",
+      "pregnancy": "Zwangerschap",
+      "menopause": "Menopauze"
+    },
+    "setupSubPreg": "Wanneer was je conceptiedatum?",
+    "setupSubCycle": "Wanneer begon je laatste menstruatie?",
+    "adherence": "aanhankelijkheid",
+    "biologSub": "Stemming, energie, symptomen",
+    "flowLow": "stroom",
+    "pelvic": "Bekkenprotocol",
+    "pelvicSub2": "Kern, vloer en houding",
+    "workoutLabel": "Training",
+    "nutritionLabel": "Voeding",
+    "moodLabel": "Stemming",
+    "energyLabel": "Energie",
+    "symptomHistory": "Symptoomgeschiedenis",
+    "hotFlashShort": "Opvlieger",
+    "startLogging": "Begin dagelijks met het loggen van uw Bio Log om hier patronen te zien.",
+    "yourInsights": "Uw hormonale inzichten",
+    "proBlurTitle": "Ontgrendel diepe hormonale analyse",
+    "proBlurSub": "AI-inzichten die zich aanpassen aan uw cyclusgeschiedenis, patronen en symptomen die in de loop van de tijd zijn geregistreerd.",
+    "library": "Hormonale Intelligentie Bibliotheek",
+    "retake": "Update mijn hormonale profiel",
+    "privacyFirst": "Uw privacy voorop",
+    "priv1Title": "Geen verkopen aan derden",
+    "priv1Body": "Uw intieme gezondheidsgegevens worden niet verkocht aan adverteerders, verzekeraars of datamakelaars.",
+    "priv2Title": "End-to-end gecodeerd",
+    "priv2Body": "Alle gevoelige gezondheidsgegevens worden zowel in rust als onderweg versleuteld. Alleen jij hebt toegang tot je geschiedenis.",
+    "priv3Title": "Geen profilering",
+    "priv3Body": "Wij gebruiken uw gezondheidsgegevens niet om advertentieprofielen op te bouwen. Punt.",
+    "restartTitle": "Start de quiz opnieuw",
+    "restartMsg": "Hierdoor wordt uw huidige profiel gewist en wordt de vragenlijst opnieuw gestart. Doorgaan?",
+    "restartConfirm": "Opnieuw opstarten",
+    "articles": {
+      "art1": {
+        "title": "Oestrogeendominantie: tekenen en oplossingen",
+        "category": "Hormonen",
+        "time": "5 min",
+        "body": "Wanneer het oestrogeengehalte onevenredig hoog is in vergelijking met progesteron, kunt u last krijgen van zware menstruaties, gewichtstoename rond de heupen, stemmingswisselingen en gevoelige borsten. Belangrijkste strategieën: het verminderen van plastic (xeno-oestrogenen), het ondersteunen van leverontgifting met kruisbloemige groenten en het opnemen van zink + B6-voedsel."
+      },
+      "art2": {
+        "title": "Cyclussynchronisatie: train slimmer in elke fase",
+        "category": "Geschiktheid",
+        "time": "7 minuten",
+        "body": "Folliculaire en ovulatoire fase: hard pushen - kracht, HIIT, PR's. Luteale fase: matig – Pilates, zwemmen. Menstruatiefase: zachtaardig – yoga, wandelen. Door uw training af te stemmen op uw hormonen, vermindert u het risico op blessures en verbetert u de aanpassing."
+      },
+      "art3": {
+        "title": "Cortisol en uw cyclus: de verborgen link",
+        "category": "Welzijn",
+        "time": "4 minuten",
+        "body": "Chronische stress verhoogt cortisol, wat de productie van progesteron direct onderdrukt. Dit veroorzaakt kortere luteale fasen, PMS-versterking en cyclusonregelmatigheden. Op bewijs gebaseerde hulpmiddelen: 4-7-8 ademhaling, adaptogenen (ashwagandha) en slaapconsistentie."
+      },
+      "art4": {
+        "title": "Darmgezondheid en oestrogeenmetabolisme",
+        "category": "Voeding",
+        "time": "6 minuten",
+        "body": "Het estroboloom – darmbacteriën die oestrogeen verwerken – is cruciaal. Een slechte darmgezondheid betekent dat oestrogeen wordt gerecirculeerd in plaats van uitgescheiden, waardoor hormonale onevenwichtigheden ontstaan. Prioriteit: vezels (30 g/dag), gefermenteerd voedsel, minder alcohol."
+      },
+      "art5": {
+        "title": "IJzer, vermoeidheid en je menstruatie",
+        "category": "Voeding",
+        "time": "4 minuten",
+        "body": "Menstruerende vrouwen verliezen elke cyclus 20-80 ml bloed. IJzergebrek is wereldwijd het meest voorkomende tekort aan voedingsstoffen en veroorzaakt direct vermoeidheid, slechte focus en verminderde atletische prestaties. Test uw ferritine, niet alleen hemoglobine."
+      },
+      "art6": {
+        "title": "Progesteron: het kalme hormoon",
+        "category": "Hormonen",
+        "time": "5 min",
+        "body": "Progesteron is je lichaam\\"
+      },
+      "art7": {
+        "title": "PCOS: voorbij de basis",
+        "category": "Gezondheid",
+        "time": "8 minuten",
+        "body": "Polycysteus ovariumsyndroom treft 1 op de 10 vrouwen. Belangrijke managementpijlers: regulering van de bloedsuikerspiegel (verminderen van geraffineerde koolhydraten), krachttraining om de insulinegevoeligheid te verbeteren, inositolsuppletie (bewijsgraad A) en stressmanagement."
+      },
+      "art8": {
+        "title": "Schildklier- en vrouwelijke vruchtbaarheid",
+        "category": "Gezondheid",
+        "time": "5 min",
+        "body": "Hypothyreoïdie treft tot 3x meer vrouwen dan mannen en is een belangrijke niet-gediagnosticeerde oorzaak van onvruchtbaarheid, onregelmatige cycli en postnatale depressie. Laat TSH, T3 en T4 testen – niet alleen TSH alleen."
+      }
+    },
+    "suppIntro": "Personaliseer op basis van uw cyclus, het stressniveau, de tegengestelde methode, het brandpunt en de tijd.",
+    "suppLocked": "Personaliseringsblokkering voor gratis gebruik.",
+    "suppDisclaimer": "Raadpleeg altijd een zorgverlener voordat u met nieuwe supplementen begint, vooral tijdens de zwangerschap.",
+    "tabInsights": "Inzichten",
+    "setupTitlePreg": "👶Acompanha a tua gravidez",
+    "setupTitleCycle": "🌸 Desbloqueia os teus inzichten doen ciclo",
+    "week": "Semana",
+    "menopauseTracker": "Monitor de menopauze",
+    "menopauseDesc": "Registeer tegen de voorkant, humor en andere geluiden. Onze quadro hormonale importa.",
+    "vitStack": "Vitaliteitsstapel",
+    "personalisedSupps": "gepersonaliseerde supplementen",
+    "insightsSub": "Personaliseer je deel van je risico, de fase van de cyclus, het stressniveau, het geluid en het brandpunt.",
+    "insightsEmpty": "Vul uw bio-registratie in voor persoonlijke inzichten.",
+    "priorityHigh": "⚠️ Prioridade",
+    "priorityNote": "💡 Nota",
+    "takeAction": "Tomar ação",
+    "librarySub": "Het is gebaseerd op het gebruik van hormonale mulhers.",
+    "quiz": {
+      "lifeStage": {
+        "question": "What is your current phase of life?",
+        "cycle": "Menstruating",
+        "cycleDesc": "Regular or irregular cycles",
+        "perimenopause": "Perimenopause",
+        "perimenopauseDesc": "Experiencing transition symptoms",
+        "menopause": "Post-Menopause",
+        "menopauseDesc": "12+ months without a period"
+      },
+      "birthControl": {
+        "question": "Are you using hormonal birth control?",
+        "none": "No — Natural Cycle",
+        "noneDesc": "No hormones or copper IUD",
+        "pill": "Combination Pill / Ring",
+        "pillDesc": "Suppresses ovulation",
+        "iud": "Hormonal IUD / Implant",
+        "iudDesc": "Progestin only (Mirena, Nexplanon)",
+        "mini_pill": "Mini-Pill",
+        "mini_pillDesc": "Progestin only pill"
+      },
+      "periodPain": {
+        "question": "How severe is your period pain?",
+        "none": "Mild / None",
+        "moderate": "Moderate",
+        "moderateDesc": "Needs occasional painkillers",
+        "severe": "Severe",
+        "severeDesc": "Impacts daily life/work"
+      },
+      "mainFocus": {
+        "question": "What is your main hormonal focus?",
+        "cycle_syncing": "Cycle Syncing",
+        "cycle_syncingDesc": "Optimise training/diet to phases",
+        "fertility": "Fertility Support",
+        "fertilityDesc": "Preparing for pregnancy",
+        "pms": "PMS / PMDD Relief",
+        "pmsDesc": "Reduce mood swings and pain",
+        "perimenopause": "Perimenopause Support",
+        "perimenopauseDesc": "Manage symptoms"
+      }
+    }
   },
   "premium": {
     "heroTitle": "Jouw Biologie,",
@@ -1503,7 +2197,18 @@
     "featWorkoutsTitle": "Video Trainingen",
     "featWorkoutsDesc": "Complete oefeningenbibliotheek",
     "featHormonesTitle": "Hormonale Gezondheid",
-    "featMentalTitle": "Geestelijk Gezondheidsplan"
+    "featMentalTitle": "Geestelijk Gezondheidsplan",
+    "title": "Bluom Pro",
+    "subtitle": "Ontgrendel uw volledige potentieel",
+    "features": {
+      "ai": "Gepersonaliseerde AI-coaching",
+      "fasting": "Geavanceerde vastenprotocollen",
+      "insights": "Diepe hormonale inzichten",
+      "scans": "Onbeperkte AI-voedselscans",
+      "sugar": "Suikerdetector en alternatieven"
+    },
+    "upgrade": "Upgrade nu",
+    "plans": "Bekijk plannen"
   },
   "settings": {
     "title": "Instellingen",
@@ -1535,7 +2240,15 @@
     "proteinG": "Dagelijkse eiwitten (g)",
     "updateGoals": "Doelen bijwerken",
     "themeColor": "Themakleur",
-    "themeColorDesc": "Kies een palet dat bij je stemming past. Wijzigingen worden meteen toegepast."
+    "themeColorDesc": "Kies een palet dat bij je stemming past. Wijzigingen worden meteen toegepast.",
+    "profile": "Profiel",
+    "notifications": "Meldingen",
+    "privacy": "Privacy",
+    "help": "Hulp en ondersteuning",
+    "logout": "Uitloggen",
+    "version": "Versie {{versie}}",
+    "connectedDevices": "Verbonden apparaten",
+    "healthConnect": "Gezondheidsintegratie"
   },
   "support": {
     "title": "Support & Feedback",
@@ -1549,7 +2262,10 @@
     "successTitle": "Verstuurd!",
     "successMsg": "We nemen snel contact op.",
     "errorTitle": "Fout",
-    "errorMsg": "Verzenden mislukt. Probeer het later opnieuw."
+    "errorMsg": "Verzenden mislukt. Probeer het later opnieuw.",
+    "howCanWeHelp": "Hoe kunnen wij helpen?",
+    "contact": "Neem contact met ons op",
+    "faq": "Veelgestelde vragen"
   },
   "focusMode": {
     "title": "Focusmodus",
@@ -1646,6 +2362,374 @@
     "variety_master": {
       "title": "Meester van variatie",
       "description": "Probeer 3 verschillende soorten trainingen! 🌈"
+    },
+    "log_30_days_meals": {
+      "title": "Voeding Meester",
+      "desc": "Registreer maaltijden gedurende 30 dagen op rij"
+    },
+    "hit_protein_7days": {
+      "title": "Eiwitstrook",
+      "desc": "Haal het eiwitdoel 7 dagen op rij"
+    },
+    "water_goal_7days": {
+      "title": "Rivierstroom",
+      "desc": "Bereik het waterdoel 7 dagen op rij"
+    },
+    "water_goal_30days": {
+      "title": "Oceaan geest",
+      "desc": "Haal het waterdoel 30 dagen op rij"
+    },
+    "under_calorie_goal": {
+      "title": "Calorietekort",
+      "desc": "Blijf onder je caloriedoel"
+    },
+    "calorie_goal_14days": {
+      "title": "Precisie",
+      "desc": "Bereik het caloriedoel 14 dagen op rij"
+    },
+    "meal_plan_full_day": {
+      "title": "Planvolger",
+      "desc": "Registreer alle maaltijden uit uw plan"
+    },
+    "try_new_recipe": {
+      "title": "Keukenverkenner",
+      "desc": "Kook een Bluom-recept"
+    },
+    "sugar_free_7days": {
+      "title": "Zoete detox",
+      "desc": "7 dagen zonder suiker"
+    },
+    "sugar_free_30days": {
+      "title": "Suiker Meester",
+      "desc": "30 dagen zonder suiker"
+    },
+    "workout_7days": {
+      "title": "Week krijger",
+      "desc": "Train 7 dagen achter elkaar"
+    },
+    "workout_30days": {
+      "title": "IJzeren discipline",
+      "desc": "Train 30 dagen achter elkaar"
+    },
+    "steps_5k": {
+      "title": "5.000 stappen",
+      "desc": "Loop 5.000 stappen op een dag"
+    },
+    "steps_10k_7days": {
+      "title": "Stap Streak",
+      "desc": "10.000 stappen gedurende 7 dagen op rij"
+    },
+    "steps_10k_30days": {
+      "title": "Marathon-geest",
+      "desc": "10.000 stappen gedurende 30 dagen op rij"
+    },
+    "calories_burned_300": {
+      "title": "Brander",
+      "desc": "Verbrand meer dan 300 calorieën in één sessie"
+    },
+    "calories_burned_500": {
+      "title": "Inferno",
+      "desc": "Verbrand meer dan 500 calorieën in één sessie"
+    },
+    "try_cardio": {
+      "title": "Cardio nieuwsgierig",
+      "desc": "Registreer een cardiosessie"
+    },
+    "try_strength": {
+      "title": "IJzeren aanraking",
+      "desc": "Log een krachtsessie in"
+    },
+    "try_hiit": {
+      "title": "HIIT-initiatie",
+      "desc": "Voltooi een HIIT-training"
+    },
+    "try_yoga": {
+      "title": "Zen-lichaam",
+      "desc": "Registreer een yoga- of stretchsessie"
+    },
+    "complete_4week_plan": {
+      "title": "Plan voltooid",
+      "desc": "Rond het gratis 4-wekenplan af"
+    },
+    "total_10_workouts": {
+      "title": "Dubbele cijfers",
+      "desc": "Registreer in totaal 10 trainingen"
+    },
+    "total_50_workouts": {
+      "title": "Halve eeuw",
+      "desc": "Registreer in totaal 50 trainingen"
+    },
+    "total_100_workouts": {
+      "title": "Eeuwclub",
+      "desc": "Registreer in totaal 100 trainingen"
+    },
+    "first_mood_log": {
+      "title": "Stemmingscontrole",
+      "desc": "Registreer uw stemming voor de eerste keer"
+    },
+    "mood_log_7days": {
+      "title": "Stemmingstracker",
+      "desc": "Log de stemming 7 dagen achter elkaar in"
+    },
+    "mood_log_30days": {
+      "title": "Emotionele Intelligentie",
+      "desc": "Registreer de stemming 30 dagen achter elkaar"
+    },
+    "meditate_7days": {
+      "title": "Mindful week",
+      "desc": "Mediteer 7 dagen achter elkaar"
+    },
+    "first_sleep_log": {
+      "title": "Slaaptracker",
+      "desc": "Registreer uw slaapkwaliteit"
+    },
+    "sleep_8hrs": {
+      "title": "Gouden slaap",
+      "desc": "Registreer 8+ uur kwaliteitsslaap"
+    },
+    "sleep_8hrs_7days": {
+      "title": "Slaap meester",
+      "desc": "8+ uur slaap gedurende 7 dagen op rij"
+    },
+    "stress_low_week": {
+      "title": "Rustige commandant",
+      "desc": "Registreer lage stress gedurende 7 dagen op rij"
+    },
+    "first_journal": {
+      "title": "Eerste pagina",
+      "desc": "Schrijf uw eerste dagboekaantekening"
+    },
+    "journal_7days": {
+      "title": "Reflectieweek",
+      "desc": "Houd 7 dagen achter elkaar een dagboek bij"
+    },
+    "journal_30days": {
+      "title": "Innerlijke architect",
+      "desc": "Houd een maand lang elke dag een dagboek bij"
+    },
+    "first_gratitude": {
+      "title": "Dankbaar hart",
+      "desc": "Schrijf je eerste dankbaarheidsbericht"
+    },
+    "gratitude_7days": {
+      "title": "Dankbaarheidsstreak",
+      "desc": "Oefen dankbaarheid zeven dagen achter elkaar"
+    },
+    "gratitude_30days": {
+      "title": "Overvloedsmentaliteit",
+      "desc": "Dankbaarheid voor 30 dagen op rij"
+    },
+    "ai_reflection": {
+      "title": "Digitale spiegel",
+      "desc": "Genereer uw eerste AI-geestreflectie"
+    },
+    "total_50_entries": {
+      "title": "Productief schrijver",
+      "desc": "Schrijf 50 dagboek- of dankbaarheidsaantekeningen"
+    },
+    "first_habit": {
+      "title": "Gewoonte geboren",
+      "desc": "Creëer je eerste gewoonte"
+    },
+    "habit_7day_streak": {
+      "title": "Gewoonte gevormd",
+      "desc": "Houd een gewoonte 7 dagen vol"
+    },
+    "habit_66day_streak": {
+      "title": "Automatisch",
+      "desc": "66 dagen – de wetenschap zegt dat het permanent is"
+    },
+    "all_habits_today": {
+      "title": "Schoon blad",
+      "desc": "Voltooi alle gewoonten op één dag"
+    },
+    "break_habit_7days": {
+      "title": "Vrijkomen",
+      "desc": "7 dagen zonder een slechte gewoonte"
+    },
+    "break_habit_30days": {
+      "title": "Vrijheid",
+      "desc": "30 dagen zonder een slechte gewoonte"
+    },
+    "break_habit_90days": {
+      "title": "Nieuwe identiteit",
+      "desc": "90 dagen – oude gewoonte is verdwenen"
+    },
+    "habit_savings_100": {
+      "title": "Geld op de bank",
+      "desc": "Bespaar 100 door een gewoonte te doorbreken"
+    },
+    "first_task": {
+      "title": "Startlijn",
+      "desc": "Voeg uw eerste taak toe"
+    },
+    "complete_10_tasks": {
+      "title": "Taakmoordenaar",
+      "desc": "Voltooi 10 taken"
+    },
+    "complete_50_tasks": {
+      "title": "Executiemachine",
+      "desc": "Voltooi 50 taken"
+    },
+    "complete_100_tasks": {
+      "title": "De exploitant",
+      "desc": "Voltooi 100 taken"
+    },
+    "focus_first_session": {
+      "title": "Diep werk",
+      "desc": "Voltooi uw eerste Focus-sessie"
+    },
+    "focus_7_sessions": {
+      "title": "Frequente stroom",
+      "desc": "Voltooi 7 focussessies"
+    },
+    "north_star_set": {
+      "title": "Noordster",
+      "desc": "Bepaal uw levensdoel voor 12 maanden"
+    },
+    "life_goal_achieved": {
+      "title": "Mijlpaal ontmoet",
+      "desc": "Markeer uw levensdoel als bereikt"
+    },
+    "partner_linked": {
+      "title": "Machtspaar",
+      "desc": "Koppeling met een partner voor gedeelde lijsten"
+    },
+    "weight_logged": {
+      "title": "Lichaamsbewust",
+      "desc": "Registreer uw gewicht voor de eerste keer"
+    },
+    "weight_goal_reached": {
+      "title": "Doel bereikt",
+      "desc": "Bereik uw beoogde lichaamsgewicht"
+    },
+    "weight_log_30days": {
+      "title": "Lichaamskroniekschrijver",
+      "desc": "Registreer uw gewicht elke dag gedurende 30 dagen"
+    },
+    "first_fast": {
+      "title": "Snelle initiatie",
+      "desc": "Voltooi uw eerste vastensessie"
+    },
+    "fast_16hrs": {
+      "title": "16:8 Ingewijd",
+      "desc": "Voltooi een vastenperiode van 16 uur"
+    },
+    "fast_24hrs": {
+      "title": "Hele dag snel",
+      "desc": "Voltooi een 24-uurs vastenperiode"
+    },
+    "fast_7streak": {
+      "title": "Vastenbeoefenaar",
+      "desc": "7 dagen vasten achter elkaar"
+    },
+    "bio_log_first": {
+      "title": "Bio-bewustzijn",
+      "desc": "Voltooi uw eerste Bio-Log"
+    },
+    "bio_log_7days": {
+      "title": "Lichaamsscanner",
+      "desc": "Registreer biomarkers 7 dagen op rij"
+    },
+    "pelvic_first": {
+      "title": "Protocol starten",
+      "desc": "Voltooi de eerste bekkenbodemkrachtsessie"
+    },
+    "supplements_7days": {
+      "title": "Consistente stapel",
+      "desc": "Log supplements for 7 days in a row"
+    },
+    "sugar_scan_first": {
+      "title": "Label-detective",
+      "desc": "Scan een productlabel met AI"
+    },
+    "cycle_logged": {
+      "title": "Cyclusbewustzijn",
+      "desc": "Registreer uw eerste cyclusgegevens"
+    },
+    "pregnancy_milestone": {
+      "title": "Nieuw hoofdstuk",
+      "desc": "Ontgrendel zwangerschapsregistratie"
+    },
+    "ai_first_message": {
+      "title": "Coach betrokken",
+      "desc": "Stuur het eerste bericht naar AI Coach"
+    },
+    "ai_10_messages": {
+      "title": "Leerzaam",
+      "desc": "Voer 10 gesprekken met AI Coach"
+    },
+    "ai_plan_generated": {
+      "title": "Blauwdruk gemaakt",
+      "desc": "Genereer uw eerste gepersonaliseerde AI-plan"
+    },
+    "ai_meal_swapped": {
+      "title": "Maaltijdarchitect",
+      "desc": "Wissel een maaltijd uit met AI (Pro)"
+    },
+    "ai_recipe_generated": {
+      "title": "AI-chef",
+      "desc": "Genereer een recept met behulp van AI"
+    },
+    "ai_insight_generated": {
+      "title": "Digitale spiegel",
+      "desc": "Ontgrendel een AI-geestrapport"
+    },
+    "whatsapp_shared": {
+      "title": "Verantwoordingspost",
+      "desc": "Deel een lijst via WhatsApp"
+    },
+    "partner_synced_week": {
+      "title": "Teamspeler",
+      "desc": "Blijf een week lang gesynchroniseerd met een partner"
+    },
+    "onboarding_complete": {
+      "title": "Blauwdruk ontgrendeld",
+      "desc": "Volledige Bluom-onboarding"
+    },
+    "all_tabs_used": {
+      "title": "Hoofdgebruiker",
+      "desc": "Gebruik de tabbladen Brandstof, Bewegen, Welzijn en Geest"
+    },
+    "streak_30_days": {
+      "title": "30 dagenreeks",
+      "desc": "Gebruik Bluom elke dag gedurende 30 dagen"
+    },
+    "streak_90_days": {
+      "title": "Legende van 90 dagen",
+      "desc": "Gebruik Bluom elke dag gedurende 90 dagen"
+    },
+    "streak_365_days": {
+      "title": "Een jaar met Bluom",
+      "desc": "Gebruik Bluom een ​​jaar lang elke dag"
+    },
+    "xp_1000": {
+      "title": "Klimmer",
+      "desc": "Verdien 1.000 XP"
+    },
+    "xp_5000": {
+      "title": "Geaard",
+      "desc": "Verdien 5.000 XP"
+    },
+    "xp_10000": {
+      "title": "Elite",
+      "desc": "Verdien 10.000 XP"
+    },
+    "xp_50000": {
+      "title": "Legendarisch",
+      "desc": "Verdien in totaal 50.000 XP"
+    },
+    "total_5_achievements": {
+      "title": "Verzamelaar",
+      "desc": "Ontgrendel 5 prestaties"
+    },
+    "total_20_achievements": {
+      "title": "Trofeekast",
+      "desc": "Ontgrendel 20 prestaties"
+    },
+    "total_50_achievements": {
+      "title": "Completionist",
+      "desc": "Ontgrendel 50 prestaties"
     }
   },
   "fasting": {
@@ -1679,8 +2763,19 @@
       "autophagy": "Wat is Autofagie?",
       "autophagyDesc": "Het proces waarbij het lichaam beschadigde cellen recyclet.",
       "muscle": "Vasten en spiermassa",
-      "muscleDesc": "Correct vasten behoudt spieren terwijl vet wordt verbrand."
-    }
+      "muscleDesc": "Correct vasten behoudt spieren terwijl vet wordt verbrand.",
+      "electrolytes": "Basisprincipes van elektrolyten",
+      "electrolytesDesc": "Blijf gehydrateerd met natrium, kalium en magnesium tijdens langdurig vasten."
+    },
+    "syncing": "Metabolische gegevens synchroniseren",
+    "unlockVisionDesc": "Bekijk precies in welke fase van de vetverbranding jij zit.",
+    "upgradeUnlock": "Upgrade om te ontgrendelen",
+    "fastingScience": "Vasten wetenschap",
+    "seeMetabolicState": "Bekijk uw realtime metabolische toestand.",
+    "advancedProtocols": "Geavanceerde protocollen",
+    "advancedDesc": "Ontgrendel 18:6-, 20:4- en OMAD-protocollen voor maximale metabolische voordelen.",
+    "proTitle": "Metabolische Inzichten Pro",
+    "proDesc": "Ontgrendel real-time metabolische fase-tracking en geavanceerde vastenanalyses."
   },
   "weightMgmt": {
     "title": "Lichaamsmetingen",
@@ -1716,7 +2811,55 @@
     "aiBodyAnalysis": "AI Lichaamsanalyse",
     "photo_before": "Voor",
     "photo_after": "Na",
-    "photo_progress": "Voortgang"
+    "photo_progress": "Voortgang",
+    "logMore": "Registreer meer gewichten om uw trend te zien",
+    "noMeasurements": "Nog geen metingen. Registreer uw eerste set.",
+    "bodyScanSub": "Schaal, DEXA, InBody-gegevens",
+    "logged": "Gelogd!",
+    "error": "Fout",
+    "couldNotSave": "Kon geen gewicht besparen.",
+    "saved": "Opgeslagen!",
+    "measurementsRecorded": "Metingen geregistreerd.",
+    "scanRecorded": "Gegevens over lichaamssamenstelling geregistreerd.",
+    "confirmDelete": "Weet u zeker dat u dit logboek wilt verwijderen?",
+    "bmiUnderweight": "Ondergewicht",
+    "bmiObese": "Zwaarlijvig",
+    "mShoulders": "Schouders",
+    "mNeck": "Nek",
+    "mLeftArm": "L-arm",
+    "mRightArm": "R-arm",
+    "mLeftThigh": "L Dij",
+    "mRightThigh": "R Dij",
+    "mLeftCalf": "L Kalf",
+    "mRightCalf": "R Kalf",
+    "sBoneMass": "Botmassa",
+    "sWater": "Water",
+    "sVisceralFat": "Visceraal vet",
+    "sBMR": "BMR",
+    "sMetabolicAge": "Metabolische leeftijd",
+    "kpiLogs": "Logboeken",
+    "kpiEntries": "inzendingen",
+    "proFeatureSub": "Ontgrendel de volledige geschiedenis, lichaamsanalyse en voor/na-foto's",
+    "upgradeToPro": "Upgrade naar Pro",
+    "targetWeightPh": "Doelgewicht ({{unit}})",
+    "weightUnit": "Gewicht ({{eenheid}})",
+    "noteOptional": "Opmerking (optioneel)",
+    "notePh": "Na de training, in de ochtend, etc.",
+    "measureHint": "Alle afmetingen in centimeters. Laat leeg om over te slaan.",
+    "saveMeasurements": "Metingen opslaan",
+    "aiScanTitle": "Visuele compositiescan",
+    "aiScanSub": "Onze AI analyseert uw laatste metingen en foto's om de lichaamssamenstelling te schatten.",
+    "startAiScan": "Start AI-scan",
+    "enterManually": "Handmatig invoeren",
+    "scanning": "Biomarkers scannen...",
+    "detectingMarkers": "Metabolische markers detecteren",
+    "aiEstimatedResults": "AI geschatte resultaten",
+    "enterResults": "Voer resultaten in",
+    "confirmSaveResults": "Bevestig en bewaar resultaten",
+    "measurementHistory": "Meetgeschiedenis",
+    "bodyScanHistory": "Bodyscan-geschiedenis",
+    "addFirstPhoto": "Begin uw visuele reis. Voeg je eerste foto toe.",
+    "noData": "Geen gegevens"
   },
   "onboarding": {
     "groups": {
@@ -1730,7 +2873,12 @@
       "goalsDesc": "Wat wil je bereiken?",
       "commitmentTitle": "Je inzetniveau",
       "mindsetTitle": "Mentaliteit",
-      "dietTitle": "Voedingsvoorkeur"
+      "dietTitle": "Voedingsvoorkeur",
+      "biometricsDesc": "Help ons uw gezondheidsstatistieken te kalibreren.",
+      "trainingDesc": "Pas uw fitnessreis aan.",
+      "activityTitle": "Dagelijkse activiteit",
+      "commitmentDesc": "Hoe intens wil je dat deze reis is?",
+      "mindsetDesc": "Wat drijft jou en wat houdt jou tegen?"
     },
     "questions": {
       "age": "Hoe oud ben je?",
@@ -1787,7 +2935,101 @@
       "dietHighProtein": "Eiwitrijk",
       "dietLowCarb": "Koolhydraatarm",
       "mealsPerDay": "Maaltijden per dag",
-      "peakEnergy": "Tijdstip piekenergie"
+      "peakEnergy": "Tijdstip piekenergie",
+      "agePlaceholder": "bijv. 30",
+      "genderSub": "Voor nauwkeurige metabolische berekeningen.",
+      "weightPlaceholder": "0",
+      "heightPlaceholder": "0",
+      "targetWeightPlaceholder": "0",
+      "targetWeightSub": "Optioneel doelgewicht.",
+      "activityLight": "Licht actief",
+      "activityVery": "Zeer actief",
+      "activityExtra": "Extra actief",
+      "locOutdoor": "Buiten",
+      "sleepPlaceholder": "uur/nacht",
+      "dietPaleo": "Paleo",
+      "dietVegetarian": "Vegetarisch",
+      "goalEndurance": "Uithoudingsvermogen",
+      "goalFlexibility": "Flexibiliteit",
+      "focusAreas": "Focusgebieden (optioneel)",
+      "focusChest": "Borst",
+      "focusBack": "Rug",
+      "focusLegs": "Benen",
+      "focusArms": "Armen",
+      "focusCore": "Kern",
+      "focusCardio": "Cardio",
+      "goalLoseWeightInfo": "Creëer een duurzaam calorietekort om vet te verliezen met behoud van energie.",
+      "goalBuildMuscleInfo": "Maximaliseer hypertrofie met progressieve overbelasting en optimale eiwitinname.",
+      "goalMaintainInfo": "Focus op prestaties en metabolische gezondheid zonder gewicht te veranderen.",
+      "goalEnduranceInfo": "Optimaliseer de aërobe capaciteit, het uithoudingsvermogen en de cardiovasculaire efficiëntie.",
+      "goalGeneralHealth": "Algemene gezondheid",
+      "goalGeneralHealthInfo": "Geef prioriteit aan een lang leven, evenwichtige energie en ziektepreventie.",
+      "goalBodyRecomp": "Hercompositie van het lichaam",
+      "goalBodyRecompInfo": "Verlies vet en krijg tegelijkertijd spiermassa. Ideaal voor het hervormen van het lichaam zonder drastische gewichtsveranderingen.",
+      "experience": "Ervaringsniveau",
+      "wsStrengthInfo": "Focus op het opbouwen van spieren en kracht door middel van weerstand.",
+      "wsCardioInfo": "Uithoudingsactiviteiten zoals hardlopen, fietsen of zwemmen.",
+      "wsHiitInfo": "Intervaltraining met hoge intensiteit om snel calorieën te verbranden.",
+      "wsYogaInfo": "Focus op flexibiliteit, balans en verbinding tussen lichaam en geest.",
+      "wsCrossfit": "CrossFit",
+      "wsCrossfitInfo": "Functionele bewegingen met hoge intensiteit.",
+      "wsPilates": "Pilates",
+      "wsPilatesInfo": "Flexibiliteit en spierkracht met lage impact.",
+      "wsMixed": "Gemengd",
+      "wsMixedInfo": "Een combinatie van verschillende stijlen.",
+      "milestonePlaceholder": "bijvoorbeeld een marathon lopen, een huis kopen...",
+      "activitySub": "Wees eerlijk voor het beste resultaat!",
+      "actSedentary": "Sedentair (bureaubaan)",
+      "actLightlyActive": "Licht actief",
+      "actModeratelyActive": "Matig actief",
+      "actVeryActive": "Zeer actief",
+      "actExtremelyActive": "Extreem actief",
+      "commitToast": "Perfect! Wij stemmen uw plan af op uw inzetniveau.",
+      "commitEasyInfo": "Zachte en duurzame veranderingen in uw eigen tempo. Langzamere voortgang, maar gemakkelijker te onderhouden.",
+      "commitBalancedInfo": "Een stabiele en bewezen aanpak. Gematigde veranderingen met consistente resultaten.",
+      "commitMaximumInfo": "Alles voor een snelle transformatie. Vereist een intensieve inzet, maar levert sneller resultaat op.",
+      "stressVeryHigh": "Zeer hoog",
+      "mainStressors": "Belangrijkste stressoren",
+      "stressorWork": "Werk & Carrière",
+      "stressorFamily": "Familie en ouderschap",
+      "stressorFinances": "Financiën",
+      "stressorHealth": "Gezondheid en zelfzorg",
+      "stressorSocial": "Sociaal en relaties",
+      "stressorSleep": "Slaapkwaliteit",
+      "stressorPurpose": "Gebrek aan doel",
+      "stressorTime": "Tijdbeheer",
+      "stressorEnvironment": "Milieu & Huisvesting",
+      "stressorBurnout": "Burn-out",
+      "stressorOverwhelm": "Overbelasting van het werk",
+      "stressorLoneliness": "Eenzaamheid",
+      "motivHealth": "Gezondheid",
+      "motivAppearance": "Verschijning",
+      "motivEnergy": "Energie",
+      "motivStrength": "Kracht",
+      "motivConfidence": "Vertrouwen",
+      "motivLongevity": "Levensduur",
+      "chalTime": "Tijd",
+      "chalMotivation": "Motivatie",
+      "chalKnowledge": "Kennis",
+      "chalConsistency": "Samenhang",
+      "chalDiet": "Dieet",
+      "chalSocial": "Sociale steun",
+      "csData": "Datagedreven",
+      "dietHighProteinInfo": "Bevordert de stofwisseling en het spierherstel. Ideaal voor vetvrije massa en eetlustbeheersing.",
+      "dietLowCarbInfo": "Minimaliseert koolhydraten om de bloedsuikerspiegel te stabiliseren en de vetverbranding te activeren.",
+      "dietBalancedInfo": "Een duurzame mix van alle macronutriënten.",
+      "dietPlantBased": "Plantaardig",
+      "dietPlantBasedInfo": "Rijk aan groenten, fruit, peulvruchten en volle granen.",
+      "dietFlexible": "Flexibel (IIFYM)",
+      "dietFlexibleInfo": "Volg macro's in plaats van voedsel te beperken. Eet wat je lekker vindt binnen je doelen.",
+      "meals2": "2 maaltijden (Intermittent Fasting)",
+      "meals3": "3 maaltijden (Standaard / IF)",
+      "meals4": "4-5 maaltijden (Hoge prestaties)",
+      "meals6": "6+ maaltijden (Hypermetabolisch)",
+      "peakEarlyMorning": "Vroeg in de ochtend",
+      "peakMidday": "Halverwege de dag",
+      "peakEvening": "Avond",
+      "peakLateNight": "Laat in de nacht"
     },
     "common": {
       "next": "Volgende",
@@ -1807,7 +3049,15 @@
       "themePrompt": "Welke kleur spreekt jou aan?",
       "themeConfirmTitle": "{{name}} instellen als mijn thema?",
       "themeConfirmDesc": "Hiermee krijgt je hele ervaring deze tint. Je kunt het altijd wijzigen in de Instellingen.",
-      "themeConfirmCta": "Instellen als mijn thema"
+      "themeConfirmCta": "Instellen als mijn thema",
+      "slide1Desc": "Om uw ervaring te personaliseren en het ideale plan te creëren, moeten we u beter leren kennen. Het duurt slechts 2 minuten.",
+      "slide2Sub": "Voorbij de pijlers",
+      "slide2Desc": "Bevat gespecialiseerde protocollen voor de gezondheid van mannen en vrouwen, productiviteitsarchitectuur en mentaliteit en meditatie.",
+      "slide3Title": "Elite-protocollen",
+      "slide3Sub": "Onbegrensd potentieel",
+      "slide3Desc": "Ontgrendel geavanceerde protocollen: levensduur, topprestaties, biohacking, anti-aging, focus en meer.",
+      "letsGo": "Laten",
+      "next": "Volgende"
     },
     "estimator": {
       "title": "Je doel in cijfers",
@@ -1817,15 +3067,51 @@
       "now": "Nu",
       "wk": "Wk",
       "month_one": "maand",
-      "month_other": "maanden"
+      "month_other": "maanden",
+      "subtitle": "Op basis van jouw inzet en beschikbaarheid",
+      "toLose": "Om te verliezen",
+      "toGain": "Om te winnen",
+      "week_one": "week",
+      "week_other": "weken",
+      "commitEasy": "Zacht en duurzaam",
+      "commitBalanced": "Consistente vooruitgang",
+      "commitMaximum": "Intensieve transformatie",
+      "disclaimer": "Dit is een schatting. De werkelijke resultaten zijn afhankelijk van consistentie, herstel en individueel metabolisme."
     },
     "transition": {
       "goalSet": "Doel ingesteld!",
       "calibrating": "Doelen kalibreren...",
       "understood": "Begrepen.",
       "almostThere": "Bijna klaar!",
-      "nutritionPlan": "Voedingsplan ontwerpen..."
-    }
+      "nutritionPlan": "Voedingsplan ontwerpen...",
+      "mentalFramework": "Je mentale kader opbouwen..."
+    },
+    "alerts": {
+      "bodyRecompTitle": "Plan voor hercompositie van het lichaam"
+    },
+    "nav": {
+      "continue": "Doorgaan"
+    },
+    "results": {
+      "title": "Jouw blauwdruk",
+      "subtitle": "Jouw gepersonaliseerde plan op 3 pijlers.",
+      "nutritionPillar": "Voeding",
+      "kcalDay": "kcal/dag",
+      "proInsights": "PRO-INZICHTEN",
+      "fitnessPillar": "Geschiktheid",
+      "week1": "Week 1 · Stichting",
+      "week2": "Week 2 · Vooruitgang",
+      "week3": "Week 3 · Piek",
+      "week4": "Week 4 · Herstel",
+      "mentalPillar": "Geestelijke gezondheid",
+      "mental1": "Stress-fundamenten",
+      "mental2": "Slaapoptimalisatie",
+      "mental3": "Mindset en herkaderen",
+      "mental4": "Integratieweek",
+      "continueToPlan": "Ga verder naar Plannen"
+    },
+    "completePrompt": "Voltooi eerst de onboarding.",
+    "completePromptShopping": "Voltooi de onboarding om de boodschappenlijst te gebruiken."
   },
   "pillReminder": {
     "title": "Medicatieherinnering",
@@ -1854,7 +3140,8 @@
     "status": {
       "taken": "Ingenomen",
       "missed": "Vergeten",
-      "allTaken": "Alles ingenomen"
+      "allTaken": "Alles ingenomen",
+      "future": "Toekomst"
     },
     "months": {
       "jan": "Januari",
@@ -1869,6 +3156,25 @@
       "oct": "Oktober",
       "nov": "November",
       "dec": "December"
+    },
+    "dayStreak": "Dagreeks",
+    "thisMonth": "Deze maand",
+    "days": "Dagen",
+    "addPillSchedule": "Voeg een pillenschema toe",
+    "dailyReminders": "Dagelijkse herinneringen",
+    "yourSchedules": "Uw schema's",
+    "daysPerWeek_one": "1 dag/week",
+    "daysPerWeek_other": "{{count}} dagen/week",
+    "savedMsg": "{{name}} schema opgeslagen.",
+    "stats": "Statistieken per pil",
+    "daysInitials": {
+      "sun": "S",
+      "mon": "M",
+      "tue": "T",
+      "wed": "W",
+      "thu": "T",
+      "fri": "F",
+      "sat": "S"
     }
   },
   "workouts": {
@@ -1876,7 +3182,7 @@
     "musclesTab": "Spieren",
     "savedWorkouts": "Opgeslagen trainingen",
     "noSavedWorkouts": "Nog geen opgeslagen trainingen",
-    "noSavedSub": "",
+    "noSavedSub": "Tik op het bladwijzerpictogram bij een training om deze hier op te slaan",
     "mainEx": "Primair",
     "categories": {
       "Strength": "Kracht",
@@ -2075,7 +3381,40 @@
       "Foam Roller": "Foamroller",
       "Step": "Step",
       "Box": "Box"
-    }
+    },
+    "rating": "Beoordeling",
+    "level": "Niveau",
+    "equipment": "Uitrusting",
+    "exerciseDetails": "Oefeningsdetails",
+    "instructions": "Instructies",
+    "primaryMuscles": "Primaire Spieren",
+    "secondaryMuscles": "Secundaire Spieren",
+    "logExercise": "Oefening Opslaan",
+    "sets": "sets",
+    "reps": "herhalingen",
+    "min": "min",
+    "title": "Trainingen",
+    "subtitle": "Begeleide videoroutines",
+    "searchPlaceholder": "Zoek trainingen...",
+    "browse": "Blader",
+    "noRoutines": "Geen routines gevonden",
+    "noRoutinesSub": "Probeer een ander type of wis het spierfilter",
+    "browseByMuscle": "Blader op spiergroep",
+    "clearFilter": "Filter wissen:",
+    "noSaved": "Nog geen opgeslagen trainingen",
+    "premium": "PREMIE",
+    "proRequired": "Pro vereist - alleen voorbeeld",
+    "orAlternatively": "of alternatief:",
+    "workoutProgress": "Vooruitgang van de training",
+    "maxWeight": "Maximaal gewicht",
+    "maxVolume": "Maximaal volume",
+    "sessions": "Sessies",
+    "workoutHistory": "Trainingsgeschiedenis",
+    "upgradeToPro": "Upgrade naar Pro",
+    "unlockVideoDesc": "Ontgrendel de volledige trainingsvideo + uitsplitsing.",
+    "noVideo": "Geen video-URL geconfigureerd",
+    "addVideo": "Voeg een video-URL toe in het beheerderspaneel",
+    "proMessage": "Deze training is vergrendeld. Upgrade naar Pro om toegang te krijgen tot premium trainingsvideo's en volledige uitsplitsingen."
   },
   "meals": {
     "breakfast": "Ontbijt",
@@ -2206,5 +3545,195 @@
       "bulk": "Massa opbouwen",
       "comfort": "Comfortfood"
     }
-  }
+  },
+  "recipes": {
+    "logToMeal": "Log naar Maaltijd",
+    "chooseAMeal": "Kies een maaltijd",
+    "logToMealBtn": "Log naar {{meal}}",
+    "loggedTitle": "✅ Gelogd!",
+    "loggedMsg": "{{title}} toegevoegd aan {{meal}} vandaag.",
+    "stayHere": "Blijf hier",
+    "viewFuel": "Bekijk Voeding",
+    "logError": "Kon recept niet loggen. Probeer opnieuw.",
+    "title": "Recepten",
+    "searchPlaceholder": "Zoek recepten...",
+    "categories": {
+      "All": "Alle",
+      "Breakfast": "Ontbijt",
+      "Lunch": "Lunch",
+      "Dinner": "Diner",
+      "Snacks": "Snacks",
+      "Desserts": "Desserts",
+      "Vegetarian": "Vegetarisch",
+      "High Protein": "Eiwitrijk",
+      "Low Carb": "Koolhydraatarm"
+    },
+    "loadingRecipes": "Laden...",
+    "noRecipes": "Nog geen recepten",
+    "noRecipesDesc": "Recepten verschijnen hier.",
+    "kcal": "kcal",
+    "backToList": "Terug",
+    "min": "min",
+    "servings": "porties",
+    "logAsMeal": "Log als Maaltijd",
+    "shoppingList": "Boodschappenlijst",
+    "keepBrowsing": "Blijf zoeken",
+    "viewList": "Bekijk lijst",
+    "nutritionFacts": "Voedingswaarden",
+    "calories": "Calorieën",
+    "protein": "Eiwit",
+    "carbs": "Koolhydraten",
+    "fat": "Vet",
+    "ingredients": "Ingrediënten",
+    "ingredientsLocked": "Ingrediënten vergrendeld",
+    "ingredientsLockedDesc": "Upgrade naar Pro.",
+    "instructions": "Bereiding",
+    "instructionsLocked": "Bereiding vergrendeld",
+    "instructionsLockedDesc": "Upgrade naar Pro voor stappen.",
+    "proUpsell": "Upgrade naar Pro om recepten, instructies en de boodschappenlijst te ontgrendelen."
+  },
+  "Goal Check": "Jij hebt geselecteerd",
+  "Error": "Kan profiel niet opslaan. Controleer uw verbinding.",
+  "metabolic": {
+    "deepKetosis": "Diepe ketose",
+    "nutritionalKetosis": "Voedingsketose",
+    "glucoseBurning": "Glucoseverbranding",
+    "dailyCheckin": "Dagelijks inchecken",
+    "title": "Metabolische hub",
+    "subtitle": "Glucose versus ketonen • Commandocentrum",
+    "currentState": "Huidige staat",
+    "netCarbs": "Netto koolhydraten",
+    "fatCarbRatio": "Vet/koolhydraten%",
+    "fatDominance": "Dikke dominantie",
+    "netCarbsLeft": "Netto koolhydraten over",
+    "ofBudget": "van {{budget}}g budget",
+    "resetStreak": "Resetreeks van 90 dagen",
+    "consistencyDesc": "Consistentie herbedrading van dopamine-routes. Blijf suikervrije dagen stapelen.",
+    "scanFood": "Voedsel scannen",
+    "scanFoodDesc": "Detecteer verborgen suikers en macro's",
+    "logDailyStatus": "Dagelijkse status registreren",
+    "didYouStaySugarFree": "Ben jij vandaag suikervrij gebleven?",
+    "greenList": "Keto Groene Lijst",
+    "greenListIntro": "Houd je aan deze voedingsmiddelen om in diepe/nutritionele ketose te blijven.",
+    "healthyFats": "Gezonde vetten",
+    "healthyFatsList": "• Avocado/Avocado-olie\\n• Olijfolie/Kokosolie\\n• Boter/Ghee\\n• MCT-olie",
+    "proteins": "Eiwitten",
+    "proteinsList": "• Vette vis (zalm, makreel)\\n• Eieren (heel)\\n• Rundvlees/biefstuk (vette stukken)\\n• Kippendijen (met vel)",
+    "lowCarbVeggies": "Koolhydraatarme groenten",
+    "lowCarbVeggiesList": "• Spinazie / Boerenkool\\n• Broccoli / Bloemkool\\n• Courgette\\n• Asperges",
+    "avoid": "Vermijd / beperk",
+    "avoidList": "• Brood, pasta, rijst\\n• Aardappelen\\n• Suikerhoudend fruit (bananen, druiven)\\n• Bewerkte snacks",
+    "proMessage": "Upgrade naar Pro om premium metabolische inzichten te ontgrendelen."
+  },
+  "Wait": "Gebruiker laden...",
+  "Dev": "Gelogde testmacro's: 10 g koolhydraten, 15 g vet",
+  "sugarControl": {
+    "checkinNeededBody": "Kies Suikervrij of Had suiker.",
+    "savedTitle": "Opgeslagen",
+    "savedBody": "Dagelijks inchecken bespaard.",
+    "meterTitle": "Herbedradingsmeter voor hersenen",
+    "dStreak": "d streep",
+    "sugarFree": "Suikervrij",
+    "hadSugar": "Suiker gehad",
+    "notes": "Opmerkingen",
+    "notesPlaceholder": "Hoe voel je je? Triggers?",
+    "saving": "Besparing...",
+    "saveCheckin": "Bewaar Inchecken",
+    "startedTitle": "Gestart",
+    "startedBody": "Uw reset van 90 dagen is gestart. Eén dag tegelijk.",
+    "errorStart": "Kan de uitdaging niet starten.",
+    "checkinNeeded": "Inchecken is nodig",
+    "title": "Suikercontrole",
+    "subtitle": "90 dagen reset • dagelijkse check-ins",
+    "bonusActive": "Glucosestabiliteitsbonus actief",
+    "bonusBody": "Jij",
+    "meterSub": "Opeenvolgende dagen geregistreerd als suikervrij. Blijf doorgaan.",
+    "days": "dagen",
+    "startReset": "Start/herstart 90 dagen reset",
+    "dailyCheckin": "Dagelijks inchecken",
+    "howDidTodayGo": "Hoe ging het vandaag?",
+    "mood": "Stemming"
+  },
+  "Saved": "Opgeslagen in de Suikercheck van vandaag.",
+  "admin": {
+    "errorRequiredName": "Oefennaam is vereist",
+    "errorSave": "Kan oefening niet opslaan",
+    "deleteConfirm": "Verwijderen",
+    "deleteTitle": "Oefening verwijderen",
+    "delete": "Verwijderen",
+    "calisthenicsBodyweight": "Lichaamsgewicht",
+    "library": "Oefeningenbibliotheek",
+    "manageExercises": "Beheer oefeningen voor trainingsplannen",
+    "new": "Nieuw",
+    "searchLibrary": "Bibliotheek zoeken...",
+    "reset": "Opnieuw instellen",
+    "type": "TYPE",
+    "difficulty": "MOEILIJKHEID",
+    "muscleGroup": "SPIERGROEP",
+    "results": "resultaten",
+    "noExercisesYet": "Nog geen oefeningen",
+    "editExercise": "Oefening bewerken",
+    "newExercise": "Nieuwe oefening",
+    "save": "Redden",
+    "exerciseName": "Naam van de oefening",
+    "exerciseNamePlaceholder": "bijv. Uitrollen van het Ab-wiel, Barbell Squat",
+    "exerciseDescription": "Beschrijving",
+    "exerciseDescriptionPlaceholder": "Wat is het doel van deze oefening?",
+    "exerciseTypeLabel": "Type oefening (selecteer alles wat van toepassing is)",
+    "instructionsLabel": "Instructies",
+    "instructionsHint": "Deze verschijnen als een genummerde lijst in de app",
+    "instructionsPlaceholder": "Kniel en pak het wiel op schouderbreedte vast\\nHoud de kern vast en adem uit\\nRol naar voren totdat de heupen gestrekt zijn\\nTrek langzaam naar achteren om te starten",
+    "primaryMuscles": "Primaire spieren",
+    "secondaryMuscles": "Secundaire spieren",
+    "muscleGroupFilterTags": "SPIERGROEP FILTERTAGS",
+    "muscleGroupFilterHint": "Deze taggen deze oefening op de kaarten Bladeren op spiergroep op het tabblad Workouts.",
+    "requiredEquipment": "Vereiste apparatuur (door komma's gescheiden)",
+    "optionalEquipment": "Optionele/alternatieve uitrusting (door komma's gescheiden)",
+    "optionalEquipmentHint": "Items die hier worden vermeld, worden weergegeven als",
+    "difficultyLabel": "Moeilijkheidsgraad",
+    "thumbnailUrl": "Miniatuur-URL — Terugval/Unisex (R2)",
+    "videoUrl": "Video-URL — Terugval/Unisex (R2)",
+    "thumbnailsVideosGender": "THUMBNAILS & VIDEO'S PER GESLACHT",
+    "genderToggleHint": "Schakel de schakelaar in om afzonderlijke ♂ mannelijke en ♀ vrouwelijke thumbnails en video's te uploaden. De app kiest de juiste versie op basis van de gebruiker\\",
+    "hasGenderVariants": "Heeft geslachtsvarianten (♂ / ♀)",
+    "maleThumbnail": "♂ Mannelijke miniatuur (R2)",
+    "maleVideo": "♂ Mannelijke video-URL (R2)",
+    "femaleThumbnail": "♀ Vrouwelijke miniatuur (R2)",
+    "femaleVideo": "♀ Vrouwelijke video-URL (R2)",
+    "fallbackVideo": "Fallback / Unisex-video-URL (R2)",
+    "fallbackVideoHint": "Wordt weergegeven als er geen geslachtsvariant bestaat of als standaard."
+  },
+  "shopping": {
+    "loading": "Laden...",
+    "signIn": "Meld u aan om de boodschappenlijst te gebruiken",
+    "upgradePrompt": "Gratis abonnement beperkt tot 2 items. Upgrade voor onbeperkt.",
+    "missingItemTitle": "Ontbrekend artikel",
+    "missingItemMsg": "Typ eerst een itemnaam.",
+    "errorAdd": "Kan item niet toevoegen. Probeer het opnieuw.",
+    "clearTitle": "Duidelijk voltooid",
+    "title": "Boodschappenlijstje",
+    "done": "klaar",
+    "clearDoneBtn": "Duidelijk klaar",
+    "loadingList": "Uw lijst laden...",
+    "emptyTitle": "Je lijst is leeg",
+    "emptySub": "Voeg items handmatig toe of haal rechtstreeks uit een recept.",
+    "addFirst": "Voeg het eerste item toe",
+    "browseRecipes": "Blader door recepten",
+    "errorDelete": "Kan item niet verwijderen. Probeer het opnieuw.",
+    "errorUpdate": "Kan item niet updaten.",
+    "upgradeTitle": "Upgrade naar Pro",
+    "upgradeMsg": "Gratis gebruikers kunnen maximaal 2 items toevoegen. Upgrade voor onbeperkte items en synchroniseer op verschillende apparaten.",
+    "viewPro": "Bekijk Pro-abonnementen",
+    "addItem": "Artikel toevoegen",
+    "itemName": "Artikelnaam",
+    "namePlaceholder": "bijv. Eieren",
+    "quantity": "Hoeveelheid",
+    "qtyPlaceholder": "bijv. 6",
+    "addToList": "Toevoegen aan lijst",
+    "clearMsg": "Verwijder ${done.length} aangevinkt item${done.length > 1 ?",
+    "addedTitle": "Toegevoegd aan boodschappenlijst",
+    "addedMsg": "{{created}} nieuwe item(s) toegevoegd en {{merged}} item(s) samengevoegd."
+  },
+  "No ingredients": "Dit recept bevat geen toevoegingen.",
+  "Success": "Oefening geregistreerd!"
 }

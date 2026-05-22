@@ -880,7 +880,9 @@ export default defineSchema({
         instructions: v.optional(v.array(v.string())), // Numbered step-by-step instructions
         instructionsLocalizations: v.optional(v.object({ pt: v.optional(v.array(v.string())), es: v.optional(v.array(v.string())), fr: v.optional(v.array(v.string())), de: v.optional(v.array(v.string())), nl: v.optional(v.array(v.string())) })),
         primaryMuscles: v.optional(v.array(v.string())), // e.g. ["Chest", "Shoulders"]
+        primaryMusclesLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
         secondaryMuscles: v.optional(v.array(v.string())), // e.g. ["Triceps", "Core"]
+        secondaryMusclesLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()) })),
         exerciseType: v.optional(v.string()), // e.g. "Strength", "Cardio", "HIIT"
         exerciseTypes: v.optional(v.array(v.string())), // multi-type for calorie calc
       })

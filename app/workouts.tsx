@@ -277,7 +277,7 @@ export default function WorkoutsScreen() {
                         <Text style={styles.subtitle}>{t('workouts.subtitle', 'Guided video routines')}</Text>
                     </View>
                     <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : null} style={styles.headerCircle}>
-                        <X size={20} color="#1e293b" />
+                        <X size={20} color={themeColors.text} />
                     </TouchableOpacity>
                 </View>
 
@@ -294,7 +294,7 @@ export default function WorkoutsScreen() {
                         />
                         {search.length > 0 && (
                             <TouchableOpacity onPress={() => setSearch('')}>
-                                <X size={18} color="#cbd5e1" />
+                                <X size={18} color={themeColors.textMuted} />
                             </TouchableOpacity>
                         )}
                     </View>
@@ -759,7 +759,7 @@ export default function WorkoutsScreen() {
                                     onPress={() => handleLogExercise(mountedWorkout.exercises[0])}
                                 >
                                     <Dumbbell size={22} color="#ffffff" />
-                                    <Text style={styles.startButtonText}>{t('workouts.logExercise', 'Log Exercise')}</Text>
+                                    <Text style={styles.startButtonText} adjustsFontSizeToFit numberOfLines={1}>{t('workouts.logExercise', 'Log Exercise')}</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -883,7 +883,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     filterPill: { paddingHorizontal: 16, paddingVertical: 7, borderRadius: 20, backgroundColor: c.surfaceMuted, borderWidth: 1, borderColor: c.border },
     filterPillActive: { backgroundColor: c.text, borderColor: c.text },
     filterPillText: { fontSize: 13, fontWeight: '700', color: c.textMuted },
-    filterPillTextActive: { color: '#ffffff' },
+    filterPillTextActive: { color: c.bg },
     listContainer: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 40, flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
     workoutCard: { width: (width - 44) / 2, height: 220, borderRadius: 20, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.14, shadowRadius: 16, elevation: 6, backgroundColor: c.surface, borderWidth: 2, borderColor: c.border },
     cardImage: { width: '100%', height: '100%' },
@@ -1016,7 +1016,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     blurBtnText: { color: '#ffffff', fontWeight: '900' },
     bottomAction: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingHorizontal: 24, backgroundColor: c.surface, borderTopWidth: 1, borderTopColor: c.surfaceMuted },
     startButton: { backgroundColor: '#2563eb', height: 64, borderRadius: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, shadowColor: '#2563eb', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16 },
-    startButtonText: { color: '#ffffff', fontSize: 18, fontWeight: '900' },
+    startButtonText: { color: '#ffffff', fontSize: 18, fontWeight: '900', flexShrink: 1 },
 
     // Video modal
     videoModalContainer: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)', justifyContent: 'center', alignItems: 'center' },

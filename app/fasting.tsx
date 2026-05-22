@@ -160,9 +160,9 @@ export default function FastingScreen() {
               trackColor="#f1f5f9"
             />
             <View className="absolute items-center">
-              <Text className="text-slate-400 font-black uppercase tracking-widest text-[10px] mb-1">{t('fasting.elapsed', 'Time Elapsed')}</Text>
-              <Text className="text-slate-900 font-black text-4xl tabular-nums">{formatTime(elapsedMs)}</Text>
-              <Text className="text-slate-500 font-bold mt-1">{t('fasting.goal', 'Goal')}: {targetHours}h</Text>
+              <Text style={{ color: themeColors.textMuted }} className="font-black uppercase tracking-widest text-[10px] mb-1">{t('fasting.elapsed', 'Time Elapsed')}</Text>
+              <Text style={{ color: themeColors.text }} className="font-black text-4xl tabular-nums">{formatTime(elapsedMs)}</Text>
+              <Text className="text-slate-500 dark:text-slate-400 font-bold mt-1">{t('fasting.goal', 'Goal')}: {targetHours}h</Text>
             </View>
           </View>
 

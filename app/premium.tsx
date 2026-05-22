@@ -76,6 +76,8 @@ function PlanCard({ title, subtitle, price, priceNote, popular, disabled, onPres
   popular: boolean; disabled: boolean; onPress: () => void;
 }) {
   const { t } = useTranslation();
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const scale = useRef(new Animated.Value(1)).current;
   const press = () => { Animated.sequence([Animated.timing(scale, { toValue: 0.97, duration: 80, useNativeDriver: true }), Animated.timing(scale, { toValue: 1, duration: 120, useNativeDriver: true })]).start(); onPress(); };
 
@@ -109,6 +111,8 @@ function PlanCard({ title, subtitle, price, priceNote, popular, disabled, onPres
 
 // ─── Feature row ──────────────────────────────────────────────────────────────
 function FeatureRow({ icon, title, desc, index }: { icon: string; title: string; desc: string; index: number }) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(16)).current;
 
@@ -438,15 +442,15 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     marginBottom: 10,
   },
   heroHeadline: {
-    fontSize: 38,
+    fontSize: 40,
     fontWeight: '900',
-    color: '#fff',
+    color: c.scheme === 'dark' ? '#ffffff' : '#1e293b',
     lineHeight: 44,
     marginBottom: 10,
   },
   heroSub: {
     fontSize: 15,
-    color: 'rgba(255,255,255,0.7)',
+    color: c.scheme === 'dark' ? 'rgba(255,255,255,0.7)' : '#334155',
     lineHeight: 22,
   },
 
@@ -490,7 +494,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: '900',
-    color: c.text,
+    color: c.scheme === 'dark' ? '#ffffff' : '#1e293b',
     marginBottom: 20,
   },
 
@@ -551,9 +555,9 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   bestBadgeText: { fontSize: 10, fontWeight: '900', color: '#0a0a0f', letterSpacing: 1.5 },
   planRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16 },
-  planTitle: { fontSize: 17, fontWeight: '900', color: c.text, marginBottom: 4 },
+  planTitle: { fontSize: 17, fontWeight: '900', color: c.scheme === 'dark' ? '#ffffff' : '#1e293b', marginBottom: 4 },
   planSub: { fontSize: 12, fontWeight: '600', color: c.textMuted, lineHeight: 16 },
-  planPrice: { fontSize: 20, fontWeight: '900', color: c.text },
+  planPrice: { fontSize: 20, fontWeight: '900', color: c.scheme === 'dark' ? '#ffffff' : c.text },
   planPriceGold: { color: GOLD_LIGHT },
   planNote: { fontSize: 11, fontWeight: '700', color: GOLD, marginTop: 2 },
   planCta: {
@@ -565,8 +569,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   planCtaGold: {
     backgroundColor: GOLD,
   },
-  planCtaText: { fontSize: 14, fontWeight: '800', color: c.text },
-  planCtaTextDark: { color: c.text },
+  planCtaText: { fontSize: 14, fontWeight: '800', color: c.scheme === 'dark' ? '#ffffff' : c.text },
+  planCtaTextDark: { color: '#0a0a0f' }, // Always dark text on gold button
 
   upgradingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 8 },
   upgradingText: { fontSize: 13, color: c.textMuted },
@@ -595,7 +599,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     borderColor: c.border,
   },
   featureEmoji: { fontSize: 20 },
-  featureTitle: { fontSize: 14, fontWeight: '800', color: c.text, marginBottom: 2 },
+  featureTitle: { fontSize: 14, fontWeight: '800', color: c.scheme === 'dark' ? '#ffffff' : '#1e293b', marginBottom: 2 },
   featureDesc: { fontSize: 12, color: c.textMuted, lineHeight: 16 },
   featureCheck: {
     width: 22,

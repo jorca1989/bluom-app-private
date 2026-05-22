@@ -223,7 +223,11 @@
       "meals": "Måltider",
       "quickActions": "Hurtige handlinger",
       "utilities": "Værktøjer"
-    }
+    },
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "caloriesShort": "cal"
   },
   "modals": {
     "pro": {
@@ -303,7 +307,26 @@
       "searchIng": "Søg for at tilføje en ingrediens...",
       "noIng": "Ingen ingredienser tilføjet",
       "totalMacros": "Samlede makroer (pr. portion)",
-      "save": "Gem opskrift"
+      "save": "Gem opskrift",
+      "name": "Recipe Name",
+      "namePlaceholder": "e.g. Chicken Stir Fry",
+      "makesServings_one": "Makes {{count}} serving",
+      "makesServings_other": "Makes {{count}} servings",
+      "makesServings": "Makes {{count}} servings",
+      "noIngredients": "No ingredients added.",
+      "goBack": "Please go back and add ingredients.",
+      "perServing": "Nutrition info per serving",
+      "recipe": "Recipe",
+      "saveRecipe": "Save Recipe",
+      "bulkImport": "Use Bulk Import for Ingredients?",
+      "pasteIngredients": "Paste or type your ingredients (one per line):",
+      "autoMatchHint": "We'll try to automatically match them to foods in the database.",
+      "nextIngredients": "Next: Ingredients",
+      "nextReview": "Next: Review",
+      "matching": "Matching your ingredients...",
+      "foundFrom": "Found from:",
+      "searchManually": "Search manually for a better match:",
+      "error": "Failed to save recipe."
     },
     "logRecipe": {
       "title": "Registrer måltid",
@@ -677,7 +700,43 @@
         "powerlifting": "Styrkeløft / Strongman",
         "crossfit": "CrossFit / Funktionel",
         "sport": "Hold- / Kampsport"
-      }
+      },
+      "q": {
+        "trainingMode": "How would you describe your approach?",
+        "primaryGoal": "What is your primary goal right now?",
+        "yearsTraining": "How long have you been training seriously?",
+        "competitionFocus": "Do you compete or plan to?"
+      },
+      "hint": {
+        "trainingMode": "Be honest — your guidance is personalised and private."
+      },
+      "natural": "Natural Athlete",
+      "naturalDesc": "No performance-enhancing drugs",
+      "enhanced": "Enhanced / PED User",
+      "enhancedDesc": "Using or considering anabolic compounds",
+      "athlete": "Competitive Athlete",
+      "athleteDesc": "Competing or prepping to compete",
+      "muscle": "Build Muscle",
+      "muscleDesc": "Hypertrophy & size",
+      "strength": "Increase Strength",
+      "strengthDesc": "Raw power & 1RM",
+      "fat_loss": "Shred & Cut",
+      "fat_lossDesc": "Fat loss, preserve muscle",
+      "performance": "Athletic Performance",
+      "performanceDesc": "Speed, power, conditioning",
+      "longevity": "Longevity & Health",
+      "longevityDesc": "Long-term optimisation",
+      "recomp": "Body Recomposition",
+      "recompDesc": "Build muscle, lose fat simultaneously",
+      "beginner": "Under 1 year",
+      "intermediate": "1–3 years",
+      "advanced": "3–7 years",
+      "veteran": "7+ years",
+      "none": "No — training for myself",
+      "bodybuilding": "Bodybuilding / Physique",
+      "powerlifting": "Powerlifting / Strongman",
+      "crossfit": "CrossFit / Functional",
+      "sport": "Team / Combat Sport"
     },
     "restartTitle": "Genstart spørgeskema",
     "restartMsg": "Dette vil slette din nuværende profil og genstarte spørgeskemaet. Fortsæt?",
@@ -690,7 +749,21 @@
       "bloodworkBody": "Assisterede atleter skal overvåge lipider, leverenzymer, hæmatokrit og hormoner minimum hver 8. uge. Disse værdier ændrer sig hurtigt ved brug af AAS. Få taget blodprøver før, under og efter hver cyklus.",
       "cardioTitle": "Hjerte-kar-sundhed er førsteprioritet",
       "cardioBody": "Den største årsag til for tidlig død hos assisterede atleter er hjerte-kar-sygdomme som følge af LV-hypertrofi, forhøjet hæmatokrit og dyslipidæmi. Konditionstræning 4x om ugen (zone 2) er ikke til forhandling."
-    }
+    },
+    "stackLoggedMsg": "Supplement intake recorded.",
+    "upgradeToPro": "Atualizar para Pro",
+    "vitalitySubline": "Drive · Recovery · Focus",
+    "supplementStack": "Supplement Stack",
+    "pillarDriveShort": "V",
+    "pillarRecoveryShort": "R",
+    "pillarFocusShort": "F",
+    "personalisedInsights": "Insights Personalizados",
+    "bloodWorkTitle": "Análises ao Sangue Periódicas",
+    "bloodWorkBody": "Atletas enhanced devem monitorizar lipídeos, hematócrito e enzimas hepáticas a cada 8 semanas.",
+    "cardioTitle": "Saúde Cardiovascular é Prioridade #1",
+    "cardioBody": "O cardio LISS 4x/semana é obrigatório para gerir a pressão arterial e hematócrito.",
+    "unlockDeepAnalytics": "Desbloqueia Análise Hormonal Profunda",
+    "unlockDeepAnalyticsSub": "Insights com IA que se adaptam ao teu histórico, padrões e sintomas registados."
   },
   "todo": {
     "title": "Produktivitetscenter",
@@ -866,7 +939,16 @@
     "units": {
       "kg": "kg",
       "minKm": "min/km"
-    }
+    },
+    "couldNotSave": "Could not save.",
+    "logged": "logged",
+    "saved": "Saved",
+    "unlockWithPro": "Unlock with Pro",
+    "viewProPlans": "View Pro Plans",
+    "clear": "Clear",
+    "back": "Back",
+    "notReady": "Not ready",
+    "upgradeToPro": "Upgrade to Pro"
   },
   "wellness": {
     "title": "Velvære",
@@ -1708,6 +1790,31 @@
         "name": "Magnesium L-Threonate",
         "reason": "Krydser blod-hjerne-barrieren; forbedrer dyp søvn og reducerer natlig angst",
         "timing": "30 min før sengetid"
+      },
+      "myoInositol": {
+        "name": "Myo-Inositol",
+        "reason": "Supports egg quality, ovulation regularity and insulin sensitivity",
+        "timing": "Split morning and night with food"
+      },
+      "coQ10": {
+        "name": "CoQ10 (Ubiquinol)",
+        "reason": "Improves mitochondrial energy in eggs; important over 35",
+        "timing": "With meals"
+      },
+      "blackCohosh": {
+        "name": "Black Cohosh",
+        "reason": "Hot flash and mood symptom relief; best evidence in early menopause",
+        "timing": "Morning and evening"
+      },
+      "calcium": {
+        "name": "Calcium + D3",
+        "reason": "Bone density protection during oestrogen decline",
+        "timing": "Split morning and night"
+      },
+      "vitD3K2": {
+        "name": "Vitamin D3 + K2",
+        "reason": "Most women are deficient; critical for immune function, mood and bone health",
+        "timing": "Morning with a fatty meal"
       }
     },
     "loggedTitle": "Registreret ✓",
@@ -1798,7 +1905,115 @@
     "priv3Body": "Vi bruger ikke dine sundhedsdata til at skabe reklameprofiler. Punktum.",
     "restartTitle": "Genstart spørgeskema",
     "restartMsg": "Dette vil slette din nuværende profil og genstarte spørgeskemaet. Fortsæt?",
-    "restartConfirm": "Genstart"
+    "restartConfirm": "Genstart",
+    "articles": {
+      "art1": {
+        "title": "Oestrogen Dominance: Signs & Solutions",
+        "category": "Hormones",
+        "time": "5 min",
+        "body": "When oestrogen is disproportionately high relative to progesterone, you may experience heavy periods, weight gain around hips, mood swings and breast tenderness. Key strategies: reduce plastics (xenoestrogens), support liver detox with cruciferous veg, and include zinc + B6 foods."
+      },
+      "art2": {
+        "title": "Cycle Syncing: Train Smarter Every Phase",
+        "category": "Fitness",
+        "time": "7 min",
+        "body": "Follicular & ovulatory phase: push hard — strength, HIIT, PRs. Luteal phase: moderate — Pilates, swimming. Menstrual phase: gentle — yoga, walking. Matching your training to your hormones reduces injury risk and improves adaptation."
+      },
+      "art3": {
+        "title": "Cortisol & Your Cycle: The Hidden Link",
+        "category": "Wellness",
+        "time": "4 min",
+        "body": "Chronic stress elevates cortisol, which directly suppresses progesterone production. This causes shorter luteal phases, PMS amplification, and cycle irregularities. Evidence-based tools: 4-7-8 breathing, adaptogens (ashwagandha), and sleep consistency."
+      },
+      "art4": {
+        "title": "Gut Health & Oestrogen Metabolism",
+        "category": "Nutrition",
+        "time": "6 min",
+        "body": "The estrobolome — gut bacteria that process oestrogen — is crucial. Poor gut health means oestrogen gets recirculated instead of excreted, driving hormonal imbalances. Prioritise: fibre (30g/day), fermented foods, reduce alcohol."
+      },
+      "art5": {
+        "title": "Iron, Fatigue & Your Period",
+        "category": "Nutrition",
+        "time": "4 min",
+        "body": "Menstruating women lose 20-80ml of blood each cycle. Iron deficiency is the most common nutrient deficiency worldwide and directly causes fatigue, poor focus and reduced athletic performance. Test your ferritin, not just haemoglobin."
+      },
+      "art6": {
+        "title": "Progesterone: The Calm Hormone",
+        "category": "Hormones",
+        "time": "5 min",
+        "body": "Progesterone is your body\\"
+      },
+      "art7": {
+        "title": "PCOS: Beyond the Basics",
+        "category": "Health",
+        "time": "8 min",
+        "body": "Polycystic Ovary Syndrome affects 1 in 10 women. Key management pillars: blood sugar regulation (reduce refined carbs), strength training to improve insulin sensitivity, inositol supplementation (evidence grade A), and stress management."
+      },
+      "art8": {
+        "title": "Thyroid & Female Fertility",
+        "category": "Health",
+        "time": "5 min",
+        "body": "Hypothyroidism affects up to 3x more women than men and is a leading undiagnosed cause of infertility, irregular cycles and postnatal depression. Get TSH, T3 and T4 tested — not just TSH alone."
+      }
+    },
+    "suppIntro": "Personalizado com base na tua fase do ciclo, nível de stress, método contracetivo, foco de saúde e idade.",
+    "suppLocked": "Personalização bloqueada para utilizadores gratuitos.",
+    "suppDisclaimer": "Always consult a healthcare professional before starting new supplements, especially during pregnancy.",
+    "tabInsights": "Insights",
+    "setupTitlePreg": "👶 Acompanha a tua gravidez",
+    "setupTitleCycle": "🌸 Desbloqueia os teus insights do ciclo",
+    "week": "Semana",
+    "menopauseTracker": "Monitor de Menopausa",
+    "menopauseDesc": "Regista afrontamentos, humor e alterações de sono. O teu quadro hormonal importa.",
+    "vitStack": "Vitality Stack",
+    "personalisedSupps": "personalised supplements",
+    "insightsSub": "Personalizados a partir do teu perfil, fase do ciclo, nível de stress, sono e foco de saúde.",
+    "insightsEmpty": "Completa o teu bio-registo para gerar insights personalizados.",
+    "priorityHigh": "⚠️ Prioridade",
+    "priorityNote": "💡 Nota",
+    "takeAction": "Tomar ação",
+    "librarySub": "Guias baseados em ciência para a saúde hormonal da mulher.",
+    "quiz": {
+      "lifeStage": {
+        "question": "What is your current phase of life?",
+        "cycle": "Menstruating",
+        "cycleDesc": "Regular or irregular cycles",
+        "perimenopause": "Perimenopause",
+        "perimenopauseDesc": "Experiencing transition symptoms",
+        "menopause": "Post-Menopause",
+        "menopauseDesc": "12+ months without a period"
+      },
+      "birthControl": {
+        "question": "Are you using hormonal birth control?",
+        "none": "No — Natural Cycle",
+        "noneDesc": "No hormones or copper IUD",
+        "pill": "Combination Pill / Ring",
+        "pillDesc": "Suppresses ovulation",
+        "iud": "Hormonal IUD / Implant",
+        "iudDesc": "Progestin only (Mirena, Nexplanon)",
+        "mini_pill": "Mini-Pill",
+        "mini_pillDesc": "Progestin only pill"
+      },
+      "periodPain": {
+        "question": "How severe is your period pain?",
+        "none": "Mild / None",
+        "moderate": "Moderate",
+        "moderateDesc": "Needs occasional painkillers",
+        "severe": "Severe",
+        "severeDesc": "Impacts daily life/work"
+      },
+      "mainFocus": {
+        "question": "What is your main hormonal focus?",
+        "cycle_syncing": "Cycle Syncing",
+        "cycle_syncingDesc": "Optimise training/diet to phases",
+        "fertility": "Fertility Support",
+        "fertilityDesc": "Preparing for pregnancy",
+        "pms": "PMS / PMDD Relief",
+        "pmsDesc": "Reduce mood swings and pain",
+        "perimenopause": "Perimenopause Support",
+        "perimenopauseDesc": "Manage symptoms"
+      }
+    }
   },
   "move": {
     "widgets": {
@@ -1807,7 +2022,8 @@
       "swipeable": "Træningsplan",
       "quickActions": "Hurtige handlinger",
       "todayActivities": "Dagens aktiviteter",
-      "moveInsights": "Bevægelsesindsigter"
+      "moveInsights": "Bevægelsesindsigter",
+      "proBanner": "Pro Banner"
     },
     "title": "Træn",
     "subtitle": "Følg dine træninger og aktiviteter",
@@ -1946,7 +2162,17 @@
     "fullBodyFocus": "Hele kroppen / blandet",
     "openMove": "Åbn Move",
     "yourWeekOverview": "Din ugeoversigt",
-    "weekOverviewDesc": "Brug dette som en enkel guide. Pro giver en personlig plan, der tilpasser sig og bytter øvelser."
+    "weekOverviewDesc": "Brug dette som en enkel guide. Pro giver en personlig plan, der tilpasser sig og bytter øvelser.",
+    "fourWeekPlan": "4-Week Plan",
+    "fourWeekPlanDesc": "A free template to get you moving.",
+    "freeTemplate": "FREE TEMPLATE",
+    "startWithStructure": "Start with structure.",
+    "followRoutine": "Follow this 4-week routine to build momentum.",
+    "proPlanAdapts": "Your personalised plan adapts as you progress.",
+    "freeUsers28Days": "Free users get a full 28-day blueprint. Upgrade to Pro to continue your journey.",
+    "viewWeek": "View week",
+    "personalisedTraining": "Personalised Training",
+    "upgradeDetail": "Upgrade to Pro to add or remove exercises from your plan."
   },
   "premium": {
     "heroTitle": "Din biologi,",
@@ -1995,7 +2221,18 @@
     "featFitnessTitle": "Personlig træningsplan",
     "featFitnessDesc": "Progressivt 4-ugers træningsprogram tilpasset din tidsplan",
     "featMentalTitle": "Plan for mental sundhed",
-    "featMentalDesc": "Ugentlige temaer, stressprotokoller og meditationer"
+    "featMentalDesc": "Ugentlige temaer, stressprotokoller og meditationer",
+    "title": "Bluom Pro",
+    "subtitle": "Unlock your full potential",
+    "features": {
+      "ai": "Personalized AI Coaching",
+      "fasting": "Advanced Fasting Protocols",
+      "insights": "Deep Hormonal Insights",
+      "scans": "Unlimited AI Food Scans",
+      "sugar": "Sugar Detector & Alternatives"
+    },
+    "upgrade": "Upgrade Now",
+    "plans": "View Plans"
   },
   "settings": {
     "title": "Indstillinger",
@@ -2048,7 +2285,15 @@
     "fatG": "Daglig fedt (g)",
     "updateGoals": "Opdater mål",
     "themeColor": "Temafarve",
-    "themeColorDesc": "Vælg en palet, der passer til dit humør. Ændringer træder i kraft med det samme."
+    "themeColorDesc": "Vælg en palet, der passer til dit humør. Ændringer træder i kraft med det samme.",
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "help": "Help & Support",
+    "logout": "Log Out",
+    "version": "Version {{version}}",
+    "connectedDevices": "Connected Devices",
+    "healthConnect": "Health Integration"
   },
   "support": {
     "title": "Support & Feedback",
@@ -2064,7 +2309,10 @@
     "successMsg": "Din henvendelse er modtaget. Vi vender tilbage hurtigst muligt.",
     "errorTitle": "Fejl",
     "errorMsg": "Kunne ikke sende. Prøv igen senere.",
-    "footer": "Bluom Life Management"
+    "footer": "Bluom Life Management",
+    "howCanWeHelp": "How can we help?",
+    "contact": "Contact Us",
+    "faq": "FAQ"
   },
   "focusMode": {
     "title": "Fokusmodus",
@@ -2852,7 +3100,9 @@
       "themePrompt": "Hvilken farve taler til dig?",
       "themeConfirmTitle": "Angiv {{name}} som mit tema?",
       "themeConfirmDesc": "Det vil farve hele din oplevelse. Du kan ændre det når som helst i Indstillinger.",
-      "themeConfirmCta": "Angiv som mit tema"
+      "themeConfirmCta": "Angiv som mit tema",
+      "letsGo": "Let",
+      "next": "Next"
     },
     "estimator": {
       "title": "Dit mål i tal",
@@ -2880,7 +3130,33 @@
       "mentalFramework": "Opbygger din mentale ramme...",
       "almostThere": "Næsten færdig!",
       "nutritionPlan": "Designer din kostplan..."
-    }
+    },
+    "alerts": {
+      "bodyRecompTitle": "Body Recomposition Plan"
+    },
+    "nav": {
+      "continue": "Continue"
+    },
+    "results": {
+      "title": "Your Blueprint",
+      "subtitle": "Your personalised plan across 3 pillars.",
+      "nutritionPillar": "Nutrition",
+      "kcalDay": "kcal / day",
+      "proInsights": "PRO INSIGHTS",
+      "fitnessPillar": "Fitness",
+      "week1": "Week 1 · Foundation",
+      "week2": "Week 2 · Progression",
+      "week3": "Week 3 · Peak",
+      "week4": "Week 4 · Recovery",
+      "mentalPillar": "Mental Health",
+      "mental1": "Stress Foundations",
+      "mental2": "Sleep Optimisation",
+      "mental3": "Mindset & Reframe",
+      "mental4": "Integration Week",
+      "continueToPlan": "Continue to Plan"
+    },
+    "completePrompt": "Please complete onboarding first.",
+    "completePromptShopping": "Please complete onboarding to use Shopping List."
   },
   "pillReminder": {
     "title": "Pille-påmindelse",
@@ -3150,7 +3426,40 @@
       "Foam Roller": "Foam Roller",
       "Step": "Step",
       "Box": "Box"
-    }
+    },
+    "title": "Workouts",
+    "subtitle": "Guided video routines",
+    "searchPlaceholder": "Search workouts...",
+    "browse": "Browse",
+    "noRoutines": "No routines found",
+    "noRoutinesSub": "Try a different type or clear the muscle filter",
+    "browseByMuscle": "Browse by Muscle Group",
+    "clearFilter": "Clear filter:",
+    "noSaved": "No saved workouts yet",
+    "premium": "PREMIUM",
+    "proRequired": "Pro required — preview only",
+    "rating": "Rating",
+    "level": "Level",
+    "equipment": "Equipment",
+    "orAlternatively": "or alternatively:",
+    "exerciseDetails": "Exercise Details",
+    "instructions": "Instructions",
+    "primaryMuscles": "Primary Muscles",
+    "secondaryMuscles": "Secondary Muscles",
+    "workoutProgress": "Workout Progress",
+    "maxWeight": "Max Weight",
+    "maxVolume": "Max Volume",
+    "sessions": "Sessions",
+    "workoutHistory": "Workout History",
+    "sets": "sets",
+    "reps": "reps",
+    "min": "min",
+    "upgradeToPro": "Upgrade to Pro",
+    "unlockVideoDesc": "Unlock the full workout video + breakdown.",
+    "logExercise": "Log Exercise",
+    "noVideo": "No video URL configured",
+    "addVideo": "Add a Video URL in the admin panel",
+    "proMessage": "This workout is locked. Upgrade to Pro to access premium workout videos and full breakdowns."
   },
   "meals": {
     "breakfast": "Breakfast",
@@ -3281,5 +3590,195 @@
       "bulk": "Bulk",
       "comfort": "Comfort Food"
     }
-  }
+  },
+  "recipes": {
+    "logToMeal": "Gem Måltid",
+    "chooseAMeal": "Vælg måltid",
+    "logToMealBtn": "Gem i {{meal}}",
+    "loggedTitle": "✅ Gemt!",
+    "loggedMsg": "{{title}} tilføjet til {{meal}} i dag.",
+    "stayHere": "Bliv her",
+    "viewFuel": "Se Mad",
+    "logError": "Kunne ikke gemme. Prøv igen.",
+    "title": "Opskrifter",
+    "searchPlaceholder": "Søg opskrifter...",
+    "categories": {
+      "All": "Alle",
+      "Breakfast": "Morgenmad",
+      "Lunch": "Frokost",
+      "Dinner": "Aftensmad",
+      "Snacks": "Snacks",
+      "Desserts": "Desserter",
+      "Vegetarian": "Vegetarisk",
+      "High Protein": "Proteinrig",
+      "Low Carb": "Low Carb"
+    },
+    "loadingRecipes": "Indlæser...",
+    "noRecipes": "Ingen opskrifter endnu",
+    "noRecipesDesc": "Opskrifter vises her.",
+    "kcal": "kcal",
+    "backToList": "Tilbage",
+    "min": "min",
+    "servings": "portioner",
+    "logAsMeal": "Gem Måltid",
+    "shoppingList": "Indkøbsliste",
+    "keepBrowsing": "Fortsæt",
+    "viewList": "Se liste",
+    "nutritionFacts": "Næringsindhold",
+    "calories": "Kalorier",
+    "protein": "Protein",
+    "carbs": "Kulhydrater",
+    "fat": "Fedt",
+    "ingredients": "Ingredienser",
+    "ingredientsLocked": "Låst",
+    "ingredientsLockedDesc": "Opgrader til Pro.",
+    "instructions": "Instruktioner",
+    "instructionsLocked": "Låst",
+    "instructionsLockedDesc": "Opgrader til Pro for at se trin.",
+    "proUpsell": "Opgrader til Pro for at få adgang til opskrifter og indkøbsliste."
+  },
+  "Goal Check": "You selected ",
+  "Error": "Could not save profile. Please check your connection.",
+  "metabolic": {
+    "deepKetosis": "Deep Ketosis",
+    "nutritionalKetosis": "Nutritional Ketosis",
+    "glucoseBurning": "Glucose Burning",
+    "dailyCheckin": "Daily check-in",
+    "title": "Metabolic Hub",
+    "subtitle": "Glucose vs Ketones • Command Center",
+    "currentState": "Current State",
+    "netCarbs": "Net Carbs",
+    "fatCarbRatio": "Fat/Carb %",
+    "fatDominance": "Fat Dominance",
+    "netCarbsLeft": "Net Carbs Left",
+    "ofBudget": "of {{budget}}g Budget",
+    "resetStreak": "90‑day reset streak",
+    "consistencyDesc": "Consistency rewires dopamine pathways. Keep stacking sugar-free days.",
+    "scanFood": "Scan Food",
+    "scanFoodDesc": "Detect Hidden Sugars & Macros",
+    "logDailyStatus": "Log Daily Status",
+    "didYouStaySugarFree": "Did you stay sugar-free today?",
+    "greenList": "Keto Green List",
+    "greenListIntro": "Stick to these foods to stay in Deep/Nutritional Ketosis.",
+    "healthyFats": "Healthy Fats",
+    "healthyFatsList": "• Avocado / Avocado Oil\\n• Olive Oil / Coconut Oil\\n• Butter / Ghee\\n• MCT Oil",
+    "proteins": "Proteins",
+    "proteinsList": "• Fatty Fish (Salmon, Mackerel)\\n• Eggs (Whole)\\n• Beef / Steak (Fatty cuts)\\n• Chicken Thighs (Skin on)",
+    "lowCarbVeggies": "Low Carb Veggies",
+    "lowCarbVeggiesList": "• Spinach / Kale\\n• Broccoli / Cauliflower\\n• Zucchini\\n• Asparagus",
+    "avoid": "Avoid / Limit",
+    "avoidList": "• Bread, Pasta, Rice\\n• Potatoes\\n• Sugary Fruits (Bananas, Grapes)\\n• Processed Snacks",
+    "proMessage": "Upgrade to Pro to unlock premium Metabolic insights."
+  },
+  "Wait": "User loading...",
+  "Dev": "Logged test macros: 10g Carbs, 15g Fat",
+  "sugarControl": {
+    "checkinNeededBody": "Choose Sugar‑free or Had sugar.",
+    "savedTitle": "Saved",
+    "savedBody": "Daily check‑in saved.",
+    "meterTitle": "Brain Rewiring Meter",
+    "dStreak": "d streak",
+    "sugarFree": "Sugar Free",
+    "hadSugar": "Had Sugar",
+    "notes": "Notes",
+    "notesPlaceholder": "How are you feeling? Triggers?",
+    "saving": "Saving...",
+    "saveCheckin": "Save Check-in",
+    "startedTitle": "Started",
+    "startedBody": "Your 90‑day reset has started. One day at a time.",
+    "errorStart": "Could not start challenge.",
+    "checkinNeeded": "Check-in needed",
+    "title": "Sugar Control",
+    "subtitle": "90‑day reset • daily check‑ins",
+    "bonusActive": "Glucose Stability Bonus Active",
+    "bonusBody": "You",
+    "meterSub": "Consecutive days logged as sugar‑free. Keep it going.",
+    "days": "days",
+    "startReset": "Start / Restart 90‑day reset",
+    "dailyCheckin": "Daily check‑in",
+    "howDidTodayGo": "How did today go?",
+    "mood": "Mood"
+  },
+  "Saved": "Saved to today\\u2019s Sugar check\\u2011in.",
+  "admin": {
+    "errorRequiredName": "Exercise Name is required",
+    "errorSave": "Failed to save exercise",
+    "deleteConfirm": "Delete ",
+    "deleteTitle": "Delete Exercise",
+    "delete": "Delete",
+    "calisthenicsBodyweight": "Bodyweight",
+    "library": "Exercise Library",
+    "manageExercises": "Manage exercises for workout plans",
+    "new": "New",
+    "searchLibrary": "Search library...",
+    "reset": "Reset",
+    "type": "TYPE",
+    "difficulty": "DIFFICULTY",
+    "muscleGroup": "MUSCLE GROUP",
+    "results": "results",
+    "noExercisesYet": "No exercises yet",
+    "editExercise": "Edit Exercise",
+    "newExercise": "New Exercise",
+    "save": "Save",
+    "exerciseName": "Exercise Name",
+    "exerciseNamePlaceholder": "e.g. Ab Wheel Rollout, Barbell Squat",
+    "exerciseDescription": "Description",
+    "exerciseDescriptionPlaceholder": "What does this exercise target?",
+    "exerciseTypeLabel": "Exercise Type (select all that apply)",
+    "instructionsLabel": "Instructions",
+    "instructionsHint": "These appear as a numbered list in the app",
+    "instructionsPlaceholder": "Kneel and grip the wheel shoulder-width\\nBrace core and exhale\\nRoll forward until hips extend\\nPull back slowly to start",
+    "primaryMuscles": "Primary Muscles",
+    "secondaryMuscles": "Secondary Muscles",
+    "muscleGroupFilterTags": "MUSCLE GROUP FILTER TAGS",
+    "muscleGroupFilterHint": "These tag this exercise to the Browse by Muscle Group cards in the Workouts tab.",
+    "requiredEquipment": "Required Equipment (comma-separated)",
+    "optionalEquipment": "Optional / Alternative Equipment (comma-separated)",
+    "optionalEquipmentHint": "Items listed here appear as ",
+    "difficultyLabel": "Difficulty",
+    "thumbnailUrl": "Thumbnail URL — Fallback / Unisex (R2)",
+    "videoUrl": "Video URL — Fallback / Unisex (R2)",
+    "thumbnailsVideosGender": "THUMBNAILS & VIDEOS BY GENDER",
+    "genderToggleHint": "Enable the toggle to upload separate ♂ Male and ♀ Female thumbnails and videos. The app picks the right version based on the user\\",
+    "hasGenderVariants": "Has gender variants (♂ / ♀)",
+    "maleThumbnail": "♂ Male Thumbnail (R2)",
+    "maleVideo": "♂ Male Video URL (R2)",
+    "femaleThumbnail": "♀ Female Thumbnail (R2)",
+    "femaleVideo": "♀ Female Video URL (R2)",
+    "fallbackVideo": "Fallback / Unisex Video URL (R2)",
+    "fallbackVideoHint": "Shown when no gender variant exists or as default."
+  },
+  "shopping": {
+    "loading": "Loading...",
+    "signIn": "Please sign in to use Shopping List",
+    "upgradePrompt": "Free plan limited to 2 items. Upgrade for unlimited.",
+    "missingItemTitle": "Missing item",
+    "missingItemMsg": "Type an item name first.",
+    "errorAdd": "Could not add item. Please try again.",
+    "clearTitle": "Clear completed",
+    "title": "Shopping List",
+    "done": "done",
+    "clearDoneBtn": "Clear done",
+    "loadingList": "Loading your list...",
+    "emptyTitle": "Your list is empty",
+    "emptySub": "Add items manually or pull straight from a recipe.",
+    "addFirst": "Add first item",
+    "browseRecipes": "Browse recipes",
+    "errorDelete": "Could not delete item. Please try again.",
+    "errorUpdate": "Could not update item.",
+    "upgradeTitle": "Upgrade to Pro",
+    "upgradeMsg": "Free users can add up to 2 items. Upgrade for unlimited items and sync across devices.",
+    "viewPro": "View Pro Plans",
+    "addItem": "Add item",
+    "itemName": "Item name",
+    "namePlaceholder": "e.g. Eggs",
+    "quantity": "Quantity",
+    "qtyPlaceholder": "e.g. 6",
+    "addToList": "Add to list",
+    "clearMsg": "Remove ${done.length} checked item${done.length > 1 ? ",
+    "addedTitle": "Added to Shopping List",
+    "addedMsg": "Added {{created}} new item(s) and merged {{merged}} item(s)."
+  },
+  "No ingredients": "This recipe has no ingredients to add.",
+  "Success": "Exercise logged!"
 }

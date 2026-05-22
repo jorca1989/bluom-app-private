@@ -223,7 +223,11 @@
       "meals": "Måltider",
       "quickActions": "Snabbåtgärder",
       "utilities": "Verktyg"
-    }
+    },
+    "protein": "Protein",
+    "carbs": "Kolhydrater",
+    "fat": "Fett",
+    "caloriesShort": "cal"
   },
   "modals": {
     "pro": {
@@ -303,7 +307,26 @@
       "searchIng": "Sök för att lägga till ingrediens...",
       "noIng": "Inga ingredienser tillagda",
       "totalMacros": "Totala makron (Per portion)",
-      "save": "Spara recept"
+      "save": "Spara recept",
+      "name": "Receptnamn",
+      "namePlaceholder": "till exempel Kycklingröra",
+      "makesServings_one": "Gör {{count}} servering",
+      "makesServings_other": "Ger {{count}} portioner",
+      "makesServings": "Ger {{count}} portioner",
+      "noIngredients": "Inga ingredienser tillsatta.",
+      "goBack": "Gå tillbaka och lägg till ingredienser.",
+      "perServing": "Näringsinformation per portion",
+      "recipe": "Recept",
+      "saveRecipe": "Spara recept",
+      "bulkImport": "Använda bulkimport för ingredienser?",
+      "pasteIngredients": "Klistra in eller skriv dina ingredienser (en per rad):",
+      "autoMatchHint": "Vi kommer att försöka matcha dem automatiskt med livsmedel i databasen.",
+      "nextIngredients": "Nästa: Ingredienser",
+      "nextReview": "Nästa: Recension",
+      "matching": "Matcha dina ingredienser...",
+      "foundFrom": "Hittade från:",
+      "searchManually": "Sök manuellt efter en bättre matchning:",
+      "error": "Det gick inte att spara receptet."
     },
     "logRecipe": {
       "title": "Logga måltid",
@@ -677,7 +700,43 @@
         "powerlifting": "Powerlifting / Strongman",
         "crossfit": "CrossFit / Funktionellt",
         "sport": "Lag- / Kampsport"
-      }
+      },
+      "q": {
+        "trainingMode": "How would you describe your approach?",
+        "primaryGoal": "What is your primary goal right now?",
+        "yearsTraining": "How long have you been training seriously?",
+        "competitionFocus": "Do you compete or plan to?"
+      },
+      "hint": {
+        "trainingMode": "Be honest — your guidance is personalised and private."
+      },
+      "natural": "Natural Athlete",
+      "naturalDesc": "No performance-enhancing drugs",
+      "enhanced": "Enhanced / PED User",
+      "enhancedDesc": "Using or considering anabolic compounds",
+      "athlete": "Competitive Athlete",
+      "athleteDesc": "Competing or prepping to compete",
+      "muscle": "Build Muscle",
+      "muscleDesc": "Hypertrophy & size",
+      "strength": "Increase Strength",
+      "strengthDesc": "Raw power & 1RM",
+      "fat_loss": "Shred & Cut",
+      "fat_lossDesc": "Fat loss, preserve muscle",
+      "performance": "Athletic Performance",
+      "performanceDesc": "Speed, power, conditioning",
+      "longevity": "Longevity & Health",
+      "longevityDesc": "Long-term optimisation",
+      "recomp": "Body Recomposition",
+      "recompDesc": "Build muscle, lose fat simultaneously",
+      "beginner": "Under 1 year",
+      "intermediate": "1–3 years",
+      "advanced": "3–7 years",
+      "veteran": "7+ years",
+      "none": "No — training for myself",
+      "bodybuilding": "Bodybuilding / Physique",
+      "powerlifting": "Powerlifting / Strongman",
+      "crossfit": "CrossFit / Functional",
+      "sport": "Team / Combat Sport"
     },
     "restartTitle": "Starta om frågeformulär",
     "restartMsg": "Detta raderar din nuvarande profil. Fortsätta?",
@@ -690,7 +749,21 @@
       "bloodworkBody": "Enhanced atleter måste övervaka lipider, levervärden och hematokrit regelbundet.",
       "cardioTitle": "Hjärthälsa är prioritet #1",
       "cardioBody": "Cardio 4x/vecka (zon 2) är obligatoriskt, inte valfritt."
-    }
+    },
+    "stackLoggedMsg": "Tillskottsintag registreras.",
+    "upgradeToPro": "Atualizar för Pro",
+    "vitalitySubline": "Drive · Återställning · Fokus",
+    "supplementStack": "Komplettera Stack",
+    "pillarDriveShort": "V",
+    "pillarRecoveryShort": "R",
+    "pillarFocusShort": "F",
+    "personalisedInsights": "Insikter Personalizados",
+    "bloodWorkTitle": "Analyser ao Sangue Periódicas",
+    "bloodWorkBody": "Atletas förbättrade utvecklingsövervakning av lipider, hematocrito och enzimas hepáticas och cada 8 semanas.",
+    "cardioTitle": "Saúde Cardiovascular é Prioridade #1",
+    "cardioBody": "O cardio LISS 4x/semana é obrigatório para gör en pressão arteriell och hematócrito.",
+    "unlockDeepAnalytics": "Desbloqueia Análise Hormonal Profunda",
+    "unlockDeepAnalyticsSub": "Insights com IA que se adaptam ao teu histórico, padrões e sintomas registados."
   },
   "todo": {
     "title": "Produktivitetshubb",
@@ -866,7 +939,16 @@
     "units": {
       "kg": "kg",
       "minKm": "min/km"
-    }
+    },
+    "couldNotSave": "Kunde inte spara.",
+    "logged": "loggas",
+    "saved": "Sparad",
+    "unlockWithPro": "Lås upp med Pro",
+    "viewProPlans": "Visa Pro-planer",
+    "clear": "Rensa",
+    "back": "Tillbaka",
+    "notReady": "Inte redo",
+    "upgradeToPro": "Uppgradera till Pro"
   },
   "wellness": {
     "title": "Välmående",
@@ -1708,6 +1790,31 @@
         "name": "Magnesium L-Threonate",
         "reason": "Passerar blod-hjärnbarriären; förbättrar djupsömn och minskar oro",
         "timing": "30 min innan läggdags"
+      },
+      "myoInositol": {
+        "name": "Myo-Inositol",
+        "reason": "Stöder äggkvalitet, regelbunden ägglossning och insulinkänslighet",
+        "timing": "Dela morgon och kväll med mat"
+      },
+      "coQ10": {
+        "name": "CoQ10 (Ubiquinol)",
+        "reason": "Förbättrar mitokondriell energi i ägg; viktigt över 35",
+        "timing": "Med måltider"
+      },
+      "blackCohosh": {
+        "name": "Svart Cohosh",
+        "reason": "Värmevallningar och lindring av humörsymtom; bästa beviset i tidig klimakteriet",
+        "timing": "Morgon och kväll"
+      },
+      "calcium": {
+        "name": "Kalcium + D3",
+        "reason": "Bendensitetsskydd under östrogennedgång",
+        "timing": "Dela morgon och kväll"
+      },
+      "vitD3K2": {
+        "name": "Vitamin D3 + K2",
+        "reason": "De flesta kvinnor är bristfälliga; avgörande för immunfunktion, humör och benhälsa",
+        "timing": "Morgon med en fet måltid"
       }
     },
     "loggedTitle": "Loggat ✓",
@@ -1798,7 +1905,115 @@
     "priv3Body": "Vi använder inte din hälsodata för att skapa annonsprofiler. Punkt.",
     "restartTitle": "Starta om frågeformulär",
     "restartMsg": "Detta raderar din nuvarande profil. Fortsätta?",
-    "restartConfirm": "Starta om"
+    "restartConfirm": "Starta om",
+    "articles": {
+      "art1": {
+        "title": "Östrogendominans: tecken och lösningar",
+        "category": "Hormoner",
+        "time": "5 min",
+        "body": "När östrogenet är oproportionerligt högt i förhållande till progesteron kan du uppleva kraftiga mens, viktökning runt höfterna, humörsvängningar och ömma bröst. Nyckelstrategier: reducera plaster (xenoestrogener), stödja leverdetox med korsblommiga grönsaker och inkludera zink + B6-mat."
+      },
+      "art2": {
+        "title": "Cykelsynkronisering: Träna smartare varje fas",
+        "category": "Kondition",
+        "time": "7 min",
+        "body": "Follikulär och ägglossningsfas: tryck hårt — styrka, HIIT, PRs. Lutealfas: måttlig — Pilates, simning. Menstruationsfas: skonsam — yoga, promenader. Att matcha din träning efter dina hormoner minskar skaderisken och förbättrar anpassningen."
+      },
+      "art3": {
+        "title": "Kortisol och din cykel: Den dolda länken",
+        "category": "Friskvård",
+        "time": "4 min",
+        "body": "Kronisk stress höjer kortisol, vilket direkt hämmar progesteronproduktionen. Detta orsakar kortare luteala faser, PMS-förstärkning och oregelbundenheter i cykeln. Evidensbaserade verktyg: 4-7-8 andning, adaptogener (ashwagandha) och sömnkonsistens."
+      },
+      "art4": {
+        "title": "Tarmhälsa och östrogenmetabolism",
+        "category": "Näring",
+        "time": "6 min",
+        "body": "Östrobolomen - tarmbakterier som bearbetar östrogen - är avgörande. Dålig tarmhälsa innebär att östrogen recirkuleras istället för att utsöndras, vilket leder till hormonella obalanser. Prioritera: fiber (30g/dag), fermenterad mat, minska alkohol."
+      },
+      "art5": {
+        "title": "Järn, trötthet & din mens",
+        "category": "Näring",
+        "time": "4 min",
+        "body": "Menstruerande kvinnor förlorar 20-80 ml blod varje cykel. Järnbrist är den vanligaste näringsbristen i världen och orsakar direkt trötthet, dålig fokus och nedsatt atletisk prestation. Testa ditt ferritin, inte bara hemoglobin."
+      },
+      "art6": {
+        "title": "Progesteron: Det lugna hormonet",
+        "category": "Hormoner",
+        "time": "5 min",
+        "body": "Progesteron är din kropp\\"
+      },
+      "art7": {
+        "title": "PCOS: Beyond the Basics",
+        "category": "Hälsa",
+        "time": "8 min",
+        "body": "Polycystiskt ovariesyndrom drabbar 1 av 10 kvinnor. Nyckelpelare för hantering: blodsockerreglering (minska raffinerade kolhydrater), styrketräning för att förbättra insulinkänsligheten, inositoltillskott (bevis grad A) och stresshantering."
+      },
+      "art8": {
+        "title": "Sköldkörtel och kvinnlig fertilitet",
+        "category": "Hälsa",
+        "time": "5 min",
+        "body": "Hypotyreos drabbar upp till 3 gånger fler kvinnor än män och är en ledande odiagnostiserad orsak till infertilitet, oregelbundna cykler och postnatal depression. Få TSH, T3 och T4 testade - inte bara TSH ensam."
+      }
+    },
+    "suppIntro": "Anpassa com base na tua fas do ciclo, nível de stress, método contracetivo, foco de saúde e idade.",
+    "suppLocked": "Personalização bloqueada för att använda gratis.",
+    "suppDisclaimer": "Rådgör alltid med en sjukvårdspersonal innan du börjar med nya kosttillskott, särskilt under graviditeten.",
+    "tabInsights": "Insikter",
+    "setupTitlePreg": "👶 Acompanha a tua gravidez",
+    "setupTitleCycle": "🌸 Desbloqueia os teus insights do ciclo",
+    "week": "Semana",
+    "menopauseTracker": "Monitor de menopausa",
+    "menopauseDesc": "Regista afrontamentos, humor och alterações de sono. O teu quadro hormonell importa.",
+    "vitStack": "Vitality Stack",
+    "personalisedSupps": "personliga kosttillskott",
+    "insightsSub": "Personalizados a partir do you perfil, phase do ciclo, nível de stress, sono e foco de saúde.",
+    "insightsEmpty": "Komplettera med bioregistrering för personliga insikter.",
+    "priorityHigh": "⚠️ Prioridade",
+    "priorityNote": "💡 Notera",
+    "takeAction": "Tomar ação",
+    "librarySub": "Guias baseados em ciência para a saude hormonal da mulher.",
+    "quiz": {
+      "lifeStage": {
+        "question": "What is your current phase of life?",
+        "cycle": "Menstruating",
+        "cycleDesc": "Regular or irregular cycles",
+        "perimenopause": "Perimenopause",
+        "perimenopauseDesc": "Experiencing transition symptoms",
+        "menopause": "Post-Menopause",
+        "menopauseDesc": "12+ months without a period"
+      },
+      "birthControl": {
+        "question": "Are you using hormonal birth control?",
+        "none": "No — Natural Cycle",
+        "noneDesc": "No hormones or copper IUD",
+        "pill": "Combination Pill / Ring",
+        "pillDesc": "Suppresses ovulation",
+        "iud": "Hormonal IUD / Implant",
+        "iudDesc": "Progestin only (Mirena, Nexplanon)",
+        "mini_pill": "Mini-Pill",
+        "mini_pillDesc": "Progestin only pill"
+      },
+      "periodPain": {
+        "question": "How severe is your period pain?",
+        "none": "Mild / None",
+        "moderate": "Moderate",
+        "moderateDesc": "Needs occasional painkillers",
+        "severe": "Severe",
+        "severeDesc": "Impacts daily life/work"
+      },
+      "mainFocus": {
+        "question": "What is your main hormonal focus?",
+        "cycle_syncing": "Cycle Syncing",
+        "cycle_syncingDesc": "Optimise training/diet to phases",
+        "fertility": "Fertility Support",
+        "fertilityDesc": "Preparing for pregnancy",
+        "pms": "PMS / PMDD Relief",
+        "pmsDesc": "Reduce mood swings and pain",
+        "perimenopause": "Perimenopause Support",
+        "perimenopauseDesc": "Manage symptoms"
+      }
+    }
   },
   "move": {
     "widgets": {
@@ -1807,7 +2022,8 @@
       "swipeable": "Träningsplan",
       "quickActions": "Snabbåtgärder",
       "todayActivities": "Dagens aktiviteter",
-      "moveInsights": "Rörelseinsikter"
+      "moveInsights": "Rörelseinsikter",
+      "proBanner": "Pro Banner"
     },
     "title": "Träna",
     "subtitle": "Följ dina träningspass och aktiviteter",
@@ -1946,7 +2162,17 @@
     "fullBodyFocus": "Helkropp / blandat",
     "openMove": "Öppna Move",
     "yourWeekOverview": "Din veckoöversikt",
-    "weekOverviewDesc": "Använd detta som en enkel guide. Pro ger en personlig plan som anpassas och byter övningar."
+    "weekOverviewDesc": "Använd detta som en enkel guide. Pro ger en personlig plan som anpassas och byter övningar.",
+    "fourWeekPlan": "4-veckorsplan",
+    "fourWeekPlanDesc": "En gratis mall för att få dig att röra på dig.",
+    "freeTemplate": "GRATIS MALL",
+    "startWithStructure": "Börja med struktur.",
+    "followRoutine": "Följ denna 4-veckorsrutin för att bygga fart.",
+    "proPlanAdapts": "Din personliga plan anpassas efterhand som du utvecklas.",
+    "freeUsers28Days": "Gratis användare får en fullständig 28-dagars ritning. Uppgradera till Pro för att fortsätta din resa.",
+    "viewWeek": "Visa vecka",
+    "personalisedTraining": "Personlig träning",
+    "upgradeDetail": "Uppgradera till Pro för att lägga till eller ta bort övningar från din plan."
   },
   "premium": {
     "heroTitle": "Din biologi,",
@@ -1995,7 +2221,18 @@
     "featFitnessTitle": "Personlig träningsplan",
     "featFitnessDesc": "Progressivt 4-veckorsprogram anpassat efter ditt schema",
     "featMentalTitle": "Mental hälsoplan",
-    "featMentalDesc": "Veckoteman, stressprotokoll och meditationer"
+    "featMentalDesc": "Veckoteman, stressprotokoll och meditationer",
+    "title": "Bluom Pro",
+    "subtitle": "Lås upp din fulla potential",
+    "features": {
+      "ai": "Personlig AI-coaching",
+      "fasting": "Avancerade fastaprotokoll",
+      "insights": "Djupa hormonella insikter",
+      "scans": "Obegränsade AI Food Scans",
+      "sugar": "Sockerdetektor och alternativ"
+    },
+    "upgrade": "Uppgradera nu",
+    "plans": "Visa planer"
   },
   "settings": {
     "title": "Inställningar",
@@ -2048,7 +2285,15 @@
     "fatG": "Dagligt fett (g)",
     "updateGoals": "Uppdatera mål",
     "themeColor": "Temafärg",
-    "themeColorDesc": "Välj en palett som matchar din stämning. Ändringar tillämpas direkt."
+    "themeColorDesc": "Välj en palett som matchar din stämning. Ändringar tillämpas direkt.",
+    "profile": "Profil",
+    "notifications": "Aviseringar",
+    "privacy": "Privatliv",
+    "help": "Hjälp & Support",
+    "logout": "Logga ut",
+    "version": "Version {{version}}",
+    "connectedDevices": "Anslutna enheter",
+    "healthConnect": "Hälsointegrering"
   },
   "support": {
     "title": "Support & Feedback",
@@ -2064,7 +2309,10 @@
     "successMsg": "Ditt ärende har tagits emot. Vi återkommer snart.",
     "errorTitle": "Fel",
     "errorMsg": "Kunde inte skicka. Försök igen senare.",
-    "footer": "Bluom Life Management"
+    "footer": "Bluom Life Management",
+    "howCanWeHelp": "Hur kan vi hjälpa till?",
+    "contact": "Kontakta oss",
+    "faq": "FAQ"
   },
   "focusMode": {
     "title": "Fokusläge",
@@ -2825,7 +3073,8 @@
       "peakEarlyMorning": "Tidig morgon",
       "peakMidday": "Mitt på dagen",
       "peakEvening": "Kväll",
-      "peakLateNight": "Sen natt"
+      "peakLateNight": "Sen natt",
+      "goalBuildMuscle": "Bygg muskler"
     },
     "common": {
       "next": "Nästa",
@@ -2851,7 +3100,9 @@
       "themePrompt": "Vilken färg tilltalar dig?",
       "themeConfirmTitle": "Ange {{name}} som mitt tema?",
       "themeConfirmDesc": "Detta färgar hela din upplevelse. Du kan ändra det när som helst i Inställningar.",
-      "themeConfirmCta": "Ange som mitt tema"
+      "themeConfirmCta": "Ange som mitt tema",
+      "letsGo": "Låta",
+      "next": "Nästa"
     },
     "estimator": {
       "title": "Ditt mål i siffror",
@@ -2879,7 +3130,33 @@
       "mentalFramework": "Bygger din mentala ram...",
       "almostThere": "Nästan klar!",
       "nutritionPlan": "Designar din näringsplan..."
-    }
+    },
+    "alerts": {
+      "bodyRecompTitle": "Kroppssammansättningsplan"
+    },
+    "nav": {
+      "continue": "Fortsätta"
+    },
+    "results": {
+      "title": "Din ritning",
+      "subtitle": "Din personliga plan över 3 pelare.",
+      "nutritionPillar": "Näring",
+      "kcalDay": "kcal / dag",
+      "proInsights": "PRO INSIGHTS",
+      "fitnessPillar": "Kondition",
+      "week1": "Vecka 1 · Stiftelsen",
+      "week2": "Vecka 2 · Progression",
+      "week3": "Vecka 3 · Topp",
+      "week4": "Vecka 4 · Återhämtning",
+      "mentalPillar": "Mental hälsa",
+      "mental1": "Stressgrunder",
+      "mental2": "Sömnoptimering",
+      "mental3": "Mindset & Reframe",
+      "mental4": "Integrationsveckan",
+      "continueToPlan": "Fortsätt att planera"
+    },
+    "completePrompt": "Vänligen slutför introduktionen först.",
+    "completePromptShopping": "Vänligen slutför introduktionen för att använda inköpslistan."
   },
   "pillReminder": {
     "title": "Medicinpåminnelse",
@@ -2950,7 +3227,7 @@
     "musclesTab": "Muskler",
     "savedWorkouts": "Sparade pass",
     "noSavedWorkouts": "Inga sparade pass än",
-    "noSavedSub": "",
+    "noSavedSub": "Tryck på bokmärkesikonen på valfritt träningspass för att spara det här",
     "mainEx": "Primär",
     "categories": {
       "Strength": "Styrka",
@@ -3149,7 +3426,40 @@
       "Foam Roller": "Foam Roller",
       "Step": "Step",
       "Box": "Box"
-    }
+    },
+    "rating": "Rating",
+    "level": "Level",
+    "equipment": "Equipment",
+    "exerciseDetails": "Exercise Details",
+    "instructions": "Instructions",
+    "primaryMuscles": "Primary Muscles",
+    "secondaryMuscles": "Secondary Muscles",
+    "logExercise": "Log Exercise",
+    "sets": "sets",
+    "reps": "reps",
+    "min": "min",
+    "title": "Träningspass",
+    "subtitle": "Guidade videorutiner",
+    "searchPlaceholder": "Sök träning...",
+    "browse": "Bläddra",
+    "noRoutines": "Inga rutiner hittades",
+    "noRoutinesSub": "Prova en annan typ eller rensa muskelfiltret",
+    "browseByMuscle": "Bläddra efter muskelgrupp",
+    "clearFilter": "Rensa filter:",
+    "noSaved": "Inga sparade träningspass än",
+    "premium": "PREMIE",
+    "proRequired": "Pro krävs – endast förhandsgranskning",
+    "orAlternatively": "eller alternativt:",
+    "workoutProgress": "Träningsframsteg",
+    "maxWeight": "Maxvikt",
+    "maxVolume": "Max volym",
+    "sessions": "Sessioner",
+    "workoutHistory": "Träningshistorik",
+    "upgradeToPro": "Uppgradera till Pro",
+    "unlockVideoDesc": "Lås upp hela träningsvideon + uppdelning.",
+    "noVideo": "Ingen video-URL konfigurerad",
+    "addVideo": "Lägg till en video-URL i adminpanelen",
+    "proMessage": "Detta träningspass är låst. Uppgradera till Pro för att få tillgång till premium träningsvideor och fullständiga uppdelningar."
   },
   "meals": {
     "breakfast": "Breakfast",
@@ -3280,5 +3590,195 @@
       "bulk": "Bulk",
       "comfort": "Comfort Food"
     }
-  }
+  },
+  "recipes": {
+    "logToMeal": "Logga Måltid",
+    "chooseAMeal": "Välj måltid",
+    "logToMealBtn": "Logga till {{meal}}",
+    "loggedTitle": "✅ Sparat!",
+    "loggedMsg": "{{title}} sparad till {{meal}} idag.",
+    "stayHere": "Stanna",
+    "viewFuel": "Se Mat",
+    "logError": "Kunde inte spara. Försök igen.",
+    "title": "Recept",
+    "searchPlaceholder": "Sök recept...",
+    "categories": {
+      "All": "Alla",
+      "Breakfast": "Frukost",
+      "Lunch": "Lunch",
+      "Dinner": "Middag",
+      "Snacks": "Mellanmål",
+      "Desserts": "Efterrätter",
+      "Vegetarian": "Vegetarisk",
+      "High Protein": "Proteinrik",
+      "Low Carb": "Lågkolhydrat"
+    },
+    "loadingRecipes": "Laddar...",
+    "noRecipes": "Inga recept än",
+    "noRecipesDesc": "Recept visas här.",
+    "kcal": "kcal",
+    "backToList": "Tillbaka",
+    "min": "min",
+    "servings": "portioner",
+    "logAsMeal": "Logga Måltid",
+    "shoppingList": "Inköpslista",
+    "keepBrowsing": "Fortsätt",
+    "viewList": "Se lista",
+    "nutritionFacts": "Näringsinnehåll",
+    "calories": "Kalorier",
+    "protein": "Protein",
+    "carbs": "Kolhydrater",
+    "fat": "Fett",
+    "ingredients": "Ingredienser",
+    "ingredientsLocked": "Låst",
+    "ingredientsLockedDesc": "Uppgradera till Pro.",
+    "instructions": "Gör så här",
+    "instructionsLocked": "Låst",
+    "instructionsLockedDesc": "Uppgradera till Pro för steg.",
+    "proUpsell": "Uppgradera till Pro för att låsa upp recept, instruktioner och inköpslista."
+  },
+  "Goal Check": "Du valde",
+  "Error": "Det gick inte att spara profilen. Kontrollera din anslutning.",
+  "metabolic": {
+    "deepKetosis": "Djup ketos",
+    "nutritionalKetosis": "Näringsketos",
+    "glucoseBurning": "Glukosförbränning",
+    "dailyCheckin": "Daglig incheckning",
+    "title": "Metaboliskt nav",
+    "subtitle": "Glukos vs ketoner • Kommandocenter",
+    "currentState": "Nuvarande tillstånd",
+    "netCarbs": "Netto kolhydrater",
+    "fatCarbRatio": "Fett/kolhydrat %",
+    "fatDominance": "Fett dominans",
+    "netCarbsLeft": "Netto kolhydrater kvar",
+    "ofBudget": "av {{budget}}g budget",
+    "resetStreak": "90-dagars återställningsserie",
+    "consistencyDesc": "Konsistens kopplar om dopaminvägar. Fortsätt stapla sockerfria dagar.",
+    "scanFood": "Skanna mat",
+    "scanFoodDesc": "Upptäck dolda sockerarter och makron",
+    "logDailyStatus": "Logga daglig status",
+    "didYouStaySugarFree": "Var du sockerfri idag?",
+    "greenList": "Keto grön lista",
+    "greenListIntro": "Håll dig till dessa livsmedel för att stanna i djup/näringsketos.",
+    "healthyFats": "Hälsosamma fetter",
+    "healthyFatsList": "• Avokado/Avocadoolja\\n• Olivolja/Kokosolja\\n• Smör/Ghee\\n• MCT-olja",
+    "proteins": "Proteiner",
+    "proteinsList": "• Fet fisk (lax, makrill)\\n• Ägg (hela)\\n• Nötkött/biff (feta styckningsdelar)\\n• Kycklinglår (hud på)",
+    "lowCarbVeggies": "Lågkolhydratgrönsaker",
+    "lowCarbVeggiesList": "• Spenat / Grönkål\\n• Broccoli / Blomkål\\n• Zucchini\\n• Sparris",
+    "avoid": "Undvik/Begränsa",
+    "avoidList": "• Bröd, pasta, ris\\n• Potatis\\n• Sockerhaltiga frukter (bananer, vindruvor)\\n• Bearbetade mellanmål",
+    "proMessage": "Uppgradera till Pro för att låsa upp premium Metabolic insikter."
+  },
+  "Wait": "Användaren laddar...",
+  "Dev": "Loggade testmakron: 10g kolhydrater, 15g fett",
+  "sugarControl": {
+    "checkinNeededBody": "Välj Sockerfri eller Hade socker.",
+    "savedTitle": "Sparad",
+    "savedBody": "Daglig incheckning sparad.",
+    "meterTitle": "Hjärnomkopplingsmätare",
+    "dStreak": "d strimma",
+    "sugarFree": "Sockerfri",
+    "hadSugar": "Hade socker",
+    "notes": "Anteckningar",
+    "notesPlaceholder": "Hur mår du? Utlösare?",
+    "saving": "Sparande...",
+    "saveCheckin": "Spara incheckning",
+    "startedTitle": "Startade",
+    "startedBody": "Din 90-dagars återställning har börjat. En dag i taget.",
+    "errorStart": "Kunde inte starta utmaningen.",
+    "checkinNeeded": "Incheckning behövs",
+    "title": "Sockerkontroll",
+    "subtitle": "90 dagars återställning • dagliga incheckningar",
+    "bonusActive": "Glukosstabilitetsbonus aktiv",
+    "bonusBody": "Du",
+    "meterSub": "Dagar i följd loggade som sockerfria. Fortsätt med det.",
+    "days": "dagar",
+    "startReset": "Starta/Starta om 90-dagars återställning",
+    "dailyCheckin": "Daglig incheckning",
+    "howDidTodayGo": "Hur gick det idag?",
+    "mood": "Humör"
+  },
+  "Saved": "Sparad i dagens sockerincheckning.",
+  "admin": {
+    "errorRequiredName": "Övningsnamn krävs",
+    "errorSave": "Det gick inte att spara träningen",
+    "deleteConfirm": "Radera",
+    "deleteTitle": "Ta bort övning",
+    "delete": "Radera",
+    "calisthenicsBodyweight": "Kroppsvikt",
+    "library": "Övningsbibliotek",
+    "manageExercises": "Hantera övningar för träningsplaner",
+    "new": "Ny",
+    "searchLibrary": "Sök i biblioteket...",
+    "reset": "Återställa",
+    "type": "TYP",
+    "difficulty": "SVÅRIGHET",
+    "muscleGroup": "MUSKELGRUPP",
+    "results": "resultat",
+    "noExercisesYet": "Inga övningar än",
+    "editExercise": "Redigera övning",
+    "newExercise": "Ny övning",
+    "save": "Spara",
+    "exerciseName": "Övningsnamn",
+    "exerciseNamePlaceholder": "till exempel Ab Wheel Rollout, Barbell Squat",
+    "exerciseDescription": "Beskrivning",
+    "exerciseDescriptionPlaceholder": "Vad syftar denna övning till?",
+    "exerciseTypeLabel": "Träningstyp (välj alla som stämmer)",
+    "instructionsLabel": "Instruktioner",
+    "instructionsHint": "Dessa visas som en numrerad lista i appen",
+    "instructionsPlaceholder": "Knäböja och greppa hjulet på axelbredden\\nStyra kärnan och andas ut\\nVulla framåt tills höfterna sträcker sig\\nDra långsamt bakåt för att starta",
+    "primaryMuscles": "Primära muskler",
+    "secondaryMuscles": "Sekundära muskler",
+    "muscleGroupFilterTags": "MUSKELGRUPP FILTERTAGGAR",
+    "muscleGroupFilterHint": "Dessa taggar den här övningen till korten Bläddra efter muskelgrupp på fliken Träningspass.",
+    "requiredEquipment": "Nödvändig utrustning (kommaseparerad)",
+    "optionalEquipment": "Valfri/alternativ utrustning (kommaseparerad)",
+    "optionalEquipmentHint": "Objekt som listas här visas som",
+    "difficultyLabel": "Svårighet",
+    "thumbnailUrl": "Webbadress för miniatyrbild — reserv/unisex (R2)",
+    "videoUrl": "Videowebbadress — reserv/unisex (R2)",
+    "thumbnailsVideosGender": "MINIATYR OCH VIDEOS PER KÖN",
+    "genderToggleHint": "Aktivera reglaget för att ladda upp separata ♂ Manliga och ♀ Kvinnliga miniatyrer och videor. Appen väljer rätt version baserat på användaren\\",
+    "hasGenderVariants": "Har könsvarianter (♂ / ♀)",
+    "maleThumbnail": "♂ Miniatyrbild för män (R2)",
+    "maleVideo": "♂ URL för manlig video (R2)",
+    "femaleThumbnail": "♀ Kvinnlig miniatyrbild (R2)",
+    "femaleVideo": "♀ Kvinnlig video-URL (R2)",
+    "fallbackVideo": "Reserv-/unisex-videowebbadress (R2)",
+    "fallbackVideoHint": "Visas när ingen könsvariant finns eller som standard."
+  },
+  "shopping": {
+    "loading": "Belastning...",
+    "signIn": "Logga in för att använda inköpslistan",
+    "upgradePrompt": "Gratis plan begränsad till 2 objekt. Uppgradera för obegränsat.",
+    "missingItemTitle": "Saknas objekt",
+    "missingItemMsg": "Skriv ett objekts namn först.",
+    "errorAdd": "Det gick inte att lägga till objektet. Försök igen.",
+    "clearTitle": "Rensa klar",
+    "title": "Inköpslista",
+    "done": "gjort",
+    "clearDoneBtn": "Rensa gjort",
+    "loadingList": "Laddar din lista...",
+    "emptyTitle": "Din lista är tom",
+    "emptySub": "Lägg till föremål manuellt eller dra direkt från ett recept.",
+    "addFirst": "Lägg till första objektet",
+    "browseRecipes": "Bläddra bland recept",
+    "errorDelete": "Det gick inte att ta bort objektet. Försök igen.",
+    "errorUpdate": "Det gick inte att uppdatera objektet.",
+    "upgradeTitle": "Uppgradera till Pro",
+    "upgradeMsg": "Gratis användare kan lägga till upp till 2 objekt. Uppgradera för obegränsat antal objekt och synkronisera mellan enheter.",
+    "viewPro": "Visa Pro-planer",
+    "addItem": "Lägg till objekt",
+    "itemName": "Objektets namn",
+    "namePlaceholder": "till exempel Ägg",
+    "quantity": "Kvantitet",
+    "qtyPlaceholder": "till exempel 6",
+    "addToList": "Lägg till i listan",
+    "clearMsg": "Ta bort ${done.length} markerad artikel${done.length > 1 ?",
+    "addedTitle": "Lagt till inköpslistan",
+    "addedMsg": "Lade till {{skapade}} nya föremål och slog samman {{sammanslagna}} föremål."
+  },
+  "No ingredients": "Det här receptet har inga ingredienser att lägga till.",
+  "Success": "Träning loggat!"
 }

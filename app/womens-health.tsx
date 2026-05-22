@@ -552,7 +552,7 @@ export default function WomensHealthScreen() {
         {/* Header */}
         <View style={s.quizTopBar}>
           <TouchableOpacity onPress={() => quizStep > 0 ? setQuizStep(p => p - 1) : router.back()} style={s.quizBack}>
-            <Ionicons name="chevron-back" size={20} color="#1e293b" />
+            <Ionicons name="chevron-back" size={20} color={themeColors.text} />
           </TouchableOpacity>
           <View style={s.quizProgress}>
             <View style={[s.quizProgressFill, { width: `${((quizStep + 1) / WOMENS_QUIZ.length) * 100}%` as any }]} />
@@ -562,7 +562,7 @@ export default function WomensHealthScreen() {
 
         {quizStep === 0 && (
           <View style={s.quizHero}>
-            <LinearGradient colors={['#fdf2f8', '#fff']} style={s.quizHeroBg}>
+            <LinearGradient colors={[themeColors.surfaceMuted, themeColors.surface]} style={s.quizHeroBg}>
               <Text style={s.quizHeroEmoji}>🌸</Text>
               <Text style={s.quizHeroTitle}>{t('womensHealth.blueprintTitle', 'O Teu Blueprint Hormonal')}</Text>
               <Text style={s.quizHeroSub}>
@@ -1001,7 +1001,7 @@ export default function WomensHealthScreen() {
                       d === 14 ? '#2563eb' :
                       d <= 21 ? '#d97706' : '#7c3aed';
                     return (
-                      <View key={d} style={[s.calDay, isToday && { borderColor: phaseColor, borderWidth: 2 }, { backgroundColor: isToday ? phaseColor : '#fff' }]}>
+                      <View key={d} style={[s.calDay, isToday && { borderColor: phaseColor, borderWidth: 2 }, isToday && { backgroundColor: phaseColor }]}>
                         <Text style={[s.calDayNum, isToday && { color: '#fff', fontWeight: '900' }]}>{d}</Text>
                       </View>
                     );
@@ -1290,8 +1290,8 @@ const createS = (c: ThemeColors) => StyleSheet.create({
   // Sync cards
   syncScroll: { marginBottom: 16 },
   syncCard:   { width: 160, borderRadius: 16, borderWidth: 1, padding: 14, marginRight: 10 },
-  syncCardTitle: { fontSize: 13, fontWeight: '800', color: c.text, marginBottom: 6 },
-  syncCardBody:  { fontSize: 12, color: c.text, lineHeight: 17 },
+  syncCardTitle: { fontSize: 13, fontWeight: '800', color: '#0f172a', marginBottom: 6 },
+  syncCardBody:  { fontSize: 12, color: '#334155', lineHeight: 17 },
 
   // Action tiles
   actionTile:  { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: c.surface, borderRadius: 16, padding: 14, marginBottom: 10, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, elevation: 1 },

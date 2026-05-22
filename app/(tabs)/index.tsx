@@ -598,7 +598,7 @@ export default function HomeScreen() {
   const wKPIs = () => (
     <View style={s.kpiGrid}>
       <KPICard
-        bg={themeColors.surface} iconColor="#2563eb" labelColor="#1e40af"
+        bg={themeColors.surface} iconColor="#2563eb" labelColor={themeColors.scheme === 'dark' ? '#93c5fd' : '#1e40af'}
         icon={<Footprints size={17} color="#2563eb" />}
         label={t('home.kpis.steps', 'Steps')} value={steps.toLocaleString()} sub="/ 10,000"
         progress={steps / 100} barColor="#2563eb"
@@ -623,7 +623,7 @@ export default function HomeScreen() {
         ) : null}
       />
       <KPICard
-        bg={themeColors.surface} iconColor="#06b6d4" labelColor="#0e7490"
+        bg={themeColors.surface} iconColor="#06b6d4" labelColor={themeColors.scheme === 'dark' ? '#67e8f9' : '#0e7490'}
         icon={<Droplets size={17} color="#06b6d4" />}
         label={t('home.kpis.water', 'Water')} value={`${waterDisplay}`} unit={waterUnit} sub={`/ ${waterGoalDisplay}${waterUnit}`}
         progress={(waterOz / waterGoalOz) * 100} barColor="#06b6d4"
@@ -634,7 +634,7 @@ export default function HomeScreen() {
       >
         <View style={s.kpiHead}>
           <Smile size={17} color="#8b5cf6" />
-          <Text style={[s.kpiLbl, { color: '#5b21b6' }]}>{t('home.kpis.mood', 'Mood')}</Text>
+          <Text style={[s.kpiLbl, { color: themeColors.scheme === 'dark' ? '#c4b5fd' : '#5b21b6' }]}>{t('home.kpis.mood', 'Mood')}</Text>
         </View>
         <Text style={[s.kpiVal, { fontSize: 28, marginBottom: 6 }]}>{moodLog?.moodEmoji ?? '—'}</Text>
         <Text style={s.kpiSub}>{moodLog ? t('home.kpis.logged', 'Logged') : t('home.kpis.tapToLog', 'Tap to log')}</Text>
@@ -645,7 +645,7 @@ export default function HomeScreen() {
       >
         <View style={s.kpiHead}>
           <Scale size={17} color="#475569" />
-          <Text style={[s.kpiLbl, { color: '#334155' }]}>{t('home.kpis.weight', 'Weight')}</Text>
+          <Text style={[s.kpiLbl, { color: themeColors.scheme === 'dark' ? '#cbd5e1' : '#334155' }]}>{t('home.kpis.weight', 'Weight')}</Text>
         </View>
         <Text style={s.kpiVal}>{weightDisplay}<Text style={s.kpiUnit}> {weightUnit}</Text></Text>
         <Text style={s.kpiSub}>{t('home.kpis.tapToUpdate', 'Tap to update')}</Text>

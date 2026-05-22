@@ -92,7 +92,9 @@ const EMPTY_FORM = {
     instructions: '',
     instr_pt: '', instr_es: '', instr_fr: '', instr_de: '', instr_nl: '',
     primaryMuscles: '',
+    pm_pt: '', pm_es: '', pm_fr: '', pm_de: '', pm_nl: '',
     secondaryMuscles: '',
+    sm_pt: '', sm_es: '', sm_fr: '', sm_de: '', sm_nl: '',
     // Muscle group filter tags for workouts.tsx Browse by Muscle Group
     muscleGroupTags: [] as string[],
     equipment: '',
@@ -255,7 +257,6 @@ export default function WorkoutsManager() {
         };
 
         const parseLines = (s: string) => s.split('\n').map(l => l.trim()).filter(Boolean);
-
         const buildListLocalizations = (pt: string, es: string, fr: string, de: string, nl: string) => {
             const obj: Record<string, string[]> = {};
             if (pt.trim()) obj.pt = parseLines(pt);
@@ -263,6 +264,17 @@ export default function WorkoutsManager() {
             if (fr.trim()) obj.fr = parseLines(fr);
             if (de.trim()) obj.de = parseLines(de);
             if (nl.trim()) obj.nl = parseLines(nl);
+            return Object.keys(obj).length > 0 ? obj : undefined;
+        };
+
+        const parseCommas = (s: string) => s.split(',').map(l => l.trim()).filter(Boolean);
+        const buildCommaListLocalizations = (pt: string, es: string, fr: string, de: string, nl: string) => {
+            const obj: Record<string, string[]> = {};
+            if (pt.trim()) obj.pt = parseCommas(pt);
+            if (es.trim()) obj.es = parseCommas(es);
+            if (fr.trim()) obj.fr = parseCommas(fr);
+            if (de.trim()) obj.de = parseCommas(de);
+            if (nl.trim()) obj.nl = parseCommas(nl);
             return Object.keys(obj).length > 0 ? obj : undefined;
         };
 
@@ -276,8 +288,10 @@ export default function WorkoutsManager() {
                 instructionsLocalizations: buildListLocalizations(form.instr_pt, form.instr_es, form.instr_fr, form.instr_de, form.instr_nl),
                 primaryMuscles: form.primaryMuscles
                     .split(',').map(m => m.trim()).filter(m => m.length > 0),
+                primaryMusclesLocalizations: buildCommaListLocalizations(form.pm_pt, form.pm_es, form.pm_fr, form.pm_de, form.pm_nl),
                 secondaryMuscles: form.secondaryMuscles
                     .split(',').map(m => m.trim()).filter(m => m.length > 0),
+                secondaryMusclesLocalizations: buildCommaListLocalizations(form.sm_pt, form.sm_es, form.sm_fr, form.sm_de, form.sm_nl),
                 exerciseType: primaryCategory,
                 exerciseTypes: types,
                 reps: undefined,
@@ -376,7 +390,17 @@ export default function WorkoutsManager() {
             instr_de: (ex.instructionsLocalizations?.de ?? []).join('\n'),
             instr_nl: (ex.instructionsLocalizations?.nl ?? []).join('\n'),
             primaryMuscles: (ex.primaryMuscles ?? []).join(', '),
+            pm_pt: (ex.primaryMusclesLocalizations?.pt ?? []).join(', '),
+            pm_es: (ex.primaryMusclesLocalizations?.es ?? []).join(', '),
+            pm_fr: (ex.primaryMusclesLocalizations?.fr ?? []).join(', '),
+            pm_de: (ex.primaryMusclesLocalizations?.de ?? []).join(', '),
+            pm_nl: (ex.primaryMusclesLocalizations?.nl ?? []).join(', '),
             secondaryMuscles: (ex.secondaryMuscles ?? []).join(', '),
+            sm_pt: (ex.secondaryMusclesLocalizations?.pt ?? []).join(', '),
+            sm_es: (ex.secondaryMusclesLocalizations?.es ?? []).join(', '),
+            sm_fr: (ex.secondaryMusclesLocalizations?.fr ?? []).join(', '),
+            sm_de: (ex.secondaryMusclesLocalizations?.de ?? []).join(', '),
+            sm_nl: (ex.secondaryMusclesLocalizations?.nl ?? []).join(', '),
             muscleGroupTags: w.muscleGroupTags ?? [],
             equipment: (w.equipment ?? []).join(', '),
             optionalEquipment: (w.optionalEquipment ?? []).join(', '),
@@ -652,23 +676,59 @@ export default function WorkoutsManager() {
                             </LangAccordion>
                         </FieldAccordion>
 
-                        {/* Primary Muscles */}
-                        <Text style={styles.label}>{t('admin.primaryMuscles', 'Primary Muscles (comma-separated)')}</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={form.primaryMuscles}
-                            onChangeText={t => setField('primaryMuscles', t)}
-                            placeholder="e.g. Abs, Core, Obliques"
-                        />
+                        {/* Primary Muscles — Accordion */}
+                        <FieldAccordion title={`💪 ${t('admin.primaryMuscles', 'Primary Muscles')} (comma-separated)`}>
+                            <LangAccordion title="🇬🇧 EN">
+                                <TextInput
+                                    style={styles.input}
+                                    value={form.primaryMuscles}
+                                    onChangeText={t => setField('primaryMuscles', t)}
+                                    placeholder="e.g. Abs, Core, Obliques"
+                                />
+                            </LangAccordion>
+                            <LangAccordion title="🇵🇹 PT">
+                                <TextInput style={styles.input} placeholder="ex. Abdominais, Core" value={form.pm_pt} onChangeText={v => setField('pm_pt', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇪🇸 ES">
+                                <TextInput style={styles.input} placeholder="ej. Abdominales, Core" value={form.pm_es} onChangeText={v => setField('pm_es', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇫🇷 FR">
+                                <TextInput style={styles.input} placeholder="ex. Abdos, Tronc" value={form.pm_fr} onChangeText={v => setField('pm_fr', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇩🇪 DE">
+                                <TextInput style={styles.input} placeholder="z.B. Bauch, Rumpf" value={form.pm_de} onChangeText={v => setField('pm_de', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇳🇱 NL">
+                                <TextInput style={styles.input} placeholder="bijv. Buikspieren, Core" value={form.pm_nl} onChangeText={v => setField('pm_nl', v)} />
+                            </LangAccordion>
+                        </FieldAccordion>
 
-                        {/* Secondary Muscles */}
-                        <Text style={styles.label}>{t('admin.secondaryMuscles', 'Secondary Muscles (comma-separated)')}</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={form.secondaryMuscles}
-                            onChangeText={t => setField('secondaryMuscles', t)}
-                            placeholder="e.g. Lower Back, Hip Flexors"
-                        />
+                        {/* Secondary Muscles — Accordion */}
+                        <FieldAccordion title={`💪 ${t('admin.secondaryMuscles', 'Secondary Muscles')} (comma-separated)`}>
+                            <LangAccordion title="🇬🇧 EN">
+                                <TextInput
+                                    style={styles.input}
+                                    value={form.secondaryMuscles}
+                                    onChangeText={t => setField('secondaryMuscles', t)}
+                                    placeholder="e.g. Lower Back, Hip Flexors"
+                                />
+                            </LangAccordion>
+                            <LangAccordion title="🇵🇹 PT">
+                                <TextInput style={styles.input} placeholder="ex. Fundo das costas" value={form.sm_pt} onChangeText={v => setField('sm_pt', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇪🇸 ES">
+                                <TextInput style={styles.input} placeholder="ej. Espalda baja" value={form.sm_es} onChangeText={v => setField('sm_es', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇫🇷 FR">
+                                <TextInput style={styles.input} placeholder="ex. Bas du dos" value={form.sm_fr} onChangeText={v => setField('sm_fr', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇩🇪 DE">
+                                <TextInput style={styles.input} placeholder="z.B. Unterer Rücken" value={form.sm_de} onChangeText={v => setField('sm_de', v)} />
+                            </LangAccordion>
+                            <LangAccordion title="🇳🇱 NL">
+                                <TextInput style={styles.input} placeholder="bijv. Onderrug" value={form.sm_nl} onChangeText={v => setField('sm_nl', v)} />
+                            </LangAccordion>
+                        </FieldAccordion>
 
                         {/* Muscle Group Tags — for the Browse by Muscle Group filter cards */}
                         <View style={styles.sectionSeparator}>

@@ -406,7 +406,7 @@ export default function RecipesScreen() {
       >
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton} activeOpacity={0.7}>
-            <Ionicons name="arrow-back" size={24} color="#1e293b" />
+            <Ionicons name="arrow-back" size={24} color={themeColors.text} />
             <Text style={styles.backText}>{t('common.back', 'Back')}</Text>
           </TouchableOpacity>
           <Text style={styles.title}>{t('recipes.title', 'Recipes')}</Text>
@@ -511,7 +511,7 @@ export default function RecipesScreen() {
             >
               <View style={styles.detailHeader}>
                 <TouchableOpacity onPress={() => setSelectedRecipe(null)} style={styles.backButton} activeOpacity={0.7}>
-                  <Ionicons name="arrow-back" size={24} color="#1e293b" />
+                  <Ionicons name="arrow-back" size={24} color={themeColors.text} />
                   <Text style={styles.backText}>{t('recipes.backToList', 'Back to Recipes')}</Text>
                 </TouchableOpacity>
               </View>

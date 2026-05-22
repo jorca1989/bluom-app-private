@@ -411,7 +411,7 @@ export default function ProductivityHub() {
             onPress={() => quizStep > 0 ? setQuizStep(s => s - 1) : router.back()}
             style={s.quizBack}
           >
-            <Ionicons name="chevron-back" size={20} color="#1e293b" />
+            <Ionicons name="chevron-back" size={20} color={themeColors.text} />
           </TouchableOpacity>
           <View style={s.quizProgressTrack}>
             <Animated.View style={[s.quizProgressFill, {
@@ -511,7 +511,7 @@ export default function ProductivityHub() {
           <View style={s.modalHeader}>
             <Text style={s.modalTitle}>{t('todo.newTask')}</Text>
             <TouchableOpacity onPress={() => setShowAddModal(false)} style={s.modalClose}>
-              <Ionicons name="close" size={20} color="#1e293b" />
+              <Ionicons name="close" size={20} color={themeColors.text} />
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }} keyboardShouldPersistTaps="handled">
@@ -636,7 +636,7 @@ export default function ProductivityHub() {
             <View style={s.modalHeader}>
               <Text style={s.modalTitle} numberOfLines={2}>{showDetail.text}</Text>
               <TouchableOpacity onPress={() => setShowDetail(null)} style={s.modalClose}>
-                <Ionicons name="close" size={20} color="#1e293b" />
+                <Ionicons name="close" size={20} color={themeColors.text} />
               </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={{ padding: 20, gap: 16 }}>
@@ -711,7 +711,7 @@ export default function ProductivityHub() {
             <View style={s.modalHeader}>
               <Text style={s.modalTitle}>{t('todo.editTask')}</Text>
               <TouchableOpacity onPress={() => setEditTodo(null)} style={s.modalClose}>
-                <Ionicons name="close" size={20} color="#1e293b" />
+                <Ionicons name="close" size={20} color={themeColors.text} />
               </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }} keyboardShouldPersistTaps="handled">
@@ -766,7 +766,7 @@ export default function ProductivityHub() {
       {/* ── TOP BAR ── */}
       <View style={s.topBar}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
-          <Ionicons name="arrow-back" size={20} color="#1e293b" />
+          <Ionicons name="arrow-back" size={20} color={themeColors.text} />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={s.topTitle}>{t('todo.title')}</Text>
