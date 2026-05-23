@@ -2199,7 +2199,19 @@
       "anxiety": "Angst",
       "food_cravings": "Heißhunger",
       "joint_pain": "Gelenkschmerzen",
-      "discharge_change": "Veränderter Ausfluss"
+      "discharge_change": "Veränderter Ausfluss",
+      "cramps": "Krämpfe",
+      "bloating": "Blähungen",
+      "headache": "Kopfschmerzen",
+      "fatigue": "Müdigkeit",
+      "mood_swings": "Stimmungsschwankungen"
+    },
+    "flowOpt": {
+      "none": "Keine",
+      "spotting": "Schmierblutung",
+      "light": "Leicht",
+      "medium": "Mittel",
+      "heavy": "Stark"
     }
   },
   "premium": {

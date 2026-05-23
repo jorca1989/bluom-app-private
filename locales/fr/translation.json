@@ -2201,7 +2201,19 @@
       "anxiety": "Anxiété",
       "food_cravings": "Envies alimentaires",
       "joint_pain": "Douleurs articulaires",
-      "discharge_change": "Changement des pertes"
+      "discharge_change": "Changement des pertes",
+      "cramps": "Crampes",
+      "bloating": "Ballonnements",
+      "headache": "Mal de tête",
+      "fatigue": "Fatigue",
+      "mood_swings": "Sautes d'humeur"
+    },
+    "flowOpt": {
+      "none": "Aucun",
+      "spotting": "Saignements légers",
+      "light": "Léger",
+      "medium": "Moyen",
+      "heavy": "Abondant"
     }
   },
   "premium": {

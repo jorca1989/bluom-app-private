@@ -2198,7 +2198,19 @@
       "anxiety": "Ansiedade",
       "food_cravings": "Desejos alimentares",
       "joint_pain": "Dor nas articulações",
-      "discharge_change": "Alterações no corrimento"
+      "discharge_change": "Alterações no corrimento",
+      "cramps": "Cólicas",
+      "bloating": "Inchaço",
+      "headache": "Dor de cabeça",
+      "fatigue": "Fadiga",
+      "mood_swings": "Alterações de humor"
+    },
+    "flowOpt": {
+      "none": "Nenhum",
+      "spotting": "Pequenas perdas",
+      "light": "Ligeiro",
+      "medium": "Médio",
+      "heavy": "Intenso"
     }
   },
   "premium": {

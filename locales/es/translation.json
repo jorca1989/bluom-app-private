@@ -178,9 +178,9 @@
     "addSteps": "Añadir pasos",
     "enterStepsCount": "Introduce el número de pasos",
     "quickActions": "Acciones rápidas",
-    "exerciseLibrary": "Biblioteca de ejercicios",
+    "exerciseLibrary": "Ejercicios",
     "addStepsAction": "Añadir pasos",
-    "customExercise": "Ejercicio personalizado",
+    "customExercise": "Crear Ejercicio",
     "aiPlan": "Plan de IA",
     "insightsTitle": "Análisis de entrenamientos",
     "streakTrends": "Racha de {{streak}} días - toca para ver tendencias",
@@ -2199,7 +2199,19 @@
       "anxiety": "Ansiedad",
       "food_cravings": "Antojos",
       "joint_pain": "Dolor articular",
-      "discharge_change": "Cambios en el flujo"
+      "discharge_change": "Cambios en el flujo",
+      "cramps": "Cólicos",
+      "bloating": "Hinchazón",
+      "headache": "Dolor de cabeza",
+      "fatigue": "Fatiga",
+      "mood_swings": "Cambios de humor"
+    },
+    "flowOpt": {
+      "none": "Ninguno",
+      "spotting": "Manchado",
+      "light": "Ligero",
+      "medium": "Medio",
+      "heavy": "Abundante"
     }
   },
   "premium": {

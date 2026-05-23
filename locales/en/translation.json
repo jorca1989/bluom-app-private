@@ -2198,7 +2198,19 @@
       "anxiety": "Anxiety",
       "food_cravings": "Food cravings",
       "joint_pain": "Joint pain",
-      "discharge_change": "Discharge changes"
+      "discharge_change": "Discharge changes",
+      "cramps": "Cramps",
+      "bloating": "Bloating",
+      "headache": "Headache",
+      "fatigue": "Fatigue",
+      "mood_swings": "Mood swings"
+    },
+    "flowOpt": {
+      "none": "None",
+      "spotting": "Spotting",
+      "light": "Light",
+      "medium": "Medium",
+      "heavy": "Heavy"
     }
   },
   "premium": {

@@ -2199,7 +2199,19 @@
       "anxiety": "Angst",
       "food_cravings": "Eetbuien",
       "joint_pain": "Gewrichtspijn",
-      "discharge_change": "Verandering in afscheiding"
+      "discharge_change": "Verandering in afscheiding",
+      "cramps": "Krampen",
+      "bloating": "Opgeblazen gevoel",
+      "headache": "Hoofdpijn",
+      "fatigue": "Vermoeidheid",
+      "mood_swings": "Stemmingswisselingen"
+    },
+    "flowOpt": {
+      "none": "Geen",
+      "spotting": "Spotting",
+      "light": "Licht",
+      "medium": "Gemiddeld",
+      "heavy": "Hevig"
     }
   },
   "premium": {
