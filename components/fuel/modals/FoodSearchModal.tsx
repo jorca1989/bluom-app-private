@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, FlatList, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, FlatList, ActivityIndicator, ScrollView, Image } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { api } from '@/convex/_generated/api';
@@ -163,7 +163,11 @@ export default function FoodSearchModal({
                   renderItem={({ item }) => (
                     <TouchableOpacity style={styles.listItem} onPress={() => onLogFood(item)} activeOpacity={0.7}>
                       <View style={styles.listIconWrap}>
-                        <Text style={styles.listIconEmoji}>{getFoodEmoji(typeof item.name === 'object' ? (item.name as any).en || '' : item.name)}</Text>
+                        {item.thumbnail ? (
+                          <Image source={{ uri: item.thumbnail }} style={styles.listIconImage} />
+                        ) : (
+                          <Text style={styles.listIconEmoji}>{getFoodEmoji(typeof item.name === 'object' ? (item.name as any).en || '' : item.name)}</Text>
+                        )}
                       </View>
                       <View style={styles.listBody}>
                         <Text style={styles.listTitle} numberOfLines={1}>{typeof item.name === 'object' ? (item.name as any).en || 'Food' : item.name}</Text>
@@ -402,6 +406,11 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   listIconEmoji: {
     fontSize: 20,
+  },
+  listIconImage: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
   },
   listBody: {
     flex: 1,

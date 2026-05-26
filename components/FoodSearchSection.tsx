@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     TextInput,
     ActivityIndicator,
+    Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from 'convex/react';
@@ -14,6 +15,13 @@ import { api } from '@/convex/_generated/api';
 // ─── Memoized search result row ─────────────────────────────
 const SearchResultItem = React.memo(({ food, onAdd }: { food: any; onAdd: () => void }) => (
     <TouchableOpacity style={styles.foodItem} onPress={onAdd}>
+        {food.thumbnail ? (
+            <Image source={{ uri: food.thumbnail }} style={styles.foodItemThumbnail} />
+        ) : (
+            <View style={styles.foodItemThumbnailPlaceholder}>
+                <Ionicons name="nutrition" size={20} color="#94a3b8" />
+            </View>
+        )}
         <View style={styles.foodItemContent}>
             <Text style={styles.foodItemName}>
                 {typeof food.name === 'object'
@@ -179,5 +187,23 @@ const styles = StyleSheet.create({
     },
     foodItemAdd: {
         marginLeft: 12,
+    },
+    foodItemThumbnail: {
+        width: 44,
+        height: 44,
+        borderRadius: 8,
+        marginRight: 12,
+        backgroundColor: '#f1f5f9',
+    },
+    foodItemThumbnailPlaceholder: {
+        width: 44,
+        height: 44,
+        borderRadius: 8,
+        marginRight: 12,
+        backgroundColor: '#f8fafc',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
     },
 });

@@ -10,6 +10,7 @@ import {
     TextInput,
     ActivityIndicator,
     Alert,
+    Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation } from 'convex/react';
@@ -35,6 +36,7 @@ const EMPTY_FORM = {
     brand: '',
     barcode: '',
     servingSize: '100g',
+    thumbnail: '',
     isVerified: true,
 };
 
@@ -104,6 +106,7 @@ export default function AdminFoodsScreen() {
                         brand: form.brand.trim() || undefined,
                         barcode: form.barcode.trim() || undefined,
                         servingSize: form.servingSize.trim() || undefined,
+                        thumbnail: form.thumbnail.trim() || undefined,
                     }
                 });
             } else {
@@ -114,6 +117,7 @@ export default function AdminFoodsScreen() {
                     brand: form.brand.trim() || undefined,
                     barcode: form.barcode.trim() || undefined,
                     servingSize: form.servingSize.trim() || undefined,
+                    thumbnail: form.thumbnail.trim() || undefined,
                 });
             }
             setIsModalOpen(false);
@@ -158,6 +162,7 @@ export default function AdminFoodsScreen() {
             brand: food.brand ?? '',
             barcode: food.barcode ?? '',
             servingSize: food.servingSize ?? '100g',
+            thumbnail: food.thumbnail ?? '',
             isVerified: food.isVerified ?? true,
         });
         setIsModalOpen(true);
@@ -173,6 +178,13 @@ export default function AdminFoodsScreen() {
         const name = typeof item.name === 'object' ? (item.name.en || Object.values(item.name)[0] || 'Unnamed') : item.name;
         return (
             <View style={styles.foodRow}>
+                {item.thumbnail ? (
+                    <Image source={{ uri: item.thumbnail }} style={styles.rowThumbnail} />
+                ) : (
+                    <View style={styles.rowThumbnailPlaceholder}>
+                        <Utensils size={16} color="#94a3b8" />
+                    </View>
+                )}
                 <View style={styles.foodInfo}>
                     <View style={styles.nameRow}>
                         <Text style={styles.foodName} numberOfLines={1}>{name}</Text>
@@ -335,8 +347,11 @@ export default function AdminFoodsScreen() {
                             <Text style={styles.label}>Barcode</Text>
                             <TextInput style={styles.input} value={form.barcode} onChangeText={v => updateField('barcode', v)} placeholder="Optional" placeholderTextColor="#94a3b8" />
 
-                            <Text style={styles.label}>Serving Size</Text>
+                             <Text style={styles.label}>Serving Size</Text>
                             <TextInput style={styles.input} value={form.servingSize} onChangeText={v => updateField('servingSize', v)} placeholder="e.g. 100g" placeholderTextColor="#94a3b8" />
+
+                            <Text style={styles.label}>Thumbnail R2 URL</Text>
+                            <TextInput style={styles.input} value={form.thumbnail} onChangeText={v => updateField('thumbnail', v)} placeholder="e.g. https://r2.bluom.app/foods/..." placeholderTextColor="#94a3b8" />
 
                             {/* Verified toggle */}
                             <TouchableOpacity style={styles.verifiedToggle} onPress={() => updateField('isVerified', !form.isVerified)}>
@@ -375,6 +390,8 @@ const styles = StyleSheet.create({
 
     listContent: { paddingHorizontal: 20, paddingBottom: 100 },
     foodRow: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 8, alignItems: 'center', borderWidth: 1, borderColor: '#f1f5f9' },
+    rowThumbnail: { width: 44, height: 44, borderRadius: 8, marginRight: 12, backgroundColor: '#f1f5f9' },
+    rowThumbnailPlaceholder: { width: 44, height: 44, borderRadius: 8, marginRight: 12, backgroundColor: '#f8fafc', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#e2e8f0' },
     foodInfo: { flex: 1, gap: 2 },
     nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
     foodName: { fontSize: 16, fontWeight: '700', color: '#1e293b', flexShrink: 1 },

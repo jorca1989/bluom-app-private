@@ -68,6 +68,7 @@ export const logFood = mutation({
         barcode: v.optional(v.string()),
         brand: v.optional(v.string()),
         servingSize: v.optional(v.string()),
+        thumbnail: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         // Generate the search name from the primary language (usually EN)
@@ -165,6 +166,7 @@ export const updateFood = mutation({
             barcode: v.optional(v.string()),
             brand: v.optional(v.string()),
             servingSize: v.optional(v.string()),
+            thumbnail: v.optional(v.string()),
         }),
     },
     handler: async (ctx, args) => {

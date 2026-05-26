@@ -177,6 +177,7 @@ export default defineSchema({
     barcode: v.optional(v.string()),
     brand: v.optional(v.string()),
     servingSize: v.optional(v.string()),
+    thumbnail: v.optional(v.string()), // Optional R2 URL for food thumbnail
     searchName: v.string(), // Normalized lowercase name for search (usually English or primary)
   })
     .searchIndex("search_name", {
