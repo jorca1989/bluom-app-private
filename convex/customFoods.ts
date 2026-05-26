@@ -71,8 +71,12 @@ export const logFood = mutation({
         thumbnail: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
-        // Generate the search name from the primary language (usually EN)
-        const searchName = (args.name.en || Object.values(args.name)[0] || "").toLowerCase();
+        // Generate the search name by combining all populated translations to support multilingual search
+        const searchName = Object.values(args.name)
+            .filter(Boolean)
+            .map((v) => v.trim())
+            .join(" ")
+            .toLowerCase();
 
         // Check if food with same name/brand or barcode already exists to avoid duplicates
         let existing = null;
@@ -175,7 +179,11 @@ export const updateFood = mutation({
 
         const patch: any = { ...args.updates };
         if (patch.name) {
-            patch.searchName = (patch.name.en || "").toLowerCase();
+            patch.searchName = Object.values(patch.name)
+                .filter(Boolean)
+                .map((v: any) => v.trim())
+                .join(" ")
+                .toLowerCase();
         }
         await ctx.db.patch(args.id, patch);
     },
