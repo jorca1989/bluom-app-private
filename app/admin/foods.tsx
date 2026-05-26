@@ -31,6 +31,7 @@ const EMPTY_FORM = {
     carbs: '',
     fat: '',
     fiber: '',
+    sugar: '',
     brand: '',
     barcode: '',
     servingSize: '100g',
@@ -82,13 +83,16 @@ export default function AdminFoodsScreen() {
                 if (value) nameObj[code] = value;
             }
 
-            const macros = {
+            const macros: any = {
                 calories: parseFloat(form.calories) || 0,
                 protein: parseFloat(form.protein) || 0,
                 carbs: parseFloat(form.carbs) || 0,
                 fat: parseFloat(form.fat) || 0,
                 fiber: parseFloat(form.fiber) || 0,
             };
+            if (form.sugar !== '') {
+                macros.sugar = parseFloat(form.sugar) || 0;
+            }
 
             if (editingFood) {
                 await updateFood({
@@ -150,6 +154,7 @@ export default function AdminFoodsScreen() {
             carbs: String(food.macros?.carbs ?? ''),
             fat: String(food.macros?.fat ?? ''),
             fiber: String(food.macros?.fiber ?? ''),
+            sugar: food.macros?.sugar !== undefined ? String(food.macros.sugar) : '',
             brand: food.brand ?? '',
             barcode: food.barcode ?? '',
             servingSize: food.servingSize ?? '100g',
@@ -174,7 +179,7 @@ export default function AdminFoodsScreen() {
                         {item.isVerified && <ShieldCheck size={14} color="#22c55e" />}
                     </View>
                     <Text style={styles.foodMeta}>
-                        {item.macros?.calories ?? 0} kcal · P{item.macros?.protein ?? 0}g · C{item.macros?.carbs ?? 0}g · F{item.macros?.fat ?? 0}g
+                        {item.macros?.calories ?? 0} kcal · P{item.macros?.protein ?? 0}g · C{item.macros?.carbs ?? 0}g · F{item.macros?.fat ?? 0}g{item.macros?.sugar !== undefined ? ` · S${item.macros.sugar}g` : ''}
                         {item.brand ? ` · ${item.brand}` : ''}
                     </Text>
                     {item.servingSize ? <Text style={styles.servingText}>Serving: {item.servingSize}</Text> : null}
@@ -302,6 +307,7 @@ export default function AdminFoodsScreen() {
                                     { key: 'carbs', label: 'Carbs', unit: 'g' },
                                     { key: 'fat', label: 'Fat', unit: 'g' },
                                     { key: 'fiber', label: 'Fiber', unit: 'g' },
+                                    { key: 'sugar', label: 'Sugar', unit: 'g' },
                                 ].map(({ key, label, unit }) => (
                                     <View key={key} style={styles.macroField}>
                                         <Text style={styles.macroLabel}>{label}</Text>
