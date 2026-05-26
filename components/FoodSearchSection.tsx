@@ -8,7 +8,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAction } from 'convex/react';
+import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 
 // ─── Memoized search result row ─────────────────────────────
@@ -22,7 +22,7 @@ const SearchResultItem = React.memo(({ food, onAdd }: { food: any; onAdd: () => 
             </Text>
             <Text style={styles.foodItemBrand}>{food.brand ?? '—'} • {food.servingSize ?? '100g'}</Text>
             <Text style={styles.foodItemNutrition}>
-                {Math.round(food.calories ?? 0)} cal • {Math.round(food.protein ?? 0)}g protein • {Math.round(food.carbs ?? 0)}g carbs • {Math.round(food.fat ?? 0)}g fat
+                {Math.round(food.macros?.calories ?? food.calories ?? 0)} cal • {Math.round(food.macros?.protein ?? food.protein ?? 0)}g protein • {Math.round(food.macros?.carbs ?? food.carbs ?? 0)}g carbs • {Math.round(food.macros?.fat ?? food.fat ?? 0)}g fat
             </Text>
         </View>
         <View style={styles.foodItemAdd}>
@@ -39,37 +39,21 @@ interface FoodSearchSectionProps {
 
 // ─── Component ──────────────────────────────────────────────
 export default function FoodSearchSection({ userId, onSelectFood }: FoodSearchSectionProps) {
-    const searchExternalFoods = useAction(api.externalFoods.searchFoods);
-
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<any[]>([]);
-    const [loadingSearch, setLoadingSearch] = useState(false);
+    const [debouncedQuery, setDebouncedQuery] = useState('');
 
-    // Debounced search
+    // Debounce search input
     useEffect(() => {
-        let cancelled = false;
-        const t = setTimeout(async () => {
-            if (!userId) return;
-            if (!searchQuery.trim()) {
-                if (!cancelled) setSearchResults([]);
-                return;
-            }
-            setLoadingSearch(true);
-            try {
-                const results = await searchExternalFoods({ userId: userId as any, query: searchQuery, limit: 50 });
-                if (!cancelled) setSearchResults(results ?? []);
-            } catch {
-                if (!cancelled) setSearchResults([]);
-            } finally {
-                if (!cancelled) setLoadingSearch(false);
-            }
-        }, 300);
+        const t = setTimeout(() => setDebouncedQuery(searchQuery.trim()), 300);
+        return () => clearTimeout(t);
+    }, [searchQuery]);
 
-        return () => {
-            cancelled = true;
-            clearTimeout(t);
-        };
-    }, [userId, searchQuery, searchExternalFoods]);
+    // Use reactive query instead of action — searches local customFoods database
+    const searchResults = useQuery(
+        api.customFoods.searchLocalFoods,
+        debouncedQuery ? { query: debouncedQuery, limit: 50 } : 'skip'
+    );
+    const loadingSearch = debouncedQuery.length > 0 && searchResults === undefined;
 
     const handleAdd = useCallback(
         (food: any) => {
@@ -98,14 +82,14 @@ export default function FoodSearchSection({ userId, onSelectFood }: FoodSearchSe
                 </View>
             ) : (
                 <View style={styles.searchResults}>
-                    {searchResults.map((food) => (
+                    {(searchResults ?? []).map((food) => (
                         <SearchResultItem
-                            key={food.kind === 'external' ? `${food.source}:${food.externalId}` : String(food._id)}
+                            key={String(food._id)}
                             food={food}
                             onAdd={() => handleAdd(food)}
                         />
                     ))}
-                    {!loadingSearch && searchQuery && searchResults.length === 0 && (
+                    {!loadingSearch && searchQuery && (searchResults ?? []).length === 0 && (
                         <View style={styles.emptyContainer}>
                             <Text style={styles.emptyText}>No foods found for "{searchQuery}"</Text>
                             <Text style={styles.emptySubtext}>Try a different search term</Text>

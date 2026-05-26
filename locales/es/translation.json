@@ -190,7 +190,7 @@
     "daysPerWeekText": "{{days}} días/semana",
     "weekOfTotal": "Semana {{current}} de {{total}}",
     "weekProgress": "Semana {{currentWeek}} de {{totalWeeks}}",
-    "upNext": "A continuación",
+    "upNext": "Siguiente",
     "exercisesCount": "{{count}} ejercicios",
     "startWorkout": "Iniciar entrenamiento",
     "viewWorkout": "Ver entrenamiento",
@@ -534,7 +534,7 @@
     "today": "Hoy",
     "modeNatural": "Natural",
     "taglineNatural": "Testosterona optimizada",
-    "modeEnhanced": "Ciclo",
+    "modeEnhanced": "Ciclado",
     "taglineEnhanced": "Inteligencia de ciclo",
     "modeAthlete": "Atleta",
     "taglineAthlete": "Modo competición activo",
@@ -3821,8 +3821,1770 @@
     "addToList": "Añadir a la lista",
     "clearMsg": "¿Eliminar ${done.length} elemento marcado${done.length > 1?",
     "addedTitle": "Agregado a la lista de compras",
-    "addedMsg": "Se agregaron {{created}} elementos nuevos y se fusionaron {{merged}} elementos."
+    "addedMsg": "Se agregaron {{created}} elementos nuevos y se fusionaron {{merged}} elementos.",
+    "categories": {
+      "Produce": "Frutas y Verduras",
+      "Dairy": "Lácteos",
+      "Meat": "Carne",
+      "Seafood": "Mariscos",
+      "Bakery": "Panadería",
+      "Pantry": "Despensa",
+      "Frozen": "Congelados",
+      "Beverages": "Bebidas",
+      "Snacks": "Snacks",
+      "Household": "Hogar",
+      "Personal Care": "Cuidado Personal",
+      "Other": "Otros"
+    }
   },
   "No ingredients": "Esta receta no tiene ingredientes que agregar.",
-  "Success": "¡Ejercicio registrado!"
+  "Success": "¡Ejercicio registrado!",
+  "monthlyMeals": {
+    "high_protein": [
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 450,
+          "protein": 38,
+          "carbs": 30,
+          "fat": 14,
+          "suggestions": [
+            "4 huevos revueltos",
+            "yogur griego 150g",
+            "cafe negro"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 620,
+          "protein": 52,
+          "carbs": 40,
+          "fat": 18,
+          "suggestions": [
+            "Pechuga de pollo a la plancha 220g",
+            "Arroz integral 120g",
+            "brócoli al vapor"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 680,
+          "protein": 55,
+          "carbs": 35,
+          "fat": 22,
+          "suggestions": [
+            "Salmón al horno 200g",
+            "batata 150g",
+            "espárragos"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 180,
+          "protein": 22,
+          "carbs": 8,
+          "fat": 5,
+          "suggestions": [
+            "Requesón 180g",
+            "rodajas de pepino"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 480,
+          "protein": 40,
+          "carbs": 28,
+          "fat": 16,
+          "suggestions": [
+            "Batido de proteínas (30 g de suero)",
+            "Avena 60g",
+            "1 plátano"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 590,
+          "protein": 48,
+          "carbs": 45,
+          "fat": 15,
+          "suggestions": [
+            "Tazón de carne picada de pavo 200g",
+            "Quinua 100g",
+            "Verdes mixtos"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 650,
+          "protein": 50,
+          "carbs": 38,
+          "fat": 20,
+          "suggestions": [
+            "Filete de ternera 180g",
+            "Patata al horno 200g",
+            "judías verdes"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 200,
+          "protein": 25,
+          "carbs": 10,
+          "fat": 6,
+          "suggestions": [
+            "Huevos duros x3",
+            "tomates cherry"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 420,
+          "protein": 35,
+          "carbs": 32,
+          "fat": 12,
+          "suggestions": [
+            "Tortilla de claras de huevo x5",
+            "Tostada integral x1",
+            "Aguacate ¼"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 600,
+          "protein": 50,
+          "carbs": 42,
+          "fat": 16,
+          "suggestions": [
+            "Atun 180g",
+            "Pasta integral 90g",
+            "salsa de tomate"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 660,
+          "protein": 54,
+          "carbs": 30,
+          "fat": 24,
+          "suggestions": [
+            "Lomo de cerdo 200g",
+            "puré de coliflor",
+            "Guisantes 80g"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 170,
+          "protein": 20,
+          "carbs": 6,
+          "fat": 4,
+          "suggestions": [
+            "Barra de proteínas (20 g+)",
+            "Almendras 15g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 460,
+          "protein": 36,
+          "carbs": 35,
+          "fat": 14,
+          "suggestions": [
+            "Avena nocturna 80g",
+            "Cuchara de proteína de suero",
+            "Arándanos 80g"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 610,
+          "protein": 53,
+          "carbs": 38,
+          "fat": 17,
+          "suggestions": [
+            "Salteado de gambas 200g",
+            "Arroz blanco 120g",
+            "pak-choi"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 640,
+          "protein": 52,
+          "carbs": 36,
+          "fat": 20,
+          "suggestions": [
+            "Muslos de pollo 220g",
+            "Verduras asadas 200g",
+            "Hummus 30g"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 190,
+          "protein": 24,
+          "carbs": 9,
+          "fat": 5,
+          "suggestions": [
+            "Queso desnatado 50g",
+            "Galletas integrales x5"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 500,
+          "protein": 42,
+          "carbs": 30,
+          "fat": 18,
+          "suggestions": [
+            "salmón ahumado 80g",
+            "Huevos x2",
+            "Pan de centeno x1"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 580,
+          "protein": 48,
+          "carbs": 44,
+          "fat": 14,
+          "suggestions": [
+            "Tazón de carne magra de ternera 180g",
+            "Lentejas 100g",
+            "ensalada de espinacas"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 670,
+          "protein": 56,
+          "carbs": 32,
+          "fat": 22,
+          "suggestions": [
+            "Filete de bacalao 220g",
+            "Gajos de boniato 150g",
+            "Brócoli de tallo tierno"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 160,
+          "protein": 20,
+          "carbs": 7,
+          "fat": 4,
+          "suggestions": [
+            "yogur skyr 150g",
+            "Nueces 15g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 440,
+          "protein": 34,
+          "carbs": 38,
+          "fat": 13,
+          "suggestions": [
+            "Tortitas proteicas x3",
+            "Sirope de arce 10ml",
+            "Bayas 60g"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 630,
+          "protein": 54,
+          "carbs": 40,
+          "fat": 19,
+          "suggestions": [
+            "Ensalada César con pollo (sin picatostes)",
+            "huevo cocido x2"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 660,
+          "protein": 50,
+          "carbs": 40,
+          "fat": 21,
+          "suggestions": [
+            "Pechuga de pato 160g",
+            "Trigo bulgur 100g",
+            "Brócoli de tallo tierno"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 180,
+          "protein": 22,
+          "carbs": 8,
+          "fat": 5,
+          "suggestions": [
+            "Edamame 100g",
+            "Pastel de arroz x2"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 470,
+          "protein": 40,
+          "carbs": 28,
+          "fat": 16,
+          "suggestions": [
+            "Muffins de huevo x4",
+            "Espinacas y queso feta",
+            "expreso"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 600,
+          "protein": 50,
+          "carbs": 45,
+          "fat": 16,
+          "suggestions": [
+            "Tazón de fideos con gambas",
+            "col china",
+            "Caldo de soja ligero"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 680,
+          "protein": 55,
+          "carbs": 34,
+          "fat": 22,
+          "suggestions": [
+            "Solomillo 180g",
+            "Champiñones asados",
+            "Ensalada de berros"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 190,
+          "protein": 25,
+          "carbs": 8,
+          "fat": 5,
+          "suggestions": [
+            "Batido de proteínas 250ml",
+            "Pastel de arroz x1"
+          ]
+        }
+      ]
+    ],
+    "balanced": [
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 380,
+          "protein": 18,
+          "carbs": 50,
+          "fat": 11,
+          "suggestions": [
+            "avena avena 70g",
+            "Plátano",
+            "leche de almendras",
+            "Semillas de chía 10g"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 520,
+          "protein": 28,
+          "carbs": 58,
+          "fat": 16,
+          "suggestions": [
+            "Wrap de pollo integral",
+            "aguacate",
+            "tomate",
+            "lechuga"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 600,
+          "protein": 32,
+          "carbs": 65,
+          "fat": 18,
+          "suggestions": [
+            "Salmón 170g",
+            "Arroz integral 120g",
+            "verduras asadas"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 150,
+          "protein": 6,
+          "carbs": 20,
+          "fat": 6,
+          "suggestions": [
+            "Manzana",
+            "Mantequilla de maní 15g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 400,
+          "protein": 20,
+          "carbs": 48,
+          "fat": 13,
+          "suggestions": [
+            "Huevos x2",
+            "Tostadas integrales x2",
+            "Zumo de naranja 150ml."
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 540,
+          "protein": 30,
+          "carbs": 55,
+          "fat": 17,
+          "suggestions": [
+            "Sándwich de ensalada de atún",
+            "Ensalada",
+            "Patatas fritas bajas en grasa 20g"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 580,
+          "protein": 30,
+          "carbs": 62,
+          "fat": 16,
+          "suggestions": [
+            "Pollo salteado 180g",
+            "Fideos 100g",
+            "verduras mixtas",
+            "salsa de soja"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 160,
+          "protein": 7,
+          "carbs": 22,
+          "fat": 5,
+          "suggestions": [
+            "Yogur 130g",
+            "Granola 20g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 360,
+          "protein": 16,
+          "carbs": 52,
+          "fat": 10,
+          "suggestions": [
+            "Tazón de batido",
+            "Bayas congeladas 100g",
+            "Plátano",
+            "Avena 30g",
+            "hojuelas de coco"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 510,
+          "protein": 26,
+          "carbs": 58,
+          "fat": 15,
+          "suggestions": [
+            "Sopa de lentejas 300ml",
+            "rollo integral",
+            "Ensalada"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 590,
+          "protein": 32,
+          "carbs": 60,
+          "fat": 17,
+          "suggestions": [
+            "Albóndigas de pavo en salsa de tomate",
+            "Espaguetis 90g",
+            "parmesano 15g"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 140,
+          "protein": 5,
+          "carbs": 19,
+          "fat": 5,
+          "suggestions": [
+            "Un puñado de uvas",
+            "Queso 25g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 390,
+          "protein": 19,
+          "carbs": 46,
+          "fat": 13,
+          "suggestions": [
+            "tostada francesa x2",
+            "bayas",
+            "yogur griego 100g"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 530,
+          "protein": 28,
+          "carbs": 56,
+          "fat": 16,
+          "suggestions": [
+            "Wrap de hummus y verduras",
+            "Halloumi a la parrilla 50g",
+            "Pimientos asados"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 610,
+          "protein": 34,
+          "carbs": 62,
+          "fat": 17,
+          "suggestions": [
+            "Ragú de ternera 160g",
+            "Pappardelle 90g",
+            "pan de ajo 30g"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 155,
+          "protein": 6,
+          "carbs": 21,
+          "fat": 5,
+          "suggestions": [
+            "Tortitas de arroz x3",
+            "Mantequilla de almendras 15g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 370,
+          "protein": 17,
+          "carbs": 50,
+          "fat": 11,
+          "suggestions": [
+            "Muesli Bircher 200g",
+            "manzana guisada",
+            "llovizna de miel"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 545,
+          "protein": 29,
+          "carbs": 57,
+          "fat": 17,
+          "suggestions": [
+            "Ensaladera de pollo a la parrilla",
+            "queso feta 30g",
+            "aceitunas",
+            "rebanada de masa madre"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 595,
+          "protein": 31,
+          "carbs": 64,
+          "fat": 16,
+          "suggestions": [
+            "Pasta de gambas 180g",
+            "ajo",
+            "chile",
+            "tomates cherry",
+            "cohete"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 145,
+          "protein": 5,
+          "carbs": 20,
+          "fat": 5,
+          "suggestions": [
+            "Plátano",
+            "Mantequilla de maní 10g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 410,
+          "protein": 21,
+          "carbs": 44,
+          "fat": 14,
+          "suggestions": [
+            "Shakshuka (2 huevos)",
+            "pita integral",
+            "té de menta"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 520,
+          "protein": 27,
+          "carbs": 59,
+          "fat": 15,
+          "suggestions": [
+            "Curry de verduras 300g",
+            "Arroz basmati 100g",
+            "pan naan 40g"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 600,
+          "protein": 33,
+          "carbs": 63,
+          "fat": 17,
+          "suggestions": [
+            "Lubina 180g",
+            "Patatas nuevas 150g",
+            "Mantequilla de hinojo y limón"
+          ]
+        },
+        {
+          "mealType": "Bocadillo",
+          "calories": 150,
+          "protein": 6,
+          "carbs": 20,
+          "fat": 5,
+          "suggestions": [
+            "Nueces mixtas 20g",
+            "Dátil Medjool x1"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 385,
+          "protein": 18,
+          "carbs": 48,
+          "fat": 12,
+          "suggestions": [
+            "tazón de acaí",
+            "Granola 25g",
+            "kiwi",
+            "arándanos"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 535,
+          "protein": 29,
+          "carbs": 56,
+          "fat": 16,
+          "suggestions": [
+            "Wrap de falafel (3 falafel)",
+            "tahini",
+            "repollo en escabeche",
+            "palitos de zanahoria"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 605,
+          "protein": 33,
+          "carbs": 61,
+          "fat": 18,
+          "suggestions": [
+            "Kofta de cordero 180g",
+            "Cuscús 100g",
+            "Tzatziki 60g",
+            "Calabacín a la plancha"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 155,
+          "protein": 7,
+          "carbs": 18,
+          "fat": 6,
+          "suggestions": [
+            "Queso en hebras x1",
+            "Tomates cherry 80g"
+          ]
+        }
+      ]
+    ],
+    "low_carb": [
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 430,
+          "protein": 28,
+          "carbs": 8,
+          "fat": 32,
+          "suggestions": [
+            "Lonjas de tocino x3",
+            "Huevos x3 revueltos",
+            "Aguacate ½",
+            "cafe negro"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 580,
+          "protein": 40,
+          "carbs": 10,
+          "fat": 42,
+          "suggestions": [
+            "Aguacate relleno de atún",
+            "rodajas de pepino",
+            "Queso 40g"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 650,
+          "protein": 48,
+          "carbs": 12,
+          "fat": 46,
+          "suggestions": [
+            "Filete de chuletón 200g",
+            "Champiñones salteados en mantequilla",
+            "Ensalada de hojas con aceite de oliva"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 200,
+          "protein": 12,
+          "carbs": 4,
+          "fat": 16,
+          "suggestions": [
+            "Salami 40g",
+            "Queso 30g",
+            "Aceitunas 8 piezas"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 410,
+          "protein": 26,
+          "carbs": 6,
+          "fat": 30,
+          "suggestions": [
+            "Panqueques cetogénicos x3",
+            "Queso crema",
+            "Bayas 50g"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 560,
+          "protein": 38,
+          "carbs": 9,
+          "fat": 40,
+          "suggestions": [
+            "César de pollo (sin picatostes)",
+            "parmesano 30g",
+            "porque lechuga",
+            "anchoas"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 630,
+          "protein": 46,
+          "carbs": 11,
+          "fat": 44,
+          "suggestions": [
+            "Salmón con mantequilla y eneldo 200g",
+            "Arroz de coliflor 200g",
+            "espárragos"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 180,
+          "protein": 10,
+          "carbs": 3,
+          "fat": 14,
+          "suggestions": [
+            "Nueces de macadamia 30g",
+            "Chocolate amargo 2 cuadritos"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 450,
+          "protein": 30,
+          "carbs": 7,
+          "fat": 34,
+          "suggestions": [
+            "Tortilla x3 huevos",
+            "espinacas",
+            "queso feta 30g",
+            "tomates cherry"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 570,
+          "protein": 42,
+          "carbs": 8,
+          "fat": 42,
+          "suggestions": [
+            "Hamburguesas wrap de lechuga x2",
+            "Empanada de ternera 120g",
+            "queso cheddar",
+            "salsa de hamburguesa"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 640,
+          "protein": 48,
+          "carbs": 10,
+          "fat": 45,
+          "suggestions": [
+            "Panceta de cerdo 180g",
+            "brócoli asado",
+            "Salsa de mantequilla con ajo"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 190,
+          "protein": 11,
+          "carbs": 3,
+          "fat": 15,
+          "suggestions": [
+            "queso brie 40g",
+            "palitos de apio 3"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 420,
+          "protein": 27,
+          "carbs": 5,
+          "fat": 32,
+          "suggestions": [
+            "salmón ahumado 80g",
+            "Queso crema 40g",
+            "pepino",
+            "alcaparras"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 555,
+          "protein": 40,
+          "carbs": 9,
+          "fat": 38,
+          "suggestions": [
+            "Fideos de calabacín",
+            "pesto 30g",
+            "tomates cherry",
+            "pollo a la parrilla"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 660,
+          "protein": 50,
+          "carbs": 10,
+          "fat": 47,
+          "suggestions": [
+            "Muslo de pato confitado 200g",
+            "Judías verdes en mantequilla",
+            "puré de apio nabo"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 170,
+          "protein": 9,
+          "carbs": 2,
+          "fat": 14,
+          "suggestions": [
+            "peperoni 30g",
+            "Queso en hebras x1"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 440,
+          "protein": 32,
+          "carbs": 6,
+          "fat": 33,
+          "suggestions": [
+            "Pudín de chía 200ml leche de coco",
+            "Cuchara de proteína en polvo",
+            "Bayas 40g"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 575,
+          "protein": 44,
+          "carbs": 8,
+          "fat": 42,
+          "suggestions": [
+            "Ensalada de huevo 3 huevos",
+            "mayonesa 30g",
+            "Tazas de lechuga romana",
+            "trozos de tocino"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 620,
+          "protein": 46,
+          "carbs": 11,
+          "fat": 43,
+          "suggestions": [
+            "Chuletas de cordero x2",
+            "Calabacín asado",
+            "Salsa de yogur de menta 30g"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 185,
+          "protein": 11,
+          "carbs": 3,
+          "fat": 15,
+          "suggestions": [
+            "Galletas de queso 3 ceto",
+            "Guacamole 40g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 460,
+          "protein": 30,
+          "carbs": 7,
+          "fat": 35,
+          "suggestions": [
+            "Café antibalas 350ml",
+            "Hueveras y tocino x2"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 560,
+          "protein": 38,
+          "carbs": 7,
+          "fat": 42,
+          "suggestions": [
+            "Tataki de atún 180g",
+            "Edamame 60g",
+            "aderezo de sésamo",
+            "Noris"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 650,
+          "protein": 50,
+          "carbs": 9,
+          "fat": 46,
+          "suggestions": [
+            "Chuletón 220g",
+            "Champiñones con mantequilla de ajo",
+            "Salsa de queso azul 30g"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 195,
+          "protein": 12,
+          "carbs": 4,
+          "fat": 15,
+          "suggestions": [
+            "Galletas de harina de almendras x4",
+            "Queso crema 30g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 425,
+          "protein": 28,
+          "carbs": 8,
+          "fat": 31,
+          "suggestions": [
+            "Barcos de huevos de aguacate x2",
+            "Tocino crujiente",
+            "salsa picante"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 570,
+          "protein": 42,
+          "carbs": 8,
+          "fat": 41,
+          "suggestions": [
+            "ensalada capresse",
+            "Muzzarella 100g",
+            "Jamón 60g",
+            "Albahaca y aceite de oliva"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 640,
+          "protein": 48,
+          "carbs": 10,
+          "fat": 45,
+          "suggestions": [
+            "Bacalao al horno 200g",
+            "gratinado de coliflor",
+            "Ensalada de rúcula y parmesano"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 175,
+          "protein": 10,
+          "carbs": 2,
+          "fat": 14,
+          "suggestions": [
+            "Huevos rellenos x2",
+            "cintas de pepino"
+          ]
+        }
+      ]
+    ],
+    "plant_based": [
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 380,
+          "protein": 14,
+          "carbs": 58,
+          "fat": 10,
+          "suggestions": [
+            "Tazón de batido",
+            "Frutos del bosque 100g",
+            "Avena 40g",
+            "Semillas de cáñamo 15g",
+            "leche de almendras"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 510,
+          "protein": 20,
+          "carbs": 68,
+          "fat": 14,
+          "suggestions": [
+            "cuenco de buda",
+            "Garbanzos 150g",
+            "Quinua 100g",
+            "verduras asadas",
+            "tahini"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 590,
+          "protein": 24,
+          "carbs": 75,
+          "fat": 16,
+          "suggestions": [
+            "lentejas dal 300g",
+            "Arroz integral 120g",
+            "pan naan 40g",
+            "chutney de mango"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 150,
+          "protein": 6,
+          "carbs": 20,
+          "fat": 5,
+          "suggestions": [
+            "rodajas de manzana",
+            "Mantequilla de almendras 15g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 400,
+          "protein": 16,
+          "carbs": 55,
+          "fat": 12,
+          "suggestions": [
+            "Revuelto de tofu 200g",
+            "Cúrcuma y espinacas",
+            "Tostadas integrales x2",
+            "tomate"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 530,
+          "protein": 22,
+          "carbs": 65,
+          "fat": 15,
+          "suggestions": [
+            "Tazón de edamame y fideos",
+            "Aderezo de sésamo y jengibre",
+            "pepino",
+            "tiras de nori"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 600,
+          "protein": 26,
+          "carbs": 72,
+          "fat": 16,
+          "suggestions": [
+            "Tacos de frijol negro x2",
+            "tortillas de maiz",
+            "salsa",
+            "Guacamole 40g",
+            "ensalada de repollo"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 160,
+          "protein": 8,
+          "carbs": 18,
+          "fat": 6,
+          "suggestions": [
+            "Hummus 60g",
+            "Palitos de zanahoria y apio"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 370,
+          "protein": 12,
+          "carbs": 60,
+          "fat": 9,
+          "suggestions": [
+            "Avena nocturna 80g",
+            "Chía 10g",
+            "leche de avena",
+            "ciruelas guisadas",
+            "jarabe de arce"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 520,
+          "protein": 21,
+          "carbs": 66,
+          "fat": 14,
+          "suggestions": [
+            "Sopa de guisantes y menta 400ml",
+            "rebanada de masa madre",
+            "Cobertura de semillas mixtas"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 580,
+          "protein": 24,
+          "carbs": 70,
+          "fat": 15,
+          "suggestions": [
+            "Risotto de setas 300g",
+            "Levadura nutricional",
+            "Ensalada de hierbas frescas"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 145,
+          "protein": 5,
+          "carbs": 22,
+          "fat": 4,
+          "suggestions": [
+            "Dátiles Medjool x2",
+            "Anacardos 20g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 410,
+          "protein": 18,
+          "carbs": 52,
+          "fat": 13,
+          "suggestions": [
+            "Tortitas proteicas (veganas)",
+            "Bayas 80g",
+            "Yogur de coco 100g"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 540,
+          "protein": 23,
+          "carbs": 67,
+          "fat": 15,
+          "suggestions": [
+            "Tempeh salteado 180g",
+            "Fideos soba 90g",
+            "salsa de maní",
+            "brotes de soja"
+          ]
+        },
+        {
+          "mealType": "Cena",
+          "calories": 595,
+          "protein": 25,
+          "carbs": 73,
+          "fat": 15,
+          "suggestions": [
+            "Curry de yaca 300g",
+            "basmati 120g",
+            "Roti 30g",
+            "Lassi de mango (avena)"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 155,
+          "protein": 6,
+          "carbs": 21,
+          "fat": 5,
+          "suggestions": [
+            "Mezcla de frutos secos 30g",
+            "mango seco 20g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 390,
+          "protein": 15,
+          "carbs": 57,
+          "fat": 11,
+          "suggestions": [
+            "Parfait de chía",
+            "leche de coco",
+            "fruta de la pasión",
+            "Granola 25g"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 525,
+          "protein": 22,
+          "carbs": 64,
+          "fat": 15,
+          "suggestions": [
+            "Verduras asadas y queso feta (a base de plantas)",
+            "Pan plano 60g",
+            "Aderezo de tahini de limón"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 590,
+          "protein": 26,
+          "carbs": 68,
+          "fat": 16,
+          "suggestions": [
+            "Garbanzos tikka masala 300g",
+            "Arroz integral 110g",
+            "chutney de cilantro"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 150,
+          "protein": 7,
+          "carbs": 18,
+          "fat": 5,
+          "suggestions": [
+            "yogur de soja 150g",
+            "Semillas de lino 10g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 420,
+          "protein": 17,
+          "carbs": 54,
+          "fat": 13,
+          "suggestions": [
+            "Tostada de aguacate x2",
+            "Tofu escalfado 80g",
+            "hojuelas de chile",
+            "limon"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 510,
+          "protein": 20,
+          "carbs": 65,
+          "fat": 14,
+          "suggestions": [
+            "Gazpacho 300ml",
+            "Masa madre x1",
+            "Hummus de pimientos asados 50g"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 600,
+          "protein": 25,
+          "carbs": 74,
+          "fat": 15,
+          "suggestions": [
+            "Berenjena a la parmesana (vegana)",
+            "Espaguetis 80g",
+            "Pesto de albahaca (vegano)"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 160,
+          "protein": 6,
+          "carbs": 22,
+          "fat": 5,
+          "suggestions": [
+            "Bolas de energía x2",
+            "Avena y mantequilla de maní"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 400,
+          "protein": 16,
+          "carbs": 55,
+          "fat": 12,
+          "suggestions": [
+            "Batido verde 500ml",
+            "espinacas",
+            "Proteína de guisante 25g",
+            "Mango",
+            "jengibre"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 535,
+          "protein": 22,
+          "carbs": 66,
+          "fat": 15,
+          "suggestions": [
+            "Rollos de papel de arroz vietnamita x4",
+            "Tofu 100g",
+            "Salsa de maní"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 585,
+          "protein": 24,
+          "carbs": 71,
+          "fat": 15,
+          "suggestions": [
+            "Tofu laksa 350ml",
+            "Fideos de arroz 80g",
+            "col china",
+            "Lima y chile"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 145,
+          "protein": 5,
+          "carbs": 21,
+          "fat": 4,
+          "suggestions": [
+            "Palomitas de maiz 30g",
+            "Espolvorear levadura nutricional"
+          ]
+        }
+      ]
+    ],
+    "flexible": [
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 400,
+          "protein": 22,
+          "carbs": 46,
+          "fat": 13,
+          "suggestions": [
+            "Huevos de cualquier estilo x2",
+            "Tostadas x2",
+            "fruta de elección",
+            "Café o té"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 550,
+          "protein": 32,
+          "carbs": 55,
+          "fat": 16,
+          "suggestions": [
+            "Proteína + carbohidratos + verduras de elección (por ejemplo, pollo + arroz + ensalada)"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 620,
+          "protein": 36,
+          "carbs": 60,
+          "fat": 18,
+          "suggestions": [
+            "Cualquier plato equilibrado: 150 g de proteínas, 120 g de almidón, 2 porciones de verduras"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 160,
+          "protein": 8,
+          "carbs": 18,
+          "fat": 5,
+          "suggestions": [
+            "Yogur O fruta + nueces O pastel de arroz + mantequilla de nueces"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 380,
+          "protein": 18,
+          "carbs": 50,
+          "fat": 11,
+          "suggestions": [
+            "Batido con proteína en polvo",
+            "Cualquier fruta que tengas",
+            "Avena o granola 40g"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 530,
+          "protein": 30,
+          "carbs": 58,
+          "fat": 15,
+          "suggestions": [
+            "Sobras de cena O sándwich con relleno de proteínas",
+            "Ensalada"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 610,
+          "protein": 34,
+          "carbs": 62,
+          "fat": 17,
+          "suggestions": [
+            "Salteado: proteínas + verduras + fideos o arroz",
+            "Salsa de elección"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 155,
+          "protein": 7,
+          "carbs": 19,
+          "fat": 5,
+          "suggestions": [
+            "Un puñado de nueces mixtas",
+            "pieza de fruta"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 420,
+          "protein": 20,
+          "carbs": 48,
+          "fat": 14,
+          "suggestions": [
+            "avena durante la noche",
+            "yogur griego",
+            "bayas",
+            "miel"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 545,
+          "protein": 31,
+          "carbs": 57,
+          "fat": 16,
+          "suggestions": [
+            "Wrap con proteína magra + ensalada",
+            "lado de la fruta"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 600,
+          "protein": 33,
+          "carbs": 63,
+          "fat": 16,
+          "suggestions": [
+            "Pasta con salsa proteica",
+            "Ensalada verde grande",
+            "panecillo"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 165,
+          "protein": 8,
+          "carbs": 20,
+          "fat": 5,
+          "suggestions": [
+            "Queso + galletas saladas",
+            "tomates cherry"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 390,
+          "protein": 19,
+          "carbs": 47,
+          "fat": 12,
+          "suggestions": [
+            "Tostada de aguacate x2",
+            "Huevo de cualquier estilo",
+            "Café"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 540,
+          "protein": 30,
+          "carbs": 60,
+          "fat": 14,
+          "suggestions": [
+            "Tazón de Buda: cereales + proteínas + verduras + aderezo"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 615,
+          "protein": 35,
+          "carbs": 61,
+          "fat": 17,
+          "suggestions": [
+            "Proteína a la plancha o al horno 180g",
+            "verduras asadas",
+            "Puré o arroz 120g"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 150,
+          "protein": 6,
+          "carbs": 19,
+          "fat": 5,
+          "suggestions": [
+            "Mezcla de frutos secos 30g",
+            "O yogur 130g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 410,
+          "protein": 21,
+          "carbs": 45,
+          "fat": 14,
+          "suggestions": [
+            "Tortitas proteicas x2",
+            "bayas",
+            "Sirope de arce 10ml"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 535,
+          "protein": 29,
+          "carbs": 57,
+          "fat": 16,
+          "suggestions": [
+            "sopa + pan",
+            "Fuente de proteína (huevo/atún/pollo) añadida"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 600,
+          "protein": 32,
+          "carbs": 64,
+          "fat": 16,
+          "suggestions": [
+            "Curry con proteínas (cualquiera): 300g + arroz 120g + naan 40g"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 160,
+          "protein": 7,
+          "carbs": 20,
+          "fat": 5,
+          "suggestions": [
+            "Pastel de arroz x2 + mantequilla de nueces 15g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 400,
+          "protein": 20,
+          "carbs": 48,
+          "fat": 12,
+          "suggestions": [
+            "Cereal (alto en proteínas) + leche",
+            "Plátano",
+            "cafe negro"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 545,
+          "protein": 31,
+          "carbs": 58,
+          "fat": 16,
+          "suggestions": [
+            "Ensaladera + cobertura proteica + cereales",
+            "aderezo de elección"
+          ]
+        },
+        {
+          "mealType": "cena",
+          "calories": 610,
+          "protein": 33,
+          "carbs": 63,
+          "fat": 17,
+          "suggestions": [
+            "Pescado (o carne) 180 g + patatas nuevas 150 g + verduras verdes"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 155,
+          "protein": 7,
+          "carbs": 19,
+          "fat": 5,
+          "suggestions": [
+            "Huevo cocido x1",
+            "pieza de fruta"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Desayuno",
+          "calories": 415,
+          "protein": 22,
+          "carbs": 46,
+          "fat": 13,
+          "suggestions": [
+            "Huevos Shakshuka x2",
+            "pan pita",
+            "Ensalada de hierbas frescas"
+          ]
+        },
+        {
+          "mealType": "Almuerzo",
+          "calories": 530,
+          "protein": 28,
+          "carbs": 59,
+          "fat": 15,
+          "suggestions": [
+            "Patata al horno + relleno de atún/queso",
+            "Ensalada"
+          ]
+        },
+        {
+          "mealType": "Cena",
+          "calories": 605,
+          "protein": 34,
+          "carbs": 61,
+          "fat": 17,
+          "suggestions": [
+            "Tagine (cualquier proteína) 300g",
+            "Cuscús 100g",
+            "pan plano harissa"
+          ]
+        },
+        {
+          "mealType": "merienda",
+          "calories": 160,
+          "protein": 7,
+          "carbs": 20,
+          "fat": 5,
+          "suggestions": [
+            "Edamame 80g",
+            "Galleta de arroz x3"
+          ]
+        }
+      ]
+    ]
+  }
 }

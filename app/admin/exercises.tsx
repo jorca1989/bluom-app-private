@@ -210,7 +210,9 @@ export default function ExerciseLibraryManager() {
                 onPress: async () => {
                     try {
                         await deleteExercise({ id });
+                        Alert.alert('Success', 'Exercise deleted successfully.');
                     } catch (err: any) {
+                        console.error('Delete error:', err);
                         Alert.alert(t('common.error', 'Error'), err?.message || t('admin.errorDelete', 'Failed to delete exercise.'));
                     }
                 }

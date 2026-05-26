@@ -35,6 +35,7 @@ const NAV_ITEMS = [
     { label: 'Analytics', icon: BarChart3, href: '/admin/analytics' },
     { label: 'Media Library', icon: FolderOpen, href: '/admin/media' },
     { label: 'Recipes Manager', icon: Utensils, href: '/admin/recipes' },
+    { label: 'Food Database', icon: Utensils, href: '/admin/foods' },
     { label: 'Video Workouts', icon: Play, href: '/admin/workouts' },
     { label: 'Exercises Lib', icon: Dumbbell, href: '/admin/exercises' },
     { label: 'Programs Manager', icon: Layers, href: '/admin/programs' },

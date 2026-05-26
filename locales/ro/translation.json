@@ -3781,8 +3781,1770 @@
     "addToList": "Adăugați pe listă",
     "clearMsg": "Eliminați ${done.length} element bifat${done.length > 1 ?",
     "addedTitle": "Adăugat la Lista de cumpărături",
-    "addedMsg": "S-au adăugat {{created}} articole noi și au fost îmbinate {{merged}} articole."
+    "addedMsg": "S-au adăugat {{created}} articole noi și au fost îmbinate {{merged}} articole.",
+    "categories": {
+      "Produce": "Produce",
+      "Dairy": "Dairy",
+      "Meat": "Meat",
+      "Seafood": "Seafood",
+      "Bakery": "Bakery",
+      "Pantry": "Pantry",
+      "Frozen": "Frozen",
+      "Beverages": "Beverages",
+      "Snacks": "Snacks",
+      "Household": "Household",
+      "Personal Care": "Personal Care",
+      "Other": "Other"
+    }
   },
   "No ingredients": "Această rețetă nu are ingrediente de adăugat.",
-  "Success": "Exercițiu înregistrat!"
+  "Success": "Exercițiu înregistrat!",
+  "monthlyMeals": {
+    "high_protein": [
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 450,
+          "protein": 38,
+          "carbs": 30,
+          "fat": 14,
+          "suggestions": [
+            "4 ouă omletă",
+            "iaurt grecesc 150 g",
+            "Cafea neagră"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 620,
+          "protein": 52,
+          "carbs": 40,
+          "fat": 18,
+          "suggestions": [
+            "Piept de pui la gratar 220g",
+            "orez brun 120g",
+            "Broccoli la abur"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 680,
+          "protein": 55,
+          "carbs": 35,
+          "fat": 22,
+          "suggestions": [
+            "somon copt 200 g",
+            "Cartofi dulci 150g",
+            "sparanghel"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 180,
+          "protein": 22,
+          "carbs": 8,
+          "fat": 5,
+          "suggestions": [
+            "Branza de vaci 180g",
+            "Felii de castraveți"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 480,
+          "protein": 40,
+          "carbs": 28,
+          "fat": 16,
+          "suggestions": [
+            "Shake de proteine (30 g zer)",
+            "Ovaz 60g",
+            "1 banană"
+          ]
+        },
+        {
+          "mealType": "Prânz",
+          "calories": 590,
+          "protein": 48,
+          "carbs": 45,
+          "fat": 15,
+          "suggestions": [
+            "castron tocat curcan 200g",
+            "Quinoa 100 g",
+            "Verzi mixte"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 650,
+          "protein": 50,
+          "carbs": 38,
+          "fat": 20,
+          "suggestions": [
+            "Friptura de vita 180g",
+            "Cartofi copți 200g",
+            "Fasole verde"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 200,
+          "protein": 25,
+          "carbs": 10,
+          "fat": 6,
+          "suggestions": [
+            "Ouă fierte tari x3",
+            "Roșii cherry"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 420,
+          "protein": 35,
+          "carbs": 32,
+          "fat": 12,
+          "suggestions": [
+            "Omleta de albus x5",
+            "Pâine prăjită din grâu integral x1",
+            "Avocado ¼"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 600,
+          "protein": 50,
+          "carbs": 42,
+          "fat": 16,
+          "suggestions": [
+            "Ton 180g",
+            "Paste din grau integral 90g",
+            "Sos de rosii"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 660,
+          "protein": 54,
+          "carbs": 30,
+          "fat": 24,
+          "suggestions": [
+            "Muschiu de porc 200g",
+            "Piure de conopidă",
+            "Mazăre 80g"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 170,
+          "protein": 20,
+          "carbs": 6,
+          "fat": 4,
+          "suggestions": [
+            "Baton de proteine (20g+)",
+            "Migdale 15 g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 460,
+          "protein": 36,
+          "carbs": 35,
+          "fat": 14,
+          "suggestions": [
+            "Ovăz peste noapte 80 g",
+            "Culina de proteine din zer",
+            "Afine 80g"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 610,
+          "protein": 53,
+          "carbs": 38,
+          "fat": 17,
+          "suggestions": [
+            "Creveți prăjiți 200g",
+            "orez alb 120 g",
+            "Pak choi"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 640,
+          "protein": 52,
+          "carbs": 36,
+          "fat": 20,
+          "suggestions": [
+            "Pulpe de pui 220g",
+            "Legume prajite 200 g",
+            "Hummus 30 g"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 190,
+          "protein": 24,
+          "carbs": 9,
+          "fat": 5,
+          "suggestions": [
+            "Brânză cu conținut scăzut de grăsimi 50 g",
+            "Biscuiți integrali x5"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 500,
+          "protein": 42,
+          "carbs": 30,
+          "fat": 18,
+          "suggestions": [
+            "somon afumat 80g",
+            "Ouă x2",
+            "Pâine de secară x1"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 580,
+          "protein": 48,
+          "carbs": 44,
+          "fat": 14,
+          "suggestions": [
+            "Bol tocată de vită slabă 180g",
+            "Linte 100g",
+            "Salata de spanac"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 670,
+          "protein": 56,
+          "carbs": 32,
+          "fat": 22,
+          "suggestions": [
+            "File de cod 220g",
+            "Cartofi dulci felii 150g",
+            "Broccoli cu tulpină fragedă"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 160,
+          "protein": 20,
+          "carbs": 7,
+          "fat": 4,
+          "suggestions": [
+            "Iaurt Skyr 150g",
+            "Nuci 15g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 440,
+          "protein": 34,
+          "carbs": 38,
+          "fat": 13,
+          "suggestions": [
+            "Clatite proteice x3",
+            "Sirop de artar 10ml",
+            "Fructe de padure 60g"
+          ]
+        },
+        {
+          "mealType": "Prânz",
+          "calories": 630,
+          "protein": 54,
+          "carbs": 40,
+          "fat": 19,
+          "suggestions": [
+            "Salata Caesar de pui (fara crutoane)",
+            "Ou fiert x2"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 660,
+          "protein": 50,
+          "carbs": 40,
+          "fat": 21,
+          "suggestions": [
+            "Piept de rata 160g",
+            "grâu bulgur 100g",
+            "Broccoli cu tulpină fragedă"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 180,
+          "protein": 22,
+          "carbs": 8,
+          "fat": 5,
+          "suggestions": [
+            "Edamame 100 g",
+            "Prajitura de orez x2"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 470,
+          "protein": 40,
+          "carbs": 28,
+          "fat": 16,
+          "suggestions": [
+            "Brioșe cu ouă x4",
+            "Spanac și feta",
+            "Espresso"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 600,
+          "protein": 50,
+          "carbs": 45,
+          "fat": 16,
+          "suggestions": [
+            "Bol cu tăiței cu creveți",
+            "Bok choy",
+            "Bulion ușor de soia"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 680,
+          "protein": 55,
+          "carbs": 34,
+          "fat": 22,
+          "suggestions": [
+            "Friptura de muschi 180g",
+            "Ciuperci prăjite",
+            "Salata de nasturel"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 190,
+          "protein": 25,
+          "carbs": 8,
+          "fat": 5,
+          "suggestions": [
+            "Shake proteic 250 ml",
+            "Prajitura de orez x1"
+          ]
+        }
+      ]
+    ],
+    "balanced": [
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 380,
+          "protein": 18,
+          "carbs": 50,
+          "fat": 11,
+          "suggestions": [
+            "Terci de ovăz 70g",
+            "Banana",
+            "Lapte de migdale",
+            "Seminte de chia 10g"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 520,
+          "protein": 28,
+          "carbs": 58,
+          "fat": 16,
+          "suggestions": [
+            "Wrap de pui din grâu integral",
+            "Avocado",
+            "roșie",
+            "Salată verde"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 600,
+          "protein": 32,
+          "carbs": 65,
+          "fat": 18,
+          "suggestions": [
+            "somon 170 g",
+            "orez brun 120g",
+            "Legume prăjite"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 150,
+          "protein": 6,
+          "carbs": 20,
+          "fat": 6,
+          "suggestions": [
+            "Măr",
+            "unt de arahide 15 g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 400,
+          "protein": 20,
+          "carbs": 48,
+          "fat": 13,
+          "suggestions": [
+            "Ouă x2",
+            "Pâine prăjită din grâu integral x2",
+            "Suc de portocale 150 ml"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 540,
+          "protein": 30,
+          "carbs": 55,
+          "fat": 17,
+          "suggestions": [
+            "Sandviș cu salată de ton",
+            "Salată secundară",
+            "Chips cu conținut scăzut de grăsimi 20 g"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 580,
+          "protein": 30,
+          "carbs": 62,
+          "fat": 16,
+          "suggestions": [
+            "Pui prajit 180g",
+            "Taitei 100g",
+            "Legume amestecate",
+            "Sos de soia"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 160,
+          "protein": 7,
+          "carbs": 22,
+          "fat": 5,
+          "suggestions": [
+            "Iaurt 130g",
+            "Granola 20g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 360,
+          "protein": 16,
+          "carbs": 52,
+          "fat": 10,
+          "suggestions": [
+            "Bol pentru smoothie",
+            "fructe de padure congelate 100g",
+            "Banana",
+            "Ovăz 30g",
+            "Fulgi de cocos"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 510,
+          "protein": 26,
+          "carbs": 58,
+          "fat": 15,
+          "suggestions": [
+            "Supa de linte 300ml",
+            "Rulada integrală",
+            "Salată secundară"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 590,
+          "protein": 32,
+          "carbs": 60,
+          "fat": 17,
+          "suggestions": [
+            "Chifteluțe de curcan în sos de roșii",
+            "Spaghete 90g",
+            "parmezan 15 g"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 140,
+          "protein": 5,
+          "carbs": 19,
+          "fat": 5,
+          "suggestions": [
+            "O mână de struguri",
+            "brânză 25 g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 390,
+          "protein": 19,
+          "carbs": 46,
+          "fat": 13,
+          "suggestions": [
+            "Toast frantuzesc x2",
+            "Fructe de pădure",
+            "iaurt grecesc 100 g"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 530,
+          "protein": 28,
+          "carbs": 56,
+          "fat": 16,
+          "suggestions": [
+            "Hummus și ambalaj vegetal",
+            "Halloumi la gratar 50g",
+            "Ardei prajiti"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 610,
+          "protein": 34,
+          "carbs": 62,
+          "fat": 17,
+          "suggestions": [
+            "Ragu de vita 160g",
+            "Pappardelle 90 g",
+            "Paine cu usturoi 30g"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 155,
+          "protein": 6,
+          "carbs": 21,
+          "fat": 5,
+          "suggestions": [
+            "Prajituri de orez x3",
+            "unt de migdale 15 g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 370,
+          "protein": 17,
+          "carbs": 50,
+          "fat": 11,
+          "suggestions": [
+            "Bircher musli 200g",
+            "Măr înăbușit",
+            "Burniță de miere"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 545,
+          "protein": 29,
+          "carbs": 57,
+          "fat": 17,
+          "suggestions": [
+            "Bol de salată cu pui la grătar",
+            "Feta 30g",
+            "Măsline",
+            "felie de aluat"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 595,
+          "protein": 31,
+          "carbs": 64,
+          "fat": 16,
+          "suggestions": [
+            "Paste cu creveți 180g",
+            "Usturoi",
+            "Chilli",
+            "Roșii cherry",
+            "Rachetă"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 145,
+          "protein": 5,
+          "carbs": 20,
+          "fat": 5,
+          "suggestions": [
+            "Banana",
+            "unt de arahide 10 g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 410,
+          "protein": 21,
+          "carbs": 44,
+          "fat": 14,
+          "suggestions": [
+            "Shakshuka (2 ouă)",
+            "Pitta integrală",
+            "Ceai de mentă"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 520,
+          "protein": 27,
+          "carbs": 59,
+          "fat": 15,
+          "suggestions": [
+            "curry de legume 300g",
+            "orez basmati 100 g",
+            "Naan 40 g"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 600,
+          "protein": 33,
+          "carbs": 63,
+          "fat": 17,
+          "suggestions": [
+            "Biban de mare 180g",
+            "Cartofi noi 150g",
+            "Samfir și unt de lămâie"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 150,
+          "protein": 6,
+          "carbs": 20,
+          "fat": 5,
+          "suggestions": [
+            "Nuci amestecate 20g",
+            "Întâlnire Medjool x1"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 385,
+          "protein": 18,
+          "carbs": 48,
+          "fat": 12,
+          "suggestions": [
+            "Bol de acai",
+            "Granola 25 g",
+            "Kiwi",
+            "Afine"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 535,
+          "protein": 29,
+          "carbs": 56,
+          "fat": 16,
+          "suggestions": [
+            "Falafel wrap (3 falafel)",
+            "Tahini",
+            "Varză murată",
+            "Bețișoare de morcov"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 605,
+          "protein": 33,
+          "carbs": 61,
+          "fat": 18,
+          "suggestions": [
+            "Kofta de miel 180g",
+            "Cuscus 100g",
+            "Tzatziki 60g",
+            "Dovlecei la gratar"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 155,
+          "protein": 7,
+          "carbs": 18,
+          "fat": 6,
+          "suggestions": [
+            "brânză cu fir x1",
+            "Roșii cherry 80g"
+          ]
+        }
+      ]
+    ],
+    "low_carb": [
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 430,
+          "protein": 28,
+          "carbs": 8,
+          "fat": 32,
+          "suggestions": [
+            "slănină x3 răbușe",
+            "Ouă x3 omletă",
+            "Avocado ½",
+            "Cafea neagră"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 580,
+          "protein": 40,
+          "carbs": 10,
+          "fat": 42,
+          "suggestions": [
+            "Avocado umplut cu ton",
+            "Felii de castraveți",
+            "Branza 40g"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 650,
+          "protein": 48,
+          "carbs": 12,
+          "fat": 46,
+          "suggestions": [
+            "Friptură de coastă 200g",
+            "Ciuperci sotate in unt",
+            "Salată cu frunze cu ulei de măsline"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 200,
+          "protein": 12,
+          "carbs": 4,
+          "fat": 16,
+          "suggestions": [
+            "Salam 40g",
+            "Branza 30g",
+            "Masline 8 buc"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 410,
+          "protein": 26,
+          "carbs": 6,
+          "fat": 30,
+          "suggestions": [
+            "Clatite keto x3",
+            "Cremă de brânză",
+            "Fructe de padure 50g"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 560,
+          "protein": 38,
+          "carbs": 9,
+          "fat": 40,
+          "suggestions": [
+            "Pui Caesar (fara crutoane)",
+            "parmezan 30 g",
+            "Ca salata verde",
+            "hamsii"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 630,
+          "protein": 46,
+          "carbs": 11,
+          "fat": 44,
+          "suggestions": [
+            "Somon cu unt si marar 200g",
+            "orez conopida 200g",
+            "sparanghel"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 180,
+          "protein": 10,
+          "carbs": 3,
+          "fat": 14,
+          "suggestions": [
+            "nuci de macadamia 30 g",
+            "Ciocolata neagra 2 patrate"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 450,
+          "protein": 30,
+          "carbs": 7,
+          "fat": 34,
+          "suggestions": [
+            "Omletă x3 ouă",
+            "Spanacul",
+            "Feta 30g",
+            "Roșii cherry"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 570,
+          "protein": 42,
+          "carbs": 8,
+          "fat": 42,
+          "suggestions": [
+            "burgeri wrap cu salata verde x2",
+            "Chiftă de vită 120g",
+            "Cheddar",
+            "Sos de burger"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 640,
+          "protein": 48,
+          "carbs": 10,
+          "fat": 45,
+          "suggestions": [
+            "Burta de porc 180g",
+            "Broccoli prajit",
+            "Sos de unt de usturoi"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 190,
+          "protein": 11,
+          "carbs": 3,
+          "fat": 15,
+          "suggestions": [
+            "brânză brie 40 g",
+            "Batoane de telina 3"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 420,
+          "protein": 27,
+          "carbs": 5,
+          "fat": 32,
+          "suggestions": [
+            "somon afumat 80g",
+            "Crema de branza 40g",
+            "Castravete",
+            "Capere"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 555,
+          "protein": 40,
+          "carbs": 9,
+          "fat": 38,
+          "suggestions": [
+            "Taitei de dovlecel",
+            "Pesto 30 g",
+            "Roșii cherry",
+            "Pui la gratar"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 660,
+          "protein": 50,
+          "carbs": 10,
+          "fat": 47,
+          "suggestions": [
+            "Pulpe de rață confit 200g",
+            "Fasole verde în unt",
+            "piure de țelină"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 170,
+          "protein": 9,
+          "carbs": 2,
+          "fat": 14,
+          "suggestions": [
+            "Pepperoni 30 g",
+            "brânză cu fir x1"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 440,
+          "protein": 32,
+          "carbs": 6,
+          "fat": 33,
+          "suggestions": [
+            "Budincă de chia 200 ml lapte de cocos",
+            "Cutiță de pudră de proteine",
+            "fructe de padure 40 g"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 575,
+          "protein": 44,
+          "carbs": 8,
+          "fat": 42,
+          "suggestions": [
+            "Salata de oua 3 oua",
+            "maia 30 g",
+            "Pahare salata romana",
+            "Bucăți de slănină"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 620,
+          "protein": 46,
+          "carbs": 11,
+          "fat": 43,
+          "suggestions": [
+            "Cotlete de miel x2",
+            "Dovlecei prăjiți",
+            "Sos de iaurt cu menta 30g"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 185,
+          "protein": 11,
+          "carbs": 3,
+          "fat": 15,
+          "suggestions": [
+            "Biscuiți cu brânză 3 keto",
+            "Guacamole 40 g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 460,
+          "protein": 30,
+          "carbs": 7,
+          "fat": 35,
+          "suggestions": [
+            "Cafea antiglont 350ml",
+            "Slănină și cupe de ouă x2"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 560,
+          "protein": 38,
+          "carbs": 7,
+          "fat": 42,
+          "suggestions": [
+            "Tataki de ton 180g",
+            "Edamame 60g",
+            "Sos de susan",
+            "Nori"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 650,
+          "protein": 50,
+          "carbs": 9,
+          "fat": 46,
+          "suggestions": [
+            "Friptura T-bone 220g",
+            "Ciuperci unt cu usturoi",
+            "Sos de brânză albastră 30g"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 195,
+          "protein": 12,
+          "carbs": 4,
+          "fat": 15,
+          "suggestions": [
+            "Biscuiti din faina de migdale x4",
+            "Crema de branza 30g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 425,
+          "protein": 28,
+          "carbs": 8,
+          "fat": 31,
+          "suggestions": [
+            "Barci cu ouă de avocado x2",
+            "Bacon crocant",
+            "Sos iute"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 570,
+          "protein": 42,
+          "carbs": 8,
+          "fat": 41,
+          "suggestions": [
+            "Salata caprese",
+            "Mozzarella 100g",
+            "Prosciutto 60g",
+            "Busuioc și ulei de măsline"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 640,
+          "protein": 48,
+          "carbs": 10,
+          "fat": 45,
+          "suggestions": [
+            "Cod la cuptor 200g",
+            "Gratin de conopida",
+            "Salata de rucola si parmezan"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 175,
+          "protein": 10,
+          "carbs": 2,
+          "fat": 14,
+          "suggestions": [
+            "Ouă deviled x2",
+            "Panglici de castraveți"
+          ]
+        }
+      ]
+    ],
+    "plant_based": [
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 380,
+          "protein": 14,
+          "carbs": 58,
+          "fat": 10,
+          "suggestions": [
+            "Bol pentru smoothie",
+            "Mix de fructe de padure 100g",
+            "Ovaz 40g",
+            "Seminte de canepa 15g",
+            "Lapte de migdale"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 510,
+          "protein": 20,
+          "carbs": 68,
+          "fat": 14,
+          "suggestions": [
+            "castron Buddha",
+            "Naut 150g",
+            "Quinoa 100 g",
+            "Legume prăjite",
+            "Tahini"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 590,
+          "protein": 24,
+          "carbs": 75,
+          "fat": 16,
+          "suggestions": [
+            "Linte din 300 g",
+            "orez brun 120g",
+            "Naan 40 g",
+            "Chutney de mango"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 150,
+          "protein": 6,
+          "carbs": 20,
+          "fat": 5,
+          "suggestions": [
+            "Felii de mere",
+            "unt de migdale 15 g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 400,
+          "protein": 16,
+          "carbs": 55,
+          "fat": 12,
+          "suggestions": [
+            "Tofu scramble 200g",
+            "Curcuma și spanac",
+            "Pâine prăjită din grâu integral x2",
+            "roșie"
+          ]
+        },
+        {
+          "mealType": "Prânz",
+          "calories": 530,
+          "protein": 22,
+          "carbs": 65,
+          "fat": 15,
+          "suggestions": [
+            "Edamame și castron cu tăiței",
+            "Sos de susan ghimbir",
+            "Castravete",
+            "Nori fâșii"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 600,
+          "protein": 26,
+          "carbs": 72,
+          "fat": 16,
+          "suggestions": [
+            "Tacos cu fasole neagră x2",
+            "Tortila de porumb",
+            "Salsa",
+            "Guac 40g",
+            "Slaw"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 160,
+          "protein": 8,
+          "carbs": 18,
+          "fat": 6,
+          "suggestions": [
+            "Hummus 60 g",
+            "Batoane de morcov și țelină"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 370,
+          "protein": 12,
+          "carbs": 60,
+          "fat": 9,
+          "suggestions": [
+            "Ovăz peste noapte 80 g",
+            "Chia 10g",
+            "Lapte de ovăz",
+            "Prune fierte",
+            "Sirop de arțar"
+          ]
+        },
+        {
+          "mealType": "Prânz",
+          "calories": 520,
+          "protein": 21,
+          "carbs": 66,
+          "fat": 14,
+          "suggestions": [
+            "Supă de mazăre și mentă 400 ml",
+            "felie de aluat",
+            "Topping de semințe mixte"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 580,
+          "protein": 24,
+          "carbs": 70,
+          "fat": 15,
+          "suggestions": [
+            "Risotto cu ciuperci 300g",
+            "Drojdie nutritivă",
+            "Salata de plante proaspete"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 145,
+          "protein": 5,
+          "carbs": 22,
+          "fat": 4,
+          "suggestions": [
+            "curmalele Medjool x2",
+            "Caju 20g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 410,
+          "protein": 18,
+          "carbs": 52,
+          "fat": 13,
+          "suggestions": [
+            "Clatite cu proteine (vegane)",
+            "Fructe de padure 80g",
+            "Iaurt de cocos 100g"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 540,
+          "protein": 23,
+          "carbs": 67,
+          "fat": 15,
+          "suggestions": [
+            "Tempeh prajit 180g",
+            "Taitei Soba 90g",
+            "Sos de arahide",
+            "Germeni de fasole"
+          ]
+        },
+        {
+          "mealType": "Cină",
+          "calories": 595,
+          "protein": 25,
+          "carbs": 73,
+          "fat": 15,
+          "suggestions": [
+            "Jackfruit curry 300g",
+            "Basmati 120g",
+            "Roti 30g",
+            "Lassi de mango (ovăz)"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 155,
+          "protein": 6,
+          "carbs": 21,
+          "fat": 5,
+          "suggestions": [
+            "Trail mix 30 g",
+            "mango uscat 20 g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 390,
+          "protein": 15,
+          "carbs": 57,
+          "fat": 11,
+          "suggestions": [
+            "Chia parfait",
+            "Lapte de cocos",
+            "Fructul pasiunii",
+            "Granola 25 g"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 525,
+          "protein": 22,
+          "carbs": 64,
+          "fat": 15,
+          "suggestions": [
+            "Legume prăjite și feta (pe bază de plante)",
+            "turtă 60g",
+            "Sos cu tahini de lamaie"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 590,
+          "protein": 26,
+          "carbs": 68,
+          "fat": 16,
+          "suggestions": [
+            "Naut tikka masala 300g",
+            "orez brun 110g",
+            "Chutney de coriandru"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 150,
+          "protein": 7,
+          "carbs": 18,
+          "fat": 5,
+          "suggestions": [
+            "Iaurt de soia 150g",
+            "Seminte de in 10g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 420,
+          "protein": 17,
+          "carbs": 54,
+          "fat": 13,
+          "suggestions": [
+            "Pâine prăjită cu avocado x2",
+            "Tofu poșat 80g",
+            "Fulgi de ardei iute",
+            "Lămâie"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 510,
+          "protein": 20,
+          "carbs": 65,
+          "fat": 14,
+          "suggestions": [
+            "Gazpacho 300 ml",
+            "Aluat x1",
+            "Hummus cu ardei prajit 50g"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 600,
+          "protein": 25,
+          "carbs": 74,
+          "fat": 15,
+          "suggestions": [
+            "Parmigiana de vinete (vegan)",
+            "Spaghete 80g",
+            "Pesto de busuioc (vegan)"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 160,
+          "protein": 6,
+          "carbs": 22,
+          "fat": 5,
+          "suggestions": [
+            "Bile energetice x2",
+            "Ovăz și unt de arahide"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Mic dejun",
+          "calories": 400,
+          "protein": 16,
+          "carbs": 55,
+          "fat": 12,
+          "suggestions": [
+            "Smoothie verde 500 ml",
+            "Spanacul",
+            "Proteine din mazăre 25 g",
+            "Mango",
+            "Ghimbir"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 535,
+          "protein": 22,
+          "carbs": 66,
+          "fat": 15,
+          "suggestions": [
+            "Rulouri de hârtie de orez vietnamez x4",
+            "Tofu 100g",
+            "Sos de scufundare cu arahide"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 585,
+          "protein": 24,
+          "carbs": 71,
+          "fat": 15,
+          "suggestions": [
+            "Tofu laksa 350 ml",
+            "Taitei de orez 80g",
+            "Bok choy",
+            "Lime & chilli"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 145,
+          "protein": 5,
+          "carbs": 21,
+          "fat": 4,
+          "suggestions": [
+            "Popcorn 30g",
+            "Stropire de drojdie nutritivă"
+          ]
+        }
+      ]
+    ],
+    "flexible": [
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 400,
+          "protein": 22,
+          "carbs": 46,
+          "fat": 13,
+          "suggestions": [
+            "Ouă orice stil x2",
+            "Toast x2",
+            "Fructe la alegere",
+            "Cafea sau ceai"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 550,
+          "protein": 32,
+          "carbs": 55,
+          "fat": 16,
+          "suggestions": [
+            "Proteine + carbohidrați + legume la alegere (de exemplu, pui + orez + salată)"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 620,
+          "protein": 36,
+          "carbs": 60,
+          "fat": 18,
+          "suggestions": [
+            "Orice farfurie echilibrata: proteine 150g, amidon 120g, 2 portii legume"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 160,
+          "protein": 8,
+          "carbs": 18,
+          "fat": 5,
+          "suggestions": [
+            "Iaurt SAU fructe + nuci SAU tort de orez + unt de nuci"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 380,
+          "protein": 18,
+          "carbs": 50,
+          "fat": 11,
+          "suggestions": [
+            "Smoothie cu pudră de proteine",
+            "Orice fruct ai",
+            "Ovaz sau granola 40g"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 530,
+          "protein": 30,
+          "carbs": 58,
+          "fat": 15,
+          "suggestions": [
+            "Resturi de cină SAU sandviș cu umplutură de proteine",
+            "Salată secundară"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 610,
+          "protein": 34,
+          "carbs": 62,
+          "fat": 17,
+          "suggestions": [
+            "Se prăjește: proteine + legume + tăiței sau orez",
+            "Sos la alegere"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 155,
+          "protein": 7,
+          "carbs": 19,
+          "fat": 5,
+          "suggestions": [
+            "O mână de nuci amestecate",
+            "Bucata de fruct"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 420,
+          "protein": 20,
+          "carbs": 48,
+          "fat": 14,
+          "suggestions": [
+            "Ovăz peste noapte",
+            "iaurt grecesc",
+            "Fructe de pădure",
+            "dragă"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 545,
+          "protein": 31,
+          "carbs": 57,
+          "fat": 16,
+          "suggestions": [
+            "Înveliș cu proteine slabe + salată",
+            "Partea de fructe"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 600,
+          "protein": 33,
+          "carbs": 63,
+          "fat": 16,
+          "suggestions": [
+            "Paste cu sos proteic",
+            "Salată verde mare",
+            "Rulada"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 165,
+          "protein": 8,
+          "carbs": 20,
+          "fat": 5,
+          "suggestions": [
+            "Brânză + biscuiți",
+            "Roșii cherry"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 390,
+          "protein": 19,
+          "carbs": 47,
+          "fat": 12,
+          "suggestions": [
+            "Pâine prăjită cu avocado x2",
+            "Ou orice stil",
+            "Cafea"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 540,
+          "protein": 30,
+          "carbs": 60,
+          "fat": 14,
+          "suggestions": [
+            "Buddha bol: cereale + proteine + legume + dressing"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 615,
+          "protein": 35,
+          "carbs": 61,
+          "fat": 17,
+          "suggestions": [
+            "Proteine la gratar sau la cuptor 180g",
+            "Legume prăjite",
+            "Piure sau orez 120g"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 150,
+          "protein": 6,
+          "carbs": 19,
+          "fat": 5,
+          "suggestions": [
+            "Trail mix 30 g",
+            "SAU iaurt 130g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 410,
+          "protein": 21,
+          "carbs": 45,
+          "fat": 14,
+          "suggestions": [
+            "Clatite proteice x2",
+            "Fructe de pădure",
+            "Sirop de artar 10ml"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 535,
+          "protein": 29,
+          "carbs": 57,
+          "fat": 16,
+          "suggestions": [
+            "Supa + paine",
+            "Sursă de proteine (ou/ton/pui) adăugată"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 600,
+          "protein": 32,
+          "carbs": 64,
+          "fat": 16,
+          "suggestions": [
+            "Curry cu proteine (oricare): 300g + orez 120g + naan 40g"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 160,
+          "protein": 7,
+          "carbs": 20,
+          "fat": 5,
+          "suggestions": [
+            "Tort de orez x2 + unt de nuci 15g"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 400,
+          "protein": 20,
+          "carbs": 48,
+          "fat": 12,
+          "suggestions": [
+            "Cereale (cu conținut ridicat de proteine) + lapte",
+            "Banana",
+            "Cafea neagră"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 545,
+          "protein": 31,
+          "carbs": 58,
+          "fat": 16,
+          "suggestions": [
+            "Bol de salată + topping proteic + cereale",
+            "Dressing la alegere"
+          ]
+        },
+        {
+          "mealType": "Cina",
+          "calories": 610,
+          "protein": 33,
+          "carbs": 63,
+          "fat": 17,
+          "suggestions": [
+            "Pește (sau carne) 180g + cartofi noi 150g + legume verzi"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 155,
+          "protein": 7,
+          "carbs": 19,
+          "fat": 5,
+          "suggestions": [
+            "Ou fiert x1",
+            "Bucata de fruct"
+          ]
+        }
+      ],
+      [
+        {
+          "mealType": "Micul dejun",
+          "calories": 415,
+          "protein": 22,
+          "carbs": 46,
+          "fat": 13,
+          "suggestions": [
+            "Shakshuka x2 ouă",
+            "Pâine Pitta",
+            "Salata de plante proaspete"
+          ]
+        },
+        {
+          "mealType": "Prânzul",
+          "calories": 530,
+          "protein": 28,
+          "carbs": 59,
+          "fat": 15,
+          "suggestions": [
+            "Cartofi copți + umplutură de ton/brânză",
+            "Salată secundară"
+          ]
+        },
+        {
+          "mealType": "Cină",
+          "calories": 605,
+          "protein": 34,
+          "carbs": 61,
+          "fat": 17,
+          "suggestions": [
+            "Tagin (orice proteină) 300g",
+            "Cuscus 100g",
+            "Pâine harissa"
+          ]
+        },
+        {
+          "mealType": "Gustare",
+          "calories": 160,
+          "protein": 7,
+          "carbs": 20,
+          "fat": 5,
+          "suggestions": [
+            "Edamame 80g",
+            "Biscuiti de orez x3"
+          ]
+        }
+      ]
+    ]
+  }
 }

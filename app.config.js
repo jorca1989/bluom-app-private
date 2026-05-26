@@ -13,7 +13,7 @@ export default ({ config }) => {
             name: "Bluom",
             slug: "bolt-expo-nativewind",
             owner: "ggovsaas",
-            version: "1.0.27",
+            version: "1.0.28",
             scheme: "bluom",
             userInterfaceStyle: "automatic",
             runtimeVersion: "1.0.27",
@@ -68,7 +68,7 @@ export default ({ config }) => {
             },
             android: {
                 package: "com.jwfca.bluom",
-                versionCode: 52,
+                versionCode: 53,
                 googleServicesFile: "./google-services.json",
                 splash: {
                     image: "./assets/images/splash.png",

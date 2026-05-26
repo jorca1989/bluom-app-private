@@ -192,8 +192,8 @@
     "weekProgress": "Tydzień {{currentWeek}} z {{totalWeeks}}",
     "upNext": "Następne",
     "exercisesCount": "{{count}} ćwiczeń",
-    "startWorkout": "Rozpocznij trening",
-    "viewWorkout": "Zobacz trening",
+    "startWorkout": "Zacznij Trening",
+    "viewWorkout": "Zobacz Trening",
     "dayPreview": "Dzień {{day}} podgląd",
     "weekOverview": "Przegląd tygodnia",
     "detailInfo": "Dotknij dowolnego ćwiczenia, aby zobaczyć szczegóły. Użytkownicy Pro mogą dodawać lub usuwać ćwiczenia.",
@@ -1124,7 +1124,7 @@
     "dailyBioLog": "Daily Bio Log",
     "moodSynced": "Mood synced from Wellness",
     "energyToday": "Energy today (1–10)",
-    "symptoms": "Symptoms",
+    "symptoms": "Objawy",
     "babyMovement": "Baby movement today (1–10)",
     "hotFlash": "Hot flash severity (1–10)",
     "saveBioLog": "Save Bio Log",
@@ -1279,6 +1279,33 @@
         "perimenopause": "Perimenopause Support",
         "perimenopauseDesc": "Manage symptoms"
       }
+    },
+    "symptomsList": {
+      "breast_tenderness": "Tkliwość piersi",
+      "acne_breakout": "Trądzik",
+      "back_pain": "Ból pleców",
+      "nausea": "Nudności",
+      "insomnia": "Bezsenność",
+      "hot_flashes": "Uderzenia gorąca",
+      "spotting": "Plamienie",
+      "heavy_flow": "Obfite krwawienie",
+      "brain_fog": "Mgła mózgowa",
+      "anxiety": "Niepokój",
+      "food_cravings": "Zachcianki",
+      "joint_pain": "Ból stawów",
+      "discharge_change": "Zmiana wydzieliny",
+      "cramps": "Skurcze",
+      "bloating": "Wzdęcia",
+      "headache": "Ból głowy",
+      "fatigue": "Zmęczenie",
+      "mood_swings": "Wahania nastroju"
+    },
+    "flowOpt": {
+      "none": "Brak",
+      "spotting": "Plamienie",
+      "light": "Lekkie",
+      "medium": "Średnie",
+      "heavy": "Obfite"
     }
   },
   "todo": {
@@ -3741,7 +3768,21 @@
     "addToList": "Add to list",
     "clearMsg": "Remove ${done.length} checked item${done.length > 1 ? ",
     "addedTitle": "Added to Shopping List",
-    "addedMsg": "Added {{created}} new item(s) and merged {{merged}} item(s)."
+    "addedMsg": "Added {{created}} new item(s) and merged {{merged}} item(s).",
+    "categories": {
+      "Produce": "Produce",
+      "Dairy": "Dairy",
+      "Meat": "Meat",
+      "Seafood": "Seafood",
+      "Bakery": "Bakery",
+      "Pantry": "Pantry",
+      "Frozen": "Frozen",
+      "Beverages": "Beverages",
+      "Snacks": "Snacks",
+      "Household": "Household",
+      "Personal Care": "Personal Care",
+      "Other": "Other"
+    }
   },
   "No ingredients": "This recipe has no ingredients to add.",
   "Success": "Exercise logged!"

@@ -50,12 +50,25 @@ interface WomensProfile {
   mainFocus:      string; // 'cycle_health'|'fertility'|'perimenopause'|'energy'|'skin_hormones'|'weight_hormones'
   cycleRegularity:string; // 'regular'|'irregular'|'unknown'
   periodPain:     string; // 'none'|'mild'|'moderate'|'severe'
+  lastPeriodDate: string;
+  conceptionDate: string;
 }
+
+type QuizOption = { value: string; label: string; icon: string };
+type QuizStep = {
+  id: keyof WomensProfile;
+  emoji: string;
+  question: string;
+  options?: QuizOption[];
+  inputType?: 'date';
+  required?: boolean;
+  skipLabel?: string;
+};
 
 // ─────────────────────────────────────────────────────────────
 // MINI QUIZ
 // ─────────────────────────────────────────────────────────────
-const WOMENS_QUIZ = [
+const WOMENS_QUIZ: QuizStep[] = [
   {
     id: 'mainFocus',
     emoji: '🌸',
@@ -102,7 +115,53 @@ const WOMENS_QUIZ = [
       { value: 'other',   label: 'Other method',          icon: '📋' },
     ],
   },
-] as const;
+];
+
+const PREGNANCY_DATE_STEPS: QuizStep[] = [
+  {
+    id: 'lastPeriodDate',
+    emoji: '📅',
+    question: 'Last Menstrual Period (LMP) — When did your last period start?',
+    inputType: 'date',
+    required: true,
+  },
+  {
+    id: 'conceptionDate',
+    emoji: '🤰',
+    question: 'Conception Date — Do you know your exact date of conception?',
+    inputType: 'date',
+    required: false,
+    skipLabel: 'I do not know yet',
+  },
+];
+
+function getWomensQuiz(lifeStage: LifeStage): QuizStep[] {
+  if (lifeStage !== 'pregnancy') return WOMENS_QUIZ;
+  return [
+    WOMENS_QUIZ[0],
+    ...PREGNANCY_DATE_STEPS,
+    WOMENS_QUIZ[3],
+  ];
+}
+
+function maskDateInput(value: string) {
+  const digits = value.replace(/\D/g, '').slice(0, 8);
+  if (digits.length <= 4) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+}
+
+function getDateTimestamp(value?: string) {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const [year, month, day] = value.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (
+    date.getUTCFullYear() !== year
+    || date.getUTCMonth() !== month - 1
+    || date.getUTCDate() !== day
+  ) return null;
+  return date.getTime();
+}
 
 // ─────────────────────────────────────────────────────────────
 // CYCLE LOGIC
@@ -420,9 +479,6 @@ export default function WomensHealthScreen() {
   const [quizAnswers, setQuizAnswers] = useState<Partial<WomensProfile>>({});
   const [profile,     setProfile]     = useState<WomensProfile | null>(null);
 
-  // ── Setup date ──
-  const [setupDate,   setSetupDate]   = useState(today);
-
   // ── Bio-log form ──
   const [energy,       setEnergy]       = useState(5);
   const [symptoms,     setSymptoms]     = useState<string[]>([]);
@@ -492,23 +548,67 @@ export default function WomensHealthScreen() {
   const insights    = useMemo(() => buildInsights(convexUser, profile, phase, t), [convexUser, profile, phase, t]);
   const suppStack   = useMemo(() => getSupplementStack(profile, phase, convexUser, t), [profile, phase, convexUser, t]);
 
-  const needsSetup  = lifeStage === 'cycle' && !convexUser?.lastPeriodDate
-    || lifeStage === 'pregnancy' && !convexUser?.pregnancyStartDate;
+  const quizSteps   = useMemo(() => getWomensQuiz(lifeStage), [lifeStage]);
 
   const score = todayStatus?.score ?? 0;
 
   // ── Quiz handlers ──
+  const finishQuiz = async (updated: Partial<WomensProfile>) => {
+    if (!convexUser?._id) {
+      Alert.alert(t('common.error', 'Error'), t('womensHealth.profileLoading', 'Your profile is still loading. Please try again in a moment.'));
+      return;
+    }
+
+    const p = updated as WomensProfile;
+    setProfile(p);
+
+    const updates: any = { lifeStage };
+    const lmpTimestamp = getDateTimestamp(updated.lastPeriodDate);
+    const conceptionTimestamp = getDateTimestamp(updated.conceptionDate);
+
+    if (lmpTimestamp) updates.lastPeriodDate = lmpTimestamp;
+    if (lifeStage === 'pregnancy') updates.pregnancyStartDate = conceptionTimestamp ?? lmpTimestamp ?? undefined;
+
+    await updateUser({ userId: convexUser._id, updates });
+    await SecureStore.setItemAsync(QUIZ_KEY, JSON.stringify(p));
+
+    setQuizDone(true);
+  };
+
   const handleQuizOption = async (value: string) => {
-    const step    = WOMENS_QUIZ[quizStep];
+    const step    = quizSteps[quizStep];
     const updated = { ...quizAnswers, [step.id]: value };
     setQuizAnswers(updated);
-    if (quizStep < WOMENS_QUIZ.length - 1) {
+    if (quizStep < quizSteps.length - 1) {
       setQuizStep(s => s + 1);
     } else {
-      const p = updated as WomensProfile;
-      setProfile(p);
-      await SecureStore.setItemAsync(QUIZ_KEY, JSON.stringify(p));
-      setQuizDone(true);
+      await finishQuiz(updated);
+    }
+  };
+
+  const handleQuizDateChange = (value: string) => {
+    const step = quizSteps[quizStep];
+    setQuizAnswers(prev => ({ ...prev, [step.id]: maskDateInput(value) }));
+  };
+
+  const handleQuizDateNext = async () => {
+    const step = quizSteps[quizStep];
+    const value = String(quizAnswers[step.id] ?? '');
+
+    if (step.required && !value) {
+      Alert.alert(t('common.required', 'Required'), t('womensHealth.dateRequired', 'Please enter a date before continuing.'));
+      return;
+    }
+
+    if (value && getDateTimestamp(value) === null) {
+      Alert.alert(t('common.invalidDate', 'Invalid date'), t('womensHealth.dateInvalid', 'Use a valid date in YYYY-MM-DD format.'));
+      return;
+    }
+
+    if (quizStep < quizSteps.length - 1) {
+      setQuizStep(s => s + 1);
+    } else {
+      await finishQuiz(quizAnswers);
     }
   };
 
@@ -531,22 +631,15 @@ export default function WomensHealthScreen() {
     } catch { Alert.alert(t('common.error','Erro'), t('womensHealth.saveError','Não foi possível guardar. Tenta novamente.')); }
   };
 
-  // ── Setup date save ──
-  const handleSetupSave = async () => {
-    if (!convexUser?._id) return;
-    const ts: any = {};
-    if (lifeStage === 'cycle')     ts.lastPeriodDate    = new Date(setupDate).getTime();
-    if (lifeStage === 'pregnancy') ts.pregnancyStartDate = new Date(setupDate).getTime();
-    await updateUser({ userId: convexUser._id, updates: { ...ts, lifeStage } });
-  };
-
   // ─────────────────────────────────────────────────────────
   // QUIZ SCREEN
   // ─────────────────────────────────────────────────────────
   if (quizLoading) return <SafeAreaView style={[s.screen, { backgroundColor: themeColors.bg }]} edges={['top']}><ActivityIndicator style={{ flex: 1 }} color="#e11d48" /></SafeAreaView>;
 
   if (!quizDone) {
-    const step = WOMENS_QUIZ[quizStep];
+    const step = quizSteps[quizStep];
+    const isDateStep = step.inputType === 'date';
+    const dateValue = String(quizAnswers[step.id] ?? '');
     return (
       <SafeAreaView style={s.quizScreen} edges={['top', 'bottom']}>
         {/* Header */}
@@ -555,9 +648,9 @@ export default function WomensHealthScreen() {
             <Ionicons name="chevron-back" size={20} color={themeColors.text} />
           </TouchableOpacity>
           <View style={s.quizProgress}>
-            <View style={[s.quizProgressFill, { width: `${((quizStep + 1) / WOMENS_QUIZ.length) * 100}%` as any }]} />
+            <View style={[s.quizProgressFill, { width: `${((quizStep + 1) / quizSteps.length) * 100}%` as any }]} />
           </View>
-          <Text style={s.quizStepNum}>{quizStep + 1}/{WOMENS_QUIZ.length}</Text>
+          <Text style={s.quizStepNum}>{quizStep + 1}/{quizSteps.length}</Text>
         </View>
 
         {quizStep === 0 && (
@@ -587,7 +680,41 @@ export default function WomensHealthScreen() {
           <Text style={s.quizEmoji}>{step.emoji}</Text>
           <Text style={s.quizQuestion}>{t(`womensHealth.quiz.${step.id}.question`, step.question)}</Text>
           <View style={s.quizOptions}>
-            {'options' in step && step.options.map((opt) => (
+            {isDateStep && (
+              <>
+                <View style={s.quizDateOption}>
+                  <Ionicons name="calendar-outline" size={22} color="#e11d48" />
+                  <TextInput
+                    style={s.quizDateInput}
+                    value={dateValue}
+                    onChangeText={handleQuizDateChange}
+                    placeholder="YYYY-MM-DD"
+                    placeholderTextColor={themeColors.textMuted}
+                    keyboardType="number-pad"
+                    maxLength={10}
+                    autoCapitalize="none"
+                  />
+                </View>
+                {step.skipLabel && (
+                  <TouchableOpacity
+                    style={s.quizOption}
+                    onPress={() => {
+                      setQuizAnswers(prev => ({ ...prev, [step.id]: '' }));
+                      setQuizStep(s => s + 1);
+                    }}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={s.quizOptionIcon}>↷</Text>
+                    <Text style={s.quizOptionLabel}>{t(`womensHealth.quiz.${step.id}.skip`, step.skipLabel)}</Text>
+                    <Ionicons name="chevron-forward" size={16} color="#94a3b8" />
+                  </TouchableOpacity>
+                )}
+                <TouchableOpacity style={s.quizNextBtn} onPress={handleQuizDateNext} activeOpacity={0.85}>
+                  <Text style={s.quizNextTxt}>{t('common.next', 'Next')}</Text>
+                </TouchableOpacity>
+              </>
+            )}
+            {!isDateStep && step.options?.map((opt) => (
               <TouchableOpacity key={opt.value} style={s.quizOption} onPress={() => handleQuizOption(opt.value)} activeOpacity={0.8}>
                 <Text style={s.quizOptionIcon}>{opt.icon}</Text>
                 <Text style={s.quizOptionLabel}>{t(`womensHealth.quiz.${step.id}.${opt.value}`, opt.label)}</Text>
@@ -877,20 +1004,6 @@ export default function WomensHealthScreen() {
         {/* ═══════════════ TODAY TAB ═══════════════ */}
         {activeTab === 'today' && (
           <>
-            {/* Setup banner */}
-            {needsSetup && (
-              <View style={s.setupBanner}>
-                <Text style={s.setupTitle}>{lifeStage === 'pregnancy' ? t('womensHealth.setupTitlePreg','👶 Acompanha a tua gravidez') : t('womensHealth.setupTitleCycle','🌸 Desbloqueia os teus insights do ciclo')}</Text>
-                <Text style={s.setupSub}>{lifeStage === 'pregnancy' ? t('womensHealth.setupSubPreg','Quando foi a tua data de conceção?') : t('womensHealth.setupSubCycle','Quando começou o teu último período?')}</Text>
-                <View style={s.setupInputRow}>
-                  <TextInput style={s.setupInput} value={setupDate} onChangeText={setSetupDate} placeholder="YYYY-MM-DD" />
-                  <TouchableOpacity style={s.setupSaveBtn} onPress={handleSetupSave}>
-                    <Text style={s.setupSaveTxt}>{t('common.save','Guardar')}</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
-
             {/* Phase hero card */}
             {phase && (
               <LinearGradient colors={phase.gradient} style={s.phaseHero}>
@@ -1239,6 +1352,10 @@ const createS = (c: ThemeColors) => StyleSheet.create({
   quizOption:   { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: c.surface, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: c.border },
   quizOptionIcon: { fontSize: 22 },
   quizOptionLabel:{ flex: 1, fontSize: 15, fontWeight: '600', color: c.text },
+  quizDateOption: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: c.surface, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 12, borderWidth: 1, borderColor: c.border },
+  quizDateInput: { flex: 1, fontSize: 17, fontWeight: '700', color: c.text, paddingVertical: 6 },
+  quizNextBtn: { backgroundColor: '#e11d48', borderRadius: 16, paddingVertical: 15, alignItems: 'center', marginTop: 4 },
+  quizNextTxt: { color: '#fff', fontSize: 16, fontWeight: '800' },
 
   // Header
   header:     { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 8, backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: c.border },
@@ -1261,15 +1378,6 @@ const createS = (c: ThemeColors) => StyleSheet.create({
 
   sectionTitle: { fontSize: 16, fontWeight: '800', color: c.text, marginBottom: 10 },
   insightsSub:  { fontSize: 13, color: c.textMuted, marginBottom: 14, lineHeight: 19 },
-
-  // Setup banner
-  setupBanner:  { backgroundColor: '#fdf2f8', borderRadius: 18, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: '#fce7f3' },
-  setupTitle:   { fontSize: 16, fontWeight: '800', color: '#9d174d', marginBottom: 4 },
-  setupSub:     { fontSize: 13, color: '#be185d', marginBottom: 12, fontWeight: '500' },
-  setupInputRow:{ flexDirection: 'row', gap: 10 },
-  setupInput:   { flex: 1, backgroundColor: c.surface, borderRadius: 12, borderWidth: 1, borderColor: '#fce7f3', padding: 12, fontSize: 15, color: c.text },
-  setupSaveBtn: { backgroundColor: '#e11d48', borderRadius: 12, paddingHorizontal: 18, justifyContent: 'center' },
-  setupSaveTxt: { color: '#fff', fontWeight: '800', fontSize: 14 },
 
   // Phase hero
   phaseHero:    { borderRadius: 22, padding: 20, marginBottom: 16, overflow: 'hidden' },

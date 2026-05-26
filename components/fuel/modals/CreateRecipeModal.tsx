@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useMutation, useAction, useQuery } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { useTranslation } from 'react-i18next';
@@ -24,8 +24,8 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const createRecipe = useMutation(api.recipes.createRecipe);
-  const upsertExternalFood = useMutation(api.foodCatalog.upsertExternalFood);
-  const matchIngredientLines = useAction(api.externalFoods.matchIngredientLines);
+  // External food persistence removed — all foods now come from local customFoods database
+  const searchLocalFoods = useQuery(api.customFoods.searchLocalFoods, { query: 'a', limit: 200 });
 
   const [step, setStep] = useState(1);
   const [recipeForm, setRecipeForm] = useState({ name: '', servings: 1 });
@@ -62,8 +62,31 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
     setMatchingLoading(true);
     const lines = bulkIngredients.split('\n').map((l) => l.trim()).filter(Boolean);
     try {
-      const matches = await matchIngredientLines({ userId, lines });
-      setMatchedIngredients(matches);
+      // Match each line against local food database
+      const matched = lines.map((line) => {
+        const lowerLine = line.toLowerCase();
+        const found = (searchLocalFoods ?? []).find((f: any) => {
+          const name = typeof f.name === 'object' ? (f.name.en || '').toLowerCase() : (f.name || '').toLowerCase();
+          return name.includes(lowerLine) || lowerLine.includes(name);
+        });
+        if (found) {
+          return {
+            name: typeof found.name === 'object' ? found.name.en : found.name,
+            original: line,
+            calories: found.macros?.calories ?? 0,
+            protein: found.macros?.protein ?? 0,
+            carbs: found.macros?.carbs ?? 0,
+            fat: found.macros?.fat ?? 0,
+            servingSize: found.servingSize ?? '100g',
+            quantity: 1,
+            unit: 'g',
+            _id: found._id,
+            unmatched: false,
+          };
+        }
+        return { name: line, original: line, unmatched: true, quantity: 1, unit: 'g' };
+      });
+      setMatchedIngredients(matched);
     } catch {
       setMatchedIngredients(lines.map((l) => ({ name: l, unmatched: true, quantity: 1, unit: 'g' })));
     } finally {
@@ -88,10 +111,22 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
 
   const handleManualSearch = async (idx: number, query: string) => {
     try {
-      const matches = await matchIngredientLines({ userId, lines: [query] });
-      const first = matches?.[0];
-      if (first && !first.unmatched) {
-        updateMatchedIngredient(idx, { ...first, unmatched: false });
+      const lowerQ = query.toLowerCase();
+      const found = (searchLocalFoods ?? []).find((f: any) => {
+        const name = typeof f.name === 'object' ? (f.name.en || '').toLowerCase() : (f.name || '').toLowerCase();
+        return name.includes(lowerQ) || lowerQ.includes(name);
+      });
+      if (found) {
+        updateMatchedIngredient(idx, {
+          name: typeof found.name === 'object' ? found.name.en : found.name,
+          calories: found.macros?.calories ?? 0,
+          protein: found.macros?.protein ?? 0,
+          carbs: found.macros?.carbs ?? 0,
+          fat: found.macros?.fat ?? 0,
+          servingSize: found.servingSize ?? '100g',
+          _id: found._id,
+          unmatched: false,
+        });
       } else {
         updateMatchedIngredient(idx, { name: query, unmatched: true });
       }
@@ -155,29 +190,12 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
   const handleSaveRecipe = async () => {
     setSaveLoading(true);
     try {
-      const withPersisted = [];
-      for (const ing of matchedIngredients) {
-        if (ing?.kind === 'external' && ing?.externalId && ing?.source) {
-          const savedId = await upsertExternalFood({
-            userId,
-            source: String(ing.source),
-            externalId: String(ing.externalId),
-            name: String(ing.name ?? 'Food'),
-            brand: ing.brand ?? undefined,
-            barcode: ing.barcode ?? undefined,
-            servingSize: String(ing.servingSize ?? '100g'),
-            calories: Number(ing.calories ?? 0),
-            protein: Number(ing.protein ?? 0),
-            carbs: Number(ing.carbs ?? 0),
-            fat: Number(ing.fat ?? 0),
-          });
-          withPersisted.push({ ...ing, foodId: String(savedId) });
-        } else if (ing?._id) {
-          withPersisted.push({ ...ing, foodId: String(ing._id) });
-        } else {
-          withPersisted.push(ing);
+      const withPersisted = matchedIngredients.map((ing) => {
+        if (ing?._id) {
+          return { ...ing, foodId: String(ing._id) };
         }
-      }
+        return ing;
+      });
 
       const totalMacros = calculateMacros(withPersisted);
       const servings = recipeForm.servings || 1;

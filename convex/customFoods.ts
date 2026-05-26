@@ -91,3 +91,76 @@ export const logFood = mutation({
 });
 
 // External search removed in favor of local "Golden List" strategy.
+
+// ─── Admin CRUD ──────────────────────────────────────────────────────────────
+
+/** List all custom foods with pagination (admin panel). */
+export const listAll = query({
+    args: {
+        limit: v.optional(v.number()),
+        cursor: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const limit = args.limit || 50;
+        const result = await ctx.db.query("customFoods").order("desc").paginate({
+            numItems: limit,
+            cursor: args.cursor ? (args.cursor as any) : null,
+        });
+        return result;
+    },
+});
+
+/** Total count of foods in the database. */
+export const getCount = query({
+    args: {},
+    handler: async (ctx) => {
+        const all = await ctx.db.query("customFoods").collect();
+        return all.length;
+    },
+});
+
+/** Update an existing custom food (admin). */
+export const updateFood = mutation({
+    args: {
+        id: v.id("customFoods"),
+        updates: v.object({
+            name: v.optional(v.object({
+                en: v.string(),
+                pt: v.optional(v.string()),
+                es: v.optional(v.string()),
+                nl: v.optional(v.string()),
+                de: v.optional(v.string()),
+                fr: v.optional(v.string()),
+            })),
+            macros: v.optional(v.object({
+                calories: v.float64(),
+                fat: v.float64(),
+                protein: v.float64(),
+                carbs: v.float64(),
+                fiber: v.float64(),
+            })),
+            isVerified: v.optional(v.boolean()),
+            barcode: v.optional(v.string()),
+            brand: v.optional(v.string()),
+            servingSize: v.optional(v.string()),
+        }),
+    },
+    handler: async (ctx, args) => {
+        const existing = await ctx.db.get(args.id);
+        if (!existing) throw new Error("Food not found");
+
+        const patch: any = { ...args.updates };
+        if (patch.name) {
+            patch.searchName = (patch.name.en || "").toLowerCase();
+        }
+        await ctx.db.patch(args.id, patch);
+    },
+});
+
+/** Delete a custom food (admin). */
+export const deleteFood = mutation({
+    args: { id: v.id("customFoods") },
+    handler: async (ctx, args) => {
+        await ctx.db.delete(args.id);
+    },
+});

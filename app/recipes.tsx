@@ -586,7 +586,8 @@ export default function RecipesScreen() {
                       }
                       if (!isPro) { setShowUpgrade(true); return; }
                       const itemsToPush = localShoppingListItems.length > 0 ? localShoppingListItems : localIngredients;
-                      if (itemsToPush.length === 0) {
+                      const translatedItemsToPush = itemsToPush.map(item => t(`db.${item.replace(/\\s+/g, '')}`, item) as string);
+                      if (translatedItemsToPush.length === 0) {
                         Alert.alert('No ingredients', 'This recipe has no ingredients to add.');
                         return;
                       }
@@ -595,7 +596,7 @@ export default function RecipesScreen() {
                         const res = await addRecipeIngredients({
                           userId: convexUser._id,
                           recipeId: selectedRecipe._id,
-                          ingredients: itemsToPush,
+                          ingredients: translatedItemsToPush,
                         });
                         Alert.alert(
                           t('shopping.addedTitle', 'Added to Shopping List'),

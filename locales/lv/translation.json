@@ -1827,8 +1827,8 @@
     "dailyBioLog": "Registo Bio Diário",
     "moodSynced": "Humor sincronizado do Wellness",
     "energyToday": "Energia hoje (1–10)",
-    "symptoms": "Sintomas",
-    "flow": "Fluxo",
+    "symptoms": "Simptomi",
+    "flow": "Asiņošana",
     "babyMovement": "Movimento do bebé hoje (1–10)",
     "hotFlash": "Intensidade dos afrontamentos (1–10)",
     "saveBioLog": "Guardar Bio-Registo",
@@ -2013,6 +2013,33 @@
         "perimenopause": "Perimenopause Support",
         "perimenopauseDesc": "Manage symptoms"
       }
+    },
+    "symptomsList": {
+      "breast_tenderness": "Krūšu jutīgums",
+      "acne_breakout": "Pūtītes",
+      "back_pain": "Muguras sāpes",
+      "nausea": "Slikta dūša",
+      "insomnia": "Bezmiegs",
+      "hot_flashes": "Karstuma viļņi",
+      "spotting": "Smērēšanās",
+      "heavy_flow": "Stipra asiņošana",
+      "brain_fog": "Prāta migla",
+      "anxiety": "Trauksme",
+      "food_cravings": "Kāre pēc ēdiena",
+      "joint_pain": "Locītavu sāpes",
+      "discharge_change": "Izmaiņas izdalījumos",
+      "cramps": "Krampji",
+      "bloating": "Vēdera uzpūšanās",
+      "headache": "Galvassāpes",
+      "fatigue": "Nogurums",
+      "mood_swings": "Garastāvokļa maiņas"
+    },
+    "flowOpt": {
+      "none": "Nav",
+      "spotting": "Smērēšanās",
+      "light": "Viegla",
+      "medium": "Vidēja",
+      "heavy": "Stipra"
     }
   },
   "move": {
@@ -2115,10 +2142,10 @@
     "daysPerWeekText": "{{days}} days/week",
     "weekOfTotal": "Week {{current}} of {{total}}",
     "weekProgress": "Week {{currentWeek}} of {{totalWeeks}}",
-    "upNext": "Up Next",
-    "exercisesCount": "{{count}} exercises",
-    "startWorkout": "Start Workout",
-    "viewWorkout": "View Workout",
+    "upNext": "Nākamais",
+    "exercisesCount": "{{count}} vingrinājumi",
+    "startWorkout": "Sākt Treniņu",
+    "viewWorkout": "Skatīt Treniņu",
     "noVideoAvailable": "No video available",
     "instructions": "Instructions",
     "muscles": "Muscles",
@@ -3781,7 +3808,21 @@
     "addToList": "Add to list",
     "clearMsg": "Remove ${done.length} checked item${done.length > 1 ? ",
     "addedTitle": "Added to Shopping List",
-    "addedMsg": "Added {{created}} new item(s) and merged {{merged}} item(s)."
+    "addedMsg": "Added {{created}} new item(s) and merged {{merged}} item(s).",
+    "categories": {
+      "Produce": "Produce",
+      "Dairy": "Dairy",
+      "Meat": "Meat",
+      "Seafood": "Seafood",
+      "Bakery": "Bakery",
+      "Pantry": "Pantry",
+      "Frozen": "Frozen",
+      "Beverages": "Beverages",
+      "Snacks": "Snacks",
+      "Household": "Household",
+      "Personal Care": "Personal Care",
+      "Other": "Other"
+    }
   },
   "No ingredients": "This recipe has no ingredients to add.",
   "Success": "Exercise logged!"

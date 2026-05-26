@@ -1,19 +1,6 @@
-import React, { useRef, useCallback, useState, useEffect, useMemo } from 'react';
-import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
-
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Dimensions,
-  TouchableOpacity,
-} from 'react-native';
-
-const { width } = Dimensions.get('window');
-const ITEM_HEIGHT = 52;
-const VISIBLE_ITEMS = 5;
-const RULER_HEIGHT = ITEM_HEIGHT * VISIBLE_ITEMS;
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { useTheme, THEMES } from '@/context/ThemeContext';
 
 interface HeightRulerProps {
   units: 'cm' | 'ft';
@@ -22,165 +9,94 @@ interface HeightRulerProps {
 }
 
 export default function HeightRuler({ units, initialValue, onValueChange }: HeightRulerProps) {
-  const { colors: themeColors } = useTheme();
-  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
-  const values = React.useMemo(() => {
-    if (units === 'cm') {
-      const vals: number[] = [];
-      for (let i = 120; i <= 220; i++) vals.push(i);
-      return vals;
-    } else {
-      const vals: number[] = [];
-      for (let totalInches = 48; totalInches <= 84; totalInches++) vals.push(totalInches);
-      return vals;
-    }
-  }, [units]);
+  const { colors } = useTheme();
+  
+  const [cmValue, setCmValue] = useState(units === 'cm' ? String(initialValue || 170) : String(Math.round((initialValue || 5.7) * 30.48)));
+  const [ftValue, setFtValue] = useState(units === 'ft' ? String(Math.floor(initialValue || 5.7)) : String(Math.floor((initialValue || 170) / 30.48)));
+  const [inValue, setInValue] = useState(units === 'ft' ? String(Math.round(((initialValue || 5.7) - Math.floor(initialValue || 5.7)) * 10)) : String(Math.round(((initialValue || 170) / 30.48 - Math.floor((initialValue || 170) / 30.48)) * 12)));
 
-  const getInitialIndex = useCallback(() => {
-    if (units === 'cm') {
-      const target = initialValue || 170;
-      const idx = values.indexOf(target);
-      return Math.max(0, idx >= 0 ? idx : values.indexOf(170));
-    } else {
-      const ftVal = initialValue || 5.7;
-      const feet = Math.floor(ftVal);
-      const inches = Math.round((ftVal - feet) * 10);
-      const totalInches = feet * 12 + inches;
-      const idx = values.indexOf(totalInches);
-      return Math.max(0, idx >= 0 ? idx : 20);
-    }
-  }, [units, initialValue, values]);
-
-  const scrollRef = useRef<ScrollView>(null);
-  const [selectedIndex, setSelectedIndex] = useState(getInitialIndex());
-  const suppressCallbackRef = useRef(true);
-
-  const formatValue = (val: number): string => {
-    if (units === 'cm') return `${val} cm`;
-    const feet = Math.floor(val / 12);
-    const inches = val % 12;
-    return `${feet}'${inches}"`;
-  };
-
-  const getOutputValue = useCallback((val: number): number => {
-    if (units === 'cm') return val;
-    return Math.round(val * 2.54);
-  }, [units]);
-
-  // Scroll to initial/reset position when units change
   useEffect(() => {
-    const idx = getInitialIndex();
-    setSelectedIndex(idx);
-    suppressCallbackRef.current = true;
-    onValueChange(getOutputValue(values[idx]));
-    setTimeout(() => {
-      scrollRef.current?.scrollTo({ y: idx * ITEM_HEIGHT, animated: false });
-      setTimeout(() => { suppressCallbackRef.current = false; }, 300);
-    }, 100);
-  }, [units]);
-
-  const handleScrollEnd = useCallback((event: any) => {
-    const y = event.nativeEvent.contentOffset.y;
-    const index = Math.round(y / ITEM_HEIGHT);
-    const clampedIndex = Math.max(0, Math.min(index, values.length - 1));
-    setSelectedIndex(clampedIndex);
-    if (!suppressCallbackRef.current) {
-      onValueChange(getOutputValue(values[clampedIndex]));
+    if (units === 'cm') {
+      const parsed = parseInt(cmValue, 10);
+      if (!isNaN(parsed) && parsed > 0) {
+        onValueChange(parsed);
+      }
+    } else {
+      const f = parseInt(ftValue, 10) || 0;
+      const i = parseInt(inValue, 10) || 0;
+      if (f > 0) {
+        const totalInches = f * 12 + i;
+        onValueChange(totalInches * 2.54);
+      }
     }
-  }, [values, onValueChange, getOutputValue]);
-
-  const handleTapItem = useCallback((index: number) => {
-    scrollRef.current?.scrollTo({ y: index * ITEM_HEIGHT, animated: true });
-    setSelectedIndex(index);
-    onValueChange(getOutputValue(values[index]));
-  }, [values, onValueChange, getOutputValue]);
-
-  const paddingItems = Math.floor(VISIBLE_ITEMS / 2);
+  }, [cmValue, ftValue, inValue, units, onValueChange]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.currentValue}>{formatValue(values[selectedIndex])}</Text>
-
-      <View style={styles.rulerContainer}>
-        <View style={styles.centerLine} />
-
-        <ScrollView
-          ref={scrollRef}
-          showsVerticalScrollIndicator={false}
-          snapToInterval={ITEM_HEIGHT}
-          decelerationRate="fast"
-          onMomentumScrollEnd={handleScrollEnd}
-          onScrollEndDrag={handleScrollEnd}
-          nestedScrollEnabled={true}
-          contentContainerStyle={{ paddingVertical: paddingItems * ITEM_HEIGHT }}
-        >
-          {values.map((item, index) => {
-            const distance = Math.abs(index - selectedIndex);
-            const isSelected = distance === 0;
-            const opacity = isSelected ? 1 : distance === 1 ? 0.6 : 0.3;
-            const scale = isSelected ? 1.15 : distance === 1 ? 1 : 0.85;
-
-            return (
-              <TouchableOpacity
-                key={item}
-                style={[styles.rulerItem, { height: ITEM_HEIGHT }]}
-                onPress={() => handleTapItem(index)}
-                activeOpacity={0.6}
-              >
-                <Text
-                  style={[
-                    styles.rulerText,
-                    {
-                      opacity,
-                      fontSize: 18 * scale,
-                      fontWeight: isSelected ? '800' : '400',
-                      color: isSelected ? '#2563eb' : '#94a3b8',
-                    },
-                  ]}
-                >
-                  {formatValue(item)}
-                </Text>
-                <View style={styles.tickContainer}>
-                  <View
-                    style={[
-                      styles.tick,
-                      {
-                        width: isSelected ? 40 : item % 5 === 0 ? 24 : 12,
-                        backgroundColor: isSelected ? '#2563eb' : '#cbd5e1',
-                        height: isSelected ? 3 : 2,
-                      },
-                    ]}
-                  />
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
-
-      <Text style={styles.helperText}>Desliza ou toca para selecionar</Text>
+      {units === 'cm' ? (
+        <View style={styles.inputWrapper}>
+          <TextInput
+            style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+            keyboardType="number-pad"
+            value={cmValue}
+            onChangeText={setCmValue}
+            maxLength={3}
+          />
+          <Text style={[styles.unitText, { color: colors.textMuted }]}>cm</Text>
+        </View>
+      ) : (
+        <View style={styles.row}>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+              keyboardType="number-pad"
+              value={ftValue}
+              onChangeText={setFtValue}
+              maxLength={1}
+            />
+            <Text style={[styles.unitText, { color: colors.textMuted }]}>ft</Text>
+          </View>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+              keyboardType="number-pad"
+              value={inValue}
+              onChangeText={setInValue}
+              maxLength={2}
+            />
+            <Text style={[styles.unitText, { color: colors.textMuted }]}>in</Text>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
 
-const createStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { alignItems: 'center', paddingVertical: 12 },
-  currentValue: { fontSize: 36, fontWeight: '900', color: c.text, marginBottom: 12 },
-  rulerContainer: { height: RULER_HEIGHT, width: width * 0.75, overflow: 'hidden', position: 'relative' },
-  centerLine: {
-    position: 'absolute',
-    top: (RULER_HEIGHT - ITEM_HEIGHT) / 2,
-    left: 0, right: 0,
-    height: ITEM_HEIGHT,
-    backgroundColor: '#eff6ff',
-    borderRadius: 12, borderWidth: 2, borderColor: '#2563eb',
-    zIndex: -1,
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    paddingVertical: 24,
   },
-  rulerItem: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
-  rulerText: { flex: 1, textAlign: 'center' },
-  tickContainer: { width: 50, alignItems: 'flex-end' },
-  tick: { borderRadius: 2 },
-  helperText: { marginTop: 8, fontSize: 13, color: c.textMuted, fontWeight: '500' },
+  row: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 8,
+  },
+  input: {
+    fontSize: 48,
+    fontWeight: '900',
+    minWidth: 90,
+    textAlign: 'center',
+    borderBottomWidth: 2,
+    paddingBottom: 4,
+  },
+  unitText: {
+    fontSize: 24,
+    fontWeight: '700',
+  },
 });
-// Static module-scope fallbacks (default theme) for helper components.
-const styles = createStyles(THEMES.default.colors);
+

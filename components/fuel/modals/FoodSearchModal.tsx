@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { useTranslation } from 'react-i18next';
-import { useAction, useQuery } from 'convex/react';
+import { useQuery } from 'convex/react';
 
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
@@ -39,60 +39,29 @@ export default function FoodSearchModal({
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<'search' | 'recipes' | 'create'>(initialTab);
   const [searchQuery, setSearchQuery] = useState('');
-  
-  const searchFoods = useAction(api.externalFoods.searchFoods);
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+
+  const searchResults = useQuery(
+    api.customFoods.searchLocalFoods,
+    debouncedQuery ? { query: debouncedQuery, limit: 30 } : 'skip'
+  );
+  const searchLoading = debouncedQuery.length > 0 && searchResults === undefined;
   const myRecipes = useQuery(api.recipes.getMyRecipes, { userId });
   const { t, i18n } = useTranslation();
 
   useEffect(() => {
     if (visible) setActiveTab(initialTab);
-    // Reset search state when opened
     if (visible && initialTab === 'search') {
       setSearchQuery('');
-      setSearchResults([]);
-      setSearchError(null);
-      setSearchLoading(false);
+      setDebouncedQuery('');
     }
   }, [initialTab, visible]);
 
+  // Debounce search input
   useEffect(() => {
-    if (!visible) return;
-    if (activeTab !== 'search') return;
-    const q = searchQuery.trim();
-    if (!q) {
-      setSearchResults([]);
-      setSearchError(null);
-      setSearchLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-    setSearchLoading(true);
-    setSearchError(null);
-
-    const handle = setTimeout(async () => {
-      try {
-        const targetLang = i18n.language === 'pt' ? 'Portuguese' : 'English';
-        const results = await searchFoods({ userId, query: q, limit: 30, targetLang });
-        if (!cancelled) setSearchResults(Array.isArray(results) ? results : []);
-      } catch (e: any) {
-        if (!cancelled) {
-          setSearchResults([]);
-          setSearchError(e?.message ? String(e.message) : 'Search failed. Please try again.');
-        }
-      } finally {
-        if (!cancelled) setSearchLoading(false);
-      }
-    }, 350);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(handle);
-    };
-  }, [activeTab, searchFoods, searchQuery, userId, visible, i18n.language]);
+    const handle = setTimeout(() => setDebouncedQuery(searchQuery.trim()), 350);
+    return () => clearTimeout(handle);
+  }, [searchQuery]);
 
   const handleSearchSubmit = () => {
     // Queries are reactive, so we don't strictly *need* to submit unless handling local state
@@ -179,13 +148,7 @@ export default function FoodSearchModal({
                 <View style={styles.loadingState}>
                   <ActivityIndicator size="large" color="#3b82f6" />
                 </View>
-              ) : searchError ? (
-                <View style={styles.emptyState}>
-                  <Ionicons name="alert-circle-outline" size={48} color="#e2e8f0" />
-                  <Text style={styles.emptyText}>{t('modals.search.searchFailed', 'Search failed')}</Text>
-                  <Text style={styles.emptySub}>{searchError}</Text>
-                </View>
-              ) : searchResults.length === 0 ? (
+              ) : (searchResults ?? []).length === 0 ? (
                 <View style={styles.emptyState}>
                   <Ionicons name="search-outline" size={48} color="#e2e8f0" />
                   <Text style={styles.emptyText}>{t('modals.search.noFoods', 'No foods found')}</Text>
@@ -193,33 +156,27 @@ export default function FoodSearchModal({
                 </View>
               ) : (
                 <FlatList
-                  data={searchResults}
-                  keyExtractor={(item) =>
-                    item?.kind === 'external'
-                      ? `${String(item.source)}:${String(item.externalId)}`
-                      : String(item._id)
-                  }
+                  data={searchResults ?? []}
+                  keyExtractor={(item) => String(item._id)}
                   showsVerticalScrollIndicator={false}
                   contentContainerStyle={styles.listContent}
                   renderItem={({ item }) => (
                     <TouchableOpacity style={styles.listItem} onPress={() => onLogFood(item)} activeOpacity={0.7}>
                       <View style={styles.listIconWrap}>
-                        <Text style={styles.listIconEmoji}>{getFoodEmoji(item.name)}</Text>
+                        <Text style={styles.listIconEmoji}>{getFoodEmoji(typeof item.name === 'object' ? (item.name as any).en || '' : item.name)}</Text>
                       </View>
                       <View style={styles.listBody}>
-                        <Text style={styles.listTitle} numberOfLines={1}>{item.name}</Text>
+                        <Text style={styles.listTitle} numberOfLines={1}>{typeof item.name === 'object' ? (item.name as any).en || 'Food' : item.name}</Text>
                         <Text style={styles.listSub} numberOfLines={1}>
-                          {item.brand ? `${item.brand} • ` : ''}{item.servingSize}
+                          {item.brand ? `${item.brand} • ` : ''}{item.servingSize ?? '100g'}
                         </Text>
                       </View>
                       <View style={styles.listRight}>
-                        <Text style={styles.listCal}>{Math.round(item.calories)}</Text>
+                        <Text style={styles.listCal}>{Math.round(item.macros?.calories ?? 0)}</Text>
                         <Text style={styles.listCalUnit}>kcal</Text>
                         <View style={styles.sourcePill}>
                           <Text style={styles.sourceText}>
-                            {item?.kind === 'external'
-                              ? String(item.source ?? '').toUpperCase()
-                              : t('modals.search.saved', 'SAVED')}
+                            {item.isVerified ? '✓ VERIFIED' : t('modals.search.saved', 'SAVED')}
                           </Text>
                         </View>
                       </View>

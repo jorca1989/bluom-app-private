@@ -444,13 +444,13 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   heroHeadline: {
     fontSize: 40,
     fontWeight: '900',
-    color: c.scheme === 'dark' ? '#ffffff' : '#1e293b',
+    color: '#ffffff',
     lineHeight: 44,
     marginBottom: 10,
   },
   heroSub: {
     fontSize: 15,
-    color: c.scheme === 'dark' ? 'rgba(255,255,255,0.7)' : '#334155',
+    color: 'rgba(255,255,255,0.85)',
     lineHeight: 22,
   },
 
