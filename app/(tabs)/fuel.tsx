@@ -85,7 +85,12 @@ const FUEL_WIDGETS_KEY = 'bluom_fuel_widgets_v1';
 
 export default function FuelScreen() {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language || 'en';
+  const getLocalizedFoodName = (nameField: any) => {
+    if (typeof nameField !== 'object' || nameField === null) return nameField || 'Food';
+    return nameField[currentLang] || nameField.en || Object.values(nameField)[0] || 'Food';
+  };
   const params = useLocalSearchParams();
   const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();
@@ -285,7 +290,7 @@ export default function FuelScreen() {
     await logFoodEntry({
       userId: convexUser._id,
       foodId: persistedFoodId,
-      foodName: typeof food.name === 'string' ? food.name : (food.name?.en || 'Food'),
+      foodName: getLocalizedFoodName(food.name),
       calories, protein, carbs, fat,
       servingSize: food.servingSize ?? '1 serving',
       mealType: toMealTypeLower(meal),
@@ -294,7 +299,7 @@ export default function FuelScreen() {
 
     triggerSound(SoundEffect.LOG_MEAL);
     setShowFoodSearch(false);
-  }, [convexUser, dateEntries, upsertExternalFood, logFoodEntry, selectedDate, router]);
+  }, [convexUser, dateEntries, upsertExternalFood, logFoodEntry, selectedDate, router, i18n.language]);
 
   async function handleAddWater(ozAmount: number) {
     if (!convexUser?._id) return;
@@ -671,7 +676,7 @@ export default function FuelScreen() {
           await logFoodEntry({
             userId: convexUser._id,
             foodId: isRecipe ? undefined : logRecipe._id || logRecipe.externalId,
-            foodName: logRecipe.name || logRecipe.title,
+            foodName: getLocalizedFoodName(logRecipe.name) || logRecipe.title,
             calories: (perServing.calories ?? 0) * logQuantity,
             protein: (perServing.protein ?? 0) * logQuantity,
             carbs: (perServing.carbs ?? 0) * logQuantity,

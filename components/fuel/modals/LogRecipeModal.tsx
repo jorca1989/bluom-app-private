@@ -36,7 +36,13 @@ export default function LogRecipeModal({
   const { colors: themeColors } = useTheme();
   const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language || 'en';
+  const getLocalizedName = (nameField: any) => {
+    if (typeof nameField !== 'object' || nameField === null) return nameField || 'Food';
+    return nameField[currentLang] || nameField.en || Object.values(nameField)[0] || 'Food';
+  };
+
   if (!visible || !recipe) return null;
 
   const perServing = recipe.nutrition?.perServing || recipe.nutrition || {
@@ -68,7 +74,7 @@ export default function LogRecipeModal({
           ) : (
             <View style={styles.body}>
               <View style={styles.recipeCard}>
-                <Text style={styles.recipeName}>{recipe.title || recipe.name}</Text>
+                <Text style={styles.recipeName}>{recipe.title || getLocalizedName(recipe.name)}</Text>
                 <View style={styles.macrosRow}>
                    <View style={styles.macroPill}>
                       <Text style={styles.macroPillTxt}>🔥 {Math.round(perServing.calories)} kcal</Text>

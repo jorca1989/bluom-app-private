@@ -12,32 +12,41 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 
+import { useTranslation } from 'react-i18next';
+
 // ─── Memoized search result row ─────────────────────────────
-const SearchResultItem = React.memo(({ food, onAdd }: { food: any; onAdd: () => void }) => (
-    <TouchableOpacity style={styles.foodItem} onPress={onAdd}>
-        {food.thumbnail ? (
-            <Image source={{ uri: food.thumbnail }} style={styles.foodItemThumbnail} />
-        ) : (
-            <View style={styles.foodItemThumbnailPlaceholder}>
-                <Ionicons name="nutrition" size={20} color="#94a3b8" />
+const SearchResultItem = React.memo(({ food, onAdd }: { food: any; onAdd: () => void }) => {
+    const { i18n } = useTranslation();
+    const currentLang = i18n.language || 'en';
+    const getLocalizedName = (nameField: any) => {
+        if (typeof nameField !== 'object' || nameField === null) return nameField || 'Food';
+        return nameField[currentLang] || nameField.en || Object.values(nameField)[0] || 'Food';
+    };
+
+    return (
+        <TouchableOpacity style={styles.foodItem} onPress={onAdd}>
+            {food.thumbnail ? (
+                <Image source={{ uri: food.thumbnail }} style={styles.foodItemThumbnail} />
+            ) : (
+                <View style={styles.foodItemThumbnailPlaceholder}>
+                    <Ionicons name="nutrition" size={20} color="#94a3b8" />
+                </View>
+            )}
+            <View style={styles.foodItemContent}>
+                <Text style={styles.foodItemName}>
+                    {getLocalizedName(food.name)}
+                </Text>
+                <Text style={styles.foodItemBrand}>{food.brand ?? '—'} • {food.servingSize ?? '100g'}</Text>
+                <Text style={styles.foodItemNutrition}>
+                    {Math.round(food.macros?.calories ?? food.calories ?? 0)} cal • {Math.round(food.macros?.protein ?? food.protein ?? 0)}g protein • {Math.round(food.macros?.carbs ?? food.carbs ?? 0)}g carbs • {Math.round(food.macros?.fat ?? food.fat ?? 0)}g fat
+                </Text>
             </View>
-        )}
-        <View style={styles.foodItemContent}>
-            <Text style={styles.foodItemName}>
-                {typeof food.name === 'object'
-                    ? (food.name as any).en || 'Food'
-                    : food.name}
-            </Text>
-            <Text style={styles.foodItemBrand}>{food.brand ?? '—'} • {food.servingSize ?? '100g'}</Text>
-            <Text style={styles.foodItemNutrition}>
-                {Math.round(food.macros?.calories ?? food.calories ?? 0)} cal • {Math.round(food.macros?.protein ?? food.protein ?? 0)}g protein • {Math.round(food.macros?.carbs ?? food.carbs ?? 0)}g carbs • {Math.round(food.macros?.fat ?? food.fat ?? 0)}g fat
-            </Text>
-        </View>
-        <View style={styles.foodItemAdd}>
-            <Ionicons name="add-circle" size={24} color="#3b82f6" />
-        </View>
-    </TouchableOpacity>
-));
+            <View style={styles.foodItemAdd}>
+                <Ionicons name="add-circle" size={24} color="#3b82f6" />
+            </View>
+        </TouchableOpacity>
+    );
+});
 
 // ─── Props ──────────────────────────────────────────────────
 interface FoodSearchSectionProps {

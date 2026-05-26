@@ -48,6 +48,11 @@ export default function FoodSearchModal({
   const searchLoading = debouncedQuery.length > 0 && searchResults === undefined;
   const myRecipes = useQuery(api.recipes.getMyRecipes, { userId });
   const { t, i18n } = useTranslation();
+  const currentLang = i18n.language || 'en';
+  const getLocalizedName = (nameField: any) => {
+    if (typeof nameField !== 'object' || nameField === null) return nameField || 'Food';
+    return nameField[currentLang] || nameField.en || Object.values(nameField)[0] || 'Food';
+  };
 
   useEffect(() => {
     if (visible) setActiveTab(initialTab);
@@ -166,11 +171,11 @@ export default function FoodSearchModal({
                         {item.thumbnail ? (
                           <Image source={{ uri: item.thumbnail }} style={styles.listIconImage} />
                         ) : (
-                          <Text style={styles.listIconEmoji}>{getFoodEmoji(typeof item.name === 'object' ? (item.name as any).en || '' : item.name)}</Text>
+                          <Text style={styles.listIconEmoji}>{getFoodEmoji(getLocalizedName(item.name))}</Text>
                         )}
                       </View>
                       <View style={styles.listBody}>
-                        <Text style={styles.listTitle} numberOfLines={1}>{typeof item.name === 'object' ? (item.name as any).en || 'Food' : item.name}</Text>
+                        <Text style={styles.listTitle} numberOfLines={1}>{getLocalizedName(item.name)}</Text>
                         <Text style={styles.listSub} numberOfLines={1}>
                           {item.brand ? `${item.brand} • ` : ''}{item.servingSize ?? '100g'}
                         </Text>
