@@ -3191,43 +3191,43 @@
   },
   "pillReminder": {
     "title": "Medisinpåminnelse",
-    "tracker": "Medisinoversikt",
+    "tracker": "Medisinsporer",
     "today": "I dag",
     "calendar": "Kalender",
     "history": "Historikk",
     "settings": "Innstillinger",
-    "dayStreak": "Dager på rad",
+    "dayStreak": "Dager i rad",
     "thisMonth": "Denne måneden",
     "todaysPills": "Dagens medisiner",
     "emptyToday": "Ingen medisiner planlagt for i dag. Legg til en i Innstillinger.",
     "addNewPill": "Legg til ny medisin",
-    "pillNamePlaceholder": "Navn på medisin (f.eks. Multivitamin)",
+    "pillNamePlaceholder": "Medisinens navn (f.eks. Vitaminer)",
     "color": "Farge",
     "shape": "Form",
     "shapes": {
       "round": "rund",
       "oval": "oval",
-      "square": "firkant"
+      "square": "firkantet"
     },
-    "reminderTime": "Tidspunkt for påminnelse (TT:MM)",
+    "reminderTime": "Påminnelsestid (HH:MM)",
     "days": "Dager",
-    "addPillSchedule": "Legg til i plan",
+    "addPillSchedule": "Legg til medisinplan",
     "dailyReminders": "Daglige påminnelser",
     "yourSchedules": "Dine planer",
     "everyDay": "Hver dag",
     "daysPerWeek_one": "1 dag/uke",
     "daysPerWeek_other": "{{count}} dager/uke",
     "added": "Lagt til",
-    "savedMsg": "Plan for {{name}} er lagret.",
-    "adherence": "Gjennomføring (12 uker)",
+    "savedMsg": "Plan for {{name}} lagret.",
+    "adherence": "12-ukers etterlevelse",
     "stats": "Statistikk per medisin",
     "taken": "tatt",
     "missed": "glemt",
     "status": {
       "taken": "Tatt",
       "missed": "Glemt",
-      "future": "Fremtidig",
-      "allTaken": "Alt tatt"
+      "future": "Fremtid",
+      "allTaken": "Alle tatt"
     },
     "months": {
       "jan": "Januar",
@@ -5573,5 +5573,32 @@
         }
       ]
     ]
+  },
+  "foodReview": {
+    "title": "Se over makroer",
+    "food": "Matvare",
+    "foodPlaceholder": "Navn på matvare",
+    "hint": "Du kan overskrive alt AI har gjettet.",
+    "meal": "Måltid",
+    "perServing": "Per porsjon (redigerbar)",
+    "servings": "Porsjoner",
+    "total": "Totalt",
+    "saveToMeal": "Lagre til {{meal}}",
+    "missingName": "Mangler navn",
+    "enterName": "Skriv inn et navn (eller behold «Ukjent»).",
+    "addedMsg": "La til {{name}} i {{meal}}",
+    "ingredients": "Ingredienser",
+    "addIngredient": "Legg til ingrediens",
+    "ingredientName": "Ingrediensnavn",
+    "amount": "Mengde (f.eks. 100g)",
+    "calories": "Kalorier",
+    "protein": "Protein",
+    "carbs": "Karbohydrater",
+    "fat": "Fett",
+    "delete": "Slett",
+    "breakfast": "Frokost",
+    "lunch": "Lunsj",
+    "dinner": "Middag",
+    "snack": "Mellommåltid"
   }
 }

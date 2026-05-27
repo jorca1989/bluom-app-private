@@ -778,7 +778,7 @@ export default function MensHealthScreen() {
           <View style={[s.modalHeader, { paddingTop: insets.top + 16, paddingHorizontal: 20, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: themeColors.border }]}>
             <View style={{ flex: 1 }}>
               <Text style={s.modalTitle}>{t('mensHealth.yourStack', 'Your Stack')}</Text>
-              <Text style={[s.modalSub, { marginTop: 2 }]}>{mc.emoji} {t(`mensHealth.${profile?.trainingMode || 'natural'}`, mc.label)} {t('mensHealth.protocolShort', 'protocol')} · {supps.length} {t('mensHealth.compounds', 'compounds')}</Text>
+              <Text style={[s.modalSub, { marginTop: 2 }]}>{mc.emoji} {mc.label} {t('mensHealth.protocolShort', 'protocol')} · {supps.length} {t('mensHealth.compounds', 'compounds')}</Text>
             </View>
             <TouchableOpacity onPress={() => setShowSupps(false)} style={s.modalClose}>
               <Ionicons name="close" size={20} color={themeColors.textMuted} />

@@ -3735,5 +3735,32 @@
     }
   },
   "No ingredients": "This recipe has no ingredients to add.",
-  "Success": "Exercise logged!"
+  "Success": "Exercise logged!",
+  "foodReview": {
+    "title": "Review Macros",
+    "food": "Food",
+    "foodPlaceholder": "Food name",
+    "hint": "You can overwrite anything the AI guessed.",
+    "meal": "Meal",
+    "perServing": "Per serving (editable)",
+    "servings": "Servings",
+    "total": "Total",
+    "saveToMeal": "Save to {{meal}}",
+    "missingName": "Missing name",
+    "enterName": "Enter a food name (or keep “Unknown”).",
+    "addedMsg": "Added {{name}} to {{meal}}",
+    "ingredients": "Ingredients",
+    "addIngredient": "Add Ingredient",
+    "ingredientName": "Ingredient Name",
+    "amount": "Amount (e.g. 100g)",
+    "calories": "Calories",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "delete": "Delete",
+    "breakfast": "Breakfast",
+    "lunch": "Lunch",
+    "dinner": "Dinner",
+    "snack": "Snack"
+  }
 }

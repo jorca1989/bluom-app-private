@@ -3204,17 +3204,17 @@
   },
   "pillReminder": {
     "title": "Recordatorio de Pastillas",
-    "tracker": "Registro de medicación",
+    "tracker": "Control de medicación",
     "today": "Hoy",
     "calendar": "Calendario",
     "history": "Historial",
     "settings": "Ajustes",
     "dayStreak": "Racha de días",
     "thisMonth": "Este mes",
-    "todaysPills": "Tomas de hoy",
-    "emptyToday": "Nada para hoy. Añade una toma en ajustes.",
-    "addNewPill": "Añadir toma",
-    "pillNamePlaceholder": "Nombre (ej: Multivitamínico)",
+    "todaysPills": "Pastillas de Hoy",
+    "emptyToday": "No hay pastillas programadas para hoy. Añade una en Ajustes.",
+    "addNewPill": "Añadir nueva pastilla",
+    "pillNamePlaceholder": "Nombre de la pastilla (ej. Multivitamínico)",
     "color": "Color",
     "shape": "Forma",
     "shapes": {
@@ -3222,9 +3222,9 @@
       "oval": "ovalada",
       "square": "cuadrada"
     },
-    "reminderTime": "Hora (HH:MM)",
+    "reminderTime": "Hora del recordatorio (HH:MM)",
     "days": "Días",
-    "addPillSchedule": "Añadir horario",
+    "addPillSchedule": "Añadir horario de pastilla",
     "dailyReminders": "Recordatorios diarios",
     "yourSchedules": "Tus horarios",
     "everyDay": "Todos los días",
@@ -3232,15 +3232,15 @@
     "daysPerWeek_other": "{{count}} días/semana",
     "added": "Añadido",
     "savedMsg": "Horario de {{name}} guardado.",
-    "adherence": "Adherencia (12 sem.)",
-    "stats": "Estadísticas",
-    "taken": "tomadas",
-    "missed": "olvidadas",
+    "adherence": "Adherencia de 12 semanas",
+    "stats": "Estadísticas por pastilla",
+    "taken": "tomada",
+    "missed": "olvidada",
     "status": {
       "taken": "Tomada",
       "missed": "Olvidada",
-      "future": "Próxima",
-      "allTaken": "Todo al día"
+      "future": "Futuro",
+      "allTaken": "Todas tomadas"
     },
     "months": {
       "jan": "Enero",
@@ -5586,5 +5586,32 @@
         }
       ]
     ]
+  },
+  "foodReview": {
+    "title": "Revisar Macros",
+    "food": "Alimento",
+    "foodPlaceholder": "Nombre del alimento",
+    "hint": "Puedes sobrescribir cualquier valor sugerido por la IA.",
+    "meal": "Comida",
+    "perServing": "Por porción (editable)",
+    "servings": "Porciones",
+    "total": "Total",
+    "saveToMeal": "Guardar en {{meal}}",
+    "missingName": "Falta el nombre",
+    "enterName": "Introduce un nombre de alimento (or mantén “Desconocido”).",
+    "addedMsg": "Añadido {{name}} a {{meal}}",
+    "ingredients": "Ingredientes",
+    "addIngredient": "Añadir ingrediente",
+    "ingredientName": "Nombre del ingrediente",
+    "amount": "Cantidad (ej. 100g)",
+    "calories": "Calorías",
+    "protein": "Proteínas",
+    "carbs": "Carbohidratos",
+    "fat": "Grasas",
+    "delete": "Eliminar",
+    "breakfast": "Desayuno",
+    "lunch": "Almuerzo",
+    "dinner": "Cena",
+    "snack": "Snack"
   }
 }

@@ -93,10 +93,10 @@ export default function SugarScanResultScreen() {
         notes: `Scan: ${trimmed}. Sugar≈${Math.round(sugarNum)}g, Calories≈${Math.round(caloriesNum)}. ${notes.trim()}. Hidden sugars: ${hiddenSugars.join(', ')}`.slice(0, 900),
       });
       celebration.trigger('fireworks');
-      Alert.alert('Saved', 'Saved to today\u2019s Sugar check\u2011in.');
+      Alert.alert(t('common.saved', 'Saved'), t('modals.sugar.savedSuccessMsg', 'Saved to today\u2019s Sugar check\u2011in.'));
       router.replace('/sugar-dashboard');
     } catch (e: any) {
-      Alert.alert('Error', e?.message ? String(e.message) : 'Could not save.');
+      Alert.alert(t('common.error', 'Error'), e?.message ? String(e.message) : t('common.couldNotSave', 'Could not save.'));
     } finally {
       setSaving(false);
     }
@@ -121,17 +121,17 @@ export default function SugarScanResultScreen() {
       });
       celebration.trigger('confetti');
       setShowMealPicker(false);
-      const mealLabel = mealType.charAt(0).toUpperCase() + mealType.slice(1);
+      const mealLabel = t(`modals.sugar.${mealType}Label`, mealType.charAt(0).toUpperCase() + mealType.slice(1));
       Alert.alert(
-        '✅ Logged!',
-        `${trimmed} added to ${mealLabel} in your Fuel diary.`,
+        t('modals.sugar.loggedSuccessTitle', '\u2705 Logged!'),
+        t('modals.sugar.loggedSuccessMsg', '{{name}} added to {{meal}} in your Fuel diary.', { name: trimmed, meal: mealLabel }),
         [
-          { text: 'Stay here', style: 'cancel' },
-          { text: 'View Fuel', onPress: () => router.replace('/(tabs)/fuel') },
+          { text: t('common.stayHere', 'Stay here'), style: 'cancel' },
+          { text: t('common.viewFuel', 'View Fuel'), onPress: () => router.replace('/(tabs)/fuel') },
         ]
       );
     } catch (e: any) {
-      Alert.alert('Error', e?.message ? String(e.message) : 'Could not log to Fuel diary.');
+      Alert.alert(t('common.error', 'Error'), e?.message ? String(e.message) : t('common.tryAgain', 'Could not log to Fuel diary.'));
     } finally {
       setLoggingMeal(false);
     }

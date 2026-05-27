@@ -20,6 +20,14 @@ type RecognizedFood = {
   protein: number;
   carbs: number;
   fat: number;
+  ingredients?: {
+    name: string;
+    amount: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }[];
 };
 
 interface PhotoRecognitionModalProps {
@@ -150,6 +158,7 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
         protein: Number(result.protein ?? 0),
         carbs: Number(result.carbs ?? 0),
         fat: Number(result.fat ?? 0),
+        ingredients: result.ingredients ?? [],
       });
       handleClose();
     } catch (e) {

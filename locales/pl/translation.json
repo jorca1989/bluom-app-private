@@ -3150,34 +3150,44 @@
     "completePromptShopping": "Please complete onboarding to use Shopping List."
   },
   "pillReminder": {
-    "title": "Przypomnienie o tabletkach",
-    "tracker": "Dziennik leków",
+    "title": "Przypomnienie o lekach",
+    "tracker": "Monitor leków",
     "today": "Dzisiaj",
     "calendar": "Kalendarz",
     "history": "Historia",
     "settings": "Ustawienia",
-    "todaysPills": "Dzisiejsze tabletki",
-    "emptyToday": "Brak zaplanowanych tabletek na dziś.",
-    "addNewPill": "Dodaj nową tabletkę",
-    "pillNamePlaceholder": "Nazwa (np. Multiwitamina)",
+    "dayStreak": "Seria dni",
+    "thisMonth": "W tym miesiącu",
+    "todaysPills": "Dzisiejsze leki",
+    "emptyToday": "Brak zaplanowanych leków na dziś. Dodaj je w Ustawieniach.",
+    "addNewPill": "Dodaj nowy lek",
+    "pillNamePlaceholder": "Nazwa leku (np. Witaminy)",
     "color": "Kolor",
     "shape": "Kształt",
     "shapes": {
-      "round": "okrągła",
-      "oval": "owalna",
-      "square": "kwadratowa"
+      "round": "okrągły",
+      "oval": "owalny",
+      "square": "kwadratowy"
     },
     "reminderTime": "Czas przypomnienia (GG:MM)",
+    "days": "Dni",
+    "addPillSchedule": "Dodaj harmonogram leków",
+    "dailyReminders": "Codzienne przypomnienia",
+    "yourSchedules": "Twoje harmonogramy",
     "everyDay": "Codziennie",
+    "daysPerWeek_one": "1 dzień/tydzień",
+    "daysPerWeek_other": "{{count}} dni/tydzień",
     "added": "Dodano",
-    "adherence": "Przyjmowanie (12 tyg.)",
-    "taken": "wzięte",
+    "savedMsg": "Harmonogram dla {{name}} zapisany.",
+    "adherence": "12-tygodniowa systematyczność",
+    "stats": "Statystyki leku",
+    "taken": "zażyte",
     "missed": "pominięte",
     "status": {
-      "taken": "Wzięte",
+      "taken": "Zażyte",
       "missed": "Pominięte",
-      "allTaken": "Wszystkie wzięte",
-      "future": "Future"
+      "future": "Przyszłość",
+      "allTaken": "Wszystkie zażyte"
     },
     "months": {
       "jan": "Styczeń",
@@ -3201,17 +3211,7 @@
       "thu": "C",
       "fri": "P",
       "sat": "S"
-    },
-    "dayStreak": "Day streak",
-    "thisMonth": "This month",
-    "days": "Days",
-    "addPillSchedule": "Add Pill Schedule",
-    "dailyReminders": "Daily reminders",
-    "yourSchedules": "Your Schedules",
-    "daysPerWeek_one": "1 day/week",
-    "daysPerWeek_other": "{{count}} days/week",
-    "savedMsg": "{{name}} schedule saved.",
-    "stats": "Per-Pill Stats"
+    }
   },
   "workouts": {
     "saved": "Zapisane",
@@ -3785,5 +3785,32 @@
     }
   },
   "No ingredients": "This recipe has no ingredients to add.",
-  "Success": "Exercise logged!"
+  "Success": "Exercise logged!",
+  "foodReview": {
+    "title": "Sprawdź makro",
+    "food": "Jedzenie",
+    "foodPlaceholder": "Nazwa jedzenia",
+    "hint": "Możesz nadpisać dowolne wartości oszacowane przez AI.",
+    "meal": "Posiłek",
+    "perServing": "Na porcję (edytowalne)",
+    "servings": "Porcje",
+    "total": "Łącznie",
+    "saveToMeal": "Zapisz w {{meal}}",
+    "missingName": "Brak nazwy",
+    "enterName": "Wpisz nazwę jedzenia (lub zostaw „Nieznane”).",
+    "addedMsg": "Dodano {{name}} do {{meal}}",
+    "ingredients": "Składniki",
+    "addIngredient": "Dodaj składnik",
+    "ingredientName": "Nazwa składnika",
+    "amount": "Ilość (np. 100g)",
+    "calories": "Kalorie",
+    "protein": "Białko",
+    "carbs": "Węglowodany",
+    "fat": "Tłuszcz",
+    "delete": "Usuń",
+    "breakfast": "Śniadanie",
+    "lunch": "Obiad",
+    "dinner": "Kolacja",
+    "snack": "Przekąska"
+  }
 }

@@ -43,7 +43,7 @@ export default function FoodSearchModal({
 
   const searchResults = useQuery(
     api.customFoods.searchLocalFoods,
-    debouncedQuery ? { query: debouncedQuery, limit: 30 } : 'skip'
+    { query: debouncedQuery, limit: 50 }
   );
   const searchLoading = debouncedQuery.length > 0 && searchResults === undefined;
   const myRecipes = useQuery(api.recipes.getMyRecipes, { userId });

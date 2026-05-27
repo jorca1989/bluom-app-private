@@ -68,7 +68,7 @@ export default function FoodSearchSection({ userId, onSelectFood }: FoodSearchSe
     // Use reactive query instead of action — searches local customFoods database
     const searchResults = useQuery(
         api.customFoods.searchLocalFoods,
-        debouncedQuery ? { query: debouncedQuery, limit: 50 } : 'skip'
+        { query: debouncedQuery, limit: 50 }
     );
     const loadingSearch = debouncedQuery.length > 0 && searchResults === undefined;
 

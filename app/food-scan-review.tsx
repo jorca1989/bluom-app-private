@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,11 +18,19 @@ function toMealTypeLower(meal: string) {
   if (m.includes('lunch')) return 'lunch' as const;
   if (m.includes('dinner')) return 'dinner' as const;
   if (m.includes('snack')) return 'snack' as const;
-  if (m.includes('snack')) return 'snack' as const;
   return 'lunch' as const;
 }
 
 type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
+
+interface Ingredient {
+  name: string;
+  amount: string;
+  calories: string;
+  protein: string;
+  carbs: string;
+  fat: string;
+}
 
 export default function FoodScanReviewScreen() {
   const { colors: themeColors } = useTheme();
@@ -44,6 +52,7 @@ export default function FoodScanReviewScreen() {
   const [meal, setMeal] = useState<MealName>((params.meal as MealName) ?? 'Lunch');
   const date = useMemo(() => String(params.date ?? new Date().toISOString().slice(0, 10)), [params.date]);
 
+  // Master states
   const [name, setName] = useState(String(params.name ?? ''));
   const [calories, setCalories] = useState(String(params.calories ?? '0'));
   const [protein, setProtein] = useState(String(params.protein ?? '0'));
@@ -51,6 +60,137 @@ export default function FoodScanReviewScreen() {
   const [fat, setFat] = useState(String(params.fat ?? '0'));
   const [servings, setServings] = useState('1');
   const [saving, setSaving] = useState(false);
+
+  // Accordion state
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+
+  // Load ingredients from router params
+  const initialIngredients = useMemo<Ingredient[]>(() => {
+    try {
+      if (params.ingredients) {
+        const parsed = JSON.parse(String(params.ingredients));
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((ing: any) => ({
+            name: String(ing.name || 'Unknown'),
+            amount: String(ing.amount || '1 serving'),
+            calories: String(ing.calories ?? '0'),
+            protein: String(ing.protein ?? '0'),
+            carbs: String(ing.carbs ?? '0'),
+            fat: String(ing.fat ?? '0'),
+          }));
+        }
+      }
+    } catch (e) {
+      console.log('[food-scan-review] Failed to parse initial ingredients', e);
+    }
+    // Fallback
+    return [{
+      name: String(params.name ?? 'Unknown'),
+      amount: '1 serving',
+      calories: String(params.calories ?? '0'),
+      protein: String(params.protein ?? '0'),
+      carbs: String(params.carbs ?? '0'),
+      fat: String(params.fat ?? '0'),
+    }];
+  }, [params.ingredients, params.name, params.calories, params.protein, params.carbs, params.fat]);
+
+  const [ingredients, setIngredients] = useState<Ingredient[]>(initialIngredients);
+
+  // 1. Live Recalculation: update flat macros whenever ingredients change
+  useEffect(() => {
+    let totalCals = 0;
+    let totalProt = 0;
+    let totalCarbs = 0;
+    let totalFat = 0;
+    ingredients.forEach((ing) => {
+      totalCals += Number(ing.calories) || 0;
+      totalProt += Number(ing.protein) || 0;
+      totalCarbs += Number(ing.carbs) || 0;
+      totalFat += Number(ing.fat) || 0;
+    });
+    setCalories(String(Math.round(totalCals)));
+    setProtein(String(Math.round(totalProt)));
+    setCarbs(String(Math.round(totalCarbs)));
+    setFat(String(Math.round(totalFat)));
+  }, [ingredients]);
+
+  // 2. Synchronization: if there's exactly 1 ingredient, sync main text inputs back to the ingredient
+  const handleNameChange = (val: string) => {
+    setName(val);
+    if (ingredients.length === 1) {
+      const copy = [...ingredients];
+      copy[0] = { ...copy[0], name: val };
+      setIngredients(copy);
+    }
+  };
+
+  const handleCaloriesChange = (val: string) => {
+    setCalories(val);
+    if (ingredients.length === 1) {
+      const copy = [...ingredients];
+      copy[0] = { ...copy[0], calories: val };
+      setIngredients(copy);
+    }
+  };
+
+  const handleProteinChange = (val: string) => {
+    setProtein(val);
+    if (ingredients.length === 1) {
+      const copy = [...ingredients];
+      copy[0] = { ...copy[0], protein: val };
+      setIngredients(copy);
+    }
+  };
+
+  const handleCarbsChange = (val: string) => {
+    setCarbs(val);
+    if (ingredients.length === 1) {
+      const copy = [...ingredients];
+      copy[0] = { ...copy[0], carbs: val };
+      setIngredients(copy);
+    }
+  };
+
+  const handleFatChange = (val: string) => {
+    setFat(val);
+    if (ingredients.length === 1) {
+      const copy = [...ingredients];
+      copy[0] = { ...copy[0], fat: val };
+      setIngredients(copy);
+    }
+  };
+
+  // Ingredient list handlers
+  const updateIngredientField = (index: number, field: keyof Ingredient, val: string) => {
+    const copy = [...ingredients];
+    copy[index] = { ...copy[index], [field]: val };
+    setIngredients(copy);
+
+    // If exactly 1 ingredient, sync back to master name state
+    if (ingredients.length === 1 && field === 'name') {
+      setName(val);
+    }
+  };
+
+  const addIngredient = () => {
+    const newIng: Ingredient = {
+      name: `${t('foodReview.food', 'Ingredient')} #${ingredients.length + 1}`,
+      amount: '100g',
+      calories: '50',
+      protein: '2',
+      carbs: '10',
+      fat: '1',
+    };
+    setIngredients([...ingredients, newIng]);
+    setExpandedIndex(ingredients.length);
+  };
+
+  const deleteIngredient = (index: number) => {
+    if (ingredients.length <= 1) return;
+    const copy = ingredients.filter((_, i) => i !== index);
+    setIngredients(copy);
+    setExpandedIndex(null);
+  };
 
   const parsed = useMemo(() => {
     const s = Math.max(0.1, Number(servings) || 1);
@@ -83,7 +223,13 @@ export default function FoodScanReviewScreen() {
       });
       triggerSound(SoundEffect.LOG_MEAL);
       celebration.trigger('confetti');
-      Alert.alert(t('common.saved', 'Saved'), t('foodReview.addedMsg', 'Added {{name}} to {{meal}}', { name: trimmed, meal: t(`common.${meal.toLowerCase()}`, meal) }));
+      Alert.alert(
+        t('common.saved', 'Saved'),
+        t('foodReview.addedMsg', 'Added {{name}} to {{meal}}', {
+          name: trimmed,
+          meal: t(`foodReview.${meal.toLowerCase()}`, meal),
+        })
+      );
       router.replace('/(tabs)/fuel');
     } catch (e: any) {
       Alert.alert(t('common.error', 'Could not save'), e?.message ? String(e.message) : t('common.tryAgain', 'Please try again.'));
@@ -100,7 +246,7 @@ export default function FoodScanReviewScreen() {
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={styles.headerTitle}>{t('foodReview.title', 'Review Macros')}</Text>
-          <Text style={styles.headerSub}>{t(`common.${meal.toLowerCase()}`, meal)} • {date}</Text>
+          <Text style={styles.headerSub}>{t(`foodReview.${meal.toLowerCase()}`, meal)} • {date}</Text>
         </View>
         <View style={{ width: 40 }} />
       </View>
@@ -110,11 +256,12 @@ export default function FoodScanReviewScreen() {
         contentContainerStyle={{ padding: 16, paddingBottom: getBottomContentPadding(insets.bottom, 24) }}
         showsVerticalScrollIndicator={false}
       >
+        {/* Main Food Card */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>{t('foodReview.food', 'Food')}</Text>
           <TextInput
             value={name}
-            onChangeText={setName}
+            onChangeText={handleNameChange}
             placeholder={t('foodReview.foodPlaceholder', 'Food name')}
             style={styles.input}
             autoCapitalize="words"
@@ -123,6 +270,7 @@ export default function FoodScanReviewScreen() {
           <Text style={styles.hint}>{t('foodReview.hint', 'You can overwrite anything the AI guessed.')}</Text>
         </View>
 
+        {/* Meal Selector */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>{t('foodReview.meal', 'Meal')}</Text>
           <View style={styles.mealSelector}>
@@ -133,21 +281,133 @@ export default function FoodScanReviewScreen() {
                 onPress={() => setMeal(m)}
               >
                 <Text style={[styles.mealOptionText, meal === m && styles.mealOptionTextActive]}>
-                  {t(`common.${m.toLowerCase()}`, m)}
+                  {t(`foodReview.${m.toLowerCase()}`, m)}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
 
+        {/* Ingredients breakdown */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>{t('foodReview.perServing', 'Per serving (editable)')}</Text>
-          <Row label={t('fuel.calories', 'Calories')} value={calories} onChange={setCalories} />
-          <Row label={t('fuel.protein', 'Protein (g)')} value={protein} onChange={setProtein} />
-          <Row label={t('fuel.carbs', 'Carbs (g)')} value={carbs} onChange={setCarbs} />
-          <Row label={t('fuel.fat', 'Fat (g)')} value={fat} onChange={setFat} />
+          <View style={styles.cardHeaderRow}>
+            <Text style={styles.cardTitle}>{t('foodReview.ingredients', 'Ingredients')}</Text>
+            <TouchableOpacity style={styles.addIngBtn} onPress={addIngredient} activeOpacity={0.7}>
+              <Ionicons name="add-circle-outline" size={20} color="#2563eb" />
+              <Text style={styles.addIngText}>{t('foodReview.addIngredient', 'Add')}</Text>
+            </TouchableOpacity>
+          </View>
+
+          {ingredients.map((ing, index) => {
+            const isExpanded = expandedIndex === index;
+            return (
+              <View key={index} style={[styles.ingItemCard, isExpanded && styles.ingItemCardExpanded]}>
+                {/* Collapsed Header */}
+                <TouchableOpacity
+                  style={styles.ingHeader}
+                  onPress={() => setExpandedIndex(isExpanded ? null : index)}
+                  activeOpacity={0.8}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.ingName} numberOfLines={1}>{ing.name}</Text>
+                    <Text style={styles.ingAmountSub}>{ing.amount || '1 serving'} · {ing.calories} kcal</Text>
+                  </View>
+                  <Ionicons
+                    name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                    size={20}
+                    color={themeColors.textMuted}
+                  />
+                </TouchableOpacity>
+
+                {/* Expanded Details Form */}
+                {isExpanded && (
+                  <View style={styles.ingDetails}>
+                    <View style={styles.detailsRow}>
+                      <Text style={styles.detailsLabel}>{t('foodReview.ingredientName', 'Name')}</Text>
+                      <TextInput
+                        value={ing.name}
+                        onChangeText={(v) => updateIngredientField(index, 'name', v)}
+                        style={styles.detailsInput}
+                        placeholder={t('foodReview.foodPlaceholder')}
+                      />
+                    </View>
+                    <View style={styles.detailsRow}>
+                      <Text style={styles.detailsLabel}>{t('foodReview.amount', 'Amount')}</Text>
+                      <TextInput
+                        value={ing.amount}
+                        onChangeText={(v) => updateIngredientField(index, 'amount', v)}
+                        style={styles.detailsInput}
+                        placeholder="e.g. 100g"
+                      />
+                    </View>
+                    <View style={styles.detailsRow}>
+                      <Text style={styles.detailsLabel}>{t('foodReview.calories', 'Calories')}</Text>
+                      <TextInput
+                        value={ing.calories}
+                        onChangeText={(v) => updateIngredientField(index, 'calories', v)}
+                        keyboardType="decimal-pad"
+                        style={styles.detailsInput}
+                        placeholder="0"
+                      />
+                    </View>
+                    <View style={styles.detailsRow}>
+                      <Text style={styles.detailsLabel}>{t('foodReview.protein', 'Protein (g)')}</Text>
+                      <TextInput
+                        value={ing.protein}
+                        onChangeText={(v) => updateIngredientField(index, 'protein', v)}
+                        keyboardType="decimal-pad"
+                        style={styles.detailsInput}
+                        placeholder="0"
+                      />
+                    </View>
+                    <View style={styles.detailsRow}>
+                      <Text style={styles.detailsLabel}>{t('foodReview.carbs', 'Carbs (g)')}</Text>
+                      <TextInput
+                        value={ing.carbs}
+                        onChangeText={(v) => updateIngredientField(index, 'carbs', v)}
+                        keyboardType="decimal-pad"
+                        style={styles.detailsInput}
+                        placeholder="0"
+                      />
+                    </View>
+                    <View style={styles.detailsRow}>
+                      <Text style={styles.detailsLabel}>{t('foodReview.fat', 'Fat (g)')}</Text>
+                      <TextInput
+                        value={ing.fat}
+                        onChangeText={(v) => updateIngredientField(index, 'fat', v)}
+                        keyboardType="decimal-pad"
+                        style={styles.detailsInput}
+                        placeholder="0"
+                      />
+                    </View>
+
+                    {ingredients.length > 1 && (
+                      <TouchableOpacity
+                        style={styles.deleteIngBtn}
+                        onPress={() => deleteIngredient(index)}
+                        activeOpacity={0.7}
+                      >
+                        <Ionicons name="trash-outline" size={16} color="#ef4444" />
+                        <Text style={styles.deleteIngText}>{t('foodReview.delete', 'Delete')}</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                )}
+              </View>
+            );
+          })}
         </View>
 
+        {/* Totals / Per Serving */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>{t('foodReview.perServing', 'Per serving (editable)')}</Text>
+          <Row label={t('foodReview.calories', 'Calories')} value={calories} onChange={handleCaloriesChange} />
+          <Row label={t('foodReview.protein', 'Protein (g)')} value={protein} onChange={handleProteinChange} />
+          <Row label={t('foodReview.carbs', 'Carbs (g)')} value={carbs} onChange={handleCarbsChange} />
+          <Row label={t('foodReview.fat', 'Fat (g)')} value={fat} onChange={handleFatChange} />
+        </View>
+
+        {/* Servings */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>{t('foodReview.servings', 'Servings')}</Text>
           <TextInput
@@ -158,10 +418,11 @@ export default function FoodScanReviewScreen() {
             style={styles.input}
           />
           <Text style={styles.hint}>
-            {t('foodReview.total', 'Total')}: {Math.round(parsed.cals * parsed.s)} {t('fuel.summary.kcal', 'cal')} • {t('fuel.mealCard.p', 'P')}{Math.round(parsed.p * parsed.s)} {t('fuel.mealCard.c', 'C')}{Math.round(parsed.cb * parsed.s)} {t('fuel.mealCard.f', 'F')}{Math.round(parsed.f * parsed.s)}
+            {t('foodReview.total', 'Total')}: {Math.round(parsed.cals * parsed.s)} kcal • P{Math.round(parsed.p * parsed.s)} C{Math.round(parsed.cb * parsed.s)} F{Math.round(parsed.f * parsed.s)}
           </Text>
         </View>
 
+        {/* Save Button */}
         <TouchableOpacity
           style={[styles.primaryBtn, saving && { opacity: 0.7 }]}
           onPress={handleSave}
@@ -169,7 +430,7 @@ export default function FoodScanReviewScreen() {
           disabled={saving}
         >
           <Ionicons name="checkmark-circle" size={18} color="#fff" />
-          <Text style={styles.primaryText}>{saving ? t('common.saving', 'Saving…') : t('foodReview.saveToMeal', 'Save to {{meal}}', { meal: t(`common.${meal.toLowerCase()}`, meal) })}</Text>
+          <Text style={styles.primaryText}>{saving ? t('common.saving', 'Saving…') : t('foodReview.saveToMeal', 'Save to {{meal}}', { meal: t(`foodReview.${meal.toLowerCase()}`, meal) })}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -177,6 +438,8 @@ export default function FoodScanReviewScreen() {
 }
 
 function Row({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   return (
     <View style={styles.row}>
       <Text style={styles.rowLabel}>{label}</Text>
@@ -220,7 +483,27 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     borderColor: c.border,
     marginBottom: 12,
   },
-  cardTitle: { fontSize: 14, fontWeight: '900', color: c.text, marginBottom: 10 },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  cardTitle: { fontSize: 14, fontWeight: '900', color: c.text, marginBottom: 0 },
+  addIngBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    backgroundColor: '#eff6ff',
+  },
+  addIngText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#2563eb',
+  },
   input: {
     borderWidth: 1,
     borderColor: c.border,
@@ -284,9 +567,87 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   mealOptionTextActive: {
     color: '#ffffff',
   },
+
+  // Ingredients styles
+  ingItemCard: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: c.border,
+    backgroundColor: c.surfaceMuted,
+    marginBottom: 8,
+    overflow: 'hidden',
+  },
+  ingItemCardExpanded: {
+    borderColor: '#3b82f6',
+    backgroundColor: c.surface,
+  },
+  ingHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+  },
+  ingName: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: c.text,
+  },
+  ingAmountSub: {
+    fontSize: 11,
+    color: c.textMuted,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  ingDetails: {
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+    borderTopWidth: 1,
+    borderTopColor: c.border,
+    backgroundColor: c.surface,
+    gap: 8,
+    paddingTop: 8,
+  },
+  detailsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  detailsLabel: {
+    flex: 1,
+    fontSize: 13,
+    color: c.text,
+    fontWeight: '700',
+  },
+  detailsInput: {
+    width: 150,
+    borderWidth: 1,
+    borderColor: c.border,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    fontSize: 14,
+    color: c.text,
+    backgroundColor: c.surface,
+    textAlign: 'right',
+    fontWeight: '700',
+  },
+  deleteIngBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    gap: 4,
+    marginTop: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    backgroundColor: '#fef2f2',
+  },
+  deleteIngText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#ef4444',
+  },
 });
-
-
 
 // Static module-scope fallbacks (default theme) for helper components.
 const styles = createStyles(THEMES.default.colors);

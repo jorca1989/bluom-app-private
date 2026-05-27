@@ -127,22 +127,38 @@ export const recognizeFoodFromImage = action({
       'da': 'Danish',
       'sv': 'Swedish',
       'no': 'Norwegian',
+      'tr': 'Turkish',
+      'el': 'Greek',
+      'bg': 'Bulgarian',
+      'ro': 'Romanian',
+      'lt': 'Lithuanian',
+      'lv': 'Latvian',
     };
     const langName = LANG_NAMES[lang] ?? 'English';
-    const langInstruction = `\n- Return the food "name" in ${langName}. IMPORTANT: Respond ONLY in ${langName}. Do not use any other language.`;
+    const langInstruction = `\n- Return the food "name" and all ingredient names inside the "ingredients" array in ${langName}. IMPORTANT: Respond ONLY in ${langName}. Do not use any other language.`;
     const prompt =
-      'Analyze this food image. Provide the Food Name, estimated Calories, Protein, Carbs, and Fats. Return ONLY a JSON object.\n' +
-      'Exact shape:\n' +
+      'Analyze this food image. Provide the overall Food Name, estimated Calories, Protein, Carbs, and Fats, and also a list of detected individual ingredients with their estimated amounts (e.g., "100g", "1 slice", "2 tablespoons") and macros.\n' +
+      'Return ONLY a JSON object with this exact shape:\n' +
       '{\n' +
       '  "name": "string",\n' +
       '  "calories": number,\n' +
       '  "protein": number,\n' +
       '  "carbs": number,\n' +
-      '  "fat": number\n' +
+      '  "fat": number,\n' +
+      '  "ingredients": [\n' +
+      '    {\n' +
+      '      "name": "string",\n' +
+      '      "amount": "string",\n' +
+      '      "calories": number,\n' +
+      '      "protein": number,\n' +
+      '      "carbs": number,\n' +
+      '      "fat": number\n' +
+      '    }\n' +
+      '  ]\n' +
       '}\n' +
       'Rules:\n' +
       '- Calories in kcal. Macros in grams.\n' +
-      '- If unsure, return name="Unknown" and set numbers to 0.\n' +
+      '- If unsure or if it\'s a single ingredient food, return the food itself as the single ingredient.\n' +
       '- Output MUST be valid JSON with no extra text.' +
       langInstruction;
 
@@ -194,6 +210,7 @@ export const recognizeFoodFromImage = action({
           protein: 0,
           carbs: 0,
           fat: 0,
+          ingredients: [],
         };
         }
       }
@@ -206,6 +223,14 @@ export const recognizeFoodFromImage = action({
       protein: number;
       carbs: number;
       fat: number;
+      ingredients: {
+        name: string;
+        amount: string;
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+      }[];
     }>(text);
 
     if (parsed) return { status: "ok" as const, ...parsed };
@@ -225,6 +250,7 @@ export const recognizeFoodFromImage = action({
       protein: 0,
       carbs: 0,
       fat: 0,
+      ingredients: [],
     };
   },
 });
@@ -261,9 +287,15 @@ export const scanSugarProductFromImage = action({
       'da': 'Danish',
       'sv': 'Swedish',
       'no': 'Norwegian',
+      'tr': 'Turkish',
+      'el': 'Greek',
+      'bg': 'Bulgarian',
+      'ro': 'Romanian',
+      'lt': 'Lithuanian',
+      'lv': 'Latvian',
     };
     const langName = LANG_NAMES[lang] ?? 'English';
-    const langInstruction = `\n- Return ALL string values in the JSON (productName, hiddenSugarsFound, smartAlternative, notes) in ${langName}. IMPORTANT: Respond ONLY in ${langName}. Do not use any other language.`;
+    const langInstruction = `\n- Return ALL string values in the JSON (productName, hiddenSugarsFound, smartAlternative, notes) in ${langName}. IMPORTANT: Respond ONLY in ${langName}. Do not use any other language.\n- For "productName", if the physical package name is in a different language from ${langName}, return the format "Original Name (Translated Name in ${langName})" if a translation makes sense (e.g., "Zero sem açúcar (Sans sucre)" or "Avoine (Oats)"). Otherwise just return the package name.`;
 
     const prompt =
       'You are a nutrition expert and sugar-awareness coach.\n' +

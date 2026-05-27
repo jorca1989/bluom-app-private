@@ -3186,8 +3186,8 @@
     "completePromptShopping": "Please complete onboarding to use Shopping List."
   },
   "pillReminder": {
-    "title": "Pille-påmindelse",
-    "tracker": "Medicinstyring",
+    "title": "Pillepåmindelse",
+    "tracker": "Medicinsporer",
     "today": "I dag",
     "calendar": "Kalender",
     "history": "Historik",
@@ -3195,35 +3195,35 @@
     "dayStreak": "Dage i træk",
     "thisMonth": "Denne måned",
     "todaysPills": "Dagens piller",
-    "emptyToday": "Ingen piller planlagt i dag. Tilføj en i Indstillinger.",
+    "emptyToday": "Ingen piller planlagt for i dag. Tilføj en under Indstillinger.",
     "addNewPill": "Tilføj ny pille",
-    "pillNamePlaceholder": "Pillens navn (f.eks. Multivitamin)",
+    "pillNamePlaceholder": "Pillens navn (f.eks. Vitaminer)",
     "color": "Farve",
     "shape": "Form",
     "shapes": {
       "round": "rund",
       "oval": "oval",
-      "square": "firkant"
+      "square": "firkantet"
     },
-    "reminderTime": "Tidspunkt for påmindelse (TT:MM)",
+    "reminderTime": "Påmindelsestid (HH:MM)",
     "days": "Dage",
-    "addPillSchedule": "Tilføj tidsplan",
-    "dailyReminders": "Daglige påminnelser",
+    "addPillSchedule": "Tilføj pilleplan",
+    "dailyReminders": "Daglige påmindelser",
     "yourSchedules": "Dine planer",
     "everyDay": "Hver dag",
     "daysPerWeek_one": "1 dag/uge",
     "daysPerWeek_other": "{{count}} dage/uge",
     "added": "Tilføjet",
-    "savedMsg": "Plan for {{name}} er gemt.",
-    "adherence": "Efterlevelse (12 uger)",
+    "savedMsg": "Plan for {{name}} gemt.",
+    "adherence": "12-ugers adhærens",
     "stats": "Statistik pr. pille",
     "taken": "taget",
     "missed": "glemt",
     "status": {
       "taken": "Taget",
       "missed": "Glemt",
-      "future": "Fremtidig",
-      "allTaken": "Alt taget"
+      "future": "Fremtid",
+      "allTaken": "Alle taget"
     },
     "months": {
       "jan": "Januar",
@@ -5569,5 +5569,32 @@
         }
       ]
     ]
+  },
+  "foodReview": {
+    "title": "Gennemse makroer",
+    "food": "Fødevare",
+    "foodPlaceholder": "Fødevarenavn",
+    "hint": "Du kan overskrive alt, hvad kunstig intelligens har gættet.",
+    "meal": "Måltid",
+    "perServing": "Pr. portion (redigerbar)",
+    "servings": "Portioner",
+    "total": "Total",
+    "saveToMeal": "Gem til {{meal}}",
+    "missingName": "Mangler navn",
+    "enterName": "Indtast et navn (eller behold ”Ukendt”).",
+    "addedMsg": "Tilføjede {{name}} til {{meal}}",
+    "ingredients": "Ingredienser",
+    "addIngredient": "Tilføj ingrediens",
+    "ingredientName": "Ingrediensnavn",
+    "amount": "Mængde (f.eks. 100g)",
+    "calories": "Kalorier",
+    "protein": "Protein",
+    "carbs": "Kulhydrater",
+    "fat": "Fedt",
+    "delete": "Slet",
+    "breakfast": "Morgenmad",
+    "lunch": "Frokost",
+    "dinner": "Aftensmad",
+    "snack": "Snack"
   }
 }

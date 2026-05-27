@@ -3206,18 +3206,18 @@
     "completePromptShopping": "Bitte schließen Sie das Onboarding ab, um die Einkaufsliste nutzen zu können."
   },
   "pillReminder": {
-    "title": "Pillen-Erinnerung",
-    "tracker": "Medikamenten-Log",
+    "title": "Pillenerinnerung",
+    "tracker": "Medikamenten-Tracker",
     "today": "Heute",
     "calendar": "Kalender",
-    "history": "Historie",
+    "history": "Verlauf",
     "settings": "Einstellungen",
-    "dayStreak": "Tage in Folge",
+    "dayStreak": "Tages-Serie",
     "thisMonth": "Diesen Monat",
     "todaysPills": "Heutige Pillen",
-    "emptyToday": "Keine Termine für heute. Füge welche in den Einstellungen hinzu.",
-    "addNewPill": "Neue Pille hinzufügen",
-    "pillNamePlaceholder": "Name (z.B. Multivitamin)",
+    "emptyToday": "Heute keine Pillen geplant. Füge eine in den Einstellungen hinzu.",
+    "addNewPill": "Pille hinzufügen",
+    "pillNamePlaceholder": "Name der Pille (z. B. Vitamine)",
     "color": "Farbe",
     "shape": "Form",
     "shapes": {
@@ -3225,9 +3225,9 @@
       "oval": "oval",
       "square": "quadratisch"
     },
-    "reminderTime": "Erinnerung (HH:MM)",
+    "reminderTime": "Erinnerungszeit (HH:MM)",
     "days": "Tage",
-    "addPillSchedule": "Plan hinzufügen",
+    "addPillSchedule": "Pillenplan hinzufügen",
     "dailyReminders": "Tägliche Erinnerungen",
     "yourSchedules": "Deine Pläne",
     "everyDay": "Jeden Tag",
@@ -3235,15 +3235,15 @@
     "daysPerWeek_other": "{{count}} Tage/Woche",
     "added": "Hinzugefügt",
     "savedMsg": "Plan für {{name}} gespeichert.",
-    "adherence": "Einhaltung (12 Wochen)",
-    "stats": "Statistik pro Pille",
+    "adherence": "12-Wochen-Adhärenz",
+    "stats": "Statistiken pro Pille",
     "taken": "genommen",
     "missed": "vergessen",
     "status": {
       "taken": "Genommen",
       "missed": "Vergessen",
-      "future": "Anstehend",
-      "allTaken": "Alles erledigt"
+      "future": "Zukunft",
+      "allTaken": "Alle genommen"
     },
     "months": {
       "jan": "Januar",
@@ -5589,5 +5589,32 @@
         }
       ]
     ]
+  },
+  "foodReview": {
+    "title": "Makros überprüfen",
+    "food": "Lebensmittel",
+    "foodPlaceholder": "Name des Lebensmittels",
+    "hint": "Sie können alle von der KI geschätzten Werte überschreiben.",
+    "meal": "Mahlzeit",
+    "perServing": "Pro Portion (editierbar)",
+    "servings": "Portionen",
+    "total": "Gesamt",
+    "saveToMeal": "In {{meal}} speichern",
+    "missingName": "Name fehlt",
+    "enterName": "Geben Sie einen Namen ein (oder belassen Sie es bei „Unbekannt“).",
+    "addedMsg": "{{name}} zu {{meal}} hinzugefügt",
+    "ingredients": "Zutaten",
+    "addIngredient": "Zutat hinzufügen",
+    "ingredientName": "Name der Zutat",
+    "amount": "Menge (z.B. 100g)",
+    "calories": "Kalorien",
+    "protein": "Protein",
+    "carbs": "Kohlenhydrate",
+    "fat": "Fett",
+    "delete": "Löschen",
+    "breakfast": "Frühstück",
+    "lunch": "Mittagessen",
+    "dinner": "Abendessen",
+    "snack": "Snack"
   }
 }

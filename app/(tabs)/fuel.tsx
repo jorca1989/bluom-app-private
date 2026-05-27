@@ -268,10 +268,11 @@ export default function FuelScreen() {
       }
     }
 
-    let calories = Number(food.calories ?? 0);
-    let protein = Number(food.protein ?? 0);
-    let carbs = Number(food.carbs ?? 0);
-    let fat = Number(food.fat ?? 0);
+    const macros = food.macros ?? food;
+    let calories = Number(macros.calories ?? 0);
+    let protein = Number(macros.protein ?? 0);
+    let carbs = Number(macros.carbs ?? 0);
+    let fat = Number(macros.fat ?? 0);
     let persistedFoodId = food?._id ? String(food._id) : undefined;
 
     if (food?.kind === 'external' && food?.externalId && food?.source) {
@@ -663,9 +664,12 @@ export default function FuelScreen() {
         onQuantityChange={setLogQuantity}
         onClose={() => setShowLogRecipeModal(false)}
         onCancel={() => setShowLogRecipeModal(false)}
-        onSave={async () => {
+        onSave={async (customMultiplier?: number, customServingSize?: string) => {
           if (!logRecipe || !convexUser?._id) return;
-          const perServing = logRecipe?.nutrition?.perServing ?? logRecipe?.nutrition ?? {
+          const multiplier = customMultiplier !== undefined ? customMultiplier : logQuantity;
+          const servingStr = customServingSize !== undefined ? customServingSize : `${logQuantity} serving(s)`;
+
+          const perServing = logRecipe?.nutrition?.perServing ?? logRecipe?.nutrition ?? logRecipe?.macros ?? {
             calories: logRecipe.calories ?? 0, 
             protein: logRecipe.protein ?? 0, 
             carbs: logRecipe.carbs ?? 0, 
@@ -677,11 +681,11 @@ export default function FuelScreen() {
             userId: convexUser._id,
             foodId: isRecipe ? undefined : logRecipe._id || logRecipe.externalId,
             foodName: getLocalizedFoodName(logRecipe.name) || logRecipe.title,
-            calories: (perServing.calories ?? 0) * logQuantity,
-            protein: (perServing.protein ?? 0) * logQuantity,
-            carbs: (perServing.carbs ?? 0) * logQuantity,
-            fat: (perServing.fat ?? 0) * logQuantity,
-            servingSize: `${logQuantity} serving(s)`,
+            calories: (perServing.calories ?? 0) * multiplier,
+            protein: (perServing.protein ?? 0) * multiplier,
+            carbs: (perServing.carbs ?? 0) * multiplier,
+            fat: (perServing.fat ?? 0) * multiplier,
+            servingSize: servingStr,
             mealType: toMealTypeLower(logMeal),
             date: selectedDate,
           });
@@ -734,6 +738,7 @@ export default function FuelScreen() {
               protein: String(item.protein),
               carbs: String(item.carbs),
               fat: String(item.fat),
+              ingredients: JSON.stringify(item.ingredients ?? []),
             },
           });
         }}

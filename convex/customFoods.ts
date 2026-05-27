@@ -17,10 +17,16 @@ export const searchLocalFoods = query({
         language: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
-        const limit = args.limit || 20;
+        const limit = args.limit || 50;
         const normalizedQuery = args.query.toLowerCase().trim();
 
-        if (!normalizedQuery) return [];
+        if (!normalizedQuery) {
+            // Pre-populate with all database custom foods (limit to 100) sorted by descending order
+            return await ctx.db
+                .query("customFoods")
+                .order("desc")
+                .take(100);
+        }
 
         const results = await ctx.db
             .query("customFoods")
