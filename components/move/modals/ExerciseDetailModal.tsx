@@ -104,9 +104,6 @@ export default function ExerciseDetailModal({
                       useNativeControls={canSeeDetails}
                       shouldPlay
                       isLooping
-                      usePoster={!!exercise.thumbnailUrl}
-                      posterSource={exercise.thumbnailUrl ? { uri: exercise.thumbnailUrl } : undefined}
-                      posterStyle={{ resizeMode: 'cover' }}
                     />
                   )}
                   {!canSeeDetails && (

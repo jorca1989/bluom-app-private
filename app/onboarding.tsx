@@ -105,7 +105,7 @@ const getStepGroups = (t: any): StepGroup[] => [
     description: t('onboarding.groups.biometricsDesc'),
     questions: [
       { id: 'weight', question: t('onboarding.questions.weight'), type: 'number_with_units', placeholder: t('onboarding.questions.weightPlaceholder') },
-      { id: 'height', question: t('onboarding.questions.height'), type: 'height_ruler', placeholder: t('onboarding.questions.heightPlaceholder') },
+      { id: 'height', question: t('onboarding.questions.height'), type: 'number_with_units', placeholder: t('onboarding.questions.heightPlaceholder') },
       { id: 'targetWeight', question: t('onboarding.questions.targetWeight'), type: 'number_with_units', placeholder: t('onboarding.questions.targetWeightPlaceholder'), subtitle: t('onboarding.questions.targetWeightSub') },
     ]
   },
@@ -714,7 +714,7 @@ export default function OnboardingScreen() {
     }
 
     if (q.type === 'number_with_units') {
-      const unit = q.id.toLowerCase().includes('weight') ? units.weight : '';
+      const unit = q.id.toLowerCase().includes('weight') ? units.weight : q.id.toLowerCase().includes('height') ? units.height : '';
       return (
         <View style={styles.unitInputRow}>
           <TextInput

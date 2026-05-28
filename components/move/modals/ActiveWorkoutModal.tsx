@@ -231,9 +231,6 @@ export default function ActiveWorkoutModal({
                                   useNativeControls
                                   shouldPlay
                                   isLooping
-                                  usePoster={!!ex.thumbnailUrl}
-                                  posterSource={ex.thumbnailUrl ? { uri: ex.thumbnailUrl } : undefined}
-                                  posterStyle={{ resizeMode: 'cover' }}
                                 />
                             )
                           ) : (

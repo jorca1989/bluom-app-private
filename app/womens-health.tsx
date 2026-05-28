@@ -136,10 +136,19 @@ const PREGNANCY_DATE_STEPS: QuizStep[] = [
 ];
 
 function getWomensQuiz(lifeStage: LifeStage): QuizStep[] {
-  if (lifeStage !== 'pregnancy') return WOMENS_QUIZ;
+  if (lifeStage === 'pregnancy') {
+    return [
+      WOMENS_QUIZ[0],
+      ...PREGNANCY_DATE_STEPS,
+      WOMENS_QUIZ[3],
+    ];
+  }
+  
   return [
     WOMENS_QUIZ[0],
-    ...PREGNANCY_DATE_STEPS,
+    WOMENS_QUIZ[1],
+    PREGNANCY_DATE_STEPS[0],
+    WOMENS_QUIZ[2],
     WOMENS_QUIZ[3],
   ];
 }

@@ -481,7 +481,6 @@ export default function RecipesScreen() {
                         contentFit="cover"
                         cachePolicy="memory-disk"
                         recyclingKey={recipe._id}
-                        transition={120}
                       />
                     ) : (
                       <View style={styles.recipeCardImagePlaceholder}>

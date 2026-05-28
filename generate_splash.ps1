@@ -2,7 +2,7 @@ Add-Type -AssemblyName System.Drawing
 
 $width = 1242
 $height = 2436
-$maxLogoSize = 800
+$maxLogoSize = 400
 $bgColor = [System.Drawing.Color]::White
 
 $projectPath = "c:\Users\jwfca\Desktop\BluomAppNew"
@@ -16,6 +16,9 @@ Write-Host "Target: $outputPath"
 $bmp = New-Object System.Drawing.Bitmap $width, $height
 $g = [System.Drawing.Graphics]::FromImage($bmp)
 $g.Clear($bgColor)
+$g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+$g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+$g.CompositingQuality = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
 
 if (Test-Path $logoPath) {
     try {

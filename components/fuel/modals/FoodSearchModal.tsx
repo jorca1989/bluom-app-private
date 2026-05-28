@@ -9,6 +9,45 @@ import { useQuery } from 'convex/react';
 
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
+export const ALL_CUISINES = [
+  { code: 'PT', label: 'Portugal', flag: '🇵🇹' },
+  { code: 'BR', label: 'Brazil', flag: '🇧🇷' },
+  { code: 'AO', label: 'Angola', flag: '🇦🇴' },
+  { code: 'ES', label: 'Spain', flag: '🇪🇸' },
+  { code: 'MX', label: 'Mexico', flag: '🇲🇽' },
+  { code: 'GB', label: 'United Kingdom', flag: '🇬🇧' },
+  { code: 'US', label: 'United States', flag: '🇺🇸' },
+  { code: 'DE', label: 'Germany', flag: '🇩🇪' },
+  { code: 'FR', label: 'France', flag: '🇫🇷' },
+  { code: 'NL', label: 'Netherlands', flag: '🇳🇱' },
+  { code: 'PL', label: 'Poland', flag: '🇵🇱' },
+  { code: 'BG', label: 'Bulgaria', flag: '🇧🇬' },
+  { code: 'DK', label: 'Denmark', flag: '🇩🇰' },
+  { code: 'GR', label: 'Greece', flag: '🇬🇷' },
+  { code: 'LT', label: 'Lithuania', flag: '🇱🇹' },
+  { code: 'LV', label: 'Latvia', flag: '🇱🇻' },
+  { code: 'NO', label: 'Norway', flag: '🇳🇴' },
+  { code: 'RO', label: 'Romania', flag: '🇷🇴' },
+  { code: 'SE', label: 'Sweden', flag: '🇸🇪' },
+  { code: 'TR', label: 'Turkey', flag: '🇹🇷' },
+];
+
+export function getFlagEmoji(countryCode: string) {
+  if (!countryCode) return '🌐';
+  const found = ALL_CUISINES.find(c => c.code === countryCode.toUpperCase());
+  if (found) return found.flag;
+  // Fallback to unicode conversion
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt(0));
+  try {
+    return String.fromCodePoint(...codePoints);
+  } catch (e) {
+    return '🌐';
+  }
+}
+
 type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 
 interface FoodSearchModalProps {
@@ -41,10 +80,24 @@ export default function FoodSearchModal({
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
 
+  const [selectedCuisines, setSelectedCuisines] = useState<string[]>(ALL_CUISINES.map(c => c.code));
+  const [tempSelectedCuisines, setTempSelectedCuisines] = useState<string[]>(ALL_CUISINES.map(c => c.code));
+  const [isCuisineModalOpen, setIsCuisineModalOpen] = useState(false);
+
   const searchResults = useQuery(
     api.customFoods.searchLocalFoods,
     { query: debouncedQuery, limit: 50 }
   );
+
+  const filteredSearchResults = useMemo(() => {
+    if (!searchResults) return [];
+    return searchResults.filter((item: any) => {
+      if (!item.countryCode && !item.isVerified) return true;
+      if (!item.countryCode) return true;
+      return selectedCuisines.includes(item.countryCode.toUpperCase());
+    });
+  }, [searchResults, selectedCuisines]);
+
   const searchLoading = debouncedQuery.length > 0 && searchResults === undefined;
   const myRecipes = useQuery(api.recipes.getMyRecipes, { userId });
   const { t, i18n } = useTranslation();
@@ -149,11 +202,28 @@ export default function FoodSearchModal({
                 )}
               </View>
 
+              <TouchableOpacity 
+                style={styles.cuisineSelectorRow} 
+                onPress={() => {
+                  setTempSelectedCuisines([...selectedCuisines]);
+                  setIsCuisineModalOpen(true);
+                }}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="filter" size={16} color="#3b82f6" style={{ marginRight: 6 }} />
+                <Text style={styles.cuisineSelectorText} numberOfLines={1}>
+                  {selectedCuisines.length === ALL_CUISINES.length 
+                    ? t('modals.search.allCuisines', '🌍 Cuisines: All Cuisines') 
+                    : `${selectedCuisines.map(c => getFlagEmoji(c)).join(' ')} (${selectedCuisines.length} selected)`}
+                </Text>
+                <Ionicons name="chevron-down" size={14} color="#64748b" style={{ marginLeft: 6 }} />
+              </TouchableOpacity>
+
               {searchLoading ? (
                 <View style={styles.loadingState}>
                   <ActivityIndicator size="large" color="#3b82f6" />
                 </View>
-              ) : (searchResults ?? []).length === 0 ? (
+              ) : (filteredSearchResults ?? []).length === 0 ? (
                 <View style={styles.emptyState}>
                   <Ionicons name="search-outline" size={48} color="#e2e8f0" />
                   <Text style={styles.emptyText}>{t('modals.search.noFoods', 'No foods found')}</Text>
@@ -161,7 +231,7 @@ export default function FoodSearchModal({
                 </View>
               ) : (
                 <FlatList
-                  data={searchResults ?? []}
+                  data={filteredSearchResults ?? []}
                   keyExtractor={(item) => String(item._id)}
                   showsVerticalScrollIndicator={false}
                   contentContainerStyle={styles.listContent}
@@ -183,11 +253,25 @@ export default function FoodSearchModal({
                       <View style={styles.listRight}>
                         <Text style={styles.listCal}>{Math.round(item.macros?.calories ?? 0)}</Text>
                         <Text style={styles.listCalUnit}>kcal</Text>
-                        <View style={styles.sourcePill}>
-                          <Text style={styles.sourceText}>
-                            {item.isVerified ? '✓ VERIFIED' : t('modals.search.saved', 'SAVED')}
-                          </Text>
-                        </View>
+                        {item.countryCode ? (
+                          <View style={[styles.sourcePill, { borderColor: '#3b82f6' }]}>
+                            <Text style={[styles.sourceText, { color: '#2563eb' }]}>
+                              {getFlagEmoji(item.countryCode)} {item.countryCode.toUpperCase()}
+                            </Text>
+                          </View>
+                        ) : !item.isVerified ? (
+                          <View style={[styles.sourcePill, { borderColor: '#10b981' }]}>
+                            <Text style={[styles.sourceText, { color: '#059669' }]}>
+                              {t('modals.search.saved', 'SAVED')}
+                            </Text>
+                          </View>
+                        ) : (
+                          <View style={styles.sourcePill}>
+                            <Text style={styles.sourceText}>
+                              🌐 GLOBAL
+                            </Text>
+                          </View>
+                        )}
                       </View>
                     </TouchableOpacity>
                   )}
@@ -268,6 +352,100 @@ export default function FoodSearchModal({
           )}
         </View>
       </SafeAreaView>
+
+      {/* Cuisine Selector Mini-Modal */}
+      <Modal 
+        visible={isCuisineModalOpen} 
+        animationType="slide" 
+        transparent
+        onRequestClose={() => setIsCuisineModalOpen(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                {t('modals.search.filterCuisine', 'Filter by Cuisine')}
+              </Text>
+              <TouchableOpacity onPress={() => setIsCuisineModalOpen(false)} style={styles.closeBtn}>
+                <Ionicons name="close" size={24} color="#64748b" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Quick selectors */}
+            <View style={styles.quickSelectRow}>
+              <TouchableOpacity 
+                style={styles.quickSelectBtn}
+                onPress={() => setTempSelectedCuisines(ALL_CUISINES.map(c => c.code))}
+              >
+                <Text style={styles.quickSelectBtnText}>
+                  {t('modals.search.selectAll', 'Select All')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.quickSelectBtn}
+                onPress={() => setTempSelectedCuisines([])}
+              >
+                <Text style={styles.quickSelectBtnText}>
+                  {t('modals.search.clearAll', 'Clear All')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <FlatList
+              data={ALL_CUISINES}
+              keyExtractor={(item) => item.code}
+              contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+              renderItem={({ item }) => {
+                const isChecked = tempSelectedCuisines.includes(item.code);
+                return (
+                  <TouchableOpacity 
+                    style={styles.cuisineItemRow}
+                    activeOpacity={0.7}
+                    onPress={() => {
+                      if (isChecked) {
+                        setTempSelectedCuisines(prev => prev.filter(c => c !== item.code));
+                      } else {
+                        setTempSelectedCuisines(prev => [...prev, item.code]);
+                      }
+                    }}
+                  >
+                    <Text style={styles.cuisineItemLabel}>
+                      {item.flag}  {item.label}
+                    </Text>
+                    <Ionicons 
+                      name={isChecked ? "checkbox" : "square-outline"} 
+                      size={24} 
+                      color={isChecked ? "#3b82f6" : "#cbd5e1"} 
+                    />
+                  </TouchableOpacity>
+                );
+              }}
+            />
+
+            <View style={styles.modalFooter}>
+              <TouchableOpacity 
+                style={styles.cancelBtn} 
+                onPress={() => setIsCuisineModalOpen(false)}
+              >
+                <Text style={styles.cancelBtnText}>
+                  {t('common.cancel', 'Cancel')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.applyBtn} 
+                onPress={() => {
+                  setSelectedCuisines([...tempSelectedCuisines]);
+                  setIsCuisineModalOpen(false);
+                }}
+              >
+                <Text style={styles.applyBtnText}>
+                  {t('common.apply', 'Apply')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </Modal>
   );
 }
@@ -494,6 +672,114 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     fontSize: 13,
     color: c.textMuted,
     lineHeight: 18,
+  },
+  cuisineSelectorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: c.surface,
+    borderColor: c.border,
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
+  cuisineSelectorText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#3b82f6',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: c.surface,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: '80%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: c.border,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: c.text,
+  },
+  quickSelectRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: c.border,
+    backgroundColor: c.surfaceMuted,
+  },
+  quickSelectBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    backgroundColor: c.surface,
+    borderWidth: 1,
+    borderColor: c.border,
+  },
+  quickSelectBtnText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: c.textMuted,
+  },
+  cuisineItemRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: c.border,
+  },
+  cuisineItemLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: c.text,
+  },
+  modalFooter: {
+    flexDirection: 'row',
+    gap: 12,
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: c.border,
+    backgroundColor: c.surface,
+  },
+  cancelBtn: {
+    flex: 1,
+    padding: 14,
+    borderRadius: 14,
+    alignItems: 'center',
+    backgroundColor: c.surfaceMuted,
+  },
+  cancelBtnText: {
+    fontWeight: 'bold',
+    color: c.textMuted,
+    fontSize: 15,
+  },
+  applyBtn: {
+    flex: 1,
+    padding: 14,
+    borderRadius: 14,
+    alignItems: 'center',
+    backgroundColor: '#3b82f6',
+  },
+  applyBtnText: {
+    fontWeight: 'bold',
+    color: '#fff',
+    fontSize: 15,
   },
 });
 

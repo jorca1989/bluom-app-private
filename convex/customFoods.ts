@@ -75,6 +75,7 @@ export const logFood = mutation({
         brand: v.optional(v.string()),
         servingSize: v.optional(v.string()),
         thumbnail: v.optional(v.string()),
+        countryCode: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         // Generate the search name by combining all populated translations to support multilingual search
@@ -177,6 +178,7 @@ export const updateFood = mutation({
             brand: v.optional(v.string()),
             servingSize: v.optional(v.string()),
             thumbnail: v.optional(v.string()),
+            countryCode: v.optional(v.string()),
         }),
     },
     handler: async (ctx, args) => {

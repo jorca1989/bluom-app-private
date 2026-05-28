@@ -18,6 +18,30 @@ import { api } from '@/convex/_generated/api';
 import { Utensils, Plus, Search, Trash2, Edit3, X, Check, ShieldCheck } from 'lucide-react-native';
 import { ADMIN_TRANSLATION_LANGUAGES } from '@/constants/adminLanguages';
 
+export const ADMIN_COUNTRIES = [
+  { code: '', label: '🌐 Global' },
+  { code: 'PT', label: '🇵🇹 Portugal' },
+  { code: 'BR', label: '🇧🇷 Brazil' },
+  { code: 'AO', label: '🇦🇴 Angola' },
+  { code: 'ES', label: '🇪🇸 Spain' },
+  { code: 'MX', label: '🇲🇽 Mexico' },
+  { code: 'GB', label: '🇬🇧 United Kingdom' },
+  { code: 'US', label: '🇺🇸 United States' },
+  { code: 'DE', label: '🇩🇪 Germany' },
+  { code: 'FR', label: '🇫🇷 France' },
+  { code: 'NL', label: '🇳🇱 Netherlands' },
+  { code: 'PL', label: '🇵🇱 Poland' },
+  { code: 'BG', label: '🇧🇬 Bulgaria' },
+  { code: 'DK', label: '🇩🇰 Denmark' },
+  { code: 'GR', label: '🇬🇷 Greece' },
+  { code: 'LT', label: '🇱🇹 Lithuania' },
+  { code: 'LV', label: '🇱🇻 Latvia' },
+  { code: 'NO', label: '🇳🇴 Norway' },
+  { code: 'RO', label: '🇷🇴 Romania' },
+  { code: 'SE', label: '🇸🇪 Sweden' },
+  { code: 'TR', label: '🇹🇷 Turkey' },
+];
+
 const PAGE_SIZE = 50;
 
 const localizedEmptyFields = (prefix: string) => Object.fromEntries(
@@ -38,6 +62,7 @@ const EMPTY_FORM = {
     servingSize: '100g',
     thumbnail: '',
     isVerified: true,
+    countryCode: '',
 };
 
 export default function AdminFoodsScreen() {
@@ -107,6 +132,7 @@ export default function AdminFoodsScreen() {
                         barcode: form.barcode.trim() || undefined,
                         servingSize: form.servingSize.trim() || undefined,
                         thumbnail: form.thumbnail.trim() || undefined,
+                        countryCode: form.countryCode.trim() || undefined,
                     }
                 });
             } else {
@@ -118,6 +144,7 @@ export default function AdminFoodsScreen() {
                     barcode: form.barcode.trim() || undefined,
                     servingSize: form.servingSize.trim() || undefined,
                     thumbnail: form.thumbnail.trim() || undefined,
+                    countryCode: form.countryCode.trim() || undefined,
                 });
             }
             setIsModalOpen(false);
@@ -164,6 +191,7 @@ export default function AdminFoodsScreen() {
             servingSize: food.servingSize ?? '100g',
             thumbnail: food.thumbnail ?? '',
             isVerified: food.isVerified ?? true,
+            countryCode: food.countryCode ?? '',
         });
         setIsModalOpen(true);
     };
@@ -172,6 +200,12 @@ export default function AdminFoodsScreen() {
         setEditingFood(null);
         setForm({ ...EMPTY_FORM });
         setIsModalOpen(true);
+    };
+
+    const getCountryFlag = (code?: string) => {
+        if (!code) return null;
+        const found = ADMIN_COUNTRIES.find(c => c.code === code);
+        return found ? found.label.split(' ')[0] : null;
     };
 
     const renderFoodItem = ({ item }: { item: any }) => {
@@ -188,6 +222,9 @@ export default function AdminFoodsScreen() {
                 <View style={styles.foodInfo}>
                     <View style={styles.nameRow}>
                         <Text style={styles.foodName} numberOfLines={1}>{name}</Text>
+                        {item.countryCode ? (
+                            <Text style={{ fontSize: 15, marginRight: 2 }}>{getCountryFlag(item.countryCode)}</Text>
+                        ) : null}
                         {item.isVerified && <ShieldCheck size={14} color="#22c55e" />}
                     </View>
                     <Text style={styles.foodMeta}>
@@ -353,6 +390,34 @@ export default function AdminFoodsScreen() {
                             <Text style={styles.label}>Thumbnail R2 URL</Text>
                             <TextInput style={styles.input} value={form.thumbnail} onChangeText={v => updateField('thumbnail', v)} placeholder="e.g. https://r2.bluom.app/foods/..." placeholderTextColor="#94a3b8" />
 
+                            <Text style={styles.label}>Cuisine Country</Text>
+                             <ScrollView 
+                                 horizontal 
+                                 showsHorizontalScrollIndicator={false} 
+                                 contentContainerStyle={styles.countryScroll}
+                             >
+                                 {ADMIN_COUNTRIES.map((c) => {
+                                     const isSelected = form.countryCode === c.code;
+                                     return (
+                                         <TouchableOpacity 
+                                             key={c.code} 
+                                             style={[
+                                                 styles.countryPill, 
+                                                 isSelected && styles.countryPillActive
+                                             ]}
+                                             onPress={() => updateField('countryCode', c.code)}
+                                         >
+                                             <Text style={[
+                                                 styles.countryPillText,
+                                                 isSelected && styles.countryPillTextActive
+                                             ]}>
+                                                 {c.label}
+                                             </Text>
+                                         </TouchableOpacity>
+                                     );
+                                 })}
+                             </ScrollView>
+
                             {/* Verified toggle */}
                             <TouchableOpacity style={styles.verifiedToggle} onPress={() => updateField('isVerified', !form.isVerified)}>
                                 <View style={[styles.checkbox, form.isVerified && styles.checkboxActive]}>
@@ -437,4 +502,10 @@ const styles = StyleSheet.create({
     cancelBtnText: { fontWeight: '700', color: '#64748b', fontSize: 15 },
     saveBtn: { flex: 1, padding: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#2563eb' },
     saveBtnText: { fontWeight: '700', color: '#fff', fontSize: 15 },
+
+    countryScroll: { gap: 8, paddingVertical: 4 },
+    countryPill: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, backgroundColor: '#f1f5f9', borderWidth: 1, borderColor: '#e2e8f0', flexDirection: 'row', alignItems: 'center' },
+    countryPillActive: { backgroundColor: '#eff6ff', borderColor: '#3b82f6' },
+    countryPillText: { fontSize: 14, fontWeight: '600', color: '#475569' },
+    countryPillTextActive: { color: '#2563eb' },
 });
