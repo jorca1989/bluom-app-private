@@ -30,6 +30,13 @@ export const ALL_CUISINES = [
   { code: 'RO', label: 'Romania', flag: '🇷🇴' },
   { code: 'SE', label: 'Sweden', flag: '🇸🇪' },
   { code: 'TR', label: 'Turkey', flag: '🇹🇷' },
+  { code: 'CN', label: 'Chinese', flag: '🇨🇳' },
+  { code: 'JP', label: 'Japanese', flag: '🇯🇵' },
+  { code: 'IN', label: 'Indian', flag: '🇮🇳' },
+  { code: 'TH', label: 'Thai', flag: '🇹🇭' },
+  { code: 'VN', label: 'Vietnamese', flag: '🇻🇳' },
+  { code: 'ARAB', label: 'Middle Eastern / Halal', flag: '🕌' },
+  { code: 'IR', label: 'Persian', flag: '🇮🇷' },
 ];
 
 export function getFlagEmoji(countryCode: string) {

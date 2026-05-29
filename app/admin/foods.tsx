@@ -40,6 +40,13 @@ export const ADMIN_COUNTRIES = [
   { code: 'RO', label: '🇷🇴 Romania' },
   { code: 'SE', label: '🇸🇪 Sweden' },
   { code: 'TR', label: '🇹🇷 Turkey' },
+  { code: 'CN', label: '🇨🇳 Chinese' },
+  { code: 'JP', label: '🇯🇵 Japanese' },
+  { code: 'IN', label: '🇮🇳 Indian' },
+  { code: 'TH', label: '🇹🇭 Thai' },
+  { code: 'VN', label: '🇻🇳 Vietnamese' },
+  { code: 'ARAB', label: '🕌 Middle Eastern / Halal' },
+  { code: 'IR', label: '🇮🇷 Persian' },
 ];
 
 const PAGE_SIZE = 50;
