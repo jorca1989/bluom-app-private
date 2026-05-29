@@ -387,22 +387,17 @@ export default function AdminFoodsScreen() {
                             {/* Details */}
                             <Text style={styles.label}>Brand</Text>
                             <TextInput style={styles.input} value={form.brand} onChangeText={v => updateField('brand', v)} placeholder="Optional" placeholderTextColor="#94a3b8" />
-
                             <Text style={styles.label}>Barcode</Text>
                             <TextInput style={styles.input} value={form.barcode} onChangeText={v => updateField('barcode', v)} placeholder="Optional" placeholderTextColor="#94a3b8" />
 
-                             <Text style={styles.label}>Serving Size</Text>
+                            <Text style={styles.label}>Serving Size</Text>
                             <TextInput style={styles.input} value={form.servingSize} onChangeText={v => updateField('servingSize', v)} placeholder="e.g. 100g" placeholderTextColor="#94a3b8" />
 
-                            <Text style={styles.label}>Thumbnail R2 URL</Text>
-                            <TextInput style={styles.input} value={form.thumbnail} onChangeText={v => updateField('thumbnail', v)} placeholder="e.g. https://r2.bluom.app/foods/..." placeholderTextColor="#94a3b8" />
+                             <Text style={styles.label}>Thumbnail R2 URL</Text>
+                             <TextInput style={styles.input} value={form.thumbnail} onChangeText={v => updateField('thumbnail', v)} placeholder="e.g. https://r2.bluom.app/foods/..." placeholderTextColor="#94a3b8" />
 
-                            <Text style={styles.label}>Cuisine Country</Text>
-                             <ScrollView 
-                                 horizontal 
-                                 showsHorizontalScrollIndicator={false} 
-                                 contentContainerStyle={styles.countryScroll}
-                             >
+                             <Text style={styles.label}>Cuisine Country</Text>
+                             <View style={styles.countryGrid}>
                                  {ADMIN_COUNTRIES.map((c) => {
                                      const isSelected = form.countryCode === c.code;
                                      return (
@@ -423,7 +418,7 @@ export default function AdminFoodsScreen() {
                                          </TouchableOpacity>
                                      );
                                  })}
-                             </ScrollView>
+                             </View>
 
                             {/* Verified toggle */}
                             <TouchableOpacity style={styles.verifiedToggle} onPress={() => updateField('isVerified', !form.isVerified)}>
@@ -510,9 +505,9 @@ const styles = StyleSheet.create({
     saveBtn: { flex: 1, padding: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#2563eb' },
     saveBtnText: { fontWeight: '700', color: '#fff', fontSize: 15 },
 
-    countryScroll: { gap: 8, paddingVertical: 4 },
-    countryPill: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, backgroundColor: '#f1f5f9', borderWidth: 1, borderColor: '#e2e8f0', flexDirection: 'row', alignItems: 'center' },
+    countryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingVertical: 6 },
+    countryPill: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 16, backgroundColor: '#f1f5f9', borderWidth: 1, borderColor: '#e2e8f0', flexDirection: 'row', alignItems: 'center', marginBottom: 2 },
     countryPillActive: { backgroundColor: '#eff6ff', borderColor: '#3b82f6' },
-    countryPillText: { fontSize: 14, fontWeight: '600', color: '#475569' },
+    countryPillText: { fontSize: 13, fontWeight: '600', color: '#475569' },
     countryPillTextActive: { color: '#2563eb' },
 });
