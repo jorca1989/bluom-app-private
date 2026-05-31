@@ -877,8 +877,8 @@ export default function OnboardingScreen() {
     <View style={{ flex: 1, backgroundColor: themeColors.bg }}>
       {showWelcome ? (
         <LinearGradient colors={[themeColors.bgGradientFrom, themeColors.bgGradientTo]} style={styles.fullscreen}>
-          <SafeAreaView style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center', paddingVertical: 40 }}>
-            <View style={{ alignItems: 'center', paddingHorizontal: 30, paddingTop: insets.top + 60 }}>
+          <SafeAreaView style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
+            <ScrollView contentContainerStyle={{ alignItems: 'center', paddingHorizontal: 30, paddingTop: 40, paddingBottom: 20 }} style={{ flex: 1, width: '100%' }} showsVerticalScrollIndicator={false}>
               {currentWelcomeSlide === 0 && (
                 <>
                   <Image source={WELCOME_LOGO} style={{ width: 140, height: 40, marginBottom: 40 }} resizeMode="contain" />
@@ -950,9 +950,9 @@ export default function OnboardingScreen() {
                   </View>
                 </>
               )}
-            </View>
+            </ScrollView>
 
-            <View style={{ alignItems: 'center', width: '100%' }}>
+            <View style={{ alignItems: 'center', width: '100%', paddingBottom: 20 }}>
               <View style={styles.dotsContainer}>
                 <View style={[styles.dot, currentWelcomeSlide === 0 && styles.activeDot]} />
                 <View style={[styles.dot, currentWelcomeSlide === 1 && styles.activeDot]} />
