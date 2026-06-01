@@ -94,6 +94,12 @@ export const createFood = mutation({
     protein: v.float64(),
     carbs: v.float64(),
     fat: v.float64(),
+    fiber: v.optional(v.float64()),
+    sugar: v.optional(v.float64()),
+    saturatedFat: v.optional(v.float64()),
+    polyunsaturatedFat: v.optional(v.float64()),
+    monounsaturatedFat: v.optional(v.float64()),
+    transFat: v.optional(v.float64()),
   },
   handler: async (ctx, args) => {
     const now = Date.now();
@@ -111,6 +117,12 @@ export const createFood = mutation({
       protein: args.protein,
       carbs: args.carbs,
       fat: args.fat,
+      fiber: args.fiber,
+      sugar: args.sugar,
+      saturatedFat: args.saturatedFat,
+      polyunsaturatedFat: args.polyunsaturatedFat,
+      monounsaturatedFat: args.monounsaturatedFat,
+      transFat: args.transFat,
       createdAt: now,
       updatedAt: now,
     });
@@ -131,6 +143,12 @@ export const upsertExternalFood = mutation({
     protein: v.float64(),
     carbs: v.float64(),
     fat: v.float64(),
+    fiber: v.optional(v.float64()),
+    sugar: v.optional(v.float64()),
+    saturatedFat: v.optional(v.float64()),
+    polyunsaturatedFat: v.optional(v.float64()),
+    monounsaturatedFat: v.optional(v.float64()),
+    transFat: v.optional(v.float64()),
   },
   handler: async (ctx, args) => {
     const now = Date.now();
@@ -154,6 +172,12 @@ export const upsertExternalFood = mutation({
         protein: args.protein,
         carbs: args.carbs,
         fat: args.fat,
+        fiber: args.fiber,
+        sugar: args.sugar,
+        saturatedFat: args.saturatedFat,
+        polyunsaturatedFat: args.polyunsaturatedFat,
+        monounsaturatedFat: args.monounsaturatedFat,
+        transFat: args.transFat,
         updatedAt: now,
       });
       return existing._id;
@@ -172,6 +196,12 @@ export const upsertExternalFood = mutation({
       protein: args.protein,
       carbs: args.carbs,
       fat: args.fat,
+      fiber: args.fiber,
+      sugar: args.sugar,
+      saturatedFat: args.saturatedFat,
+      polyunsaturatedFat: args.polyunsaturatedFat,
+      monounsaturatedFat: args.monounsaturatedFat,
+      transFat: args.transFat,
       createdAt: now,
       updatedAt: now,
     });

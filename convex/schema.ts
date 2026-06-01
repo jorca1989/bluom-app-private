@@ -172,6 +172,10 @@ export default defineSchema({
       carbs: v.float64(),
       fiber: v.float64(),
       sugar: v.optional(v.float64()),
+      saturatedFat: v.optional(v.float64()),
+      polyunsaturatedFat: v.optional(v.float64()),
+      monounsaturatedFat: v.optional(v.float64()),
+      transFat: v.optional(v.float64()),
     }),
     isVerified: v.boolean(),
     barcode: v.optional(v.string()),
@@ -180,6 +184,9 @@ export default defineSchema({
     thumbnail: v.optional(v.string()), // Optional R2 URL for food thumbnail
     searchName: v.string(), // Normalized lowercase name for search (usually English or primary)
     countryCode: v.optional(v.string()), // Optional country code for regional/gastronomic association (e.g. 'PT', 'ES', 'PL')
+    mealType: v.optional(v.array(v.string())),
+    dietType: v.optional(v.array(v.string())),
+    nutrientType: v.optional(v.array(v.string())),
   })
     .searchIndex("search_name", {
       searchField: "searchName",
@@ -281,6 +288,12 @@ export default defineSchema({
     protein: v.float64(),
     carbs: v.float64(),
     fat: v.float64(),
+    fiber: v.optional(v.float64()),
+    sugar: v.optional(v.float64()),
+    saturatedFat: v.optional(v.float64()),
+    polyunsaturatedFat: v.optional(v.float64()),
+    monounsaturatedFat: v.optional(v.float64()),
+    transFat: v.optional(v.float64()),
     servingSize: v.string(),
 
     // Meal Classification
@@ -314,10 +327,19 @@ export default defineSchema({
     externalId: v.optional(v.string()), // provider id
     barcode: v.optional(v.string()),
     servingSize: v.string(),
+    mealType: v.optional(v.array(v.string())),
+    dietType: v.optional(v.array(v.string())),
+    nutrientType: v.optional(v.array(v.string())),
     calories: v.float64(),
     protein: v.float64(),
     carbs: v.float64(),
     fat: v.float64(),
+    fiber: v.optional(v.float64()),
+    sugar: v.optional(v.float64()),
+    saturatedFat: v.optional(v.float64()),
+    polyunsaturatedFat: v.optional(v.float64()),
+    monounsaturatedFat: v.optional(v.float64()),
+    transFat: v.optional(v.float64()),
     createdAt: v.float64(),
     updatedAt: v.float64(),
   })

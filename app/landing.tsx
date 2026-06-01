@@ -18,9 +18,9 @@ export default function LandingPage() {
   const imgNutritionCollage = "https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/imagesection%202%20-%203%20screenshots%20of%20fuel.tsx%20and%20ai%20calorie%20photo%20detector%20camera%20model.png";
   const imgWaterLog = "https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/image%203-%20shopping%20list%20%2B%20recipes.tsx.png";
   const imgMove = "https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/imagesection%204%20Move.tsx%2C%20the%20exercise%20accordeon%20where%20you%20enter%20the%20sets%20and%20reps%2C%20%2B%20workouts.tsx.png";
-  const imgBehavioral = "https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/image%206%20-%20screenshots%20of%20wellness.tsx.png";
+  const imgBehavioral = "https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/image%205%20the%20meal%2C%20mental%20health%20and%20fitness%20plans.png.png";
   const imgWellness = "https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/image%206%20-%20screenshots%20of%20wellness.tsx.png";
-  const imgGamesHub = "https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/image%206%20-%20screenshots%20of%20wellness.tsx.png";
+  const imgGamesHub = "https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/Image%206%20wellness.tsx.png";
   const imgWomensHealth = "https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/image%207%20womens%20health%20cycle%20come%20we%20see%20the%20today%20tab%2C%20thr%20symtomns%20form%20and%20the%20pevic%20protocol%20timmer.png";
   const imgSupplements = "https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/image%208%20-%20%20Menrs%20health%20screen%20shots.png";
 
@@ -107,11 +107,11 @@ export default function LandingPage() {
               {status === 'error' && <p className="text-rose-600 font-bold text-sm mb-4">Couldn't save. Try again.</p>}
 
               <div id="download" className="flex flex-wrap items-center gap-3">
-                <a href="https://apps.apple.com/app/bluom-nutrition-fitness-ai/id6759072102" target="_blank" rel="noopener noreferrer"
+                <a href="https://apps.apple.com/pt/app/bluom-nutrition-fitness-ai/id6759072102?l=en-GB" target="_blank" rel="noopener noreferrer"
                   className="bg-slate-900 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:scale-105 transition-all no-underline">
                   <div className="text-left"><p className="text-[9px] uppercase font-bold opacity-60 m-0">Download on the</p><p className="text-base font-bold leading-none m-0">App Store</p></div>
                 </a>
-                <a href="#" className="bg-slate-900 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:scale-105 transition-all no-underline">
+                <a href="https://play.google.com/store/apps/details?id=com.jwfca.bluom" target="_blank" rel="noopener noreferrer" className="bg-slate-900 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:scale-105 transition-all no-underline">
                   <div className="text-left"><p className="text-[9px] uppercase font-bold opacity-60 m-0">Get it on</p><p className="text-base font-bold leading-none m-0">Google Play</p></div>
                 </a>
               </div>
@@ -307,7 +307,8 @@ export default function LandingPage() {
               <div className="bg-slate-900 text-white rounded-3xl p-8 border-2 border-[#2563eb] relative">
                 <span className="absolute -top-3 left-8 bg-[#2563eb] text-white text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full">Most popular</span>
                 <h3 className="text-2xl font-black font-outfit">Premium</h3>
-                <p className="text-4xl font-black font-outfit mt-4">$9.99<span className="text-base text-slate-400 font-bold">/mo</span></p>
+                <p className="text-4xl font-black font-outfit mt-4"><span className="text-2xl">$</span>11.99<span className="text-base text-slate-400 font-bold">/mo</span></p>
+                <p className="text-xs text-slate-400 font-bold mt-1">iOS: $12.99 (US) / €14.99 (EU)</p>
                 <ul className="space-y-2 mt-6 text-slate-200 font-inter font-semibold text-sm">
                   <li>✓ Everything in Free</li><li>✓ AI photo calorie scanner</li><li>✓ 5th premium meal slot</li><li>✓ Unlimited AI coach messages</li><li>✓ Premium recipes & video workouts</li><li>✓ Advanced analytics & reports</li>
                 </ul>
@@ -363,8 +364,8 @@ export default function LandingPage() {
                 <img src={logoSrc} alt="Bluom" className="h-9 w-auto mb-4" />
                 <p className="text-slate-500 font-inter font-medium max-w-xs">Precision Living. Power in Bloom. Live with vigor — optimize with precision.</p>
                 <div className="flex gap-3 mt-6">
-                  <a href="https://apps.apple.com/app/bluom-nutrition-fitness-ai/id6759072102" target="_blank" rel="noopener noreferrer" className="bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-lg no-underline">App Store</a>
-                  <a href="#" className="bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-lg no-underline">Google Play</a>
+                  <a href="https://apps.apple.com/pt/app/bluom-nutrition-fitness-ai/id6759072102?l=en-GB" target="_blank" rel="noopener noreferrer" className="bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-lg no-underline">App Store</a>
+                  <a href="https://play.google.com/store/apps/details?id=com.jwfca.bluom" target="_blank" rel="noopener noreferrer" className="bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-lg no-underline">Google Play</a>
                 </div>
               </div>
 

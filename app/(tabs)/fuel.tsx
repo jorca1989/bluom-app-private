@@ -44,6 +44,7 @@ import { QuickActions, UtilityCards } from '@/components/fuel/QuickActions';
 
 // Modals
 import AddFoodModal from '@/components/fuel/modals/AddFoodModal';
+import DetailedInsightsModal from '@/components/fuel/modals/DetailedInsightsModal';
 import CreateRecipeModal from '@/components/fuel/modals/CreateRecipeModal';
 import LogRecipeModal from '@/components/fuel/modals/LogRecipeModal';
 import FoodSearchModal from '@/components/fuel/modals/FoodSearchModal';
@@ -168,6 +169,7 @@ export default function FuelScreen() {
   const [showRecipeModal, setShowRecipeModal] = useState(false);
   const [showVoiceLog, setShowVoiceLog] = useState(false);
   const [showProUpgrade, setShowProUpgrade] = useState(false);
+  const [showDetailedInsights, setShowDetailedInsights] = useState(false);
   const [proGateMessage, setProGateMessage] = useState('This feature is available on Pro.');
   
   // Log Recipe Modal
@@ -468,6 +470,16 @@ export default function FuelScreen() {
           {isFW('macros') && (
           <View style={styles.section}>
             <MacroCards macros={macroCardsData} />
+            <TouchableOpacity 
+              style={[styles.detailedInsightsBtn, { backgroundColor: themeColors.surfaceMuted }]}
+              activeOpacity={0.7}
+              onPress={() => setShowDetailedInsights(true)}
+            >
+              <Ionicons name="stats-chart" size={16} color={themeColors.primary} />
+              <Text style={[styles.detailedInsightsText, { color: themeColors.primary }]}>
+                {t('fuel.detailedInsights.button', 'Detailed Insights')}
+              </Text>
+            </TouchableOpacity>
           </View>
           )}
 
@@ -721,6 +733,12 @@ export default function FuelScreen() {
         isPro={isPro}
       />
 
+      <DetailedInsightsModal
+        visible={showDetailedInsights}
+        onClose={() => setShowDetailedInsights(false)}
+        totals={daily?.consumed ?? { calories:0, protein:0, carbs:0, fat:0, fiber:0, sugar:0, saturatedFat:0, polyunsaturatedFat:0, monounsaturatedFat:0, transFat:0 }}
+      />
+
       <PhotoRecognitionModal
         visible={showPhotoCapture}
         onClose={() => setShowPhotoCapture(false)}
@@ -786,6 +804,19 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     fontWeight: '700',
     color: c.text,
     marginBottom: 16,
+  },
+  detailedInsightsBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    marginTop: 12,
+    borderRadius: 12,
+    gap: 6,
+  },
+  detailedInsightsText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   mealsSection: {
     paddingHorizontal: 20,

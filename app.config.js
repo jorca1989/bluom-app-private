@@ -76,6 +76,11 @@ export default ({ config }) => {
                     resizeMode: "contain",
                     backgroundColor: "#ffffff"
                 },
+                config: {
+                    googleMaps: {
+                        apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_ANDROID_KEY || ""
+                    }
+                },
                 permissions: [
                     // ── Camera ────────────────────────────────────────────────────
                     "android.permission.CAMERA",
@@ -121,6 +126,28 @@ export default ({ config }) => {
 
                 // ── Push Notifications ────────────────────────────────────────────
                 "expo-notifications",
+
+                // ── Apple Authentication ──────────────────────────────────────────
+                "expo-apple-authentication",
+
+                // ── Location & GPS ───────────────────────────────────────────────
+                [
+                    "expo-location",
+                    {
+                        locationAlwaysAndWhenInUsePermission: "Bluom needs access to your location to track your outdoor running routes.",
+                        isIosBackgroundLocationEnabled: true,
+                        isAndroidBackgroundLocationEnabled: true,
+                    }
+                ],
+
+                // ── HealthKit (iOS) ───────────────────────────────────────────────
+                [
+                    "@kingstinct/react-native-healthkit",
+                    {
+                        healthSharePermission: "Bluom reads your step count, active calories, walking distance, body weight, sleep duration, and heart rate from Apple Health to automatically update your daily goals and generate personalised wellness insights — so you never have to log manually.",
+                        healthUpdatePermission: "Bluom writes your logged workouts, sleep minutes, and body weight back to Apple Health, keeping all your wellness data in one place."
+                    }
+                ],
             ],
             extra: {
                 router: {},

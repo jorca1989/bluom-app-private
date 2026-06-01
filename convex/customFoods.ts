@@ -15,23 +15,39 @@ export const searchLocalFoods = query({
         query: v.string(),
         limit: v.optional(v.number()),
         language: v.optional(v.string()),
+        mealTypes: v.optional(v.array(v.string())),
+        dietTypes: v.optional(v.array(v.string())),
+        nutrientTypes: v.optional(v.array(v.string())),
     },
     handler: async (ctx, args) => {
         const limit = args.limit || 50;
         const normalizedQuery = args.query.toLowerCase().trim();
 
+        let results = [];
         if (!normalizedQuery) {
             // Pre-populate with all database custom foods (limit to 100) sorted by descending order
-            return await ctx.db
+            results = await ctx.db
                 .query("customFoods")
                 .order("desc")
                 .take(100);
+        } else {
+            results = await ctx.db
+                .query("customFoods")
+                .withSearchIndex("search_name", (q) => q.search("searchName", normalizedQuery))
+                .take(limit);
         }
 
-        const results = await ctx.db
-            .query("customFoods")
-            .withSearchIndex("search_name", (q) => q.search("searchName", normalizedQuery))
-            .take(limit);
+        const { mealTypes, dietTypes, nutrientTypes } = args;
+
+        if (mealTypes && mealTypes.length > 0) {
+            results = results.filter(f => f.mealType && f.mealType.some(m => mealTypes.includes(m)));
+        }
+        if (dietTypes && dietTypes.length > 0) {
+            results = results.filter(f => f.dietType && f.dietType.some(d => dietTypes.includes(d)));
+        }
+        if (nutrientTypes && nutrientTypes.length > 0) {
+            results = results.filter(f => f.nutrientType && f.nutrientType.some(n => nutrientTypes.includes(n)));
+        }
 
         return results;
     },
@@ -69,6 +85,10 @@ export const logFood = mutation({
             carbs: v.float64(),
             fiber: v.float64(),
             sugar: v.optional(v.float64()),
+            saturatedFat: v.optional(v.float64()),
+            polyunsaturatedFat: v.optional(v.float64()),
+            monounsaturatedFat: v.optional(v.float64()),
+            transFat: v.optional(v.float64()),
         }),
         isVerified: v.boolean(),
         barcode: v.optional(v.string()),
@@ -172,6 +192,10 @@ export const updateFood = mutation({
                 carbs: v.float64(),
                 fiber: v.float64(),
                 sugar: v.optional(v.float64()),
+                saturatedFat: v.optional(v.float64()),
+                polyunsaturatedFat: v.optional(v.float64()),
+                monounsaturatedFat: v.optional(v.float64()),
+                transFat: v.optional(v.float64()),
             })),
             isVerified: v.optional(v.boolean()),
             barcode: v.optional(v.string()),

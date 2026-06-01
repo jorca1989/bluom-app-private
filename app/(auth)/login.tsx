@@ -19,6 +19,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, LogIn, Eye, EyeOff } from 'lucide-react-native';
 import { MASTER_ADMINS } from '@/convex/permissions';
 import AppleSignInButton from '@/components/AppleSignInButton';
+import GoogleSignInButton from '@/components/GoogleSignInButton';
 import { useTranslation } from 'react-i18next';
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
@@ -247,7 +248,10 @@ export default function LoginScreen() {
                   </LinearGradient>
                 </TouchableOpacity>
 
-                {/* Social Logins removed for App Store compliance (Guideline 4.8) */}
+                <View style={{ marginTop: 16, gap: 12 }}>
+                  <AppleSignInButton />
+                  <GoogleSignInButton />
+                </View>
               </>
             )}
           </View>

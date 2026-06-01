@@ -21,6 +21,12 @@ export const logFoodEntry = mutation({
     protein: v.float64(),
     carbs: v.float64(),
     fat: v.float64(),
+    fiber: v.optional(v.float64()),
+    sugar: v.optional(v.float64()),
+    saturatedFat: v.optional(v.float64()),
+    polyunsaturatedFat: v.optional(v.float64()),
+    monounsaturatedFat: v.optional(v.float64()),
+    transFat: v.optional(v.float64()),
     servingSize: v.string(),
     mealType: v.union(
       v.literal("breakfast"),
@@ -51,6 +57,12 @@ export const logFoodEntry = mutation({
       protein: args.protein,
       carbs: args.carbs,
       fat: args.fat,
+      fiber: args.fiber,
+      sugar: args.sugar,
+      saturatedFat: args.saturatedFat,
+      polyunsaturatedFat: args.polyunsaturatedFat,
+      monounsaturatedFat: args.monounsaturatedFat,
+      transFat: args.transFat,
       servingSize: args.servingSize,
       mealType: args.mealType,
       date: args.date,
@@ -147,8 +159,17 @@ export const getDailyTotals = query({
         protein: acc.protein + entry.protein,
         carbs: acc.carbs + entry.carbs,
         fat: acc.fat + entry.fat,
+        fiber: acc.fiber + (entry.fiber ?? 0),
+        sugar: acc.sugar + (entry.sugar ?? 0),
+        saturatedFat: acc.saturatedFat + (entry.saturatedFat ?? 0),
+        polyunsaturatedFat: acc.polyunsaturatedFat + (entry.polyunsaturatedFat ?? 0),
+        monounsaturatedFat: acc.monounsaturatedFat + (entry.monounsaturatedFat ?? 0),
+        transFat: acc.transFat + (entry.transFat ?? 0),
       }),
-      { calories: 0, protein: 0, carbs: 0, fat: 0 }
+      { 
+        calories: 0, protein: 0, carbs: 0, fat: 0,
+        fiber: 0, sugar: 0, saturatedFat: 0, polyunsaturatedFat: 0, monounsaturatedFat: 0, transFat: 0
+      }
     );
 
     return totals;

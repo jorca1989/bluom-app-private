@@ -24,7 +24,7 @@ import { api } from '@/convex/_generated/api';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
+
 import {
   Activity, Sparkles, Info,
   ChevronRight, Check, Lock,
@@ -788,23 +788,9 @@ export default function OnboardingScreen() {
                 <Text style={styles.pillarCalVal}>{calculatedResults?.dailyCalories}</Text>
                 <Text style={styles.pillarCalLabel}>{t('onboarding.results.kcalDay', 'kcal / day')}</Text>
               </View>
-              {/* Blurred macros */}
+              {/* Solid Locker */}
               <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 72 }}>
-                <View style={styles.macroRow}>
-                  <View style={styles.macroItem}>
-                    <Text style={styles.macroVal}>{calculatedResults?.protein}g</Text>
-                    <Text style={styles.macroLabel}>{t('fuel.protein', 'Protein')}</Text>
-                  </View>
-                  <View style={styles.macroItem}>
-                    <Text style={styles.macroVal}>{calculatedResults?.carbs}g</Text>
-                    <Text style={styles.macroLabel}>{t('fuel.carbs', 'Carbs')}</Text>
-                  </View>
-                  <View style={styles.macroItem}>
-                    <Text style={styles.macroVal}>{calculatedResults?.fat}g</Text>
-                    <Text style={styles.macroLabel}>{t('fuel.fat', 'Fat')}</Text>
-                  </View>
-                </View>
-                <BlurView intensity={90} tint="light" style={StyleSheet.absoluteFill} />
+                <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.surface, opacity: 1 }]} />
                 <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
                   <Lock size={14} color={themeColors.text} />
                   <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
@@ -814,19 +800,8 @@ export default function OnboardingScreen() {
 
             {/* ── Pillar 2: Fitness ── */}
             <PillarCard emoji="🏋️" title={t('onboarding.results.fitnessPillar', 'Fitness')} color="#7c3aed">
-              <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8 }}>
-                {[
-                  t('onboarding.results.week1', 'Week 1 · Foundation'),
-                  t('onboarding.results.week2', 'Week 2 · Progression'),
-                  t('onboarding.results.week3', 'Week 3 · Peak'),
-                  t('onboarding.results.week4', 'Week 4 · Recovery'),
-                ].map((week, i) => (
-                  <View key={i} style={[styles.planWeekRow, { backgroundColor: i % 2 === 0 ? themeColors.surfaceMuted : themeColors.surface }]}>
-                    <Text style={styles.planWeekNum}>W{i + 1}</Text>
-                    <Text style={styles.planWeekLabel}>{week}</Text>
-                  </View>
-                ))}
-                <BlurView intensity={80} tint="light" style={StyleSheet.absoluteFill} />
+              <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 160 }}>
+                <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.surface, opacity: 1 }]} />
                 <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
                   <Lock size={14} color={themeColors.text} />
                   <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
@@ -836,19 +811,8 @@ export default function OnboardingScreen() {
 
             {/* ── Pillar 3: Mental Health ── */}
             <PillarCard emoji="🧠" title={t('onboarding.results.mentalPillar', 'Mental Health')} color="#059669">
-              <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8 }}>
-                {[
-                  t('onboarding.results.mental1', 'Stress Foundations'),
-                  t('onboarding.results.mental2', 'Sleep Optimisation'),
-                  t('onboarding.results.mental3', 'Mindset & Reframe'),
-                  t('onboarding.results.mental4', 'Integration Week'),
-                ].map((theme, i) => (
-                  <View key={i} style={[styles.planWeekRow, { backgroundColor: i % 2 === 0 ? themeColors.surfaceMuted : themeColors.surface }]}>
-                    <Text style={[styles.planWeekNum, { color: '#059669' }]}>W{i + 1}</Text>
-                    <Text style={styles.planWeekLabel}>{theme}</Text>
-                  </View>
-                ))}
-                <BlurView intensity={80} tint="light" style={StyleSheet.absoluteFill} />
+              <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 160 }}>
+                <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.surface, opacity: 1 }]} />
                 <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
                   <Lock size={14} color={themeColors.text} />
                   <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>

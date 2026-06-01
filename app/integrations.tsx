@@ -54,7 +54,6 @@ interface IntegrationDef {
 
 const INTEGRATIONS: IntegrationDef[] = [
   // ── Activity ──────────────────────────────────────────────
-  /*
   {
     id: 'apple_health',
     name: 'Apple Health',
@@ -76,8 +75,6 @@ const INTEGRATIONS: IntegrationDef[] = [
     platform: 'ios',
     available: Platform.OS === 'ios',
   },
-  */
-  /*
   {
     id: 'google_health',
     name: 'Health Connect',
@@ -99,7 +96,6 @@ const INTEGRATIONS: IntegrationDef[] = [
     platform: 'android',
     available: Platform.OS === 'android',
   },
-  */
   {
     id: 'strava',
     name: 'Strava',

@@ -64,6 +64,10 @@ const EMPTY_FORM = {
     fat: '',
     fiber: '',
     sugar: '',
+    saturatedFat: '',
+    polyunsaturatedFat: '',
+    monounsaturatedFat: '',
+    transFat: '',
     brand: '',
     barcode: '',
     servingSize: '100g',
@@ -124,9 +128,11 @@ export default function AdminFoodsScreen() {
                 fat: parseFloat(form.fat) || 0,
                 fiber: parseFloat(form.fiber) || 0,
             };
-            if (form.sugar !== '') {
-                macros.sugar = parseFloat(form.sugar) || 0;
-            }
+            if (form.sugar !== '') macros.sugar = parseFloat(form.sugar) || 0;
+            if (form.saturatedFat !== '') macros.saturatedFat = parseFloat(form.saturatedFat) || 0;
+            if (form.polyunsaturatedFat !== '') macros.polyunsaturatedFat = parseFloat(form.polyunsaturatedFat) || 0;
+            if (form.monounsaturatedFat !== '') macros.monounsaturatedFat = parseFloat(form.monounsaturatedFat) || 0;
+            if (form.transFat !== '') macros.transFat = parseFloat(form.transFat) || 0;
 
             if (editingFood) {
                 await updateFood({
@@ -193,6 +199,10 @@ export default function AdminFoodsScreen() {
             fat: String(food.macros?.fat ?? ''),
             fiber: String(food.macros?.fiber ?? ''),
             sugar: food.macros?.sugar !== undefined ? String(food.macros.sugar) : '',
+            saturatedFat: food.macros?.saturatedFat !== undefined ? String(food.macros.saturatedFat) : '',
+            polyunsaturatedFat: food.macros?.polyunsaturatedFat !== undefined ? String(food.macros.polyunsaturatedFat) : '',
+            monounsaturatedFat: food.macros?.monounsaturatedFat !== undefined ? String(food.macros.monounsaturatedFat) : '',
+            transFat: food.macros?.transFat !== undefined ? String(food.macros.transFat) : '',
             brand: food.brand ?? '',
             barcode: food.barcode ?? '',
             servingSize: food.servingSize ?? '100g',
@@ -364,6 +374,10 @@ export default function AdminFoodsScreen() {
                                     { key: 'fat', label: 'Fat', unit: 'g' },
                                     { key: 'fiber', label: 'Fiber', unit: 'g' },
                                     { key: 'sugar', label: 'Sugar', unit: 'g' },
+                                    { key: 'saturatedFat', label: 'Saturated Fat', unit: 'g' },
+                                    { key: 'polyunsaturatedFat', label: 'Polyunsat. Fat', unit: 'g' },
+                                    { key: 'monounsaturatedFat', label: 'Monounsat. Fat', unit: 'g' },
+                                    { key: 'transFat', label: 'Trans Fat', unit: 'g' },
                                 ].map(({ key, label, unit }) => (
                                     <View key={key} style={styles.macroField}>
                                         <Text style={styles.macroLabel}>{label}</Text>

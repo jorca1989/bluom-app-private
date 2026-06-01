@@ -141,8 +141,17 @@ export const getDailyMacros = query({
         protein: acc.protein + (e.protein ?? 0),
         carbs: acc.carbs + (e.carbs ?? 0),
         fat: acc.fat + (e.fat ?? 0),
+        fiber: acc.fiber + (e.fiber ?? 0),
+        sugar: acc.sugar + (e.sugar ?? 0),
+        saturatedFat: acc.saturatedFat + (e.saturatedFat ?? 0),
+        polyunsaturatedFat: acc.polyunsaturatedFat + (e.polyunsaturatedFat ?? 0),
+        monounsaturatedFat: acc.monounsaturatedFat + (e.monounsaturatedFat ?? 0),
+        transFat: acc.transFat + (e.transFat ?? 0),
       }),
-      { calories: 0, protein: 0, carbs: 0, fat: 0 }
+      { 
+        calories: 0, protein: 0, carbs: 0, fat: 0,
+        fiber: 0, sugar: 0, saturatedFat: 0, polyunsaturatedFat: 0, monounsaturatedFat: 0, transFat: 0
+      }
     );
 
     const target = {

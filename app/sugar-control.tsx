@@ -58,6 +58,11 @@ export default function SugarControlScreen() {
     api.sugar.getDailyStatus,
     convexUser?._id ? { userId: convexUser._id, date: today } : 'skip'
   );
+  const daily = useQuery(
+    api.daily.getDailyMacros,
+    convexUser?._id ? { userId: convexUser._id, date: today } : 'skip'
+  );
+  const sugarConsumed = daily?.consumed?.sugar ?? 0;
   const wellnessMood = useQuery(
     api.wellness.getMoodForDate,
     convexUser?._id ? { userId: convexUser._id, date: today } : 'skip'
@@ -210,6 +215,15 @@ export default function SugarControlScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>{t('sugarControl.dailyCheckin', 'Daily check‑in')}</Text>
           <Text style={styles.cardSub}>{t('sugarControl.howDidTodayGo', 'How did today go?')}</Text>
+
+          <View style={[styles.sugarConsumedBox, { backgroundColor: themeColors.surfaceMuted, borderColor: themeColors.border }]}>
+            <Text style={[styles.sugarConsumedLabel, { color: themeColors.textMuted }]}>
+              {t('sugarControl.loggedSugar', 'Sugar logged today:')}
+            </Text>
+            <Text style={[styles.sugarConsumedValue, { color: sugarConsumed > 0 ? '#ef4444' : '#16a34a' }]}>
+              {Math.round(sugarConsumed)}g
+            </Text>
+          </View>
 
           <View style={styles.choiceRow}>
             <Choice
@@ -416,6 +430,23 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     justifyContent: 'center',
   },
   primaryText: { color: '#fff', fontWeight: '900', fontSize: 15 },
+  sugarConsumedBox: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  sugarConsumedLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  sugarConsumedValue: {
+    fontSize: 18,
+    fontWeight: '900',
+  },
 });
 
 

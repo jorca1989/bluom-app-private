@@ -1,10 +1,79 @@
 import React from 'react';
+import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useOAuth } from '@clerk/clerk-expo';
 
-/**
- * AppleSignInButton (Stubbed)
- * 
- * This component is currently stubbed to avoid dependency on expo-apple-authentication.
- */
-export default function AppleSignInButton({ disabled }: { disabled?: boolean }) {
-  return null;
+type Props = {
+  disabled?: boolean;
+};
+
+export default function AppleSignInButton({ disabled }: Props) {
+  const { startOAuthFlow } = useOAuth({ strategy: 'oauth_apple' });
+  const [loading, setLoading] = React.useState(false);
+
+  // Keep native-only for now to avoid web redirect complexity.
+  if (Platform.OS === 'web') return null;
+
+  const onPress = async () => {
+    if (disabled || loading) return;
+    try {
+      setLoading(true);
+      const redirectUrl = 'bluom://sso-callback';
+      console.log('[auth][apple] redirectUrl', redirectUrl);
+
+      const { createdSessionId, setActive, authSessionResult } = await startOAuthFlow({
+        redirectUrl,
+      });
+
+      if (authSessionResult?.type === 'cancel' || authSessionResult?.type === 'dismiss') {
+        return;
+      }
+
+      if (createdSessionId && setActive) {
+        await setActive({ session: createdSessionId });
+      } else {
+        Alert.alert('Apple sign-in incomplete', 'Please try again.');
+      }
+    } catch (e: any) {
+      const code = e?.code ?? e?.errorCode;
+      if (String(code) === 'ERR_REQUEST_CANCELED') return;
+      Alert.alert('Apple sign-in failed', e?.message ? String(e.message) : 'Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <TouchableOpacity
+      style={[styles.btn, (disabled || loading) && { opacity: 0.6 }]}
+      onPress={onPress}
+      activeOpacity={0.85}
+      disabled={disabled || loading}
+    >
+      <View style={styles.row}>
+        <Ionicons name="logo-apple" size={20} color="#000000" />
+        <Text style={styles.text}>Continue with Apple</Text>
+      </View>
+    </TouchableOpacity>
+  );
 }
+
+const styles = StyleSheet.create({
+  btn: {
+    width: '100%',
+    height: 56,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#000000',
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+  text: { color: '#000000', fontWeight: '700', fontSize: 16 },
+});

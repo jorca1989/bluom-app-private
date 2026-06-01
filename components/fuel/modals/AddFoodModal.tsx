@@ -30,7 +30,14 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
     totalCarbs: '',
     totalFat: '',
     protein: '',
+    sugar: '',
+    fiber: '',
+    saturatedFat: '',
+    polyunsaturatedFat: '',
+    monounsaturatedFat: '',
+    transFat: '',
   });
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -56,6 +63,12 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
         protein: parseFloat(form.protein) || 0,
         carbs: parseFloat(form.totalCarbs) || 0,
         fat: parseFloat(form.totalFat) || 0,
+        sugar: form.sugar ? parseFloat(form.sugar) : undefined,
+        fiber: form.fiber ? parseFloat(form.fiber) : undefined,
+        saturatedFat: form.saturatedFat ? parseFloat(form.saturatedFat) : undefined,
+        polyunsaturatedFat: form.polyunsaturatedFat ? parseFloat(form.polyunsaturatedFat) : undefined,
+        monounsaturatedFat: form.monounsaturatedFat ? parseFloat(form.monounsaturatedFat) : undefined,
+        transFat: form.transFat ? parseFloat(form.transFat) : undefined,
       });
 
       Alert.alert(t('modals.addFood.successTitle', 'Success'), t('modals.addFood.successMsg', 'Food/ingredient added!'));
@@ -71,7 +84,7 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
     onClose();
     setTimeout(() => {
       setStep(1);
-      setForm({ name: '', brand: '', servingSize: '100g', calories: '', totalCarbs: '', totalFat: '', protein: '' });
+      setForm({ name: '', brand: '', servingSize: '100g', calories: '', totalCarbs: '', totalFat: '', protein: '', sugar: '', fiber: '', saturatedFat: '', polyunsaturatedFat: '', monounsaturatedFat: '', transFat: '' });
       setError('');
     }, 300);
   };
@@ -223,6 +236,48 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
                   <Text style={styles.macroUnit}>g</Text>
                 </View>
               </View>
+
+              <TouchableOpacity style={{ alignSelf: 'flex-start', marginTop: 16, marginBottom: 8 }} onPress={() => setShowAdvanced(!showAdvanced)}>
+                <Text style={{ color: themeColors.primary, fontWeight: '700', fontSize: 14 }}>
+                  {showAdvanced ? 'Hide Advanced Macros' : '+ Add Advanced Macros (Optional)'}
+                </Text>
+              </TouchableOpacity>
+
+              {showAdvanced && (
+                <View style={[styles.macroGrid, { marginTop: 8 }]}>
+                  <View style={styles.macroCard}>
+                    <Text style={styles.macroLabel}>Sugar</Text>
+                    <TextInput style={styles.macroInput} placeholder="0" value={form.sugar} onChangeText={(v) => handleChange('sugar', v)} keyboardType="numeric" selectTextOnFocus placeholderTextColor="#94a3b8" />
+                    <Text style={styles.macroUnit}>g</Text>
+                  </View>
+                  <View style={styles.macroCard}>
+                    <Text style={styles.macroLabel}>Fiber</Text>
+                    <TextInput style={styles.macroInput} placeholder="0" value={form.fiber} onChangeText={(v) => handleChange('fiber', v)} keyboardType="numeric" selectTextOnFocus placeholderTextColor="#94a3b8" />
+                    <Text style={styles.macroUnit}>g</Text>
+                  </View>
+                  <View style={styles.macroCard}>
+                    <Text style={styles.macroLabel}>Saturated Fat</Text>
+                    <TextInput style={styles.macroInput} placeholder="0" value={form.saturatedFat} onChangeText={(v) => handleChange('saturatedFat', v)} keyboardType="numeric" selectTextOnFocus placeholderTextColor="#94a3b8" />
+                    <Text style={styles.macroUnit}>g</Text>
+                  </View>
+                  <View style={styles.macroCard}>
+                    <Text style={styles.macroLabel}>Trans Fat</Text>
+                    <TextInput style={styles.macroInput} placeholder="0" value={form.transFat} onChangeText={(v) => handleChange('transFat', v)} keyboardType="numeric" selectTextOnFocus placeholderTextColor="#94a3b8" />
+                    <Text style={styles.macroUnit}>g</Text>
+                  </View>
+                  <View style={styles.macroCard}>
+                    <Text style={styles.macroLabel}>Polyunsat. Fat</Text>
+                    <TextInput style={styles.macroInput} placeholder="0" value={form.polyunsaturatedFat} onChangeText={(v) => handleChange('polyunsaturatedFat', v)} keyboardType="numeric" selectTextOnFocus placeholderTextColor="#94a3b8" />
+                    <Text style={styles.macroUnit}>g</Text>
+                  </View>
+                  <View style={styles.macroCard}>
+                    <Text style={styles.macroLabel}>Monounsat. Fat</Text>
+                    <TextInput style={styles.macroInput} placeholder="0" value={form.monounsaturatedFat} onChangeText={(v) => handleChange('monounsaturatedFat', v)} keyboardType="numeric" selectTextOnFocus placeholderTextColor="#94a3b8" />
+                    <Text style={styles.macroUnit}>g</Text>
+                  </View>
+                </View>
+              )}
+
 
               <View style={styles.buttonRow}>
                 <TouchableOpacity style={styles.secondaryButton} onPress={() => setStep(1)}>

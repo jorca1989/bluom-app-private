@@ -5,12 +5,18 @@ export const list = query({
   args: {
     search: v.optional(v.string()),
     category: v.optional(v.string()),
+    mealTypes: v.optional(v.array(v.string())),
+    dietTypes: v.optional(v.array(v.string())),
+    cuisines: v.optional(v.array(v.string())),
     limit: v.optional(v.float64()),
   },
   handler: async (ctx, args) => {
     const limit = Math.max(1, Math.min(100, Math.floor(args.limit ?? 50)));
     const search = (args.search ?? "").trim().toLowerCase();
     const category = (args.category ?? "").trim();
+    const mealTypes = args.mealTypes ?? [];
+    const dietTypes = args.dietTypes ?? [];
+    const cuisines = args.cuisines ?? [];
 
     let recipes = await ctx.db.query("publicRecipes").collect();
 
@@ -23,6 +29,18 @@ export const list = query({
         const matchMulti = (r.categories ?? []).includes(category);
         return matchSingle || matchMulti;
       });
+    }
+
+    if (mealTypes.length > 0) {
+      recipes = recipes.filter(r => r.mealType && r.mealType.some(m => mealTypes.includes(m)));
+    }
+
+    if (dietTypes.length > 0) {
+      recipes = recipes.filter(r => r.dietType && r.dietType.some(d => dietTypes.includes(d)));
+    }
+
+    if (cuisines.length > 0) {
+      recipes = recipes.filter(r => r.cuisine && cuisines.includes(r.cuisine));
     }
 
     if (search) {

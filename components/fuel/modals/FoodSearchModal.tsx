@@ -39,6 +39,10 @@ export const ALL_CUISINES = [
   { code: 'IR', label: 'Persian', flag: '🇮🇷' },
 ];
 
+export const MEAL_TYPES = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+export const DIET_TYPES = ['Vegan', 'Vegetarian', 'Keto', 'Paleo', 'Gluten-Free'];
+export const NUTRIENT_TYPES = ['Fiber Rich', 'High Protein', 'Low Carb', 'Low Fat'];
+
 export function getFlagEmoji(countryCode: string) {
   if (!countryCode) return '🌐';
   const found = ALL_CUISINES.find(c => c.code === countryCode.toUpperCase());
@@ -88,12 +92,27 @@ export default function FoodSearchModal({
   const [debouncedQuery, setDebouncedQuery] = useState('');
 
   const [selectedCuisines, setSelectedCuisines] = useState<string[]>(ALL_CUISINES.map(c => c.code));
+  const [selectedMealTypes, setSelectedMealTypes] = useState<string[]>([]);
+  const [selectedDietTypes, setSelectedDietTypes] = useState<string[]>([]);
+  const [selectedNutrientTypes, setSelectedNutrientTypes] = useState<string[]>([]);
+
   const [tempSelectedCuisines, setTempSelectedCuisines] = useState<string[]>(ALL_CUISINES.map(c => c.code));
-  const [isCuisineModalOpen, setIsCuisineModalOpen] = useState(false);
+  const [tempSelectedMealTypes, setTempSelectedMealTypes] = useState<string[]>([]);
+  const [tempSelectedDietTypes, setTempSelectedDietTypes] = useState<string[]>([]);
+  const [tempSelectedNutrientTypes, setTempSelectedNutrientTypes] = useState<string[]>([]);
+
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [activeFilterTab, setActiveFilterTab] = useState<'cuisine' | 'meal' | 'diet' | 'nutrient'>('cuisine');
 
   const searchResults = useQuery(
     api.customFoods.searchLocalFoods,
-    { query: debouncedQuery, limit: 50 }
+    { 
+      query: debouncedQuery, 
+      limit: 50,
+      mealTypes: selectedMealTypes,
+      dietTypes: selectedDietTypes,
+      nutrientTypes: selectedNutrientTypes
+    }
   );
 
   const filteredSearchResults = useMemo(() => {
@@ -213,15 +232,19 @@ export default function FoodSearchModal({
                 style={styles.cuisineSelectorRow} 
                 onPress={() => {
                   setTempSelectedCuisines([...selectedCuisines]);
-                  setIsCuisineModalOpen(true);
+                  setTempSelectedMealTypes([...selectedMealTypes]);
+                  setTempSelectedDietTypes([...selectedDietTypes]);
+                  setTempSelectedNutrientTypes([...selectedNutrientTypes]);
+                  setIsFilterModalOpen(true);
                 }}
                 activeOpacity={0.7}
               >
                 <Ionicons name="filter" size={16} color="#3b82f6" style={{ marginRight: 6 }} />
                 <Text style={styles.cuisineSelectorText} numberOfLines={1}>
-                  {selectedCuisines.length === ALL_CUISINES.length 
-                    ? t('modals.search.allCuisines', '🌍 Cuisines: All Cuisines') 
-                    : `${selectedCuisines.map(c => getFlagEmoji(c)).join(' ')} (${selectedCuisines.length} selected)`}
+                  {t('modals.search.filters', 'Filters')} ({
+                    selectedMealTypes.length + selectedDietTypes.length + selectedNutrientTypes.length + 
+                    (selectedCuisines.length < ALL_CUISINES.length ? selectedCuisines.length : 0)
+                  } active)
                 </Text>
                 <Ionicons name="chevron-down" size={14} color="#64748b" style={{ marginLeft: 6 }} />
               </TouchableOpacity>
@@ -360,64 +383,95 @@ export default function FoodSearchModal({
         </View>
       </SafeAreaView>
 
-      {/* Cuisine Selector Mini-Modal */}
+      {/* Filter Modal */}
       <Modal 
-        visible={isCuisineModalOpen} 
+        visible={isFilterModalOpen} 
         animationType="slide" 
         transparent
-        onRequestClose={() => setIsCuisineModalOpen(false)}
+        onRequestClose={() => setIsFilterModalOpen(false)}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>
-                {t('modals.search.filterCuisine', 'Filter by Cuisine')}
+                {t('modals.search.filterOptions', 'Filter Options')}
               </Text>
-              <TouchableOpacity onPress={() => setIsCuisineModalOpen(false)} style={styles.closeBtn}>
+              <TouchableOpacity onPress={() => setIsFilterModalOpen(false)} style={styles.closeBtn}>
                 <Ionicons name="close" size={24} color="#64748b" />
               </TouchableOpacity>
             </View>
 
-            {/* Quick selectors */}
-            <View style={styles.quickSelectRow}>
-              <TouchableOpacity 
-                style={styles.quickSelectBtn}
-                onPress={() => setTempSelectedCuisines(ALL_CUISINES.map(c => c.code))}
-              >
-                <Text style={styles.quickSelectBtnText}>
-                  {t('modals.search.selectAll', 'Select All')}
-                </Text>
+            <View style={styles.tabsRow}>
+              <TouchableOpacity style={[styles.tab, activeFilterTab === 'cuisine' && styles.tabActive]} onPress={() => setActiveFilterTab('cuisine')}>
+                <Text style={[styles.tabText, activeFilterTab === 'cuisine' && styles.tabTextActive]} numberOfLines={1} adjustsFontSizeToFit>Cuisine</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.quickSelectBtn}
-                onPress={() => setTempSelectedCuisines([])}
-              >
-                <Text style={styles.quickSelectBtnText}>
-                  {t('modals.search.clearAll', 'Clear All')}
-                </Text>
+              <TouchableOpacity style={[styles.tab, activeFilterTab === 'meal' && styles.tabActive]} onPress={() => setActiveFilterTab('meal')}>
+                <Text style={[styles.tabText, activeFilterTab === 'meal' && styles.tabTextActive]} numberOfLines={1} adjustsFontSizeToFit>Meal</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.tab, activeFilterTab === 'diet' && styles.tabActive]} onPress={() => setActiveFilterTab('diet')}>
+                <Text style={[styles.tabText, activeFilterTab === 'diet' && styles.tabTextActive]} numberOfLines={1} adjustsFontSizeToFit>Diet</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.tab, activeFilterTab === 'nutrient' && styles.tabActive]} onPress={() => setActiveFilterTab('nutrient')}>
+                <Text style={[styles.tabText, activeFilterTab === 'nutrient' && styles.tabTextActive]} numberOfLines={1} adjustsFontSizeToFit>Nutrient</Text>
               </TouchableOpacity>
             </View>
 
+            {/* Quick selectors for Cuisine */}
+            {activeFilterTab === 'cuisine' && (
+              <View style={styles.quickSelectRow}>
+                <TouchableOpacity 
+                  style={styles.quickSelectBtn}
+                  onPress={() => setTempSelectedCuisines(ALL_CUISINES.map(c => c.code))}
+                >
+                  <Text style={styles.quickSelectBtnText}>{t('modals.search.selectAll', 'Select All')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={styles.quickSelectBtn}
+                  onPress={() => setTempSelectedCuisines([])}
+                >
+                  <Text style={styles.quickSelectBtnText}>{t('modals.search.clearAll', 'Clear All')}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
             <FlatList
-              data={ALL_CUISINES}
+              data={
+                activeFilterTab === 'cuisine' ? ALL_CUISINES :
+                activeFilterTab === 'meal' ? MEAL_TYPES.map(m => ({ code: m, label: m, flag: '' })) :
+                activeFilterTab === 'diet' ? DIET_TYPES.map(d => ({ code: d, label: d, flag: '' })) :
+                NUTRIENT_TYPES.map(n => ({ code: n, label: n, flag: '' }))
+              }
               keyExtractor={(item) => item.code}
-              contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+              contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20, marginTop: 10 }}
               renderItem={({ item }) => {
-                const isChecked = tempSelectedCuisines.includes(item.code);
+                let isChecked = false;
+                if (activeFilterTab === 'cuisine') isChecked = tempSelectedCuisines.includes(item.code);
+                if (activeFilterTab === 'meal') isChecked = tempSelectedMealTypes.includes(item.code);
+                if (activeFilterTab === 'diet') isChecked = tempSelectedDietTypes.includes(item.code);
+                if (activeFilterTab === 'nutrient') isChecked = tempSelectedNutrientTypes.includes(item.code);
+
                 return (
                   <TouchableOpacity 
                     style={styles.cuisineItemRow}
                     activeOpacity={0.7}
                     onPress={() => {
-                      if (isChecked) {
-                        setTempSelectedCuisines(prev => prev.filter(c => c !== item.code));
-                      } else {
-                        setTempSelectedCuisines(prev => [...prev, item.code]);
+                      if (activeFilterTab === 'cuisine') {
+                        if (isChecked) setTempSelectedCuisines(prev => prev.filter(c => c !== item.code));
+                        else setTempSelectedCuisines(prev => [...prev, item.code]);
+                      } else if (activeFilterTab === 'meal') {
+                        if (isChecked) setTempSelectedMealTypes(prev => prev.filter(c => c !== item.code));
+                        else setTempSelectedMealTypes(prev => [...prev, item.code]);
+                      } else if (activeFilterTab === 'diet') {
+                        if (isChecked) setTempSelectedDietTypes(prev => prev.filter(c => c !== item.code));
+                        else setTempSelectedDietTypes(prev => [...prev, item.code]);
+                      } else if (activeFilterTab === 'nutrient') {
+                        if (isChecked) setTempSelectedNutrientTypes(prev => prev.filter(c => c !== item.code));
+                        else setTempSelectedNutrientTypes(prev => [...prev, item.code]);
                       }
                     }}
                   >
                     <Text style={styles.cuisineItemLabel}>
-                      {item.flag}  {item.label}
+                      {item.flag ? `${item.flag} ` : ''}{item.label}
                     </Text>
                     <Ionicons 
                       name={isChecked ? "checkbox" : "square-outline"} 
@@ -432,22 +486,21 @@ export default function FoodSearchModal({
             <View style={styles.modalFooter}>
               <TouchableOpacity 
                 style={styles.cancelBtn} 
-                onPress={() => setIsCuisineModalOpen(false)}
+                onPress={() => setIsFilterModalOpen(false)}
               >
-                <Text style={styles.cancelBtnText}>
-                  {t('common.cancel', 'Cancel')}
-                </Text>
+                <Text style={styles.cancelBtnText}>{t('common.cancel', 'Cancel')}</Text>
               </TouchableOpacity>
               <TouchableOpacity 
                 style={styles.applyBtn} 
                 onPress={() => {
                   setSelectedCuisines([...tempSelectedCuisines]);
-                  setIsCuisineModalOpen(false);
+                  setSelectedMealTypes([...tempSelectedMealTypes]);
+                  setSelectedDietTypes([...tempSelectedDietTypes]);
+                  setSelectedNutrientTypes([...tempSelectedNutrientTypes]);
+                  setIsFilterModalOpen(false);
                 }}
               >
-                <Text style={styles.applyBtnText}>
-                  {t('common.apply', 'Apply')}
-                </Text>
+                <Text style={styles.applyBtnText}>{t('common.apply', 'Apply')}</Text>
               </TouchableOpacity>
             </View>
           </View>
