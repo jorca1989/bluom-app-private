@@ -481,6 +481,10 @@ export default defineSchema({
     categories: v.optional(v.array(v.string())), // multi-category tags
     status: v.optional(v.string()), // 'published' | 'draft'
     isPremium: v.optional(v.boolean()),
+    mealType: v.optional(v.array(v.string())),
+    dietType: v.optional(v.array(v.string())),
+    nutrientType: v.optional(v.array(v.string())),
+    cuisine: v.optional(v.string()),
     titleLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()), bg: v.optional(v.string()), da: v.optional(v.string()), el: v.optional(v.string()), lt: v.optional(v.string()), lv: v.optional(v.string()), no: v.optional(v.string()), pl: v.optional(v.string()), ro: v.optional(v.string()), sv: v.optional(v.string()), tr: v.optional(v.string()) })),
     descriptionLocalizations: v.optional(v.object({ pt: v.optional(v.string()), es: v.optional(v.string()), fr: v.optional(v.string()), de: v.optional(v.string()), nl: v.optional(v.string()), bg: v.optional(v.string()), da: v.optional(v.string()), el: v.optional(v.string()), lt: v.optional(v.string()), lv: v.optional(v.string()), no: v.optional(v.string()), pl: v.optional(v.string()), ro: v.optional(v.string()), sv: v.optional(v.string()), tr: v.optional(v.string()) })),
     ingredients: v.optional(v.array(v.string())),

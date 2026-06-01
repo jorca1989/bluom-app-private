@@ -102,6 +102,7 @@ export default function MetabolicHub() {
   // Fuel entries do not track fiber yet; fall back to metabolic log fiber if present.
   const fiber = todayMacros?.fiber ?? 0;
   const fat = foodTotals?.fat ?? todayMacros?.fat ?? 0;
+  const sugar = foodTotals?.sugar ?? todayMacros?.sugar ?? 0;
 
   const netCarbs = Math.max(0, carbs - fiber);
   const ketoState = getKetosisState(netCarbs, t);
@@ -207,9 +208,9 @@ export default function MetabolicHub() {
         </View>
 
         {/* --- New KPI Grid --- */}
-        <View className="flex-row gap-3 mb-4">
+        <View className="flex-row flex-wrap justify-between gap-y-3 mb-4">
           {/* Net Carbs */}
-          <View style={{ flex: 1, backgroundColor: themeColors.surface, borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, padding: 16 }}>
+          <View style={{ width: '48%', backgroundColor: themeColors.surface, borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, padding: 16 }}>
             <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4 }}>{t('metabolic.netCarbs', 'Net Carbs')}</Text>
             <View className="flex-row items-baseline gap-1">
               <Text style={{ color: themeColors.text, fontWeight: '900', fontSize: 24 }}>{Math.round(netCarbs)}</Text>
@@ -219,7 +220,7 @@ export default function MetabolicHub() {
           </View>
 
           {/* Fat/Carb Ratio */}
-          <View style={{ flex: 1, backgroundColor: themeColors.surface, borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, padding: 16 }}>
+          <View style={{ width: '48%', backgroundColor: themeColors.surface, borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, padding: 16 }}>
             <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4 }}>{t('metabolic.fatCarbRatio', 'Fat/Carb %')}</Text>
             <View className="flex-row items-baseline gap-1">
               <Text style={{ color: themeColors.text, fontWeight: '900', fontSize: 24 }}>{fatPercentage}</Text>
@@ -229,13 +230,23 @@ export default function MetabolicHub() {
           </View>
 
           {/* Net Carb Budget */}
-          <View style={{ flex: 1, backgroundColor: themeColors.surface, borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, padding: 16 }}>
+          <View style={{ width: '48%', backgroundColor: themeColors.surface, borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, padding: 16 }}>
             <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4 }}>{t('metabolic.netCarbsLeft', 'Net Carbs Left')}</Text>
             <View className="flex-row items-baseline gap-1">
               <Text style={{ color: netCarbsRemaining < 5 ? '#e11d48' : '#059669', fontWeight: '900', fontSize: 24 }}>{Math.round(netCarbsRemaining)}</Text>
               <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 12 }}>g</Text>
             </View>
             <Text style={{ color: themeColors.textMuted, fontWeight: '600', fontSize: 10, marginTop: 4 }}>{t('metabolic.ofBudget', 'of {{budget}}g Budget', { budget: netCarbBudget })}</Text>
+          </View>
+
+          {/* Sugar Consumed */}
+          <View style={{ width: '48%', backgroundColor: themeColors.surface, borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, padding: 16 }}>
+            <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4 }}>{t('metabolic.sugarConsumed', 'Sugar Logged')}</Text>
+            <View className="flex-row items-baseline gap-1">
+              <Text style={{ color: themeColors.text, fontWeight: '900', fontSize: 24 }}>{Math.round(sugar)}</Text>
+              <Text style={{ color: themeColors.textMuted, fontWeight: '700', fontSize: 12 }}>g</Text>
+            </View>
+            <Text style={{ color: themeColors.textMuted, fontWeight: '600', fontSize: 10, marginTop: 4 }}>{t('metabolic.totalLogged', 'Total Logged')}</Text>
           </View>
         </View>
 

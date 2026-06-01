@@ -551,10 +551,8 @@ export default function IntegrationsScreen() {
 
   // ── Show only platform-relevant integrations ─────────────────
   const visible = (item: IntegrationDef) => {
-    if (item.platform === 'coming_soon') return true; // show as placeholders
-    if (item.platform === 'both') return true;
-    if (item.platform === 'ios' && Platform.OS !== 'ios') return false;
-    if (item.platform === 'android' && Platform.OS !== 'android') return false;
+    // Show all integrations so the user knows they exist, 
+    // even if they are on web or the wrong platform.
     return true;
   };
   return (

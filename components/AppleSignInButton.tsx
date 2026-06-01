@@ -11,8 +11,8 @@ export default function AppleSignInButton({ disabled }: Props) {
   const { startOAuthFlow } = useOAuth({ strategy: 'oauth_apple' });
   const [loading, setLoading] = React.useState(false);
 
-  // Keep native-only for now to avoid web redirect complexity.
-  if (Platform.OS === 'web') return null;
+  // Allow rendering on web (useful for UI testing)
+  // if (Platform.OS === 'web') return null;
 
   const onPress = async () => {
     if (disabled || loading) return;

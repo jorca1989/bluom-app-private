@@ -113,6 +113,7 @@ export default ({ config }) => {
                 "expo-audio",
                 "expo-asset",
                 "expo-splash-screen",
+                "expo-localization",
                 "@react-native-community/datetimepicker",
 
                 // ── Camera ────────────────────────────────────────────────────────

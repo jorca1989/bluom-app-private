@@ -12,6 +12,12 @@ export interface FoodItem {
   protein: number;
   carbs: number;
   fat: number;
+  sugar: number;
+  fiber?: number;
+  saturatedFat?: number;
+  polyunsaturatedFat?: number;
+  monounsaturatedFat?: number;
+  transFat?: number;
 }
 
 interface MealCardProps {
@@ -21,9 +27,10 @@ interface MealCardProps {
   foods: FoodItem[];
   onAddPress: () => void;
   onDeletePress: (id: string) => void;
+  onItemPress?: (food: FoodItem) => void;
 }
 
-const MealCard = ({ title, icon, time, foods, onAddPress, onDeletePress }: MealCardProps) => {
+const MealCard = ({ title, icon, time, foods, onAddPress, onDeletePress, onItemPress }: MealCardProps) => {
   const { t } = useTranslation();
   const { colors: themeColors } = useTheme();
   const styles = useMemo(() => createStyles(themeColors), [themeColors]);
@@ -33,8 +40,9 @@ const MealCard = ({ title, icon, time, foods, onAddPress, onDeletePress }: MealC
       protein: acc.protein + f.protein,
       carbs: acc.carbs + f.carbs,
       fat: acc.fat + f.fat,
+      sugar: acc.sugar + f.sugar,
     }),
-    { cal: 0, protein: 0, carbs: 0, fat: 0 }
+    { cal: 0, protein: 0, carbs: 0, fat: 0, sugar: 0 }
   );
 
   const macroTotal = totals.protein + totals.carbs + totals.fat || 1;
@@ -64,7 +72,7 @@ const MealCard = ({ title, icon, time, foods, onAddPress, onDeletePress }: MealC
       {foods.length > 0 && (
         <View style={styles.foodsList}>
           {foods.map((food, i) => (
-            <View key={food.id || i} style={styles.foodRow}>
+            <TouchableOpacity key={food.id || i} style={styles.foodRow} onPress={() => onItemPress && onItemPress(food)} activeOpacity={0.7}>
               <Text style={styles.foodName}>{t(`db.${food.name.replace(/\s+/g, '')}`, food.name)}</Text>
               <View style={styles.foodRight}>
                 <Text style={styles.foodCal}>{Math.round(food.cal)} kcal</Text>
@@ -72,7 +80,7 @@ const MealCard = ({ title, icon, time, foods, onAddPress, onDeletePress }: MealC
                    <Ionicons name="close" size={16} color="#94a3b8" />
                 </TouchableOpacity>
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
       )}
@@ -85,7 +93,7 @@ const MealCard = ({ title, icon, time, foods, onAddPress, onDeletePress }: MealC
             <View style={[styles.macroSegment, { backgroundColor: '#fde047', width: `${fatPct}%` }]} />
           </View>
           <Text style={styles.macroText}>
-            {t('fuel.mealCard.p', 'P')}:{Math.round(totals.protein)}g {t('fuel.mealCard.c', 'C')}:{Math.round(totals.carbs)}g {t('fuel.mealCard.f', 'F')}:{Math.round(totals.fat)}g
+            {t('fuel.mealCard.p', 'P')}:{Math.round(totals.protein)}g {t('fuel.mealCard.c', 'C')}:{Math.round(totals.carbs)}g ({Math.round(totals.sugar)}g sugar) {t('fuel.mealCard.f', 'F')}:{Math.round(totals.fat)}g
           </Text>
         </View>
       )}

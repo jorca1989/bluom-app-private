@@ -30,9 +30,12 @@ import { useTranslation } from 'react-i18next';
 import { useUser as useAppUser } from '@/context/UserContext';
 import { sendHydrationReminder, sendMealReminder } from '@/utils/notifications';
 import { useAccessControl } from '@/hooks/useAccessControl';
+import { useTheme } from '@/context/ThemeContext';
+import type { ThemeColors } from '@/context/ThemeContext';
 
 import CoachMark from '@/components/CoachMark';
 import PhotoRecognitionModal from '@/components/PhotoRecognitionModal';
+import FoodDetailsModal from '@/components/fuel/modals/FoodDetailsModal';
 
 // New Components
 import CalorieSummary from '@/components/fuel/CalorieSummary';
@@ -50,8 +53,6 @@ import LogRecipeModal from '@/components/fuel/modals/LogRecipeModal';
 import FoodSearchModal from '@/components/fuel/modals/FoodSearchModal';
 import VoiceLogModal from '@/components/fuel/modals/VoiceLogModel';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
-import { useTheme } from '@/context/ThemeContext';
-import type { ThemeColors } from '@/context/ThemeContext';
 
 type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 type MealTypeLower = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'premium_slot';
@@ -178,6 +179,8 @@ export default function FuelScreen() {
   const [logMeal, setLogMeal] = useState<MealName>('Lunch');
   const [logQuantity, setLogQuantity] = useState(1);
   const [logSuccess, setLogSuccess] = useState(false);
+
+  const [detailsFood, setDetailsFood] = useState<any>(null);
 
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -527,6 +530,12 @@ export default function FuelScreen() {
                    protein: e.protein ?? 0,
                    carbs: e.carbs ?? 0,
                    fat: e.fat ?? 0,
+                   sugar: e.sugar ?? 0,
+                   fiber: e.fiber,
+                   saturatedFat: e.saturatedFat,
+                   polyunsaturatedFat: e.polyunsaturatedFat,
+                   monounsaturatedFat: e.monounsaturatedFat,
+                   transFat: e.transFat,
                  }));
 
                  return (
@@ -540,6 +549,7 @@ export default function FuelScreen() {
                         setShowFoodSearch(true);
                      }}
                      onDeletePress={(id) => deleteFoodEntry({ entryId: id as any })}
+                     onItemPress={(food) => setDetailsFood(food)}
                    />
                  );
               })}
@@ -586,6 +596,31 @@ export default function FuelScreen() {
               </TouchableOpacity>
             </View>
           ) : null}
+
+          {/* Personalized Meal Plan Button */}
+          <View style={styles.section}>
+            <TouchableOpacity 
+              style={[styles.premiumMealPlanBtn, { backgroundColor: themeColors.primary }]}
+              activeOpacity={0.85}
+              onPress={() => {
+                 if (!isPro) {
+                    setProGateMessage(t('fuel.mealPlanProGate', 'Personalized meal plans are a Pro feature.'));
+                    setShowProUpgrade(true);
+                 } else {
+                    router.push('/ai-coach');
+                 }
+              }}
+            >
+              <View style={styles.premiumMealPlanContent}>
+                 <Ionicons name="sparkles" size={24} color="#ffffff" />
+                 <View style={styles.premiumMealPlanTextWrap}>
+                    <Text style={styles.premiumMealPlanTitle}>{t('fuel.getMealPlan', 'Get Personalized Meal Plan')}</Text>
+                    <Text style={styles.premiumMealPlanSub}>{t('fuel.getMealPlanSub', 'AI generated meal plans tailored to your goals')}</Text>
+                 </View>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#ffffff" style={{ opacity: 0.8 }} />
+            </TouchableOpacity>
+          </View>
 
           {isFW('quickActions') && (
           <View style={styles.section}>
@@ -650,6 +685,15 @@ export default function FuelScreen() {
         visible={showAddFoodModal} 
         onClose={() => setShowAddFoodModal(false)} 
         userId={convexUser._id} 
+      />
+
+      <FoodDetailsModal
+        visible={!!detailsFood}
+        onClose={() => setDetailsFood(null)}
+        item={detailsFood}
+        itemType="food"
+        onLog={() => {}}
+        hideLogButton={true}
       />
       
       <CreateRecipeModal
@@ -801,7 +845,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '800',
     color: c.text,
     marginBottom: 16,
   },
@@ -927,5 +971,37 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     color: c.textMuted, 
     fontWeight: '500', 
     fontSize: 14,
+  },
+  premiumMealPlanBtn: {
+    borderRadius: 20,
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    shadowColor: '#3b82f6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  premiumMealPlanContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  premiumMealPlanTextWrap: {
+    marginLeft: 16,
+    flex: 1,
+  },
+  premiumMealPlanTitle: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '800',
+    marginBottom: 4,
+  },
+  premiumMealPlanSub: {
+    color: 'rgba(255,255,255,0.85)',
+    fontSize: 13,
+    fontWeight: '500',
   }
 });

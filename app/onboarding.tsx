@@ -841,8 +841,8 @@ export default function OnboardingScreen() {
     <View style={{ flex: 1, backgroundColor: themeColors.bg }}>
       {showWelcome ? (
         <LinearGradient colors={[themeColors.bgGradientFrom, themeColors.bgGradientTo]} style={styles.fullscreen}>
-          <SafeAreaView style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
-            <ScrollView contentContainerStyle={{ alignItems: 'center', paddingHorizontal: 30, paddingTop: 40, paddingBottom: 20 }} style={{ flex: 1, width: '100%' }} showsVerticalScrollIndicator={false}>
+          <SafeAreaView style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center' }} edges={['top', 'bottom']}>
+            <ScrollView contentContainerStyle={{ alignItems: 'center', paddingHorizontal: 30, paddingTop: 40, paddingBottom: Math.max(20, insets.bottom) }} style={{ flex: 1, width: '100%' }} showsVerticalScrollIndicator={false}>
               {currentWelcomeSlide === 0 && (
                 <>
                   <Image source={WELCOME_LOGO} style={{ width: 140, height: 40, marginBottom: 40 }} resizeMode="contain" />
@@ -916,7 +916,7 @@ export default function OnboardingScreen() {
               )}
             </ScrollView>
 
-            <View style={{ alignItems: 'center', width: '100%', paddingBottom: 20 }}>
+            <View style={{ alignItems: 'center', width: '100%', paddingBottom: Math.max(20, insets.bottom) }}>
               <View style={styles.dotsContainer}>
                 <View style={[styles.dot, currentWelcomeSlide === 0 && styles.activeDot]} />
                 <View style={[styles.dot, currentWelcomeSlide === 1 && styles.activeDot]} />
@@ -1108,7 +1108,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   dotsContainer: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 32, marginTop: 48 },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: c.surfaceMuted },
   activeDot: { backgroundColor: c.primary, width: 20 },
-  welcomeBtn: { backgroundColor: c.primary, marginHorizontal: 30, padding: 18, borderRadius: 16, alignItems: 'center', marginBottom: 40 },
+  welcomeBtn: { backgroundColor: c.primary, width: '85%', maxWidth: 350, padding: 18, borderRadius: 16, alignItems: 'center', marginBottom: 20 },
   welcomeBtnText: { color: c.onPrimary, fontSize: 18, fontWeight: 'bold' },
 
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16, gap: 16, backgroundColor: c.bg },

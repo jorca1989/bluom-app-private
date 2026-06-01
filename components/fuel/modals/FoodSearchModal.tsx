@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from 'convex/react';
 
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+import FoodDetailsModal from './FoodDetailsModal';
 
 export const ALL_CUISINES = [
   { code: 'PT', label: 'Portugal', flag: '🇵🇹' },
@@ -91,6 +92,9 @@ export default function FoodSearchModal({
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
 
+  const [detailsItem, setDetailsItem] = useState<any>(null);
+  const [detailsType, setDetailsType] = useState<'food' | 'recipe' | null>(null);
+
   const [selectedCuisines, setSelectedCuisines] = useState<string[]>(ALL_CUISINES.map(c => c.code));
   const [selectedMealTypes, setSelectedMealTypes] = useState<string[]>([]);
   const [selectedDietTypes, setSelectedDietTypes] = useState<string[]>([]);
@@ -126,6 +130,26 @@ export default function FoodSearchModal({
 
   const searchLoading = debouncedQuery.length > 0 && searchResults === undefined;
   const myRecipes = useQuery(api.recipes.getMyRecipes, { userId });
+
+  const filteredMyRecipes = useMemo(() => {
+    if (!myRecipes) return [];
+    return myRecipes.filter((r: any) => {
+      if (selectedCuisines.length > 0 && selectedCuisines.length < ALL_CUISINES.length) {
+        if (r.cuisine && !selectedCuisines.includes(r.cuisine)) return false;
+      }
+      if (selectedMealTypes.length > 0) {
+        if (!r.mealType || !r.mealType.some((m: string) => selectedMealTypes.includes(m))) return false;
+      }
+      if (selectedDietTypes.length > 0) {
+        if (!r.dietType || !r.dietType.some((d: string) => selectedDietTypes.includes(d))) return false;
+      }
+      if (selectedNutrientTypes.length > 0) {
+        if (!r.nutrientType || !r.nutrientType.some((n: string) => selectedNutrientTypes.includes(n))) return false;
+      }
+      return true;
+    });
+  }, [myRecipes, selectedCuisines, selectedMealTypes, selectedDietTypes, selectedNutrientTypes]);
+
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language || 'en';
   const getLocalizedName = (nameField: any) => {
@@ -266,7 +290,7 @@ export default function FoodSearchModal({
                   showsVerticalScrollIndicator={false}
                   contentContainerStyle={styles.listContent}
                   renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.listItem} onPress={() => onLogFood(item)} activeOpacity={0.7}>
+                    <TouchableOpacity style={styles.listItem} onPress={() => { setDetailsItem(item); setDetailsType('food'); }} activeOpacity={0.7}>
                       <View style={styles.listIconWrap}>
                         {item.thumbnail ? (
                           <Image source={{ uri: item.thumbnail }} style={styles.listIconImage} />
@@ -316,22 +340,22 @@ export default function FoodSearchModal({
                 <View style={styles.loadingState}>
                   <ActivityIndicator size="large" color="#3b82f6" />
                 </View>
-              ) : myRecipes.length === 0 ? (
+              ) : (filteredMyRecipes ?? []).length === 0 ? (
                 <View style={styles.emptyState}>
                   <Ionicons name="restaurant-outline" size={48} color="#e2e8f0" />
-                  <Text style={styles.emptyText}>{t('modals.search.noRecipes', 'No recipes yet')}</Text>
-                  <Text style={styles.emptySub}>{t('modals.search.createQuick', 'Create your own recipes for quick logging.')}</Text>
+                  <Text style={styles.emptyText}>{t('modals.search.noRecipes', 'No recipes found')}</Text>
+                  <Text style={styles.emptySub}>{t('modals.search.createQuick', 'Adjust your filters or create a new recipe.')}</Text>
                 </View>
               ) : (
                 <FlatList
-                  data={myRecipes}
+                  data={filteredMyRecipes}
                   keyExtractor={(item) => item._id}
                   showsVerticalScrollIndicator={false}
                   contentContainerStyle={styles.listContent}
                   renderItem={({ item }) => {
                     const macros = calculateRecipeMacros(item);
                     return (
-                      <TouchableOpacity style={styles.listItem} onPress={() => onLogRecipe(item)} activeOpacity={0.7}>
+                      <TouchableOpacity style={styles.listItem} onPress={() => { setDetailsItem(item); setDetailsType('recipe'); }} activeOpacity={0.7}>
                          <View style={styles.listIconWrapRecipe}>
                            <Ionicons name="restaurant" size={20} color="#2563eb" />
                          </View>
@@ -506,6 +530,21 @@ export default function FoodSearchModal({
           </View>
         </View>
       </Modal>
+
+      <FoodDetailsModal
+        visible={!!detailsItem}
+        onClose={() => setDetailsItem(null)}
+        item={detailsItem}
+        itemType={detailsType}
+        onLog={(item) => {
+          if (detailsType === 'recipe') {
+            onLogRecipe(item);
+          } else {
+            onLogFood(item);
+          }
+          setDetailsItem(null);
+        }}
+      />
     </Modal>
   );
 }

@@ -1106,6 +1106,27 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     justifyContent: 'center',
   },
   lockedBtnText: { color: '#ffffff', fontWeight: '900' },
+  // Modal styles for filtering
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  modalContent: { backgroundColor: c.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '90%' },
+  modalHeader: { padding: 20, borderBottomWidth: 1, borderBottomColor: c.border, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  modalTitle: { fontSize: 20, fontWeight: 'bold', color: c.text },
+  closeBtn: { padding: 4 },
+  tabsRow: { flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: c.border, gap: 8 },
+  tab: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20, backgroundColor: c.surfaceMuted },
+  tabActive: { backgroundColor: '#3b82f6' },
+  tabText: { fontSize: 14, fontWeight: '600', color: c.textMuted },
+  tabTextActive: { color: '#ffffff' },
+  quickSelectRow: { flexDirection: 'row', gap: 12, padding: 16, paddingBottom: 0 },
+  quickSelectBtn: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 12, backgroundColor: c.surfaceMuted },
+  quickSelectBtnText: { fontSize: 13, fontWeight: '600', color: c.text },
+  cuisineItemRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, borderBottomWidth: 1, borderBottomColor: c.border },
+  cuisineItemLabel: { fontSize: 16, color: c.text, fontWeight: '500' },
+  modalFooter: { padding: 20, borderTopWidth: 1, borderTopColor: c.border, flexDirection: 'row', gap: 12, backgroundColor: c.surface },
+  cancelBtn: { flex: 1, paddingVertical: 14, borderRadius: 14, backgroundColor: c.surfaceMuted, alignItems: 'center' },
+  cancelBtnText: { fontSize: 16, fontWeight: '600', color: c.text },
+  applyBtn: { flex: 1, paddingVertical: 14, borderRadius: 14, backgroundColor: '#3b82f6', alignItems: 'center' },
+  applyBtnText: { fontSize: 16, fontWeight: '700', color: '#ffffff' },
 });
 
 // Static module-scope fallbacks (default theme) for helper components.
