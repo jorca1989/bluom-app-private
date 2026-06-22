@@ -72,6 +72,8 @@ interface FoodSearchModalProps {
   onLogRecipe: (recipe: any) => void;
   onOpenAddFood: () => void;
   onOpenCreateRecipe: () => void;
+  onEditFood?: (food: any) => void;
+  onEditRecipe?: (recipe: any) => void;
 }
 
 export default function FoodSearchModal({
@@ -84,6 +86,8 @@ export default function FoodSearchModal({
   onLogRecipe,
   onOpenAddFood,
   onOpenCreateRecipe,
+  onEditFood,
+  onEditRecipe,
 }: FoodSearchModalProps) {
   const { colors: themeColors } = useTheme();
   const styles = useMemo(() => createStyles(themeColors), [themeColors]);
@@ -130,25 +134,32 @@ export default function FoodSearchModal({
 
   const searchLoading = debouncedQuery.length > 0 && searchResults === undefined;
   const myRecipes = useQuery(api.recipes.getMyRecipes, { userId });
+  const myFoods = useQuery(api.foodCatalog.getMyFoods, { userId });
 
-  const filteredMyRecipes = useMemo(() => {
-    if (!myRecipes) return [];
-    return myRecipes.filter((r: any) => {
+  const filteredMyCollection = useMemo(() => {
+    const recipesList = (myRecipes ?? []).map((r: any) => ({ ...r, _type: 'recipe' as const }));
+    const foodsList = (myFoods ?? []).map((f: any) => ({ ...f, _type: 'food' as const }));
+    const combined = [...recipesList, ...foodsList];
+
+    // sort newest first
+    combined.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+    return combined.filter((item: any) => {
       if (selectedCuisines.length > 0 && selectedCuisines.length < ALL_CUISINES.length) {
-        if (r.cuisine && !selectedCuisines.includes(r.cuisine)) return false;
+        if (item.cuisine && !selectedCuisines.includes(item.cuisine)) return false;
       }
       if (selectedMealTypes.length > 0) {
-        if (!r.mealType || !r.mealType.some((m: string) => selectedMealTypes.includes(m))) return false;
+        if (item.mealType && !item.mealType.some((m: string) => selectedMealTypes.includes(m))) return false;
       }
       if (selectedDietTypes.length > 0) {
-        if (!r.dietType || !r.dietType.some((d: string) => selectedDietTypes.includes(d))) return false;
+        if (item.dietType && !item.dietType.some((d: string) => selectedDietTypes.includes(d))) return false;
       }
       if (selectedNutrientTypes.length > 0) {
-        if (!r.nutrientType || !r.nutrientType.some((n: string) => selectedNutrientTypes.includes(n))) return false;
+        if (item.nutrientType && !item.nutrientType.some((n: string) => selectedNutrientTypes.includes(n))) return false;
       }
       return true;
     });
-  }, [myRecipes, selectedCuisines, selectedMealTypes, selectedDietTypes, selectedNutrientTypes]);
+  }, [myRecipes, myFoods, selectedCuisines, selectedMealTypes, selectedDietTypes, selectedNutrientTypes]);
 
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language || 'en';
@@ -246,32 +257,23 @@ export default function FoodSearchModal({
                   placeholderTextColor="#94a3b8"
                 />
                 {searchQuery.length > 0 && (
-                  <TouchableOpacity onPress={() => setSearchQuery('')}>
+                  <TouchableOpacity onPress={() => setSearchQuery('')} style={{ marginRight: 8 }}>
                     <Ionicons name="close-circle" size={20} color="#cbd5e1" />
                   </TouchableOpacity>
                 )}
+                <TouchableOpacity 
+                  onPress={() => {
+                    setTempSelectedCuisines([...selectedCuisines]);
+                    setTempSelectedMealTypes([...selectedMealTypes]);
+                    setTempSelectedDietTypes([...selectedDietTypes]);
+                    setTempSelectedNutrientTypes([...selectedNutrientTypes]);
+                    setIsFilterModalOpen(true);
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="options" size={20} color="#3b82f6" />
+                </TouchableOpacity>
               </View>
-
-              <TouchableOpacity 
-                style={styles.cuisineSelectorRow} 
-                onPress={() => {
-                  setTempSelectedCuisines([...selectedCuisines]);
-                  setTempSelectedMealTypes([...selectedMealTypes]);
-                  setTempSelectedDietTypes([...selectedDietTypes]);
-                  setTempSelectedNutrientTypes([...selectedNutrientTypes]);
-                  setIsFilterModalOpen(true);
-                }}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="filter" size={16} color="#3b82f6" style={{ marginRight: 6 }} />
-                <Text style={styles.cuisineSelectorText} numberOfLines={1}>
-                  {t('modals.search.filters', 'Filters')} ({
-                    selectedMealTypes.length + selectedDietTypes.length + selectedNutrientTypes.length + 
-                    (selectedCuisines.length < ALL_CUISINES.length ? selectedCuisines.length : 0)
-                  } active)
-                </Text>
-                <Ionicons name="chevron-down" size={14} color="#64748b" style={{ marginLeft: 6 }} />
-              </TouchableOpacity>
 
               {searchLoading ? (
                 <View style={styles.loadingState}>
@@ -336,40 +338,69 @@ export default function FoodSearchModal({
 
           {activeTab === 'recipes' && (
             <View style={{ flex: 1 }}>
-              {!myRecipes ? (
+              {!myRecipes || !myFoods ? (
                 <View style={styles.loadingState}>
                   <ActivityIndicator size="large" color="#3b82f6" />
                 </View>
-              ) : (filteredMyRecipes ?? []).length === 0 ? (
+              ) : (filteredMyCollection ?? []).length === 0 ? (
                 <View style={styles.emptyState}>
                   <Ionicons name="restaurant-outline" size={48} color="#e2e8f0" />
-                  <Text style={styles.emptyText}>{t('modals.search.noRecipes', 'No recipes found')}</Text>
-                  <Text style={styles.emptySub}>{t('modals.search.createQuick', 'Adjust your filters or create a new recipe.')}</Text>
+                  <Text style={styles.emptyText}>{t('modals.search.noRecipes', 'No saved items found')}</Text>
+                  <Text style={styles.emptySub}>{t('modals.search.createQuick', 'Adjust your filters or create a new custom food/recipe.')}</Text>
                 </View>
               ) : (
                 <FlatList
-                  data={filteredMyRecipes}
+                  data={filteredMyCollection}
                   keyExtractor={(item) => item._id}
                   showsVerticalScrollIndicator={false}
                   contentContainerStyle={styles.listContent}
                   renderItem={({ item }) => {
-                    const macros = calculateRecipeMacros(item);
+                    const isRecipe = item._type === 'recipe';
+                    const macros = isRecipe 
+                      ? calculateRecipeMacros(item) 
+                      : (item.macros || item);
                     return (
-                      <TouchableOpacity style={styles.listItem} onPress={() => { setDetailsItem(item); setDetailsType('recipe'); }} activeOpacity={0.7}>
-                         <View style={styles.listIconWrapRecipe}>
-                           <Ionicons name="restaurant" size={20} color="#2563eb" />
-                         </View>
-                         <View style={styles.listBody}>
-                           <Text style={styles.listTitle} numberOfLines={1}>{item.name}</Text>
-                           <Text style={styles.listSub} numberOfLines={1}>
-                              {item.servings} {t('modals.search.servings', 'Servings')}
-                           </Text>
-                         </View>
-                         <View style={styles.listRight}>
-                           <Text style={styles.listCal}>{Math.round(macros.calories)}</Text>
-                           <Text style={styles.listCalUnit}>kcal</Text>
-                         </View>
-                      </TouchableOpacity>
+                      <View style={styles.listItemRowContainer}>
+                        <TouchableOpacity 
+                          style={[styles.listItem, { flex: 1 }]} 
+                          onPress={() => { 
+                            setDetailsItem(item); 
+                            setDetailsType(isRecipe ? 'recipe' : 'food'); 
+                          }} 
+                          activeOpacity={0.7}
+                        >
+                          <View style={isRecipe ? styles.listIconWrapRecipe : styles.listIconWrapFood}>
+                            <Ionicons name={isRecipe ? "restaurant" : "nutrition"} size={20} color={isRecipe ? "#2563eb" : "#10b981"} />
+                          </View>
+                          <View style={styles.listBody}>
+                            <Text style={styles.listTitle} numberOfLines={1}>{item.name}</Text>
+                            <Text style={styles.listSub} numberOfLines={1}>
+                              {isRecipe 
+                                ? `${item.servings} ${t('modals.search.servings', 'Servings')}`
+                                : (item.brand ? `${item.brand} • ` : '') + (item.servingSize || '100g')
+                              }
+                            </Text>
+                          </View>
+                          <View style={styles.listRight}>
+                            <Text style={styles.listCal}>{Math.round(macros.calories ?? 0)}</Text>
+                            <Text style={styles.listCalUnit}>kcal</Text>
+                          </View>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity 
+                          style={styles.editIconBtn} 
+                          onPress={() => {
+                            if (isRecipe) {
+                              if (onEditRecipe) onEditRecipe(item);
+                            } else {
+                              if (onEditFood) onEditFood(item);
+                            }
+                          }}
+                          activeOpacity={0.7}
+                        >
+                          <Ionicons name="create-outline" size={20} color="#3b82f6" />
+                        </TouchableOpacity>
+                      </View>
                     );
                   }}
                 />
@@ -685,6 +716,29 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: '#eff6ff',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  listIconWrapFood: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#ecfdf5',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  listItemRowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  editIconBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: c.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: c.border,
   },
   listIconEmoji: {
     fontSize: 20,

@@ -460,20 +460,6 @@ export default function RecipesScreen() {
               <Ionicons name="filter" size={20} color="#3b82f6" />
             </TouchableOpacity>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
-            {categories.map((category) => (
-              <TouchableOpacity
-                key={category}
-                style={[styles.categoryChip, selectedCategory === category && styles.categoryChipActive]}
-                onPress={() => setSelectedCategory(category)}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.categoryChipText, selectedCategory === category && styles.categoryChipTextActive]}>
-                  {t(`recipes.categories.${category}`, category) as string}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
         </View>
 
         {loading && (

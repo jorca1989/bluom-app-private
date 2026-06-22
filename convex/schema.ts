@@ -176,6 +176,15 @@ export default defineSchema({
       polyunsaturatedFat: v.optional(v.float64()),
       monounsaturatedFat: v.optional(v.float64()),
       transFat: v.optional(v.float64()),
+      iron: v.optional(v.float64()),
+      calcium: v.optional(v.float64()),
+      potassium: v.optional(v.float64()),
+      vitaminA: v.optional(v.float64()),
+      vitaminC: v.optional(v.float64()),
+      addedSugar: v.optional(v.float64()),
+      sodium: v.optional(v.float64()),
+      magnesium: v.optional(v.float64()),
+      zinc: v.optional(v.float64()),
     }),
     isVerified: v.boolean(),
     barcode: v.optional(v.string()),
@@ -282,6 +291,8 @@ export default defineSchema({
     // Food Details
     foodId: v.optional(v.string()), // Reference to food database
     foodName: v.string(),
+    thumbnail: v.optional(v.string()), // Added for FoodDetailsModal image
+    image: v.optional(v.string()),     // Added for FoodDetailsModal image
 
     // Macros (v.float64 for precision)
     calories: v.float64(),
@@ -294,6 +305,15 @@ export default defineSchema({
     polyunsaturatedFat: v.optional(v.float64()),
     monounsaturatedFat: v.optional(v.float64()),
     transFat: v.optional(v.float64()),
+    iron: v.optional(v.float64()),
+    calcium: v.optional(v.float64()),
+    potassium: v.optional(v.float64()),
+    vitaminA: v.optional(v.float64()),
+    vitaminC: v.optional(v.float64()),
+    addedSugar: v.optional(v.float64()),
+    sodium: v.optional(v.float64()),
+    magnesium: v.optional(v.float64()),
+    zinc: v.optional(v.float64()),
     servingSize: v.string(),
 
     // Meal Classification
@@ -340,6 +360,10 @@ export default defineSchema({
     polyunsaturatedFat: v.optional(v.float64()),
     monounsaturatedFat: v.optional(v.float64()),
     transFat: v.optional(v.float64()),
+    addedSugar: v.optional(v.float64()),
+    sodium: v.optional(v.float64()),
+    magnesium: v.optional(v.float64()),
+    zinc: v.optional(v.float64()),
     createdAt: v.float64(),
     updatedAt: v.float64(),
   })
@@ -587,12 +611,29 @@ export default defineSchema({
     note: v.optional(v.string()),
     factors: v.optional(v.array(v.string())), // e.g., ["caffeine", "exercise", "stress"]
 
+    // Advanced Local Sleep Tracking Metrics
+    sleepDuration: v.optional(v.number()), // in minutes
+    deepSleepMinutes: v.optional(v.number()),
+    lightSleepMinutes: v.optional(v.number()),
+    noiseCount: v.optional(v.number()),
+
     // Date tracking
     date: v.string(), // ISO date string (YYYY-MM-DD)
     timestamp: v.float64(),
   })
     .index("by_user_and_date", ["userId", "date"])
     .index("by_user", ["userId"]),
+
+  // Sleep Recordings - Captured snore/talk snippets
+  sleepRecordings: defineTable({
+    sleepLogId: v.id("sleepLogs"),
+    localUri: v.string(),
+    r2Url: v.optional(v.string()),
+    soundTag: v.string(), // e.g. "snore" | "talk" | "cough" | "rustle" | "ambient"
+    decibelLevel: v.number(),
+    timestamp: v.number(), // epoch timestamp of snippet
+  })
+    .index("by_sleepLogId", ["sleepLogId"]),
 
   // Games Progress - Free tier: 2 games/day
   gamesProgress: defineTable({

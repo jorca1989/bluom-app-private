@@ -47,6 +47,8 @@ export default function FoodScanReviewScreen() {
   );
 
   const logFoodEntry = useMutation(api.food.logFoodEntry);
+  const createFood = useMutation(api.foodCatalog.createFood);
+  const createRecipe = useMutation(api.recipes.createRecipe);
   const celebration = useCelebration();
 
   const [meal, setMeal] = useState<MealName>((params.meal as MealName) ?? 'Lunch');
@@ -98,6 +100,7 @@ export default function FoodScanReviewScreen() {
 
   // 1. Live Recalculation: update flat macros whenever ingredients change
   useEffect(() => {
+    if (ingredients.length <= 1) return;
     let totalCals = 0;
     let totalProt = 0;
     let totalCarbs = 0;
@@ -109,9 +112,9 @@ export default function FoodScanReviewScreen() {
       totalFat += Number(ing.fat) || 0;
     });
     setCalories(String(Math.round(totalCals)));
-    setProtein(String(Math.round(totalProt)));
-    setCarbs(String(Math.round(totalCarbs)));
-    setFat(String(Math.round(totalFat)));
+    setProtein(String(Math.round(totalProt * 10) / 10));
+    setCarbs(String(Math.round(totalCarbs * 10) / 10));
+    setFat(String(Math.round(totalFat * 10) / 10));
   }, [ingredients]);
 
   // 2. Synchronization: if there's exactly 1 ingredient, sync main text inputs back to the ingredient
@@ -231,6 +234,93 @@ export default function FoodScanReviewScreen() {
         })
       );
       router.replace('/(tabs)/fuel');
+    } catch (e: any) {
+      Alert.alert(t('common.error', 'Could not save'), e?.message ? String(e.message) : t('common.tryAgain', 'Please try again.'));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleSaveToMyFoods() {
+    if (!convexUser?._id) return;
+    const trimmed = name.trim();
+    if (!trimmed) {
+      Alert.alert(t('foodReview.missingName', 'Missing name'), t('foodReview.enterName', 'Enter a food name (or keep “Unknown”).'));
+      return;
+    }
+    setSaving(true);
+    try {
+      await createFood({
+        userId: convexUser._id,
+        name: trimmed,
+        servingSize: `${parsed.s} serving(s)`,
+        calories: parsed.cals,
+        protein: parsed.p,
+        carbs: parsed.cb,
+        fat: parsed.f,
+      });
+      triggerSound(SoundEffect.LOG_MEAL);
+      Alert.alert(
+        t('common.saved', 'Saved'),
+        t('foodReview.savedToMyFoodsSuccess', 'Saved to My Foods! You can find it in search.')
+      );
+    } catch (e: any) {
+      Alert.alert(t('common.error', 'Could not save'), e?.message ? String(e.message) : t('common.tryAgain', 'Please try again.'));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleSaveAsRecipe() {
+    if (!convexUser?._id) return;
+    const trimmed = name.trim();
+    if (!trimmed) {
+      Alert.alert(t('foodReview.missingName', 'Missing name'), t('foodReview.enterName', 'Enter a recipe name.'));
+      return;
+    }
+    setSaving(true);
+    try {
+      const nutrition = {
+        total: {
+          calories: parsed.cals * parsed.s,
+          protein: parsed.p * parsed.s,
+          carbs: parsed.cb * parsed.s,
+          fat: parsed.f * parsed.s,
+        },
+        perServing: {
+          calories: parsed.cals,
+          protein: parsed.p,
+          carbs: parsed.cb,
+          fat: parsed.f,
+        }
+      };
+
+      const ingredientsJson = JSON.stringify(
+        ingredients.map((ing) => ({
+          name: ing.name,
+          quantity: 1,
+          unit: ing.amount || 'serving',
+          calories: Number(ing.calories) || 0,
+          protein: Number(ing.protein) || 0,
+          carbs: Number(ing.carbs) || 0,
+          fat: Number(ing.fat) || 0,
+          servingSize: ing.amount || '',
+        }))
+      );
+
+      await createRecipe({
+        userId: convexUser._id,
+        name: trimmed,
+        servings: parsed.s,
+        ingredientsJson,
+        nutritionJson: JSON.stringify(nutrition),
+      });
+
+      triggerSound(SoundEffect.LOG_MEAL);
+      Alert.alert(
+        t('common.saved', 'Saved'),
+        t('foodReview.savedAsRecipeSuccess', 'Saved as Recipe! You can find it in search.')
+      );
     } catch (e: any) {
       Alert.alert(t('common.error', 'Could not save'), e?.message ? String(e.message) : t('common.tryAgain', 'Please try again.'));
     } finally {
@@ -422,16 +512,40 @@ export default function FoodScanReviewScreen() {
           </Text>
         </View>
 
-        {/* Save Button */}
-        <TouchableOpacity
-          style={[styles.primaryBtn, saving && { opacity: 0.7 }]}
-          onPress={handleSave}
-          activeOpacity={0.85}
-          disabled={saving}
-        >
-          <Ionicons name="checkmark-circle" size={18} color="#fff" />
-          <Text style={styles.primaryText}>{saving ? t('common.saving', 'Saving…') : t('foodReview.saveToMeal', 'Save to {{meal}}', { meal: t(`foodReview.${meal.toLowerCase()}`, meal) })}</Text>
-        </TouchableOpacity>
+        {/* Save Buttons Group */}
+        <View style={{ gap: 8, marginTop: 12 }}>
+          <TouchableOpacity
+            style={[styles.primaryBtn, saving && { opacity: 0.7 }]}
+            onPress={handleSave}
+            activeOpacity={0.85}
+            disabled={saving}
+          >
+            <Ionicons name="checkmark-circle" size={18} color="#fff" />
+            <Text style={styles.primaryText}>{saving ? t('common.saving', 'Saving…') : t('foodReview.saveToMeal', 'Save to {{meal}}', { meal: t(`foodReview.${meal.toLowerCase()}`, meal) })}</Text>
+          </TouchableOpacity>
+
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <TouchableOpacity
+              style={[styles.secondaryActionBtn, { flex: 1 }]}
+              onPress={handleSaveToMyFoods}
+              activeOpacity={0.8}
+              disabled={saving}
+            >
+              <Ionicons name="bookmark-outline" size={18} color="#2563eb" />
+              <Text style={styles.secondaryActionText}>{t('foodReview.saveToMyFoods', 'Save to My Foods')}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.secondaryActionBtn, { flex: 1 }]}
+              onPress={handleSaveAsRecipe}
+              activeOpacity={0.8}
+              disabled={saving}
+            >
+              <Ionicons name="restaurant-outline" size={18} color="#2563eb" />
+              <Text style={styles.secondaryActionText}>{t('foodReview.saveAsRecipe', 'Save as Recipe')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -542,6 +656,23 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     justifyContent: 'center',
   },
   primaryText: { color: '#fff', fontWeight: '900', fontSize: 15 },
+  secondaryActionBtn: {
+    backgroundColor: c.surface,
+    borderWidth: 1,
+    borderColor: '#3b82f6',
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  secondaryActionText: {
+    color: '#2563eb',
+    fontWeight: '800',
+    fontSize: 13,
+  },
   mealSelector: {
     flexDirection: 'row',
     flexWrap: 'wrap',

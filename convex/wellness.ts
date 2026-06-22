@@ -171,6 +171,11 @@ export const logSleep = mutation({
     note: v.optional(v.string()),
     factors: v.optional(v.array(v.string())),
     date: v.string(),
+    // Advanced sleep tracking
+    sleepDuration: v.optional(v.number()),
+    deepSleepMinutes: v.optional(v.number()),
+    lightSleepMinutes: v.optional(v.number()),
+    noiseCount: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     // Validate quality is between 0-100
@@ -186,11 +191,54 @@ export const logSleep = mutation({
       wakeTime: args.wakeTime,
       note: args.note,
       factors: args.factors,
+      sleepDuration: args.sleepDuration,
+      deepSleepMinutes: args.deepSleepMinutes,
+      lightSleepMinutes: args.lightSleepMinutes,
+      noiseCount: args.noiseCount,
       date: args.date,
       timestamp: Date.now(),
     });
 
     return sleepLogId;
+  },
+});
+
+/**
+ * Add audio recording snippet to a sleep log
+ */
+export const addSleepRecording = mutation({
+  args: {
+    sleepLogId: v.id("sleepLogs"),
+    localUri: v.string(),
+    r2Url: v.optional(v.string()),
+    soundTag: v.string(),
+    decibelLevel: v.number(),
+    timestamp: v.number(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("sleepRecordings", {
+      sleepLogId: args.sleepLogId,
+      localUri: args.localUri,
+      r2Url: args.r2Url,
+      soundTag: args.soundTag,
+      decibelLevel: args.decibelLevel,
+      timestamp: args.timestamp,
+    });
+  },
+});
+
+/**
+ * Get all audio recording snippets for a sleep log
+ */
+export const getSleepRecordings = query({
+  args: {
+    sleepLogId: v.id("sleepLogs"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("sleepRecordings")
+      .withIndex("by_sleepLogId", (q) => q.eq("sleepLogId", args.sleepLogId))
+      .collect();
   },
 });
 

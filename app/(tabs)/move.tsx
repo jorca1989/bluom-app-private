@@ -55,13 +55,14 @@ import type { ThemeColors } from '@/context/ThemeContext';
 // ─────────────────────────────────────────────────────────────
 // WIDGET TOGGLE SYSTEM
 // ─────────────────────────────────────────────────────────────
-type MoveWidgetId = 'kpis' | 'swipeable' | 'quickActions' | 'todayActivities' | 'moveInsights' | 'proBanner';
+type MoveWidgetId = 'kpis' | 'swipeable' | 'quickActions' | 'todayActivities' | 'moveInsights' | 'proBanner' | 'outdoorBanner';
 const MOVE_WIDGETS: { id: MoveWidgetId; emoji: string; labelKey: string; defaultLabel: string }[] = [
   { id: 'kpis',            emoji: '📊', labelKey: 'move.widgets.kpis', defaultLabel: 'Activity KPIs' },
   { id: 'swipeable',       emoji: '🗓️', labelKey: 'move.widgets.swipeable', defaultLabel: 'Workout Plan' },
   { id: 'quickActions',    emoji: '⚡', labelKey: 'move.widgets.quickActions', defaultLabel: 'Quick Actions' },
   { id: 'todayActivities', emoji: '🏃', labelKey: 'move.widgets.todayActivities', defaultLabel: "Today's Activities" },
   { id: 'moveInsights',    emoji: '📈', labelKey: 'move.widgets.moveInsights', defaultLabel: 'Move Insights' },
+  { id: 'outdoorBanner',   emoji: '🗺️', labelKey: 'move.widgets.outdoorBanner', defaultLabel: 'Record Outdoor Activity' },
   { id: 'proBanner',       emoji: '🔒', labelKey: 'move.widgets.blueprintCompleteBanner', defaultLabel: 'Blueprint complete upgrade banner' },
 ];
 const ALL_MOVE_WIDGET_IDS = MOVE_WIDGETS.map(w => w.id);
@@ -998,7 +999,7 @@ export default function MoveScreen() {
           />}
 
           {/* Outdoor Activity - Re-enabled for testing GPS tracking */}
-          <OutdoorActivityBanner onStart={() => setShowOutdoor(true)} />
+          {isMW('outdoorBanner') && <OutdoorActivityBanner onStart={() => setShowOutdoor(true)} />}
 
           {/* Today's Activities */}
           {isMW('todayActivities') && <View style={styles.card}>

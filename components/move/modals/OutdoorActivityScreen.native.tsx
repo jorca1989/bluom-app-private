@@ -39,6 +39,7 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -350,7 +351,7 @@ export default function OutdoorActivityScreen({
       Alert.alert(
         'Background Location',
         'For uninterrupted tracking when your screen is off, allow location access "Always" in Settings. You can still record with "While Using".',
-        [{ text: 'Continue anyway' }, { text: 'Open Settings', onPress: () => { } }]
+        [{ text: 'Continue anyway' }, { text: 'Open Settings', onPress: () => Linking.openSettings() }]
       );
       // Not a hard failure — foreground-only works fine
     }
@@ -482,8 +483,8 @@ export default function OutdoorActivityScreen({
   // ─────────────────────────────────────────────────────────────
   if (screen === 'select') {
     return (
-      <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-        <SafeAreaView style={sel.container} edges={['top', 'bottom']}>
+      <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
+        <View style={[sel.container, { paddingTop: Math.max(insets.top, 16), paddingBottom: Math.max(insets.bottom, 16) }]}>
           {/* Header */}
           <View style={sel.header}>
             <TouchableOpacity onPress={onClose} style={sel.closeBtn}>
@@ -507,7 +508,9 @@ export default function OutdoorActivityScreen({
                 <View style={[sel.tileIcon, { backgroundColor: c.bg }]}>
                   <Ionicons name={c.icon as any} size={28} color={c.color} />
                 </View>
-                <Text style={[sel.tileLabel, activityType === type && { color: c.color }]}>{t(`move.${c.label}`)}</Text>
+                <Text style={[sel.tileLabel, activityType === type && { color: c.color }]}>
+                  {t(`move.${c.label}`, c.label.charAt(0).toUpperCase() + c.label.slice(1))}
+                </Text>
                 {activityType === type && (
                   <View style={[sel.checkBadge, { backgroundColor: c.color }]}>
                     <Ionicons name="checkmark" size={12} color="#fff" />
@@ -532,9 +535,11 @@ export default function OutdoorActivityScreen({
             activeOpacity={0.9}
           >
             <Ionicons name="play" size={22} color="#fff" />
-            <Text style={sel.startBtnText}>{t('common.start', 'Start')} {t(`move.${cfg.label}`)}</Text>
+            <Text style={sel.startBtnText}>
+              {t('common.start', 'Start')} {t(`move.${cfg.label}`, cfg.label.charAt(0).toUpperCase() + cfg.label.slice(1))}
+            </Text>
           </TouchableOpacity>
-        </SafeAreaView>
+        </View>
       </Modal>
     );
   }
@@ -550,11 +555,13 @@ export default function OutdoorActivityScreen({
 
     return (
       <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-        <SafeAreaView style={sum.container} edges={['top', 'bottom']}>
+        <View style={[sum.container, { paddingTop: Math.max(insets.top, 16), paddingBottom: Math.max(insets.bottom, 16) }]}>
           <View style={sum.header}>
             <View style={[sum.badge, { backgroundColor: cfg.bg }]}>
               <Ionicons name={cfg.icon as any} size={20} color={cfg.color} />
-              <Text style={[sum.badgeText, { color: cfg.color }]}>{t(`move.${cfg.label}`)}</Text>
+              <Text style={[sum.badgeText, { color: cfg.color }]}>
+                {t(`move.${cfg.label}`, cfg.label.charAt(0).toUpperCase() + cfg.label.slice(1))}
+              </Text>
             </View>
             <Text style={sum.title}>{t('move.activityComplete', 'Activity Complete')}</Text>
           </View>
@@ -621,7 +628,7 @@ export default function OutdoorActivityScreen({
           <TouchableOpacity style={sum.discardBtn} onPress={onClose}>
             <Text style={sum.discardText}>{t('move.discard', 'Discard')}</Text>
           </TouchableOpacity>
-        </SafeAreaView>
+        </View>
       </Modal>
     );
   }
@@ -685,7 +692,7 @@ export default function OutdoorActivityScreen({
         )}
 
         {/* TOP DASHBOARD */}
-        <SafeAreaView style={rec.topOverlay} edges={['top']} pointerEvents="box-none">
+        <View style={[rec.topOverlay, { paddingTop: Math.max(insets.top, 16) }]} pointerEvents="box-none">
           <View style={rec.dashCard}>
             {/* Activity badge */}
             <View style={[rec.activityBadge, { backgroundColor: cfg.color }]}>
@@ -725,7 +732,7 @@ export default function OutdoorActivityScreen({
               </View>
             )}
           </View>
-        </SafeAreaView>
+        </View>
 
         {/* BOTTOM CONTROLS */}
         <View style={[rec.controls, { paddingBottom: Math.max(insets.bottom, 24) + 8 }]}>

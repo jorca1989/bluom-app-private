@@ -248,10 +248,6 @@ export default function LoginScreen() {
                   </LinearGradient>
                 </TouchableOpacity>
 
-                <View style={{ marginTop: 16, gap: 12 }}>
-                  <AppleSignInButton />
-                  <GoogleSignInButton />
-                </View>
               </>
             )}
           </View>

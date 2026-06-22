@@ -410,7 +410,7 @@ export default function CreateRecipeModal({ visible, onClose, onRecipeCreated, u
                                  style={styles.qtyInput}
                                  value={String(ing.quantity ?? 1)}
                                  onChangeText={(v) => updateMatchedIngredient(idx, { quantity: parseFloat(v) || 1 })}
-                                 keyboardType="numeric"
+                                 keyboardType="decimal-pad"
                                  selectTextOnFocus
                                />
                                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.unitsScroll}>

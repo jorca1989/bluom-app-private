@@ -17,7 +17,7 @@ import React, { useState, useRef, useMemo } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
   Modal, ScrollView, ActivityIndicator, Alert,
-  Animated, Dimensions,
+  Animated, Dimensions, TextInput,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -41,12 +41,12 @@ type MealTypeLower = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
 interface ParsedFoodItem {
   name: string;
-  quantity: number;
+  quantity: string;
   unit: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
+  calories: string;
+  protein: string;
+  carbs: string;
+  fat: string;
 }
 
 interface Props {
@@ -86,6 +86,7 @@ export default function VoiceLogModal({
   // Convex
   const logFoodEntry   = useMutation(api.food.logFoodEntry);
   const parseVoiceFood = useAction(api.aiVoice.parseVoiceFoodLog);
+  const createFood     = useMutation(api.foodCatalog.createFood);
 
   // State
   const [stage,       setStage]       = useState<Stage>('idle');
@@ -94,6 +95,7 @@ export default function VoiceLogModal({
   const [saving,      setSaving]      = useState(false);
   const [transcript,  setTranscript]  = useState('');
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const [savedIndices, setSavedIndices] = useState<number[]>([]);
 
   // Recording ref
   const recordingRef = useRef<Audio.Recording | null>(null);
@@ -180,7 +182,16 @@ export default function VoiceLogModal({
       }
 
       setTranscript(result.transcript ?? '');
-      setParsedItems(result.items ?? []);
+      const itemsWithStrings = (result.items ?? []).map((item: any) => ({
+        name: String(item.name || ''),
+        quantity: String(item.quantity ?? '1'),
+        unit: String(item.unit || 'g'),
+        calories: String(item.calories ?? '0'),
+        protein: String(item.protein ?? '0'),
+        carbs: String(item.carbs ?? '0'),
+        fat: String(item.fat ?? '0'),
+      }));
+      setParsedItems(itemsWithStrings);
       setStage('review');
     } catch (e: any) {
       console.error('Stop recording error:', e);
@@ -199,10 +210,10 @@ export default function VoiceLogModal({
         await logFoodEntry({
           userId,
           foodName: item.name,
-          calories: item.calories,
-          protein:  item.protein,
-          carbs:    item.carbs,
-          fat:      item.fat,
+          calories: parseFloat(item.calories) || 0,
+          protein:  parseFloat(item.protein) || 0,
+          carbs:    parseFloat(item.carbs) || 0,
+          fat:      parseFloat(item.fat) || 0,
           servingSize: `${item.quantity} ${item.unit}`,
           mealType: selectedMeal.toLowerCase() as MealTypeLower,
           date: selectedDate,
@@ -216,6 +227,24 @@ export default function VoiceLogModal({
     }
   };
 
+  const handleSaveItemToFoods = async (item: ParsedFoodItem, idx: number) => {
+    try {
+      await createFood({
+        userId,
+        name: item.name,
+        servingSize: `${item.quantity} ${item.unit}`,
+        calories: parseFloat(item.calories) || 0,
+        protein: parseFloat(item.protein) || 0,
+        carbs: parseFloat(item.carbs) || 0,
+        fat: parseFloat(item.fat) || 0,
+      });
+      setSavedIndices(prev => [...prev, idx]);
+      Alert.alert(t('common.saved', 'Saved'), t('foodReview.savedToMyFoodsSuccess', 'Saved to My Foods!'));
+    } catch {
+      Alert.alert(t('common.error', 'Error'), t('common.tryAgain', 'Failed to save item. Please try again.'));
+    }
+  };
+
   const handleClose = () => {
     if (recordingRef.current) {
       recordingRef.current.stopAndUnloadAsync().catch(() => {});
@@ -226,12 +255,14 @@ export default function VoiceLogModal({
     setParsedItems([]);
     setTranscript('');
     setSelectedMeal(defaultMeal);
+    setSavedIndices([]);
     onClose();
   };
 
   const handleRetry = () => {
     setParsedItems([]);
     setTranscript('');
+    setSavedIndices([]);
     setStage('idle');
   };
 
@@ -239,7 +270,13 @@ export default function VoiceLogModal({
     setParsedItems(prev => prev.filter((_, i) => i !== idx));
   };
 
-  const totalCals = parsedItems.reduce((a, b) => a + b.calories, 0);
+  const updateVoiceItemField = (index: number, field: keyof ParsedFoodItem, val: string) => {
+    const copy = [...parsedItems];
+    copy[index] = { ...copy[index], [field]: val };
+    setParsedItems(copy);
+  };
+
+  const totalCals = parsedItems.reduce((a, b) => a + (parseFloat(b.calories) || 0), 0);
 
   return (
     <Modal
@@ -338,23 +375,91 @@ export default function VoiceLogModal({
                   </TouchableOpacity>
                 </View>
               ) : (
-                parsedItems.map((item, idx) => (
-                  <View key={idx} style={s.itemCard}>
-                    <View style={s.itemLeft}>
-                      <Text style={s.itemName}>{item.name}</Text>
-                      <Text style={s.itemQty}>{item.quantity} {item.unit}</Text>
+                parsedItems.map((item, idx) => {
+                  const isSaved = savedIndices.includes(idx);
+                  return (
+                    <View key={idx} style={[s.itemCard, { flexDirection: 'column', alignItems: 'stretch', gap: 10 }]}>
+                      {/* Name & Actions */}
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                        <TextInput
+                          style={[s.input, { flex: 1, fontSize: 14, fontWeight: '700', paddingVertical: 4, paddingHorizontal: 8 }]}
+                          value={item.name}
+                          onChangeText={(v) => updateVoiceItemField(idx, 'name', v)}
+                        />
+                        <TouchableOpacity
+                          onPress={() => handleSaveItemToFoods(item, idx)}
+                          style={{ padding: 4 }}
+                          disabled={isSaved}
+                        >
+                          <Ionicons
+                            name={isSaved ? "bookmark" : "bookmark-outline"}
+                            size={20}
+                            color={isSaved ? "#10b981" : "#3b82f6"}
+                          />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => removeItem(idx)} style={s.removeBtn}>
+                          <Ionicons name="close-circle" size={20} color="#ef4444" />
+                        </TouchableOpacity>
+                      </View>
+
+                      {/* Quantity & Unit */}
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                        <Text style={[s.label, { fontSize: 12 }]}>Qty:</Text>
+                        <TextInput
+                          style={[s.input, { width: 60, textAlign: 'center', fontSize: 13, paddingVertical: 4 }]}
+                          value={item.quantity}
+                          keyboardType="decimal-pad"
+                          onChangeText={(v) => updateVoiceItemField(idx, 'quantity', v)}
+                        />
+                        <TextInput
+                          style={[s.input, { width: 80, fontSize: 13, paddingVertical: 4, paddingHorizontal: 8 }]}
+                          value={item.unit}
+                          onChangeText={(v) => updateVoiceItemField(idx, 'unit', v)}
+                        />
+                      </View>
+
+                      {/* Macros row */}
+                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+                        <View style={{ flex: 1, alignItems: 'center' }}>
+                          <Text style={{ fontSize: 10, color: themeColors.textMuted }}>kcal</Text>
+                          <TextInput
+                            style={[s.input, { width: '100%', textAlign: 'center', fontSize: 12, paddingVertical: 4 }]}
+                            value={item.calories}
+                            keyboardType="decimal-pad"
+                            onChangeText={(v) => updateVoiceItemField(idx, 'calories', v)}
+                          />
+                        </View>
+                        <View style={{ flex: 1, alignItems: 'center' }}>
+                          <Text style={{ fontSize: 10, color: themeColors.textMuted }}>Prot (g)</Text>
+                          <TextInput
+                            style={[s.input, { width: '100%', textAlign: 'center', fontSize: 12, paddingVertical: 4 }]}
+                            value={item.protein}
+                            keyboardType="decimal-pad"
+                            onChangeText={(v) => updateVoiceItemField(idx, 'protein', v)}
+                          />
+                        </View>
+                        <View style={{ flex: 1, alignItems: 'center' }}>
+                          <Text style={{ fontSize: 10, color: themeColors.textMuted }}>Carbs (g)</Text>
+                          <TextInput
+                            style={[s.input, { width: '100%', textAlign: 'center', fontSize: 12, paddingVertical: 4 }]}
+                            value={item.carbs}
+                            keyboardType="decimal-pad"
+                            onChangeText={(v) => updateVoiceItemField(idx, 'carbs', v)}
+                          />
+                        </View>
+                        <View style={{ flex: 1, alignItems: 'center' }}>
+                          <Text style={{ fontSize: 10, color: themeColors.textMuted }}>Fat (g)</Text>
+                          <TextInput
+                            style={[s.input, { width: '100%', textAlign: 'center', fontSize: 12, paddingVertical: 4 }]}
+                            value={item.fat}
+                            keyboardType="decimal-pad"
+                            onChangeText={(v) => updateVoiceItemField(idx, 'fat', v)}
+                          />
+                        </View>
+                      </View>
                     </View>
-                    <View style={s.itemMacros}>
-                      <Text style={s.itemCal}>{Math.round(item.calories)} kcal</Text>
-                      <Text style={s.itemMacroSub}>
-                        P {Math.round(item.protein)}g · C {Math.round(item.carbs)}g · F {Math.round(item.fat)}g
-                      </Text>
-                    </View>
-                    <TouchableOpacity onPress={() => removeItem(idx)} style={s.removeBtn}>
-                      <Ionicons name="close-circle" size={20} color="#ef4444" />
-                    </TouchableOpacity>
-                  </View>
-                ))
+                  );
+                })
               )}
 
               {parsedItems.length > 0 && (
@@ -541,6 +646,20 @@ const createS = (c: ThemeColors) => StyleSheet.create({
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
   confirmBtnText: { fontSize: 15, fontWeight: '800', color: '#fff' },
+
+  input: {
+    backgroundColor: c.surface,
+    borderWidth: 1,
+    borderColor: c.border,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    color: c.text,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: c.text,
+  },
 
   retryBtn: {
     backgroundColor: c.surfaceMuted, paddingHorizontal: 20, paddingVertical: 12,

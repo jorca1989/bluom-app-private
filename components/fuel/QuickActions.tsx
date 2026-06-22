@@ -52,9 +52,10 @@ interface UtilityCardsProps {
   onShoppingList: () => void;
   onAiChef: () => void;
   onMonthlyPlan: () => void;
+  onNutritionInsights: () => void;
 }
 
-export const UtilityCards = ({ onLibrary, onMyRecipes, onShoppingList, onAiChef, onMonthlyPlan }: UtilityCardsProps) => {
+export const UtilityCards = ({ onLibrary, onMyRecipes, onShoppingList, onAiChef, onMonthlyPlan, onNutritionInsights }: UtilityCardsProps) => {
   const { t } = useTranslation();
   return (
     <View style={styles.utilGridContainer}>
@@ -92,7 +93,13 @@ export const UtilityCards = ({ onLibrary, onMyRecipes, onShoppingList, onAiChef,
         desc={t('fuel.quickActions.personalPlanDesc', '30-Day AI routine')} 
         bgColor="#10b981" 
         onPress={onMonthlyPlan} 
-        fullWidth
+      />
+      <UtilCard 
+        icon="pie-chart" 
+        label={t('fuel.quickActions.nutritionInsights', 'Nutrition Insights')} 
+        desc={t('fuel.quickActions.nutritionInsightsDesc', 'Deep macro dive')} 
+        bgColor="#f59e0b" 
+        onPress={onNutritionInsights} 
       />
     </View>
   );

@@ -16,6 +16,7 @@ import PanicButton from '../../components/PanicButton';
 import MeditationHub from '../../components/MeditationHub';
 import GamesHub from '../../components/GamesHub';
 import LifeGoalsHub from '../../components/LifeGoalsHub';
+import AdvancedSleepTracker from '../../components/wellness/AdvancedSleepTracker';
 import { triggerSound, SoundEffect } from '../../utils/soundEffects';
 import { getBottomContentPadding, TAB_BAR_HEIGHT } from '../../utils/layout';
 import { useTheme } from '@/context/ThemeContext';
@@ -202,6 +203,7 @@ export default function WellnessScreen() {
 
   // Modal state
   const [showSleepModal, setShowSleepModal] = useState(false);
+  const [showAdvancedSleepTracker, setShowAdvancedSleepTracker] = useState(false);
   const [showMoodModal, setShowMoodModal] = useState(false);
   const [showInsightsModal, setShowInsightsModal] = useState(false);
   const [showMeditationHub, setShowMeditationHub] = useState(false);
@@ -347,14 +349,16 @@ export default function WellnessScreen() {
 
         {/* ── KPI 2×2 Grid ── */}
         {isWW('kpis') && <View style={s.kpiGrid}>
-          <KpiCard
-            icon="moon" iconBg="#ede9fe" iconColor="#7c3aed"
-            label={t('wellness.sleep', 'Sleep')} labelColor="#5b21b6"
-            value={todaySleep ? `${todaySleep.hours}h` : '--'}
-            progress={todaySleep ? (todaySleep.hours / 8) * 100 : 0}
-            barColor="#7c3aed"
-            sub={t('wellness.lastNight', 'Last night')}
-          />
+          <TouchableOpacity onPress={() => setShowAdvancedSleepTracker(true)} activeOpacity={0.8}>
+            <KpiCard
+              icon="moon" iconBg="#ede9fe" iconColor="#7c3aed"
+              label={t('wellness.sleep', 'Sleep')} labelColor="#5b21b6"
+              value={todaySleep ? `${todaySleep.hours}h` : '--'}
+              progress={todaySleep ? (todaySleep.hours / 8) * 100 : 0}
+              barColor="#7c3aed"
+              sub={t('wellness.lastNight', 'Last night')}
+            />
+          </TouchableOpacity>
           <KpiCard
             icon="happy"
             iconBg={moodConfig ? moodConfig.color + '25' : '#f1f5f9'}
@@ -390,7 +394,7 @@ export default function WellnessScreen() {
           <View style={s.quickActions}>
             <QuickActionBtn
               icon="moon-outline" label={t('wellness.sleep', 'Sleep')} color="#7c3aed" bg="#ede9fe"
-              onPress={() => setShowSleepModal(true)}
+              onPress={() => setShowAdvancedSleepTracker(true)}
             />
             <QuickActionBtn
               icon="happy-outline" label={t('wellness.mood', 'Mood')} color="#eab308" bg="#fef9c3"
@@ -589,6 +593,17 @@ export default function WellnessScreen() {
       {showMeditationHub && <MeditationHub userId={user._id} onClose={() => setShowMeditationHub(false)} />}
       {showGamesHub && <GamesHub userId={user._id} onClose={() => setShowGamesHub(false)} />}
       {showLifeGoals && <LifeGoalsHub userId={user._id} onClose={() => setShowLifeGoals(false)} />}
+      {showAdvancedSleepTracker && (
+        <AdvancedSleepTracker
+          visible={showAdvancedSleepTracker}
+          userId={user._id}
+          onClose={() => setShowAdvancedSleepTracker(false)}
+          onOpenMeditationHub={() => {
+            setShowAdvancedSleepTracker(false);
+            setShowMeditationHub(true);
+          }}
+        />
+      )}
       {/* <PanicButton userId={user._id} /> */}
     </SafeAreaView>
   );

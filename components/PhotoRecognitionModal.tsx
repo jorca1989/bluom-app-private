@@ -14,6 +14,8 @@ import { useTranslation } from 'react-i18next';
 
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
+type ScanMode = 'food' | 'nutrition';
+
 type RecognizedFood = {
   name: string;
   calories: number;
@@ -49,9 +51,11 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
   const [permission, requestPermission] = useCameraPermissions();
   const [cameraReady, setCameraReady] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const [scanMode, setScanMode] = useState<ScanMode>('food');
   
   const cameraRef = React.useRef<CameraView | null>(null);
   const recognizeFood = useAction(api.ai.recognizeFoodFromImage);
+  const recognizeLabel = useAction(api.ai.recognizeNutritionLabelFromImage);
 
   const [capturedBase64, setCapturedBase64] = useState<string | null>(null);
   const [capturedMimeType, setCapturedMimeType] = useState<string | null>(null);
@@ -68,6 +72,7 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
 
   const handleClose = () => {
     resetCapture();
+    setScanMode('food');
     onClose();
   };
 
@@ -142,31 +147,81 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
     setLoading(true);
     setRecognizeError(null);
     try {
-      const result = await recognizeFood({
-        imageBase64: capturedBase64!,
-        mimeType: capturedMimeType!,
-        platform: Platform.OS,
-        language: i18n.language,
-      });
-      if (result?.status === 'maintenance') {
-        setRecognizeError('Temporarily unavailable. Please try again in a bit.');
-        return;
+      if (scanMode === 'food') {
+        // ── Food photo recognition ──
+        const result = await recognizeFood({
+          imageBase64: capturedBase64!,
+          mimeType: capturedMimeType!,
+          platform: Platform.OS,
+          language: i18n.language,
+        });
+        if (result?.status === 'maintenance') {
+          setRecognizeError(t('modals.photo.tempUnavailable', 'Temporarily unavailable. Please try again in a bit.'));
+          return;
+        }
+        onRecognized({
+          name: result.name ?? 'Unknown',
+          calories: Number(result.calories ?? 0),
+          protein: Number(result.protein ?? 0),
+          carbs: Number(result.carbs ?? 0),
+          fat: Number(result.fat ?? 0),
+          ingredients: result.ingredients ?? [],
+        });
+      } else {
+        // ── Nutrition label recognition ──
+        const result = await recognizeLabel({
+          imageBase64: capturedBase64!,
+          mimeType: capturedMimeType!,
+          platform: Platform.OS,
+          language: i18n.language,
+        });
+        if (result?.status === 'maintenance') {
+          setRecognizeError(t('modals.photo.tempUnavailable', 'Temporarily unavailable. Please try again in a bit.'));
+          return;
+        }
+        // Map nutrition label result to RecognizedFood shape
+        const labelName = result.name ?? 'Nutrition Label';
+        const servingSize = result.servingSize ?? '1 serving';
+        onRecognized({
+          name: labelName,
+          calories: Number(result.calories ?? 0),
+          protein: Number(result.protein ?? 0),
+          carbs: Number(result.carbs ?? 0),
+          fat: Number(result.fat ?? 0),
+          ingredients: [
+            {
+              name: labelName,
+              amount: servingSize,
+              calories: Number(result.calories ?? 0),
+              protein: Number(result.protein ?? 0),
+              carbs: Number(result.carbs ?? 0),
+              fat: Number(result.fat ?? 0),
+            },
+          ],
+        });
       }
-      onRecognized({
-        name: result.name ?? 'Unknown',
-        calories: Number(result.calories ?? 0),
-        protein: Number(result.protein ?? 0),
-        carbs: Number(result.carbs ?? 0),
-        fat: Number(result.fat ?? 0),
-        ingredients: result.ingredients ?? [],
-      });
       handleClose();
     } catch (e) {
-      setRecognizeError('Failed to analyze food. Try again.');
+      setRecognizeError(
+        scanMode === 'food'
+          ? t('modals.photo.failedAnalyze', 'Failed to analyze food. Try again.')
+          : t('modals.photo.failedLabel', 'Failed to read label. Try again.')
+      );
     } finally {
       setLoading(false);
     }
   }
+
+  // ── Derived text for current mode ──
+  const modeTitle = scanMode === 'food'
+    ? t('modals.photo.title', 'Photo AI Log')
+    : t('modals.photo.labelTitle', 'Nutrition Label');
+  const modeSubtitle = scanMode === 'food'
+    ? t('modals.photo.extract', 'Extract macros from your meal')
+    : t('modals.photo.extractLabel', 'Extract macros from a nutrition label');
+  const analyzeLabel = scanMode === 'food'
+    ? t('modals.photo.analyze', 'Analyze Food')
+    : t('modals.photo.analyzeLabel', 'Read Label');
 
   return (
     <Modal visible={visible} animationType="slide" transparent presentationStyle="fullScreen" onRequestClose={handleClose}>
@@ -185,8 +240,8 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
               edges={['top']}
             >
               <View style={styles.topInfo}>
-                <Text style={styles.scanTitle}>{t('modals.photo.title', 'Photo AI Log')}</Text>
-                <Text style={styles.scanSubtitle}>{t('modals.photo.extract', 'Extract macros from your meal')}</Text>
+                <Text style={styles.scanTitle}>{modeTitle}</Text>
+                <Text style={styles.scanSubtitle}>{modeSubtitle}</Text>
               </View>
               <TouchableOpacity onPress={handleClose} style={styles.iconCloseBtn}>
                 <Ionicons name="close" size={24} color="#ffffff" />
@@ -195,11 +250,35 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
 
             {/* Scan Frame Overlay */}
             <View style={styles.scanOverlay}>
-              <View style={styles.scanFrame} />
+              <View style={[styles.scanFrame, scanMode === 'nutrition' && styles.scanFrameLabel]} />
               {captureError && <Text style={styles.errorFloatText}>{captureError}</Text>}
             </View>
 
             <SafeAreaView style={styles.bottomControls} edges={['bottom']}>
+              {/* Mode Toggle */}
+              <View style={styles.modeToggleContainer}>
+                <TouchableOpacity
+                  style={[styles.modeToggleBtn, scanMode === 'food' && styles.modeToggleBtnActive]}
+                  onPress={() => setScanMode('food')}
+                  activeOpacity={0.8}
+                >
+                  <Ionicons name="restaurant-outline" size={16} color={scanMode === 'food' ? '#ffffff' : 'rgba(255,255,255,0.6)'} />
+                  <Text style={[styles.modeToggleText, scanMode === 'food' && styles.modeToggleTextActive]}>
+                    {t('modals.photo.modeFood', 'Scan Food')}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modeToggleBtn, scanMode === 'nutrition' && styles.modeToggleBtnActive]}
+                  onPress={() => setScanMode('nutrition')}
+                  activeOpacity={0.8}
+                >
+                  <Ionicons name="document-text-outline" size={16} color={scanMode === 'nutrition' ? '#ffffff' : 'rgba(255,255,255,0.6)'} />
+                  <Text style={[styles.modeToggleText, scanMode === 'nutrition' && styles.modeToggleTextActive]}>
+                    {t('modals.photo.modeLabel', 'Nutrition Label')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
               <View style={styles.buttonRow}>
                 <View style={{ width: 44 }} />
                 
@@ -220,7 +299,7 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
                 <Ionicons name="arrow-back" size={22} color="#1e293b" />
               </TouchableOpacity>
               <View style={{ flex: 1 }}>
-                <Text style={styles.resultsTitle}>{t('modals.photo.title', 'Photo AI Log')}</Text>
+                <Text style={styles.resultsTitle}>{modeTitle}</Text>
                 <Text style={styles.resultsSub}>{t('modals.photo.ready', 'Ready to analyze')}</Text>
               </View>
               <View style={{ width: 40 }} />
@@ -242,6 +321,18 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
                     <Text style={styles.analysisTitle}>{t('modals.photo.captured', 'Photo Captured')}</Text>
                   </View>
 
+                  {/* Mode badge so user knows what they're about to analyze */}
+                  <View style={styles.modeBadge}>
+                    <Ionicons
+                      name={scanMode === 'food' ? 'restaurant-outline' : 'document-text-outline'}
+                      size={14}
+                      color={scanMode === 'food' ? '#10b981' : '#3b82f6'}
+                    />
+                    <Text style={[styles.modeBadgeText, { color: scanMode === 'food' ? '#10b981' : '#3b82f6' }]}>
+                      {scanMode === 'food' ? t('modals.photo.modeFood', 'Scan Food') : t('modals.photo.modeLabel', 'Nutrition Label')}
+                    </Text>
+                  </View>
+
                   {recognizeError && <Text style={styles.errorText}>{recognizeError}</Text>}
 
                   <View style={styles.resultActions}>
@@ -249,7 +340,7 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
                       {loading ? <ActivityIndicator size="small" color="#ffffff"/> : (
                         <>
                           <Ionicons name="sparkles" size={18} color="#ffffff" />
-                          <Text style={styles.analyzeBtnText}>{t('modals.photo.analyze', 'Analyze Food')}</Text>
+                          <Text style={styles.analyzeBtnText}>{analyzeLabel}</Text>
                         </>
                       )}
                     </TouchableOpacity>
@@ -270,8 +361,12 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
             handleClose();
             router.push('/(tabs)/profile');
           }}
-          title={t('modals.photo.title', 'AI Photo Log')}
-          message={t('modals.photo.upsell', 'Unlock instant AI food recognition and macro tracking with Bluom Pro.')}
+          title={scanMode === 'food' ? t('modals.photo.title', 'AI Photo Log') : t('modals.photo.labelTitle', 'Nutrition Label')}
+          message={
+            scanMode === 'food'
+              ? t('modals.photo.upsell', 'Unlock instant AI food recognition and macro tracking with Bluom Pro.')
+              : t('modals.photo.upsellLabel', 'Unlock instant nutrition label scanning and macro extraction with Bluom Pro.')
+          }
         />
       </View>
     </Modal>
@@ -332,6 +427,13 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     borderRadius: 24,
     backgroundColor: 'transparent',
   },
+  scanFrameLabel: {
+    // Taller rectangle for nutrition label scanning
+    width: width * 0.75,
+    height: width * 1.0,
+    borderRadius: 16,
+    borderColor: 'rgba(59, 130, 246, 0.6)',
+  },
   bottomControls: {
     position: 'absolute',
     bottom: 0,
@@ -339,6 +441,35 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     right: 0,
     paddingHorizontal: 30,
     paddingBottom: 20,
+  },
+  // ── Mode toggle ──
+  modeToggleContainer: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    borderRadius: 16,
+    padding: 3,
+    marginBottom: 20,
+    gap: 2,
+  },
+  modeToggleBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 13,
+  },
+  modeToggleBtnActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  modeToggleText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  modeToggleTextActive: {
+    color: '#ffffff',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -434,12 +565,27 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    marginBottom: 20,
+    marginBottom: 12,
   },
   analysisTitle: {
     fontSize: 20,
     fontWeight: '900',
     color: c.text,
+  },
+  modeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 6,
+    backgroundColor: c.surfaceMuted,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  modeBadgeText: {
+    fontSize: 12,
+    fontWeight: '800',
   },
   resultActions: {
     flexDirection: 'column',

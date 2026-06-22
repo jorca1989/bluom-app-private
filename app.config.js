@@ -13,10 +13,10 @@ export default ({ config }) => {
             name: "Bluom",
             slug: "bolt-expo-nativewind",
             owner: "ggovsaas",
-            version: "1.0.30",
+            version: "1.0.34",
             scheme: "bluom",
             userInterfaceStyle: "automatic",
-            runtimeVersion: "1.0.30",
+            runtimeVersion: "1.0.34",
             // New Architecture DISABLED — react-native-maps 1.20.1 doesn't support Fabric
             // (AIRMap view manager fails to register). Re-enable when react-native-maps ships
             // New Arch support, or after migrating to @teovilla/react-native-web-maps.
@@ -24,7 +24,7 @@ export default ({ config }) => {
             privacyPolicyUrl: "https://www.bluom.app/legal/privacy",
             ios: {
                 bundleIdentifier: "com.jwfca.bluom",
-                buildNumber: "45",
+                buildNumber: "49",
                 appleTeamId: "TJSGDC6873",
                 googleServicesFile: "./GoogleService-Info.plist",
                 entitlements: {
@@ -69,7 +69,7 @@ export default ({ config }) => {
             },
             android: {
                 package: "com.jwfca.bluom",
-                versionCode: 54,
+                versionCode: 58,
                 googleServicesFile: "./google-services.json",
                 splash: {
                     image: "./assets/images/logo.png",
@@ -78,7 +78,7 @@ export default ({ config }) => {
                 },
                 config: {
                     googleMaps: {
-                        apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_ANDROID_KEY || ""
+                        apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_ANDROID_KEY || process.env.GOOGLE_MAPS_ANDROID_KEY || ""
                     }
                 },
                 permissions: [
@@ -88,7 +88,7 @@ export default ({ config }) => {
                     "android.permission.MODIFY_AUDIO_SETTINGS",
                     // ── Foreground service / wake lock ────────────────────────────
                     "android.permission.FOREGROUND_SERVICE",
-                    "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+                    "android.permission.FOREGROUND_SERVICE_LOCATION",
                     "android.permission.WAKE_LOCK",
                     // ── Notifications ─────────────────────────────────────────────
                     "android.permission.POST_NOTIFICATIONS",
@@ -128,25 +128,14 @@ export default ({ config }) => {
                 // ── Push Notifications ────────────────────────────────────────────
                 "expo-notifications",
 
-                // ── Apple Authentication ──────────────────────────────────────────
-                "expo-apple-authentication",
-
                 // ── Location & GPS ───────────────────────────────────────────────
                 [
                     "expo-location",
                     {
                         locationAlwaysAndWhenInUsePermission: "Bluom needs access to your location to track your outdoor running routes.",
                         isIosBackgroundLocationEnabled: true,
-                        isAndroidBackgroundLocationEnabled: true,
-                    }
-                ],
-
-                // ── HealthKit (iOS) ───────────────────────────────────────────────
-                [
-                    "@kingstinct/react-native-healthkit",
-                    {
-                        healthSharePermission: "Bluom reads your step count, active calories, walking distance, body weight, sleep duration, and heart rate from Apple Health to automatically update your daily goals and generate personalised wellness insights — so you never have to log manually.",
-                        healthUpdatePermission: "Bluom writes your logged workouts, sleep minutes, and body weight back to Apple Health, keeping all your wellness data in one place."
+                        isAndroidBackgroundLocationEnabled: false,
+                        isAndroidForegroundServiceEnabled: true,
                     }
                 ],
             ],

@@ -256,6 +256,165 @@ export const recognizeFoodFromImage = action({
 });
 
 /**
+ * Nutrition Facts Label Scanner: Scan a nutrition facts table/label photo and extract exact macros.
+ */
+export const recognizeNutritionLabelFromImage = action({
+  args: {
+    imageBase64: v.string(),
+    mimeType: v.string(),
+    platform: v.string(),
+    language: v.optional(v.string()),
+  },
+  handler: async (_ctx, args) => {
+    const { apiKey, source, normalizedPlatform } = getGeminiApiKeyForPlatform(args.platform);
+    console.log(`[ai] recognizeNutritionLabelFromImage platform=${normalizedPlatform} keySource=${source}`);
+    const platform = normalizedPlatform;
+    const fallbackKey =
+      platform === "ios"
+        ? process.env.GEMINI_API_KEY_ANDROID
+        : process.env.GEMINI_API_KEY_IOS;
+    const lang = args.language ?? 'en';
+    const LANG_NAMES: Record<string, string> = {
+      'en': 'English',
+      'pt': 'European Portuguese',
+      'fr': 'French',
+      'de': 'German',
+      'es': 'Spanish',
+      'it': 'Italian',
+      'nl': 'Dutch',
+      'pl': 'Polish',
+      'da': 'Danish',
+      'sv': 'Swedish',
+      'no': 'Norwegian',
+      'tr': 'Turkish',
+      'el': 'Greek',
+      'bg': 'Bulgarian',
+      'ro': 'Romanian',
+      'lt': 'Lithuanian',
+      'lv': 'Latvian',
+    };
+    const langName = LANG_NAMES[lang] ?? 'English';
+    const langInstruction = `\n- Return the "name" field in ${langName}. IMPORTANT: Respond ONLY in ${langName}. Do not use any other language.`;
+    const prompt =
+      'You are a nutrition label reader expert. Analyze this image of a Nutrition Facts table / label.\n' +
+      'Extract the exact values printed on the label.\n' +
+      'Return ONLY a JSON object with this exact shape:\n' +
+      '{\n' +
+      '  "name": "string (product name if visible, otherwise \'Nutrition Label\')",\n' +
+      '  "servingSize": "string (e.g. \'1 cup (240ml)\', \'100g\')",\n' +
+      '  "calories": number,\n' +
+      '  "protein": number,\n' +
+      '  "carbs": number,\n' +
+      '  "fat": number,\n' +
+      '  "fiber": number,\n' +
+      '  "sugar": number,\n' +
+      '  "sodium": number,\n' +
+      '  "saturatedFat": number\n' +
+      '}\n' +
+      'Rules:\n' +
+      '- Calories in kcal. All macros in grams, sodium in mg.\n' +
+      '- Use the "per serving" values if available; otherwise use "per 100g" values.\n' +
+      '- If a value is not visible or unreadable, use 0.\n' +
+      '- Output MUST be valid JSON with no extra text.' +
+      langInstruction;
+
+    let text = "";
+    try {
+      const result = await generateContentWithFallback(
+        [
+          { text: prompt },
+          {
+            inlineData: {
+              mimeType: args.mimeType,
+              data: args.imageBase64,
+            },
+          },
+        ],
+        apiKey
+      );
+      text = result.response.text();
+    } catch (err) {
+      if (isForbidden403(err)) {
+        if (fallbackKey) {
+          try {
+            const retry = await generateContentWithFallback(
+              [
+                { text: prompt },
+                {
+                  inlineData: {
+                    mimeType: args.mimeType,
+                    data: args.imageBase64,
+                  },
+                },
+              ],
+              fallbackKey
+            );
+            text = retry.response.text();
+          } catch {
+            // fall through to maintenance below
+          }
+        }
+        if (text) {
+          // continue parsing if retry succeeded
+        } else {
+        return {
+          status: "maintenance" as const,
+          name: "Unknown",
+          servingSize: "1 serving",
+          calories: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+          fiber: 0,
+          sugar: 0,
+          sodium: 0,
+          saturatedFat: 0,
+        };
+        }
+      }
+      throw err;
+    }
+
+    const parsed = safeJsonParse<{
+      name: string;
+      servingSize: string;
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      fiber: number;
+      sugar: number;
+      sodium: number;
+      saturatedFat: number;
+    }>(text);
+
+    if (parsed) return { status: "ok" as const, ...parsed };
+
+    // Fallback: try to extract JSON block if model included commentary
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    if (start >= 0 && end > start) {
+      const maybe = safeJsonParse<any>(text.slice(start, end + 1));
+      if (maybe) return { status: "ok" as const, ...maybe };
+    }
+
+    return {
+      status: "ok" as const,
+      name: "Unknown",
+      servingSize: "1 serving",
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+      sugar: 0,
+      sodium: 0,
+      saturatedFat: 0,
+    };
+  },
+});
+
+/**
  * Sugar Control: Scan a product/label photo and estimate sugar + calories + smart alternative.
  */
 export const scanSugarProductFromImage = action({

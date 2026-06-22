@@ -27,21 +27,17 @@ export interface UseHealthSyncReturn {
 }
 
 let isAppleHealthAvailable = false;
-let requestAppleAuthorization: any = null;
+let requestAppleAuthorization: any = async () => {};
 let queryQuantitySamples: any = null;
-let HKQuantityTypeIdentifier: any = null;
+let HKQuantityTypeIdentifier: any = {
+  stepCount: 'stepCount',
+  activeEnergyBurned: 'activeEnergyBurned',
+  distanceWalkingRunning: 'distanceWalkingRunning',
+  bodyMass: 'bodyMass',
+  heartRate: 'heartRate'
+};
 
-if (Platform.OS === 'ios') {
-  try {
-    const hk = require('@kingstinct/react-native-healthkit');
-    isAppleHealthAvailable = true;
-    requestAppleAuthorization = hk.requestAuthorization;
-    queryQuantitySamples = hk.queryQuantitySamples;
-    HKQuantityTypeIdentifier = hk.HKQuantityTypeIdentifier;
-  } catch (e) {
-    console.log('Failed to require @kingstinct/react-native-healthkit', e);
-  }
-}
+// Apple Health completely disabled for App Store compliance and reliability
 
 export function useHealthSync(): UseHealthSyncReturn {
   const [connected, setConnected] = useState(false);

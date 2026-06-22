@@ -9,6 +9,7 @@ export interface FoodItem {
   id: string; // Convex _id
   name: string;
   cal: number;
+  calories: number; // explicitly pass calories so FoodDetailsModal reads it correctly
   protein: number;
   carbs: number;
   fat: number;
@@ -18,6 +19,17 @@ export interface FoodItem {
   polyunsaturatedFat?: number;
   monounsaturatedFat?: number;
   transFat?: number;
+  addedSugar?: number;
+  sodium?: number;
+  iron?: number;
+  calcium?: number;
+  potassium?: number;
+  magnesium?: number;
+  zinc?: number;
+  vitaminA?: number;
+  vitaminC?: number;
+  thumbnail?: string;
+  image?: string;
 }
 
 interface MealCardProps {

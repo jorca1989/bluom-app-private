@@ -51,6 +51,30 @@ export const deleteRecipe = mutation({
   },
 });
 
+export const updateRecipe = mutation({
+  args: {
+    recipeId: v.id("recipes"),
+    name: v.string(),
+    servings: v.float64(),
+    ingredientsJson: v.string(),
+    nutritionJson: v.string(),
+    storageId: v.optional(v.id("_storage")),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    await ctx.db.patch(args.recipeId, {
+      name: args.name,
+      servings: args.servings,
+      ingredientsJson: args.ingredientsJson,
+      nutritionJson: args.nutritionJson,
+      storageId: args.storageId,
+      updatedAt: now,
+    });
+    return args.recipeId;
+  },
+});
+
+
 
 
 

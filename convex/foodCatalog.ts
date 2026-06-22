@@ -208,4 +208,65 @@ export const upsertExternalFood = mutation({
   },
 });
 
+export const getMyFoods = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const foods = await ctx.db
+      .query("foods")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
 
+    // newest first
+    foods.sort((a, b) => b.createdAt - a.createdAt);
+    return foods;
+  },
+});
+
+export const updateFood = mutation({
+  args: {
+    foodId: v.id("foods"),
+    name: v.string(),
+    description: v.optional(v.string()),
+    brand: v.optional(v.string()),
+    servingSize: v.string(),
+    calories: v.float64(),
+    protein: v.float64(),
+    carbs: v.float64(),
+    fat: v.float64(),
+    fiber: v.optional(v.float64()),
+    sugar: v.optional(v.float64()),
+    saturatedFat: v.optional(v.float64()),
+    polyunsaturatedFat: v.optional(v.float64()),
+    monounsaturatedFat: v.optional(v.float64()),
+    transFat: v.optional(v.float64()),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    await ctx.db.patch(args.foodId, {
+      name: args.name,
+      nameLower: args.name.trim().toLowerCase(),
+      description: args.description,
+      brand: args.brand,
+      servingSize: args.servingSize,
+      calories: args.calories,
+      protein: args.protein,
+      carbs: args.carbs,
+      fat: args.fat,
+      fiber: args.fiber,
+      sugar: args.sugar,
+      saturatedFat: args.saturatedFat,
+      polyunsaturatedFat: args.polyunsaturatedFat,
+      monounsaturatedFat: args.monounsaturatedFat,
+      transFat: args.transFat,
+      updatedAt: now,
+    });
+    return args.foodId;
+  },
+});
+
+export const deleteFood = mutation({
+  args: { foodId: v.id("foods") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.foodId);
+  },
+});

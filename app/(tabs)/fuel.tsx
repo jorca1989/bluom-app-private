@@ -51,8 +51,11 @@ import DetailedInsightsModal from '@/components/fuel/modals/DetailedInsightsModa
 import CreateRecipeModal from '@/components/fuel/modals/CreateRecipeModal';
 import LogRecipeModal from '@/components/fuel/modals/LogRecipeModal';
 import FoodSearchModal from '@/components/fuel/modals/FoodSearchModal';
+import NutritionInsightsModal from '@/components/fuel/modals/NutritionInsightsModal';
 import VoiceLogModal from '@/components/fuel/modals/VoiceLogModel';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
+import EditFoodModal from '@/components/fuel/modals/EditFoodModal';
+import EditRecipeModal from '@/components/fuel/modals/EditRecipeModal';
 
 type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 type MealTypeLower = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'premium_slot';
@@ -171,6 +174,7 @@ export default function FuelScreen() {
   const [showVoiceLog, setShowVoiceLog] = useState(false);
   const [showProUpgrade, setShowProUpgrade] = useState(false);
   const [showDetailedInsights, setShowDetailedInsights] = useState(false);
+  const [showNutritionInsightsModal, setShowNutritionInsightsModal] = useState(false);
   const [proGateMessage, setProGateMessage] = useState('This feature is available on Pro.');
   
   // Log Recipe Modal
@@ -181,6 +185,8 @@ export default function FuelScreen() {
   const [logSuccess, setLogSuccess] = useState(false);
 
   const [detailsFood, setDetailsFood] = useState<any>(null);
+  const [editingFood, setEditingFood] = useState<any>(null);
+  const [editingRecipe, setEditingRecipe] = useState<any>(null);
 
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -473,16 +479,6 @@ export default function FuelScreen() {
           {isFW('macros') && (
           <View style={styles.section}>
             <MacroCards macros={macroCardsData} />
-            <TouchableOpacity 
-              style={[styles.detailedInsightsBtn, { backgroundColor: themeColors.surfaceMuted }]}
-              activeOpacity={0.7}
-              onPress={() => setShowDetailedInsights(true)}
-            >
-              <Ionicons name="stats-chart" size={16} color={themeColors.primary} />
-              <Text style={[styles.detailedInsightsText, { color: themeColors.primary }]}>
-                {t('fuel.detailedInsights.button', 'Detailed Insights')}
-              </Text>
-            </TouchableOpacity>
           </View>
           )}
 
@@ -527,6 +523,7 @@ export default function FuelScreen() {
                    id: e._id,
                    name: String(e.foodName),
                    cal: e.calories ?? 0,
+                   calories: e.calories ?? 0,
                    protein: e.protein ?? 0,
                    carbs: e.carbs ?? 0,
                    fat: e.fat ?? 0,
@@ -536,6 +533,17 @@ export default function FuelScreen() {
                    polyunsaturatedFat: e.polyunsaturatedFat,
                    monounsaturatedFat: e.monounsaturatedFat,
                    transFat: e.transFat,
+                   addedSugar: e.addedSugar,
+                   sodium: e.sodium,
+                   iron: e.iron,
+                   calcium: e.calcium,
+                   potassium: e.potassium,
+                   magnesium: e.magnesium,
+                   zinc: e.zinc,
+                   vitaminA: e.vitaminA,
+                   vitaminC: e.vitaminC,
+                   thumbnail: e.thumbnail,
+                   image: e.image,
                  }));
 
                  return (
@@ -597,31 +605,6 @@ export default function FuelScreen() {
             </View>
           ) : null}
 
-          {/* Personalized Meal Plan Button */}
-          <View style={styles.section}>
-            <TouchableOpacity 
-              style={[styles.premiumMealPlanBtn, { backgroundColor: themeColors.primary }]}
-              activeOpacity={0.85}
-              onPress={() => {
-                 if (!isPro) {
-                    setProGateMessage(t('fuel.mealPlanProGate', 'Personalized meal plans are a Pro feature.'));
-                    setShowProUpgrade(true);
-                 } else {
-                    router.push('/ai-coach');
-                 }
-              }}
-            >
-              <View style={styles.premiumMealPlanContent}>
-                 <Ionicons name="sparkles" size={24} color="#ffffff" />
-                 <View style={styles.premiumMealPlanTextWrap}>
-                    <Text style={styles.premiumMealPlanTitle}>{t('fuel.getMealPlan', 'Get Personalized Meal Plan')}</Text>
-                    <Text style={styles.premiumMealPlanSub}>{t('fuel.getMealPlanSub', 'AI generated meal plans tailored to your goals')}</Text>
-                 </View>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#ffffff" style={{ opacity: 0.8 }} />
-            </TouchableOpacity>
-          </View>
-
           {isFW('quickActions') && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('fuel.sections.quickActions', 'Quick Actions')}</Text>
@@ -647,6 +630,7 @@ export default function FuelScreen() {
               onShoppingList={() => router.push('/shopping-list')}
               onAiChef={() => { router.push('/ai-meal-maker'); }}
               onMonthlyPlan={() => router.push('/meal-hub')}
+              onNutritionInsights={() => setShowNutritionInsightsModal(true)}
             />
           </View>
           )}
@@ -667,7 +651,9 @@ export default function FuelScreen() {
            setLogMeal(selectedMeal);
            setLogQuantity(1);
            setLogSuccess(false);
-           setShowLogRecipeModal(true);
+           setTimeout(() => {
+              setShowLogRecipeModal(true);
+           }, 400);
         }}
         onLogRecipe={(recipe) => {
            setLogRecipe(recipe);
@@ -675,10 +661,26 @@ export default function FuelScreen() {
            setLogMeal(selectedMeal);
            setLogQuantity(1);
            setLogSuccess(false);
-           setShowLogRecipeModal(true);
+           setTimeout(() => {
+              setShowLogRecipeModal(true);
+           }, 400);
         }}
-        onOpenAddFood={() => { setShowFoodSearch(false); setShowAddFoodModal(true); }}
-        onOpenCreateRecipe={() => { setShowFoodSearch(false); setShowRecipeModal(true); }}
+        onOpenAddFood={() => { 
+           setShowFoodSearch(false); 
+           setTimeout(() => setShowAddFoodModal(true), 400); 
+        }}
+        onOpenCreateRecipe={() => { 
+           setShowFoodSearch(false); 
+           setTimeout(() => setShowRecipeModal(true), 400); 
+        }}
+        onEditFood={(food) => {
+           setShowFoodSearch(false);
+           setTimeout(() => setEditingFood(food), 400);
+        }}
+        onEditRecipe={(recipe) => {
+           setShowFoodSearch(false);
+           setTimeout(() => setEditingRecipe(recipe), 400);
+        }}
       />
 
       <AddFoodModal 
@@ -692,10 +694,18 @@ export default function FuelScreen() {
         onClose={() => setDetailsFood(null)}
         item={detailsFood}
         itemType="food"
-        onLog={() => {}}
+        onLog={(food) => {
+           setDetailsFood(null);
+        }}
         hideLogButton={true}
       />
       
+      <NutritionInsightsModal
+        visible={showNutritionInsightsModal}
+        onClose={() => setShowNutritionInsightsModal(false)}
+        dateEntries={dateEntries || []}
+      />
+
       <CreateRecipeModal
         visible={showRecipeModal}
         onClose={() => setShowRecipeModal(false)}
@@ -706,9 +716,33 @@ export default function FuelScreen() {
           setLogMeal('Lunch');
           setLogQuantity(1);
           setLogSuccess(false);
-          setShowLogRecipeModal(true);
+          setTimeout(() => {
+            setShowLogRecipeModal(true);
+          }, 400);
         }}
       />
+
+      {editingFood && (
+        <EditFoodModal
+          visible={!!editingFood}
+          onClose={() => setEditingFood(null)}
+          userId={convexUser._id}
+          food={editingFood}
+          onUpdated={() => {}}
+          onDeleted={() => {}}
+        />
+      )}
+
+      {editingRecipe && (
+        <EditRecipeModal
+          visible={!!editingRecipe}
+          onClose={() => setEditingRecipe(null)}
+          userId={convexUser._id}
+          recipe={editingRecipe}
+          onUpdated={() => {}}
+          onDeleted={() => {}}
+        />
+      )}
       
       <LogRecipeModal
         visible={showLogRecipeModal}
@@ -750,8 +784,10 @@ export default function FuelScreen() {
           setLogSuccess(true);
           setTimeout(() => {
             setShowLogRecipeModal(false);
-            setLogRecipe(null);
             setLogSuccess(false);
+            setTimeout(() => {
+              setLogRecipe(null);
+            }, 400);
           }, 1500);
         }}
       />

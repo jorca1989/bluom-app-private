@@ -43,6 +43,16 @@ export default function LogRecipeModal({
     return nameField[currentLang] || nameField.en || Object.values(nameField)[0] || 'Food';
   };
 
+  const [localRecipe, setLocalRecipe] = useState<any>(null);
+
+  useEffect(() => {
+    if (recipe) {
+      setLocalRecipe(recipe);
+    }
+  }, [recipe]);
+
+  const activeRecipe = recipe || localRecipe;
+
   const parseServingSize = (sizeStr: string) => {
     if (!sizeStr) return { value: 100, unit: 'g' };
     const match = String(sizeStr).match(/^(\d+(?:\.\d+)?)\s*(.*)$/);
@@ -56,25 +66,26 @@ export default function LogRecipeModal({
   };
 
   const { value: baseValue, unit: baseUnit } = useMemo(() => {
-    return parseServingSize(recipe ? recipe.servingSize : '');
-  }, [recipe ? recipe.servingSize : '']);
+    return parseServingSize(activeRecipe ? activeRecipe.servingSize : '');
+  }, [activeRecipe]);
 
   const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
-    if (visible && recipe) {
+    if (visible && activeRecipe) {
       setInputValue(String(baseValue));
     }
-  }, [visible, recipe, baseValue]);
+  }, [visible, activeRecipe, baseValue]);
 
-  if (!visible || !recipe) return null;
-
-  const perServing = recipe.nutrition?.perServing || recipe.nutrition || recipe.macros || {
-    calories: recipe.calories || 0,
-    protein: recipe.protein || 0,
-    carbs: recipe.carbs || 0,
-    fat: recipe.fat || 0,
-  };
+  const perServing = useMemo(() => {
+    if (!activeRecipe) return { calories: 0, protein: 0, carbs: 0, fat: 0 };
+    return activeRecipe.nutrition?.perServing || activeRecipe.nutrition || activeRecipe.macros || {
+      calories: activeRecipe.calories || 0,
+      protein: activeRecipe.protein || 0,
+      carbs: activeRecipe.carbs || 0,
+      fat: activeRecipe.fat || 0,
+    };
+  }, [activeRecipe]);
 
   const adjustValue = (direction: 'up' | 'down') => {
     const current = parseFloat(inputValue) || baseValue;
@@ -89,7 +100,7 @@ export default function LogRecipeModal({
   };
 
   const numericValue = parseFloat(inputValue) || baseValue;
-  const factor = numericValue / baseValue;
+  const factor = activeRecipe ? (numericValue / baseValue) : 1;
 
   const displayCalories = Math.round((perServing.calories ?? 0) * factor);
   const displayProtein = Math.round((perServing.protein ?? 0) * factor);
@@ -98,27 +109,28 @@ export default function LogRecipeModal({
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
-      <View style={styles.overlay}>
-        <SafeAreaView style={[styles.modalContent, { paddingBottom: Math.max(insets.bottom, 24) }]} edges={['bottom']}>
-          <View style={styles.header}>
-            <Text style={styles.title}>{t('modals.logRecipe.title', recipe?.ingredients ? 'Log Recipe' : 'Log Food')}</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <Ionicons name="close" size={20} color="#64748b" />
-            </TouchableOpacity>
-          </View>
-
-          {success ? (
-            <View style={styles.successView}>
-              <View style={styles.successIconWrap}>
-                 <Ionicons name="checkmark-sharp" size={40} color="#10b981" />
-              </View>
-              <Text style={styles.successTitle}>{t('modals.logRecipe.logged', recipe?.ingredients ? 'Recipe Logged!' : 'Food Logged!')}</Text>
-              <Text style={styles.successSub}>{t('modals.logRecipe.addedTo', 'Added to your')} {t(`fuel.meals.${meal.toLowerCase()}`, meal).toLowerCase()}.</Text>
+      {activeRecipe ? (
+        <View style={styles.overlay}>
+          <SafeAreaView style={[styles.modalContent, { paddingBottom: Math.max(insets.bottom, 24) }]} edges={['bottom']}>
+            <View style={styles.header}>
+              <Text style={styles.title}>{t('modals.logRecipe.title', activeRecipe?.ingredients ? 'Log Recipe' : 'Log Food')}</Text>
+              <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+                <Ionicons name="close" size={20} color="#64748b" />
+              </TouchableOpacity>
             </View>
-          ) : (
+
+            {success ? (
+              <View style={styles.successView}>
+                <View style={styles.successIconWrap}>
+                   <Ionicons name="checkmark-sharp" size={40} color="#10b981" />
+                </View>
+                <Text style={styles.successTitle}>{t('modals.logRecipe.logged', activeRecipe?.ingredients ? 'Recipe Logged!' : 'Food Logged!')}</Text>
+                <Text style={styles.successSub}>{t('modals.logRecipe.addedTo', 'Added to your')} {t(`fuel.meals.${meal.toLowerCase()}`, meal).toLowerCase()}.</Text>
+              </View>
+            ) : (
             <View style={styles.body}>
               <View style={styles.recipeCard}>
-                <Text style={styles.recipeName}>{recipe.title || getLocalizedName(recipe.name)}</Text>
+                <Text style={styles.recipeName}>{activeRecipe.title || getLocalizedName(activeRecipe.name)}</Text>
                 <View style={styles.macrosRow}>
                    <View style={styles.macroPill}>
                       <Text style={styles.macroPillTxt}>🔥 {displayCalories} kcal</Text>
@@ -154,7 +166,7 @@ export default function LogRecipeModal({
 
               <View style={styles.field}>
                 <Text style={styles.label}>
-                  {t('modals.logRecipe.qty', 'Quantity')} {recipe.servingSize ? `(Base: ${recipe.servingSize})` : ''}
+                  {t('modals.logRecipe.qty', 'Quantity')} {activeRecipe.servingSize ? `(Base: ${activeRecipe.servingSize})` : ''}
                 </Text>
                 <View style={styles.qtyInputContainer}>
                   <TouchableOpacity style={styles.qtyBtn} onPress={() => adjustValue('down')}>
@@ -193,6 +205,7 @@ export default function LogRecipeModal({
           )}
         </SafeAreaView>
       </View>
+      ) : null}
     </Modal>
   );
 }

@@ -184,7 +184,7 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
                     placeholder="0" 
                     value={form.calories} 
                     onChangeText={(v) => handleChange('calories', v)} 
-                    keyboardType="numeric" 
+                    keyboardType="decimal-pad" 
                     selectTextOnFocus 
                     placeholderTextColor="#94a3b8"
                   />
@@ -199,7 +199,7 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
                     placeholder="0" 
                     value={form.protein} 
                     onChangeText={(v) => handleChange('protein', v)} 
-                    keyboardType="numeric" 
+                    keyboardType="decimal-pad" 
                     selectTextOnFocus 
                     placeholderTextColor="#94a3b8"
                   />
@@ -214,7 +214,7 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
                     placeholder="0" 
                     value={form.totalCarbs} 
                     onChangeText={(v) => handleChange('totalCarbs', v)} 
-                    keyboardType="numeric" 
+                    keyboardType="decimal-pad" 
                     selectTextOnFocus 
                     placeholderTextColor="#94a3b8"
                   />
@@ -229,7 +229,7 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
                     placeholder="0" 
                     value={form.totalFat} 
                     onChangeText={(v) => handleChange('totalFat', v)} 
-                    keyboardType="numeric" 
+                    keyboardType="decimal-pad" 
                     selectTextOnFocus 
                     placeholderTextColor="#94a3b8"
                   />
@@ -247,32 +247,32 @@ export default function AddFoodModal({ visible, onClose, userId }: AddFoodModalP
                 <View style={[styles.macroGrid, { marginTop: 8 }]}>
                   <View style={styles.macroCard}>
                     <Text style={styles.macroLabel}>Sugar</Text>
-                    <TextInput style={styles.macroInput} placeholder="0" value={form.sugar} onChangeText={(v) => handleChange('sugar', v)} keyboardType="numeric" selectTextOnFocus placeholderTextColor="#94a3b8" />
+                    <TextInput style={styles.macroInput} placeholder="0" value={form.sugar} onChangeText={(v) => handleChange('sugar', v)} keyboardType="decimal-pad" selectTextOnFocus placeholderTextColor="#94a3b8" />
                     <Text style={styles.macroUnit}>g</Text>
                   </View>
                   <View style={styles.macroCard}>
                     <Text style={styles.macroLabel}>Fiber</Text>
-                    <TextInput style={styles.macroInput} placeholder="0" value={form.fiber} onChangeText={(v) => handleChange('fiber', v)} keyboardType="numeric" selectTextOnFocus placeholderTextColor="#94a3b8" />
+                    <TextInput style={styles.macroInput} placeholder="0" value={form.fiber} onChangeText={(v) => handleChange('fiber', v)} keyboardType="decimal-pad" selectTextOnFocus placeholderTextColor="#94a3b8" />
                     <Text style={styles.macroUnit}>g</Text>
                   </View>
                   <View style={styles.macroCard}>
                     <Text style={styles.macroLabel}>Saturated Fat</Text>
-                    <TextInput style={styles.macroInput} placeholder="0" value={form.saturatedFat} onChangeText={(v) => handleChange('saturatedFat', v)} keyboardType="numeric" selectTextOnFocus placeholderTextColor="#94a3b8" />
+                    <TextInput style={styles.macroInput} placeholder="0" value={form.saturatedFat} onChangeText={(v) => handleChange('saturatedFat', v)} keyboardType="decimal-pad" selectTextOnFocus placeholderTextColor="#94a3b8" />
                     <Text style={styles.macroUnit}>g</Text>
                   </View>
                   <View style={styles.macroCard}>
                     <Text style={styles.macroLabel}>Trans Fat</Text>
-                    <TextInput style={styles.macroInput} placeholder="0" value={form.transFat} onChangeText={(v) => handleChange('transFat', v)} keyboardType="numeric" selectTextOnFocus placeholderTextColor="#94a3b8" />
+                    <TextInput style={styles.macroInput} placeholder="0" value={form.transFat} onChangeText={(v) => handleChange('transFat', v)} keyboardType="decimal-pad" selectTextOnFocus placeholderTextColor="#94a3b8" />
                     <Text style={styles.macroUnit}>g</Text>
                   </View>
                   <View style={styles.macroCard}>
                     <Text style={styles.macroLabel}>Polyunsat. Fat</Text>
-                    <TextInput style={styles.macroInput} placeholder="0" value={form.polyunsaturatedFat} onChangeText={(v) => handleChange('polyunsaturatedFat', v)} keyboardType="numeric" selectTextOnFocus placeholderTextColor="#94a3b8" />
+                    <TextInput style={styles.macroInput} placeholder="0" value={form.polyunsaturatedFat} onChangeText={(v) => handleChange('polyunsaturatedFat', v)} keyboardType="decimal-pad" selectTextOnFocus placeholderTextColor="#94a3b8" />
                     <Text style={styles.macroUnit}>g</Text>
                   </View>
                   <View style={styles.macroCard}>
                     <Text style={styles.macroLabel}>Monounsat. Fat</Text>
-                    <TextInput style={styles.macroInput} placeholder="0" value={form.monounsaturatedFat} onChangeText={(v) => handleChange('monounsaturatedFat', v)} keyboardType="numeric" selectTextOnFocus placeholderTextColor="#94a3b8" />
+                    <TextInput style={styles.macroInput} placeholder="0" value={form.monounsaturatedFat} onChangeText={(v) => handleChange('monounsaturatedFat', v)} keyboardType="decimal-pad" selectTextOnFocus placeholderTextColor="#94a3b8" />
                     <Text style={styles.macroUnit}>g</Text>
                   </View>
                 </View>

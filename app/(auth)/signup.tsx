@@ -185,11 +185,6 @@ export default function SignupScreen() {
                   </LinearGradient>
                 </TouchableOpacity>
 
-                <View style={{ marginTop: 16, gap: 12 }}>
-                  <AppleSignInButton />
-                  <GoogleSignInButton />
-                </View>
-
                 <View style={styles.footer}>
                   <Text style={styles.footerText}>{t('auth.signup.alreadyAccount', 'Already have an account? ')}</Text>
                   <TouchableOpacity onPress={() => router.push('/login')}>

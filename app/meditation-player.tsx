@@ -89,9 +89,11 @@ interface SeekBarProps {
   onSeekEnd: (ms: number) => void;
   formatTime: (ms: number) => string;
   enabled: boolean;
+  colors: ThemeColors;
 }
 
-function SeekBar({ positionMs, durationMs, onSeekStart, onSeekEnd, formatTime, enabled }: SeekBarProps) {
+function SeekBar({ positionMs, durationMs, onSeekStart, onSeekEnd, formatTime, enabled, colors }: SeekBarProps) {
+  const sbStyles = useMemo(() => createSbStyles(colors), [colors]);
   const durationRef = useRef(durationMs);
   const onSeekEndRef = useRef(onSeekEnd);
   const onSeekStartRef = useRef(onSeekStart);
@@ -584,11 +586,12 @@ export default function MeditationPlayerScreen({
           onSeekEnd={handleSeek}
           formatTime={formatTime}
           enabled={showSeekBar}
+          colors={themeColors}
         />
       )}
       <View style={playerStyles.controls}>
         <TouchableOpacity style={playerStyles.skipButton} onPress={() => skipBy(-15_000)} activeOpacity={0.65}>
-          <Ionicons name="play-back" size={26} color="#475569" />
+          <Ionicons name="play-back" size={26} color={themeColors.textMuted} />
           <Text style={playerStyles.skipLabel}>15s</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -603,7 +606,7 @@ export default function MeditationPlayerScreen({
           }
         </TouchableOpacity>
         <TouchableOpacity style={playerStyles.skipButton} onPress={() => skipBy(15_000)} activeOpacity={0.65}>
-          <Ionicons name="play-forward" size={26} color="#475569" />
+          <Ionicons name="play-forward" size={26} color={themeColors.textMuted} />
           <Text style={playerStyles.skipLabel}>15s</Text>
         </TouchableOpacity>
       </View>
@@ -616,12 +619,15 @@ export default function MeditationPlayerScreen({
 
   return (
     <Modal visible={visible} animationType="slide" transparent={false} supportedOrientations={['portrait', 'landscape']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <StatusBar
+        barStyle={themeColors.scheme === 'dark' ? 'light-content' : 'dark-content'}
+        backgroundColor={themeColors.surface}
+      />
       <SafeAreaView style={[playerStyles.container]} edges={['bottom']}>
         {/* Header - Aligned to match Exercise Library */}
         <View style={[playerStyles.header, { paddingTop: Math.max(insets.top, 44) }]}>
           <TouchableOpacity style={playerStyles.closeButton} onPress={handleClose}>
-            <Ionicons name="close" size={24} color="#1e293b" />
+            <Ionicons name="close" size={24} color={themeColors.text} />
           </TouchableOpacity>
           <View style={playerStyles.headerTitleContainer}>
             <Text style={playerStyles.headerTitle} numberOfLines={1}>
@@ -662,7 +668,7 @@ const createPlayerStyles = (c: ThemeColors) => StyleSheet.create({
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingBottom: 14,
-    backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: '#e5e7eb',
+    backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: c.border,
   },
   headerTitleContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   closeButton: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
