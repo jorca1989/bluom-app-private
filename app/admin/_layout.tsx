@@ -22,6 +22,7 @@ import {
 } from 'lucide-react-native';
 import { MASTER_ADMINS } from '../../convex/permissions';
 import { getBottomContentPadding } from '@/utils/layout';
+import { useTranslation } from 'react-i18next';
 
 const SIDEBAR_WIDTH = 260;
 
@@ -49,9 +50,21 @@ export default function AdminLayout() {
     const pathname = usePathname();
     const { width } = useWindowDimensions();
     const insets = useSafeAreaInsets();
-
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const isDesktop = width > 1024;
+    const { i18n } = useTranslation();
+
+    useEffect(() => {
+        const originalLang = i18n.language;
+        if (originalLang !== 'en') {
+            i18n.changeLanguage('en');
+        }
+        return () => {
+            if (originalLang && originalLang !== 'en') {
+                i18n.changeLanguage(originalLang);
+            }
+        };
+    }, [i18n]);
 
     useEffect(() => {
         if (isLoaded) {

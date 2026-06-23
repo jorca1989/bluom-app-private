@@ -48,6 +48,11 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
   const [showMeditationPlayer, setShowMeditationPlayer] = useState(false);
   const [selectedSoundscape, setSelectedSoundscape] = useState<any>(null);
   const [activeSession, setActiveSession] = useState<any>(null);
+  const [soundscapeSubFilter, setSoundscapeSubFilter] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSoundscapeSubFilter(null);
+  }, [selectedCategory]);
 
   // Data fetching - Fetch all to filter locally and instantly
   const allSessions = useQuery(api.meditation.getSessions, {});
@@ -88,33 +93,75 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
     { _id: '5', title: t('wellness.fallbackSessions.selfLoveTitle', 'Self-Love Pause'), category: 'self-love', duration: 8, description: t('wellness.fallbackSessions.selfLoveDesc', 'Practice compassion and gratitude.'), tags: ['self-love', 'Compassion'], coverImage: 'https://images.unsplash.com/photo-1499209974431-9dddcece097a?q=80&w=800&auto=format&fit=crop', coverImageLandscape: undefined },
   ].filter(s => !selectedCategory || s.category === selectedCategory || s.tags.includes(selectedCategory)), [selectedCategory]);
 
-  const displaySessions = rawSessions ?? fallbackSessions;
-  
-  // Groupings for the UI — prefer admin-curated flags, fall back to array slice
-  const featuredSessions = useMemo(() => {
-    const featured = displaySessions.filter((s: any) => s.isFeatured);
-    return featured.length > 0 ? featured : displaySessions.slice(0, 3);
-  }, [displaySessions]);
-  const trendingSessions = useMemo(() => {
-    const trending = displaySessions.filter((s: any) => s.isTrending);
-    return trending.length > 0 ? trending : displaySessions.slice(0, 4);
-  }, [displaySessions]);
-  const quickSessions = displaySessions.filter((s: any) => (s.duration ?? 0) <= 5);
-  const deepDiveSessions = displaySessions.filter((s: any) => (s.duration ?? 0) > 10);
-
   const combinedSoundscapes = useMemo(() => {
     const local = [SOUNDSCAPES.rain, SOUNDSCAPES.forest, SOUNDSCAPES.ocean, SOUNDSCAPES.brownNoise].map((ss, idx) => ({
       _id: `local-${ss.id}`,
       title: t('wellness.soundscapes.' + ss.id, ss.name),
+      description: ss.description,
       isLocal: true,
       emoji: idx === 0 ? '🌧' : idx === 1 ? '🌲' : idx === 2 ? '🌊' : '🎧',
       localRef: ss,
+      coverImage: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=300&auto=format&fit=crop',
+      duration: 0,
+      videoUrl: undefined,
+      visualType: undefined,
     }));
     const fromDb = allSessions 
       ? allSessions.filter((s: any) => s.type === 'soundscape' || (s.category && s.category.toLowerCase() === 'soundscapes'))
       : [];
     return [...local, ...fromDb];
   }, [allSessions, t]);
+
+  const filteredSoundscapes = useMemo(() => {
+    if (!combinedSoundscapes) return [];
+    if (!soundscapeSubFilter) return combinedSoundscapes;
+    
+    return combinedSoundscapes.filter((ss: any) => {
+      const titleLower = (ss.title || ss.name || '').toLowerCase();
+      const descLower = (ss.description || ss.descriptionLocalizations?.pt || '').toLowerCase();
+      const tags = (ss.tags || []).map((t: string) => t.toLowerCase());
+      
+      const matchWord = (word: string) => 
+        titleLower.includes(word) || descLower.includes(word) || tags.includes(word);
+        
+      if (soundscapeSubFilter === 'rain') {
+        return matchWord('rain') || matchWord('shower') || ss.localRef?.id === 'rain';
+      }
+      if (soundscapeSubFilter === 'forest') {
+        return matchWord('forest') || matchWord('wood') || matchWord('bird') || matchWord('nature') || ss.localRef?.id === 'forest';
+      }
+      if (soundscapeSubFilter === 'ocean') {
+        return matchWord('ocean') || matchWord('wave') || matchWord('sea') || matchWord('beach') || ss.localRef?.id === 'ocean';
+      }
+      if (soundscapeSubFilter === 'noise') {
+        return matchWord('noise') || matchWord('white') || matchWord('brown') || matchWord('pink') || ss.localRef?.id === 'brownNoise';
+      }
+      return true;
+    });
+  }, [combinedSoundscapes, soundscapeSubFilter]);
+
+  const displaySessions = useMemo(() => {
+    if (selectedCategory === 'soundscape') {
+      return filteredSoundscapes;
+    }
+    return rawSessions ?? fallbackSessions;
+  }, [selectedCategory, filteredSoundscapes, rawSessions, fallbackSessions]);
+  
+  // Groupings for the UI — prefer admin-curated flags, fall back to array slice
+  const featuredSessions = useMemo(() => {
+    if (selectedCategory === 'soundscape') return [];
+    const featured = displaySessions.filter((s: any) => s.isFeatured);
+    return featured.length > 0 ? featured : displaySessions.slice(0, 3);
+  }, [displaySessions, selectedCategory]);
+  
+  const trendingSessions = useMemo(() => {
+    if (selectedCategory === 'soundscape') return [];
+    const trending = displaySessions.filter((s: any) => s.isTrending);
+    return trending.length > 0 ? trending : displaySessions.slice(0, 4);
+  }, [displaySessions, selectedCategory]);
+
+  const quickSessions = useMemo(() => displaySessions.filter((s: any) => (s.duration ?? 0) <= 5), [displaySessions]);
+  const deepDiveSessions = useMemo(() => displaySessions.filter((s: any) => (s.duration ?? 0) > 10), [displaySessions]);
 
   const handleStartSession = (session: any) => {
     if (session.coverImage) Image.prefetch(session.coverImage);
@@ -178,6 +225,32 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
             ))}
           </ScrollView>
 
+          {/* Soundscapes Sub-Filters */}
+          {selectedCategory === 'soundscape' && (
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false} 
+              contentContainerStyle={[styles.categoryScroll, { paddingTop: 0, paddingBottom: 16 }]}
+            >
+              {[
+                { id: null, name: t('wellness.meditationHub.allFilters', 'All'), emoji: '🎧' },
+                { id: 'rain', name: t('wellness.soundscapes.rain', 'Rain'), emoji: '🌧' },
+                { id: 'forest', name: t('wellness.soundscapes.forest', 'Forest'), emoji: '🌲' },
+                { id: 'ocean', name: t('wellness.soundscapes.ocean', 'Ocean'), emoji: '🌊' },
+                { id: 'noise', name: t('wellness.soundscapes.brownNoise', 'Noise'), emoji: '💤' },
+              ].map(sub => (
+                <TouchableOpacity
+                  key={sub.id ?? 'all'}
+                  style={[styles.categoryPill, soundscapeSubFilter === sub.id && styles.categoryPillActive]}
+                  onPress={() => setSoundscapeSubFilter(sub.id)}
+                >
+                  <Text style={{ fontSize: 13, marginRight: 4 }}>{sub.emoji}</Text>
+                  <Text style={[styles.categoryPillText, soundscapeSubFilter === sub.id && styles.categoryPillTextActive]}>{sub.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          )}
+
           {/* Featured Sessions — swipable carousel driven by admin isFeatured toggle */}
           {!selectedCategory && featuredSessions.length > 0 && (
             <View style={{ marginBottom: 28 }}>
@@ -238,30 +311,31 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
             </View>
           )}
 
-          {/* Soundscapes */}
-          {!selectedCategory && combinedSoundscapes.length > 0 && (
+          {/* Soundscapes Filter Selection */}
+          {!selectedCategory && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>{t('wellness.meditationHub.soundscapes', 'Soundscapes')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScroll}>
-                {combinedSoundscapes.map((ss: any) => (
+                {[
+                  { id: 'rain', name: t('wellness.soundscapes.rain', 'Rain'), emoji: '🌧' },
+                  { id: 'forest', name: t('wellness.soundscapes.forest', 'Forest'), emoji: '🌲' },
+                  { id: 'ocean', name: t('wellness.soundscapes.ocean', 'Ocean'), emoji: '🌊' },
+                  { id: 'noise', name: t('wellness.soundscapes.brownNoise', 'Noise'), emoji: '🎧' },
+                ].map((item) => (
                   <TouchableOpacity 
-                    key={ss._id} 
+                    key={item.id} 
                     style={styles.soundscapeCard} 
-                    onPress={() => ss.isLocal ? handleStartSoundscape(ss.localRef) : handleStartSession(ss)}
+                    onPress={() => {
+                      setSelectedCategory('soundscape');
+                      setSoundscapeSubFilter(item.id);
+                    }}
                   >
                     <View style={styles.soundscapeIconBox}>
-                      {ss.isLocal ? (
-                        <Text style={{ fontSize: 28 }}>{ss.emoji}</Text>
-                      ) : ss.coverImage ? (
-                        <Image source={{ uri: ss.coverImage }} style={{ width: 80, height: 80, borderRadius: 40 }} />
-                      ) : (
-                        <Text style={{ fontSize: 28 }}>🎧</Text>
-                      )}
+                      <Text style={{ fontSize: 28 }}>{item.emoji}</Text>
                     </View>
-                    {/* Play button below icon, NOT overlapping */}
-                    <Text style={styles.soundscapeTitle}>{ss.isLocal ? t(`wellness.soundscapes.${ss.localRef.id}`, ss.title) : getLocalizedField(ss, 'title')}</Text>
+                    <Text style={styles.soundscapeTitle}>{item.name}</Text>
                     <View style={styles.soundscapePlay}>
-                      <Ionicons name="play" size={12} color="#2563eb" />
+                      <Ionicons name="filter-outline" size={12} color="#2563eb" />
                     </View>
                   </TouchableOpacity>
                 ))}
@@ -271,18 +345,34 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
 
           {/* Standard List (Rendered below if filtered, or as "Recently Added" if not) */}
           <View style={[styles.section, { paddingHorizontal: 20 }]}>
-            <Text style={styles.sectionTitle}>{selectedCategory ? t('wellness.meditationHub.allSessions', 'All Sessions') : t('wellness.meditationHub.recentlyAdded', 'Recently Added')}</Text>
+            <Text style={styles.sectionTitle}>
+              {selectedCategory === 'soundscape'
+                ? t('wellness.meditationHub.soundscapes', 'Soundscapes')
+                : selectedCategory 
+                  ? t('wellness.meditationHub.allSessions', 'All Sessions') 
+                  : t('wellness.meditationHub.recentlyAdded', 'Recently Added')}
+            </Text>
             
-            {!rawSessions && !fallbackSessions ? (
+            {!displaySessions ? (
               <ActivityIndicator size="small" color="#2563eb" style={{marginTop: 20}} />
             ) : (
               displaySessions.map((session: any) => (
-                <TouchableOpacity key={session._id} style={styles.listCard} onPress={() => handleStartSession(session)}>
-                  <Image source={{ uri: session.coverImage }} style={styles.listCardImg} />
+                <TouchableOpacity 
+                  key={session._id} 
+                  style={styles.listCard} 
+                  onPress={() => session.isLocal ? handleStartSoundscape(session.localRef) : handleStartSession(session)}
+                >
+                  {session.isLocal ? (
+                    <View style={[styles.listCardImg, { justifyContent: 'center', alignItems: 'center', backgroundColor: themeColors.surfaceMuted }]}>
+                      <Text style={{ fontSize: 24 }}>{session.emoji}</Text>
+                    </View>
+                  ) : (
+                    <Image source={{ uri: session.coverImage }} style={styles.listCardImg} />
+                  )}
                   <View style={styles.listCardInfo}>
-                    <Text style={styles.listCardTitle}>{getLocalizedField(session, 'title')}</Text>
-                    <Text style={styles.listCardSub} numberOfLines={1}>{getLocalizedField(session, 'description')}</Text>
-                    <Text style={styles.listCardDuration}>{session.duration} min</Text>
+                    <Text style={styles.listCardTitle}>{session.isLocal ? session.title : getLocalizedField(session, 'title')}</Text>
+                    <Text style={styles.listCardSub} numberOfLines={1}>{session.isLocal ? session.description : getLocalizedField(session, 'description')}</Text>
+                    <Text style={styles.listCardDuration}>{session.isLocal ? t('wellness.loopAmbient', 'Ambient Loop') : `${session.duration} min`}</Text>
                   </View>
                   <View style={styles.listCardPlay}>
                     <Ionicons name="play" size={18} color="#2563eb" />

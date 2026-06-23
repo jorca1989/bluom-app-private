@@ -239,19 +239,65 @@ export default function WorkoutsManager() {
     const updateWorkout = useMutation(api.videoWorkouts.updateWorkout);
     const deleteWorkout = useMutation(api.videoWorkouts.deleteWorkout);
 
+    const [selectedAdminLang, setSelectedAdminLang] = useState<string>('en');
+    const [showLangDropdown, setShowLangDropdown] = useState(false);
+
+    const getActiveTitle = () => {
+        if (selectedAdminLang === 'en') return form.exerciseName;
+        return form[`title_${selectedAdminLang}`] ?? '';
+    };
+    const setActiveTitle = (val: string) => {
+        setForm((p: any) => {
+            if (selectedAdminLang === 'en') return { ...p, exerciseName: val };
+            return { ...p, [`title_${selectedAdminLang}`]: val };
+        });
+    };
+
+    const getActiveDesc = () => {
+        if (selectedAdminLang === 'en') return form.exerciseDescription;
+        return form[`desc_${selectedAdminLang}`] ?? '';
+    };
+    const setActiveDesc = (val: string) => {
+        setForm((p: any) => {
+            if (selectedAdminLang === 'en') return { ...p, exerciseDescription: val };
+            return { ...p, [`desc_${selectedAdminLang}`]: val };
+        });
+    };
+
+    const getActiveInstructions = () => {
+        if (selectedAdminLang === 'en') return form.instructions;
+        return form[`instr_${selectedAdminLang}`] ?? '';
+    };
+    const setActiveInstructions = (val: string) => {
+        setForm((p: any) => {
+            if (selectedAdminLang === 'en') return { ...p, instructions: val };
+            return { ...p, [`instr_${selectedAdminLang}`]: val };
+        });
+    };
+
+    const getActivePM = () => {
+        if (selectedAdminLang === 'en') return form.primaryMuscles;
+        return form[`pm_${selectedAdminLang}`] ?? '';
+    };
+    const setActivePM = (val: string) => {
+        setForm((p: any) => {
+            if (selectedAdminLang === 'en') return { ...p, primaryMuscles: val };
+            return { ...p, [`pm_${selectedAdminLang}`]: val };
+        });
+    };
+
+    const getActiveSM = () => {
+        if (selectedAdminLang === 'en') return form.secondaryMuscles;
+        return form[`sm_${selectedAdminLang}`] ?? '';
+    };
+    const setActiveSM = (val: string) => {
+        setForm((p: any) => {
+            if (selectedAdminLang === 'en') return { ...p, secondaryMuscles: val };
+            return { ...p, [`sm_${selectedAdminLang}`]: val };
+        });
+    };
+
     const setField = (key: string, val: any) => setForm((f: any) => ({ ...f, [key]: val }));
-    const extraLanguageInputs = (prefix: string, options: { multiline?: boolean; height?: number; placeholder?: string } = {}) =>
-        ADMIN_TRANSLATION_LANGUAGES.slice(5).map(({ code, label, name }) => (
-            <LangAccordion key={`${prefix}_${code}`} title={`${label} ${name}`}>
-                <TextInput
-                    style={[styles.input, options.multiline && { height: options.height ?? 90 }]}
-                    multiline={options.multiline}
-                    value={form[`${prefix}_${code}`] ?? ''}
-                    onChangeText={v => setField(`${prefix}_${code}`, v)}
-                    placeholder={options.placeholder ?? `${name} translation...`}
-                />
-            </LangAccordion>
-        ));
 
     // ── Build payload ────────────────────────────────────────────────────────
     const buildPayload = () => {
@@ -390,6 +436,8 @@ export default function WorkoutsManager() {
         const ex = w.exercises?.[0] ?? {};
         const tl = w.titleLocalizations || {};
         const dl = w.descriptionLocalizations || {};
+        setSelectedAdminLang('en');
+        setShowLangDropdown(false);
         setEditingWorkout(w);
         setForm({
             exerciseName: ex.name ?? w.title ?? '',
@@ -420,6 +468,8 @@ export default function WorkoutsManager() {
 
     const openNew = () => {
         setEditingWorkout(null);
+        setSelectedAdminLang('en');
+        setShowLangDropdown(false);
         setForm({ ...EMPTY_FORM });
         setIsModalOpen(true);
     };
@@ -597,51 +647,68 @@ export default function WorkoutsManager() {
 
                     <ScrollView style={styles.form} keyboardShouldPersistTaps="handled">
 
-                        {/* Exercise Name — Accordion */}
-                        <FieldAccordion title={`📝 ${t('admin.exerciseName', 'Exercise Name')} *`}>
-                            <LangAccordion title="🇬🇧 EN (required)">
-                                <TextInput style={styles.input} value={form.exerciseName} onChangeText={t => setField('exerciseName', t)} placeholder={t('admin.exerciseNamePlaceholder', 'e.g. Ab Wheel Rollout, Barbell Squat')} />
-                            </LangAccordion>
-                            <LangAccordion title="🇵🇹 PT">
-                                <TextInput style={styles.input} placeholder="ex. Rolo Abdominal" value={form.title_pt} onChangeText={v => setField('title_pt', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇪🇸 ES">
-                                <TextInput style={styles.input} placeholder="ej. Rodillo Abdominal" value={form.title_es} onChangeText={v => setField('title_es', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇫🇷 FR">
-                                <TextInput style={styles.input} placeholder="ex. Rouleau Abdominal" value={form.title_fr} onChangeText={v => setField('title_fr', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇩🇪 DE">
-                                <TextInput style={styles.input} placeholder="z.B. Bauchroller" value={form.title_de} onChangeText={v => setField('title_de', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇳🇱 NL">
-                                <TextInput style={styles.input} placeholder="bijv. Buikrol" value={form.title_nl} onChangeText={v => setField('title_nl', v)} />
-                            </LangAccordion>
-                            {extraLanguageInputs('title')}
-                        </FieldAccordion>
+                        {/* Language Selector Dropdown */}
+                        <View style={styles.langSelectorContainer}>
+                            <Text style={[styles.label, { marginTop: 0 }]}>Editing Translation Language</Text>
+                            <View style={styles.dropdownWrap}>
+                                <TouchableOpacity style={styles.dropdownBtn} onPress={() => setShowLangDropdown(prev => !prev)}>
+                                    <Text style={styles.dropdownBtnText}>
+                                        {selectedAdminLang === 'en' ? '🇬🇧 English (Default / Required)' : 
+                                         selectedAdminLang === 'pt' ? '🇧🇷 Portuguese' :
+                                         selectedAdminLang === 'es' ? '🇪🇸 Spanish' :
+                                         selectedAdminLang === 'de' ? '🇩🇪 German' :
+                                         selectedAdminLang === 'nl' ? '🇳🇱 Dutch' :
+                                         ADMIN_TRANSLATION_LANGUAGES.find(l => l.code === selectedAdminLang)?.name || selectedAdminLang}
+                                    </Text>
+                                    <ChevronDown size={18} color="#64748b" />
+                                </TouchableOpacity>
+                                {showLangDropdown && (
+                                    <View style={styles.dropdownOptions}>
+                                        <TouchableOpacity 
+                                            style={[styles.dropdownOption, selectedAdminLang === 'en' && styles.dropdownOptionActive]}
+                                            onPress={() => { setSelectedAdminLang('en'); setShowLangDropdown(false); }}
+                                        >
+                                            <Text style={[styles.dropdownOptionText, selectedAdminLang === 'en' && styles.dropdownOptionTextActive]}>🇬🇧 English (Default / Required)</Text>
+                                        </TouchableOpacity>
+                                        {ADMIN_TRANSLATION_LANGUAGES.map(lang => {
+                                            const flag = lang.code === 'pt' ? '🇧🇷' : lang.code === 'es' ? '🇪🇸' : lang.code === 'de' ? '🇩🇪' : lang.code === 'nl' ? '🇳🇱' : '🌐';
+                                            return (
+                                                <TouchableOpacity 
+                                                    key={lang.code}
+                                                    style={[styles.dropdownOption, selectedAdminLang === lang.code && styles.dropdownOptionActive]}
+                                                    onPress={() => { setSelectedAdminLang(lang.code); setShowLangDropdown(false); }}
+                                                >
+                                                    <Text style={[styles.dropdownOptionText, selectedAdminLang === lang.code && styles.dropdownOptionTextActive]}>{flag} {lang.name}</Text>
+                                                </TouchableOpacity>
+                                            );
+                                        })}
+                                    </View>
+                                )}
+                            </View>
+                        </View>
 
-                        {/* Exercise Description — Accordion */}
-                        <FieldAccordion title={`📋 ${t('admin.exerciseDescription', 'Description')}`}>
-                            <LangAccordion title="🇬🇧 EN">
-                                <TextInput style={[styles.input, { height: 80 }]} multiline value={form.exerciseDescription} onChangeText={t => setField('exerciseDescription', t)} placeholder={t('admin.exerciseDescriptionPlaceholder', 'What does this exercise target?')} />
-                            </LangAccordion>
-                            <LangAccordion title="🇵🇹 PT">
-                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descrição em português..." value={form.desc_pt} onChangeText={v => setField('desc_pt', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇪🇸 ES">
-                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descripción en español..." value={form.desc_es} onChangeText={v => setField('desc_es', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇫🇷 FR">
-                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Description en français..." value={form.desc_fr} onChangeText={v => setField('desc_fr', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇩🇪 DE">
-                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschreibung auf Deutsch..." value={form.desc_de} onChangeText={v => setField('desc_de', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇳🇱 NL">
-                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschrijving in het Nederlands..." value={form.desc_nl} onChangeText={v => setField('desc_nl', v)} />
-                            </LangAccordion>
-                            {extraLanguageInputs('desc', { multiline: true, height: 70 })}
-                        </FieldAccordion>
+                        {/* Exercise Name */}
+                        <Text style={styles.label}>
+                            📝 {t('admin.exerciseName', 'Exercise Name')} ({selectedAdminLang === 'en' ? 'EN - Required' : selectedAdminLang.toUpperCase()}) *
+                        </Text>
+                        <TextInput 
+                            style={styles.input} 
+                            value={getActiveTitle()} 
+                            onChangeText={setActiveTitle} 
+                            placeholder={selectedAdminLang === 'en' ? t('admin.exerciseNamePlaceholder', 'e.g. Ab Wheel Rollout, Barbell Squat') : 'Translation name...'} 
+                        />
+
+                        {/* Exercise Description */}
+                        <Text style={styles.label}>
+                            📋 {t('admin.exerciseDescription', 'Description')} ({selectedAdminLang === 'en' ? 'EN' : selectedAdminLang.toUpperCase()})
+                        </Text>
+                        <TextInput 
+                            style={[styles.input, { height: 80 }]} 
+                            multiline 
+                            value={getActiveDesc()} 
+                            onChangeText={setActiveDesc} 
+                            placeholder={selectedAdminLang === 'en' ? t('admin.exerciseDescriptionPlaceholder', 'What does this exercise target?') : 'Translation description...'} 
+                        />
 
                         {/* Exercise Type — multi-select */}
                         <DropdownField
@@ -657,85 +724,40 @@ export default function WorkoutsManager() {
                             </Text>
                         )}
 
-                        {/* Instructions — Accordion */}
-                        <FieldAccordion title={`📋 ${t('admin.instructionsLabel', 'Instructions')} — one step per line`}>
-                            <Text style={[styles.fieldHint, { marginBottom: 8 }]}>{t('admin.instructionsHint', 'These appear as a numbered list in the app')}</Text>
-                            <LangAccordion title="🇬🇧 EN (required)">
-                                <TextInput style={[styles.input, { height: 130 }]} multiline value={form.instructions} onChangeText={t => setField('instructions', t)} placeholder={t('admin.instructionsPlaceholder', "Kneel and grip the wheel shoulder-width\nBrace core and exhale\nRoll forward until hips extend\nPull back slowly to start")} />
-                            </LangAccordion>
-                            <LangAccordion title="🇵🇹 PT">
-                                <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_pt} onChangeText={v => setField('instr_pt', v)} placeholder={"Ajoelhe e segure o volante...\nContraia o core...\n..."} />
-                            </LangAccordion>
-                            <LangAccordion title="🇪🇸 ES">
-                                <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_es} onChangeText={v => setField('instr_es', v)} placeholder={"Arrodíllate y sujeta la rueda...\nContraer el core...\n..."} />
-                            </LangAccordion>
-                            <LangAccordion title="🇫🇷 FR">
-                                <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_fr} onChangeText={v => setField('instr_fr', v)} placeholder={"Agenouillez-vous et saisissez la roue...\nContracter le core...\n..."} />
-                            </LangAccordion>
-                            <LangAccordion title="🇩🇪 DE">
-                                <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_de} onChangeText={v => setField('instr_de', v)} placeholder={"Knien Sie und greifen Sie das Rad...\nCore anspannen...\n..."} />
-                            </LangAccordion>
-                            <LangAccordion title="🇳🇱 NL">
-                                <TextInput style={[styles.input, { height: 110 }]} multiline value={form.instr_nl} onChangeText={v => setField('instr_nl', v)} placeholder={"Kniel neer en grijp het wiel...\nCore aanspannen...\n..."} />
-                            </LangAccordion>
-                            {extraLanguageInputs('instr', { multiline: true, height: 110 })}
-                        </FieldAccordion>
+                        {/* Instructions */}
+                        <Text style={styles.label}>
+                            📋 {t('admin.instructionsLabel', 'Instructions')} — one step per line ({selectedAdminLang === 'en' ? 'EN - Required' : selectedAdminLang.toUpperCase()})
+                        </Text>
+                        <Text style={[styles.fieldHint, { marginBottom: 8 }]}>{t('admin.instructionsHint', 'These appear as a numbered list in the app')}</Text>
+                        <TextInput 
+                            style={[styles.input, { height: 130 }]} 
+                            multiline 
+                            value={getActiveInstructions()} 
+                            onChangeText={setActiveInstructions} 
+                            placeholder={selectedAdminLang === 'en' ? t('admin.instructionsPlaceholder', "Kneel and grip the wheel shoulder-width\nBrace core and exhale\nRoll forward until hips extend\nPull back slowly to start") : 'Translation instructions...'} 
+                        />
 
-                        {/* Primary Muscles — Accordion */}
-                        <FieldAccordion title={`💪 ${t('admin.primaryMuscles', 'Primary Muscles')} (comma-separated)`}>
-                            <LangAccordion title="🇬🇧 EN">
-                                <TextInput
-                                    style={styles.input}
-                                    value={form.primaryMuscles}
-                                    onChangeText={t => setField('primaryMuscles', t)}
-                                    placeholder="e.g. Abs, Core, Obliques"
-                                />
-                            </LangAccordion>
-                            <LangAccordion title="🇵🇹 PT">
-                                <TextInput style={styles.input} placeholder="ex. Abdominais, Core" value={form.pm_pt} onChangeText={v => setField('pm_pt', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇪🇸 ES">
-                                <TextInput style={styles.input} placeholder="ej. Abdominales, Core" value={form.pm_es} onChangeText={v => setField('pm_es', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇫🇷 FR">
-                                <TextInput style={styles.input} placeholder="ex. Abdos, Tronc" value={form.pm_fr} onChangeText={v => setField('pm_fr', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇩🇪 DE">
-                                <TextInput style={styles.input} placeholder="z.B. Bauch, Rumpf" value={form.pm_de} onChangeText={v => setField('pm_de', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇳🇱 NL">
-                                <TextInput style={styles.input} placeholder="bijv. Buikspieren, Core" value={form.pm_nl} onChangeText={v => setField('pm_nl', v)} />
-                            </LangAccordion>
-                            {extraLanguageInputs('pm', { placeholder: 'Comma-separated translated muscle names...' })}
-                        </FieldAccordion>
+                        {/* Primary Muscles */}
+                        <Text style={styles.label}>
+                            💪 {t('admin.primaryMuscles', 'Primary Muscles')} (comma-separated, {selectedAdminLang === 'en' ? 'EN' : selectedAdminLang.toUpperCase()})
+                        </Text>
+                        <TextInput
+                            style={styles.input}
+                            value={getActivePM()}
+                            onChangeText={setActivePM}
+                            placeholder={selectedAdminLang === 'en' ? "e.g. Abs, Core, Obliques" : "Translation primary muscles..."}
+                        />
 
-                        {/* Secondary Muscles — Accordion */}
-                        <FieldAccordion title={`💪 ${t('admin.secondaryMuscles', 'Secondary Muscles')} (comma-separated)`}>
-                            <LangAccordion title="🇬🇧 EN">
-                                <TextInput
-                                    style={styles.input}
-                                    value={form.secondaryMuscles}
-                                    onChangeText={t => setField('secondaryMuscles', t)}
-                                    placeholder="e.g. Lower Back, Hip Flexors"
-                                />
-                            </LangAccordion>
-                            <LangAccordion title="🇵🇹 PT">
-                                <TextInput style={styles.input} placeholder="ex. Fundo das costas" value={form.sm_pt} onChangeText={v => setField('sm_pt', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇪🇸 ES">
-                                <TextInput style={styles.input} placeholder="ej. Espalda baja" value={form.sm_es} onChangeText={v => setField('sm_es', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇫🇷 FR">
-                                <TextInput style={styles.input} placeholder="ex. Bas du dos" value={form.sm_fr} onChangeText={v => setField('sm_fr', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇩🇪 DE">
-                                <TextInput style={styles.input} placeholder="z.B. Unterer Rücken" value={form.sm_de} onChangeText={v => setField('sm_de', v)} />
-                            </LangAccordion>
-                            <LangAccordion title="🇳🇱 NL">
-                                <TextInput style={styles.input} placeholder="bijv. Onderrug" value={form.sm_nl} onChangeText={v => setField('sm_nl', v)} />
-                            </LangAccordion>
-                            {extraLanguageInputs('sm', { placeholder: 'Comma-separated translated muscle names...' })}
-                        </FieldAccordion>
+                        {/* Secondary Muscles */}
+                        <Text style={styles.label}>
+                            💪 {t('admin.secondaryMuscles', 'Secondary Muscles')} (comma-separated, {selectedAdminLang === 'en' ? 'EN' : selectedAdminLang.toUpperCase()})
+                        </Text>
+                        <TextInput
+                            style={styles.input}
+                            value={getActiveSM()}
+                            onChangeText={setActiveSM}
+                            placeholder={selectedAdminLang === 'en' ? "e.g. Lower Back, Hip Flexors" : "Translation secondary muscles..."}
+                        />
 
                         {/* Muscle Group Tags — for the Browse by Muscle Group filter cards */}
                         <View style={styles.sectionSeparator}>
@@ -1075,4 +1097,68 @@ const styles = StyleSheet.create({
     filterPillActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
     filterPillTxt: { fontSize: 12, fontWeight: '700', color: '#64748b' },
     filterPillTxtActive: { color: '#ffffff' },
+    langSelectorContainer: {
+        marginBottom: 16,
+        padding: 14,
+        backgroundColor: '#f8fafc',
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+    },
+    dropdownWrap: {
+        position: 'relative',
+        zIndex: 1000,
+    },
+    dropdownBtn: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderWidth: 1.5,
+        borderColor: '#cbd5e1',
+        borderRadius: 12,
+        padding: 12,
+        marginTop: 6,
+    },
+    dropdownBtnText: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#1e293b',
+    },
+    dropdownOptions: {
+        position: 'absolute',
+        top: '100%',
+        left: 0,
+        right: 0,
+        backgroundColor: '#fff',
+        borderWidth: 1.5,
+        borderColor: '#cbd5e1',
+        borderRadius: 12,
+        marginTop: 4,
+        maxHeight: 200,
+        overflow: 'scroll',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 5,
+        zIndex: 10000,
+    },
+    dropdownOption: {
+        padding: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+    },
+    dropdownOptionActive: {
+        backgroundColor: '#eff6ff',
+    },
+    dropdownOptionText: {
+        fontSize: 14,
+        color: '#475569',
+        fontWeight: '600',
+    },
+    dropdownOptionTextActive: {
+        color: '#2563eb',
+        fontWeight: '700',
+    },
 });

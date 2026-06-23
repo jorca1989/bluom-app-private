@@ -252,24 +252,73 @@ export default function RecipesManager() {
             tags: [],
             status: 'published',
         });
+        setSelectedAdminLang('en');
+        setShowLangDropdown(false);
         setSelectedRecipe(null);
     };
 
-    const extraLanguageInputs = (prefix: string, options: { multiline?: boolean; height?: number; placeholder?: string } = {}) =>
-        ADMIN_TRANSLATION_LANGUAGES.slice(5).map(({ code, label, name }) => (
-            <LangAccordion key={`${prefix}_${code}`} title={`${label} ${name}`}>
-                <TextInput
-                    style={[styles.input, options.multiline && { height: options.height ?? 90 }]}
-                    multiline={options.multiline}
-                    placeholder={options.placeholder ?? `${name} translation...`}
-                    value={newRecipe[`${prefix}_${code}`] ?? ''}
-                    onChangeText={v => setNewRecipe((p: any) => ({ ...p, [`${prefix}_${code}`]: v }))}
-                />
-            </LangAccordion>
-        ));
+    const [selectedAdminLang, setSelectedAdminLang] = useState<string>('en');
+    const [showLangDropdown, setShowLangDropdown] = useState(false);
+
+    const getActiveTitle = () => {
+        if (selectedAdminLang === 'en') return newRecipe.title;
+        return newRecipe[`title_${selectedAdminLang}`] ?? '';
+    };
+    const setActiveTitle = (val: string) => {
+        setNewRecipe((p: any) => {
+            if (selectedAdminLang === 'en') return { ...p, title: val };
+            return { ...p, [`title_${selectedAdminLang}`]: val };
+        });
+    };
+
+    const getActiveDesc = () => {
+        if (selectedAdminLang === 'en') return newRecipe.shortDescription;
+        return newRecipe[`desc_${selectedAdminLang}`] ?? '';
+    };
+    const setActiveDesc = (val: string) => {
+        setNewRecipe((p: any) => {
+            if (selectedAdminLang === 'en') return { ...p, shortDescription: val };
+            return { ...p, [`desc_${selectedAdminLang}`]: val };
+        });
+    };
+
+    const getActiveIngredients = () => {
+        if (selectedAdminLang === 'en') return newRecipe.ingredientsText;
+        return newRecipe[`ingr_${selectedAdminLang}`] ?? '';
+    };
+    const setActiveIngredients = (val: string) => {
+        setNewRecipe((p: any) => {
+            if (selectedAdminLang === 'en') return { ...p, ingredientsText: val };
+            return { ...p, [`ingr_${selectedAdminLang}`]: val };
+        });
+    };
+
+    const getActiveInstructions = () => {
+        if (selectedAdminLang === 'en') return newRecipe.instructionsText;
+        return newRecipe[`instr_${selectedAdminLang}`] ?? '';
+    };
+    const setActiveInstructions = (val: string) => {
+        setNewRecipe((p: any) => {
+            if (selectedAdminLang === 'en') return { ...p, instructionsText: val };
+            return { ...p, [`instr_${selectedAdminLang}`]: val };
+        });
+    };
+
+    const getActiveShopping = () => {
+        if (selectedAdminLang === 'en') return newRecipe.shoppingListText;
+        return newRecipe[`shopping_${selectedAdminLang}`] ?? '';
+    };
+    const setActiveShopping = (val: string) => {
+        setNewRecipe((p: any) => {
+            if (selectedAdminLang === 'en') return { ...p, shoppingListText: val };
+            return { ...p, [`shopping_${selectedAdminLang}`]: val };
+        });
+    };
 
     const handleEdit = (recipe: any) => {
         setSelectedRecipe(recipe);
+        setSelectedAdminLang('en');
+        setShowLangDropdown(false);
         const tl = recipe.titleLocalizations || {};
         const dl = recipe.descriptionLocalizations || {};
         setNewRecipe({
@@ -584,28 +633,56 @@ export default function RecipesManager() {
                         </TouchableOpacity>
                     </View>
                     <ScrollView style={styles.modalForm}>
-                        {/* Recipe Name — Accordion */}
-                        <FieldAccordion title={`📝 ${t('admin.name', 'Name')} *`}>
-                            <LangAccordion title="🇬🇧 EN (required)">
-                                <TextInput style={styles.input} placeholder={t('admin.recipeNamePlaceholder', 'e.g. Mediterranean Salmon')} value={newRecipe.title} onChangeText={(t) => setNewRecipe((p: any) => ({ ...p, title: t }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇵🇹 PT">
-                                <TextInput style={styles.input} placeholder="ex. Salmão Mediterrâneo" value={newRecipe.title_pt} onChangeText={v => setNewRecipe((p: any) => ({ ...p, title_pt: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇪🇸 ES">
-                                <TextInput style={styles.input} placeholder="ej. Salmón Mediterráneo" value={newRecipe.title_es} onChangeText={v => setNewRecipe((p: any) => ({ ...p, title_es: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇫🇷 FR">
-                                <TextInput style={styles.input} placeholder="ex. Saumon Méditerranéen" value={newRecipe.title_fr} onChangeText={v => setNewRecipe((p: any) => ({ ...p, title_fr: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇩🇪 DE">
-                                <TextInput style={styles.input} placeholder="z.B. Mediterraner Lachs" value={newRecipe.title_de} onChangeText={v => setNewRecipe((p: any) => ({ ...p, title_de: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇳🇱 NL">
-                                <TextInput style={styles.input} placeholder="bijv. Mediterrane Zalm" value={newRecipe.title_nl} onChangeText={v => setNewRecipe((p: any) => ({ ...p, title_nl: v }))} />
-                            </LangAccordion>
-                            {extraLanguageInputs('title')}
-                        </FieldAccordion>
+                        {/* Language Selector Dropdown */}
+                        <View style={styles.langSelectorContainer}>
+                            <Text style={[styles.label, { marginTop: 0 }]}>Editing Translation Language</Text>
+                            <View style={styles.dropdownWrap}>
+                                <TouchableOpacity style={styles.dropdownBtn} onPress={() => setShowLangDropdown(prev => !prev)}>
+                                    <Text style={styles.dropdownBtnText}>
+                                        {selectedAdminLang === 'en' ? '🇬🇧 English (Default / Required)' : 
+                                         selectedAdminLang === 'pt' ? '🇧🇷 Portuguese' :
+                                         selectedAdminLang === 'es' ? '🇪🇸 Spanish' :
+                                         selectedAdminLang === 'de' ? '🇩🇪 German' :
+                                         selectedAdminLang === 'nl' ? '🇳🇱 Dutch' :
+                                         ADMIN_TRANSLATION_LANGUAGES.find(l => l.code === selectedAdminLang)?.name || selectedAdminLang}
+                                    </Text>
+                                    <ChevronDown size={18} color="#64748b" />
+                                </TouchableOpacity>
+                                {showLangDropdown && (
+                                    <View style={styles.dropdownOptions}>
+                                        <TouchableOpacity 
+                                            style={[styles.dropdownOption, selectedAdminLang === 'en' && styles.dropdownOptionActive]}
+                                            onPress={() => { setSelectedAdminLang('en'); setShowLangDropdown(false); }}
+                                        >
+                                            <Text style={[styles.dropdownOptionText, selectedAdminLang === 'en' && styles.dropdownOptionTextActive]}>🇬🇧 English (Default / Required)</Text>
+                                        </TouchableOpacity>
+                                        {ADMIN_TRANSLATION_LANGUAGES.map(lang => {
+                                            const flag = lang.code === 'pt' ? '🇧🇷' : lang.code === 'es' ? '🇪🇸' : lang.code === 'de' ? '🇩🇪' : lang.code === 'nl' ? '🇳🇱' : '🌐';
+                                            return (
+                                                <TouchableOpacity 
+                                                    key={lang.code}
+                                                    style={[styles.dropdownOption, selectedAdminLang === lang.code && styles.dropdownOptionActive]}
+                                                    onPress={() => { setSelectedAdminLang(lang.code); setShowLangDropdown(false); }}
+                                                >
+                                                    <Text style={[styles.dropdownOptionText, selectedAdminLang === lang.code && styles.dropdownOptionTextActive]}>{flag} {lang.name}</Text>
+                                                </TouchableOpacity>
+                                            );
+                                        })}
+                                    </View>
+                                )}
+                            </View>
+                        </View>
+
+                        {/* Recipe Name */}
+                        <Text style={styles.label}>
+                            📝 {t('admin.name', 'Name')} ({selectedAdminLang === 'en' ? 'EN - Required' : selectedAdminLang.toUpperCase()}) *
+                        </Text>
+                        <TextInput 
+                            style={styles.input} 
+                            placeholder={selectedAdminLang === 'en' ? t('admin.recipeNamePlaceholder', 'e.g. Mediterranean Salmon') : 'Translation name...'} 
+                            value={getActiveTitle()} 
+                            onChangeText={setActiveTitle} 
+                        />
 
                         <DropdownField
                             label={t('admin.categories', 'Categories')}
@@ -644,32 +721,21 @@ export default function RecipesManager() {
                             </View>
                         </View>
 
-                        {/* Description — Accordion */}
-                        <FieldAccordion title={`📄 ${t('admin.shortDescription', 'Description')}`}>
-                            <LangAccordion title="🇬🇧 EN (required)">
-                                <TextInput style={[styles.input, { height: 90 }]} multiline placeholder={t('admin.shortDescriptionPlaceholder', 'One-line description users see in-app...')} value={newRecipe.shortDescription} onChangeText={v => setNewRecipe((p: any) => ({ ...p, shortDescription: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇵🇹 PT">
-                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descrição em português..." value={newRecipe.desc_pt} onChangeText={v => setNewRecipe((p: any) => ({ ...p, desc_pt: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇪🇸 ES">
-                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Descripción en español..." value={newRecipe.desc_es} onChangeText={v => setNewRecipe((p: any) => ({ ...p, desc_es: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇫🇷 FR">
-                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Description en français..." value={newRecipe.desc_fr} onChangeText={v => setNewRecipe((p: any) => ({ ...p, desc_fr: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇩🇪 DE">
-                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschreibung auf Deutsch..." value={newRecipe.desc_de} onChangeText={v => setNewRecipe((p: any) => ({ ...p, desc_de: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇳🇱 NL">
-                                <TextInput style={[styles.input, { height: 70 }]} multiline placeholder="Beschrijving in het Nederlands..." value={newRecipe.desc_nl} onChangeText={v => setNewRecipe((p: any) => ({ ...p, desc_nl: v }))} />
-                            </LangAccordion>
-                            {extraLanguageInputs('desc', { multiline: true, height: 70 })}
-                        </FieldAccordion>
+                        {/* Description */}
+                        <Text style={styles.label}>
+                            📄 {t('admin.shortDescription', 'Description')} ({selectedAdminLang === 'en' ? 'EN - Required' : selectedAdminLang.toUpperCase()})
+                        </Text>
+                        <TextInput 
+                            style={[styles.input, { height: 90 }]} 
+                            multiline 
+                            placeholder={selectedAdminLang === 'en' ? t('admin.shortDescriptionPlaceholder', 'One-line description users see in-app...') : 'Translation description...'} 
+                            value={getActiveDesc()} 
+                            onChangeText={setActiveDesc} 
+                        />
 
                         <Text style={styles.label}>{t('admin.imageUrl', 'Image URL (R2)')}</Text>
                         <TextInput
-                            style={[styles.input, { marginBottom: 60 }]}
+                            style={styles.input}
                             value={newRecipe.imageUrl}
                             onChangeText={t => setNewRecipe((p: any) => ({ ...p, imageUrl: t }))}
                             placeholder={`${R2_CONFIG.generalBaseUrl}/recipes/image.jpg`}
@@ -741,94 +807,41 @@ export default function RecipesManager() {
                             </View>
                         </View>
 
-                        {/* Ingredients — Accordion */}
-                        <FieldAccordion title={`🥦 ${t('admin.ingredientsList', 'Ingredients')} *`}>
-                            <LangAccordion title="🇬🇧 EN (required)">
-                                <TextInput
-                                    style={[styles.input, { height: 150 }]}
-                                    multiline
-                                    placeholder={'2 Eggs\n1 Avocado\n...'}
-                                    value={newRecipe.ingredientsText}
-                                    onChangeText={(t) => setNewRecipe((p: any) => ({ ...p, ingredientsText: t }))}
-                                />
-                            </LangAccordion>
-                            <LangAccordion title="🇵🇹 PT">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Ovos\n1 Abacate\n...'} value={newRecipe.ingr_pt} onChangeText={v => setNewRecipe((p: any) => ({ ...p, ingr_pt: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇪🇸 ES">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Huevos\n1 Aguacate\n...'} value={newRecipe.ingr_es} onChangeText={v => setNewRecipe((p: any) => ({ ...p, ingr_es: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇫🇷 FR">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Œufs\n1 Avocat\n...'} value={newRecipe.ingr_fr} onChangeText={v => setNewRecipe((p: any) => ({ ...p, ingr_fr: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇩🇪 DE">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Eier\n1 Avocado\n...'} value={newRecipe.ingr_de} onChangeText={v => setNewRecipe((p: any) => ({ ...p, ingr_de: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇳🇱 NL">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'2 Eieren\n1 Avocado\n...'} value={newRecipe.ingr_nl} onChangeText={v => setNewRecipe((p: any) => ({ ...p, ingr_nl: v }))} />
-                            </LangAccordion>
-                            {extraLanguageInputs('ingr', { multiline: true, height: 120 })}
-                        </FieldAccordion>
+                        {/* Ingredients */}
+                        <Text style={styles.label}>
+                            🥦 {t('admin.ingredientsList', 'Ingredients')} ({selectedAdminLang === 'en' ? 'EN - Required' : selectedAdminLang.toUpperCase()}) *
+                        </Text>
+                        <TextInput
+                            style={[styles.input, { height: 150 }]}
+                            multiline
+                            placeholder={selectedAdminLang === 'en' ? '2 Eggs\n1 Avocado\n...' : 'Translation ingredients...'}
+                            value={getActiveIngredients()}
+                            onChangeText={setActiveIngredients}
+                        />
 
-                        {/* Instructions — Accordion */}
-                        <FieldAccordion title={`📋 ${t('admin.instructionsSteps', 'Instructions')} *`}>
-                            <LangAccordion title="🇬🇧 EN (required)">
-                                <TextInput
-                                    style={[styles.input, { height: 150 }]}
-                                    multiline
-                                    placeholder={'1) Preheat oven...\n2) Season salmon...\n...'}
-                                    value={newRecipe.instructionsText}
-                                    onChangeText={(t) => setNewRecipe((p: any) => ({ ...p, instructionsText: t }))}
-                                />
-                            </LangAccordion>
-                            <LangAccordion title="🇵🇹 PT">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Pré-aquecer o forno...\n2) Temperar o salmão...'} value={newRecipe.instr_pt} onChangeText={v => setNewRecipe((p: any) => ({ ...p, instr_pt: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇪🇸 ES">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Precalentar el horno...\n2) Sazonar el salmón...'} value={newRecipe.instr_es} onChangeText={v => setNewRecipe((p: any) => ({ ...p, instr_es: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇫🇷 FR">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Préchauffer le four...\n2) Assaisonner le saumon...'} value={newRecipe.instr_fr} onChangeText={v => setNewRecipe((p: any) => ({ ...p, instr_fr: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇩🇪 DE">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) Den Ofen vorheizen...\n2) Den Lachs würzen...'} value={newRecipe.instr_de} onChangeText={v => setNewRecipe((p: any) => ({ ...p, instr_de: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇳🇱 NL">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1) De oven voorverwarmen...\n2) De zalm kruiden...'} value={newRecipe.instr_nl} onChangeText={v => setNewRecipe((p: any) => ({ ...p, instr_nl: v }))} />
-                            </LangAccordion>
-                            {extraLanguageInputs('instr', { multiline: true, height: 120 })}
-                        </FieldAccordion>
+                        {/* Instructions */}
+                        <Text style={styles.label}>
+                            📋 {t('admin.instructionsSteps', 'Instructions')} ({selectedAdminLang === 'en' ? 'EN - Required' : selectedAdminLang.toUpperCase()}) *
+                        </Text>
+                        <TextInput
+                            style={[styles.input, { height: 150 }]}
+                            multiline
+                            placeholder={selectedAdminLang === 'en' ? '1) Preheat oven...\n2) Season salmon...\n...' : 'Translation instructions...'}
+                            value={getActiveInstructions()}
+                            onChangeText={setActiveInstructions}
+                        />
 
-                        <FieldAccordion title="Shopping List Items (one per line)">
-                            <LangAccordion title="🇬🇧 EN (required)">
-                                <TextInput
-                                    style={[styles.input, { height: 150 }]}
-                                    multiline
-                                    placeholder={'1 cup Almond Milk\n2 tbsp Honey\n...'}
-                                    value={newRecipe.shoppingListText}
-                                    onChangeText={(t) => setNewRecipe((p: any) => ({ ...p, shoppingListText: t }))}
-                                />
-                            </LangAccordion>
-                            <LangAccordion title="🇵🇹 PT">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1 cháv. Leite de Amêndoa\n2 c.s. Mel'} value={newRecipe.shopping_pt} onChangeText={v => setNewRecipe((p: any) => ({ ...p, shopping_pt: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇪🇸 ES">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1 taza de leche de almendras\n2 cdas de miel'} value={newRecipe.shopping_es} onChangeText={v => setNewRecipe((p: any) => ({ ...p, shopping_es: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇫🇷 FR">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={"1 tasse de lait d'amande\n2 c.à.s de miel"} value={newRecipe.shopping_fr} onChangeText={v => setNewRecipe((p: any) => ({ ...p, shopping_fr: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇩🇪 DE">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1 Tasse Mandelmilch\n2 EL Honig'} value={newRecipe.shopping_de} onChangeText={v => setNewRecipe((p: any) => ({ ...p, shopping_de: v }))} />
-                            </LangAccordion>
-                            <LangAccordion title="🇳🇱 NL">
-                                <TextInput style={[styles.input, { height: 120 }]} multiline placeholder={'1 kopje amandelmelk\n2 el honing'} value={newRecipe.shopping_nl} onChangeText={v => setNewRecipe((p: any) => ({ ...p, shopping_nl: v }))} />
-                            </LangAccordion>
-                            {extraLanguageInputs('shopping', { multiline: true, height: 120 })}
-                        </FieldAccordion>
-
-
-
+                        {/* Shopping List */}
+                        <Text style={styles.label}>
+                            🛒 Shopping List Items — one per line ({selectedAdminLang === 'en' ? 'EN - Required' : selectedAdminLang.toUpperCase()})
+                        </Text>
+                        <TextInput
+                            style={[styles.input, { height: 150 }]}
+                            multiline
+                            placeholder={selectedAdminLang === 'en' ? '1 cup Almond Milk\n2 tbsp Honey\n...' : 'Translation shopping list...'}
+                            value={getActiveShopping()}
+                            onChangeText={setActiveShopping}
+                        />
                     </ScrollView>
                 </View>
             </Modal>
@@ -1106,4 +1119,68 @@ const styles = StyleSheet.create({
     fPillActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
     fPillTxt: { fontSize: 12, fontWeight: '700', color: '#64748b' },
     fPillTxtActive: { color: '#ffffff' },
+    langSelectorContainer: {
+        marginBottom: 16,
+        padding: 14,
+        backgroundColor: '#f8fafc',
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+    },
+    dropdownWrap: {
+        position: 'relative',
+        zIndex: 1000,
+    },
+    dropdownBtn: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderWidth: 1.5,
+        borderColor: '#cbd5e1',
+        borderRadius: 12,
+        padding: 12,
+        marginTop: 6,
+    },
+    dropdownBtnText: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#1e293b',
+    },
+    dropdownOptions: {
+        position: 'absolute',
+        top: '100%',
+        left: 0,
+        right: 0,
+        backgroundColor: '#fff',
+        borderWidth: 1.5,
+        borderColor: '#cbd5e1',
+        borderRadius: 12,
+        marginTop: 4,
+        maxHeight: 200,
+        overflow: 'scroll',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 5,
+        zIndex: 10000,
+    },
+    dropdownOption: {
+        padding: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+    },
+    dropdownOptionActive: {
+        backgroundColor: '#eff6ff',
+    },
+    dropdownOptionText: {
+        fontSize: 14,
+        color: '#475569',
+        fontWeight: '600',
+    },
+    dropdownOptionTextActive: {
+        color: '#2563eb',
+        fontWeight: '700',
+    },
 });

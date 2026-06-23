@@ -1,5 +1,6 @@
 export const MEDITATION_FILTERS = [
     { id: 'sleep', name: 'Better Sleep', emoji: '🌙', color: '#6366f1' },
+    { id: 'soundscape', name: 'Soundscapes', emoji: '🎧', color: '#2563eb' },
     { id: 'morning', name: 'Morning Boost', emoji: '☀️', color: '#f59e0b' },
     { id: 'focus', name: 'Focus', emoji: '🎯', color: '#3b82f6' },
     { id: 'self-love', name: 'Self-Love', emoji: '💗', color: '#ec4899' },

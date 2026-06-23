@@ -84,6 +84,8 @@ export default function MeditationsManager() {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSession, setSelectedSession] = useState<any>(null);
+    const [selectedAdminLang, setSelectedAdminLang] = useState<string>('en');
+    const [showLangDropdown, setShowLangDropdown] = useState(false);
 
     const emptyForm = {
         title: '',
@@ -124,10 +126,17 @@ export default function MeditationsManager() {
         });
     }, [allItems, search, filterCat, filterType, filterTier]);
 
-    const resetForm = () => { setForm(emptyForm); setSelectedSession(null); };
+    const resetForm = () => { 
+        setForm(emptyForm); 
+        setSelectedSession(null); 
+        setSelectedAdminLang('en');
+        setShowLangDropdown(false);
+    };
 
     const handleEdit = (session: any) => {
         setSelectedSession(session);
+        setSelectedAdminLang('en');
+        setShowLangDropdown(false);
         const tl = session.titleLocalizations ?? {};
         const dl = session.descriptionLocalizations ?? {};
         setForm({
@@ -152,18 +161,47 @@ export default function MeditationsManager() {
         setIsModalOpen(true);
     };
 
-    const extraLanguageInputs = (prefix: 'title' | 'desc', options: { multiline?: boolean; height?: number } = {}) =>
-        EXTRA_MEDITATION_LANGUAGES.map(({ code, label, name }) => (
-            <LangAccordion key={`${prefix}_${code}`} title={`${label} ${name}`}>
-                <TextInput
-                    style={[styles.input, options.multiline && { height: options.height ?? 80, textAlignVertical: 'top' }]}
-                    multiline={options.multiline}
-                    value={form[`${prefix}_${code}`] ?? ''}
-                    onChangeText={v => setForm((p: any) => ({ ...p, [`${prefix}_${code}`]: v }))}
-                    placeholder={`${name} ${prefix}...`}
-                />
-            </LangAccordion>
-        ));
+    const getActiveTitle = () => {
+        if (selectedAdminLang === 'en') return form.title;
+        if (selectedAdminLang === 'pt') return form.titlePt;
+        if (selectedAdminLang === 'es') return form.titleEs;
+        if (selectedAdminLang === 'de') return form.titleDe;
+        if (selectedAdminLang === 'nl') return form.titleNl;
+        return form[`title_${selectedAdminLang}`] ?? '';
+    };
+
+    const setActiveTitle = (val: string) => {
+        setForm((p: any) => {
+            if (selectedAdminLang === 'en') return { ...p, title: val };
+            if (selectedAdminLang === 'pt') return { ...p, titlePt: val };
+            if (selectedAdminLang === 'es') return { ...p, titleEs: val };
+            if (selectedAdminLang === 'de') return { ...p, titleDe: val };
+            if (selectedAdminLang === 'nl') return { ...p, titleNl: val };
+            return { ...p, [`title_${selectedAdminLang}`]: val };
+        });
+    };
+
+    const getActiveDesc = () => {
+        if (selectedAdminLang === 'en') return form.description;
+        if (selectedAdminLang === 'pt') return form.descPt;
+        if (selectedAdminLang === 'es') return form.descEs;
+        if (selectedAdminLang === 'de') return form.descDe;
+        if (selectedAdminLang === 'nl') return form.descNl;
+        return form[`desc_${selectedAdminLang}`] ?? '';
+    };
+
+    const setActiveDesc = (val: string) => {
+        setForm((p: any) => {
+            if (selectedAdminLang === 'en') return { ...p, description: val };
+            if (selectedAdminLang === 'pt') return { ...p, descPt: val };
+            if (selectedAdminLang === 'es') return { ...p, descEs: val };
+            if (selectedAdminLang === 'de') return { ...p, descDe: val };
+            if (selectedAdminLang === 'nl') return { ...p, descNl: val };
+            return { ...p, [`desc_${selectedAdminLang}`]: val };
+        });
+    };
+
+
 
     const handleSave = async () => {
         try {
@@ -456,44 +494,66 @@ export default function MeditationsManager() {
                                 </TouchableOpacity>
                             ))}
                         </View>
+                        {/* Language Selector Dropdown */}
+                        <View style={styles.langSelectorContainer}>
+                            <Text style={[styles.label, { marginTop: 0 }]}>Editing Translation Language</Text>
+                            <View style={styles.dropdownWrap}>
+                                <TouchableOpacity style={styles.dropdownBtn} onPress={() => setShowLangDropdown(prev => !prev)}>
+                                    <Text style={styles.dropdownBtnText}>
+                                        {selectedAdminLang === 'en' ? '🇬🇧 English (Default / Required)' : 
+                                         selectedAdminLang === 'pt' ? '🇧🇷 Portuguese' :
+                                         selectedAdminLang === 'es' ? '🇪🇸 Spanish' :
+                                         selectedAdminLang === 'de' ? '🇩🇪 German' :
+                                         selectedAdminLang === 'nl' ? '🇳🇱 Dutch' :
+                                         ADMIN_TRANSLATION_LANGUAGES.find(l => l.code === selectedAdminLang)?.name || selectedAdminLang}
+                                    </Text>
+                                    <ChevronDown size={18} color="#64748b" />
+                                </TouchableOpacity>
+                                {showLangDropdown && (
+                                    <View style={styles.dropdownOptions}>
+                                        <TouchableOpacity 
+                                            style={[styles.dropdownOption, selectedAdminLang === 'en' && styles.dropdownOptionActive]}
+                                            onPress={() => { setSelectedAdminLang('en'); setShowLangDropdown(false); }}
+                                        >
+                                            <Text style={[styles.dropdownOptionText, selectedAdminLang === 'en' && styles.dropdownOptionTextActive]}>🇬🇧 English (Default / Required)</Text>
+                                        </TouchableOpacity>
+                                        {ADMIN_TRANSLATION_LANGUAGES.map(lang => {
+                                            const flag = lang.code === 'pt' ? '🇧🇷' : lang.code === 'es' ? '🇪🇸' : lang.code === 'de' ? '🇩🇪' : lang.code === 'nl' ? '🇳🇱' : '🌐';
+                                            return (
+                                                <TouchableOpacity 
+                                                    key={lang.code}
+                                                    style={[styles.dropdownOption, selectedAdminLang === lang.code && styles.dropdownOptionActive]}
+                                                    onPress={() => { setSelectedAdminLang(lang.code); setShowLangDropdown(false); }}
+                                                >
+                                                    <Text style={[styles.dropdownOptionText, selectedAdminLang === lang.code && styles.dropdownOptionTextActive]}>{flag} {lang.name}</Text>
+                                                </TouchableOpacity>
+                                            );
+                                        })}
+                                    </View>
+                                )}
+                            </View>
+                        </View>
 
-                        <FieldAccordion title={`📝 ${t('admin.titleLabel', 'Title')} *`}>
-                            <LangAccordion title="🇬🇧 EN (required)">
-                                <TextInput style={styles.input} value={form.title} onChangeText={t => setForm((p: any) => ({ ...p, title: t }))} placeholder={t('admin.titlePlaceholder', 'e.g. Deep Sleep Journey')} />
-                            </LangAccordion>
-                            <LangAccordion title="🇧🇷 PT">
-                                <TextInput style={styles.input} value={form.titlePt} onChangeText={v => setForm((p: any) => ({ ...p, titlePt: v }))} placeholder="Título em português..." />
-                            </LangAccordion>
-                            <LangAccordion title="🇪🇸 ES">
-                                <TextInput style={styles.input} value={form.titleEs} onChangeText={v => setForm((p: any) => ({ ...p, titleEs: v }))} placeholder="Título en español..." />
-                            </LangAccordion>
-                            <LangAccordion title="🇩🇪 DE">
-                                <TextInput style={styles.input} value={form.titleDe} onChangeText={v => setForm((p: any) => ({ ...p, titleDe: v }))} placeholder="Titel auf Deutsch..." />
-                            </LangAccordion>
-                            <LangAccordion title="🇳🇱 NL">
-                                <TextInput style={styles.input} value={form.titleNl} onChangeText={v => setForm((p: any) => ({ ...p, titleNl: v }))} placeholder="Titel in het Nederlands..." />
-                            </LangAccordion>
-                            {extraLanguageInputs('title')}
-                        </FieldAccordion>
+                        <Text style={styles.label}>
+                            📝 {t('admin.titleLabel', 'Title')} ({selectedAdminLang === 'en' ? 'EN - Required' : selectedAdminLang.toUpperCase()}) *
+                        </Text>
+                        <TextInput 
+                            style={styles.input} 
+                            value={getActiveTitle()} 
+                            onChangeText={setActiveTitle} 
+                            placeholder={selectedAdminLang === 'en' ? t('admin.titlePlaceholder', 'e.g. Deep Sleep Journey') : 'Translation title...'} 
+                        />
 
-                        <FieldAccordion title={`📋 ${t('admin.description', 'Description')} ${form.type === 'soundscape' ? t('admin.optional', '(Optional)') : ''}`}>
-                            <LangAccordion title="🇬🇧 EN">
-                                <TextInput style={[styles.input, { height: 100, textAlignVertical: 'top' }]} multiline value={form.description} onChangeText={t => setForm((p: any) => ({ ...p, description: t }))} placeholder={t('admin.descriptionPlaceholder', 'What this session helps with...')} />
-                            </LangAccordion>
-                            <LangAccordion title="🇧🇷 PT">
-                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descPt} onChangeText={v => setForm((p: any) => ({ ...p, descPt: v }))} placeholder="Descrição em português..." />
-                            </LangAccordion>
-                            <LangAccordion title="🇪🇸 ES">
-                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descEs} onChangeText={v => setForm((p: any) => ({ ...p, descEs: v }))} placeholder="Descripción en español..." />
-                            </LangAccordion>
-                            <LangAccordion title="🇩🇪 DE">
-                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descDe} onChangeText={v => setForm((p: any) => ({ ...p, descDe: v }))} placeholder="Beschreibung auf Deutsch..." />
-                            </LangAccordion>
-                            <LangAccordion title="🇳🇱 NL">
-                                <TextInput style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline value={form.descNl} onChangeText={v => setForm((p: any) => ({ ...p, descNl: v }))} placeholder="Beschrijving in het Nederlands..." />
-                            </LangAccordion>
-                            {extraLanguageInputs('desc', { multiline: true, height: 80 })}
-                        </FieldAccordion>
+                        <Text style={styles.label}>
+                            📋 {t('admin.description', 'Description')} ({selectedAdminLang === 'en' ? 'EN - Required' : selectedAdminLang.toUpperCase()}) *
+                        </Text>
+                        <TextInput 
+                            style={[styles.input, { height: 100, textAlignVertical: 'top' }]} 
+                            multiline 
+                            value={getActiveDesc()} 
+                            onChangeText={setActiveDesc} 
+                            placeholder={selectedAdminLang === 'en' ? t('admin.descriptionPlaceholder', 'What this session helps with...') : 'Translation description...'} 
+                        />
 
                         {form.type === 'meditation' && (
                             <>
@@ -667,4 +727,68 @@ const styles = StyleSheet.create({
     fPillCatActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
     fPillTxt: { fontSize: 12, fontWeight: '700', color: '#64748b' },
     fPillTxtActive: { color: '#ffffff' },
+    langSelectorContainer: {
+        marginBottom: 16,
+        padding: 14,
+        backgroundColor: '#f8fafc',
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+    },
+    dropdownWrap: {
+        position: 'relative',
+        zIndex: 1000,
+    },
+    dropdownBtn: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderWidth: 1.5,
+        borderColor: '#cbd5e1',
+        borderRadius: 12,
+        padding: 12,
+        marginTop: 6,
+    },
+    dropdownBtnText: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#1e293b',
+    },
+    dropdownOptions: {
+        position: 'absolute',
+        top: '100%',
+        left: 0,
+        right: 0,
+        backgroundColor: '#fff',
+        borderWidth: 1.5,
+        borderColor: '#cbd5e1',
+        borderRadius: 12,
+        marginTop: 4,
+        maxHeight: 200,
+        overflow: 'scroll',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 5,
+        zIndex: 10000,
+    },
+    dropdownOption: {
+        padding: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+    },
+    dropdownOptionActive: {
+        backgroundColor: '#eff6ff',
+    },
+    dropdownOptionText: {
+        fontSize: 14,
+        color: '#475569',
+        fontWeight: '600',
+    },
+    dropdownOptionTextActive: {
+        color: '#2563eb',
+        fontWeight: '700',
+    },
 });

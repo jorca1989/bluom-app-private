@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Image } from 'expo-image';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { Dumbbell, Plus, Search, Trash2, Edit3, X, Image as ImageIcon, Filter } from 'lucide-react-native';
+import { Dumbbell, Plus, Search, Trash2, Edit3, X, Image as ImageIcon, Filter, ChevronDown } from 'lucide-react-native';
 import { R2_CONFIG } from '@/utils/r2Config';
 import { ADMIN_TRANSLATION_LANGUAGES } from '@/constants/adminLanguages';
 
@@ -148,6 +148,20 @@ export default function ExerciseLibraryManager() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingExercise, setEditingExercise] = useState<any>(null);
     const [form, setForm] = useState<any>({ ...EMPTY_FORM });
+    const [selectedAdminLang, setSelectedAdminLang] = useState<string>('en');
+    const [showLangDropdown, setShowLangDropdown] = useState(false);
+
+    const getActiveName = () => {
+        if (selectedAdminLang === 'en') return form.name;
+        return form[`name_${selectedAdminLang}`] ?? '';
+    };
+
+    const setActiveName = (val: string) => {
+        setForm((p: any) => {
+            if (selectedAdminLang === 'en') return { ...p, name: val };
+            return { ...p, [`name_${selectedAdminLang}`]: val };
+        });
+    };
 
     const allExercises = useQuery(api.exercises.listAll, {
         search: search.trim() || undefined,
@@ -245,6 +259,8 @@ export default function ExerciseLibraryManager() {
 
     const openEdit = (ex: any) => {
         setEditingExercise(ex);
+        setSelectedAdminLang('en');
+        setShowLangDropdown(false);
         const existingMuscles: string[] = Array.isArray(ex.muscleGroups) ? ex.muscleGroups : [];
         const nameObj = typeof ex.name === 'object' ? ex.name : { en: ex.name ?? '' };
         setForm({
@@ -259,21 +275,10 @@ export default function ExerciseLibraryManager() {
         setIsModalOpen(true);
     };
 
-    const extraLanguageInputs = () =>
-        ADMIN_TRANSLATION_LANGUAGES.slice(5).map(({ code, label, name }) => (
-            <React.Fragment key={code}>
-                <Text style={styles.label}>Name ({label})</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder={`${name} exercise name...`}
-                    value={form[`name_${code}`] ?? ''}
-                    onChangeText={v => setForm((f: any) => ({ ...f, [`name_${code}`]: v }))}
-                />
-            </React.Fragment>
-        ));
-
     const openNew = () => {
         setEditingExercise(null);
+        setSelectedAdminLang('en');
+        setShowLangDropdown(false);
         setForm({ ...EMPTY_FORM });
         setIsModalOpen(true);
     };
@@ -409,19 +414,55 @@ export default function ExerciseLibraryManager() {
                     </View>
 
                     <ScrollView style={styles.form} keyboardShouldPersistTaps="handled">
-                        <Text style={styles.label}>{t('admin.exerciseName', 'Exercise Name *')} (EN)</Text>
-                        <TextInput style={styles.input} value={form.name} onChangeText={t => setForm((f: any) => ({ ...f, name: t }))} placeholder={t('admin.exerciseNamePlaceholder', 'e.g. Barbell Squat')} />
-                        <Text style={styles.label}>Name (PT)</Text>
-                        <TextInput style={styles.input} placeholder="ex. Agachamento com Barra" value={form.name_pt} onChangeText={v => setForm((f: any) => ({ ...f, name_pt: v }))} />
-                        <Text style={styles.label}>Name (ES)</Text>
-                        <TextInput style={styles.input} placeholder="ej. Sentadilla con Barra" value={form.name_es} onChangeText={v => setForm((f: any) => ({ ...f, name_es: v }))} />
-                        <Text style={styles.label}>Name (FR)</Text>
-                        <TextInput style={styles.input} placeholder="ex. Squat avec Barre" value={form.name_fr} onChangeText={v => setForm((f: any) => ({ ...f, name_fr: v }))} />
-                        <Text style={styles.label}>Name (DE)</Text>
-                        <TextInput style={styles.input} placeholder="z.B. Kniebeuge mit Stange" value={form.name_de} onChangeText={v => setForm((f: any) => ({ ...f, name_de: v }))} />
-                        <Text style={styles.label}>Name (NL)</Text>
-                        <TextInput style={styles.input} placeholder="bijv. Squat met Stang" value={form.name_nl} onChangeText={v => setForm((f: any) => ({ ...f, name_nl: v }))} />
-                        {extraLanguageInputs()}
+                        {/* Language Selector Dropdown */}
+                        <View style={styles.langSelectorContainer}>
+                            <Text style={[styles.label, { marginTop: 0 }]}>Editing Translation Language</Text>
+                            <View style={styles.dropdownWrap}>
+                                <TouchableOpacity style={styles.dropdownBtn} onPress={() => setShowLangDropdown(prev => !prev)}>
+                                    <Text style={styles.dropdownBtnText}>
+                                        {selectedAdminLang === 'en' ? '🇬🇧 English (Default / Required)' : 
+                                         selectedAdminLang === 'pt' ? '🇧🇷 Portuguese' :
+                                         selectedAdminLang === 'es' ? '🇪🇸 Spanish' :
+                                         selectedAdminLang === 'de' ? '🇩🇪 German' :
+                                         selectedAdminLang === 'nl' ? '🇳🇱 Dutch' :
+                                         ADMIN_TRANSLATION_LANGUAGES.find(l => l.code === selectedAdminLang)?.name || selectedAdminLang}
+                                    </Text>
+                                    <ChevronDown size={18} color="#64748b" />
+                                </TouchableOpacity>
+                                {showLangDropdown && (
+                                    <View style={styles.dropdownOptions}>
+                                        <TouchableOpacity 
+                                            style={[styles.dropdownOption, selectedAdminLang === 'en' && styles.dropdownOptionActive]}
+                                            onPress={() => { setSelectedAdminLang('en'); setShowLangDropdown(false); }}
+                                        >
+                                            <Text style={[styles.dropdownOptionText, selectedAdminLang === 'en' && styles.dropdownOptionTextActive]}>🇬🇧 English (Default / Required)</Text>
+                                        </TouchableOpacity>
+                                        {ADMIN_TRANSLATION_LANGUAGES.map(lang => {
+                                            const flag = lang.code === 'pt' ? '🇧🇷' : lang.code === 'es' ? '🇪🇸' : lang.code === 'de' ? '🇩🇪' : lang.code === 'nl' ? '🇳🇱' : '🌐';
+                                            return (
+                                                <TouchableOpacity 
+                                                    key={lang.code}
+                                                    style={[styles.dropdownOption, selectedAdminLang === lang.code && styles.dropdownOptionActive]}
+                                                    onPress={() => { setSelectedAdminLang(lang.code); setShowLangDropdown(false); }}
+                                                >
+                                                    <Text style={[styles.dropdownOptionText, selectedAdminLang === lang.code && styles.dropdownOptionTextActive]}>{flag} {lang.name}</Text>
+                                                </TouchableOpacity>
+                                            );
+                                        })}
+                                    </View>
+                                )}
+                            </View>
+                        </View>
+
+                        <Text style={styles.label}>
+                            📝 {t('admin.exerciseName', 'Exercise Name *')} ({selectedAdminLang === 'en' ? 'EN - Required' : selectedAdminLang.toUpperCase()})
+                        </Text>
+                        <TextInput 
+                            style={styles.input} 
+                            value={getActiveName()} 
+                            onChangeText={setActiveName} 
+                            placeholder={selectedAdminLang === 'en' ? t('admin.exerciseNamePlaceholder', 'e.g. Barbell Squat') : 'Translation name...'} 
+                        />
 
                         <Text style={styles.label}>{t('admin.thumbnailUrl', 'Thumbnail URL (R2)')}</Text>
                         {!!form.thumbnailUrl && (
@@ -542,4 +583,68 @@ const styles = StyleSheet.create({
     pillTxt: { fontSize: 12, fontWeight: '700', color: '#64748b' },
     pillTxtActive: { color: '#fff' },
     thumbPreview: { width: '100%', height: 140, borderRadius: 12, marginBottom: 8, backgroundColor: '#f1f5f9' },
+    langSelectorContainer: {
+        marginBottom: 16,
+        padding: 14,
+        backgroundColor: '#f8fafc',
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+    },
+    dropdownWrap: {
+        position: 'relative',
+        zIndex: 1000,
+    },
+    dropdownBtn: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderWidth: 1.5,
+        borderColor: '#cbd5e1',
+        borderRadius: 12,
+        padding: 12,
+        marginTop: 6,
+    },
+    dropdownBtnText: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#1e293b',
+    },
+    dropdownOptions: {
+        position: 'absolute',
+        top: '100%',
+        left: 0,
+        right: 0,
+        backgroundColor: '#fff',
+        borderWidth: 1.5,
+        borderColor: '#cbd5e1',
+        borderRadius: 12,
+        marginTop: 4,
+        maxHeight: 200,
+        overflow: 'scroll',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 5,
+        zIndex: 10000,
+    },
+    dropdownOption: {
+        padding: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+    },
+    dropdownOptionActive: {
+        backgroundColor: '#eff6ff',
+    },
+    dropdownOptionText: {
+        fontSize: 14,
+        color: '#475569',
+        fontWeight: '600',
+    },
+    dropdownOptionTextActive: {
+        color: '#2563eb',
+        fontWeight: '700',
+    },
 });
