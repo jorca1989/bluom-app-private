@@ -647,44 +647,30 @@ export default function WorkoutsManager() {
 
                     <ScrollView style={styles.form} keyboardShouldPersistTaps="handled">
 
-                        {/* Language Selector Dropdown */}
+                        {/* Language Selector Tabs */}
                         <View style={styles.langSelectorContainer}>
-                            <Text style={[styles.label, { marginTop: 0 }]}>Editing Translation Language</Text>
-                            <View style={styles.dropdownWrap}>
-                                <TouchableOpacity style={styles.dropdownBtn} onPress={() => setShowLangDropdown(prev => !prev)}>
-                                    <Text style={styles.dropdownBtnText}>
-                                        {selectedAdminLang === 'en' ? '🇬🇧 English (Default / Required)' : 
-                                         selectedAdminLang === 'pt' ? '🇧🇷 Portuguese' :
-                                         selectedAdminLang === 'es' ? '🇪🇸 Spanish' :
-                                         selectedAdminLang === 'de' ? '🇩🇪 German' :
-                                         selectedAdminLang === 'nl' ? '🇳🇱 Dutch' :
-                                         ADMIN_TRANSLATION_LANGUAGES.find(l => l.code === selectedAdminLang)?.name || selectedAdminLang}
-                                    </Text>
-                                    <ChevronDown size={18} color="#64748b" />
+                            <Text style={styles.miniLangLabel}>Lang:</Text>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+                                <TouchableOpacity 
+                                    onPress={() => setSelectedAdminLang('en')} 
+                                    style={[styles.miniLangTab, selectedAdminLang === 'en' && styles.miniLangTabActive]}
+                                >
+                                    <Text style={[styles.miniLangText, selectedAdminLang === 'en' && styles.miniLangTextActive]}>🇬🇧 EN</Text>
                                 </TouchableOpacity>
-                                {showLangDropdown && (
-                                    <View style={styles.dropdownOptions}>
+                                {ADMIN_TRANSLATION_LANGUAGES.map(lang => {
+                                    const flag = lang.code === 'pt' ? '🇧🇷' : lang.code === 'es' ? '🇪🇸' : lang.code === 'de' ? '🇩🇪' : lang.code === 'nl' ? '🇳🇱' : '🌐';
+                                    const isActive = selectedAdminLang === lang.code;
+                                    return (
                                         <TouchableOpacity 
-                                            style={[styles.dropdownOption, selectedAdminLang === 'en' && styles.dropdownOptionActive]}
-                                            onPress={() => { setSelectedAdminLang('en'); setShowLangDropdown(false); }}
+                                            key={lang.code}
+                                            onPress={() => setSelectedAdminLang(lang.code)} 
+                                            style={[styles.miniLangTab, isActive && styles.miniLangTabActive]}
                                         >
-                                            <Text style={[styles.dropdownOptionText, selectedAdminLang === 'en' && styles.dropdownOptionTextActive]}>🇬🇧 English (Default / Required)</Text>
+                                            <Text style={[styles.miniLangText, isActive && styles.miniLangTextActive]}>{flag} {lang.label}</Text>
                                         </TouchableOpacity>
-                                        {ADMIN_TRANSLATION_LANGUAGES.map(lang => {
-                                            const flag = lang.code === 'pt' ? '🇧🇷' : lang.code === 'es' ? '🇪🇸' : lang.code === 'de' ? '🇩🇪' : lang.code === 'nl' ? '🇳🇱' : '🌐';
-                                            return (
-                                                <TouchableOpacity 
-                                                    key={lang.code}
-                                                    style={[styles.dropdownOption, selectedAdminLang === lang.code && styles.dropdownOptionActive]}
-                                                    onPress={() => { setSelectedAdminLang(lang.code); setShowLangDropdown(false); }}
-                                                >
-                                                    <Text style={[styles.dropdownOptionText, selectedAdminLang === lang.code && styles.dropdownOptionTextActive]}>{flag} {lang.name}</Text>
-                                                </TouchableOpacity>
-                                            );
-                                        })}
-                                    </View>
-                                )}
-                            </View>
+                                    );
+                                })}
+                            </ScrollView>
                         </View>
 
                         {/* Exercise Name */}
@@ -1099,66 +1085,40 @@ const styles = StyleSheet.create({
     filterPillTxtActive: { color: '#ffffff' },
     langSelectorContainer: {
         marginBottom: 16,
-        padding: 14,
+        padding: 8,
         backgroundColor: '#f8fafc',
         borderRadius: 14,
         borderWidth: 1,
         borderColor: '#e2e8f0',
-    },
-    dropdownWrap: {
-        position: 'relative',
-        zIndex: 1000,
-    },
-    dropdownBtn: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
+        gap: 8,
+    },
+    miniLangLabel: {
+        fontSize: 10,
+        fontWeight: '800',
+        color: '#64748b',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    miniLangTab: {
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 8,
         backgroundColor: '#fff',
-        borderWidth: 1.5,
+        borderWidth: 1,
         borderColor: '#cbd5e1',
-        borderRadius: 12,
-        padding: 12,
-        marginTop: 6,
     },
-    dropdownBtnText: {
-        fontSize: 14,
+    miniLangTabActive: {
+        backgroundColor: '#2563eb',
+        borderColor: '#2563eb',
+    },
+    miniLangText: {
+        fontSize: 12,
         fontWeight: '700',
-        color: '#1e293b',
+        color: '#64748b',
     },
-    dropdownOptions: {
-        position: 'absolute',
-        top: '100%',
-        left: 0,
-        right: 0,
-        backgroundColor: '#fff',
-        borderWidth: 1.5,
-        borderColor: '#cbd5e1',
-        borderRadius: 12,
-        marginTop: 4,
-        maxHeight: 200,
-        overflow: 'scroll',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
-        elevation: 5,
-        zIndex: 10000,
-    },
-    dropdownOption: {
-        padding: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: '#f1f5f9',
-    },
-    dropdownOptionActive: {
-        backgroundColor: '#eff6ff',
-    },
-    dropdownOptionText: {
-        fontSize: 14,
-        color: '#475569',
-        fontWeight: '600',
-    },
-    dropdownOptionTextActive: {
-        color: '#2563eb',
-        fontWeight: '700',
+    miniLangTextActive: {
+        color: '#fff',
     },
 });
