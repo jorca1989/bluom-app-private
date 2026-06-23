@@ -64,7 +64,8 @@ export default function AdminLayout() {
                 i18n.changeLanguage(originalLang);
             }
         };
-    }, [i18n]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         if (isLoaded) {
