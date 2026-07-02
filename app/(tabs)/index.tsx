@@ -46,6 +46,8 @@ import {
   Sparkles,
   TrendingDown,
   Moon,
+  Heart,
+  Stethoscope,
 } from 'lucide-react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { CircularProgress } from '@/components/CircularProgress';
@@ -729,6 +731,8 @@ export default function HomeScreen() {
       { icon: Utensils, label: t('home.discover.recipes', 'Recipes'), path: '/recipes', color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
       { icon: Play, label: t('home.discover.workouts', 'Workouts'), path: '/workouts', color: '#16a34a', bg: 'rgba(22,163,74,0.12)' },
       { icon: TrendingDown, label: t('home.discover.metabolic', 'Metabolic'), path: '/sugar-dashboard', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+      { icon: Stethoscope, label: t('home.discover.dental', 'Dental Hub'), path: '/dental-hub', color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)' },
+      { icon: Heart, label: t('home.discover.pulse', 'Pulse Check'), path: '/pulse-checker', color: '#f43f5e', bg: 'rgba(244,63,94,0.12)' },
     ];
 
     const shown = showAllDiscover ? discoverItems : discoverItems.slice(0, 6);

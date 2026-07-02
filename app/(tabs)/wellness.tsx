@@ -221,6 +221,11 @@ export default function WellnessScreen() {
     SecureStore.getItemAsync(WELLNESS_WIDGETS_KEY).then(val => {
       if (val) try { setWellnessWidgets(new Set(JSON.parse(val) as WellnessWidgetId[])); } catch {}
     });
+    // Pre-warm heavy lazy-loaded components in background when Wellness tab mounts
+    import('../../components/MeditationHub').catch(() => {});
+    import('../../components/GamesHub').catch(() => {});
+    import('../../components/LifeGoalsHub').catch(() => {});
+    import('../../components/wellness/AdvancedSleepTracker').catch(() => {});
   }, []);
   const toggleWellnessWidget = useCallback((id: WellnessWidgetId) => {
     setWellnessWidgets(prev => {

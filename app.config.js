@@ -35,7 +35,15 @@ export default ({ config }) => {
                     ITSAppUsesNonExemptEncryption: false,
 
                     // ── Background Modes ──────────────────────────────────────────
-                    UIBackgroundModes: ["audio", "fetch", "remote-notification"],
+                    UIBackgroundModes: ["audio", "fetch", "remote-notification", "location"],
+
+                    // ── Location ─────────────────────────────────────────────────
+                    NSLocationWhenInUseUsageDescription:
+                        "Bluom needs your location to show your position on the map and record your route.",
+                    NSLocationAlwaysAndWhenInUseUsageDescription:
+                        "Allow Bluom to access your location in the background so your route continues recording when your screen is off.",
+                    NSLocationAlwaysUsageDescription:
+                        "Bluom accesses location in the background to keep tracking your route when you minimise the app.",
 
                     // ── Camera & Photos ───────────────────────────────────────────
                     NSPhotoLibraryUsageDescription:
@@ -90,6 +98,10 @@ export default ({ config }) => {
                     "android.permission.FOREGROUND_SERVICE",
                     "android.permission.FOREGROUND_SERVICE_LOCATION",
                     "android.permission.WAKE_LOCK",
+                    // ── Location ──────────────────────────────────────────────────
+                    "android.permission.ACCESS_FINE_LOCATION",
+                    "android.permission.ACCESS_COARSE_LOCATION",
+                    "android.permission.ACCESS_BACKGROUND_LOCATION",
                     // ── Notifications ─────────────────────────────────────────────
                     "android.permission.POST_NOTIFICATIONS",
                     "android.permission.RECEIVE_BOOT_COMPLETED",
@@ -132,9 +144,11 @@ export default ({ config }) => {
                 [
                     "expo-location",
                     {
-                        locationAlwaysAndWhenInUsePermission: "Bluom needs access to your location to track your outdoor running routes.",
+                        locationAlwaysAndWhenInUsePermission: "Bluom needs access to your location to track your outdoor running, cycling, hiking, and walking routes.",
+                        locationAlwaysPermission: "Allow Bluom to access your location in the background so your route continues recording when your screen is off.",
+                        locationWhenInUsePermission: "Bluom needs your location to show your position on the map and record your route.",
                         isIosBackgroundLocationEnabled: true,
-                        isAndroidBackgroundLocationEnabled: false,
+                        isAndroidBackgroundLocationEnabled: true,
                         isAndroidForegroundServiceEnabled: true,
                     }
                 ],

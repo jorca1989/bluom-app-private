@@ -27,6 +27,7 @@ import {
   pickMonthlyAndAnnualPackages,
   purchasePackageSafe,
 } from '@/utils/revenuecat';
+import { useUser as useAppUser } from '@/context/UserContext';
 import { BlurView } from 'expo-blur';
 import Svg, { Path } from 'react-native-svg';
 import * as SecureStore from 'expo-secure-store';
@@ -153,6 +154,8 @@ export default function PremiumScreen() {
   const convexUser = useQuery(api.users.getUserByClerkId, clerkUser?.id ? { clerkId: clerkUser.id } : 'skip');
   const updateUser = useMutation(api.users.updateUser);
 
+  const { refresh: refreshAppUser } = useAppUser();
+
   const isPro = useMemo(() => (
     convexUser?.subscriptionStatus === 'pro' || convexUser?.isPremium ||
     convexUser?.isAdmin || convexUser?.role === 'admin' || convexUser?.role === 'super_admin'
@@ -201,6 +204,9 @@ export default function PremiumScreen() {
     try {
       const info = await purchasePackageSafe(pkg);
       if (!info) return;
+      // Immediately sync entitlements into the global UserContext so isPro
+      // updates across all screens without requiring an app restart.
+      await refreshAppUser().catch(() => {});
       Alert.alert('Welcome to Pro ✦', 'Your journey just levelled up. Full access is now unlocked.');
       handleDismiss();
     } catch (e: any) {

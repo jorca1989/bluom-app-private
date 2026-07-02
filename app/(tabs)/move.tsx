@@ -132,6 +132,14 @@ export default function MoveScreen() {
         }
       } catch { /* ignore */ }
     })();
+
+    // Pre-warm heavy lazy-loaded components in background when Move tab mounts
+    import('@/components/move/modals/OutdoorActivityModal').catch(() => {});
+    import('@/components/move/modals/ActiveWorkoutModal').catch(() => {});
+    import('@/components/move/modals/WorkoutDetailModal').catch(() => {});
+    import('@/components/move/modals/ExerciseSearchModal').catch(() => {});
+    import('@/components/move/modals/SingleExerciseLogModal').catch(() => {});
+    import('@/components/move/modals/ExerciseDetailModal').catch(() => {});
   }, []);
 
   const toggleMoveWidget = useCallback(async (id: MoveWidgetId) => {

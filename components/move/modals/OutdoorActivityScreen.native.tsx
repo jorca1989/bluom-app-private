@@ -335,26 +335,50 @@ export default function OutdoorActivityScreen({
 
   // ── Request permissions ───────────────────────────────────────
   const requestPermissions = async (): Promise<boolean> => {
-    const { status: fg } = await Location.requestForegroundPermissionsAsync();
-    if (fg !== 'granted') {
+    // Step 1: Foreground location — required to start any tracking
+    let fgStatus: string;
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      fgStatus = status;
+    } catch (e) {
+      console.warn('[OutdoorActivity] Foreground permission request failed:', e);
+      fgStatus = 'denied';
+    }
+
+    if (fgStatus !== 'granted') {
       Alert.alert(
-        'Location Required',
-        'Bluom needs your location to record your route. Please enable it in Settings.',
-        [{ text: 'OK' }]
+        t('move.locationRequired', 'Location Required'),
+        t('move.locationRequiredDesc', 'Bluom needs your location to record your route. Please enable it in Settings.'),
+        [
+          { text: t('common.cancel', 'Cancel'), style: 'cancel' },
+          { text: t('common.openSettings', 'Open Settings'), onPress: () => Linking.openSettings() },
+        ]
       );
       return false;
     }
-    // Background permission — only needed for background task
-    // iOS: shows a second "Always Allow" prompt
-    const { status: bg } = await Location.requestBackgroundPermissionsAsync();
-    if (bg !== 'granted') {
-      Alert.alert(
-        'Background Location',
-        'For uninterrupted tracking when your screen is off, allow location access "Always" in Settings. You can still record with "While Using".',
-        [{ text: 'Continue anyway' }, { text: 'Open Settings', onPress: () => Linking.openSettings() }]
-      );
-      // Not a hard failure — foreground-only works fine
+
+    // Step 2: Background location — optional, degrades gracefully to foreground-only
+    // Wrapped in try/catch because on devices without the permission declared in the
+    // manifest (e.g. dev builds before the manifest change), this throws instead of
+    // returning 'denied', which would crash the activity start flow.
+    try {
+      const { status: bg } = await Location.requestBackgroundPermissionsAsync();
+      if (bg !== 'granted') {
+        Alert.alert(
+          t('move.backgroundLocation', 'Background Location'),
+          t('move.backgroundLocationDesc', 'For uninterrupted tracking when your screen is off, allow location access "Always" in Settings. You can still record with "While Using".'),
+          [
+            { text: t('move.continueAnyway', 'Continue anyway') },
+            { text: t('common.openSettings', 'Open Settings'), onPress: () => Linking.openSettings() },
+          ]
+        );
+        // Non-fatal: foreground tracking still works
+      }
+    } catch (e) {
+      // Background location not declared in this build's manifest — safe to ignore
+      console.warn('[OutdoorActivity] Background permission unavailable (needs native rebuild):', e);
     }
+
     return true;
   };
 
@@ -490,11 +514,11 @@ export default function OutdoorActivityScreen({
             <TouchableOpacity onPress={onClose} style={sel.closeBtn}>
               <Ionicons name="close" size={24} color="#0f172a" />
             </TouchableOpacity>
-            <Text style={sel.title}>Start Activity</Text>
+            <Text style={sel.title}>{t('move.startActivity', 'Start Activity')}</Text>
             <View style={{ width: 40 }} />
           </View>
 
-          <Text style={sel.subtitle}>What are you doing today?</Text>
+          <Text style={sel.subtitle}>{t('move.whatDoingToday', 'What are you doing today?')}</Text>
 
           {/* Activity tiles */}
           <View style={sel.grid}>
@@ -687,7 +711,7 @@ export default function OutdoorActivityScreen({
         {isPaused && (
           <View style={rec.pauseBanner}>
             <Ionicons name="pause-circle" size={18} color="#f59e0b" />
-            <Text style={rec.pauseBannerText}>PAUSED</Text>
+            <Text style={rec.pauseBannerText}>{t('move.paused', 'PAUSED')}</Text>
           </View>
         )}
 
@@ -697,14 +721,16 @@ export default function OutdoorActivityScreen({
             {/* Activity badge */}
             <View style={[rec.activityBadge, { backgroundColor: cfg.color }]}>
               <Ionicons name={cfg.icon as any} size={14} color="#fff" />
-              <Text style={rec.activityBadgeText}>{cfg.label}</Text>
+              <Text style={rec.activityBadgeText}>
+                {t(`move.${cfg.label}`, cfg.label.charAt(0).toUpperCase() + cfg.label.slice(1))}
+              </Text>
             </View>
 
             {/* Primary stats row */}
             <View style={rec.statsRow}>
               <View style={rec.statBlock}>
                 <Text style={rec.statValue}>{formatDuration(elapsedSecs)}</Text>
-                <Text style={rec.statLabel}>Duration</Text>
+                <Text style={rec.statLabel}>{t('move.duration', 'Duration')}</Text>
               </View>
               <View style={rec.statDivider} />
               <View style={rec.statBlock}>
@@ -713,12 +739,14 @@ export default function OutdoorActivityScreen({
                     ? `${Math.round(distanceM)} m`
                     : `${distanceKm.toFixed(2)} km`}
                 </Text>
-                <Text style={rec.statLabel}>Distance</Text>
+                <Text style={rec.statLabel}>{t('move.distance', 'Distance')}</Text>
               </View>
               <View style={rec.statDivider} />
               <View style={rec.statBlock}>
                 <Text style={rec.statValue}>{paceOrSpeed}</Text>
-                <Text style={rec.statLabel}>{cfg.paceLabel}</Text>
+                <Text style={rec.statLabel}>
+                  {cfg.paceLabel === 'Speed' ? t('move.speed', 'Speed') : t('move.pace', 'Pace')}
+                </Text>
               </View>
             </View>
 
@@ -742,11 +770,11 @@ export default function OutdoorActivityScreen({
             style={rec.stopBtn}
             onPress={() =>
               Alert.alert(
-                'Stop Activity?',
-                'Your route will be saved.',
+                t('move.stopActivityQuestion', 'Stop Activity?'),
+                t('move.stopActivityDesc', 'Your route will be saved.'),
                 [
-                  { text: 'Keep going', style: 'cancel' },
-                  { text: 'Stop & Save', style: 'destructive', onPress: () => stopTracking(true) },
+                  { text: t('move.keepGoing', 'Keep going'), style: 'cancel' },
+                  { text: t('move.stopAndSave', 'Stop & Save'), style: 'destructive', onPress: () => stopTracking(true) },
                 ]
               )
             }
@@ -776,9 +804,9 @@ export default function OutdoorActivityScreen({
               const route = await loadGPXRoute(/* file uri here */);
               if (route.length) {
                 setGpxRoute(route);
-                Alert.alert('Route loaded', `${route.length} waypoints.`);
+                Alert.alert(t('move.routeLoaded', 'Route loaded'), t('move.waypointsLoaded', '{{count}} waypoints.', { count: route.length }));
               } else {
-                Alert.alert('GPX Routes', 'GPX file upload coming soon.\nYou can upload Wikiloc .gpx files to overlay a reference path.');
+                Alert.alert(t('move.gpxRoutes', 'GPX Routes'), t('move.gpxRoutesDesc', 'GPX file upload coming soon.\nYou can upload Wikiloc .gpx files to overlay a reference path.'));
               }
             }}
             activeOpacity={0.85}

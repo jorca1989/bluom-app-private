@@ -504,6 +504,8 @@ export default function RecipesScreen() {
                     contentFit="cover"
                     cachePolicy="memory-disk"
                     recyclingKey={recipe._id}
+                    priority="normal"
+                    transition={150}
                   />
                 ) : (
                   <View style={styles.recipeCardImagePlaceholder}>
@@ -552,6 +554,7 @@ export default function RecipesScreen() {
                     contentFit="cover"
                     cachePolicy="memory-disk"
                     recyclingKey={selectedRecipe._id}
+                    priority="high"
                     transition={120}
                   />
                 ) : (
