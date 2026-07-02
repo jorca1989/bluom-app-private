@@ -19,7 +19,7 @@ import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import Svg, { Path } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
 import { useUser } from '@clerk/clerk-expo';
 
 const { width, height } = Dimensions.get('window');
@@ -28,6 +28,7 @@ export default function PulseCheckerScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { colors: themeColors } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
 
   // Camera permissions
   const [permission, requestPermission] = useCameraPermissions();
@@ -232,7 +233,7 @@ export default function PulseCheckerScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#fff" />
+          <Ionicons name="arrow-back" size={24} color={themeColors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{t('pulse.title', 'PPG Pulse Tracker')}</Text>
         <View style={{ width: 44 }} />
@@ -334,8 +335,8 @@ export default function PulseCheckerScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#090d16' },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   center: { justifyContent: 'center', alignItems: 'center' },
   header: {
     flexDirection: 'row',
@@ -344,12 +345,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#1e293b',
+    borderBottomColor: c.border,
   },
   backButton: { width: 44, height: 44, justifyContent: 'center', alignItems: 'center' },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: c.text },
   content: { padding: 20, alignItems: 'center' },
-  introText: { color: '#94a3b8', fontSize: 14, textAlign: 'center', lineHeight: 21, marginBottom: 28 },
+  introText: { color: c.textMuted, fontSize: 14, textAlign: 'center', lineHeight: 21, marginBottom: 28 },
   sensorContainer: { width: 180, height: 180, justifyContent: 'center', alignItems: 'center', marginBottom: 28 },
   cameraOuter: {
     width: 140,
@@ -357,7 +358,7 @@ const styles = StyleSheet.create({
     borderRadius: 70,
     overflow: 'hidden',
     borderWidth: 4,
-    borderColor: '#3b82f6',
+    borderColor: c.primary,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
@@ -367,7 +368,7 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: '#1e293b',
+    backgroundColor: c.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -386,43 +387,43 @@ const styles = StyleSheet.create({
     borderWidth: 3,
   },
   permissionBtn: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: c.primary,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 12,
   },
-  permissionBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  permissionBtnText: { color: c.onPrimary, fontWeight: '700', fontSize: 14 },
   progressContainer: { width: '100%', alignItems: 'center', marginBottom: 24 },
-  statusText: { color: '#fff', fontSize: 13, fontWeight: '600', marginBottom: 8 },
-  progressBarBg: { width: '100%', height: 6, backgroundColor: '#1e293b', borderRadius: 3, overflow: 'hidden' },
+  statusText: { color: c.text, fontSize: 13, fontWeight: '600', marginBottom: 8 },
+  progressBarBg: { width: '100%', height: 6, backgroundColor: c.surfaceMuted, borderRadius: 3, overflow: 'hidden' },
   progressBarFill: { height: '100%', backgroundColor: '#10b981' },
   graphContainer: {
     width: '100%',
-    backgroundColor: '#111827',
+    backgroundColor: c.surface,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#1f2937',
+    borderColor: c.border,
     marginBottom: 28,
   },
-  graphLabel: { color: '#94a3b8', fontSize: 11, fontWeight: '700', textTransform: 'uppercase', marginBottom: 12 },
+  graphLabel: { color: c.textMuted, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', marginBottom: 12 },
   svgWrapper: { width: '100%', height: 100, overflow: 'hidden' },
-  svg: { backgroundColor: '#0f172a', borderRadius: 8 },
+  svg: { backgroundColor: c.surfaceMuted, borderRadius: 8 },
   resultsCard: {
     width: '100%',
-    backgroundColor: '#111827',
+    backgroundColor: c.surface,
     borderRadius: 16,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#1f2937',
+    borderColor: c.border,
     marginBottom: 28,
   },
-  resultsTitle: { color: '#fff', fontSize: 16, fontWeight: '700', marginBottom: 16 },
+  resultsTitle: { color: c.text, fontSize: 16, fontWeight: '700', marginBottom: 16 },
   resultsGrid: { flexDirection: 'row', justifyContent: 'space-between' },
   resultItem: { flex: 1, alignItems: 'center', gap: 6 },
-  resultValue: { color: '#fff', fontSize: 20, fontWeight: '800', marginTop: 4 },
-  resultUnit: { fontSize: 12, color: '#94a3b8', fontWeight: '500' },
-  resultLabel: { color: '#94a3b8', fontSize: 11, fontWeight: '500' },
+  resultValue: { color: c.text, fontSize: 20, fontWeight: '800', marginTop: 4 },
+  resultUnit: { fontSize: 12, color: c.textMuted, fontWeight: '500' },
+  resultLabel: { color: c.textMuted, fontSize: 11, fontWeight: '500' },
   actionBtn: {
     width: '100%',
     paddingVertical: 16,
@@ -435,7 +436,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
-  actionBtnStart: { backgroundColor: '#3b82f6' },
+  actionBtnStart: { backgroundColor: c.primary },
   actionBtnStop: { backgroundColor: '#ef4444' },
-  actionBtnText: { color: '#fff', fontSize: 16, fontWeight: '800' },
+  actionBtnText: { color: c.onPrimary, fontSize: 16, fontWeight: '800' },
 });

@@ -596,11 +596,50 @@ export default function WellnessScreen() {
         </SafeAreaView>
       </Modal>
 
-      <Suspense fallback={null}>
-        {showMeditationHub && <MeditationHub userId={user._id} onClose={() => setShowMeditationHub(false)} />}
-        {showGamesHub && <GamesHub userId={user._id} onClose={() => setShowGamesHub(false)} />}
-        {showLifeGoals && <LifeGoalsHub userId={user._id} onClose={() => setShowLifeGoals(false)} />}
-        {showAdvancedSleepTracker && (
+      {showMeditationHub && (
+        <Suspense fallback={
+          <Modal transparent visible animationType="fade">
+            <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator size="large" color="#3b82f6" />
+            </View>
+          </Modal>
+        }>
+          <MeditationHub userId={user._id} onClose={() => setShowMeditationHub(false)} />
+        </Suspense>
+      )}
+
+      {showGamesHub && (
+        <Suspense fallback={
+          <Modal transparent visible animationType="fade">
+            <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator size="large" color="#3b82f6" />
+            </View>
+          </Modal>
+        }>
+          <GamesHub userId={user._id} onClose={() => setShowGamesHub(false)} />
+        </Suspense>
+      )}
+
+      {showLifeGoals && (
+        <Suspense fallback={
+          <Modal transparent visible animationType="fade">
+            <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator size="large" color="#3b82f6" />
+            </View>
+          </Modal>
+        }>
+          <LifeGoalsHub userId={user._id} onClose={() => setShowLifeGoals(false)} />
+        </Suspense>
+      )}
+
+      {showAdvancedSleepTracker && (
+        <Suspense fallback={
+          <Modal transparent visible animationType="fade">
+            <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator size="large" color="#3b82f6" />
+            </View>
+          </Modal>
+        }>
           <AdvancedSleepTracker
             visible={showAdvancedSleepTracker}
             userId={user._id}
@@ -610,8 +649,8 @@ export default function WellnessScreen() {
               setShowMeditationHub(true);
             }}
           />
-        )}
-      </Suspense>
+        </Suspense>
+      )}
       {/* <PanicButton userId={user._id} /> */}
     </SafeAreaView>
   );
