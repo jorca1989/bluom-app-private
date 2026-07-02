@@ -1,0 +1,532 @@
+﻿diff --git a/convex/ai.ts b/convex/ai.ts
+index cee6cd6..cc93d93 100644
+--- a/convex/ai.ts
++++ b/convex/ai.ts
+@@ -98,6 +98,40 @@ export async function generateContentWithFallback(parts: any[], apiKeyOverride?:
+   throw lastErr ?? new Error("No compatible Gemini model found for generateContent.");
+ }
+ 
++export async function generateContentWithDeepSeek(prompt: string, jsonMode = false): Promise<string> {
++  const apiKey = process.env.DEEPSEEK_API_KEY;
++  if (!apiKey) {
++    throw new Error("Missing DEEPSEEK_API_KEY in Convex environment.");
++  }
++
++  const body: any = {
++    model: "deepseek-chat",
++    messages: [{ role: "user", content: prompt }],
++    temperature: 0.2,
++  };
++
++  if (jsonMode) {
++    body.response_format = { type: "json_object" };
++  }
++
++  const response = await fetch("https://api.deepseek.com/chat/completions", {
++    method: "POST",
++    headers: {
++      "Content-Type": "application/json",
++      "Authorization": `Bearer ${apiKey}`,
++    },
++    body: JSON.stringify(body),
++  });
++
++  if (!response.ok) {
++    const errText = await response.text();
++    throw new Error(`DeepSeek API error: ${response.status} ${errText}`);
++  }
++
++  const result = await response.json();
++  return result.choices[0].message.content || "";
++}
++
+ export const recognizeFoodFromImage = action({
+   args: {
+     // Base64 without data: prefix
+@@ -615,8 +649,7 @@ Return EXACTLY this JSON shape:
+   ]
+ }`;
+ 
+-    const result = await generateContentWithFallback([{ text: prompt }]);
+-    const text = result.response.text();
++    const text = await generateContentWithDeepSeek(prompt, true);
+     const parsed = safeJsonParse<any>(text);
+     if (parsed) return parsed;
+ 
+@@ -627,7 +660,7 @@ Return EXACTLY this JSON shape:
+       if (maybe) return maybe;
+     }
+ 
+-    throw new Error("Gemini returned invalid JSON for recipe generation.");
++    throw new Error("DeepSeek returned invalid JSON for recipe generation.");
+   },
+ });
+ 
+diff --git a/convex/plans.ts b/convex/plans.ts
+index a5be99a..6011c56 100644
+--- a/convex/plans.ts
++++ b/convex/plans.ts
+@@ -2,7 +2,7 @@ import { v } from "convex/values";
+ import { mutation, query, internalMutation, action } from "./_generated/server";
+ import { internal } from "./_generated/api";
+ import type { Id } from "./_generated/dataModel";
+-import { generateContentWithFallback, safeJsonParse } from "./ai";
++import { generateContentWithFallback, safeJsonParse, generateContentWithDeepSeek } from "./ai";
+ 
+ /**
+  * SAVE GENERATED PLANS (Internal Mutation)
+@@ -194,10 +194,9 @@ export const generateAllPlans = action({
+     }
+     `;
+ 
+-    // 3. Call Gemini
++    // 3. Call DeepSeek
+     try {
+-      const result = await generateContentWithFallback([{ text: systemPrompt }]);
+-      const text = result.response.text();
++      const text = await generateContentWithDeepSeek(systemPrompt, true);
+       const parsed = safeJsonParse<any>(text);
+ 
+       let data = parsed;
+@@ -211,7 +210,7 @@ export const generateAllPlans = action({
+       }
+ 
+       if (!data || !data.nutrition || !data.fitness || !data.wellness) {
+-        console.warn("Gemini failed to generate valid plan JSON. Using basic fallback.");
++        console.warn("DeepSeek failed to generate valid plan JSON. Using basic fallback.");
+         data = createFallbackData(user);
+       }
+ 
+diff --git a/convex/schema.ts b/convex/schema.ts
+index caff374..9a31deb 100644
+--- a/convex/schema.ts
++++ b/convex/schema.ts
+@@ -1185,4 +1185,26 @@ export default defineSchema({
+   })
+     .index("by_user", ["userId"])
+     .index("by_user_date", ["userId", "date"]),
++
++  // PPG Pulse Logs
++  pulseLogs: defineTable({
++    userId: v.id("users"),
++    bpm: v.number(),
++    hrv: v.number(),
++    stressLevel: v.string(),
++    createdAt: v.number(),
++  }).index("by_user", ["userId"]),
++
++  // Dental Logs
++  dentalLogs: defineTable({
++    userId: v.id("users"),
++    date: v.string(),
++    brushDuration: v.number(),
++    flossed: v.boolean(),
++    mouthwash: v.boolean(),
++    tongueClean: v.boolean(),
++    sensitiveTeeth: v.array(v.string()),
++  })
++    .index("by_user", ["userId"])
++    .index("by_user_date", ["userId", "date"]),
+ });
+diff --git a/locales/de/translation.json b/locales/de/translation.json
+index 7cae727..52cc2a2 100644
+--- a/locales/de/translation.json
++++ b/locales/de/translation.json
+@@ -5616,5 +5616,61 @@
+     "lunch": "Mittagessen",
+     "dinner": "Abendessen",
+     "snack": "Snack"
++  },
++  "pulse": {
++    "title": "PPG Puls-Tracker",
++    "intro": "Legen Sie Ihren Zeigefinger flach auf das Hauptobjektiv der R├╝ckkamera und den Blitz, um Ihre arterielle Pulswelle zu messen.",
++    "cameraPermissionMsg": "Kameraberechtigung ist erforderlich, um den PPG-Puls zu analysieren.",
++    "savedMsg": "Ihre Vitalwerte wurden erfolgreich in Ihren Wellness-Logs gespeichert.",
++    "fingerDetected": "Finger erkannt",
++    "measuring": "Vitalwerte werden gemessen...",
++    "starting": "Initialisierung...",
++    "completed": "Messung abgeschlossen",
++    "bpm": "Schl├ñge pro Minute",
++    "hrv": "HFV (Herzfrequenzvariabilit├ñt)",
++    "stress": "Stresslevel",
++    "startMeasurement": "Pulsmessung starten",
++    "stopMeasurement": "Pulsmessung stoppen",
++    "instructionText": "Halten Sie Ihren Finger ruhig. Das Messfenster schlie├ƒt sich in 15 Sekunden."
++  },
++  "dental": {
++    "finishedTitle": "Z├ñhneputzen abgeschlossen!",
++    "finishedMsg": "Sie haben Ihr 2-min├╝tiges Z├ñhneputzen beendet! Erfolgreich protokolliert.",
++    "manualLogged": "Standardm├ñ├ƒiges 2-min├╝tiges Z├ñhneputzen protokolliert.",
++    "title": "Zahngesundheits-Portal",
++    "routineAssistant": "Routine-Assistent",
++    "routineAssistantSub": "Tippen Sie auf der Karte auf empfindliche Z├ñhne und starten Sie den 2-Minuten-Putztimer.",
++    "progressTracker": "Zahngesundheit-Fortschritt",
++    "brushingStreak": "Tage in Folge",
++    "totalLogs": "Logs Gesamt",
++    "timeSpent": "Zeitaufwand",
++    "triggerAiScan": "KI-Zahnscan starten",
++    "selectedSensitiveTeeth": "Ausgew├ñhlte empfindliche Z├ñhne:",
++    "noTeethSelected": "Keine Z├ñhne ausgew├ñhlt. Tippen Sie auf die Z├ñhne in der Grafik, um Empfindlichkeit zu markieren.",
++    "twoMinuteCountdown": "2-MINUTEN-COUNTDOWN",
++    "start": "Start",
++    "pause": "Pause",
++    "reset": "Zur├╝cksetzen",
++    "checklistHeader": "Heutige Hygiene-Checkliste",
++    "flossed": "Zahnseide benutzt",
++    "mouthwash": "Mundsp├╝lung benutzt",
++    "tongueClean": "Zunge gereinigt",
++    "manualLog": "Putzen manuell loggen",
++    "aiScanTitle": "KI-Zahninspektions-Ansicht",
++    "cameraPlaceholder": "Bereit f├╝r visuelle Inspektion",
++    "cameraPlaceholderSub": "Bitte richten Sie die Frontkamera in einem gut beleuchteten Bereich auf Ihre Z├ñhne",
++    "initiateScanner": "Scanner starten",
++    "scanningTeeth": "Zahnoberfl├ñchen werden gescannt...",
++    "runningDiagnostic": "KI-Diagnosemodelle werden ausgef├╝hrt...",
++    "runningDiagnosticSub": "Zahnschmelzbereiche werden segmentiert & Plaque-Dichte-Index wird gepr├╝ft",
++    "analysisComplete": "Analyse abgeschlossen",
++    "plaqueDensity": "Plaque-Dichte",
++    "cavityRisk": "Kariesrisiko",
++    "enamelHealth": "Schmelz-Gesundheit",
++    "visualFindings": "Wichtigste visuelle Befunde:",
++    "aiRecommendation": "Praktische KI-Empfehlung:",
++    "saveClose": "Bericht speichern & schlie├ƒen",
++    "tabRoutine": "Routine & Timer",
++    "tabAnalytics": "Analyse & Scan"
+   }
+ }
+\ No newline at end of file
+diff --git a/locales/en/translation.json b/locales/en/translation.json
+index 6d837cb..e18919b 100644
+--- a/locales/en/translation.json
++++ b/locales/en/translation.json
+@@ -3833,5 +3833,61 @@
+     "saveAsRecipe": "Save as Recipe",
+     "savedToMyFoodsSuccess": "Saved to My Foods! You can find it in search.",
+     "savedAsRecipeSuccess": "Saved as Recipe! You can find it in search."
++  },
++  "pulse": {
++    "title": "PPG Pulse Tracker",
++    "intro": "Place your index finger flat over the main back camera lens and flash torch to sample your arterial pulse waveform.",
++    "cameraPermissionMsg": "Camera permission is required to analyze PPG pulse.",
++    "savedMsg": "Your vitals have been successfully logged to your Wellness logs.",
++    "fingerDetected": "Finger Detected",
++    "measuring": "Measuring Vitals...",
++    "starting": "Initializing...",
++    "completed": "Measurement Completed",
++    "bpm": "Beats Per Minute",
++    "hrv": "HRV (Heart Rate Var.)",
++    "stress": "Stress Level",
++    "startMeasurement": "Start Pulse Scan",
++    "stopMeasurement": "Stop Pulse Scan",
++    "instructionText": "Keep your finger steady. The scanning window completes in 15 seconds."
++  },
++  "dental": {
++    "finishedTitle": "Brushing Complete!",
++    "finishedMsg": "You completed your 2-minute brushing session! Logged successfully.",
++    "manualLogged": "Standard 2-minute brushing session logged.",
++    "title": "Dental Health Hub",
++    "routineAssistant": "Routine Assistant",
++    "routineAssistantSub": "Tap sensitive teeth on the map and complete your 2-minute brushing timer.",
++    "progressTracker": "Oral Progress Tracker",
++    "brushingStreak": "Brushing Streak",
++    "totalLogs": "Total Logs",
++    "timeSpent": "Time Spent",
++    "triggerAiScan": "Trigger AI Dental Scan",
++    "selectedSensitiveTeeth": "Selected Sensitive Teeth:",
++    "noTeethSelected": "No teeth selected. Tap teeth in the arch to mark sensitivity.",
++    "twoMinuteCountdown": "2 MINUTE COUNTDOWN",
++    "start": "Start",
++    "pause": "Pause",
++    "reset": "Reset",
++    "checklistHeader": "Today's Hygiene Checklist",
++    "flossed": "Flossed Teeth",
++    "mouthwash": "Used Mouthwash",
++    "tongueClean": "Cleaned Tongue",
++    "manualLog": "Manually Log Brushing",
++    "aiScanTitle": "AI Dental Scan Viewport",
++    "cameraPlaceholder": "Ready for Visual Inspection",
++    "cameraPlaceholderSub": "Please point the front camera to your teeth in a well-lit area",
++    "initiateScanner": "Initiate Scanner",
++    "scanningTeeth": "Scanning Teeth Surfaces...",
++    "runningDiagnostic": "Running AI Diagnostic Vision Models...",
++    "runningDiagnosticSub": "Segmenting enamel regions & checking plaque density index",
++    "analysisComplete": "Analysis Complete",
++    "plaqueDensity": "Plaque Density",
++    "cavityRisk": "Cavity Risk",
++    "enamelHealth": "Enamel Health",
++    "visualFindings": "Key Visual Findings:",
++    "aiRecommendation": "Actionable AI Recommendation:",
++    "saveClose": "Save & Close Report",
++    "tabRoutine": "Routine & Timer",
++    "tabAnalytics": "Analytics & Scan"
+   }
+ }
+\ No newline at end of file
+diff --git a/locales/es/translation.json b/locales/es/translation.json
+index b28c275..6e64303 100644
+--- a/locales/es/translation.json
++++ b/locales/es/translation.json
+@@ -5613,5 +5613,61 @@
+     "lunch": "Almuerzo",
+     "dinner": "Cena",
+     "snack": "Snack"
++  },
++  "pulse": {
++    "title": "Monitor de Pulso PPG",
++    "intro": "Coloque su dedo ├¡ndice plano sobre la lente de la c├ímara trasera principal y el flash para tomar una muestra de su onda de pulso arterial.",
++    "cameraPermissionMsg": "Se requiere permiso de c├ímara para analizar el pulso PPG.",
++    "savedMsg": "Sus signos vitales se han registrado con ├⌐xito en sus registros de Bienestar.",
++    "fingerDetected": "Dedo detectado",
++    "measuring": "Midiendo constantes vitales...",
++    "starting": "Iniciando...",
++    "completed": "Medici├│n completada",
++    "bpm": "Latidos por minuto",
++    "hrv": "VFC (Variab. Frec. Card├¡aca)",
++    "stress": "Nivel de estr├⌐s",
++    "startMeasurement": "Iniciar escaneo de pulso",
++    "stopMeasurement": "Detener escaneo de pulso",
++    "instructionText": "Mantenga el dedo quieto. La ventana de escaneo se completa en 15 segundos."
++  },
++  "dental": {
++    "finishedTitle": "┬íCepillado completado!",
++    "finishedMsg": "┬íCompletaste tu sesi├│n de cepillado de 2 minutos! Registrado con ├⌐xito.",
++    "manualLogged": "Sesi├│n est├índar de cepillado de 2 minutos registrada.",
++    "title": "Portal de Salud Dental",
++    "routineAssistant": "Asistente de Rutina",
++    "routineAssistantSub": "Toque los dientes sensibles en el mapa y complete el temporizador de cepillado de 2 minutos.",
++    "progressTracker": "Progreso de Salud Dental",
++    "brushingStreak": "D├¡as seguidos",
++    "totalLogs": "Total de registros",
++    "timeSpent": "Tiempo invertido",
++    "triggerAiScan": "Iniciar escaneo dental con IA",
++    "selectedSensitiveTeeth": "Dientes sensibles seleccionados:",
++    "noTeethSelected": "Ning├║n diente seleccionado. Toque los dientes en el mapa para marcar sensibilidad.",
++    "twoMinuteCountdown": "CUENTA ATR├üS DE 2 MINUTOS",
++    "start": "Iniciar",
++    "pause": "Pausa",
++    "reset": "Reiniciar",
++    "checklistHeader": "Checklist de higiene de hoy",
++    "flossed": "Us├│ hilo dental",
++    "mouthwash": "Us├│ enjuague bucal",
++    "tongueClean": "Limpi├│ la lengua",
++    "manualLog": "Registrar cepillado manual",
++    "aiScanTitle": "C├ímara de Inspe├º├úo Dental IA",
++    "cameraPlaceholder": "Listo para inspecci├│n visual",
++    "cameraPlaceholderSub": "Por favor, apunte la c├ímara frontal a sus dientes en un ├írea bien iluminada",
++    "initiateScanner": "Iniciar esc├íner",
++    "scanningTeeth": "Escaneando superficies dentales...",
++    "runningDiagnostic": "Ejecutando modelos visuales de diagn├│stico de IA...",
++    "runningDiagnosticSub": "Segmentando regiones de esmalte y comprobando el ├¡ndice de densidad de placa",
++    "analysisComplete": "An├ílisis completado",
++    "plaqueDensity": "Densidad de placa",
++    "cavityRisk": "Riesgo de caries",
++    "enamelHealth": "Salud del esmalte",
++    "visualFindings": "Principales hallazgos visuales:",
++    "aiRecommendation": "Recomendaci├│n pr├íctica de IA:",
++    "saveClose": "Guardar y cerrar informe",
++    "tabRoutine": "Rutina y temporizador",
++    "tabAnalytics": "An├ílisis y escaneo"
+   }
+ }
+\ No newline at end of file
+diff --git a/locales/fr/translation.json b/locales/fr/translation.json
+index 7b8affa..62b63bd 100644
+--- a/locales/fr/translation.json
++++ b/locales/fr/translation.json
+@@ -5615,5 +5615,61 @@
+     "lunch": "D├⌐jeuner",
+     "dinner": "D├«ner",
+     "snack": "Collation"
++  },
++  "pulse": {
++    "title": "Capteur de Pouls PPG",
++    "intro": "Placez votre index ├á plat sur l'objectif de la cam├⌐ra arri├¿re principale et le flash pour mesurer votre onde de pouls art├⌐riel.",
++    "cameraPermissionMsg": "L'autorisation de la cam├⌐ra est requise pour analyser le pouls PPG.",
++    "savedMsg": "Vos constantes vitales ont ├⌐t├⌐ enregistr├⌐es avec succ├¿s dans vos journaux de bien-├¬tre.",
++    "fingerDetected": "Doigt d├⌐tect├⌐",
++    "measuring": "Mesure des constantes vitales...",
++    "starting": "Initialisation...",
++    "completed": "Mesure termin├⌐e",
++    "bpm": "Battements par minute",
++    "hrv": "VFC (Variabilit├⌐ de la Freq. Card.)",
++    "stress": "Niveau de stress",
++    "startMeasurement": "D├⌐marrer la lecture du pouls",
++    "stopMeasurement": "Arr├¬ter la lecture du pouls",
++    "instructionText": "Gardez votre doigt immobile. La fen├¬tre de lecture se termine dans 15 secondes."
++  },
++  "dental": {
++    "finishedTitle": "Brossage termin├⌐ !",
++    "finishedMsg": "Vous avez termin├⌐ votre session de brossage de 2 minutes ! Enregistr├⌐ avec succ├¿s.",
++    "manualLogged": "Session de brossage standard de 2 minutes enregistr├⌐e.",
++    "title": "Portail de Sant├⌐ Dentaire",
++    "routineAssistant": "Assistant de Routine",
++    "routineAssistantSub": "Touchez les dents sensibles sur la carte et terminez le minuteur de brossage de 2 minutes.",
++    "progressTracker": "Suivi de Sant├⌐ Dentaire",
++    "brushingStreak": "Jours cons├⌐cutifs",
++    "totalLogs": "Total des logs",
++    "timeSpent": "Temps pass├⌐",
++    "triggerAiScan": "Lancer le scan dentaire par IA",
++    "selectedSensitiveTeeth": "Dents sensibles s├⌐lectionn├⌐es :",
++    "noTeethSelected": "Aucune dent s├⌐lectionn├⌐e. Touchez les dents sur la carte pour marquer la sensibilit├⌐.",
++    "twoMinuteCountdown": "COMPTE ├Ç REBOURS DE 2 MIN",
++    "start": "D├⌐marrer",
++    "pause": "Pause",
++    "reset": "R├⌐initialiser",
++    "checklistHeader": "Check-list d'hygi├¿ne du jour",
++    "flossed": "Fil dentaire utilis├⌐",
++    "mouthwash": "Bain de bouche utilis├⌐",
++    "tongueClean": "Langue nettoy├⌐e",
++    "manualLog": "Enregistrer brossage manuel",
++    "aiScanTitle": "Cam├⌐ra d'Inspection Dentaire par IA",
++    "cameraPlaceholder": "Pr├¬t pour l'inspection visuelle",
++    "cameraPlaceholderSub": "Veuillez pointer la cam├⌐ra frontale vers vos dents dans un endroit bien ├⌐clair├⌐",
++    "initiateScanner": "D├⌐marrer le scanner",
++    "scanningTeeth": "Scan des surfaces dentaires...",
++    "runningDiagnostic": "Ex├⌐cution des mod├¿les visuels de diagnostic IA...",
++    "runningDiagnosticSub": "Segmentation des r├⌐gions d'├⌐mail & v├⌐rification de l'indice de plaque",
++    "analysisComplete": "Analyse termin├⌐e",
++    "plaqueDensity": "Densit├⌐ de la plaque",
++    "cavityRisk": "Risque de caries",
++    "enamelHealth": "Sant├⌐ de l'├⌐mail",
++    "visualFindings": "Principales constatations visuelles :",
++    "aiRecommendation": "Recommandation pratique de l'IA :",
++    "saveClose": "Enregistrer & fermer le rapport",
++    "tabRoutine": "Routine & Minuteur",
++    "tabAnalytics": "Analyses & Scan"
+   }
+ }
+\ No newline at end of file
+diff --git a/locales/nl/translation.json b/locales/nl/translation.json
+index 0595c9b..e8f31be 100644
+--- a/locales/nl/translation.json
++++ b/locales/nl/translation.json
+@@ -5566,5 +5566,61 @@
+     "lunch": "Lunch",
+     "dinner": "Avondeten",
+     "snack": "Snack"
++  },
++  "pulse": {
++    "title": "PPG Hartslagmonitor",
++    "intro": "Plaats uw wijsvinger plat op de lens van de hoofdcamera aan de achterzijde en de flitser om uw arteri├½le polsslaggolf te meten.",
++    "cameraPermissionMsg": "Cameratoestemming is vereist om de PPG-polsslag te analyseren.",
++    "savedMsg": "Uw vitale functies zijn succesvol opgeslagen in uw Wellness-logs.",
++    "fingerDetected": "Vinger gedetecteerd",
++    "measuring": "Meten van vitale functies...",
++    "starting": "Initialiseren...",
++    "completed": "Meting voltooid",
++    "bpm": "Slagen per minuut",
++    "hrv": "HRV (Hartslagvariabiliteit)",
++    "stress": "Stressniveau",
++    "startMeasurement": "Start polsslagscan",
++    "stopMeasurement": "Stop polsslagscan",
++    "instructionText": "Houd uw vinger stil. Het scanvenster sluit in 15 seconden."
++  },
++  "dental": {
++    "finishedTitle": "Poetsen voltooid!",
++    "finishedMsg": "U heeft uw poetssessie van 2 minuten afgerond! Succesvol geregistreerd.",
++    "manualLogged": "Standaard poetssessie van 2 minuten geregistreerd.",
++    "title": "Tandheelkundig Portaal",
++    "routineAssistant": "Routine-assistent",
++    "routineAssistantSub": "Tik op gevoelige tanden op de kaart en voltooi de poetstimer van 2 minuten.",
++    "progressTracker": "Voortgang Mondgezondheid",
++    "brushingStreak": "Dagen achter elkaar",
++    "totalLogs": "Totaal aantal logs",
++    "timeSpent": "Bestede tijd",
++    "triggerAiScan": "AI Tandscan starten",
++    "selectedSensitiveTeeth": "Geselecteerde gevoelige tanden:",
++    "noTeethSelected": "Geen tanden geselecteerd. Tik op tanden in de afbeelding om gevoeligheid te markeren.",
++    "twoMinuteCountdown": "2 MINUTEN COUNTDOWN",
++    "start": "Start",
++    "pause": "Pauze",
++    "reset": "Resetten",
++    "checklistHeader": "Hygi├½ne Checklist van Vandaag",
++    "flossed": "Flosdraad gebruikt",
++    "mouthwash": "Mondwater gebruikt",
++    "tongueClean": "Tong gereinigd",
++    "manualLog": "Poetsen handmatig registreren",
++    "aiScanTitle": "KI Tandheelkundig Inspectie-venster",
++    "cameraPlaceholder": "Gereed voor visuele inspection",
++    "cameraPlaceholderSub": "Richt de camera aan de voorzijde op uw tanden in een goed verlichte ruimte",
++    "initiateScanner": "Scanner starten",
++    "scanningTeeth": "Tandoppervlakken scannen...",
++    "runningDiagnostic": "KI-diagnostische visiemodellen uitvoeren...",
++    "runningDiagnosticSub": "Glazuurgebieden segmenteren & plaque-dichtheidsindex controleren",
++    "analysisComplete": "Analyse voltooid",
++    "plaqueDensity": "Plaque-dichtheid",
++    "cavityRisk": "Cari├½srisico",
++    "enamelHealth": "Gezondheid van tandglazuur",
++    "visualFindings": "Belangrijkste visuelle bevindingen:",
++    "aiRecommendation": "Praktische KI-aanbeveling:",
++    "saveClose": "Rapport opslaan & sluiten",
++    "tabRoutine": "Routine & Timer",
++    "tabAnalytics": "Analyse & Scan"
+   }
+ }
+\ No newline at end of file
+diff --git a/locales/pt/translation.json b/locales/pt/translation.json
+index 66f5ed4..ed4eca0 100644
+--- a/locales/pt/translation.json
++++ b/locales/pt/translation.json
+@@ -5655,5 +5655,61 @@
+     "lunch": "Almo├ºo",
+     "dinner": "Jantar",
+     "snack": "Snack"
++  },
++  "pulse": {
++    "title": "Monitor de Pulso PPG",
++    "intro": "Coloque o dedo indicador sobre a lente da c├ómara traseira e o flash para amostrar a sua onda de pulso arterial.",
++    "cameraPermissionMsg": "├ë necess├íria permiss├úo de c├ómara para analisar o pulso PPG.",
++    "savedMsg": "Os seus sinais vitais foram registados com sucesso nos registos de Bem-Estar.",
++    "fingerDetected": "Dedo Detetado",
++    "measuring": "A medir sinais vitais...",
++    "starting": "A iniciar...",
++    "completed": "Medi├º├úo Conclu├¡da",
++    "bpm": "Batimentos Por Minuto",
++    "hrv": "VFC (Variab. Freq. Card├¡aca)",
++    "stress": "N├¡vel de Stress",
++    "startMeasurement": "Iniciar Leitura de Pulso",
++    "stopMeasurement": "Parar Leitura de Pulso",
++    "instructionText": "Mantenha o dedo im├│vel. A janela de leitura conclui em 15 segundos."
++  },
++  "dental": {
++    "finishedTitle": "Escovagem Conclu├¡da!",
++    "finishedMsg": "Concluiu a sua sess├úo de escovagem de 2 minutos! Registado com sucesso.",
++    "manualLogged": "Sess├úo padr├úo de 2 minutos registada.",
++    "title": "Portal de Sa├║de Oral",
++    "routineAssistant": "Assistente de Rotina",
++    "routineAssistantSub": "Toque nos dentes sens├¡veis no mapa e conclua o temporizador de escovagem de 2 minutos.",
++    "progressTracker": "Progresso de Sa├║de Oral",
++    "brushingStreak": "Dias Seguidos",
++    "totalLogs": "Total de Registos",
++    "timeSpent": "Tempo Gasto",
++    "triggerAiScan": "Iniciar Digitaliza├º├úo IA",
++    "selectedSensitiveTeeth": "Dentes Sens├¡veis Selecionados:",
++    "noTeethSelected": "Nenhum dente selecionado. Toque nos dentes no mapa para marcar sensibilidade.",
++    "twoMinuteCountdown": "CONTAGEM DE 2 MINUTOS",
++    "start": "Iniciar",
++    "pause": "Pausa",
++    "reset": "Reiniciar",
++    "checklistHeader": "Checklist de Higiene de Hoje",
++    "flossed": "Usou Fio Dent├írio",
++    "mouthwash": "Usou Elixir Bucal",
++    "tongueClean": "Limpou a L├¡ngua",
++    "manualLog": "Registar Escovagem Manual",
++    "aiScanTitle": "C├ómara de Inspe├º├úo Dental IA",
++    "cameraPlaceholder": "Pronto para Inspe├º├úo Visual",
++    "cameraPlaceholderSub": "Por favor, aponte a c├ómara frontal para os seus dentes numa ├írea bem iluminada",
++    "initiateScanner": "Iniciar Scanner",
++    "scanningTeeth": "A Digitalizar Superf├¡cies dos Dentes...",
++    "runningDiagnostic": "A Executar Modelos Visuais de Diagn├│stico IA...",
++    "runningDiagnosticSub": "A segmentar regi├╡es do esmalte e a verificar o ├¡ndice de densidade da placa",
++    "analysisComplete": "An├ílise Conclu├¡da",
++    "plaqueDensity": "Densidade da Placa",
++    "cavityRisk": "Meta de C├íries",
++    "enamelHealth": "Sa├║de do Esmalte",
++    "visualFindings": "Principais Conclus├╡es Visuais:",
++    "aiRecommendation": "Recomenda├º├úo Pr├ítica da IA:",
++    "saveClose": "Guardar e Fechar Relat├│rio",
++    "tabRoutine": "Rotina e Temporizador",
++    "tabAnalytics": "An├ílises e Scan"
+   }
+ }
+\ No newline at end of file
