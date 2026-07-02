@@ -142,7 +142,7 @@ function InitialLayout() {
 
   // Minimum splash delay
   useEffect(() => {
-    const timer = setTimeout(() => setMinSplashTimeElapsed(true), 2000);
+    const timer = setTimeout(() => setMinSplashTimeElapsed(true), 500);
     return () => clearTimeout(timer);
   }, []);
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo, Suspense, lazy } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Modal, ActivityIndicator, Dimensions, TextInput, Switch,
@@ -13,10 +13,11 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
 import PanicButton from '../../components/PanicButton';
-import MeditationHub from '../../components/MeditationHub';
-import GamesHub from '../../components/GamesHub';
-import LifeGoalsHub from '../../components/LifeGoalsHub';
-import AdvancedSleepTracker from '../../components/wellness/AdvancedSleepTracker';
+// Lazy-load heavy hub components — only parse JS when user opens them
+const MeditationHub = lazy(() => import('../../components/MeditationHub'));
+const GamesHub = lazy(() => import('../../components/GamesHub'));
+const LifeGoalsHub = lazy(() => import('../../components/LifeGoalsHub'));
+const AdvancedSleepTracker = lazy(() => import('../../components/wellness/AdvancedSleepTracker'));
 import { triggerSound, SoundEffect } from '../../utils/soundEffects';
 import { getBottomContentPadding, TAB_BAR_HEIGHT } from '../../utils/layout';
 import { useTheme } from '@/context/ThemeContext';
@@ -590,20 +591,22 @@ export default function WellnessScreen() {
         </SafeAreaView>
       </Modal>
 
-      {showMeditationHub && <MeditationHub userId={user._id} onClose={() => setShowMeditationHub(false)} />}
-      {showGamesHub && <GamesHub userId={user._id} onClose={() => setShowGamesHub(false)} />}
-      {showLifeGoals && <LifeGoalsHub userId={user._id} onClose={() => setShowLifeGoals(false)} />}
-      {showAdvancedSleepTracker && (
-        <AdvancedSleepTracker
-          visible={showAdvancedSleepTracker}
-          userId={user._id}
-          onClose={() => setShowAdvancedSleepTracker(false)}
-          onOpenMeditationHub={() => {
-            setShowAdvancedSleepTracker(false);
-            setShowMeditationHub(true);
-          }}
-        />
-      )}
+      <Suspense fallback={null}>
+        {showMeditationHub && <MeditationHub userId={user._id} onClose={() => setShowMeditationHub(false)} />}
+        {showGamesHub && <GamesHub userId={user._id} onClose={() => setShowGamesHub(false)} />}
+        {showLifeGoals && <LifeGoalsHub userId={user._id} onClose={() => setShowLifeGoals(false)} />}
+        {showAdvancedSleepTracker && (
+          <AdvancedSleepTracker
+            visible={showAdvancedSleepTracker}
+            userId={user._id}
+            onClose={() => setShowAdvancedSleepTracker(false)}
+            onOpenMeditationHub={() => {
+              setShowAdvancedSleepTracker(false);
+              setShowMeditationHub(true);
+            }}
+          />
+        )}
+      </Suspense>
       {/* <PanicButton userId={user._id} /> */}
     </SafeAreaView>
   );

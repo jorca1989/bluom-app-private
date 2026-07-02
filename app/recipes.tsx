@@ -418,8 +418,15 @@ export default function RecipesScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top', 'bottom']}>
-      <ScrollView
-        style={styles.scrollView}
+      <FlatList
+        data={loading ? [] : recipes || []}
+        keyExtractor={(recipe) => recipe._id}
+        numColumns={2}
+        initialNumToRender={8}
+        maxToRenderPerBatch={6}
+        windowSize={5}
+        removeClippedSubviews={true}
+        columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 24, marginBottom: 16 }}
         contentContainerStyle={{
           paddingBottom: getBottomContentPadding(insets.bottom),
           paddingTop: Platform.OS === 'android'
@@ -427,97 +434,94 @@ export default function RecipesScreen() {
             : Math.max(insets.top, 12) + 8,
         }}
         showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton} activeOpacity={0.7}>
-            <Ionicons name="arrow-back" size={24} color={themeColors.text} />
-            <Text style={styles.backText}>{t('common.back', 'Back')}</Text>
-          </TouchableOpacity>
-          <Text style={styles.title}>{t('recipes.title', 'Recipes')}</Text>
-          <View style={{ width: 60 }} />
-        </View>
+        ListHeaderComponent={
+          <>
+            <View style={styles.header}>
+              <TouchableOpacity onPress={() => router.back()} style={styles.backButton} activeOpacity={0.7}>
+                <Ionicons name="arrow-back" size={24} color={themeColors.text} />
+                <Text style={styles.backText}>{t('common.back', 'Back')}</Text>
+              </TouchableOpacity>
+              <Text style={styles.title}>{t('recipes.title', 'Recipes')}</Text>
+              <View style={{ width: 60 }} />
+            </View>
 
-        <View style={styles.card}>
-          <View style={styles.searchContainer}>
-            <Ionicons name="search" size={20} color="#94a3b8" style={styles.searchIcon} />
-            <TextInput
-              style={styles.searchInput}
-              placeholder={t('recipes.searchPlaceholder', 'Search recipes...')}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholderTextColor="#94a3b8"
-            />
-            <TouchableOpacity 
-              onPress={() => {
-                setTempSelectedCuisines([...selectedCuisines]);
-                setTempSelectedMealTypes([...selectedMealTypes]);
-                setTempSelectedDietTypes([...selectedDietTypes]);
-                setTempSelectedNutrientTypes([...selectedNutrientTypes]);
-                setIsFilterModalOpen(true);
-              }}
-              style={{ marginLeft: 8 }}
-            >
-              <Ionicons name="filter" size={20} color="#3b82f6" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {loading && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#3b82f6" />
-            <Text style={styles.loadingText}>{t('recipes.loadingRecipes', 'Loading recipes...') as string}</Text>
-          </View>
-        )}
-
-        {!loading && (!recipes || recipes.length === 0) && (
-          <View style={styles.emptyContainer}>
-            <Ionicons name="restaurant-outline" size={48} color="#94a3b8" />
-            <Text style={styles.emptyText}>{t('recipes.noRecipes', 'No recipes yet') as string}</Text>
-            <Text style={styles.emptySubtext}>
-              {t('recipes.noRecipesDesc', 'Admin recipes will appear here once they are added.') as string}
-            </Text>
-          </View>
-        )}
-
-        {!loading && recipes && recipes.length > 0 && (
-          <View style={styles.recipesGrid}>
-            {recipes.map((recipe) => {
-              const imageSource = imageSources.get(recipe._id);
-              return (
-                <TouchableOpacity
-                  key={recipe._id}
-                  style={[styles.recipeCard, { width: gridItemWidth }]}
-                  onPress={() => setSelectedRecipe(recipe)}
-                  activeOpacity={0.8}
+            <View style={styles.card}>
+              <View style={styles.searchContainer}>
+                <Ionicons name="search" size={20} color="#94a3b8" style={styles.searchIcon} />
+                <TextInput
+                  style={styles.searchInput}
+                  placeholder={t('recipes.searchPlaceholder', 'Search recipes...')}
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  placeholderTextColor="#94a3b8"
+                />
+                <TouchableOpacity 
+                  onPress={() => {
+                    setTempSelectedCuisines([...selectedCuisines]);
+                    setTempSelectedMealTypes([...selectedMealTypes]);
+                    setTempSelectedDietTypes([...selectedDietTypes]);
+                    setTempSelectedNutrientTypes([...selectedNutrientTypes]);
+                    setIsFilterModalOpen(true);
+                  }}
+                  style={{ marginLeft: 8 }}
                 >
-                  <View style={styles.recipeCardImageContainer}>
-                    {imageSource ? (
-                      <Image
-                        source={imageSource}
-                        style={styles.recipeCardImage}
-                        contentFit="cover"
-                        cachePolicy="memory-disk"
-                        recyclingKey={recipe._id}
-                      />
-                    ) : (
-                      <View style={styles.recipeCardImagePlaceholder}>
-                        <Ionicons name="restaurant" size={32} color="#94a3b8" />
-                      </View>
-                    )}
-                  </View>
-                  <View style={styles.recipeCardContent}>
-                    <Text style={styles.recipeCardTitle} numberOfLines={2}>{getLocalizedField(recipe, 'title', lang)}</Text>
-                    <View style={styles.recipeCardMacros}>
-                      <Text style={styles.macro}>{Math.round(n(recipe.calories))} {t('recipes.kcal', 'cal')}</Text>
-                      <Text style={styles.macro}>{Math.round(n(recipe.protein))}g {t('fuel.mealCard.p', 'P')}</Text>
-                    </View>
-                  </View>
+                  <Ionicons name="filter" size={20} color="#3b82f6" />
                 </TouchableOpacity>
-              );
-            })}
-          </View>
-        )}
-      </ScrollView>
+              </View>
+            </View>
+
+            {loading && (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#3b82f6" />
+                <Text style={styles.loadingText}>{t('recipes.loadingRecipes', 'Loading recipes...') as string}</Text>
+              </View>
+            )}
+
+            {!loading && (!recipes || recipes.length === 0) && (
+              <View style={styles.emptyContainer}>
+                <Ionicons name="restaurant-outline" size={48} color="#94a3b8" />
+                <Text style={styles.emptyText}>{t('recipes.noRecipes', 'No recipes yet') as string}</Text>
+                <Text style={styles.emptySubtext}>
+                  {t('recipes.noRecipesDesc', 'Admin recipes will appear here once they are added.') as string}
+                </Text>
+              </View>
+            )}
+          </>
+        }
+        renderItem={({ item: recipe }) => {
+          const imageSource = imageSources.get(recipe._id);
+          return (
+            <TouchableOpacity
+              style={[styles.recipeCard, { width: gridItemWidth }]}
+              onPress={() => setSelectedRecipe(recipe)}
+              activeOpacity={0.8}
+            >
+              <View style={styles.recipeCardImageContainer}>
+                {imageSource ? (
+                  <Image
+                    source={imageSource}
+                    style={styles.recipeCardImage}
+                    contentFit="cover"
+                    cachePolicy="memory-disk"
+                    recyclingKey={recipe._id}
+                  />
+                ) : (
+                  <View style={styles.recipeCardImagePlaceholder}>
+                    <Ionicons name="restaurant" size={32} color="#94a3b8" />
+                  </View>
+                )}
+              </View>
+              <View style={styles.recipeCardContent}>
+                <Text style={styles.recipeCardTitle} numberOfLines={2}>{getLocalizedField(recipe, 'title', lang)}</Text>
+                <View style={styles.recipeCardMacros}>
+                  <Text style={styles.macro}>{Math.round(n(recipe.calories))} {t('recipes.kcal', 'cal')}</Text>
+                  <Text style={styles.macro}>{Math.round(n(recipe.protein))}g {t('fuel.mealCard.p', 'P')}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          );
+        }}
+      />
 
       {/* ── Detail modal ───────────────────────────────────── */}
       {selectedRecipe ? (

@@ -1185,4 +1185,26 @@ export default defineSchema({
   })
     .index("by_user", ["userId"])
     .index("by_user_date", ["userId", "date"]),
+
+  // PPG Pulse Logs
+  pulseLogs: defineTable({
+    userId: v.id("users"),
+    bpm: v.number(),
+    hrv: v.number(),
+    stressLevel: v.string(),
+    createdAt: v.number(),
+  }).index("by_user", ["userId"]),
+
+  // Dental Logs
+  dentalLogs: defineTable({
+    userId: v.id("users"),
+    date: v.string(),
+    brushDuration: v.number(),
+    flossed: v.boolean(),
+    mouthwash: v.boolean(),
+    tongueClean: v.boolean(),
+    sensitiveTeeth: v.array(v.string()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_date", ["userId", "date"]),
 });

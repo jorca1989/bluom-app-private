@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, Suspense, lazy } from 'react';
 import {
   View,
   Text,
@@ -51,11 +51,13 @@ import DetailedInsightsModal from '@/components/fuel/modals/DetailedInsightsModa
 import CreateRecipeModal from '@/components/fuel/modals/CreateRecipeModal';
 import LogRecipeModal from '@/components/fuel/modals/LogRecipeModal';
 import FoodSearchModal from '@/components/fuel/modals/FoodSearchModal';
-import NutritionInsightsModal from '@/components/fuel/modals/NutritionInsightsModal';
 import VoiceLogModal from '@/components/fuel/modals/VoiceLogModel';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
-import EditFoodModal from '@/components/fuel/modals/EditFoodModal';
-import EditRecipeModal from '@/components/fuel/modals/EditRecipeModal';
+
+// Lazy-load heavy modals — only parse JS when user opens them, not on tab mount
+const EditFoodModal = lazy(() => import('@/components/fuel/modals/EditFoodModal'));
+const EditRecipeModal = lazy(() => import('@/components/fuel/modals/EditRecipeModal'));
+const NutritionInsightsModal = lazy(() => import('@/components/fuel/modals/NutritionInsightsModal'));
 
 type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 type MealTypeLower = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'premium_slot';
@@ -700,11 +702,13 @@ export default function FuelScreen() {
         hideLogButton={true}
       />
       
-      <NutritionInsightsModal
-        visible={showNutritionInsightsModal}
-        onClose={() => setShowNutritionInsightsModal(false)}
-        dateEntries={dateEntries || []}
-      />
+      <Suspense fallback={null}>
+        <NutritionInsightsModal
+          visible={showNutritionInsightsModal}
+          onClose={() => setShowNutritionInsightsModal(false)}
+          dateEntries={dateEntries || []}
+        />
+      </Suspense>
 
       <CreateRecipeModal
         visible={showRecipeModal}
@@ -716,33 +720,33 @@ export default function FuelScreen() {
           setLogMeal('Lunch');
           setLogQuantity(1);
           setLogSuccess(false);
-          setTimeout(() => {
-            setShowLogRecipeModal(true);
-          }, 400);
+          setShowLogRecipeModal(true);
         }}
       />
 
-      {editingFood && (
-        <EditFoodModal
-          visible={!!editingFood}
-          onClose={() => setEditingFood(null)}
-          userId={convexUser._id}
-          food={editingFood}
-          onUpdated={() => {}}
-          onDeleted={() => {}}
-        />
-      )}
+      <Suspense fallback={null}>
+        {editingFood && (
+          <EditFoodModal
+            visible={!!editingFood}
+            onClose={() => setEditingFood(null)}
+            userId={convexUser._id}
+            food={editingFood}
+            onUpdated={() => {}}
+            onDeleted={() => {}}
+          />
+        )}
 
-      {editingRecipe && (
-        <EditRecipeModal
-          visible={!!editingRecipe}
-          onClose={() => setEditingRecipe(null)}
-          userId={convexUser._id}
-          recipe={editingRecipe}
-          onUpdated={() => {}}
-          onDeleted={() => {}}
-        />
-      )}
+        {editingRecipe && (
+          <EditRecipeModal
+            visible={!!editingRecipe}
+            onClose={() => setEditingRecipe(null)}
+            userId={convexUser._id}
+            recipe={editingRecipe}
+            onUpdated={() => {}}
+            onDeleted={() => {}}
+          />
+        )}
+      </Suspense>
       
       <LogRecipeModal
         visible={showLogRecipeModal}

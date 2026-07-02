@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { mutation, query, internalMutation, action } from "./_generated/server";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
-import { generateContentWithFallback, safeJsonParse } from "./ai";
+import { generateContentWithFallback, safeJsonParse, generateContentWithDeepSeek } from "./ai";
 
 /**
  * SAVE GENERATED PLANS (Internal Mutation)
@@ -194,10 +194,9 @@ export const generateAllPlans = action({
     }
     `;
 
-    // 3. Call Gemini
+    // 3. Call DeepSeek
     try {
-      const result = await generateContentWithFallback([{ text: systemPrompt }]);
-      const text = result.response.text();
+      const text = await generateContentWithDeepSeek(systemPrompt, true);
       const parsed = safeJsonParse<any>(text);
 
       let data = parsed;
@@ -211,7 +210,7 @@ export const generateAllPlans = action({
       }
 
       if (!data || !data.nutrition || !data.fitness || !data.wellness) {
-        console.warn("Gemini failed to generate valid plan JSON. Using basic fallback.");
+        console.warn("DeepSeek failed to generate valid plan JSON. Using basic fallback.");
         data = createFallbackData(user);
       }
 

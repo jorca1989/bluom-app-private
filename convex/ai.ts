@@ -98,6 +98,40 @@ export async function generateContentWithFallback(parts: any[], apiKeyOverride?:
   throw lastErr ?? new Error("No compatible Gemini model found for generateContent.");
 }
 
+export async function generateContentWithDeepSeek(prompt: string, jsonMode = false): Promise<string> {
+  const apiKey = process.env.DEEPSEEK_API_KEY;
+  if (!apiKey) {
+    throw new Error("Missing DEEPSEEK_API_KEY in Convex environment.");
+  }
+
+  const body: any = {
+    model: "deepseek-chat",
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.2,
+  };
+
+  if (jsonMode) {
+    body.response_format = { type: "json_object" };
+  }
+
+  const response = await fetch("https://api.deepseek.com/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`DeepSeek API error: ${response.status} ${errText}`);
+  }
+
+  const result = await response.json();
+  return result.choices[0].message.content || "";
+}
+
 export const recognizeFoodFromImage = action({
   args: {
     // Base64 without data: prefix
@@ -615,8 +649,7 @@ Return EXACTLY this JSON shape:
   ]
 }`;
 
-    const result = await generateContentWithFallback([{ text: prompt }]);
-    const text = result.response.text();
+    const text = await generateContentWithDeepSeek(prompt, true);
     const parsed = safeJsonParse<any>(text);
     if (parsed) return parsed;
 
@@ -627,7 +660,7 @@ Return EXACTLY this JSON shape:
       if (maybe) return maybe;
     }
 
-    throw new Error("Gemini returned invalid JSON for recipe generation.");
+    throw new Error("DeepSeek returned invalid JSON for recipe generation.");
   },
 });
 
