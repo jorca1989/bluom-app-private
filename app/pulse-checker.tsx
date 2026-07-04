@@ -314,7 +314,9 @@ export default function PulseCheckerScreen() {
               </View>
               <View style={styles.resultItem}>
                 <Ionicons name="speedometer" size={24} color="#a855f7" />
-                <Text style={[styles.resultValue, { color: stress === 'Low' ? '#10b981' : stress === 'Moderate' ? '#f59e0b' : '#ef4444' }]}>{stress}</Text>
+                <Text style={[styles.resultValue, { color: stress === 'Low' ? '#10b981' : stress === 'Moderate' ? '#f59e0b' : '#ef4444' }]}>
+                  {stress === 'Low' ? t('pulse.stressLow', 'Low') : stress === 'Moderate' ? t('pulse.stressModerate', 'Moderate') : t('pulse.stressHigh', 'High')}
+                </Text>
                 <Text style={styles.resultLabel}>{t('pulse.stress', 'Stress Level')}</Text>
               </View>
             </View>

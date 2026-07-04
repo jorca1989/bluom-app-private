@@ -59,9 +59,9 @@ export default function AdvancedSleepTracker({ visible, userId, onClose, onOpenM
 
   const sleepSounds = useMemo(() => {
     const fallbackList = [
-      { id: 'rain', name: 'Rain', icon: 'rainy-outline', url: 'https://raw.githubusercontent.com/danielrosehill/HA-White-Noise-Component/master/audio/rain.mp3' },
-      { id: 'ocean', name: 'Ocean Waves', icon: 'water-outline', url: 'https://raw.githubusercontent.com/bradtraversy/ambient-sound-mixer/main/sounds/ocean.mp3' },
-      { id: 'white', name: 'White Noise', icon: 'radio-outline', url: 'https://raw.githubusercontent.com/danielrosehill/HA-White-Noise-Component/master/audio/white.mp3' },
+      { id: 'rain', name: t('wellness.rain', 'Rain'), icon: 'rainy-outline', url: 'https://raw.githubusercontent.com/danielrosehill/HA-White-Noise-Component/master/audio/rain.mp3' },
+      { id: 'ocean', name: t('wellness.ocean', 'Ocean Waves'), icon: 'water-outline', url: 'https://raw.githubusercontent.com/bradtraversy/ambient-sound-mixer/main/sounds/ocean.mp3' },
+      { id: 'white', name: t('wellness.whiteNoise', 'White Noise'), icon: 'radio-outline', url: 'https://raw.githubusercontent.com/danielrosehill/HA-White-Noise-Component/master/audio/white.mp3' },
     ];
 
     if (!allSessions) return fallbackList;
@@ -710,7 +710,11 @@ export default function AdvancedSleepTracker({ visible, userId, onClose, onOpenM
           <View style={[s.clipBadge, { backgroundColor: snip.soundTag === 'snore' ? '#f43f5e20' : '#3b82f620' }]}>
             <Ionicons name={getTagIcon(snip.soundTag) as any} size={16} color={snip.soundTag === 'snore' ? '#f43f5e' : '#3b82f6'} />
             <Text style={[s.clipBadgeText, { color: snip.soundTag === 'snore' ? '#f43f5e' : '#3b82f6' }]}>
-              {snip.soundTag.toUpperCase()}
+              {snip.soundTag === 'snore' ? t('wellness.snore', 'Snore') :
+               snip.soundTag === 'cough' ? t('wellness.cough', 'Cough') :
+               snip.soundTag === 'talk' ? t('wellness.talk', 'Talk') :
+               snip.soundTag === 'rustle' ? t('wellness.rustle', 'Rustle') :
+               t('wellness.ambient', 'Ambient')}
             </Text>
           </View>
           <Text style={s.clipTime}>{timeLabel}</Text>

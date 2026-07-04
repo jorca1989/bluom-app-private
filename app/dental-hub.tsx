@@ -293,8 +293,8 @@ export default function DentalHubScreen() {
               plaqueIndex: Math.floor(8 + Math.random() * 15),
               cavityProbability: Math.floor(3 + Math.random() * 12),
               enamelHealth: Math.floor(85 + Math.random() * 14),
-              anomalies: Math.random() > 0.6 ? ['Mild gingival redness near lower back molars'] : ['No abnormal findings detected.'],
-              recommendation: 'Excellent hygiene. Maintain focus brushing lower quadrant back areas.',
+              anomalies: Math.random() > 0.6 ? [t('dental.findingsAnomaly', 'Mild gingival redness near lower back molars')] : [t('dental.findingsNormal', 'No abnormal findings detected.')],
+              recommendation: t('dental.recText', 'Excellent hygiene. Maintain focus brushing lower quadrant back areas.'),
             });
             if (Platform.OS !== 'web') {
               Vibration.vibrate(200);
@@ -417,8 +417,8 @@ export default function DentalHubScreen() {
                     );
                   })}
 
-                  <SvgText x="160" y="80" fill="rgba(255,255,255,0.3)" fontSize="10" fontWeight="bold" textAnchor="middle">UPPER DENTAL ARCH</SvgText>
-                  <SvgText x="160" y="260" fill="rgba(255,255,255,0.3)" fontSize="10" fontWeight="bold" textAnchor="middle">LOWER DENTAL ARCH</SvgText>
+                  <SvgText x="160" y="80" fill="rgba(255,255,255,0.3)" fontSize="10" fontWeight="bold" textAnchor="middle">{t('dental.upperArch', 'UPPER DENTAL ARCH')}</SvgText>
+                  <SvgText x="160" y="260" fill="rgba(255,255,255,0.3)" fontSize="10" fontWeight="bold" textAnchor="middle">{t('dental.lowerArch', 'LOWER DENTAL ARCH')}</SvgText>
                 </Svg>
               </View>
 
@@ -517,7 +517,7 @@ export default function DentalHubScreen() {
                     <Ionicons name="flame" size={20} color="#3b82f6" />
                   </View>
                   <Text style={styles.statValue}>{stats.streak} {t('dental.brushingStreak', 'Days')}</Text>
-                  <Text style={styles.statLabel}>{t('dental.brushingStreak', 'Brushing Streak')}</Text>
+                  <Text style={styles.statLabel}>{t('dental.brushingStreakTitle', 'Brushing Streak')}</Text>
                 </View>
                 <View style={styles.statCard}>
                   <View style={[styles.statIconWrap, { backgroundColor: 'rgba(16, 185, 129, 0.2)' }]}>
