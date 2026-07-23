@@ -931,7 +931,8 @@ export default function OnboardingScreen() {
           </SafeAreaView>
 
           {/* Floating language selector */}
-          <View style={{ position: 'absolute', bottom: 140, right: 24 }}>            {showLangPicker && (
+          <View style={{ position: 'absolute', bottom: 140, right: 24 }}>
+            {showLangPicker && (
               <View style={styles.langPickerPopup}>
                 {LANG_OPTIONS.map(lang => (
                   <TouchableOpacity

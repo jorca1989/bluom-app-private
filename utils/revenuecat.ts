@@ -104,6 +104,24 @@ export async function purchasePackageSafe(pkg: PurchasesPackage): Promise<Custom
   if (Platform.OS === 'web') return null;
   try {
     const res = await Purchases.purchasePackage(pkg);
+    
+    // Sync transaction with GoMarketMe for affiliate attribution tracking
+    try {
+      let Constants;
+      try {
+        Constants = require('expo-constants').default;
+      } catch (e) {
+        // ignore
+      }
+      if (Constants?.appOwnership !== 'expo') {
+        const GoMarketMe = require('gomarketme-react-native').default;
+        await GoMarketMe.syncAllTransactions();
+        console.log('[GoMarketMe] Transactions synced successfully');
+      }
+    } catch (gmeErr) {
+      console.warn('[GoMarketMe] Failed to sync transactions with GoMarketMe:', gmeErr);
+    }
+
     return res?.customerInfo ?? null;
   } catch (e: any) {
     const msg = String(e?.message ?? '');

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState, Suspense, lazy } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AIRoutineModal from '@/components/AIRoutineModal';
 import Tooltip from '@/components/Tooltip';
 import CoachMark from '@/components/CoachMark';
@@ -38,16 +38,12 @@ import ProgramWorkoutWidget from '@/components/move/ProgramWorkoutWidget';
 import MoveQuickActions from '@/components/move/MoveQuickActions';
 import MoveInsights from '@/components/move/MoveInsights';
 import OutdoorActivityBanner from '@/components/move/OutdoorActivityBanner';
-// Lazy-load heavy modals — only parse JS when user opens them, not on tab mount
-const OutdoorActivityModal = lazy(() => import('@/components/move/modals/OutdoorActivityModal'));
-const ActiveWorkoutModal = lazy(() => import('@/components/move/modals/ActiveWorkoutModal').then(m => ({ default: m.default })));
-const WorkoutDetailModal = lazy(() => import('@/components/move/modals/WorkoutDetailModal'));
-const ExerciseSearchModal = lazy(() => import('@/components/move/modals/ExerciseSearchModal').then(m => ({ default: m.default })));
-const SingleExerciseLogModal = lazy(() => import('@/components/move/modals/SingleExerciseLogModal'));
-const ExerciseDetailModal = lazy(() => import('@/components/move/modals/ExerciseDetailModal'));
-// Re-export types that were originally imported alongside the components
-import type { ActiveExercise } from '@/components/move/modals/ActiveWorkoutModal';
-import type { ExerciseLibraryItem as ESearchItem } from '@/components/move/modals/ExerciseSearchModal';
+import OutdoorActivityModal from '@/components/move/modals/OutdoorActivityModal';
+import ActiveWorkoutModal, { ActiveExercise } from '@/components/move/modals/ActiveWorkoutModal';
+import WorkoutDetailModal from '@/components/move/modals/WorkoutDetailModal';
+import ExerciseSearchModal, { ExerciseLibraryItem as ESearchItem } from '@/components/move/modals/ExerciseSearchModal';
+import SingleExerciseLogModal from '@/components/move/modals/SingleExerciseLogModal';
+import ExerciseDetailModal from '@/components/move/modals/ExerciseDetailModal';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { FREE_4_WEEK_PLAN, getWeekRoutineDays } from '@/utils/fourWeekPlanData';
 import { buildPlanFromDBWorkouts } from '@/utils/buildPlanFromDB';
@@ -1167,294 +1163,246 @@ export default function MoveScreen() {
       </ScrollView>
 
       {showActiveWorkout && (
-        <Suspense fallback={
-          <Modal transparent visible animationType="fade">
-            <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
-              <ActivityIndicator size="large" color="#3b82f6" />
-            </View>
-          </Modal>
-        }>
-          <ActiveWorkoutModal
-            visible={showActiveWorkout}
-            exercises={activeWorkoutExercises}
-            onClose={() => setShowActiveWorkout(false)}
-            onFinishWorkout={async (time, vol, sets, ex) => {
-              try {
-                if (convexUser) {
-                  await logExerciseEntry({
-                    userId: convexUser._id,
-                    exerciseName: `Day ${selectedDayIndex + 1}: ${workouts[selectedDayIndex]?.dayTitle || 'Workout'}`,
-                    exerciseType: 'strength',
-                    duration: Math.max(1, Math.floor(time / 60)),
-                    met: 6.0,
-                    date: currentDate,
-                  });
-                }
-              } catch (e) {
-                console.error("Failed to log entry", e);
+        <ActiveWorkoutModal
+          visible={showActiveWorkout}
+          exercises={activeWorkoutExercises}
+          onClose={() => setShowActiveWorkout(false)}
+          onFinishWorkout={async (time, vol, sets, ex) => {
+            try {
+              if (convexUser) {
+                await logExerciseEntry({
+                  userId: convexUser._id,
+                  exerciseName: `Day ${selectedDayIndex + 1}: ${workouts[selectedDayIndex]?.dayTitle || 'Workout'}`,
+                  exerciseType: 'strength',
+                  duration: Math.max(1, Math.floor(time / 60)),
+                  met: 6.0,
+                  date: currentDate,
+                });
               }
-              setShowActiveWorkout(false);
-              setCompletedWorkoutsThisWeek(prev => Math.min(prev + 1, workouts.length * 4));
-              Alert.alert(t('move.workoutCompleted', "WorkoutCompleted!"), t('move.workoutSaved', "Great job! Your activity was saved."));
-            }}
-            onAddExercise={() => {
-              if (!isPro) return handleProFeature(t('move.addExercise', 'Add Exercise'), t('move.proAddExerciseDesc', 'Upgrade to Pro to add exercises mid-workout.'));
-              setExerciseSearchTarget('active_add');
-              setShowExerciseSearch(true);
-            }}
-            onDeleteExercise={(exIdx) => {
-              if (!isPro) return handleProFeature(t('move.removeExercise', 'Remove Exercise'), t('move.proRemoveExerciseDesc', 'Upgrade to Pro to remove exercises mid-workout.'));
-              setActiveWorkoutExercises((prev) => prev.filter((_, i) => i !== exIdx));
-            }}
-          />
-        </Suspense>
+            } catch (e) {
+              console.error("Failed to log entry", e);
+            }
+            setShowActiveWorkout(false);
+            setCompletedWorkoutsThisWeek(prev => Math.min(prev + 1, workouts.length * 4));
+            Alert.alert(t('move.workoutCompleted', "WorkoutCompleted!"), t('move.workoutSaved', "Great job! Your activity was saved."));
+          }}
+          onAddExercise={() => {
+            if (!isPro) return handleProFeature(t('move.addExercise', 'Add Exercise'), t('move.proAddExerciseDesc', 'Upgrade to Pro to add exercises mid-workout.'));
+            setExerciseSearchTarget('active_add');
+            setShowExerciseSearch(true);
+          }}
+          onDeleteExercise={(exIdx) => {
+            if (!isPro) return handleProFeature(t('move.removeExercise', 'Remove Exercise'), t('move.proRemoveExerciseDesc', 'Upgrade to Pro to remove exercises mid-workout.'));
+            setActiveWorkoutExercises((prev) => prev.filter((_, i) => i !== exIdx));
+          }}
+        />
       )}
 
       {showWorkoutDetail && (
-        <Suspense fallback={
-          <Modal transparent visible animationType="fade">
-            <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
-              <ActivityIndicator size="large" color="#3b82f6" />
-            </View>
-          </Modal>
-        }>
-          <WorkoutDetailModal
-            visible={showWorkoutDetail}
-            routineDays={workouts as any}
-            initialTab={workoutDetailTab as any}
-            isPreviewMode={workoutDetailMode === 'start'}
-            onStartActiveWorkout={(idx) => {
-              setSelectedDayIndex(idx);
-              const built: ActiveExercise[] = (workouts[idx]?.exercises ?? []).map((ex: any) => ({
-                id: ex.id,
-                name: ex.name,
-                thumbnailUrl: ex.thumbnailUrl,
-                videoUrl: ex.videoUrl,
-                sets: Array.from({ length: typeof ex.sets === 'number' ? ex.sets : 3 }).map((_, i: number) => ({
-                  id: `${ex.id}-set-${i}`,
-                  weight: '',
-                  reps: typeof ex.reps === 'string' ? ex.reps.split('-')[0] : String(ex.reps),
-                  completed: false
-                }))
-              }));
-              setActiveWorkoutExercises(built);
-              setShowActiveWorkout(true);
-              setTimeout(() => setShowWorkoutDetail(false), 80);
-            }}
-            onClose={() => setShowWorkoutDetail(false)}
-            onAddExercise={(dayIdx) => {
-              if (!isPro) return handleProFeature(t('move.addExercise', 'Add Exercise'), t('move.proAddExerciseDesc', 'Upgrade to Pro to add exercises to your plan.'));
-              setPlanEditDayIndex(dayIdx);
-              setExerciseSearchTarget('plan_add');
-              setShowWorkoutDetail(false);
-              setTimeout(() => setShowExerciseSearch(true), 100);
-            }}
-            onDeleteExercise={(id, dayIdx) => {
-              if (!isPro) return handleProFeature(t('move.removeExercise', 'Remove Exercise'), t('move.proRemoveExerciseDesc', 'Upgrade to Pro to customize your routine.'));
-              setWorkouts((prev) => {
-                const next = [...prev];
-                const day = next[dayIdx];
-                if (!day) return prev;
-                day.exercises = (day.exercises ?? []).filter((e: any) => String(e.id) !== String(id));
-                next[dayIdx] = { ...day };
-                return next;
-              });
-            }}
-            onExercisePress={(ex) => {
-              setSelectedExerciseForDetail({
-                _id: ex.id,
-                name: ex.name,
-                category: ex.primaryMuscle,
-                type: ex.exerciseType ?? ex.exerciseTypes?.[0] ?? 'Strength',
-                exerciseType: ex.exerciseType,
-                exerciseTypes: ex.exerciseTypes,
-                muscleGroups: [ex.primaryMuscle],
-                primaryMuscles: [ex.primaryMuscle],
-                secondaryMuscles: ex.secondaryMuscles ?? [],
-                thumbnailUrl: ex.thumbnailUrl,
-                videoUrl: ex.videoUrl,
-                instructions: ex.instructions ?? [],
-                instructionsLocalizations: ex.instructionsLocalizations,
-                equipment: ex.equipment,
-                fromRoutine: true,
-              } as any);
-              setShowExerciseDetail(true);
-              setTimeout(() => setShowWorkoutDetail(false), 80);
-            }}
-            isPro={!!isPro}
-          />
-        </Suspense>
+        <WorkoutDetailModal
+          visible={showWorkoutDetail}
+          routineDays={workouts as any}
+          initialTab={workoutDetailTab as any}
+          isPreviewMode={workoutDetailMode === 'start'}
+          onStartActiveWorkout={(idx) => {
+            setSelectedDayIndex(idx);
+            const built: ActiveExercise[] = (workouts[idx]?.exercises ?? []).map((ex: any) => ({
+              id: ex.id,
+              name: ex.name,
+              thumbnailUrl: ex.thumbnailUrl,
+              videoUrl: ex.videoUrl,
+              sets: Array.from({ length: typeof ex.sets === 'number' ? ex.sets : 3 }).map((_, i: number) => ({
+                id: `${ex.id}-set-${i}`,
+                weight: '',
+                reps: typeof ex.reps === 'string' ? ex.reps.split('-')[0] : String(ex.reps),
+                completed: false
+              }))
+            }));
+            setActiveWorkoutExercises(built);
+            setShowActiveWorkout(true);
+            setTimeout(() => setShowWorkoutDetail(false), 80);
+          }}
+          onClose={() => setShowWorkoutDetail(false)}
+          onAddExercise={(dayIdx) => {
+            if (!isPro) return handleProFeature(t('move.addExercise', 'Add Exercise'), t('move.proAddExerciseDesc', 'Upgrade to Pro to add exercises to your plan.'));
+            setPlanEditDayIndex(dayIdx);
+            setExerciseSearchTarget('plan_add');
+            setShowWorkoutDetail(false);
+            setTimeout(() => setShowExerciseSearch(true), 100);
+          }}
+          onDeleteExercise={(id, dayIdx) => {
+            if (!isPro) return handleProFeature(t('move.removeExercise', 'Remove Exercise'), t('move.proRemoveExerciseDesc', 'Upgrade to Pro to customize your routine.'));
+            setWorkouts((prev) => {
+              const next = [...prev];
+              const day = next[dayIdx];
+              if (!day) return prev;
+              day.exercises = (day.exercises ?? []).filter((e: any) => String(e.id) !== String(id));
+              next[dayIdx] = { ...day };
+              return next;
+            });
+          }}
+          onExercisePress={(ex) => {
+            setSelectedExerciseForDetail({
+              _id: ex.id,
+              name: ex.name,
+              category: ex.primaryMuscle,
+              type: ex.exerciseType ?? ex.exerciseTypes?.[0] ?? 'Strength',
+              exerciseType: ex.exerciseType,
+              exerciseTypes: ex.exerciseTypes,
+              muscleGroups: [ex.primaryMuscle],
+              primaryMuscles: [ex.primaryMuscle],
+              secondaryMuscles: ex.secondaryMuscles ?? [],
+              thumbnailUrl: ex.thumbnailUrl,
+              videoUrl: ex.videoUrl,
+              instructions: ex.instructions ?? [],
+              instructionsLocalizations: ex.instructionsLocalizations,
+              equipment: ex.equipment,
+              fromRoutine: true,
+            } as any);
+            setShowExerciseDetail(true);
+            setTimeout(() => setShowWorkoutDetail(false), 80);
+          }}
+          isPro={!!isPro}
+        />
       )}
 
       {showExerciseSearch && (
-        <Suspense fallback={
-          <Modal transparent visible animationType="fade">
-            <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
-              <ActivityIndicator size="large" color="#3b82f6" />
-            </View>
-          </Modal>
-        }>
-          <ExerciseSearchModal
-            visible={showExerciseSearch}
-            searchResults={
-              (exerciseSearchTarget === 'plan_add' || exerciseSearchTarget === 'active_add')
-                ? (videoWorkoutExercises as any)
-                : (searchResults as any)
-            }
-            loading={
-              (exerciseSearchTarget === 'plan_add' || exerciseSearchTarget === 'active_add')
-                ? (dbWorkouts === undefined)
-                : searchLoading
-            }
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            onExerciseSelect={(ex) => {
-              setSelectedExerciseForDetail(ex);
-              if (exerciseSearchTarget === 'log') {
-                setShowExerciseSearch(false);
-                setTimeout(() => setShowSingleExerciseLog(true), 50);
-              } else if (exerciseSearchTarget === 'plan_add') {
-                setWorkouts((prev) => {
-                  const next = [...prev];
-                  const day = next[planEditDayIndex];
-                  if (!day) return prev;
-                  const muscle =
-                    Array.isArray((ex as any).muscleGroups) && (ex as any).muscleGroups.length
-                      ? (ex as any).muscleGroups[0]
-                      : ((ex as any).category ?? 'Full body');
-                  const newEx = {
-                    id: (ex as any)._id ?? (ex as any).id ?? `add-${Date.now()}`,
-                    name: typeof (ex as any).name === 'object' ? (ex as any).name.en : (ex as any).name,
-                    thumbnailUrl: (ex as any).thumbnailUrl,
-                    primaryMuscle: muscle,
-                    equipment: (ex as any).equipment ?? 'Varies',
-                    sets: 3,
-                    reps: '10',
-                  };
-                  day.exercises = [...(day.exercises ?? []), newEx];
-                  next[planEditDayIndex] = { ...day };
-                  return next;
-                });
-                setShowExerciseSearch(false);
-              } else if (exerciseSearchTarget === 'active_add') {
-                const newActive: ActiveExercise = {
-                  id: (ex as any)._id ?? (ex as any).id ?? `active-${Date.now()}`,
+        <ExerciseSearchModal
+          visible={showExerciseSearch}
+          searchResults={
+            (exerciseSearchTarget === 'plan_add' || exerciseSearchTarget === 'active_add')
+              ? (videoWorkoutExercises as any)
+              : (searchResults as any)
+          }
+          loading={
+            (exerciseSearchTarget === 'plan_add' || exerciseSearchTarget === 'active_add')
+              ? (dbWorkouts === undefined)
+              : searchLoading
+          }
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onExerciseSelect={(ex) => {
+            setSelectedExerciseForDetail(ex);
+            if (exerciseSearchTarget === 'log') {
+              setShowExerciseSearch(false);
+              setTimeout(() => setShowSingleExerciseLog(true), 50);
+            } else if (exerciseSearchTarget === 'plan_add') {
+              setWorkouts((prev) => {
+                const next = [...prev];
+                const day = next[planEditDayIndex];
+                if (!day) return prev;
+                const muscle =
+                  Array.isArray((ex as any).muscleGroups) && (ex as any).muscleGroups.length
+                    ? (ex as any).muscleGroups[0]
+                    : ((ex as any).category ?? 'Full body');
+                const newEx = {
+                  id: (ex as any)._id ?? (ex as any).id ?? `add-${Date.now()}`,
                   name: typeof (ex as any).name === 'object' ? (ex as any).name.en : (ex as any).name,
                   thumbnailUrl: (ex as any).thumbnailUrl,
-                  videoUrl: (ex as any).videoUrl,
-                  sets: Array.from({ length: 3 }).map((_, i: number) => ({
-                    id: `${String((ex as any)._id ?? (ex as any).id ?? 'x')}-set-${i}-${Date.now()}`,
-                    weight: '',
-                    reps: '10',
-                    completed: false,
-                  })),
+                  primaryMuscle: muscle,
+                  equipment: (ex as any).equipment ?? 'Varies',
+                  sets: 3,
+                  reps: '10',
                 };
-                setActiveWorkoutExercises((prev) => [...prev, newActive]);
-                setShowExerciseSearch(false);
-              } else {
-                setShowExerciseSearch(false);
-                setTimeout(() => setShowExerciseDetail(true), 50);
-              }
-            }}
-            onClose={() => setShowExerciseSearch(false)}
-          />
-        </Suspense>
+                day.exercises = [...(day.exercises ?? []), newEx];
+                next[planEditDayIndex] = { ...day };
+                return next;
+              });
+              setShowExerciseSearch(false);
+            } else if (exerciseSearchTarget === 'active_add') {
+              const newActive: ActiveExercise = {
+                id: (ex as any)._id ?? (ex as any).id ?? `active-${Date.now()}`,
+                name: typeof (ex as any).name === 'object' ? (ex as any).name.en : (ex as any).name,
+                thumbnailUrl: (ex as any).thumbnailUrl,
+                videoUrl: (ex as any).videoUrl,
+                sets: Array.from({ length: 3 }).map((_, i: number) => ({
+                  id: `${String((ex as any)._id ?? (ex as any).id ?? 'x')}-set-${i}-${Date.now()}`,
+                  weight: '',
+                  reps: '10',
+                  completed: false,
+                })),
+              };
+              setActiveWorkoutExercises((prev) => [...prev, newActive]);
+              setShowExerciseSearch(false);
+            } else {
+              setShowExerciseSearch(false);
+              setTimeout(() => setShowExerciseDetail(true), 50);
+            }
+          }}
+          onClose={() => setShowExerciseSearch(false)}
+        />
       )}
 
       {showSingleExerciseLog && (
-        <Suspense fallback={
-          <Modal transparent visible animationType="fade">
-            <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
-              <ActivityIndicator size="large" color="#3b82f6" />
-            </View>
-          </Modal>
-        }>
-          <SingleExerciseLogModal
-            visible={showSingleExerciseLog}
-            exercise={selectedExerciseForDetail ? {
-              id: selectedExerciseForDetail._id || selectedExerciseForDetail.id,
-              name: typeof selectedExerciseForDetail.name === 'object' ? selectedExerciseForDetail.name.en : selectedExerciseForDetail.name,
-              thumbnailUrl: selectedExerciseForDetail.thumbnailUrl,
-              type: selectedExerciseForDetail.type,
-              caloriesPerMinute: selectedExerciseForDetail.caloriesPerMinute,
-            } : null}
-            onClose={() => setShowSingleExerciseLog(false)}
-            onSave={async (exId, data) => {
-              setShowSingleExerciseLog(false);
-              try {
-                let totalWeight = 0;
-                let totalReps = 0;
-                if (data.sets) {
-                  totalWeight = data.sets.reduce((acc, s) => acc + (parseFloat(s.weight) || 0), 0);
-                  totalReps = data.sets.reduce((acc, s) => acc + (parseInt(s.reps) || 0), 0);
-                }
-
-                if (!convexUser?._id) {
-                  Alert.alert(t('common.error', 'Error'), t('move.errorProfile', 'User profile not loaded. Cannot log workout.'));
-                  return;
-                }
-
-                const src = selectedExerciseForDetail ?? selectedExercise;
-                const etype = (src?.type ?? 'strength') as 'strength' | 'cardio' | 'yoga' | 'hiit';
-                const eName = typeof src?.name === 'string'
-                  ? src.name
-                  : JSON.stringify(src?.name || { en: t('move.manualWorkout', 'Manual Workout') });
-
-                await logExerciseEntry({
-                  userId: convexUser._id,
-                  exerciseName: eName as string,
-                  exerciseType: etype,
-                  duration: data.duration ?? (data.sets ? Math.max(12, data.sets.length * 6) : 30),
-                  met: src?.caloriesPerMinute ? src.caloriesPerMinute / 1.5 : 5,
-                  sets: data.sets?.length || 0,
-                  reps: totalReps,
-                  weight: totalWeight,
-                  distance: data.distanceKm,
-                  pace: data.pace,
-                  date: new Date().toISOString().split('T')[0]
-                });
-                Alert.alert(t('move.workoutLogged', 'Workout Logged'), t('move.exerciseSaved', 'Your exercise was successfully saved!'));
-              } catch (e) {
-                console.error("Failed to log entry", e);
-                Alert.alert(t('common.error', 'Error'), t('move.errorLog', 'Could not log exercise'));
+        <SingleExerciseLogModal
+          visible={showSingleExerciseLog}
+          exercise={selectedExerciseForDetail ? {
+            id: selectedExerciseForDetail._id || selectedExerciseForDetail.id,
+            name: typeof selectedExerciseForDetail.name === 'object' ? selectedExerciseForDetail.name.en : selectedExerciseForDetail.name,
+            thumbnailUrl: selectedExerciseForDetail.thumbnailUrl,
+            type: selectedExerciseForDetail.type,
+            caloriesPerMinute: selectedExerciseForDetail.caloriesPerMinute,
+          } : null}
+          onClose={() => setShowSingleExerciseLog(false)}
+          onSave={async (exId, data) => {
+            setShowSingleExerciseLog(false);
+            try {
+              let totalWeight = 0;
+              let totalReps = 0;
+              if (data.sets) {
+                totalWeight = data.sets.reduce((acc, s) => acc + (parseFloat(s.weight) || 0), 0);
+                totalReps = data.sets.reduce((acc, s) => acc + (parseInt(s.reps) || 0), 0);
               }
-            }}
-          />
-        </Suspense>
+
+              if (!convexUser?._id) {
+                Alert.alert(t('common.error', 'Error'), t('move.errorProfile', 'User profile not loaded. Cannot log workout.'));
+                return;
+              }
+
+              const src = selectedExerciseForDetail ?? selectedExercise;
+              const etype = (src?.type ?? 'strength') as 'strength' | 'cardio' | 'yoga' | 'hiit';
+              const eName = typeof src?.name === 'string'
+                ? src.name
+                : JSON.stringify(src?.name || { en: t('move.manualWorkout', 'Manual Workout') });
+
+              await logExerciseEntry({
+                userId: convexUser._id,
+                exerciseName: eName as string,
+                exerciseType: etype,
+                duration: data.duration ?? (data.sets ? Math.max(12, data.sets.length * 6) : 30),
+                met: src?.caloriesPerMinute ? src.caloriesPerMinute / 1.5 : 5,
+                sets: data.sets?.length || 0,
+                reps: totalReps,
+                weight: totalWeight,
+                distance: data.distanceKm,
+                pace: data.pace,
+                date: new Date().toISOString().split('T')[0]
+              });
+              Alert.alert(t('move.workoutLogged', 'Workout Logged'), t('move.exerciseSaved', 'Your exercise was successfully saved!'));
+            } catch (e) {
+              console.error("Failed to log entry", e);
+              Alert.alert(t('common.error', 'Error'), t('move.errorLog', 'Could not log exercise'));
+            }
+          }}
+        />
       )}
 
       {showExerciseDetail && (
-        <Suspense fallback={
-          <Modal transparent visible animationType="fade">
-            <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
-              <ActivityIndicator size="large" color="#3b82f6" />
-            </View>
-          </Modal>
-        }>
-          <ExerciseDetailModal
-            visible={showExerciseDetail}
-            exercise={selectedExerciseForDetail}
-            isPro={!!isPro}
-            freeAccess={!!selectedExerciseForDetail?.fromRoutine}
-            onClose={() => setShowExerciseDetail(false)}
-            onUpgradePress={() => { setShowExerciseDetail(false); router.push('/premium'); }}
-          />
-        </Suspense>
+        <ExerciseDetailModal
+          visible={showExerciseDetail}
+          exercise={selectedExerciseForDetail}
+          isPro={!!isPro}
+          freeAccess={!!selectedExerciseForDetail?.fromRoutine}
+          onClose={() => setShowExerciseDetail(false)}
+          onUpgradePress={() => { setShowExerciseDetail(false); router.push('/premium'); }}
+        />
       )}
 
       {showOutdoor && (
-        <Suspense fallback={
-          <Modal transparent visible animationType="fade">
-            <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
-              <ActivityIndicator size="large" color="#3b82f6" />
-            </View>
-          </Modal>
-        }>
-          <OutdoorActivityModal
-            visible={showOutdoor}
-            onClose={() => setShowOutdoor(false)}
-          />
-        </Suspense>
+        <OutdoorActivityModal
+          visible={showOutdoor}
+          onClose={() => setShowOutdoor(false)}
+        />
       )}
       <Modal
         visible={showWorkoutModal}

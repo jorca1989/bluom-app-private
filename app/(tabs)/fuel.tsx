@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState, Suspense, lazy } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -54,10 +54,9 @@ import FoodSearchModal from '@/components/fuel/modals/FoodSearchModal';
 import VoiceLogModal from '@/components/fuel/modals/VoiceLogModel';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 
-// Lazy-load heavy modals — only parse JS when user opens them, not on tab mount
-const EditFoodModal = lazy(() => import('@/components/fuel/modals/EditFoodModal'));
-const EditRecipeModal = lazy(() => import('@/components/fuel/modals/EditRecipeModal'));
-const NutritionInsightsModal = lazy(() => import('@/components/fuel/modals/NutritionInsightsModal'));
+import EditFoodModal from '@/components/fuel/modals/EditFoodModal';
+import EditRecipeModal from '@/components/fuel/modals/EditRecipeModal';
+import NutritionInsightsModal from '@/components/fuel/modals/NutritionInsightsModal';
 
 type MealName = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 type MealTypeLower = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'premium_slot';
@@ -702,13 +701,11 @@ export default function FuelScreen() {
         hideLogButton={true}
       />
       
-      <Suspense fallback={null}>
-        <NutritionInsightsModal
-          visible={showNutritionInsightsModal}
-          onClose={() => setShowNutritionInsightsModal(false)}
-          dateEntries={dateEntries || []}
-        />
-      </Suspense>
+      <NutritionInsightsModal
+        visible={showNutritionInsightsModal}
+        onClose={() => setShowNutritionInsightsModal(false)}
+        dateEntries={dateEntries || []}
+      />
 
       <CreateRecipeModal
         visible={showRecipeModal}
@@ -724,29 +721,27 @@ export default function FuelScreen() {
         }}
       />
 
-      <Suspense fallback={null}>
-        {editingFood && (
-          <EditFoodModal
-            visible={!!editingFood}
-            onClose={() => setEditingFood(null)}
-            userId={convexUser._id}
-            food={editingFood}
-            onUpdated={() => {}}
-            onDeleted={() => {}}
-          />
-        )}
+      {editingFood && (
+        <EditFoodModal
+          visible={!!editingFood}
+          onClose={() => setEditingFood(null)}
+          userId={convexUser._id}
+          food={editingFood}
+          onUpdated={() => {}}
+          onDeleted={() => {}}
+        />
+      )}
 
-        {editingRecipe && (
-          <EditRecipeModal
-            visible={!!editingRecipe}
-            onClose={() => setEditingRecipe(null)}
-            userId={convexUser._id}
-            recipe={editingRecipe}
-            onUpdated={() => {}}
-            onDeleted={() => {}}
-          />
-        )}
-      </Suspense>
+      {editingRecipe && (
+        <EditRecipeModal
+          visible={!!editingRecipe}
+          onClose={() => setEditingRecipe(null)}
+          userId={convexUser._id}
+          recipe={editingRecipe}
+          onUpdated={() => {}}
+          onDeleted={() => {}}
+        />
+      )}
       
       <LogRecipeModal
         visible={showLogRecipeModal}

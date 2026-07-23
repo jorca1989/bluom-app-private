@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo, Suspense, lazy } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Modal, ActivityIndicator, Dimensions, TextInput, Switch,
@@ -13,11 +13,10 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
 import PanicButton from '../../components/PanicButton';
-// Lazy-load heavy hub components — only parse JS when user opens them
-const MeditationHub = lazy(() => import('../../components/MeditationHub'));
-const GamesHub = lazy(() => import('../../components/GamesHub'));
-const LifeGoalsHub = lazy(() => import('../../components/LifeGoalsHub'));
-const AdvancedSleepTracker = lazy(() => import('../../components/wellness/AdvancedSleepTracker'));
+import MeditationHub from '../../components/MeditationHub';
+import GamesHub from '../../components/GamesHub';
+import LifeGoalsHub from '../../components/LifeGoalsHub';
+import AdvancedSleepTracker from '../../components/wellness/AdvancedSleepTracker';
 import { triggerSound, SoundEffect } from '../../utils/soundEffects';
 import { getBottomContentPadding, TAB_BAR_HEIGHT } from '../../utils/layout';
 import { useTheme } from '@/context/ThemeContext';
@@ -597,59 +596,27 @@ export default function WellnessScreen() {
       </Modal>
 
       {showMeditationHub && (
-        <Suspense fallback={
-          <Modal transparent visible animationType="fade">
-            <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
-              <ActivityIndicator size="large" color="#3b82f6" />
-            </View>
-          </Modal>
-        }>
-          <MeditationHub userId={user._id} onClose={() => setShowMeditationHub(false)} />
-        </Suspense>
+        <MeditationHub userId={user._id} onClose={() => setShowMeditationHub(false)} />
       )}
 
       {showGamesHub && (
-        <Suspense fallback={
-          <Modal transparent visible animationType="fade">
-            <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
-              <ActivityIndicator size="large" color="#3b82f6" />
-            </View>
-          </Modal>
-        }>
-          <GamesHub userId={user._id} onClose={() => setShowGamesHub(false)} />
-        </Suspense>
+        <GamesHub userId={user._id} onClose={() => setShowGamesHub(false)} />
       )}
 
       {showLifeGoals && (
-        <Suspense fallback={
-          <Modal transparent visible animationType="fade">
-            <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
-              <ActivityIndicator size="large" color="#3b82f6" />
-            </View>
-          </Modal>
-        }>
-          <LifeGoalsHub userId={user._id} onClose={() => setShowLifeGoals(false)} />
-        </Suspense>
+        <LifeGoalsHub userId={user._id} onClose={() => setShowLifeGoals(false)} />
       )}
 
       {showAdvancedSleepTracker && (
-        <Suspense fallback={
-          <Modal transparent visible animationType="fade">
-            <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
-              <ActivityIndicator size="large" color="#3b82f6" />
-            </View>
-          </Modal>
-        }>
-          <AdvancedSleepTracker
-            visible={showAdvancedSleepTracker}
-            userId={user._id}
-            onClose={() => setShowAdvancedSleepTracker(false)}
-            onOpenMeditationHub={() => {
-              setShowAdvancedSleepTracker(false);
-              setShowMeditationHub(true);
-            }}
-          />
-        </Suspense>
+        <AdvancedSleepTracker
+          visible={showAdvancedSleepTracker}
+          userId={user._id}
+          onClose={() => setShowAdvancedSleepTracker(false)}
+          onOpenMeditationHub={() => {
+            setShowAdvancedSleepTracker(false);
+            setShowMeditationHub(true);
+          }}
+        />
       )}
       {/* <PanicButton userId={user._id} /> */}
     </SafeAreaView>

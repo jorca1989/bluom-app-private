@@ -13,7 +13,7 @@ import {
   Switch,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useMutation, useQuery } from 'convex/react';
@@ -77,6 +77,7 @@ export default function DentalHubScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { colors: c } = useTheme();
+  const insets = useSafeAreaInsets();
 
   // Active navigation tab
   const [activeTab, setActiveTab] = useState<'routine' | 'analytics'>('routine');
@@ -548,10 +549,9 @@ export default function DentalHubScreen() {
         )}
       </ScrollView>
 
-      {/* AI Dental Scan Modal Viewport */}
       <Modal visible={showScanModal} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
-          <SafeAreaView style={styles.modalContent}>
+          <View style={[styles.modalContent, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
             {/* Modal Header */}
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{t('dental.aiScanTitle', 'AI Dental Scan Viewport')}</Text>
@@ -566,8 +566,14 @@ export default function DentalHubScreen() {
                   <Ionicons name="camera" size={80} color="rgba(255,255,255,0.15)" />
                   <Text style={styles.cameraPlaceholderText}>{t('dental.cameraPlaceholder', 'Ready for Visual Inspection')}</Text>
                   <Text style={styles.cameraPlaceholderSubText}>
-                    {t('dental.cameraPlaceholderSub', 'Please point the front camera to your teeth in a well-lit area')}
+                    {t('dental.cameraPlaceholderInstructions', 'Hold the device 10–15 cm from your open mouth. You can use your front camera (guided by a mirror) or the back camera for a high-resolution snapshot.')}
                   </Text>
+                  <View style={styles.disclaimerContainer}>
+                    <Ionicons name="alert-circle-outline" size={16} color="#ef4444" />
+                    <Text style={styles.disclaimerText}>
+                      {t('dental.simulationDisclaimer', 'Educational simulation only. This is not a medical scan and does not replace a dentist diagnosis.')}
+                    </Text>
+                  </View>
                 </View>
                 <TouchableOpacity style={styles.actionScanBtn} onPress={startAiScan}>
                   <Text style={styles.actionScanBtnText}>{t('dental.initiateScanner', 'Initiate Scanner')}</Text>
@@ -643,7 +649,7 @@ export default function DentalHubScreen() {
                 </TouchableOpacity>
               </ScrollView>
             )}
-          </SafeAreaView>
+          </View>
         </View>
       </Modal>
     </SafeAreaView>
@@ -1057,5 +1063,24 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '700',
+  },
+  disclaimerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(239, 68, 68, 0.08)',
+    borderColor: 'rgba(239, 68, 68, 0.2)',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 10,
+    marginTop: 15,
+    marginHorizontal: 16,
+    gap: 8,
+  },
+  disclaimerText: {
+    color: '#ef4444',
+    fontSize: 11,
+    fontWeight: '500',
+    flex: 1,
+    lineHeight: 15,
   },
 });

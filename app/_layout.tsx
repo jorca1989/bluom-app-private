@@ -335,6 +335,34 @@ export default function RootLayout() {
   useSoundEffects();
   useEffect(() => { warnIfMissingGoogleOAuthClientIds(); }, []);
 
+  // Initialize GoMarketMe SDK for iOS/Android Dev Client tracking
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+    
+    let Constants;
+    try {
+      Constants = require('expo-constants').default;
+    } catch (e) {
+      // ignore
+    }
+    
+    if (Constants?.appOwnership === 'expo') {
+      console.warn('[GoMarketMe] Skipping initialization on Expo Go (not supported).');
+      return;
+    }
+
+    const initGoMarketMe = async () => {
+      try {
+        const GoMarketMe = require('gomarketme-react-native').default;
+        await GoMarketMe.initialize('EItGzVR1R03mtqnI8vTij7DRdm7ezG6h4oDz5kvg');
+        console.log('[GoMarketMe] SDK initialized successfully');
+      } catch (err) {
+        console.warn('[GoMarketMe] Initialization failed:', err);
+      }
+    };
+    initGoMarketMe();
+  }, []);
+
   if (!publishableKey || !convexUrl) {
     return (
       <View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
