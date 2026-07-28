@@ -12,6 +12,7 @@ import { useUser as useAppUser } from '@/context/UserContext';
 import { getBottomContentPadding } from '@/utils/layout';
 
 import { useTheme, type ThemeColors } from '@/context/ThemeContext';
+import MedicalDisclaimer from '@/components/MedicalDisclaimer';
 
 type Message = {
   role: 'user' | 'coach';
@@ -258,6 +259,7 @@ export default function AiCoachScreen() {
               </View>
             </View>
           )}
+          <MedicalDisclaimer />
         </ScrollView>
 
         <View style={{ backgroundColor: themeColors.surface, borderTopWidth: 1, borderTopColor: themeColors.border, paddingBottom: Math.max(insets.bottom, 12) }}>

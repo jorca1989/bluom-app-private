@@ -13,6 +13,7 @@ import { getBottomContentPadding } from '@/utils/layout';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 
 import { useTheme, type ThemeColors } from '@/context/ThemeContext';
+import MedicalDisclaimer from '@/components/MedicalDisclaimer';
 
 const { width } = Dimensions.get('window');
 
@@ -298,6 +299,8 @@ export default function FastingScreen() {
             ))}
           </ScrollView>
         </View>
+
+        <MedicalDisclaimer />
       </ScrollView>
 
       {/* Protocol Upgrade Modal */}

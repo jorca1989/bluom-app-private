@@ -15,6 +15,7 @@ import * as SecureStore from "expo-secure-store";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { RevenueCatBootstrapper } from '@/components/RevenueCatBootstrapper';
+import { InfluToBootstrapper } from '@/components/InfluToBootstrapper';
 import { UserProvider } from '@/context/UserContext';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
@@ -262,6 +263,7 @@ function InitialLayout() {
   return (
     <>
       <RevenueCatBootstrapper />
+      <InfluToBootstrapper />
       <AudioProvider>
         <UserProvider>
           <CelebrationProvider>

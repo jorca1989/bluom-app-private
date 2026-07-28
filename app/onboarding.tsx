@@ -917,6 +917,21 @@ export default function OnboardingScreen() {
             </ScrollView>
 
             <View style={{ alignItems: 'center', width: '100%', paddingBottom: Math.max(20, insets.bottom) }}>
+              {/* ── Medical Disclaimer ──────────────────────────────────── */}
+              <View style={{
+                backgroundColor: 'rgba(255,255,255,0.12)',
+                borderRadius: 12,
+                paddingHorizontal: 18,
+                paddingVertical: 10,
+                marginHorizontal: 24,
+                marginBottom: 16,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.2)',
+              }}>
+                <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', textAlign: 'center', lineHeight: 16 }}>
+                  {t('onboarding.disclaimer', 'Bluom provides general wellness information only. Always consult a qualified healthcare professional for medical advice, diagnosis, or treatment.')}
+                </Text>
+              </View>
               <View style={styles.dotsContainer}>
                 <View style={[styles.dot, currentWelcomeSlide === 0 && styles.activeDot]} />
                 <View style={[styles.dot, currentWelcomeSlide === 1 && styles.activeDot]} />

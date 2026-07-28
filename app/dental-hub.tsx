@@ -23,6 +23,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { G, Path, Circle, Rect, Text as SvgText } from 'react-native-svg';
+import MedicalDisclaimer from '@/components/MedicalDisclaimer';
 
 const { width } = Dimensions.get('window');
 
@@ -547,6 +548,8 @@ export default function DentalHubScreen() {
             </LinearGradient>
           </View>
         )}
+
+        <MedicalDisclaimer />
       </ScrollView>
 
       <Modal visible={showScanModal} animationType="slide" transparent>

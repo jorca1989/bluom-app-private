@@ -15,6 +15,7 @@ import { useUser as useAppUser } from '@/context/UserContext';
 import { useCelebration } from '@/context/CelebrationContext';
 
 import { useTheme, type ThemeColors } from '@/context/ThemeContext';
+import MedicalDisclaimer from '@/components/MedicalDisclaimer';
 
 // --- Ketosis State Logic ---
 function getKetosisState(netCarbs: number, t: any): { state: string; color: string; bgColor: string } {
@@ -304,6 +305,7 @@ export default function MetabolicHub() {
           <Text style={{ color: themeColors.text, fontWeight: '800', fontSize: 15 }}>{t('metabolic.logDailyStatus', 'Log Daily Status')}</Text>
         </TouchableOpacity>
 
+        <MedicalDisclaimer />
       </ScrollView>
 
       {/* --- Daily Check-in Modal --- */}

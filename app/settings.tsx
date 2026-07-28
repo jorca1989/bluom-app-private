@@ -489,6 +489,21 @@ export default function SettingsScreen() {
                         <Image source={require('../assets/images/icon.png')} style={{ width: 40, height: 40, borderRadius: 10 }} contentFit="cover" />
                     </View>
                     <Text style={styles.appName}>Bluom</Text>
+
+                    {/* Medical Disclaimer — required by Google Play Health Content policy */}
+                    <View style={{
+                        marginTop: 16,
+                        marginHorizontal: 8,
+                        backgroundColor: '#f8fafc',
+                        borderRadius: 12,
+                        padding: 14,
+                        borderWidth: 1,
+                        borderColor: '#e2e8f0',
+                    }}>
+                        <Text style={{ fontSize: 11, color: '#64748b', textAlign: 'center', lineHeight: 17 }}>
+                            {t('settings.medicalDisclaimer', 'Bluom provides general wellness and fitness information only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional before making health-related decisions.')}
+                        </Text>
+                    </View>
                 </View>
             </ScrollView>
 

@@ -21,6 +21,7 @@ import Svg, { Path } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { useTheme, type ThemeColors } from '@/context/ThemeContext';
 import { useUser } from '@clerk/clerk-expo';
+import MedicalDisclaimer from '@/components/MedicalDisclaimer';
 
 const { width, height } = Dimensions.get('window');
 
@@ -332,6 +333,8 @@ export default function PulseCheckerScreen() {
             {isScanning ? t('pulse.cancel', 'Cancel Scanning') : t('pulse.start', 'Start Pulse Check')}
           </Text>
         </TouchableOpacity>
+
+        <MedicalDisclaimer />
       </ScrollView>
     </SafeAreaView>
   );

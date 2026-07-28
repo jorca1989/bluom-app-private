@@ -36,6 +36,7 @@ import { api } from '@/convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import * as SecureStore from 'expo-secure-store';
+import MedicalDisclaimer from '@/components/MedicalDisclaimer';
 
 const { width: SW } = Dimensions.get('window');
 const QUIZ_KEY = 'bluom_womens_quiz_v1';
@@ -1305,6 +1306,7 @@ export default function WomensHealthScreen() {
             </TouchableOpacity>
           </>
         )}
+        <MedicalDisclaimer />
       </Animated.ScrollView>
 
       {/* Privacy modal */}

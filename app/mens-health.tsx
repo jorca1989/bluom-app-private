@@ -38,6 +38,7 @@ import { useUser } from '@clerk/clerk-expo';
 import { useTranslation } from 'react-i18next';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import * as SecureStore from 'expo-secure-store';
+import MedicalDisclaimer from '@/components/MedicalDisclaimer';
 
 const { width: SW } = Dimensions.get('window');
 const QUIZ_KEY = 'bluom_mens_quiz_v1';
@@ -1178,14 +1179,14 @@ export default function MensHealthScreen() {
         {/* ═══════════════ INSIGHTS TAB ═══════════════ */}
         {activeTab === 'insights' && (
           <>
-            <Text style={s.sectionTitle}>{t('mensHealth.personalisedInsights','Insights Personalizados')}</Text>
+            <Text style={s.sectionTitle}>{t('mensHealth.personalisedInsights', 'Personalized Insights')}</Text>
 
             {/* Natural insights */}
             {profile?.trainingMode === 'natural' && tOpt.pillars.filter(p => p.score < 70).map((p, i) => (
               <View key={i} style={[s.insightCard, { borderLeftColor: p.score < 50 ? '#ef4444' : '#fcd34d' }]}>
                 <Text style={s.insightEmoji}>{p.icon}</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.insightTitle}>{p.name} {t('mensHealth.needsAttention', 'precisa de atenção')}</Text>
+                  <Text style={s.insightTitle}>{p.name} {t('mensHealth.needsAttention', 'needs attention')}</Text>
                   <Text style={s.insightBody}>{p.tip}</Text>
                 </View>
               </View>
@@ -1196,8 +1197,8 @@ export default function MensHealthScreen() {
               <View style={[s.insightCard, { borderLeftColor: '#60a5fa' }]}>
                 <Text style={s.insightEmoji}>📅</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.insightTitle}>{t('mensHealth.annualPanel', 'Painel de sangue anual recomendado')}</Text>
-                  <Text style={s.insightBody}>{t('mensHealth.annualPanelBody', 'Aos {{age}} anos, acompanhar testosterona total, testosterona livre, SHBG, estradiol e tiroide anualmente dá-te os dados para otimizar proativamente.', { age: convexUser.age })}</Text>
+                  <Text style={s.insightTitle}>{t('mensHealth.annualPanel', 'Annual blood panel recommended')}</Text>
+                  <Text style={s.insightBody}>{t('mensHealth.annualPanelBody', 'At {{age}}, tracking total testosterone, free testosterone, SHBG, estradiol, and thyroid annually gives you the data to optimize proactively.', { age: convexUser.age })}</Text>
                 </View>
               </View>
             )}
@@ -1207,8 +1208,8 @@ export default function MensHealthScreen() {
               <View style={[s.insightCard, { borderLeftColor: '#f97316' }]}>
                 <Text style={s.insightEmoji}>🔥</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.insightTitle}>{t('mensHealth.fatLossTitle', 'Perda de Gordura & Testosterona')}</Text>
-                  <Text style={s.insightBody}>{t('mensHealth.fatLossBody', 'Restrição calórica agressiva abaixo de 15 kcal/kg/dia suprime a testosterona. Visa um défice máximo de 15–20%. Prioriza proteína 2,2g/kg para preservar músculo.')}</Text>
+                  <Text style={s.insightTitle}>{t('mensHealth.fatLossTitle', 'Fat Loss & Testosterone')}</Text>
+                  <Text style={s.insightBody}>{t('mensHealth.fatLossBody', 'Aggressive caloric restriction below 15 kcal/kg/day suppresses testosterone. Aim for a maximum deficit of 15–20%. Prioritize protein at 2.2g/kg to preserve muscle.')}</Text>
                 </View>
               </View>
             )}
@@ -1217,8 +1218,8 @@ export default function MensHealthScreen() {
               <View style={[s.insightCard, { borderLeftColor: '#4ade80' }]}>
                 <Text style={s.insightEmoji}>💪</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.insightTitle}>{t('mensHealth.progressiveTitle', 'Protocolo de Sobrecarga Progressiva')}</Text>
-                  <Text style={s.insightBody}>{t('mensHealth.progressiveBody', 'Aumenta o peso, repetições ou densidade em cada sessão. O treino pesado é o sinal anabólico primário.')}</Text>
+                  <Text style={s.insightTitle}>{t('mensHealth.progressiveTitle', 'Progressive Overload Protocol')}</Text>
+                  <Text style={s.insightBody}>{t('mensHealth.progressiveBody', 'Increase weight, reps, or density each session. Heavy training is the primary anabolic signal.')}</Text>
                 </View>
               </View>
             ) : null}
@@ -1229,15 +1230,15 @@ export default function MensHealthScreen() {
                 <View style={[s.insightCard, { borderLeftColor: '#ef4444' }]}>
                   <Text style={s.insightEmoji}>⚠️</Text>
                   <View style={{ flex: 1 }}>
-                    <Text style={s.insightTitle}>{t('mensHealth.bloodWorkTitle', 'Análises ao Sangue Periódicas')}</Text>
-                    <Text style={s.insightBody}>{t('mensHealth.bloodWorkBody', 'Atletas enhanced devem monitorizar lipídeos, hematócrito e enzimas hepáticas a cada 8 semanas.')}</Text>
+                    <Text style={s.insightTitle}>{t('mensHealth.bloodWorkTitle', 'Periodic Blood Work')}</Text>
+                    <Text style={s.insightBody}>{t('mensHealth.bloodWorkBody', 'Enhanced athletes should monitor lipids, hematocrit, and liver enzymes every 8 weeks.')}</Text>
                   </View>
                 </View>
                 <View style={[s.insightCard, { borderLeftColor: '#f97316' }]}>
                   <Text style={s.insightEmoji}>❤️</Text>
                   <View style={{ flex: 1 }}>
-                    <Text style={s.insightTitle}>{t('mensHealth.cardioTitle', 'Saúde Cardiovascular é Prioridade #1')}</Text>
-                    <Text style={s.insightBody}>{t('mensHealth.cardioBody', 'O cardio LISS 4x/semana é obrigatório para gerir a pressão arterial e hematócrito.')}</Text>
+                    <Text style={s.insightTitle}>{t('mensHealth.cardioTitle', 'Cardiovascular Health is Priority #1')}</Text>
+                    <Text style={s.insightBody}>{t('mensHealth.cardioBody', 'LISS cardio 4x/week is mandatory to manage blood pressure and hematocrit.')}</Text>
                   </View>
                 </View>
               </>
@@ -1248,10 +1249,10 @@ export default function MensHealthScreen() {
               <View style={s.proBlurWrap}>
                 <BlurView intensity={15} tint="dark" style={StyleSheet.absoluteFill} />
                 <View style={s.proBlurContent}>
-                  <Text style={s.proBlurTitle}>{t('mensHealth.unlockDeepAnalytics', 'Desbloqueia Análise Hormonal Profunda')}</Text>
-                  <Text style={s.proBlurSub}>{t('mensHealth.unlockDeepAnalyticsSub', 'Insights com IA que se adaptam ao teu histórico, padrões e sintomas registados.')}</Text>
+                  <Text style={s.proBlurTitle}>{t('mensHealth.unlockDeepAnalytics', 'Unlock Deep Hormonal Analysis')}</Text>
+                  <Text style={s.proBlurSub}>{t('mensHealth.unlockDeepAnalyticsSub', 'AI-powered insights that adapt to your history, patterns, and logged symptoms.')}</Text>
                   <TouchableOpacity style={[s.proBlurBtn, { backgroundColor: mc.gradient[0] }]} onPress={() => router.push('/premium' as any)}>
-                    <Text style={s.proBlurBtnTxt}>{t('mensHealth.upgradeToPro','Atualizar para Pro')}</Text>
+                    <Text style={s.proBlurBtnTxt}>{t('mensHealth.upgradeToPro', 'Upgrade to Pro')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1288,6 +1289,7 @@ export default function MensHealthScreen() {
             ))}
           </>
         )}
+        <MedicalDisclaimer />
       </Animated.ScrollView>
     </SafeAreaView>
   );
