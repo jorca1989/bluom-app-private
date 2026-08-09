@@ -3869,7 +3869,7 @@
     "quantity": "Cantidad",
     "qtyPlaceholder": "p.ej. 6",
     "addToList": "Añadir a la lista",
-    "clearMsg": "¿Eliminar ${done.length} elemento marcado${done.length > 1?",
+    "clearMsg": "¿Eliminar {{count}} elemento(s) marcado(s)?",
     "addedTitle": "Agregado a la lista de compras",
     "addedMsg": "Se agregaron {{created}} elementos nuevos y se fusionaron {{merged}} elementos.",
     "categories": {

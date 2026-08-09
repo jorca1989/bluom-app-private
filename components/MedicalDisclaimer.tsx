@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 18,
     paddingVertical: 10,
+    marginTop: 24,
     marginHorizontal: 24,
     marginBottom: 16,
     borderWidth: 1,

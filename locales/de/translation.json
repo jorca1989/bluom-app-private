@@ -3872,7 +3872,7 @@
     "quantity": "Menge",
     "qtyPlaceholder": "z.B. 6",
     "addToList": "Zur Liste hinzufügen",
-    "clearMsg": "${done.length} markiertes Element entfernen${done.length > 1 ?",
+    "clearMsg": "{{count}} markiertes Element(e) entfernen?",
     "addedTitle": "Zur Einkaufsliste hinzugefügt",
     "addedMsg": "{{created}} neue Artikel hinzugefügt und {{merged}} Artikel zusammengeführt.",
     "categories": {

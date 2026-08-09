@@ -167,16 +167,26 @@ export default function HabitHubScreen() {
     const totalHabits = habits ? habits.length : 0;
     const completionPercentage = totalHabits > 0 ? Math.round((completedHabitsToday / totalHabits) * 100) : 0;
 
+    const [pendingHabitIds, setPendingHabitIds] = useState<Set<string>>(new Set());
+
     const handleToggleHabit = async (habitId: Id<"habits">) => {
+        if (pendingHabitIds.has(habitId)) return;
+        setPendingHabitIds(prev => new Set(prev).add(habitId));
+        triggerSound(SoundEffect.WELLNESS_LOG);
         try {
             const res = await toggleHabit({ habitId, date: today });
             if (res.completed) {
                 setSparkleTrigger(habitId);
                 setTimeout(() => setSparkleTrigger(null), 1000);
-                triggerSound(SoundEffect.WELLNESS_LOG);
             }
         } catch (e) {
             Alert.alert(t('wellness.common.error', 'Error'), t('wellness.habits.errorToggle', 'Failed to toggle habit'));
+        } finally {
+            setPendingHabitIds(prev => {
+                const next = new Set(prev);
+                next.delete(habitId);
+                return next;
+            });
         }
     };
 

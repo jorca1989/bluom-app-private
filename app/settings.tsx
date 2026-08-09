@@ -63,6 +63,7 @@ export default function SettingsScreen() {
     const [showGoalsModal, setShowGoalsModal] = useState(false);
     const [showLangModal, setShowLangModal] = useState(false);
     const [showThemeModal, setShowThemeModal] = useState(false);
+    const [isSigningOut, setIsSigningOut] = useState(false);
 
     // Theme switcher
     const { theme: activeTheme, setTheme, themes, colors: themeColors } = useTheme();
@@ -161,18 +162,29 @@ export default function SettingsScreen() {
     };
 
     const handleSignOut = () => {
+        if (isSigningOut) return;
         Alert.alert(t('settings.signOut', 'Sign Out'), t('settings.signOutConfirm', 'Are you sure you want to sign out?'), [
-            { text: t('common.cancel', 'Cancelar'), style: 'cancel' },
-            { text: t('settings.signOut', 'Sign Out'), style: 'destructive', onPress: () => signOut() },
+            { text: t('common.cancel', 'Cancel'), style: 'cancel' },
+            { text: t('settings.signOut', 'Sign Out'), style: 'destructive', onPress: async () => {
+                setIsSigningOut(true);
+                try {
+                    await signOut();
+                } catch (error) {
+                    console.error('Sign out failed:', error);
+                    Alert.alert(t('common.error', 'Error'), t('settings.signOutFailed', 'Unable to sign out. Please try again.'));
+                } finally {
+                    setIsSigningOut(false);
+                }
+            } },
         ]);
     };
 
     const handleDeleteAccount = () => {
         Alert.alert(
             'Delete Account',
-            'Are you sure you want to completely delete your account? This will permanently erase your data and cannot be undone.',
+            t('settings.deleteAccountConfirm', 'Are you sure you want to completely delete your account? This will permanently erase your data and cannot be undone.'),
             [
-                { text: 'Cancelar', style: 'cancel' },
+                { text: t('common.cancel', 'Cancel'), style: 'cancel' },
                 {
                     text: t('settings.deletePermanently', 'Delete Permanently'),
                     style: 'destructive',
@@ -465,11 +477,15 @@ export default function SettingsScreen() {
 
                         <View style={styles.divider} />
 
-                        <TouchableOpacity style={[styles.item, { paddingVertical: 16 }]} activeOpacity={0.7} onPress={handleSignOut}>
+                        <TouchableOpacity style={[styles.item, { paddingVertical: 16 }]} activeOpacity={0.7} onPress={handleSignOut} disabled={isSigningOut}>
                             <View style={styles.itemLeft}>
+                                {isSigningOut
+                                    ? <ActivityIndicator size="small" color="#ef4444" style={{ marginRight: 8 }} />
+                                    : null
+                                }
                                 <Text style={[styles.itemLabel, { color: '#64748b' }]}>{t('settings.signOut', 'Sign Out')}</Text>
                             </View>
-                            <Ionicons name="log-out-outline" size={18} color="#64748b" />
+                            {!isSigningOut && <Ionicons name="log-out-outline" size={18} color="#64748b" />}
                         </TouchableOpacity>
 
                         <View style={styles.divider} />

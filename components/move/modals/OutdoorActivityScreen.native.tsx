@@ -68,6 +68,7 @@ import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
 import { useTranslation } from 'react-i18next';
+import { saveOfflineActivity } from '@/services/offlineActivityTracker';
 
 const { width, height } = Dimensions.get('window');
 
@@ -451,7 +452,7 @@ export default function OutdoorActivityScreen({
     setScreen('summary');
   };
 
-  // ── Save to Convex ────────────────────────────────────────────
+  // ── Save to Convex (with offline fallback) ───────────────────
   const saveActivity = async () => {
     if (!convexUser?._id || elapsedSecs < 10) {
       onClose();
@@ -476,7 +477,28 @@ export default function OutdoorActivityScreen({
         date: new Date().toISOString().split('T')[0],
       });
     } catch (e: any) {
-      Alert.alert('Save failed', e?.message ?? 'Could not save activity.');
+      // Network offline or Convex unavailable — persist locally
+      try {
+        const cfg = ACTIVITY_CONFIG[activityType];
+        const durationMins = Math.max(1, Math.round(elapsedSecs / 60));
+        const met = cfg.metPerHour / 3.5;
+        const distanceKm = distanceRef.current / 1000;
+        await saveOfflineActivity({
+          userId: String(convexUser._id),
+          exerciseName: `${cfg.label} — ${distanceKm.toFixed(2)} km`,
+          exerciseType: 'cardio',
+          duration: durationMins,
+          met: met,
+          distance: distanceKm,
+          date: new Date().toISOString().split('T')[0],
+        });
+        Alert.alert(
+          t('move.offlineSaved', 'Saved Offline'),
+          t('move.offlineSavedDesc', 'Your activity has been saved locally and will sync automatically when you reconnect.')
+        );
+      } catch (offlineErr) {
+        Alert.alert('Save failed', e?.message ?? 'Could not save activity.');
+      }
     } finally {
       setSaving(false);
       onClose();

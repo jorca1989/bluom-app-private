@@ -24,6 +24,8 @@ import { AudioProvider } from '@/context/AudioContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { warnIfMissingGoogleOAuthClientIds } from '@/utils/googleOAuthEnv';
 import { AnalyticsProvider } from '@/components/AnalyticsProvider';
+import { ReviewTriggerProvider } from '@/hooks/useReviewTrigger';
+import useOfflineActivitySync from '@/hooks/useOfflineActivitySync';
 import { Buffer } from 'buffer';
 globalThis.Buffer = globalThis.Buffer ?? Buffer;
 
@@ -98,6 +100,9 @@ function InitialLayout() {
   const router = useRouter();
   const segments = useSegments();
   const navigationState = useRootNavigationState();
+
+  // Sync any offline-saved activities when network is available
+  useOfflineActivitySync();
 
   const convexUser = useQuery(
     api.users.getUserByClerkId,
@@ -386,7 +391,9 @@ export default function RootLayout() {
             <ConvexProviderWithClerk client={convex} useAuth={useConvexClerkAuth}>
               <AnalyticsProvider>
                 <ThemeProvider>
-                  <InitialLayout />
+                  <ReviewTriggerProvider>
+                    <InitialLayout />
+                  </ReviewTriggerProvider>
                 </ThemeProvider>
               </AnalyticsProvider>
             </ConvexProviderWithClerk>

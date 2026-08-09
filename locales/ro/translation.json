@@ -3779,7 +3779,7 @@
     "quantity": "Cantitate",
     "qtyPlaceholder": "de ex. 6",
     "addToList": "Adăugați pe listă",
-    "clearMsg": "Eliminați ${done.length} element bifat${done.length > 1 ?",
+    "clearMsg": "Eliminați {{count}} element(e) bifat(e)?",
     "addedTitle": "Adăugat la Lista de cumpărături",
     "addedMsg": "S-au adăugat {{created}} articole noi și au fost îmbinate {{merged}} articole.",
     "categories": {

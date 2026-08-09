@@ -198,7 +198,7 @@ export default function LogRecipeModal({
                   const servingStr = `${numVal}${baseUnit}`;
                   onSave(mult, servingStr);
                 }}>
-                  <Text style={styles.saveBtnTxt}>{t('modals.logRecipe.logTo', 'Log to')} {t(`fuel.meals.${meal.toLowerCase()}`, meal)}</Text>
+                  <Text style={styles.saveBtnTxt} adjustsFontSizeToFit={true} minimumFontScale={0.7} numberOfLines={1}>{t('modals.logRecipe.logTo', 'Log to')} {t(`fuel.meals.${meal.toLowerCase()}`, meal)}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -315,18 +315,23 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     gap: 8,
   },
   mealOption: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    flex: 1,
+    minWidth: 70,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
     borderRadius: 12,
     backgroundColor: c.surfaceMuted,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   mealOptionActive: {
     backgroundColor: '#3b82f6',
   },
   mealText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
     color: c.text,
+    textAlign: 'center',
   },
   mealTextActive: {
     color: '#ffffff',

@@ -57,6 +57,7 @@ import type * as questProgress from "../questProgress.js";
 import type * as quests from "../quests.js";
 import type * as recipes from "../recipes.js";
 import type * as revenuecat from "../revenuecat.js";
+import type * as reviews from "../reviews.js";
 import type * as routine_agent from "../routine_agent.js";
 import type * as routines from "../routines.js";
 import type * as savedWorkouts from "../savedWorkouts.js";
@@ -134,6 +135,7 @@ declare const fullApi: ApiFromModules<{
   quests: typeof quests;
   recipes: typeof recipes;
   revenuecat: typeof revenuecat;
+  reviews: typeof reviews;
   routine_agent: typeof routine_agent;
   routines: typeof routines;
   savedWorkouts: typeof savedWorkouts;

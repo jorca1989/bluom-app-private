@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme, type ThemeColors } from '@/context/ThemeContext';
@@ -20,6 +20,7 @@ export default function FoodDetailsModal({ visible, onClose, item, itemType, onL
   const { colors: themeColors } = useTheme();
   const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const currentLang = i18n.language || 'en';
+  const insets = useSafeAreaInsets();
 
   const [localItem, setLocalItem] = useState<any | null>(null);
   const [localItemType, setLocalItemType] = useState<'food' | 'recipe' | null>(null);
@@ -90,9 +91,9 @@ export default function FoodDetailsModal({ visible, onClose, item, itemType, onL
   const hasFatBreakdown = satFat !== undefined || polyFat !== undefined || monoFat !== undefined || transFat !== undefined;
   const hasCarbBreakdown = fiber !== undefined || sugar !== undefined || addedSugar !== undefined;
   const hasMinerals = sodium !== undefined || potassium !== undefined || iron !== undefined || calcium !== undefined || magnesium !== undefined || zinc !== undefined || vitaminA !== undefined || vitaminC !== undefined;  return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
       {activeItem ? (
-        <SafeAreaView style={styles.modalContainer} edges={['top']}>
+        <SafeAreaView style={styles.modalContainer} edges={['bottom']}>
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.headerTitle} numberOfLines={1}>Food Details</Text>
@@ -101,7 +102,7 @@ export default function FoodDetailsModal({ visible, onClose, item, itemType, onL
             </TouchableOpacity>
           </View>
 
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingBottom: 24 + Math.max(insets.bottom, 16) }]}>
             {/* Main Info */}
             <View style={styles.infoCard}>
                {imageUrl ? (
@@ -209,7 +210,7 @@ export default function FoodDetailsModal({ visible, onClose, item, itemType, onL
           </ScrollView>
 
           {!hideLogButton && (
-            <View style={styles.footer}>
+            <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom + 16, 32) }]}>
                <TouchableOpacity 
                   style={styles.addBtn}
                   activeOpacity={0.8}
@@ -221,7 +222,7 @@ export default function FoodDetailsModal({ visible, onClose, item, itemType, onL
                   }}
                >
                   <Ionicons name="add-circle" size={24} color="#fff" style={{ marginRight: 8 }} />
-                  <Text style={styles.addBtnText}>Add to Diary</Text>
+                  <Text style={styles.addBtnText} numberOfLines={1} adjustsFontSizeToFit>{t('foodReview.addToDiary', 'Add to Diary')}</Text>
                </TouchableOpacity>
             </View>
           )}
@@ -417,7 +418,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     fontStyle: 'italic',
   },
   footer: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
     backgroundColor: '#ffffff',
     borderTopWidth: 1,
     borderTopColor: '#e2e8f0',
@@ -437,7 +439,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   addBtnText: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '800',
   },
 });

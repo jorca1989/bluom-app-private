@@ -143,7 +143,9 @@ export default function SingleExerciseLogModal({
           <TouchableOpacity onPress={onClose} style={styles.iconBtn}>
             <Ionicons name="chevron-down" size={28} color={themeColors.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{mode === 'duration' ? t('move.logActivity', 'Log Activity') : t('move.logWorkout', 'Log Workout')}</Text>
+          <View style={{ flex: 1, marginRight: 8 }}>
+            <Text style={styles.headerTitle} numberOfLines={1} adjustsFontSizeToFit>{mode === 'duration' ? t('move.logActivity', 'Log Activity') : t('move.logWorkout', 'Log Workout')}</Text>
+          </View>
           <TouchableOpacity 
             style={[styles.finishBtn, !canSave && styles.finishBtnDisabled]} 
             onPress={() => onSave(
@@ -159,7 +161,7 @@ export default function SingleExerciseLogModal({
             )}
             disabled={!canSave}
           >
-            <Text style={[styles.finishBtnText, !canSave && styles.finishBtnTextDisabled]}>{t('common.save', 'Save')}</Text>
+            <Text style={[styles.finishBtnText, !canSave && styles.finishBtnTextDisabled]} numberOfLines={1} adjustsFontSizeToFit={true} minimumFontScale={0.7}>{t('move.log', 'Log')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -234,7 +236,7 @@ export default function SingleExerciseLogModal({
                   <>
                     {/* Sets Header */}
                     <View style={styles.setsHeader}>
-                      <Text style={[styles.setsColHead, { width: 40 }]}>{t('move.setShort', 'SET')}</Text>
+                      <Text style={[styles.setsColHead, { minWidth: 48, flexShrink: 0 }]}>{t('move.setShort', 'SET')}</Text>
                       <Text style={[styles.setsColHead, { flex: 1, textAlign: 'center' }]}>{t('move.kgShort', 'KG')} / +{t('move.kgShort', 'KG')}</Text>
                       <Text style={[styles.setsColHead, { flex: 1, textAlign: 'center' }]}>{t('move.repsShort', 'REPS')}</Text>
                       <View style={{ width: 34 }} />
@@ -322,9 +324,13 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: c.surface,
   },
   headerTitle: {
+    flex: 1,
+    flexShrink: 1,
     fontSize: 16,
     fontWeight: 'bold',
     color: c.text,
+    textAlign: 'center',
+    marginHorizontal: 8,
   },
   iconBtn: {
     padding: 8,

@@ -723,9 +723,11 @@ export default function WorkoutsScreen() {
                                                 <Text style={styles.historyDate}>{log.date}</Text>
                                                 <View style={styles.historyDetails}>
                                                     {log.sets && (
-                                                        <Text style={styles.historyText}>
-                                                            {log.sets.length} {t('workouts.sets', 'sets')} • {log.sets.reduce((s: number, x: any) => s + x.reps, 0)} {t('workouts.reps', 'reps')}
-                                                        </Text>
+                                                        <View style={{ flex: 1 }}>
+                                                            <Text style={styles.historyText} numberOfLines={1} adjustsFontSizeToFit={true} minimumFontScale={0.6}>
+                                                                {log.sets.length} {t('workouts.sets', 'sets')} • {log.sets.reduce((s: number, x: any) => s + x.reps, 0)} {t('workouts.reps', 'reps')}
+                                                            </Text>
+                                                        </View>
                                                     )}
                                                     {log.duration && (
                                                         <Text style={styles.historyText}>{log.duration} {t('workouts.min', 'min')}</Text>

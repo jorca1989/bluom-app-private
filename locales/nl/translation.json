@@ -3822,7 +3822,7 @@
     "quantity": "Hoeveelheid",
     "qtyPlaceholder": "bijv. 6",
     "addToList": "Toevoegen aan lijst",
-    "clearMsg": "Verwijder ${done.length} aangevinkt item${done.length > 1 ?",
+    "clearMsg": "Verwijder {{count}} aangevinkt(e) item(s)?",
     "addedTitle": "Toegevoegd aan boodschappenlijst",
     "addedMsg": "{{created}} nieuwe item(s) toegevoegd en {{merged}} item(s) samengevoegd.",
     "categories": {

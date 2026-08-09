@@ -343,7 +343,7 @@ export default function FoodScanReviewScreen() {
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 16, paddingBottom: getBottomContentPadding(insets.bottom, 24) }}
+        contentContainerStyle={{ padding: 16, paddingBottom: getBottomContentPadding(insets.bottom, 48) }}
         showsVerticalScrollIndicator={false}
       >
         {/* Main Food Card */}
@@ -532,7 +532,7 @@ export default function FoodScanReviewScreen() {
               disabled={saving}
             >
               <Ionicons name="bookmark-outline" size={18} color="#2563eb" />
-              <Text style={styles.secondaryActionText}>{t('foodReview.saveToMyFoods', 'Save to My Foods')}</Text>
+              <Text style={styles.secondaryActionText} numberOfLines={1} adjustsFontSizeToFit>{t('foodReview.saveToMyFoods', 'Save to My Foods')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -542,7 +542,7 @@ export default function FoodScanReviewScreen() {
               disabled={saving}
             >
               <Ionicons name="restaurant-outline" size={18} color="#2563eb" />
-              <Text style={styles.secondaryActionText}>{t('foodReview.saveAsRecipe', 'Save as Recipe')}</Text>
+              <Text style={styles.secondaryActionText} numberOfLines={1} adjustsFontSizeToFit>{t('foodReview.saveAsRecipe', 'Save as Recipe')}</Text>
             </TouchableOpacity>
           </View>
         </View>

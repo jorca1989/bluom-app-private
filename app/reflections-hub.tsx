@@ -216,12 +216,19 @@ export default function ReflectionsHub() {
         setShowMoodPicker(true);
     };
 
+    const [isSavingMood, setIsSavingMood] = useState(false);
+
     // Step 2: User selects mood -> Save Everything
     const finalizeJournalSave = async (selectedMood: number | null) => {
+        if (isSavingMood) return;
+        setIsSavingMood(true);
         setShowMoodPicker(false);
         setPendingJournalSave(false);
 
-        if (!user) return;
+        if (!user) {
+            setIsSavingMood(false);
+            return;
+        }
 
         const content = journalContent.trim();
         const thoughts = quickThoughts.join('\n• ');
@@ -234,7 +241,6 @@ export default function ReflectionsHub() {
             setTriggerGlow(true);
             setTriggerSparkle(true);
             triggerSound(SoundEffect.WELLNESS_LOG);
-
 
             // Perform both actions concurrently (TypeScript: typed as any[] to allow mixed return types)
             const promises: Promise<any>[] = [
@@ -257,17 +263,18 @@ export default function ReflectionsHub() {
 
             await Promise.all(promises);
 
-            // Reset
+            // Reset after successful save
             setJournalContent('');
             setJournalPrompt('');
             setQuickThoughts([]);
-            setNewQuickThought(''); // Clear input too
+            setNewQuickThought('');
             setTimeout(() => setTriggerSparkle(false), 2000);
             setTimeout(() => setTriggerGlow(false), 2000);
-
         } catch (e) {
-            console.error(e);
-            Alert.alert(t('wellness.common.error', 'Erro'), t('wellness.reflections.errorSaveJournal', 'Erro ao guardar diário'));
+            console.error('Save journal error:', e);
+            Alert.alert(t('wellness.common.error', 'Error'), t('wellness.reflections.errorSaveJournal', 'Failed to save journal'));
+        } finally {
+            setIsSavingMood(false);
         }
     };
 

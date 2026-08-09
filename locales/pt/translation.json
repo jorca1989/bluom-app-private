@@ -3869,9 +3869,9 @@
     "quantity": "Quantidade",
     "qtyPlaceholder": "por exemplo 6",
     "addToList": "Adicionar à lista",
-    "clearMsg": "Remover ${done.length} item marcado ${done.length > 1 ?",
+    "clearMsg": "Remover itens concluídos?",
     "addedTitle": "Adicionado à lista de compras",
-    "addedMsg": "Adicionados {{criados}} novos itens e {{fundidos}} itens mesclados.",
+    "addedMsg": "Foram adicionados {{created}} itens novos e {{merged}} itens foram combinados.",
     "categories": {
       "Produce": "Frutas e Vegetais",
       "Dairy": "Laticínios",

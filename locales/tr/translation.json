@@ -3806,9 +3806,9 @@
     "quantity": "Miktar",
     "qtyPlaceholder": "örneğin 6",
     "addToList": "Listeye ekle",
-    "clearMsg": "${done.length} işaretli öğeyi kaldır ${done.length > 1 ?",
+    "clearMsg": "{{count}} işaretli öğeyi kaldır?",
     "addedTitle": "Alışveriş Listesine Eklendi",
-    "addedMsg": "{{created}} yeni öğe eklendi ve {{birleştirilmiş}} öğe birleştirildi.",
+    "addedMsg": "{{created}} yeni öğe eklendi ve {{merged}} öğe birleştirildi.",
     "categories": {
       "Produce": "Produce",
       "Dairy": "Dairy",

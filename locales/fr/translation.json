@@ -3871,7 +3871,7 @@
     "quantity": "Quantité",
     "qtyPlaceholder": "par ex. 6",
     "addToList": "Ajouter à la liste",
-    "clearMsg": "Supprimer ${done.length} élément coché${done.length > 1 ?",
+    "clearMsg": "Supprimer {{count}} élément(s) coché(s) ?",
     "addedTitle": "Ajouté à la liste d'achats",
     "addedMsg": "Ajout de {{created}} nouveaux éléments et fusion de {{merged}} éléments.",
     "categories": {

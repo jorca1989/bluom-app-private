@@ -153,6 +153,7 @@ export default function FourWeekPlanScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['bottom']}>
+      {/* Header */}
       <View style={[styles.header, { paddingTop: Math.max(insets.top, 44) }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={26} color={themeColors.text} />
@@ -183,30 +184,27 @@ export default function FourWeekPlanScreen() {
           </Text>
         </View>
 
-        {/* Week cards */}
+        {/* Week cards grid */}
         <View style={styles.weekGrid}>
-          {[1, 2, 3, 4].map((_, idx) => {
-            const days = getWeekDays(idx);
-            const theme = getWeekTheme(idx);
-
+          {[0, 1, 2, 3].map((weekIdx) => {
+            const days = getWeekDays(weekIdx);
+            const theme = getWeekTheme(weekIdx);
             return (
               <TouchableOpacity
-                key={`week-card-${idx}`}
-              style={[styles.weekCard, { backgroundColor: WEEK_COLORS[idx % WEEK_COLORS.length] }]}
-                onPress={() => handleViewWeek(idx)}
+                key={`week-${weekIdx}`}
+                style={[styles.weekCard, { backgroundColor: WEEK_COLORS[weekIdx % WEEK_COLORS.length] }]}
+                onPress={() => handleViewWeek(weekIdx)}
                 activeOpacity={0.85}
               >
-                <Text style={styles.weekLabel}>{t('common.weekNum', 'Week {{num}}', { num: idx + 1 })}</Text>
+                <Text style={styles.weekLabel}>{t('move.weekNum', 'Week {{num}}', { num: weekIdx + 1 })}</Text>
                 <Text style={styles.weekTheme} numberOfLines={1}>{theme}</Text>
-
                 <View style={styles.daysSummary}>
-                  {days.map((d: any, dIdx: number) => (
-                    <Text key={`daysum-${idx}-${dIdx}`} style={styles.daySummaryText} numberOfLines={1}>
+                  {days.slice(0, 3).map((d: any, dIdx: number) => (
+                    <Text key={`d-${weekIdx}-${dIdx}`} style={styles.daySummaryText} numberOfLines={1}>
                       {dIdx + 1}. {d.dayTitle}
                     </Text>
                   ))}
                 </View>
-
                 <View style={styles.viewWeekBtn}>
                   <Text style={styles.viewWeekBtnText}>{t('move.viewWeek', 'View week')}</Text>
                   <Ionicons name="chevron-forward" size={14} color="#ffffff" />
@@ -248,7 +246,6 @@ export default function FourWeekPlanScreen() {
           </TouchableOpacity>
         )}
       </ScrollView>
-
       {/* Week detail modal */}
       {selectedWeek !== null && (
         <WorkoutDetailModal

@@ -51,6 +51,7 @@ import BreathingAnimation from '../components/BreathingAnimation';
 import { Soundscape } from '../utils/soundscapes';
 
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+import { useReviewTrigger } from '@/hooks/useReviewTrigger';
 
 // ─────────────────────────────────────────────────────────────
 // Spinner
@@ -264,6 +265,7 @@ export default function MeditationPlayerScreen({
   useEffect(() => { isPlayingRef.current = isPlaying; }, [isPlaying]);
 
   const completeSession = useMutation(api.meditation.completeSession);
+  const { triggerReviewPrompt } = useReviewTrigger();
 
   // ── Keep screen awake – aggressive ──────────────────────────
   useEffect(() => {
@@ -449,10 +451,13 @@ export default function MeditationPlayerScreen({
     const minutesCompleted = Math.floor(positionMsRef.current / 60_000);
     await cleanup();
     if (logId && minutesCompleted > 0) {
-      try { await completeSession({ logId, durationCompleted: minutesCompleted }); } catch { }
+      try {
+        await completeSession({ logId, durationCompleted: minutesCompleted });
+        await triggerReviewPrompt();
+      } catch { }
     }
     onClose();
-  }, [cleanup, completeSession, logId, onClose]);
+  }, [cleanup, completeSession, logId, onClose, triggerReviewPrompt]);
 
   const handleClose = useCallback(async () => {
     if (isClosingRef.current) return;

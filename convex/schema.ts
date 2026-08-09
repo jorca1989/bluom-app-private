@@ -102,9 +102,22 @@ export default defineSchema({
     // Metadata
     createdAt: v.optional(v.float64()),
     updatedAt: v.optional(v.float64()),
-  })
-    .index("by_clerk_id", ["clerkId"])
+  })    .index("by_clerk_id", ["clerkId"])
     .index("by_email", ["email"]),
+
+  reviews: defineTable({
+    userId: v.id("users"),
+    rating: v.number(),
+    feedbackCategory: v.union(v.literal("bug"), v.literal("feature_request"), v.literal("general_experience"), v.literal("praise")),
+    comment: v.optional(v.string()),
+    appVersion: v.string(),
+    platform: v.string(),
+    status: v.union(v.literal("pending"), v.literal("reviewed"), v.literal("archived")),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_created_at", ["userId", "createdAt"]),
 
   // ── Affiliates / Influencer Registry ─────────────────────────────────────────
   // One record per influencer. Created when you grant them manual access.
