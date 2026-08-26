@@ -38,18 +38,21 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { useTranslation } from 'react-i18next';
+
 interface OutdoorActivityBannerProps {
   onStart: () => void;
 }
 
 const ACTIVITY_PILLS = [
-  { label: 'Run',   icon: 'walk',      color: '#ef4444' },
-  { label: 'Cycle', icon: 'bicycle',   color: '#3b82f6' },
-  { label: 'Hike',  icon: 'footsteps', color: '#16a34a' },
-  { label: 'Walk',  icon: 'walk',      color: '#f59e0b' },
+  { label: 'Run',   key: 'move.running', icon: 'walk',      color: '#ef4444' },
+  { label: 'Cycle', key: 'move.cycling', icon: 'bicycle',   color: '#3b82f6' },
+  { label: 'Hike',  key: 'move.hiking',  icon: 'footsteps', color: '#16a34a' },
+  { label: 'Walk',  key: 'move.walking', icon: 'walk',      color: '#f59e0b' },
 ];
 
 export default function OutdoorActivityBanner({ onStart }: OutdoorActivityBannerProps) {
+  const { t } = useTranslation();
   const scale = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () =>
@@ -80,18 +83,18 @@ export default function OutdoorActivityBanner({ onStart }: OutdoorActivityBanner
           <View style={s.left}>
             <View style={s.liveDot}>
               <View style={s.liveDotPulse} />
-              <Text style={s.liveLabel}>OUTDOOR</Text>
+              <Text style={s.liveLabel}>{t('move.outdoorBannerLive', 'OUTDOOR')}</Text>
             </View>
 
-            <Text style={s.heading}>Record{'\n'}Activity</Text>
-            <Text style={s.sub}>GPS tracking • Live stats</Text>
+            <Text style={s.heading}>{t('move.outdoorBannerRecord', 'Record\nActivity')}</Text>
+            <Text style={s.sub}>{t('move.outdoorBannerSub', 'GPS tracking • Live stats')}</Text>
 
             {/* Activity type pills */}
             <View style={s.pills}>
               {ACTIVITY_PILLS.map((a) => (
                 <View key={a.label} style={[s.pill, { borderColor: a.color + '50' }]}>
                   <Ionicons name={a.icon as any} size={11} color={a.color} />
-                  <Text style={[s.pillText, { color: a.color }]}>{a.label}</Text>
+                  <Text style={[s.pillText, { color: a.color }]}>{t(a.key, a.label)}</Text>
                 </View>
               ))}
             </View>
@@ -102,7 +105,7 @@ export default function OutdoorActivityBanner({ onStart }: OutdoorActivityBanner
             <View style={s.startCircle}>
               <Ionicons name="play" size={26} color="#fff" style={{ marginLeft: 3 }} />
             </View>
-            <Text style={s.startHint}>Tap to start</Text>
+            <Text style={s.startHint}>{t('move.outdoorBannerTapToStart', 'Tap to start')}</Text>
           </View>
         </LinearGradient>
       </TouchableOpacity>

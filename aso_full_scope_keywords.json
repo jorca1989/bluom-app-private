@@ -1,0 +1,266 @@
+[
+  {
+    "keyword": "calorie counter",
+    "category": "core",
+    "volume": 76,
+    "difficulty": 82,
+    "opportunityScore": 70,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "calorie tracker",
+    "category": "core",
+    "volume": 68,
+    "difficulty": 74,
+    "opportunityScore": 62,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "food scanner",
+    "category": "core",
+    "volume": 45,
+    "difficulty": 48,
+    "opportunityScore": 42,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "photo calorie counter",
+    "category": "core",
+    "volume": 28,
+    "difficulty": 32,
+    "opportunityScore": 24,
+    "passedCriteria": true
+  },
+  {
+    "keyword": "macro calculator",
+    "category": "core",
+    "volume": 42,
+    "difficulty": 52,
+    "opportunityScore": 32,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "macro tracker",
+    "category": "core",
+    "volume": 55,
+    "difficulty": 65,
+    "opportunityScore": 45,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "fitness tracker",
+    "category": "core",
+    "volume": 81,
+    "difficulty": 88,
+    "opportunityScore": 74,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "workout log",
+    "category": "core",
+    "volume": 48,
+    "difficulty": 58,
+    "opportunityScore": 38,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "gps tracker",
+    "category": "core",
+    "volume": 58,
+    "difficulty": 72,
+    "opportunityScore": 44,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "running tracker",
+    "category": "core",
+    "volume": 64,
+    "difficulty": 76,
+    "opportunityScore": 52,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "gps workout",
+    "category": "core",
+    "volume": 18,
+    "difficulty": 26,
+    "opportunityScore": 10,
+    "passedCriteria": true
+  },
+  {
+    "keyword": "vitality score",
+    "category": "core",
+    "volume": 12,
+    "difficulty": 18,
+    "opportunityScore": 6,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "testosterone tracker",
+    "category": "core",
+    "volume": 16,
+    "difficulty": 22,
+    "opportunityScore": 10,
+    "passedCriteria": true
+  },
+  {
+    "keyword": "testo vitality",
+    "category": "core",
+    "volume": 8,
+    "difficulty": 12,
+    "opportunityScore": 4,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "libido tracker",
+    "category": "core",
+    "volume": 18,
+    "difficulty": 24,
+    "opportunityScore": 12,
+    "passedCriteria": true
+  },
+  {
+    "keyword": "cycle syncing",
+    "category": "core",
+    "volume": 38,
+    "difficulty": 35,
+    "opportunityScore": 41,
+    "passedCriteria": true
+  },
+  {
+    "keyword": "period tracker",
+    "category": "core",
+    "volume": 84,
+    "difficulty": 88,
+    "opportunityScore": 80,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "hormone tracker",
+    "category": "core",
+    "volume": 32,
+    "difficulty": 38,
+    "opportunityScore": 26,
+    "passedCriteria": true
+  },
+  {
+    "keyword": "luteal phase tracker",
+    "category": "core",
+    "volume": 20,
+    "difficulty": 24,
+    "opportunityScore": 16,
+    "passedCriteria": true
+  },
+  {
+    "keyword": "habit tracker",
+    "category": "core",
+    "volume": 62,
+    "difficulty": 72,
+    "opportunityScore": 52,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "sleep tracker",
+    "category": "core",
+    "volume": 66,
+    "difficulty": 78,
+    "opportunityScore": 54,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "mood tracker",
+    "category": "core",
+    "volume": 54,
+    "difficulty": 62,
+    "opportunityScore": 46,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "habit app",
+    "category": "core",
+    "volume": 48,
+    "difficulty": 60,
+    "opportunityScore": 36,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "pelvic floor timer",
+    "category": "untapped",
+    "volume": 19,
+    "difficulty": 20,
+    "opportunityScore": 18,
+    "passedCriteria": true
+  },
+  {
+    "keyword": "pelvic exercise",
+    "category": "untapped",
+    "volume": 26,
+    "difficulty": 28,
+    "opportunityScore": 24,
+    "passedCriteria": true
+  },
+  {
+    "keyword": "ingredient photo scanner",
+    "category": "untapped",
+    "volume": 22,
+    "difficulty": 24,
+    "opportunityScore": 20,
+    "passedCriteria": true
+  },
+  {
+    "keyword": "ai recipe maker",
+    "category": "untapped",
+    "volume": 24,
+    "difficulty": 25,
+    "opportunityScore": 23,
+    "passedCriteria": true
+  },
+  {
+    "keyword": "testo vitality check in",
+    "category": "untapped",
+    "volume": 9,
+    "difficulty": 12,
+    "opportunityScore": 6,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "libido recovery tracker",
+    "category": "untapped",
+    "volume": 14,
+    "difficulty": 18,
+    "opportunityScore": 10,
+    "passedCriteria": false
+  },
+  {
+    "keyword": "oral health log",
+    "category": "untapped",
+    "volume": 17,
+    "difficulty": 19,
+    "opportunityScore": 15,
+    "passedCriteria": true
+  },
+  {
+    "keyword": "menopause symptom log",
+    "category": "untapped",
+    "volume": 30,
+    "difficulty": 32,
+    "opportunityScore": 28,
+    "passedCriteria": true
+  },
+  {
+    "keyword": "all in one health folder",
+    "category": "untapped",
+    "volume": 15,
+    "difficulty": 22,
+    "opportunityScore": 8,
+    "passedCriteria": true
+  },
+  {
+    "keyword": "vitality stack",
+    "category": "untapped",
+    "volume": 21,
+    "difficulty": 26,
+    "opportunityScore": 16,
+    "passedCriteria": true
+  }
+]

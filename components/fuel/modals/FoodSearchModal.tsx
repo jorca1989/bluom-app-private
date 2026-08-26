@@ -217,12 +217,31 @@ export default function FoodSearchModal({
     return '🍽️';
   };
 
+  const getHeaderTitle = () => {
+    const mealName = t(`fuel.meals.${meal.toLowerCase()}`, meal);
+    switch (activeTab) {
+      case 'search':
+        return `${t('modals.search.addFood', 'Add Food')} - ${mealName}`;
+      case 'recipes':
+        return `${t('modals.search.addRecipe', 'Add Recipe')} - ${mealName}`;
+      case 'create':
+        return t('modals.search.createRecipeTitle', 'Create a Recipe');
+      default:
+        return `${t('modals.search.addTo', 'Add to')} ${mealName}`;
+    }
+  };
+
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <SafeAreaView style={styles.modalContainer} edges={['top']}>
         <View style={styles.header}>
-          <Text style={styles.title}>
-            {t('modals.search.addTo', 'Add to')} {t(`fuel.meals.${meal.toLowerCase()}`, meal)}
+          <Text 
+            style={styles.title}
+            numberOfLines={1}
+            adjustsFontSizeToFit={true}
+            minimumFontScale={0.7}
+          >
+            {getHeaderTitle()}
           </Text>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
             <Ionicons name="close" size={24} color="#64748b" />
@@ -593,6 +612,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: c.surface,
   },
   title: {
+    flex: 1,
+    marginRight: 12,
     fontSize: 20,
     fontWeight: 'bold',
     color: c.text,

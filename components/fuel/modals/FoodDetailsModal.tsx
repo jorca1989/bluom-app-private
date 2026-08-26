@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,13 +24,17 @@ export default function FoodDetailsModal({ visible, onClose, item, itemType, onL
 
   const [localItem, setLocalItem] = useState<any | null>(null);
   const [localItemType, setLocalItemType] = useState<'food' | 'recipe' | null>(null);
+  const isLoggingRef = useRef<boolean>(false);
 
   useEffect(() => {
+    if (visible) {
+      isLoggingRef.current = false;
+    }
     if (item) {
       setLocalItem(item);
       setLocalItemType(itemType);
     }
-  }, [item, itemType]);
+  }, [item, itemType, visible]);
 
   const activeItem = item || localItem;
   const activeItemType = item ? itemType : localItemType;
@@ -212,9 +216,12 @@ export default function FoodDetailsModal({ visible, onClose, item, itemType, onL
           {!hideLogButton && (
             <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom + 16, 32) }]}>
                <TouchableOpacity 
-                  style={styles.addBtn}
+                  style={[styles.addBtn, isLoggingRef.current && { opacity: 0.5 }]}
                   activeOpacity={0.8}
+                  disabled={isLoggingRef.current}
                   onPress={() => {
+                     if (isLoggingRef.current) return;
+                     isLoggingRef.current = true;
                      onClose();
                      setTimeout(() => {
                         onLog(activeItem);

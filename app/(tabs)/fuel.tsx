@@ -184,6 +184,7 @@ export default function FuelScreen() {
   const [logMeal, setLogMeal] = useState<MealName>('Lunch');
   const [logQuantity, setLogQuantity] = useState(1);
   const [logSuccess, setLogSuccess] = useState(false);
+  const [isLoggingFood, setIsLoggingFood] = useState(false);
 
   const [detailsFood, setDetailsFood] = useState<any>(null);
   const [editingFood, setEditingFood] = useState<any>(null);
@@ -285,6 +286,12 @@ export default function FuelScreen() {
     let protein = Number(macros.protein ?? 0);
     let carbs = Number(macros.carbs ?? 0);
     let fat = Number(macros.fat ?? 0);
+    let fiber = macros.fiber !== undefined ? Number(macros.fiber) : undefined;
+    let sugar = macros.sugar !== undefined ? Number(macros.sugar) : undefined;
+    let saturatedFat = macros.saturatedFat !== undefined ? Number(macros.saturatedFat) : undefined;
+    let polyunsaturatedFat = macros.polyunsaturatedFat !== undefined ? Number(macros.polyunsaturatedFat) : undefined;
+    let monounsaturatedFat = macros.monounsaturatedFat !== undefined ? Number(macros.monounsaturatedFat) : undefined;
+    let transFat = macros.transFat !== undefined ? Number(macros.transFat) : undefined;
     let persistedFoodId = food?._id ? String(food._id) : undefined;
 
     if (food?.kind === 'external' && food?.externalId && food?.source) {
@@ -296,6 +303,7 @@ export default function FuelScreen() {
         brand: food.brand ?? undefined,
         servingSize: String(food.servingSize ?? '1 serving'),
         calories, protein, carbs, fat,
+        fiber, sugar, saturatedFat, polyunsaturatedFat, monounsaturatedFat, transFat,
       });
       persistedFoodId = String(savedId);
     }
@@ -305,6 +313,7 @@ export default function FuelScreen() {
       foodId: persistedFoodId,
       foodName: getLocalizedFoodName(food.name),
       calories, protein, carbs, fat,
+      fiber, sugar, saturatedFat, polyunsaturatedFat, monounsaturatedFat, transFat,
       servingSize: food.servingSize ?? '1 serving',
       mealType: toMealTypeLower(meal),
       date: selectedDate,
@@ -754,40 +763,58 @@ export default function FuelScreen() {
         onClose={() => setShowLogRecipeModal(false)}
         onCancel={() => setShowLogRecipeModal(false)}
         onSave={async (customMultiplier?: number, customServingSize?: string) => {
-          if (!logRecipe || !convexUser?._id) return;
-          const multiplier = customMultiplier !== undefined ? customMultiplier : logQuantity;
-          const servingStr = customServingSize !== undefined ? customServingSize : `${logQuantity} serving(s)`;
+          if (isLoggingFood) return;
+          setIsLoggingFood(true);
+          try {
+            if (!logRecipe || !convexUser?._id) return;
+            const multiplier = customMultiplier !== undefined ? customMultiplier : logQuantity;
+            const servingStr = customServingSize !== undefined ? customServingSize : `${logQuantity} serving(s)`;
 
-          const perServing = logRecipe?.nutrition?.perServing ?? logRecipe?.nutrition ?? logRecipe?.macros ?? {
-            calories: logRecipe.calories ?? 0, 
-            protein: logRecipe.protein ?? 0, 
-            carbs: logRecipe.carbs ?? 0, 
-            fat: logRecipe.fat ?? 0,
-          };
-          const isRecipe = 'nutrition' in logRecipe || 'ingredients' in logRecipe;
+            const perServing = logRecipe?.nutrition?.perServing ?? logRecipe?.nutrition ?? logRecipe?.macros ?? {
+              calories: logRecipe.calories ?? 0, 
+              protein: logRecipe.protein ?? 0, 
+              carbs: logRecipe.carbs ?? 0, 
+              fat: logRecipe.fat ?? 0,
+              fiber: logRecipe.fiber,
+              sugar: logRecipe.sugar,
+              saturatedFat: logRecipe.saturatedFat,
+              polyunsaturatedFat: logRecipe.polyunsaturatedFat,
+              monounsaturatedFat: logRecipe.monounsaturatedFat,
+              transFat: logRecipe.transFat,
+            };
+            const isRecipe = 'nutrition' in logRecipe || 'ingredients' in logRecipe;
 
-          await logFoodEntry({
-            userId: convexUser._id,
-            foodId: isRecipe ? undefined : logRecipe._id || logRecipe.externalId,
-            foodName: getLocalizedFoodName(logRecipe.name) || logRecipe.title,
-            calories: (perServing.calories ?? 0) * multiplier,
-            protein: (perServing.protein ?? 0) * multiplier,
-            carbs: (perServing.carbs ?? 0) * multiplier,
-            fat: (perServing.fat ?? 0) * multiplier,
-            servingSize: servingStr,
-            mealType: toMealTypeLower(logMeal),
-            date: selectedDate,
-          });
+            await logFoodEntry({
+              userId: convexUser._id,
+              foodId: isRecipe ? undefined : logRecipe._id || logRecipe.externalId,
+              foodName: getLocalizedFoodName(logRecipe.name) || logRecipe.title,
+              calories: (perServing.calories ?? 0) * multiplier,
+              protein: (perServing.protein ?? 0) * multiplier,
+              carbs: (perServing.carbs ?? 0) * multiplier,
+              fat: (perServing.fat ?? 0) * multiplier,
+              fiber: perServing.fiber !== undefined ? (perServing.fiber ?? 0) * multiplier : undefined,
+              sugar: perServing.sugar !== undefined ? (perServing.sugar ?? 0) * multiplier : undefined,
+              saturatedFat: perServing.saturatedFat !== undefined ? (perServing.saturatedFat ?? 0) * multiplier : undefined,
+              polyunsaturatedFat: perServing.polyunsaturatedFat !== undefined ? (perServing.polyunsaturatedFat ?? 0) * multiplier : undefined,
+              monounsaturatedFat: perServing.monounsaturatedFat !== undefined ? (perServing.monounsaturatedFat ?? 0) * multiplier : undefined,
+              transFat: perServing.transFat !== undefined ? (perServing.transFat ?? 0) * multiplier : undefined,
+              servingSize: servingStr,
+              mealType: toMealTypeLower(logMeal),
+              date: selectedDate,
+            });
 
-          triggerSound(SoundEffect.LOG_MEAL);
-          setLogSuccess(true);
-          setTimeout(() => {
-            setShowLogRecipeModal(false);
-            setLogSuccess(false);
+            triggerSound(SoundEffect.LOG_MEAL);
+            setLogSuccess(true);
             setTimeout(() => {
-              setLogRecipe(null);
-            }, 400);
-          }, 1500);
+              setShowLogRecipeModal(false);
+              setLogSuccess(false);
+              setTimeout(() => {
+                setLogRecipe(null);
+              }, 400);
+            }, 1500);
+          } finally {
+            setIsLoggingFood(false);
+          }
         }}
       />
 

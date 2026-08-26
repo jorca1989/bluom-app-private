@@ -129,6 +129,26 @@ export const internalGetUserById = internalQuery({
   },
 });
 
+export const internalGetUserByClerkId = internalQuery({
+  args: { clerkId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+      .first();
+  },
+});
+
+export const getProUsers = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("subscriptionStatus"), "pro"))
+      .collect();
+  },
+});
+
 /**
  * Update user profile
  */
@@ -436,5 +456,18 @@ export const deleteAccount = mutation({
 
     // Finally, delete the user record itself
     await ctx.db.delete(args.userId);
+  },
+});
+
+export const savePushToken = mutation({
+  args: { clerkId: v.string(), token: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_clerk_id', (q) => q.eq('clerkId', args.clerkId))
+      .unique();
+    if (user) {
+      await ctx.db.patch(user._id, { expoPushToken: args.token });
+    }
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -44,12 +44,16 @@ export default function LogRecipeModal({
   };
 
   const [localRecipe, setLocalRecipe] = useState<any>(null);
+  const isLoggingRef = useRef<boolean>(false);
 
   useEffect(() => {
+    if (visible) {
+      isLoggingRef.current = false;
+    }
     if (recipe) {
       setLocalRecipe(recipe);
     }
-  }, [recipe]);
+  }, [recipe, visible]);
 
   const activeRecipe = recipe || localRecipe;
 
@@ -113,7 +117,16 @@ export default function LogRecipeModal({
         <View style={styles.overlay}>
           <SafeAreaView style={[styles.modalContent, { paddingBottom: Math.max(insets.bottom, 24) }]} edges={['bottom']}>
             <View style={styles.header}>
-              <Text style={styles.title}>{t('modals.logRecipe.title', activeRecipe?.ingredients ? 'Log Recipe' : 'Log Food')}</Text>
+              <Text 
+                style={styles.title}
+                numberOfLines={1}
+                adjustsFontSizeToFit={true}
+                minimumFontScale={0.7}
+              >
+                {activeRecipe?.ingredients || activeRecipe?._type === 'recipe'
+                  ? t('modals.logRecipe.titleRecipe', 'Add Recipe')
+                  : t('modals.logRecipe.titleFood', 'Add Food')}
+              </Text>
               <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
                 <Ionicons name="close" size={20} color="#64748b" />
               </TouchableOpacity>
@@ -156,7 +169,12 @@ export default function LogRecipeModal({
                       style={[styles.mealOption, meal === m && styles.mealOptionActive]}
                       onPress={() => onMealChange(m)}
                     >
-                      <Text style={[styles.mealText, meal === m && styles.mealTextActive]}>
+                      <Text 
+                        style={[styles.mealText, meal === m && styles.mealTextActive]}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit={true}
+                        minimumFontScale={0.7}
+                      >
                         {t(`fuel.meals.${m.toLowerCase()}`, m)}
                       </Text>
                     </TouchableOpacity>
@@ -192,11 +210,16 @@ export default function LogRecipeModal({
                 <TouchableOpacity style={styles.cancelBtn} onPress={onCancel}>
                   <Text style={styles.cancelBtnTxt}>{t('modals.logRecipe.skip', 'Skip')}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.saveBtn} onPress={() => {
-                  const numVal = parseFloat(inputValue) || baseValue;
-                  const mult = numVal / baseValue;
-                  const servingStr = `${numVal}${baseUnit}`;
-                  onSave(mult, servingStr);
+                <TouchableOpacity 
+                  style={[styles.saveBtn, isLoggingRef.current && { opacity: 0.5 }]} 
+                  disabled={isLoggingRef.current}
+                  onPress={() => {
+                    if (isLoggingRef.current) return;
+                    isLoggingRef.current = true;
+                    const numVal = parseFloat(inputValue) || baseValue;
+                    const mult = numVal / baseValue;
+                    const servingStr = `${numVal}${baseUnit}`;
+                    onSave(mult, servingStr);
                 }}>
                   <Text style={styles.saveBtnTxt} adjustsFontSizeToFit={true} minimumFontScale={0.7} numberOfLines={1}>{t('modals.logRecipe.logTo', 'Log to')} {t(`fuel.meals.${meal.toLowerCase()}`, meal)}</Text>
                 </TouchableOpacity>

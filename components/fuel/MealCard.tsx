@@ -68,7 +68,14 @@ const MealCard = ({ title, icon, time, foods, onAddPress, onDeletePress, onItemP
         <View style={styles.headerLeft}>
           <Ionicons name={icon} size={24} color="#3b82f6" />
           <View>
-            <Text style={styles.title}>{title}</Text>
+            <Text 
+              style={styles.title}
+              numberOfLines={1}
+              adjustsFontSizeToFit={true}
+              minimumFontScale={0.7}
+            >
+              {title}
+            </Text>
             {time && <Text style={styles.time}>{time}</Text>}
           </View>
         </View>

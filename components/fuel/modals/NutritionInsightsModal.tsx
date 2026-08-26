@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme, type ThemeColors } from '@/context/ThemeContext';
+import { translateValue } from '@/utils/translateHelper';
 
 interface NutritionInsightsModalProps {
   visible: boolean;
@@ -12,7 +13,7 @@ interface NutritionInsightsModalProps {
 }
 
 export default function NutritionInsightsModal({ visible, onClose, dateEntries }: NutritionInsightsModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors: themeColors } = useTheme();
   const styles = useMemo(() => createStyles(themeColors), [themeColors]);
 
@@ -47,7 +48,7 @@ export default function NutritionInsightsModal({ visible, onClose, dateEntries }
       <View style={[styles.macroRow, isSubItem && styles.subMacroRow]}>
         <View style={styles.macroLabelWrap}>
           <View style={[styles.macroDot, { backgroundColor: color }]} />
-          <Text style={[styles.macroLabelText, isSubItem && styles.subMacroLabelText]}>{label}</Text>
+          <Text style={[styles.macroLabelText, isSubItem && styles.subMacroLabelText]}>{translateValue(label, i18n.language, t)}</Text>
         </View>
         <Text style={[styles.macroValText, isSubItem && styles.subMacroValText]}>{Math.round(val)}{unit}</Text>
       </View>
@@ -61,7 +62,7 @@ export default function NutritionInsightsModal({ visible, onClose, dateEntries }
       <SafeAreaView style={styles.modalContainer} edges={['top']}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>{t('fuel.insights.title', 'Nutrition Insights')}</Text>
+          <Text style={styles.headerTitle}>{translateValue(t('fuel.insights.title', 'Nutrition Insights'), i18n.language, t)}</Text>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
             <Ionicons name="close" size={24} color="#64748b" />
           </TouchableOpacity>
@@ -77,20 +78,20 @@ export default function NutritionInsightsModal({ visible, onClose, dateEntries }
             <View style={styles.summaryDivider} />
             <View style={styles.summaryItem}>
               <Text style={styles.summaryVal}>{foodCount}</Text>
-              <Text style={styles.summaryLabel}>foods</Text>
+              <Text style={styles.summaryLabel}>{translateValue('foods', i18n.language, t)}</Text>
             </View>
             <View style={styles.summaryDivider} />
             <View style={styles.summaryItem}>
               <Text style={[styles.summaryVal, { color: '#fca5a5' }]}>{Math.round(totals.p)}g</Text>
-              <Text style={styles.summaryLabel}>protein</Text>
+              <Text style={styles.summaryLabel}>{translateValue('protein', i18n.language, t)}</Text>
             </View>
           </View>
 
           {foodCount === 0 && (
             <View style={styles.emptyState}>
               <Ionicons name="nutrition-outline" size={48} color="#cbd5e1" />
-              <Text style={styles.emptyTitle}>No foods logged today</Text>
-              <Text style={styles.emptySubtitle}>Log meals to see your detailed nutrition insights here.</Text>
+              <Text style={styles.emptyTitle}>{translateValue('No foods logged today', i18n.language, t)}</Text>
+              <Text style={styles.emptySubtitle}>{translateValue('Log meals to see your detailed nutrition insights here.', i18n.language, t)}</Text>
             </View>
           )}
 
@@ -100,9 +101,9 @@ export default function NutritionInsightsModal({ visible, onClose, dateEntries }
               <View style={styles.breakdownCard}>
                 <View style={styles.sectionHeader}>
                   <Ionicons name="water" size={18} color="#fde047" />
-                  <Text style={styles.sectionTitle}>Fat Breakdown</Text>
+                  <Text style={styles.sectionTitle}>{translateValue('Fat Breakdown', i18n.language, t)}</Text>
                 </View>
-                <Text style={styles.sectionDesc}>Cardiovascular profiling & hormone synthesis</Text>
+                <Text style={styles.sectionDesc}>{translateValue('Cardiovascular profiling & hormone synthesis', i18n.language, t)}</Text>
                 
                 {renderRow('Total Fat', totals.f, '#fde047')}
                 {renderRow('Saturated Fat', totals.satFat, '#fef08a', true)}
@@ -115,9 +116,9 @@ export default function NutritionInsightsModal({ visible, onClose, dateEntries }
               <View style={styles.breakdownCard}>
                 <View style={styles.sectionHeader}>
                   <Ionicons name="flash" size={18} color="#93c5fd" />
-                  <Text style={styles.sectionTitle}>Carbs & Blood Sugar</Text>
+                  <Text style={styles.sectionTitle}>{translateValue('Carbs & Blood Sugar', i18n.language, t)}</Text>
                 </View>
-                <Text style={styles.sectionDesc}>Sugar control & fasting intelligence</Text>
+                <Text style={styles.sectionDesc}>{translateValue('Sugar control & fasting intelligence', i18n.language, t)}</Text>
                 
                 {renderRow('Total Carbohydrates', totals.c, '#93c5fd')}
                 {renderRow('Dietary Fiber', totals.fiber, '#bfdbfe', true)}
@@ -129,7 +130,7 @@ export default function NutritionInsightsModal({ visible, onClose, dateEntries }
               <View style={styles.breakdownCard}>
                 <View style={styles.sectionHeader}>
                   <Ionicons name="fitness" size={18} color="#fca5a5" />
-                  <Text style={styles.sectionTitle}>Protein</Text>
+                  <Text style={styles.sectionTitle}>{translateValue('Protein', i18n.language, t)}</Text>
                 </View>
                 {renderRow('Total Protein', totals.p, '#fca5a5')}
               </View>
@@ -138,9 +139,9 @@ export default function NutritionInsightsModal({ visible, onClose, dateEntries }
               <View style={styles.breakdownCard}>
                 <View style={styles.sectionHeader}>
                   <Ionicons name="leaf" size={18} color="#a78bfa" />
-                  <Text style={styles.sectionTitle}>Vitamins & Minerals</Text>
+                  <Text style={styles.sectionTitle}>{translateValue('Vitamins & Minerals', i18n.language, t)}</Text>
                 </View>
-                <Text style={styles.sectionDesc}>The Vitality Matrix — biological evidence for your health hubs</Text>
+                <Text style={styles.sectionDesc}>{translateValue('The Vitality Matrix — biological evidence for your health hubs', i18n.language, t)}</Text>
                 
                 {renderRow('Sodium', totals.sodium, '#f97316', false, 'mg')}
                 {renderRow('Potassium', totals.potassium, '#22c55e', false, 'mg')}

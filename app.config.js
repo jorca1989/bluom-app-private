@@ -13,10 +13,10 @@ export default ({ config }) => {
             name: "Bluom",
             slug: "bolt-expo-nativewind",
             owner: "ggovsaas",
-            version: "1.0.42",
+            version: "1.0.43",
             scheme: "bluom",
             userInterfaceStyle: "automatic",
-            runtimeVersion: "1.0.42",
+            runtimeVersion: "1.0.43",
             // New Architecture DISABLED — react-native-maps 1.20.1 doesn't support Fabric
             // (AIRMap view manager fails to register). Re-enable when react-native-maps ships
             // New Arch support, or after migrating to @teovilla/react-native-web-maps.
@@ -24,7 +24,7 @@ export default ({ config }) => {
             privacyPolicyUrl: "https://www.bluom.app/legal/privacy",
             ios: {
                 bundleIdentifier: "com.jwfca.bluom",
-                buildNumber: "67",
+                buildNumber: "68",
                 appleTeamId: "TJSGDC6873",
                 googleServicesFile: "./GoogleService-Info.plist",
                 entitlements: {
@@ -78,7 +78,7 @@ export default ({ config }) => {
             },
             android: {
                 package: "com.jwfca.bluom",
-                versionCode: 67,
+                versionCode: 68,
                 googleServicesFile: "./google-services.json",
                 splash: {
                     image: "./assets/images/logo.png",

@@ -11,6 +11,7 @@ import { useRouter } from 'expo-router';
 import { api } from '@/convex/_generated/api';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useTranslation } from 'react-i18next';
+import { translateValue } from '@/utils/translateHelper';
 
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
@@ -263,8 +264,13 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
                   activeOpacity={0.8}
                 >
                   <Ionicons name="restaurant-outline" size={16} color={scanMode === 'food' ? '#ffffff' : 'rgba(255,255,255,0.6)'} />
-                  <Text style={[styles.modeToggleText, scanMode === 'food' && styles.modeToggleTextActive]}>
-                    {t('modals.photo.modeFood', 'Scan Food')}
+                  <Text 
+                    style={[styles.modeToggleText, scanMode === 'food' && styles.modeToggleTextActive]}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.7}
+                  >
+                    {translateValue(t('modals.photo.modeFood', 'Scan Food'), i18n.language, t)}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -273,8 +279,13 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
                   activeOpacity={0.8}
                 >
                   <Ionicons name="document-text-outline" size={16} color={scanMode === 'nutrition' ? '#ffffff' : 'rgba(255,255,255,0.6)'} />
-                  <Text style={[styles.modeToggleText, scanMode === 'nutrition' && styles.modeToggleTextActive]}>
-                    {t('modals.photo.modeLabel', 'Nutrition Label')}
+                  <Text 
+                    style={[styles.modeToggleText, scanMode === 'nutrition' && styles.modeToggleTextActive]}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.7}
+                  >
+                    {translateValue(t('modals.photo.modeLabel', 'Nutrition Label'), i18n.language, t)}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -328,8 +339,15 @@ export default function PhotoRecognitionModal({ visible, onClose, onRecognized, 
                       size={14}
                       color={scanMode === 'food' ? '#10b981' : '#3b82f6'}
                     />
-                    <Text style={[styles.modeBadgeText, { color: scanMode === 'food' ? '#10b981' : '#3b82f6' }]}>
-                      {scanMode === 'food' ? t('modals.photo.modeFood', 'Scan Food') : t('modals.photo.modeLabel', 'Nutrition Label')}
+                    <Text 
+                      style={[styles.modeBadgeText, { color: scanMode === 'food' ? '#10b981' : '#3b82f6' }]}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                      minimumFontScale={0.7}
+                    >
+                      {scanMode === 'food' 
+                        ? translateValue(t('modals.photo.modeFood', 'Scan Food'), i18n.language, t) 
+                        : translateValue(t('modals.photo.modeLabel', 'Nutrition Label'), i18n.language, t)}
                     </Text>
                   </View>
 

@@ -45,6 +45,9 @@ import type {
 import { setPendingRouteAfterOnboarding } from './_layout';
 
 import HeightRuler from '@/components/onboarding/HeightRuler';
+import ScrollWheelPicker from '@/components/onboarding/ScrollWheelPicker';
+import HorizontalRulerPicker from '@/components/onboarding/HorizontalRulerPicker';
+import SteppedSlider from '@/components/onboarding/SteppedSlider';
 import Toast from '@/components/onboarding/Toast';
 import GoalEstimator from '@/components/onboarding/GoalEstimator';
 import { useTheme, THEMES, THEME_ORDER, type ThemeColors, type ThemeKey } from '@/context/ThemeContext';
@@ -64,7 +67,7 @@ interface QuestionOption {
 interface Question {
   id: string;
   question: string;
-  type: 'text' | 'number' | 'select' | 'multiselect' | 'number_with_units' | 'height_ruler' | 'select_with_info';
+  type: 'text' | 'number' | 'select' | 'multiselect' | 'number_with_units' | 'height_ruler' | 'select_with_info' | 'scroll_wheel' | 'horizontal_ruler' | 'stepped_slider';
   placeholder?: string;
   options?: (string | QuestionOption)[];
   subtitle?: string;
@@ -72,6 +75,8 @@ interface Question {
   min?: number;
   max?: number;
   toastFeedback?: string;
+  suffix?: string;
+  sliderSteps?: { value: string; label: string; description: string }[];
 }
 
 interface StepGroup {
@@ -85,255 +90,288 @@ interface StepGroup {
 
 const getStepGroups = (t: any): StepGroup[] => [
   {
-    id: 'identity',
+    id: 'gender',
     title: t('onboarding.groups.identityTitle'),
-    description: t('onboarding.groups.identityDesc'),
-    questions: [
-      { id: 'age', question: t('onboarding.questions.age'), type: 'number', placeholder: t('onboarding.questions.agePlaceholder'), min: 13, max: 100 },
-      {
-        id: 'gender',
-        question: t('onboarding.questions.gender'),
-        type: 'select',
-        options: [{ label: t('onboarding.questions.genderMale'), value: 'male' }, { label: t('onboarding.questions.genderFemale'), value: 'female' }],
-        subtitle: t('onboarding.questions.genderSub')
-      },
-    ]
+    questions: [{
+      id: 'gender',
+      question: t('onboarding.questions.gender'),
+      type: 'select',
+      options: [{ label: t('onboarding.questions.genderMale'), value: 'male' }, { label: t('onboarding.questions.genderFemale'), value: 'female' }],
+      subtitle: t('onboarding.questions.genderSub')
+    }]
   },
   {
-    id: 'biometrics',
+    id: 'age',
+    title: t('onboarding.groups.identityTitle'),
+    questions: [{ id: 'age', question: t('onboarding.questions.age'), type: 'scroll_wheel', min: 13, max: 100 }]
+  },
+  {
+    id: 'height',
     title: t('onboarding.groups.biometricsTitle'),
-    description: t('onboarding.groups.biometricsDesc'),
-    questions: [
-      { id: 'weight', question: t('onboarding.questions.weight'), type: 'number_with_units', placeholder: t('onboarding.questions.weightPlaceholder') },
-      { id: 'height', question: t('onboarding.questions.height'), type: 'number_with_units', placeholder: t('onboarding.questions.heightPlaceholder') },
-      { id: 'targetWeight', question: t('onboarding.questions.targetWeight'), type: 'number_with_units', placeholder: t('onboarding.questions.targetWeightPlaceholder'), subtitle: t('onboarding.questions.targetWeightSub') },
-    ]
+    questions: [{ id: 'height', question: t('onboarding.questions.height'), type: 'scroll_wheel', min: 100, max: 230, suffix: 'cm' }]
   },
   {
-    id: 'training',
+    id: 'weight',
+    title: t('onboarding.groups.biometricsTitle'),
+    questions: [{ id: 'weight', question: t('onboarding.questions.weight'), type: 'horizontal_ruler', min: 30, max: 200, suffix: 'kg' }]
+  },
+  {
+    id: 'targetWeight',
+    title: t('onboarding.groups.biometricsTitle'),
+    questions: [{ id: 'targetWeight', question: t('onboarding.questions.targetWeight'), type: 'horizontal_ruler', min: 30, max: 200, suffix: 'kg', subtitle: t('onboarding.questions.targetWeightSub') }]
+  },
+  {
+    id: 'fitnessGoal',
     title: t('onboarding.groups.trainingTitle'),
-    description: t('onboarding.groups.trainingDesc'),
-    questions: [
-      {
-        id: 'fitnessGoal',
-        question: t('onboarding.questions.fitnessGoal'),
-        type: 'select_with_info',
-        hasInfo: true,
-        options: [
-          { label: t('onboarding.questions.goalLoseWeight'), value: 'lose_weight', info: t('onboarding.questions.goalLoseWeightInfo') },
-          { label: t('onboarding.questions.goalBuildMuscle'), value: 'build_muscle', info: t('onboarding.questions.goalBuildMuscleInfo') },
-          { label: t('onboarding.questions.goalMaintain'), value: 'maintain', info: t('onboarding.questions.goalMaintainInfo') },
-          { label: t('onboarding.questions.goalEndurance'), value: 'improve_endurance', info: t('onboarding.questions.goalEnduranceInfo') },
-          { label: t('onboarding.questions.goalGeneralHealth'), value: 'general_health', info: t('onboarding.questions.goalGeneralHealthInfo') },
-          { label: t('onboarding.questions.goalBodyRecomp', 'Body Recomposition'), value: 'body_recomp', info: t('onboarding.questions.goalBodyRecompInfo', 'Lose fat and gain muscle simultaneously. Best for those who want to reshape their physique without drastic weight changes.') },
-        ]
-      },
-      {
-        id: 'experience',
-        question: t('onboarding.questions.experience'),
-        type: 'select',
-        options: [
-          { label: t('onboarding.questions.expBeginner'), value: 'beginner' },
-          { label: t('onboarding.questions.expIntermediate'), value: 'intermediate' },
-          { label: t('onboarding.questions.expAdvanced'), value: 'advanced' }
-        ]
-      },
-      {
-        id: 'workoutPreference',
-        question: t('onboarding.questions.workoutStyle'),
-        type: 'select_with_info',
-        hasInfo: true,
-        options: [
-          { label: t('onboarding.questions.wsStrength'), value: 'strength', info: t('onboarding.questions.wsStrengthInfo') },
-          { label: t('onboarding.questions.wsCardio'), value: 'cardio', info: t('onboarding.questions.wsCardioInfo') },
-          { label: t('onboarding.questions.wsHiit'), value: 'hiit', info: t('onboarding.questions.wsHiitInfo') },
-          { label: t('onboarding.questions.wsYoga'), value: 'yoga', info: t('onboarding.questions.wsYogaInfo') },
-          { label: t('onboarding.questions.wsCrossfit'), value: 'crossfit', info: t('onboarding.questions.wsCrossfitInfo') },
-          { label: t('onboarding.questions.wsPilates'), value: 'pilates', info: t('onboarding.questions.wsPilatesInfo') },
-          { label: t('onboarding.questions.wsMixed'), value: 'mixed', info: t('onboarding.questions.wsMixedInfo') }
-        ]
-      },
-      { id: 'goal', question: t('onboarding.questions.milestone'), type: 'text', placeholder: t('onboarding.questions.milestonePlaceholder') },
-    ]
+    questions: [{
+      id: 'fitnessGoal',
+      question: t('onboarding.questions.fitnessGoal'),
+      type: 'select_with_info',
+      hasInfo: true,
+      options: [
+        { label: t('onboarding.questions.goalLoseWeight'), value: 'lose_weight', info: t('onboarding.questions.goalLoseWeightInfo') },
+        { label: t('onboarding.questions.goalBuildMuscle'), value: 'build_muscle', info: t('onboarding.questions.goalBuildMuscleInfo') },
+        { label: t('onboarding.questions.goalMaintain'), value: 'maintain', info: t('onboarding.questions.goalMaintainInfo') },
+        { label: t('onboarding.questions.goalEndurance'), value: 'improve_endurance', info: t('onboarding.questions.goalEnduranceInfo') },
+        { label: t('onboarding.questions.goalGeneralHealth'), value: 'general_health', info: t('onboarding.questions.goalGeneralHealthInfo') },
+        { label: t('onboarding.questions.goalBodyRecomp', 'Body Recomposition'), value: 'body_recomp', info: t('onboarding.questions.goalBodyRecompInfo', 'Lose fat and gain muscle simultaneously. Best for those who want to reshape their physique without drastic weight changes.') },
+      ]
+    }]
   },
   {
-    id: 'activity',
+    id: 'experience',
+    title: t('onboarding.groups.trainingTitle'),
+    questions: [{
+      id: 'experience',
+      question: t('onboarding.questions.experience'),
+      type: 'stepped_slider',
+      sliderSteps: [
+        { value: 'beginner', label: t('onboarding.questions.expBeginner'), description: t('onboarding.slider.beginnerDesc', 'New to fitness or just getting started') },
+        { value: 'intermediate', label: t('onboarding.questions.expIntermediate'), description: t('onboarding.slider.intermediateDesc', 'Regular training for 1-3 years') },
+        { value: 'advanced', label: t('onboarding.questions.expAdvanced'), description: t('onboarding.slider.advancedDesc', 'Serious training for 3+ years') }
+      ]
+    }]
+  },
+  {
+    id: 'workoutPreference',
+    title: t('onboarding.groups.trainingTitle'),
+    questions: [{
+      id: 'workoutPreference',
+      question: t('onboarding.questions.workoutStyle'),
+      type: 'select_with_info',
+      hasInfo: true,
+      options: [
+        { label: t('onboarding.questions.wsStrength'), value: 'strength', info: t('onboarding.questions.wsStrengthInfo') },
+        { label: t('onboarding.questions.wsCardio'), value: 'cardio', info: t('onboarding.questions.wsCardioInfo') },
+        { label: t('onboarding.questions.wsHiit'), value: 'hiit', info: t('onboarding.questions.wsHiitInfo') },
+        { label: t('onboarding.questions.wsYoga'), value: 'yoga', info: t('onboarding.questions.wsYogaInfo') },
+        { label: t('onboarding.questions.wsCrossfit'), value: 'crossfit', info: t('onboarding.questions.wsCrossfitInfo') },
+        { label: t('onboarding.questions.wsPilates'), value: 'pilates', info: t('onboarding.questions.wsPilatesInfo') },
+        { label: t('onboarding.questions.wsMixed'), value: 'mixed', info: t('onboarding.questions.wsMixedInfo') }
+      ]
+    }]
+  },
+  {
+    id: 'activityLevel',
     title: t('onboarding.groups.activityTitle'),
-    questions: [
-      {
-        id: 'activityLevel',
-        question: t('onboarding.questions.activityLevel'),
-        type: 'select',
-        subtitle: t('onboarding.questions.activitySub'),
-        options: [
-          { label: t('onboarding.questions.actSedentary'), value: 'sedentary' },
-          { label: t('onboarding.questions.actLightlyActive'), value: 'lightly_active' },
-          { label: t('onboarding.questions.actModeratelyActive'), value: 'moderately_active' },
-          { label: t('onboarding.questions.actVeryActive'), value: 'very_active' },
-          { label: t('onboarding.questions.actExtremelyActive'), value: 'extremely_active' }
-        ]
-      },
-      {
-        id: 'timeAvailable',
-        question: t('onboarding.questions.weeklyTime'),
-        type: 'select',
-        options: [
-          { label: '< 2h', value: '1' },
-          { label: '2–4h', value: '3' },
-          { label: '4–6h', value: '5' },
-          { label: '6+h', value: '7' },
-        ]
-      }
-    ]
+    questions: [{
+      id: 'activityLevel',
+      question: t('onboarding.questions.activityLevel'),
+      type: 'stepped_slider',
+      subtitle: t('onboarding.questions.activitySub'),
+      sliderSteps: [
+        { value: 'sedentary', label: t('onboarding.questions.actSedentary'), description: t('onboarding.slider.sedentaryDesc', 'Office job, minimal movement') },
+        { value: 'lightly_active', label: t('onboarding.questions.actLightlyActive'), description: t('onboarding.slider.lightlyActiveDesc', 'Light walks, occasional activity') },
+        { value: 'moderately_active', label: t('onboarding.questions.actModeratelyActive'), description: t('onboarding.slider.modActiveDesc', 'Regular exercise 3-4x per week') },
+        { value: 'very_active', label: t('onboarding.questions.actVeryActive'), description: t('onboarding.slider.veryActiveDesc', 'Intense training 5-6x per week') },
+        { value: 'extremely_active', label: t('onboarding.questions.actExtremelyActive'), description: t('onboarding.slider.extremeActiveDesc', 'Athlete-level daily training') }
+      ]
+    }]
+  },
+  {
+    id: 'timeAvailable',
+    title: t('onboarding.groups.activityTitle'),
+    questions: [{
+      id: 'timeAvailable',
+      question: t('onboarding.questions.weeklyTime'),
+      type: 'select',
+      options: [
+        { label: '< 2h', value: '1' },
+        { label: '2–4h', value: '3' },
+        { label: '4–6h', value: '5' },
+        { label: '6+h', value: '7' },
+      ]
+    }]
   },
   {
     id: 'commitment',
     title: t('onboarding.groups.commitmentTitle'),
     description: t('onboarding.groups.commitmentDesc'),
-    questions: [
-      {
-        id: 'commitmentLevel',
-        question: t('onboarding.questions.commitmentApproach'),
-        type: 'select_with_info',
-        hasInfo: true,
-        toastFeedback: t('onboarding.questions.commitToast'),
-        options: [
-          { label: t('onboarding.questions.commitEasy'), value: 'easy', info: t('onboarding.questions.commitEasyInfo') },
-          { label: t('onboarding.questions.commitBalanced'), value: 'balanced', info: t('onboarding.questions.commitBalancedInfo') },
-          { label: t('onboarding.questions.commitMaximum'), value: 'maximum', info: t('onboarding.questions.commitMaximumInfo') }
-        ]
-      },
-    ]
+    questions: [{
+      id: 'commitmentLevel',
+      question: t('onboarding.questions.commitmentApproach'),
+      type: 'select_with_info',
+      hasInfo: true,
+      toastFeedback: t('onboarding.questions.commitToast'),
+      options: [
+        { label: t('onboarding.questions.commitEasy'), value: 'easy', info: t('onboarding.questions.commitEasyInfo') },
+        { label: t('onboarding.questions.commitBalanced'), value: 'balanced', info: t('onboarding.questions.commitBalancedInfo') },
+        { label: t('onboarding.questions.commitMaximum'), value: 'maximum', info: t('onboarding.questions.commitMaximumInfo') }
+      ]
+    }]
   },
   {
-    id: 'lifestyle',
+    id: 'sleepHours',
     title: t('onboarding.groups.lifestyleTitle'),
-    questions: [
-      { id: 'sleepHours', question: t('onboarding.questions.sleepHours'), type: 'number', min: 4, max: 12 },
-      {
-        id: 'stressLevel',
-        question: t('onboarding.questions.stressLevel'),
-        type: 'select',
-        options: [
-          { label: t('onboarding.questions.stressLow'), value: 'low' },
-          { label: t('onboarding.questions.stressMod'), value: 'moderate' },
-          { label: t('onboarding.questions.stressHigh'), value: 'high' },
-          { label: t('onboarding.questions.stressVeryHigh'), value: 'very_high' }
-        ]
-      },
-      {
-        id: 'lifeStressor',
-        question: t('onboarding.questions.mainStressors'),
-        type: 'multiselect',
-        options: [
-          { label: t('onboarding.questions.stressorWork'), value: 'Work/Career' },
-          { label: t('onboarding.questions.stressorFamily'), value: 'Family/Parenting' },
-          { label: t('onboarding.questions.stressorFinances'), value: 'Financial Planning' },
-          { label: t('onboarding.questions.stressorHealth'), value: 'Health/Self-Care' },
-          { label: t('onboarding.questions.stressorSocial'), value: 'Social/Relationships' },
-          { label: t('onboarding.questions.stressorSleep'), value: 'Sleep' },
-          { label: t('onboarding.questions.stressorPurpose'), value: 'Purpose' },
-          { label: t('onboarding.questions.stressorTime'), value: 'Time' },
-          { label: t('onboarding.questions.stressorEnvironment'), value: 'Environment' },
-          { label: t('onboarding.questions.stressorBurnout'), value: 'Burnout' },
-          { label: t('onboarding.questions.stressorOverwhelm'), value: 'Overwhelm' },
-          { label: t('onboarding.questions.stressorLoneliness'), value: 'Loneliness' },
-        ]
-      }
-    ]
+    questions: [{ id: 'sleepHours', question: t('onboarding.questions.sleepHours'), type: 'scroll_wheel', min: 3, max: 12, suffix: 'h' }]
   },
   {
-    id: 'mindset',
+    id: 'stressLevel',
+    title: t('onboarding.groups.lifestyleTitle'),
+    questions: [{
+      id: 'stressLevel',
+      question: t('onboarding.questions.stressLevel'),
+      type: 'stepped_slider',
+      sliderSteps: [
+        { value: 'low', label: t('onboarding.questions.stressLow'), description: t('onboarding.slider.stressLowDesc', 'Relaxed, manageable daily life') },
+        { value: 'moderate', label: t('onboarding.questions.stressMod'), description: t('onboarding.slider.stressModDesc', 'Some pressure but coping well') },
+        { value: 'high', label: t('onboarding.questions.stressHigh'), description: t('onboarding.slider.stressHighDesc', 'Frequent stress affecting wellbeing') },
+        { value: 'very_high', label: t('onboarding.questions.stressVeryHigh'), description: t('onboarding.slider.stressVeryHighDesc', 'Overwhelmed, struggling to manage') }
+      ]
+    }]
+  },
+  {
+    id: 'lifeStressor',
+    title: t('onboarding.groups.lifestyleTitle'),
+    questions: [{
+      id: 'lifeStressor',
+      question: t('onboarding.questions.mainStressors'),
+      type: 'multiselect',
+      options: [
+        { label: t('onboarding.questions.stressorWork'), value: 'Work/Career' },
+        { label: t('onboarding.questions.stressorFamily'), value: 'Family/Parenting' },
+        { label: t('onboarding.questions.stressorFinances'), value: 'Financial Planning' },
+        { label: t('onboarding.questions.stressorHealth'), value: 'Health/Self-Care' },
+        { label: t('onboarding.questions.stressorSocial'), value: 'Social/Relationships' },
+        { label: t('onboarding.questions.stressorSleep'), value: 'Sleep' },
+        { label: t('onboarding.questions.stressorPurpose'), value: 'Purpose' },
+        { label: t('onboarding.questions.stressorTime'), value: 'Time' },
+        { label: t('onboarding.questions.stressorEnvironment'), value: 'Environment' },
+        { label: t('onboarding.questions.stressorBurnout'), value: 'Burnout' },
+        { label: t('onboarding.questions.stressorOverwhelm'), value: 'Overwhelm' },
+        { label: t('onboarding.questions.stressorLoneliness'), value: 'Loneliness' },
+      ]
+    }]
+  },
+  {
+    id: 'motivation',
     title: t('onboarding.groups.mindsetTitle'),
     description: t('onboarding.groups.mindsetDesc'),
-    questions: [
-      {
-        id: 'motivation',
-        question: t('onboarding.questions.motivations'),
-        type: 'multiselect',
-        options: [
-          { label: t('onboarding.questions.motivHealth'), value: 'Health' },
-          { label: t('onboarding.questions.motivAppearance'), value: 'Appearance' },
-          { label: t('onboarding.questions.motivEnergy'), value: 'Energy' },
-          { label: t('onboarding.questions.motivStrength'), value: 'Strength' },
-          { label: t('onboarding.questions.motivConfidence'), value: 'Confidence' },
-          { label: t('onboarding.questions.motivLongevity'), value: 'Longevity' }
-        ]
-      },
-      {
-        id: 'challenges',
-        question: t('onboarding.questions.challenges'),
-        type: 'multiselect',
-        options: [
-          { label: t('onboarding.questions.chalTime'), value: 'Time' },
-          { label: t('onboarding.questions.chalMotivation'), value: 'Motivation' },
-          { label: t('onboarding.questions.chalKnowledge'), value: 'Knowledge' },
-          { label: t('onboarding.questions.chalConsistency'), value: 'Consistency' },
-          { label: t('onboarding.questions.chalDiet'), value: 'Diet' },
-          { label: t('onboarding.questions.chalSocial'), value: 'Social Support' }
-        ]
-      },
-      {
-        id: 'coachingStyle',
-        question: t('onboarding.questions.coachingStyle'),
-        type: 'select',
-        options: [
-          { label: t('onboarding.questions.csDirect'), value: 'Direct & Disciplined' },
-          { label: t('onboarding.questions.csEncouraging'), value: 'Encouraging & Gentle' },
-          { label: t('onboarding.questions.csData'), value: 'Data-Driven & Analytical' }
-        ]
-      }
-    ]
+    questions: [{
+      id: 'motivation',
+      question: t('onboarding.questions.motivations'),
+      type: 'multiselect',
+      options: [
+        { label: t('onboarding.questions.motivHealth'), value: 'Health' },
+        { label: t('onboarding.questions.motivAppearance'), value: 'Appearance' },
+        { label: t('onboarding.questions.motivEnergy'), value: 'Energy' },
+        { label: t('onboarding.questions.motivStrength'), value: 'Strength' },
+        { label: t('onboarding.questions.motivConfidence'), value: 'Confidence' },
+        { label: t('onboarding.questions.motivLongevity'), value: 'Longevity' }
+      ]
+    }]
   },
   {
-    id: 'diet',
+    id: 'challenges',
+    title: t('onboarding.groups.mindsetTitle'),
+    questions: [{
+      id: 'challenges',
+      question: t('onboarding.questions.challenges'),
+      type: 'multiselect',
+      options: [
+        { label: t('onboarding.questions.chalTime'), value: 'Time' },
+        { label: t('onboarding.questions.chalMotivation'), value: 'Motivation' },
+        { label: t('onboarding.questions.chalKnowledge'), value: 'Knowledge' },
+        { label: t('onboarding.questions.chalConsistency'), value: 'Consistency' },
+        { label: t('onboarding.questions.chalDiet'), value: 'Diet' },
+        { label: t('onboarding.questions.chalSocial'), value: 'Social Support' }
+      ]
+    }]
+  },
+  {
+    id: 'coachingStyle',
+    title: t('onboarding.groups.mindsetTitle'),
+    questions: [{
+      id: 'coachingStyle',
+      question: t('onboarding.questions.coachingStyle'),
+      type: 'select',
+      options: [
+        { label: t('onboarding.questions.csDirect'), value: 'Direct & Disciplined' },
+        { label: t('onboarding.questions.csEncouraging'), value: 'Encouraging & Gentle' },
+        { label: t('onboarding.questions.csData'), value: 'Data-Driven & Analytical' }
+      ]
+    }]
+  },
+  {
+    id: 'nutritionPreference',
     title: t('onboarding.groups.dietTitle'),
-    questions: [
-      {
-        id: 'nutritionPreference',
-        question: t('onboarding.questions.dietApproach'),
-        type: 'select_with_info',
-        hasInfo: true,
-        options: [
-          { label: t('onboarding.questions.dietHighProtein'), value: 'high_protein', info: t('onboarding.questions.dietHighProteinInfo') },
-          { label: t('onboarding.questions.dietLowCarb'), value: 'low_carb', info: t('onboarding.questions.dietLowCarbInfo') },
-          { label: t('onboarding.questions.dietBalanced'), value: 'balanced', info: t('onboarding.questions.dietBalancedInfo') },
-          { label: t('onboarding.questions.dietPlantBased'), value: 'plant_based', info: t('onboarding.questions.dietPlantBasedInfo') },
-          { label: t('onboarding.questions.dietFlexible'), value: 'flexible', info: t('onboarding.questions.dietFlexibleInfo') }
-        ]
-      },
-      {
-        id: 'mealFrequency',
-        question: t('onboarding.questions.mealsPerDay'),
-        type: 'select',
-        options: [
-          { label: t('onboarding.questions.meals2'), value: '2' },
-          { label: t('onboarding.questions.meals3'), value: '3' },
-          { label: t('onboarding.questions.meals4'), value: '4' },
-          { label: t('onboarding.questions.meals6'), value: '6' },
-        ]
-      },
-      {
-        id: 'peakEnergy',
-        question: t('onboarding.questions.peakEnergy'),
-        type: 'select',
-        options: [
-          { label: t('onboarding.questions.peakEarlyMorning'), value: 'Early Morning' },
-          { label: t('onboarding.questions.peakMidday'), value: 'Mid-Day' },
-          { label: t('onboarding.questions.peakEvening'), value: 'Evening' },
-          { label: t('onboarding.questions.peakLateNight'), value: 'Late Night' },
-        ]
-      }
-    ]
-  }
+    questions: [{
+      id: 'nutritionPreference',
+      question: t('onboarding.questions.dietApproach'),
+      type: 'select_with_info',
+      hasInfo: true,
+      options: [
+        { label: t('onboarding.questions.dietHighProtein'), value: 'high_protein', info: t('onboarding.questions.dietHighProteinInfo') },
+        { label: t('onboarding.questions.dietLowCarb'), value: 'low_carb', info: t('onboarding.questions.dietLowCarbInfo') },
+        { label: t('onboarding.questions.dietBalanced'), value: 'balanced', info: t('onboarding.questions.dietBalancedInfo') },
+        { label: t('onboarding.questions.dietPlantBased'), value: 'plant_based', info: t('onboarding.questions.dietPlantBasedInfo') },
+        { label: t('onboarding.questions.dietFlexible'), value: 'flexible', info: t('onboarding.questions.dietFlexibleInfo') }
+      ]
+    }]
+  },
+  {
+    id: 'mealFrequency',
+    title: t('onboarding.groups.dietTitle'),
+    questions: [{
+      id: 'mealFrequency',
+      question: t('onboarding.questions.mealsPerDay'),
+      type: 'select',
+      options: [
+        { label: t('onboarding.questions.meals2'), value: '2' },
+        { label: t('onboarding.questions.meals3'), value: '3' },
+        { label: t('onboarding.questions.meals4'), value: '4' },
+        { label: t('onboarding.questions.meals6'), value: '6' },
+      ]
+    }]
+  },
+  {
+    id: 'peakEnergy',
+    title: t('onboarding.groups.dietTitle'),
+    questions: [{
+      id: 'peakEnergy',
+      question: t('onboarding.questions.peakEnergy'),
+      type: 'select',
+      options: [
+        { label: t('onboarding.questions.peakEarlyMorning'), value: 'Early Morning' },
+        { label: t('onboarding.questions.peakMidday'), value: 'Mid-Day' },
+        { label: t('onboarding.questions.peakEvening'), value: 'Evening' },
+        { label: t('onboarding.questions.peakLateNight'), value: 'Late Night' },
+      ]
+    }]
+  },
+  {
+    id: 'goal',
+    title: t('onboarding.groups.trainingTitle'),
+    questions: [{ id: 'goal', question: t('onboarding.questions.milestone'), type: 'text', placeholder: t('onboarding.questions.milestonePlaceholder') }]
+  },
 ];
 
 // Transition toasts — shown inline via Toast component (no Modal)
 // Defined as a function so it can use the t() translation function
-const getTransitionMessages = (t: (key: string, fallback: string) => string): { [key: number]: { title: string; subtitle: string; emoji: string } } => ({
-  2: { title: t('onboarding.transition.goalSet', 'Goal Set!'), subtitle: t('onboarding.transition.calibrating', "We're calibrating your targets..."), emoji: "🎯" },
-  5: { title: t('onboarding.transition.understood', 'Understood.'), subtitle: t('onboarding.transition.mentalFramework', 'Building your mental framework...'), emoji: "🧠" },
-  6: { title: t('onboarding.transition.almostThere', 'Almost there!'), subtitle: t('onboarding.transition.nutritionPlan', 'Designing your nutrition plan...'), emoji: "🥗" },
+const getTransitionMessages = (t: (key: string, fallback: string) => string): { [key: string]: { title: string; subtitle: string; emoji: string } } => ({
+  'commitment': { title: t('onboarding.transition.goalSet', 'Goal Set!'), subtitle: t('onboarding.transition.calibrating', "We're calibrating your targets..."), emoji: "🎯" },
+  'motivation': { title: t('onboarding.transition.understood', 'Understood.'), subtitle: t('onboarding.transition.mentalFramework', 'Building your mental framework...'), emoji: "🧠" },
+  'nutritionPreference': { title: t('onboarding.transition.almostThere', 'Almost there!'), subtitle: t('onboarding.transition.nutritionPlan', 'Designing your nutrition plan...'), emoji: "🥗" },
 });
 
 const WELCOME_SLIDES = [
@@ -367,11 +405,11 @@ const WELCOME_SLIDES = [
 
 export default function OnboardingScreen() {
   const { t } = useTranslation();
-  const STEP_GROUPS = React.useMemo(() => getStepGroups(t), [t]);
   const { user: clerkUser } = useUser();
   const insets = useSafeAreaInsets();
 
   const onboardUser = useMutation(api.onboarding.onboardUser);
+  const updateUser = useMutation(api.users.updateUser);
   const convexUser = useQuery(api.users.getUserByClerkId, clerkUser?.id ? { clerkId: clerkUser.id } : 'skip');
 
   // State
@@ -393,6 +431,158 @@ export default function OnboardingScreen() {
   const { theme: activeTheme, setTheme: setActiveTheme, colors: themeColors } = useTheme();
   const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const [pendingThemePick, setPendingThemePick] = useState<ThemeKey | null>(null);
+
+  const STEP_GROUPS = React.useMemo(() => {
+    const baseGroups = getStepGroups(t);
+    const gender = answers.gender;
+    const lifestyleIndex = baseGroups.findIndex(g => g.id === 'sleepHours'); // Changed from 'lifestyle' to 'sleepHours' as 'lifestyle' group is gone
+
+    if (gender === 'female') {
+      const womensGroups: StepGroup[] = [
+        {
+          id: 'lifeStage',
+          title: t('onboarding.groups.womensHealthTitle', "Women's Health"),
+          description: t('onboarding.groups.womensHealthDesc', "Hormonal & cycle health profile optimization"),
+          questions: [{
+            id: 'lifeStage',
+            question: t('onboarding.questions.lifeStage', 'What is your current life stage?'),
+            type: 'select',
+            options: [
+              { label: t('womensHealth.stage.cycle', 'Menstruating / Cycle'), value: 'cycle' },
+              { label: t('womensHealth.stage.pregnancy', 'Pregnancy'), value: 'pregnancy' },
+              { label: t('womensHealth.stage.menopause', 'Menopause / Post-menopause'), value: 'menopause' },
+            ]
+          }]
+        },
+        {
+          id: 'womensMainFocus',
+          title: t('onboarding.groups.womensHealthTitle', "Women's Health"),
+          questions: [{
+            id: 'womensMainFocus',
+            question: t('womensHealth.questions.mainFocus', 'What is your main focus right now?'),
+            type: 'select',
+            options: [
+              { value: 'cycle_health',     label: t('womensHealth.focus.cycle', 'Cycle health & regularity'), icon: '🔄' },
+              { value: 'fertility',        label: t('womensHealth.focus.fertility', 'Fertility & conception'),    icon: '🤱' },
+              { value: 'perimenopause',    label: t('womensHealth.focus.perimenopause', 'Perimenopause symptoms'),    icon: '🌡️' },
+              { value: 'energy',           label: t('womensHealth.focus.energy', 'Hormonal energy & mood'),   icon: '⚡' },
+              { value: 'skin_hormones',    label: t('womensHealth.focus.skin', 'Skin & hormonal acne'),     icon: '✨' },
+              { value: 'weight_hormones',  label: t('womensHealth.focus.weight', 'Hormonal weight balance'),  icon: '⚖️' },
+            ],
+          }]
+        },
+        {
+          id: 'cycleRegularity',
+          title: t('onboarding.groups.womensHealthTitle', "Women's Health"),
+          questions: [{
+            id: 'cycleRegularity',
+            question: t('womensHealth.questions.cycleRegularity', 'How would you describe your cycle?'),
+            type: 'select',
+            options: [
+              { value: 'regular',   label: t('womensHealth.regularity.regular', 'Regular (24–35 day cycle)'), icon: '✅' },
+              { value: 'irregular', label: t('womensHealth.regularity.irregular', 'Irregular / unpredictable'),  icon: '🌊' },
+              { value: 'unknown',   label: t('womensHealth.regularity.unknown', 'I\'m not sure'),              icon: '❓' },
+            ],
+          }]
+        },
+        {
+          id: 'periodPain',
+          title: t('onboarding.groups.womensHealthTitle', "Women's Health"),
+          questions: [{
+            id: 'periodPain',
+            question: t('womensHealth.questions.periodPain', 'How is your period pain?'),
+            type: 'select',
+            options: [
+              { value: 'none',     label: t('womensHealth.pain.none', 'None — pain-free'),       icon: '😊' },
+              { value: 'mild',     label: t('womensHealth.pain.mild', 'Mild — manageable'),      icon: '🟡' },
+              { value: 'moderate', label: t('womensHealth.pain.moderate', 'Moderate — disruptive'),  icon: '🟠' },
+              { value: 'severe',   label: t('womensHealth.pain.severe', 'Severe — debilitating'),  icon: '🔴' },
+            ],
+          }]
+        },
+        {
+          id: 'birthControl',
+          title: t('onboarding.groups.womensHealthTitle', "Women's Health"),
+          questions: [{
+            id: 'birthControl',
+            question: t('womensHealth.questions.birthControl', 'Are you using hormonal birth control?'),
+            type: 'select',
+            options: [
+              { value: 'none',    label: t('womensHealth.bc.none', 'No — not using any'),   icon: '🌿' },
+              { value: 'pill',    label: t('womensHealth.bc.pill', 'Combined / mini pill'),  icon: '💊' },
+              { value: 'iud',     label: t('womensHealth.bc.iud', 'IUD (hormonal)'),        icon: '🔩' },
+              { value: 'implant', label: t('womensHealth.bc.implant', 'Implant / injection'),   icon: '💉' },
+              { value: 'other',   label: t('womensHealth.bc.other', 'Other method'),          icon: '📋' },
+            ],
+          }]
+        }
+      ];
+      const copy = [...baseGroups];
+      if (lifestyleIndex !== -1) {
+        copy.splice(lifestyleIndex, 0, ...womensGroups);
+      } else {
+        copy.push(...womensGroups);
+      }
+      return copy;
+    } else if (gender === 'male') {
+      const mensGroups: StepGroup[] = [
+        {
+          id: 'trainingMode',
+          title: t('onboarding.groups.mensHealthTitle', "Men's Health"),
+          description: t('onboarding.groups.mensHealthDesc', "Training style, experience & goal optimization"),
+          questions: [{
+            id: 'trainingMode',
+            question: t('mensHealth.questions.trainingMode', 'How would you describe your training approach?'),
+            type: 'select',
+            options: [
+              { value: 'natural', label: t('mensHealth.modes.natural', 'Natural Athlete'), icon: '🌿' },
+              { value: 'enhanced', label: t('mensHealth.modes.enhanced', 'Enhanced / PED User'), icon: '💉' },
+              { value: 'athlete', label: t('mensHealth.modes.athlete', 'Competitive Athlete'), icon: '🏆' },
+            ],
+          }]
+        },
+        {
+          id: 'yearsTraining',
+          title: t('onboarding.groups.mensHealthTitle', "Men's Health"),
+          questions: [{
+            id: 'yearsTraining',
+            question: t('mensHealth.questions.yearsTraining', 'How long have you been training seriously?'),
+            type: 'select',
+            options: [
+              { value: 'beginner', label: t('mensHealth.years.beginner', 'Under 1 year'), icon: '🌱' },
+              { value: 'intermediate', label: t('mensHealth.years.intermediate', '1–3 years'), icon: '📈' },
+              { value: 'advanced', label: t('mensHealth.years.advanced', '3–7 years'), icon: '🔥' },
+              { value: 'veteran', label: t('mensHealth.years.veteran', '7+ years'), icon: '🏆' },
+            ],
+          }]
+        },
+        {
+          id: 'competitionFocus',
+          title: t('onboarding.groups.mensHealthTitle', "Men's Health"),
+          questions: [{
+            id: 'competitionFocus',
+            question: t('mensHealth.questions.competitionFocus', 'Do you compete or plan to?'),
+            type: 'select',
+            options: [
+              { value: 'none', label: t('mensHealth.comp.none', 'No — training for myself'), icon: '🧘' },
+              { value: 'bodybuilding', label: t('mensHealth.comp.bodybuilding', 'Bodybuilding / Physique'), icon: '💎' },
+              { value: 'powerlifting', label: t('mensHealth.comp.powerlifting', 'Powerlifting / Strongman'), icon: '🏋️' },
+              { value: 'crossfit', label: t('mensHealth.comp.crossfit', 'CrossFit / Functional'), icon: '⚡' },
+              { value: 'sport', label: t('mensHealth.comp.sport', 'Team / Combat Sport'), icon: '🥊' },
+            ],
+          }]
+        }
+      ];
+      const copy = [...baseGroups];
+      if (lifestyleIndex !== -1) {
+        copy.splice(lifestyleIndex, 0, ...mensGroups);
+      } else {
+        copy.push(...mensGroups);
+      }
+      return copy;
+    }
+    return baseGroups;
+  }, [t, answers.gender]);
 
   const LANG_OPTIONS = [
     { code: 'pt', flag: '🇵🇹', label: 'PT' },
@@ -448,6 +638,21 @@ export default function OnboardingScreen() {
     if (toastFeedback) {
       showToast(toastFeedback);
     }
+    const currentGroup = STEP_GROUPS[currentGroupIndex];
+    if (currentGroup && currentGroup.questions.length === 1) {
+      const q = currentGroup.questions[0];
+      if (q.type === 'select' || q.type === 'select_with_info') {
+        setTimeout(() => {
+          const transition = getTransitionMessages(t)[currentGroup.id];
+          if (transition) {
+            showToast(transition.subtitle, transition.title, transition.emoji);
+            setTimeout(() => advanceGroup(), 2000);
+          } else {
+            advanceGroup();
+          }
+        }, 400);
+      }
+    }
   };
 
   const handleWelcomeNext = () => {
@@ -496,7 +701,7 @@ export default function OnboardingScreen() {
     }
 
     // Show transition toast (no Modal — just the Toast component)
-    const transition = getTransitionMessages(t)[currentGroupIndex];
+    const transition = getTransitionMessages(t)[currentGroup.id];
     if (transition) {
       showToast(transition.subtitle, transition.title, transition.emoji);
       setTimeout(() => advanceGroup(), 2000);
@@ -613,6 +818,40 @@ export default function OnboardingScreen() {
       setPendingRouteAfterOnboarding('/premium');
 
       await onboardUser({ clerkId: clerkUser!.id, ...dataToSave as any });
+
+      if (gender === 'female') {
+        const womensProfileObj = {
+          mainFocus: answers.womensMainFocus || 'cycle_health',
+          cycleRegularity: answers.cycleRegularity || 'regular',
+          periodPain: answers.periodPain || 'none',
+          birthControl: answers.birthControl || 'none',
+          lastPeriodDate: '',
+          conceptionDate: '',
+        };
+        await SecureStore.setItemAsync('bluom_womens_quiz_v1', JSON.stringify(womensProfileObj)).catch(() => {});
+        if (convexUser?._id) {
+          await updateUser({
+            userId: convexUser._id,
+            updates: { lifeStage: answers.lifeStage || 'cycle' }
+          }).catch((err) => console.error("Failed to update lifeStage in convex:", err));
+        }
+      } else if (gender === 'male') {
+        let mappedGoal = 'muscle';
+        const fg = answers.fitnessGoal;
+        if (fg === 'lose_weight') mappedGoal = 'fat_loss';
+        else if (fg === 'build_muscle') mappedGoal = 'muscle';
+        else if (fg === 'improve_endurance') mappedGoal = 'performance';
+        else if (fg === 'general_health' || fg === 'maintain') mappedGoal = 'longevity';
+        else if (fg === 'body_recomp') mappedGoal = 'recomp';
+
+        const mensProfileObj = {
+          trainingMode: answers.trainingMode || 'natural',
+          primaryGoal: mappedGoal,
+          yearsTraining: answers.yearsTraining || 'beginner',
+          competitionFocus: answers.competitionFocus || 'none',
+        };
+        await SecureStore.setItemAsync('bluom_mens_quiz_v1', JSON.stringify(mensProfileObj)).catch(() => {});
+      }
 
       // ── DO NOT call router.replace here. _layout.tsx handles it. ──────────
       // The mutation above sets convexUser.age > 0 in Convex.
@@ -739,6 +978,64 @@ export default function OnboardingScreen() {
       );
     }
 
+    if (q.type === 'scroll_wheel') {
+      const numVal = parseFloat(val) || q.min || 0;
+      const isWeight = q.id.toLowerCase().includes('weight');
+      const isHeight = q.id.toLowerCase().includes('height');
+      const currentUnit = isWeight ? units.weight : isHeight ? units.height : undefined;
+      const unitOpts = isWeight ? ['kg', 'lbs'] : isHeight ? ['cm', 'ft'] : undefined;
+      return (
+        <ScrollWheelPicker
+          min={q.min || 0}
+          max={q.max || 100}
+          value={numVal}
+          onChange={(v) => handleAnswer(q.id, v.toString())}
+          suffix={q.suffix || currentUnit}
+          unitToggle={unitOpts && currentUnit ? {
+            options: unitOpts,
+            selected: currentUnit,
+            onToggle: (u) => {
+              if (isWeight) setUnits(prev => ({ ...prev, weight: u }));
+              else if (isHeight) setUnits(prev => ({ ...prev, height: u }));
+            }
+          } : undefined}
+        />
+      );
+    }
+
+    if (q.type === 'horizontal_ruler') {
+      const numVal = parseFloat(val) || q.min || 0;
+      const isWeight = q.id.toLowerCase().includes('weight');
+      const currentUnit = isWeight ? units.weight : undefined;
+      const unitOpts = isWeight ? ['kg', 'lbs'] : undefined;
+      return (
+        <HorizontalRulerPicker
+          min={q.min || 0}
+          max={q.max || 200}
+          value={numVal}
+          onChange={(v) => handleAnswer(q.id, v.toString())}
+          suffix={q.suffix || currentUnit}
+          unitToggle={unitOpts && currentUnit ? {
+            options: unitOpts,
+            selected: currentUnit,
+            onToggle: (u) => setUnits(prev => ({ ...prev, weight: u }))
+          } : undefined}
+        />
+      );
+    }
+
+    if (q.type === 'stepped_slider') {
+      const steps = q.sliderSteps || [];
+      const selectedIdx = steps.findIndex(s => s.value === val);
+      return (
+        <SteppedSlider
+          steps={steps}
+          selectedIndex={selectedIdx >= 0 ? selectedIdx : 0}
+          onChange={(idx) => handleAnswer(q.id, steps[idx].value)}
+        />
+      );
+    }
+
     return null;
   };
 
@@ -822,7 +1119,7 @@ export default function OnboardingScreen() {
           </ScrollView>
 
           {/* Fixed footer button */}
-          <View style={styles.resultsFooter}>
+          <View style={[styles.resultsFooter, { paddingBottom: Math.max(insets.bottom, 20) }]}>
             <TouchableOpacity style={styles.primaryBtn} onPress={handleFinalSubmit} disabled={isSubmitting}>
               {isSubmitting
                 ? <ActivityIndicator color={themeColors.onPrimary} />
@@ -917,7 +1214,7 @@ export default function OnboardingScreen() {
             </ScrollView>
 
             <View style={{ alignItems: 'center', width: '100%', paddingBottom: Math.max(20, insets.bottom) }}>
-              {/* ── Medical Disclaimer ──────────────────────────────────── */}
+              {/* ── Medical Disclaimer (Disabled) ──────────────────────────
               <View style={{
                 backgroundColor: 'rgba(255,255,255,0.12)',
                 borderRadius: 12,
@@ -932,6 +1229,7 @@ export default function OnboardingScreen() {
                   {t('onboarding.disclaimer', 'Bluom provides general wellness information only. Always consult a qualified healthcare professional for medical advice, diagnosis, or treatment.')}
                 </Text>
               </View>
+              ────────────────────────────────────────────────────────── */}
               <View style={styles.dotsContainer}>
                 <View style={[styles.dot, currentWelcomeSlide === 0 && styles.activeDot]} />
                 <View style={[styles.dot, currentWelcomeSlide === 1 && styles.activeDot]} />

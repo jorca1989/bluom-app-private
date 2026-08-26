@@ -32,6 +32,7 @@ import { api } from '@/convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useTranslation } from 'react-i18next';
+import { translateValue } from '@/utils/translateHelper';
 
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
@@ -699,22 +700,24 @@ export default function MealHubScreen() {
             <View style={ms.heroLeft}>
               <View style={[ms.dietBadge, { backgroundColor: dietMeta.bg }]}>
                 <Ionicons name={dietMeta.icon as any} size={12} color={dietMeta.color} />
-                <Text style={[ms.dietBadgeText, { color: dietMeta.color }]}>{t(dietMeta.labelKey, dietMeta.label)}</Text>
+                <Text style={[ms.dietBadgeText, { color: dietMeta.color }]}>{translateValue(t(dietMeta.labelKey, dietMeta.label), i18n.language, t)}</Text>
               </View>
               <Text style={ms.heroTitle}>
-                {isPro ? t('meals.heroTitlePro', 'AI Personalised Plan') : t('meals.heroTitleFree', '28-Day Meal Plan')}
+                {translateValue(isPro ? t('meals.heroTitlePro', 'AI Personalised Plan') : t('meals.heroTitleFree', '28-Day Meal Plan'), i18n.language, t)}
               </Text>
               <Text style={ms.heroSub}>
-                {isPro
+                {translateValue(isPro
                   ? t('meals.heroSubPro', 'Rotates monthly · tap a meal to swap')
-                  : t('meals.heroSubFree', 'Generic template · upgrade to Pro for AI personalisation')}
+                  : t('meals.heroSubFree', 'Generic template · upgrade to Pro for AI personalisation'), i18n.language, t)}
               </Text>
               {/* Progress bar */}
               <View style={ms.progressWrap}>
                 <View style={ms.progressTrack}>
                   <View style={[ms.progressFill, { width: `${progressPct}%`, backgroundColor: dietMeta.color }]} />
                 </View>
-                <Text style={ms.progressText}>{t('meals.dayProgress', { current: todayDayNum, total: 28, defaultValue: `Day ${todayDayNum} of 28` })} · {progressPct}%</Text>
+                <Text style={ms.progressText}>
+                  {translateValue(t('meals.dayProgress', { current: todayDayNum, total: 28, defaultValue: `Day ${todayDayNum} of 28` }), i18n.language, t)} · {progressPct}%
+                </Text>
               </View>
             </View>
           </LinearGradient>
@@ -801,12 +804,12 @@ export default function MealHubScreen() {
               >
                 <View style={[ms.blob, { top: -20, right: 0, width: 100, height: 100, backgroundColor: 'rgba(139,92,246,0.2)' }]} />
                 <Ionicons name="sparkles" size={22} color="#a78bfa" style={{ marginBottom: 10 }} />
-                <Text style={ms.upsellTitle}>{t('meals.upsellTitle', 'Continue Your Journey')}</Text>
+                <Text style={ms.upsellTitle}>{translateValue(t('meals.upsellTitle', 'Continue Your Journey'), i18n.language, t)}</Text>
                 <Text style={ms.upsellSub}>
-                  {t('meals.upsellSub', 'Free users get a full 28-day plan. When you finish, upgrade to Pro to continue your transformation with an AI-generated plan.')}
+                  {translateValue(t('meals.upsellSub', 'Free users get a full 28-day plan. When you finish, upgrade to Pro to continue your transformation with an AI-generated plan.'), i18n.language, t)}
                 </Text>
                 <View style={ms.upsellCta}>
-                  <Text style={ms.upsellCtaText}>{t('meals.upsellCta', 'Upgrade to Pro')} →</Text>
+                  <Text style={ms.upsellCtaText}>{translateValue(t('meals.upsellCta', 'Upgrade to Pro'), i18n.language, t)} →</Text>
                 </View>
               </LinearGradient>
             </TouchableOpacity>

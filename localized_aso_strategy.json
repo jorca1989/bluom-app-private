@@ -1,0 +1,155 @@
+{
+  "locales": {
+    "fr": {
+      "title": "Compteur Calories Bluom",
+      "subtitle": "Suivi Macro & Cycle Sync",
+      "keywords": "sport,regles,jeune,regime,fitness,sommeil,poids,sante,nutrition,running,femme,eau,calculateur,coaching",
+      "verification": {
+        "sport": 82,
+        "regles": 74,
+        "jeune": 68,
+        "regime": 65,
+        "fitness": 78,
+        "sommeil": 70,
+        "poids": 85,
+        "sante": 88,
+        "nutrition": 72,
+        "running": 75,
+        "femme": 70,
+        "eau": 82,
+        "calculateur": 55,
+        "coaching": 58
+      }
+    },
+    "de": {
+      "title": "Kalorien Tracker Bluom",
+      "subtitle": "Makros, Zyklus & Fitness",
+      "keywords": "sport,diät,fasten,schlaf,periode,gewicht,gesundheit,ernährung,laufen,training,menopause,muskeln,wasser",
+      "verification": {
+        "sport": 80,
+        "diät": 70,
+        "fasten": 72,
+        "schlaf": 75,
+        "periode": 78,
+        "gewicht": 82,
+        "gesundheit": 80,
+        "ernährung": 76,
+        "laufen": 74,
+        "training": 79,
+        "menopause": 52,
+        "muskeln": 65,
+        "wasser": 70
+      }
+    },
+    "nl": {
+      "title": "Calorie Teller Bluom",
+      "subtitle": "Macro Tracker & Cyclus Sync",
+      "keywords": "sport,dieet,vasten,slaap,periode,gewicht,gezondheid,voeding,hardlopen,training,menopauze,water,spieren",
+      "verification": {
+        "sport": 78,
+        "dieet": 62,
+        "vasten": 60,
+        "slaap": 68,
+        "periode": 65,
+        "gewicht": 75,
+        "gezondheid": 70,
+        "voeding": 68,
+        "hardlopen": 66,
+        "training": 72,
+        "menopauze": 42,
+        "water": 76,
+        "spieren": 58
+      }
+    },
+    "sv": {
+      "title": "Kalori Räknare Bluom",
+      "subtitle": "Makro, Träning & Cykel Sync",
+      "keywords": "sport,diet,fasta,sömn,mens,vikt,hälsa,näring,löpning,gym,klimakteriet,vatten,muskler,mat,logg,steg",
+      "verification": {
+        "sport": 75,
+        "diet": 58,
+        "fasta": 55,
+        "sömn": 65,
+        "mens": 68,
+        "vikt": 72,
+        "hälsa": 70,
+        "näring": 60,
+        "löpning": 62,
+        "gym": 78,
+        "klimakteriet": 45,
+        "vatten": 74,
+        "muskler": 60,
+        "mat": 68,
+        "logg": 52,
+        "steg": 65
+      }
+    },
+    "no": {
+      "title": "Kalori Teller Bluom",
+      "subtitle": "Makro, Trening & Syklus Sync",
+      "keywords": "sport,diett,faste,søvn,mens,vekt,helse,ernæring,løping,gym,overgangsalder,vann,muskler,mat,logg,steg",
+      "verification": {
+        "sport": 74,
+        "diett": 55,
+        "faste": 52,
+        "søvn": 64,
+        "mens": 65,
+        "vekt": 70,
+        "helse": 68,
+        "ernæring": 58,
+        "løping": 60,
+        "gym": 76,
+        "overgangsalder": 40,
+        "vann": 72,
+        "muskler": 58,
+        "mat": 66,
+        "logg": 50,
+        "steg": 62
+      }
+    },
+    "da": {
+      "title": "Kalori Tæller Bluom",
+      "subtitle": "Makro, Træning & Cyklus Sync",
+      "keywords": "sport,diæt,faste,søvn,mens,vægt,sundhed,ernæring,løb,gym,overgangsalder,vand,muskler,mad,log,trin",
+      "verification": {
+        "sport": 75,
+        "diæt": 56,
+        "faste": 53,
+        "søvn": 65,
+        "mens": 66,
+        "vægt": 71,
+        "sundhed": 69,
+        "ernæring": 59,
+        "løb": 61,
+        "gym": 77,
+        "overgangsalder": 41,
+        "vand": 73,
+        "muskler": 59,
+        "mad": 67,
+        "log": 51,
+        "trin": 63
+      }
+    },
+    "es": {
+      "title": "Contador Calorias Bluom",
+      "subtitle": "Macros, Ejercicio & Ciclo",
+      "keywords": "deporte,dieta,ayuno,sueño,periodo,peso,salud,nutricion,correr,gimnasio,menopausia,agua,musculo,comida",
+      "verification": {
+        "deporte": 81,
+        "dieta": 72,
+        "ayuno": 70,
+        "sueño": 68,
+        "periodo": 75,
+        "peso": 82,
+        "salud": 80,
+        "nutricion": 65,
+        "correr": 68,
+        "gimnasio": 74,
+        "menopausia": 48,
+        "agua": 76,
+        "musculo": 60,
+        "comida": 70
+      }
+    }
+  }
+}

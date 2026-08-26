@@ -43,7 +43,7 @@ export const startSession = mutation({
 
     // Guided session content is still being curated. If a placeholder call happens without a real sessionId,
     // ignore it to avoid production console noise.
-    if (!args.sessionId) return null as any;
+    // Removed guard: if (!args.sessionId) return null as any;
 
     if (!isProOrAdmin(user)) {
       // Free users: max 3 meditations/day
@@ -78,6 +78,9 @@ export const completeSession = mutation({
   handler: async (ctx, args) => {
     const log = await ctx.db.get(args.logId);
     if (!log) throw new Error("Log not found");
+
+    // Update actual duration in the log
+    await ctx.db.patch(args.logId, { durationMinutes: args.durationCompleted });
 
     // Update Mind Garden State
     const gardenState = await ctx.db

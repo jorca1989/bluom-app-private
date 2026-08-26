@@ -22,6 +22,7 @@ import ExerciseDetailModal from '@/components/move/modals/ExerciseDetailModal';
 import { FREE_4_WEEK_PLAN, getWeekRoutineDays, PlanWeek } from '@/utils/fourWeekPlanData';
 import { buildWeekFromDBWorkouts } from '@/utils/buildPlanFromDB';
 import { useAccessControl } from '@/hooks/useAccessControl';
+import { translateValue } from '@/utils/translateHelper';
 
 // ─── Week colours ─────────────────────────────────────────────────────────────
 const WEEK_COLORS = ['#1e293b', '#4c1d95', '#065f46', '#92400e'];
@@ -32,7 +33,7 @@ export default function FourWeekPlanScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useClerkUser();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const convexUser = useQuery(
     api.users.getUserByClerkId,
@@ -47,6 +48,7 @@ export default function FourWeekPlanScreen() {
 
   const dbWorkouts = useQuery(api.videoWorkouts.list, {});
 
+
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);  // week index 0-3
   const [showWorkoutDetail, setShowWorkoutDetail] = useState(false);
@@ -58,8 +60,8 @@ export default function FourWeekPlanScreen() {
 
   const translateWorkoutLabel = React.useCallback((value?: string) => {
     if (!value) return '';
-    return t(`workouts.labels.${value}`, value) as string;
-  }, [t]);
+    return translateValue(value, i18n.language, t);
+  }, [t, i18n.language]);
 
   const translateMuscleList = React.useCallback((value?: string) => {
     if (!value) return '';
@@ -67,15 +69,27 @@ export default function FourWeekPlanScreen() {
       .split(',')
       .map((part) => part.trim())
       .filter(Boolean)
-      .map((part) => t(`workouts.muscles.${part}`, translateWorkoutLabel(part)) as string)
+      .map((part) => translateValue(part, i18n.language, t))
       .join(', ');
-  }, [t, translateWorkoutLabel]);
+  }, [t, i18n.language]);
 
   // ── Resolve days: AI plan > static plan ─────────────────────────────────────
   // The AI plan's `workouts` represents ONE week's template, repeated for all 4 weeks.
   const aiWorkouts = activePlans?.fitnessPlan?.workouts;
 
   const getWeekDays = useMemo(() => {
+    const findDbMediaForExercise = (exName: string, sex: string = 'male') => {
+      if (!dbWorkouts) return { thumbnailUrl: '', videoUrl: '' };
+      for (const w of dbWorkouts) {
+        if (w.exercises?.some((ex: any) => ex.name.toLowerCase() === exName.toLowerCase())) {
+          const video = (sex === 'female' ? w.videoUrlFemale : w.videoUrlMale) || w.videoUrl || '';
+          const thumb = (sex === 'female' ? w.thumbnailFemale : w.thumbnailMale) || w.thumbnail || '';
+          return { thumbnailUrl: thumb, videoUrl: video };
+        }
+      }
+      return { thumbnailUrl: '', videoUrl: '' };
+    };
+
     return (weekIdx: number) => {
       // For rotation beyond 4 weeks, map the index onto the 4-week cycle
       const rotatedIdx = weekIdx % 4;
@@ -87,16 +101,19 @@ export default function FourWeekPlanScreen() {
           muscleGroups: Array.isArray(w.muscleGroups)
             ? translateMuscleList(w.muscleGroups.join(', '))
             : translateMuscleList(w.muscleGroups || w.focus || 'Full Body'),
-          exercises: (w.exercises || []).map((ex: any, j: number) => ({
-            id: `ai-w${weekIdx + 1}-d${i + 1}-e${j}`,
-            name: ex.name || 'Exercise',
-            thumbnailUrl: ex.thumbnailUrl || '',
-            videoUrl: ex.videoUrl || '',
-            primaryMuscle: Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || ex.muscleGroup || 'Various'),
-            equipment: ex.equipment || 'Various',
-            sets: typeof ex.sets === 'number' ? ex.sets : (parseInt(String(ex.sets)) || 3),
-            reps: ex.reps !== undefined ? String(ex.reps) : '10',
-          })),
+          exercises: (w.exercises || []).map((ex: any, j: number) => {
+            const media = findDbMediaForExercise(ex.name || '', convexUser?.biologicalSex || 'male');
+            return {
+              id: `ai-w${weekIdx + 1}-d${i + 1}-e${j}`,
+              name: ex.name || 'Exercise',
+              thumbnailUrl: ex.thumbnailUrl || media.thumbnailUrl || '',
+              videoUrl: ex.videoUrl || media.videoUrl || '',
+              primaryMuscle: Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || ex.muscleGroup || 'Various'),
+              equipment: ex.equipment || 'Various',
+              sets: typeof ex.sets === 'number' ? ex.sets : (parseInt(String(ex.sets)) || 3),
+              reps: ex.reps !== undefined ? String(ex.reps) : '10',
+            };
+          }),
         }));
       }
       // 2. DB workouts
@@ -117,7 +134,7 @@ export default function FourWeekPlanScreen() {
   const getWeekTheme = (weekIdx: number): string => {
     if (aiWorkouts && aiWorkouts.length > 0) {
       const split = activePlans?.fitnessPlan?.workoutSplit || `Week ${weekIdx + 1}`;
-      return t(`db.${split.replace(/\s+/g, '')}`, split);
+      return translateWorkoutLabel(split);
     }
     const rotatedIdx = weekIdx % 4;
     const theme = FREE_4_WEEK_PLAN[rotatedIdx]?.theme || 'Phase';
@@ -196,7 +213,7 @@ export default function FourWeekPlanScreen() {
                 onPress={() => handleViewWeek(weekIdx)}
                 activeOpacity={0.85}
               >
-                <Text style={styles.weekLabel}>{t('move.weekNum', 'Week {{num}}', { num: weekIdx + 1 })}</Text>
+                <Text style={styles.weekLabel}>{t('common.weekNum', 'Week {{num}}', { num: weekIdx + 1 })}</Text>
                 <Text style={styles.weekTheme} numberOfLines={1}>{theme}</Text>
                 <View style={styles.daysSummary}>
                   {days.slice(0, 3).map((d: any, dIdx: number) => (

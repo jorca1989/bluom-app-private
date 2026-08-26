@@ -15,7 +15,7 @@ import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from 'convex/react';
+import { useQuery, useMutation } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
 import MeditationPlayerScreen from '../app/meditation-player';
@@ -49,6 +49,8 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
   const [selectedSoundscape, setSelectedSoundscape] = useState<any>(null);
   const [activeSession, setActiveSession] = useState<any>(null);
   const [soundscapeSubFilter, setSoundscapeSubFilter] = useState<string | null>(null);
+  const logMeditation = useMutation(api.meditation.startSession);
+  const [activeLogId, setActiveLogId] = useState<any>(null);
 
   useEffect(() => {
     setSoundscapeSubFilter(null);
@@ -163,16 +165,39 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
   const quickSessions = useMemo(() => displaySessions.filter((s: any) => (s.duration ?? 0) <= 5), [displaySessions]);
   const deepDiveSessions = useMemo(() => displaySessions.filter((s: any) => (s.duration ?? 0) > 10), [displaySessions]);
 
-  const handleStartSession = (session: any) => {
+  const handleStartSession = async (session: any) => {
     if (session.coverImage) Image.prefetch(session.coverImage);
     setActiveSession(session);
     setShowMeditationPlayer(true);
+    if (userId) {
+      try {
+        const logId = await logMeditation({
+          userId,
+          title: session.title || 'Meditation',
+          durationMinutes: session.duration || 0,
+          sessionId: session.isLocal ? undefined : (session._id || undefined),
+          date: new Date().toISOString().split('T')[0],
+        });
+        setActiveLogId(logId);
+      } catch (e) { console.warn('Failed to log meditation start:', e); }
+    }
   };
 
-  const handleStartSoundscape = (soundscape: any) => {
+  const handleStartSoundscape = async (soundscape: any) => {
     setSelectedSoundscape(soundscape);
     setActiveSession({ title: soundscape.name, duration: 0 });
     setShowMeditationPlayer(true);
+    if (userId) {
+      try {
+        const logId = await logMeditation({
+          userId,
+          title: soundscape.name || 'Soundscape',
+          durationMinutes: 0,
+          date: new Date().toISOString().split('T')[0],
+        });
+        setActiveLogId(logId);
+      } catch (e) { console.warn('Failed to log soundscape start:', e); }
+    }
   };
 
   const getGreeting = () => {
@@ -393,6 +418,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
             setShowMeditationPlayer(false);
             setSelectedSoundscape(null);
             setActiveSession(null);
+            setActiveLogId(null);
           }}
           soundscape={selectedSoundscape}
           audioUrl={getLocalizedAudio(activeSession)}
@@ -401,6 +427,7 @@ export default function MeditationHub({ userId, onClose }: MeditationHubProps) {
           videoUrl={activeSession?.videoUrl}
           visualType={activeSession?.visualType}
           duration={activeSession?.duration}
+          logId={activeLogId}
         />
       )}
     </Modal>

@@ -94,6 +94,7 @@ export default defineSchema({
 
     partnerId: v.optional(v.id("users")), // For shared Todo/Grocery lists
 
+
     // Life Stage Tracking (Women's Health)
     lifeStage: v.optional(v.union(v.literal("cycle"), v.literal("pregnancy"), v.literal("menopause"))),
     pregnancyStartDate: v.optional(v.number()), // timestamp
@@ -102,6 +103,7 @@ export default defineSchema({
     // Metadata
     createdAt: v.optional(v.float64()),
     updatedAt: v.optional(v.float64()),
+    expoPushToken: v.optional(v.string()),
   })    .index("by_clerk_id", ["clerkId"])
     .index("by_email", ["email"]),
 

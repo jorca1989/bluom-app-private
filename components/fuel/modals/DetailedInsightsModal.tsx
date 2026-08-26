@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/context/ThemeContext';
+import { translateValue } from '@/utils/translateHelper';
 
 interface DetailedInsightsModalProps {
   visible: boolean;
@@ -24,11 +25,11 @@ interface DetailedInsightsModalProps {
 
 export default function DetailedInsightsModal({ visible, onClose, totals }: DetailedInsightsModalProps) {
   const { colors: themeColors } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const renderRow = (label: string, value: number, unit: string = 'g', isIndented = false) => (
     <View style={[styles.row, isIndented && styles.indentedRow, { borderBottomColor: themeColors.border }]}>
-      <Text style={[styles.label, { color: themeColors.text }]}>{label}</Text>
+      <Text style={[styles.label, { color: themeColors.text }]}>{translateValue(label, i18n.language, t)}</Text>
       <Text style={[styles.value, { color: themeColors.text }]}>
         {Math.round(value)} {unit}
       </Text>
@@ -40,7 +41,7 @@ export default function DetailedInsightsModal({ visible, onClose, totals }: Deta
       <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top', 'bottom']}>
         <View style={[styles.header, { borderBottomColor: themeColors.border }]}>
           <Text style={[styles.title, { color: themeColors.text }]}>
-            {t('fuel.detailedInsights.title', 'Detailed Nutrition')}
+            {translateValue(t('fuel.detailedInsights.title', 'Detailed Nutrition'), i18n.language, t)}
           </Text>
           <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: themeColors.surfaceMuted }]}>
             <Ionicons name="close" size={24} color={themeColors.textMuted} />

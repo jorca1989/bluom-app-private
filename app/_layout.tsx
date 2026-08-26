@@ -17,8 +17,9 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { RevenueCatBootstrapper } from '@/components/RevenueCatBootstrapper';
 import { InfluToBootstrapper } from '@/components/InfluToBootstrapper';
 import { UserProvider } from '@/context/UserContext';
-import { useQuery } from 'convex/react';
+import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import { registerForPushNotificationsAsync } from '@/utils/notifications';
 import { CelebrationProvider } from '@/context/CelebrationContext';
 import { AudioProvider } from '@/context/AudioContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
@@ -108,6 +109,18 @@ function InitialLayout() {
     api.users.getUserByClerkId,
     user?.id ? { clerkId: user.id } : 'skip'
   );
+
+  const savePushToken = useMutation(api.users.savePushToken);
+
+  useEffect(() => {
+    if (user?.id) {
+      registerForPushNotificationsAsync().then((token) => {
+        if (token) {
+          savePushToken({ clerkId: user.id, token });
+        }
+      });
+    }
+  }, [user?.id]);
 
   // Restore saved language from SecureStore as fast as possible (before DB loads)
   useEffect(() => {

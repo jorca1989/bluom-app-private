@@ -98,12 +98,18 @@ export default function MetabolicHub() {
   };
 
   // --- Metric Calculations ---
-  // Default fallbacks if no logs
-  const carbs = foodTotals?.carbs ?? todayMacros?.carbs ?? 0;
-  // Fuel entries do not track fiber yet; fall back to metabolic log fiber if present.
-  const fiber = todayMacros?.fiber ?? 0;
-  const fat = foodTotals?.fat ?? todayMacros?.fat ?? 0;
-  const sugar = foodTotals?.sugar ?? todayMacros?.sugar ?? 0;
+  // Default fallbacks if no logs in Fuel
+  const hasFoodEntries = !!(foodTotals && (
+    foodTotals.calories > 0 ||
+    foodTotals.carbs > 0 ||
+    foodTotals.protein > 0 ||
+    foodTotals.fat > 0
+  ));
+
+  const carbs = hasFoodEntries ? (foodTotals?.carbs ?? 0) : (todayMacros?.carbs ?? 0);
+  const fiber = hasFoodEntries ? (foodTotals?.fiber ?? 0) : (todayMacros?.fiber ?? 0);
+  const fat = hasFoodEntries ? (foodTotals?.fat ?? 0) : (todayMacros?.fat ?? 0);
+  const sugar = hasFoodEntries ? (foodTotals?.sugar ?? 0) : (todayMacros?.sugar ?? 0);
 
   const netCarbs = Math.max(0, carbs - fiber);
   const ketoState = getKetosisState(netCarbs, t);

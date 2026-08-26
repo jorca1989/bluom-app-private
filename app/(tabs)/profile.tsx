@@ -599,12 +599,6 @@ export default function ProfileScreen() {
             </>
           )}
           <MenuRow
-            icon={<Sparkles size={18} color="#6366f1" />} iconBg="#eef2ff"
-            label={t('profile.myBlueprint', 'My Blueprint')} sub={t('profile.myBlueprintSub', 'Nutrition, fitness and wellbeing plan')}
-            onPress={() => router.push('/personalized-plan')}
-          />
-          <View style={s.divider} />
-          <MenuRow
             icon={<TrendingDown size={18} color="#ef4444" />} iconBg="#fee2e2"
             label={t('profile.sugarControl', 'Sugar Control')} sub={t('profile.sugarControlSub', '90-day reset + daily check-ins')}
             onPress={() => router.push('/sugar-dashboard')}

@@ -35,6 +35,7 @@ import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAccessControl } from '@/hooks/useAccessControl';
+import { translateValue } from '@/utils/translateHelper';
 import {
   ChevronLeft,
   ChevronRight,
@@ -182,13 +183,13 @@ function NutritionPreview({
   convexUser: any;
   rotationDays: number;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const MEAL_TYPE_PT: Record<string, string> = {
     Breakfast: t('meals.breakfast', 'Breakfast'),
-    Lunch:     t('meals.lunch',     'Almoço'),
-    Dinner:    t('meals.dinner',    'Jantar'),
-    Snack:     t('meals.snack',     'Lanche'),
+    Lunch:     t('meals.lunch',     'Lunch'),
+    Dinner:    t('meals.dinner',    'Dinner'),
+    Snack:     t('meals.snack',     'Snack'),
   };
 
   // Derive today's meal summary — same logic meal-hub.tsx uses
@@ -218,15 +219,15 @@ function NutritionPreview({
       {/* Macro row */}
       <View style={np.macroRow}>
         <StatChip label={t('meals.calories', 'Calories')} value={`${Math.round(calories)}`}   color="#f59e0b" />
-        <StatChip label={t('meals.protein',  'Proteína')} value={`${Math.round(protein)}g`}   color="#ef4444" />
-        <StatChip label={t('meals.carbs',    'Hidratos')} value={`${Math.round(carbs)}g`}     color="#3b82f6" />
-        <StatChip label={t('meals.fat',      'Gordura')} value={`${Math.round(fat)}g`}        color="#10b981" />
+        <StatChip label={t('meals.protein',  'Protein')} value={`${Math.round(protein)}g`}   color="#ef4444" />
+        <StatChip label={t('meals.carbs',    'Carbs')} value={`${Math.round(carbs)}g`}     color="#3b82f6" />
+        <StatChip label={t('meals.fat',      'Fat')} value={`${Math.round(fat)}g`}        color="#10b981" />
       </View>
 
       {/* Today's meals — up to 4 */}
       {todayMeals.slice(0, 4).map((meal: any, i: number) => {
         const accent = MEAL_ACCENT[meal.mealType] ?? '#2563eb';
-        const mealLabel = MEAL_TYPE_PT[meal.mealType] ?? meal.mealType;
+        const mealLabel = translateValue(MEAL_TYPE_PT[meal.mealType] ?? meal.mealType, i18n.language, t);
         return (
           <View key={i} style={[np.mealRow, i === 0 && { marginTop: 4 }]}>
             <View style={[np.dot, { backgroundColor: accent }]} />

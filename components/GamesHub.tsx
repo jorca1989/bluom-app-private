@@ -299,8 +299,8 @@ export default function GamesHub({ userId, onClose }: GamesHubProps) {
                     <View style={{ marginBottom: 16, width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center' }}>
                       <game.icon size={26} color="#fff" />
                     </View>
-                    <Text style={styles.gameName}>{t(`wellness.gamesHub.game_${game.id}_name`, game.name)}</Text>
-                    <Text style={styles.gameDescription}>{t(`wellness.gamesHub.game_${game.id}_desc`, game.description)}</Text>
+                    <Text style={styles.gameName} numberOfLines={2} adjustsFontSizeToFit={true} minimumFontScale={0.75}>{t(`wellness.gamesHub.game_${game.id}_name`, game.name)}</Text>
+                    <Text style={styles.gameDescription} numberOfLines={3} adjustsFontSizeToFit={true} minimumFontScale={0.8}>{t(`wellness.gamesHub.game_${game.id}_desc`, game.description)}</Text>
                     {!game.implemented && (
                       <View style={styles.soonPill}>
                         <Text style={styles.soonPillText}>{t('wellness.gamesHub.comingSoon', 'Coming soon')}</Text>
@@ -3049,7 +3049,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   gamesGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
   gameCard: { width: (width - 60) / 2, padding: 16, borderRadius: 12, marginBottom: 12, alignItems: 'center' },
   gameEmoji: { fontSize: 32, marginBottom: 8 },
-  gameName: { fontSize: 14, fontWeight: '600', color: '#ffffff', marginBottom: 4 },
+  gameName: { fontSize: 14, fontWeight: '600', color: '#ffffff', marginBottom: 4, textAlign: 'center' },
   gameDescription: { fontSize: 11, color: '#ffffff', opacity: 0.9, textAlign: 'center' },
 
   // Game screens

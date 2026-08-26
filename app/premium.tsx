@@ -87,7 +87,7 @@ function PlanCard({ title, subtitle, price, priceNote, popular, disabled, onPres
       <TouchableOpacity onPress={press} disabled={disabled} activeOpacity={1} style={styles.planInner}>
         {popular && (
           <View style={styles.bestBadge}>
-            <Text style={styles.bestBadgeText}>{t('premium.bestValue', '✦ BEST VALUE')}</Text>
+            <Text style={styles.bestBadgeText}>{t('premium.bestValue', '★ BEST VALUE')}</Text>
           </View>
         )}
         <View style={styles.planRow}>
@@ -102,7 +102,7 @@ function PlanCard({ title, subtitle, price, priceNote, popular, disabled, onPres
         </View>
         <View style={[styles.planCta, popular && styles.planCtaGold]}>
           <Text style={[styles.planCtaText, popular && styles.planCtaTextDark]}>
-            {popular ? t('premium.startAnnual', '✦ Start Annual Pro') : t('premium.startMonthly', 'Start Monthly')}
+            {popular ? t('premium.startAnnual', '★ Start Annual Pro') : t('premium.startMonthly', 'Start Monthly')}
           </Text>
         </View>
       </TouchableOpacity>
@@ -197,15 +197,13 @@ export default function PremiumScreen() {
     router.replace('/(tabs)');
   }
 
-  async function purchase(kind: 'monthly' | 'annual') {
-    const pkg = kind === 'annual' ? pkgs?.annual : pkgs?.monthly;
+  async function makePurchase(pkg: any) {
     if (!pkg) { Alert.alert('Unavailable', 'Please check your connection and try again.'); return; }
     setUpgrading(true);
     try {
       const info = await purchasePackageSafe(pkg);
       if (!info) return;
-      // Immediately sync entitlements into the global UserContext so isPro
-      // updates across all screens without requiring an app restart.
+      // Sync entitlements in global user context
       await refreshAppUser().catch(() => {});
       Alert.alert('Welcome to Pro ✦', 'Your journey just levelled up. Full access is now unlocked.');
       handleDismiss();
@@ -218,6 +216,13 @@ export default function PremiumScreen() {
   const heroScale = scrollY.interpolate({ inputRange: [-100, 0], outputRange: [1.15, 1], extrapolate: 'clamp' });
   const heroOpacity = scrollY.interpolate({ inputRange: [0, 200], outputRange: [1, 0.3], extrapolate: 'clamp' });
   const heroTranslateY = scrollY.interpolate({ inputRange: [0, 300], outputRange: [0, -60], extrapolate: 'clamp' });
+
+  const annualFormattedPrice = pkgs?.annual?.product?.priceString ?? '—';
+  const annualPriceNumber = pkgs?.annual?.product?.price ?? 0;
+  const monthlyFormattedPrice = pkgs?.monthly?.product?.priceString ?? '—';
+  const currencySymbol = annualFormattedPrice.replace(/[\d.,\s]/g, '') || '$';
+  
+  const weeklyPriceStr = "Just " + currencySymbol + (annualPriceNumber / 52).toFixed(2) + " / wk — save 50%";
 
   if (!isClerkLoaded || convexUser === undefined) {
     return <View style={[styles.root, styles.center]}><ActivityIndicator color="#d4af37" size="large" /></View>;
@@ -274,7 +279,17 @@ export default function PremiumScreen() {
             </View>
           ) : (
             <>
-              {/* ── Value comparison ── */}
+              {/* ── Features (The Pro Advantage) ── */}
+              <View style={styles.section}>
+                <Text style={styles.sectionEyebrow}>{t('premium.everythingLabel', 'EVERYTHING INCLUDED')}</Text>
+                <Text style={styles.sectionTitle}>{t('premium.featuresTitle', 'The Pro Advantage')}</Text>
+                {FEATURES.map((f, i) => <FeatureRow key={f.title} {...f} index={i} />)}
+              </View>
+
+              {/* ── Divider ── */}
+              <View style={styles.divider} />
+
+              {/* ── Value comparison (For less than your daily treat) ── */}
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>{t('premium.mathTitle', 'For less than your daily treat')}</Text>
                 <View style={styles.compareRow}>
@@ -305,26 +320,26 @@ export default function PremiumScreen() {
               {/* ── Divider ── */}
               <View style={styles.divider} />
 
-              {/* ── Pricing plans ── */}
+              {/* ── Pricing plans (CHOOSE YOUR PLAN) ── */}
               <View style={styles.section}>
                 <Text style={styles.sectionEyebrow}>{t('premium.choosePlan', 'CHOOSE YOUR PLAN')}</Text>
                 <PlanCard
-                  title={t('premium.annualTitle', 'Pro Annual')}
-                  subtitle={annualWeeklyNote ? t('premium.annualSub', `Just ${annualWeeklyNote}/wk — save 50%`, { price: annualWeeklyNote }) : t('premium.annualSubAlt', 'Best value, cancel anytime')}
-                  price={pkgs?.annual?.product?.priceString ?? '—'}
-                  priceNote={annualMonthlyNote ? `${annualMonthlyNote} / ${t('premium.month', 'mo')}` : null}
+                  title="Pro Annual"
+                  subtitle={weeklyPriceStr}
+                  price={annualFormattedPrice ? `${annualFormattedPrice} / yr` : '—'}
+                  priceNote={`Billed annually at ${annualFormattedPrice}`}
                   popular={true}
                   disabled={upgrading || !pkgs?.annual}
-                  onPress={() => purchase('annual')}
+                  onPress={() => makePurchase(pkgs?.annual)}
                 />
                 <PlanCard
-                  title={t('premium.monthlyTitle', 'Pro Monthly')}
+                  title="Pro Monthly"
                   subtitle={t('premium.monthlySub', 'Full access, billed monthly')}
-                  price={pkgs?.monthly?.product?.priceString ?? '—'}
+                  price={monthlyFormattedPrice ? `${monthlyFormattedPrice} / mo` : '—'}
                   priceNote={null}
                   popular={false}
                   disabled={upgrading || !pkgs?.monthly}
-                  onPress={() => purchase('monthly')}
+                  onPress={() => makePurchase(pkgs?.monthly)}
                 />
                 {upgrading && (
                   <View style={styles.upgradingRow}>
@@ -337,16 +352,6 @@ export default function PremiumScreen() {
               {/* ── Social proof ── */}
               <View style={styles.socialProof}>
                 <Text style={styles.socialProofText}>{t('premium.socialProof', '🔥 Join 10,000+ people already optimising their biology')}</Text>
-              </View>
-
-              {/* ── Divider ── */}
-              <View style={styles.divider} />
-
-              {/* ── Features ── */}
-              <View style={styles.section}>
-                <Text style={styles.sectionEyebrow}>{t('premium.everythingLabel', 'EVERYTHING INCLUDED')}</Text>
-                <Text style={styles.sectionTitle}>{t('premium.featuresTitle', 'The Pro Advantage')}</Text>
-                {FEATURES.map((f, i) => <FeatureRow key={f.title} {...f} index={i} />)}
               </View>
 
               {/* ── Divider ── */}
@@ -567,15 +572,18 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   planPriceGold: { color: GOLD_LIGHT },
   planNote: { fontSize: 11, fontWeight: '700', color: GOLD, marginTop: 2 },
   planCta: {
-    backgroundColor: GOLD,
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: GOLD,
     borderRadius: 12,
     paddingVertical: 13,
     alignItems: 'center',
   },
   planCtaGold: {
     backgroundColor: GOLD,
+    borderColor: GOLD,
   },
-  planCtaText: { fontSize: 14, fontWeight: '800', color: c.scheme === 'dark' ? '#ffffff' : c.text },
+  planCtaText: { fontSize: 14, fontWeight: '800', color: GOLD },
   planCtaTextDark: { color: '#0a0a0f' }, // Always dark text on gold button
 
   upgradingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 8 },

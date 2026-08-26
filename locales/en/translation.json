@@ -112,7 +112,9 @@
       "workouts": "Workouts",
       "metabolic": "Metabolic",
       "viewAll": "View All",
-      "showLess": "Show Less"
+      "showLess": "Show Less",
+      "dental": "Dental Hub",
+      "pulse": "Pulse Check"
     },
     "northStar": {
       "label": "North Star Goal",
@@ -267,7 +269,7 @@
     "consistencyStreak": "Consistency Streak",
     "daysCount": "{{count}} days",
     "onFire": "On fire!",
-    "keepGoing": "Keep going!",
+    "keepGoing": "Keep going",
     "avgSessionLength": "Avg Session Length",
     "workoutMix": "Workout Mix",
     "mostActiveDay": "Most Active Day",
@@ -288,7 +290,40 @@
     "fullBodyFocus": "Full Body / Mixed",
     "openMove": "Open Move",
     "yourWeekOverview": "Your week overview",
-    "weekOverviewDesc": "Use this as a simple guide. Pro gets a personalised plan that adapts and swaps exercises."
+    "weekOverviewDesc": "Use this as a simple guide. Pro gets a personalised plan that adapts and swaps exercises.",
+    "widgets.outdoorBanner": "Record Outdoor Activity",
+    "outdoorActivity": "Outdoor Activity",
+    "nativeBuildRequired": "Native build required",
+    "nativeBuildRequiredDesc": "This recorder uses Maps + background tracking. Your current build doesn't include the required native modules yet.",
+    "locationRequired": "Location Required",
+    "locationRequiredDesc": "Bluom needs your location to record your route. Please enable it in Settings.",
+    "backgroundLocation": "Background Location",
+    "backgroundLocationDesc": "For uninterrupted tracking when your screen is off, allow location access \"Always\" in Settings. You can still record with \"While Using\".",
+    "continueAnyway": "Continue anyway",
+    "offlineSaved": "Saved Offline",
+    "offlineSavedDesc": "Your activity has been saved locally and will sync automatically when you reconnect.",
+    "startActivity": "Start Activity",
+    "whatDoingToday": "What are you doing today?",
+    "gpsAccuracyTip": "GPS will activate when you start. Keep your phone accessible for best accuracy.",
+    "activityComplete": "Activity Complete",
+    "distance": "Distance",
+    "avgSpeed": "Avg Speed",
+    "avgPace": "Avg Pace",
+    "saveActivity": "Save Activity",
+    "discard": "Discard",
+    "paused": "PAUSED",
+    "speed": "Speed",
+    "stopActivityQuestion": "Stop Activity?",
+    "stopActivityDesc": "Your route will be saved.",
+    "stopAndSave": "Stop & Save",
+    "running": "Running",
+    "cycling": "Cycling",
+    "walking": "Walking",
+    "hiking": "Hiking",
+    "outdoorBannerLive": "OUTDOOR",
+    "outdoorBannerRecord": "Record\nActivity",
+    "outdoorBannerSub": "GPS tracking • Live stats",
+    "outdoorBannerTapToStart": "Tap to start"
   },
   "tabs": {
     "home": "Home",
@@ -387,7 +422,10 @@
     "protein": "Protein",
     "carbs": "Carbs",
     "fat": "Fat",
-    "caloriesShort": "cal"
+    "caloriesShort": "cal",
+    "insights": {
+      "title": "Nutrition Insights"
+    }
   },
   "modals": {
     "pro": {
@@ -946,7 +984,30 @@
     "cardioTitle": "Saúde Cardiovascular é Prioridade #1",
     "cardioBody": "O cardio LISS 4x/semana é obrigatório para gerir a pressão arterial e hematócrito.",
     "unlockDeepAnalytics": "Desbloqueia Análise Hormonal Profunda",
-    "unlockDeepAnalyticsSub": "Insights com IA que se adaptam ao teu histórico, padrões e sintomas registados."
+    "unlockDeepAnalyticsSub": "Insights com IA que se adaptam ao teu histórico, padrões e sintomas registados.",
+    "questions": {
+      "trainingMode": "How would you describe your training approach?",
+      "yearsTraining": "How long have you been training seriously?",
+      "competitionFocus": "Do you compete or plan to?"
+    },
+    "modes": {
+      "natural": "Natural Athlete",
+      "enhanced": "Enhanced / PED User",
+      "athlete": "Competitive Athlete"
+    },
+    "years": {
+      "beginner": "Under 1 year",
+      "intermediate": "1–3 years",
+      "advanced": "3–7 years",
+      "veteran": "7+ years"
+    },
+    "comp": {
+      "none": "No — training for myself",
+      "bodybuilding": "Bodybuilding / Physique",
+      "powerlifting": "Powerlifting / Strongman",
+      "crossfit": "CrossFit / Functional",
+      "sport": "Team / Combat Sport"
+    }
   },
   "todo": {
     "title": "Productivity Hub",
@@ -2083,9 +2144,9 @@
     "title": "Women's Health",
     "headerSub": "Hormonal intelligence",
     "stage": {
-      "cycle": "Cycle",
+      "cycle": "Menstruating / Cycle",
       "pregnancy": "Pregnancy",
-      "menopause": "Menopause"
+      "menopause": "Menopause / Post-menopause"
     },
     "tabToday": "Today",
     "tabBaby": "Baby",
@@ -2287,6 +2348,38 @@
       "light": "Light",
       "medium": "Medium",
       "heavy": "Heavy"
+    },
+    "questions": {
+      "mainFocus": "What is your main focus right now?",
+      "cycleRegularity": "How would you describe your cycle?",
+      "periodPain": "How is your period pain?",
+      "birthControl": "Are you using hormonal birth control?"
+    },
+    "focus": {
+      "cycle": "Cycle health & regularity",
+      "fertility": "Fertility & conception",
+      "perimenopause": "Perimenopause symptoms",
+      "energy": "Hormonal energy & mood",
+      "skin": "Skin & hormonal acne",
+      "weight": "Hormonal weight balance"
+    },
+    "regularity": {
+      "regular": "Regular (24–35 day cycle)",
+      "irregular": "Irregular / unpredictable",
+      "unknown": "I'm not sure"
+    },
+    "pain": {
+      "none": "None — pain-free",
+      "mild": "Mild — manageable",
+      "moderate": "Moderate — disruptive",
+      "severe": "Severe — debilitating"
+    },
+    "bc": {
+      "none": "No — not using any",
+      "pill": "Combined / mini pill",
+      "iud": "IUD (hormonal)",
+      "implant": "Implant / injection",
+      "other": "Other method"
     }
   },
   "premium": {
@@ -2940,7 +3033,11 @@
       "commitmentDesc": "How intense do you want this journey to be?",
       "mindsetTitle": "Mindset",
       "mindsetDesc": "What drives you and what holds you back?",
-      "dietTitle": "Nutritional Preference"
+      "dietTitle": "Nutritional Preference",
+      "womensHealthTitle": "Women's Health",
+      "womensHealthDesc": "Hormonal & cycle health profile optimization",
+      "mensHealthTitle": "Men's Health",
+      "mensHealthDesc": "Training style, experience & goal optimization"
     },
     "questions": {
       "age": "How old are you?",
@@ -3091,7 +3188,8 @@
       "peakEarlyMorning": "Early morning",
       "peakMidday": "Mid-day",
       "peakEvening": "Evening",
-      "peakLateNight": "Late night"
+      "peakLateNight": "Late night",
+      "lifeStage": "What is your current life stage?"
     },
     "common": {
       "next": "Next",
@@ -3887,7 +3985,9 @@
     "lowerArch": "LOWER DENTAL ARCH",
     "findingsAnomaly": "Mild gingival redness near lower back molars",
     "findingsNormal": "No abnormal findings detected.",
-    "recText": "Excellent hygiene. Maintain focus brushing lower quadrant back areas."
+    "recText": "Excellent hygiene. Maintain focus brushing lower quadrant back areas.",
+    "cameraPlaceholderInstructions": "Hold the device 10–15 cm from your open mouth. You can use your front camera (guided by a mirror) or the back camera for a high-resolution snapshot.",
+    "simulationDisclaimer": "Educational simulation only. This is not a medical scan and does not replace a dentist diagnosis."
   },
   "pulse": {
     "cameraPermissionMsg": "Camera permission is required to analyze PPG pulse.",

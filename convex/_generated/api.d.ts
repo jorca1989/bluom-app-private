@@ -19,6 +19,7 @@ import type * as ai from "../ai.js";
 import type * as aiCoachMessages from "../aiCoachMessages.js";
 import type * as aiVoice from "../aiVoice.js";
 import type * as aimind from "../aimind.js";
+import type * as crons from "../crons.js";
 import type * as customFoods from "../customFoods.js";
 import type * as daily from "../daily.js";
 import type * as debug from "../debug.js";
@@ -97,6 +98,7 @@ declare const fullApi: ApiFromModules<{
   aiCoachMessages: typeof aiCoachMessages;
   aiVoice: typeof aiVoice;
   aimind: typeof aimind;
+  crons: typeof crons;
   customFoods: typeof customFoods;
   daily: typeof daily;
   debug: typeof debug;

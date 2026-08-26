@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { getLocalizedExerciseName } from '@/utils/localize';
+import { translateValue } from '@/utils/translateHelper';
 
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
@@ -81,17 +82,17 @@ export default function WorkoutDetailModal({
   const currentDay = routineDays[dayIndex] ?? null;
   const translateWorkoutLabel = React.useCallback((value?: string) => {
     if (!value) return '';
-    return t(`workouts.labels.${value}`, value) as string;
-  }, [t]);
+    return translateValue(value, i18n.language, t);
+  }, [t, i18n.language]);
   const translateMuscleList = React.useCallback((value?: string) => {
     if (!value) return '';
     return value
       .split(',')
       .map((part) => part.trim())
       .filter(Boolean)
-      .map((part) => t(`workouts.muscles.${part}`, translateWorkoutLabel(part)) as string)
+      .map((part) => translateValue(part, i18n.language, t))
       .join(', ');
-  }, [t, translateWorkoutLabel]);
+  }, [t, i18n.language]);
   const displayTitle = currentDay?.dayTitle ? translateWorkoutLabel(currentDay.dayTitle) : t('common.dayNum', 'Day {{num}}', { num: activeTab });
   const displayMuscleGroup = translateMuscleList(currentDay?.muscleGroups);
   const displayExercises = currentDay?.exercises ?? [];

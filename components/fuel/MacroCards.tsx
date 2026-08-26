@@ -68,11 +68,16 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   card: {
     flex: 1,
-    backgroundColor: c.surfaceMuted,
+    backgroundColor: c.surface,
     borderRadius: 20,
     padding: 12,
     borderWidth: 1,
     borderColor: c.surfaceMuted,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
   header: {
     flexDirection: 'row',

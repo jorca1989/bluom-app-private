@@ -1,6 +1,6 @@
 import { v } from "convex/values";
-import { mutation, query, internalMutation, action } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { mutation, query, internalMutation, action, internalAction, internalQuery } from "./_generated/server";
+import { api, internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { generateContentWithFallback, safeJsonParse, generateContentWithDeepSeek } from "./ai";
 
@@ -414,4 +414,70 @@ export const updateSpecificMeal = internalMutation({
       await ctx.db.patch(args.planId, { mealTemplates: templates });
     }
   }
+});
+
+export const internalGetActivePlans = internalQuery({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const nutritionPlan = await ctx.db
+      .query("nutritionPlans")
+      .withIndex("by_user_active", (q) =>
+        q.eq("userId", args.userId).eq("isActive", true)
+      )
+      .first();
+
+    const fitnessPlan = await ctx.db
+      .query("fitnessPlans")
+      .withIndex("by_user_active", (q) =>
+        q.eq("userId", args.userId).eq("isActive", true)
+      )
+      .first();
+
+    const wellnessPlan = await ctx.db
+      .query("wellnessPlans")
+      .withIndex("by_user_active", (q) =>
+        q.eq("userId", args.userId).eq("isActive", true)
+      )
+      .first();
+
+    return { nutritionPlan, fitnessPlan, wellnessPlan };
+  },
+});
+
+export const internalGenerateAllPlans = internalAction({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    await ctx.runAction((api.plans.generateAllPlans as any), { userId: args.userId });
+  },
+});
+
+export const checkAndRegeneratePlans = internalAction({
+  args: {},
+  handler: async (ctx) => {
+    const proUsers = await ctx.runQuery(internal.users.getProUsers);
+    const FORTNIGHT_MS = 28 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    for (const user of proUsers) {
+      const activePlans = await ctx.runQuery(internal.plans.internalGetActivePlans, { userId: user._id });
+      if (!activePlans.nutritionPlan || (now - activePlans.nutritionPlan._creationTime > FORTNIGHT_MS)) {
+        try {
+          await ctx.runAction((api.plans.generateAllPlans as any), { userId: user._id });
+        } catch (e) {
+          console.error(`Plan regeneration failed for user ${user._id}:`, e);
+        }
+      }
+    }
+  },
+});
+
+export const checkAndRegenerateSingle = internalAction({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const activePlans = await ctx.runQuery(internal.plans.internalGetActivePlans, { userId: args.userId });
+    const FORTNIGHT_MS = 28 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    if (!activePlans.nutritionPlan || (now - activePlans.nutritionPlan._creationTime > FORTNIGHT_MS)) {
+      await ctx.runAction((api.plans.generateAllPlans as any), { userId: args.userId });
+    }
+  },
 });

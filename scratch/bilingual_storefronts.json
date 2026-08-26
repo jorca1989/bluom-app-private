@@ -1,0 +1,16 @@
+{
+  "frCaProposal": {
+    "storefront": "French (Canada) [fr-CA]",
+    "title": "Compteur Calories Bluom",
+    "subtitle": "Sport, Sommeil & Macro",
+    "keywordField": "sante,running,fitness,motivation,meditation,regime,jeune,poids,tracker,gym,workout,health,habit",
+    "charCount": 97
+  },
+  "itChProposal": {
+    "storefront": "Italian (Switzerland) [it-CH]",
+    "title": "Contacalorie Bluom",
+    "subtitle": "Salute, Dieta & Palestra",
+    "keywordField": "allenamento,digiuno,sonno,meditazione,contapassi,peso,forma,tracker,gym,workout,health,habit",
+    "charCount": 97
+  }
+}

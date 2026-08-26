@@ -1,0 +1,6758 @@
+{
+  "sections": [
+    {
+      "name": "GERMAN",
+      "startLine": 1,
+      "keywords": [
+        {
+          "keyword": "sport",
+          "googleVol": 412,
+          "appleVol": 850,
+          "notes": ""
+        },
+        {
+          "keyword": "Kochen",
+          "googleVol": 252,
+          "appleVol": 755,
+          "notes": ""
+        },
+        {
+          "keyword": "muskeln",
+          "googleVol": 43,
+          "appleVol": 51,
+          "notes": ""
+        },
+        {
+          "keyword": "ernährung",
+          "googleVol": 197,
+          "appleVol": 219,
+          "notes": ""
+        },
+        {
+          "keyword": "training",
+          "googleVol": 308,
+          "appleVol": 682,
+          "notes": ""
+        },
+        {
+          "keyword": "kalorien",
+          "googleVol": 287,
+          "appleVol": 308,
+          "notes": ""
+        },
+        {
+          "keyword": "gesundheit",
+          "googleVol": 140,
+          "appleVol": 159,
+          "notes": ""
+        },
+        {
+          "keyword": "gewicht",
+          "googleVol": 173,
+          "appleVol": 192,
+          "notes": ""
+        },
+        {
+          "keyword": "periode",
+          "googleVol": 255,
+          "appleVol": 283,
+          "notes": ""
+        },
+        {
+          "keyword": "schlaf",
+          "googleVol": 71,
+          "appleVol": 264,
+          "notes": ""
+        },
+        {
+          "keyword": "fasten",
+          "googleVol": 349,
+          "appleVol": 384,
+          "notes": ""
+        },
+        {
+          "keyword": "diät",
+          "googleVol": 115,
+          "appleVol": 130,
+          "notes": ""
+        },
+        {
+          "keyword": "sport",
+          "googleVol": 330,
+          "appleVol": 956,
+          "notes": ""
+        },
+        {
+          "keyword": "frauen",
+          "googleVol": 67,
+          "appleVol": 78,
+          "notes": ""
+        },
+        {
+          "keyword": "Ausbildung",
+          "googleVol": 8,
+          "appleVol": 12,
+          "notes": ""
+        },
+        {
+          "keyword": "makro tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 59,
+          "appleVol": 218,
+          "notes": ""
+        },
+        {
+          "keyword": "kalorientracker",
+          "googleVol": 77,
+          "appleVol": 93,
+          "notes": ""
+        },
+        {
+          "keyword": "Diät",
+          "googleVol": 115,
+          "appleVol": 130,
+          "notes": ""
+        },
+        {
+          "keyword": "Gewohnheitstracker",
+          "googleVol": 101,
+          "appleVol": 113,
+          "notes": ""
+        },
+        {
+          "keyword": "laufen",
+          "googleVol": 6,
+          "appleVol": 18,
+          "notes": ""
+        },
+        {
+          "keyword": "Meditation",
+          "googleVol": 145,
+          "appleVol": 550,
+          "notes": ""
+        },
+        {
+          "keyword": "stimmung",
+          "googleVol": 0,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "gewohnheit",
+          "googleVol": 0,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "Wochenplaner",
+          "googleVol": 6,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Gewohnheiten",
+          "googleVol": 2,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "wasser",
+          "googleVol": 11,
+          "appleVol": 6,
+          "notes": ""
+        },
+        {
+          "keyword": "Wassertracker",
+          "googleVol": 11,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "workout",
+          "googleVol": 452,
+          "appleVol": 477,
+          "notes": ""
+        },
+        {
+          "keyword": "workout timer",
+          "googleVol": 101,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep",
+          "googleVol": 364,
+          "appleVol": 413,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 355,
+          "appleVol": 755,
+          "notes": ""
+        },
+        {
+          "keyword": "period",
+          "googleVol": 150,
+          "appleVol": 18,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 347,
+          "appleVol": 384,
+          "notes": ""
+        },
+        {
+          "keyword": "tracker",
+          "googleVol": 388,
+          "appleVol": 443,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 388,
+          "appleVol": 443,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 65,
+          "appleVol": 79,
+          "notes": "5"
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 17,
+          "appleVol": 9,
+          "notes": ""
+        },
+        {
+          "keyword": "weight loss",
+          "googleVol": 48,
+          "appleVol": 183,
+          "notes": ""
+        },
+        {
+          "keyword": "weight tracker",
+          "googleVol": 268,
+          "appleVol": 302,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 297,
+          "appleVol": 66,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 1771,
+          "appleVol": 1947,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 5,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "exercises",
+          "googleVol": 0,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 191,
+          "appleVol": 24,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 55,
+          "appleVol": 66,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 59,
+          "appleVol": 18,
+          "notes": ""
+        },
+        {
+          "keyword": "habit tracker",
+          "googleVol": 261,
+          "appleVol": 820,
+          "notes": ""
+        },
+        {
+          "keyword": "women",
+          "googleVol": 41,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "cycle",
+          "googleVol": 65,
+          "appleVol": 79,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "SWISS",
+      "startLine": 65,
+      "keywords": [
+        {
+          "keyword": "Kochen",
+          "googleVol": 81,
+          "appleVol": 99,
+          "notes": ""
+        },
+        {
+          "keyword": "muskeln",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "ernährung",
+          "googleVol": 15,
+          "appleVol": 17,
+          "notes": ""
+        },
+        {
+          "keyword": "training",
+          "googleVol": 128,
+          "appleVol": 159,
+          "notes": ""
+        },
+        {
+          "keyword": "kalorien",
+          "googleVol": 2,
+          "appleVol": 6,
+          "notes": ""
+        },
+        {
+          "keyword": "kalorienzähler",
+          "googleVol": 173,
+          "appleVol": 346,
+          "notes": ""
+        },
+        {
+          "keyword": "gewicht",
+          "googleVol": 23,
+          "appleVol": 25,
+          "notes": ""
+        },
+        {
+          "keyword": "gesundheit",
+          "googleVol": 0,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "periode",
+          "googleVol": 42,
+          "appleVol": 51,
+          "notes": ""
+        },
+        {
+          "keyword": "schlaf",
+          "googleVol": 37,
+          "appleVol": 44,
+          "notes": ""
+        },
+        {
+          "keyword": "fasten",
+          "googleVol": 42,
+          "appleVol": 51,
+          "notes": ""
+        },
+        {
+          "keyword": "diät",
+          "googleVol": 28,
+          "appleVol": 29,
+          "notes": ""
+        },
+        {
+          "keyword": "sport",
+          "googleVol": 163,
+          "appleVol": 208,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 0,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "kalorientracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "sante",
+          "googleVol": 23,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "Compteur de Calories",
+          "googleVol": 6,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "courir",
+          "googleVol": 6,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 175,
+          "appleVol": 541,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep",
+          "googleVol": 107,
+          "appleVol": 129,
+          "notes": ""
+        },
+        {
+          "keyword": "calorie tracker",
+          "googleVol": 21,
+          "appleVol": 240,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep",
+          "googleVol": 106,
+          "appleVol": 129,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 116,
+          "appleVol": 116,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 37,
+          "appleVol": 151,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 54,
+          "appleVol": 65,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 57,
+          "appleVol": 69,
+          "notes": ""
+        },
+        {
+          "keyword": "fitness",
+          "googleVol": 240,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 6,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 2,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 155,
+          "appleVol": 20,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 10,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 19,
+          "appleVol": 19,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 1,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "habit tracker",
+          "googleVol": 167,
+          "appleVol": 218,
+          "notes": ""
+        },
+        {
+          "keyword": "women",
+          "googleVol": 6,
+          "appleVol": 0,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "AUSTRIA",
+      "startLine": 108,
+      "keywords": [
+        {
+          "keyword": "gym",
+          "googleVol": 85,
+          "appleVol": 112,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 32,
+          "appleVol": 137,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 80,
+          "appleVol": 106,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 4,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 1,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 8,
+          "appleVol": 10,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 80,
+          "appleVol": 11,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 227,
+          "appleVol": 200,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 0,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "habit tracker",
+          "googleVol": 206,
+          "appleVol": 256,
+          "notes": ""
+        },
+        {
+          "keyword": "women",
+          "googleVol": 12,
+          "appleVol": 0,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "DUTCH",
+      "startLine": 137,
+      "keywords": [
+        {
+          "keyword": "dieet",
+          "googleVol": 53,
+          "appleVol": 7,
+          "notes": ""
+        },
+        {
+          "keyword": "eten",
+          "googleVol": 159,
+          "appleVol": 155,
+          "notes": ""
+        },
+        {
+          "keyword": "training",
+          "googleVol": 64,
+          "appleVol": 56,
+          "notes": ""
+        },
+        {
+          "keyword": "slaap",
+          "googleVol": 80,
+          "appleVol": 113,
+          "notes": ""
+        },
+        {
+          "keyword": "sportschool",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "vasten",
+          "googleVol": 2,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "gewicht",
+          "googleVol": 3,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "calorieënteller",
+          "googleVol": 630,
+          "appleVol": 416,
+          "notes": ""
+        },
+        {
+          "keyword": "calorie",
+          "googleVol": 100,
+          "appleVol": 304,
+          "notes": ""
+        },
+        {
+          "keyword": "calorie",
+          "googleVol": 238,
+          "appleVol": 213,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 220,
+          "appleVol": 197,
+          "notes": ""
+        },
+        {
+          "keyword": "fitness",
+          "googleVol": 235,
+          "appleVol": 336,
+          "notes": ""
+        },
+        {
+          "keyword": "stemming",
+          "googleVol": 0,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "mood",
+          "googleVol": 34,
+          "appleVol": 123,
+          "notes": ""
+        },
+        {
+          "keyword": "maaltijd",
+          "googleVol": 4,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "tracker",
+          "googleVol": 69,
+          "appleVol": 205,
+          "notes": ""
+        },
+        {
+          "keyword": "gewoontes",
+          "googleVol": 0,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "gewoonte",
+          "googleVol": 1,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "water",
+          "googleVol": 232,
+          "appleVol": 213,
+          "notes": ""
+        },
+        {
+          "keyword": "coach",
+          "googleVol": 224,
+          "appleVol": 205,
+          "notes": ""
+        },
+        {
+          "keyword": "boodschappenlijstje",
+          "googleVol": 105,
+          "appleVol": 105,
+          "notes": ""
+        },
+        {
+          "keyword": "focus",
+          "googleVol": 258,
+          "appleVol": 223,
+          "notes": ""
+        },
+        {
+          "keyword": "coach",
+          "googleVol": 204,
+          "appleVol": 197,
+          "notes": ""
+        },
+        {
+          "keyword": "voeding",
+          "googleVol": 80,
+          "appleVol": 18,
+          "notes": ""
+        },
+        {
+          "keyword": "nutrition",
+          "googleVol": 4,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "koken",
+          "googleVol": 168,
+          "appleVol": 157,
+          "notes": ""
+        },
+        {
+          "keyword": "Gewichtsdagboek",
+          "googleVol": 1,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "Gewichtsmonitor",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Stappenteller",
+          "googleVol": 315,
+          "appleVol": 248,
+          "notes": ""
+        },
+        {
+          "keyword": "Wandelen",
+          "googleVol": 120,
+          "appleVol": 117,
+          "notes": ""
+        },
+        {
+          "keyword": "bmi",
+          "googleVol": 106,
+          "appleVol": 105,
+          "notes": ""
+        },
+        {
+          "keyword": "bmi calculator",
+          "googleVol": 147,
+          "appleVol": 146,
+          "notes": ""
+        },
+        {
+          "keyword": "periode",
+          "googleVol": 4,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "menstruatie",
+          "googleVol": 147,
+          "appleVol": 146,
+          "notes": ""
+        },
+        {
+          "keyword": "fietsen",
+          "googleVol": 62,
+          "appleVol": 12,
+          "notes": ""
+        },
+        {
+          "keyword": "wielrennen",
+          "googleVol": 135,
+          "appleVol": 20,
+          "notes": ""
+        },
+        {
+          "keyword": "meditatie",
+          "googleVol": 15,
+          "appleVol": 34,
+          "notes": ""
+        },
+        {
+          "keyword": "workout",
+          "googleVol": 239,
+          "appleVol": 321,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep",
+          "googleVol": 276,
+          "appleVol": 239,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep recorder",
+          "googleVol": 259,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep cycle",
+          "googleVol": 314,
+          "appleVol": 277,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 232,
+          "appleVol": 105,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 77,
+          "appleVol": 223,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 220,
+          "appleVol": 197,
+          "notes": "39"
+        },
+        {
+          "keyword": "habit tracker",
+          "googleVol": 74,
+          "appleVol": 277,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 196,
+          "appleVol": 176,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 3,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 2,
+          "appleVol": 53,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 303,
+          "appleVol": 109,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 336,
+          "appleVol": 336,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 2,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 3,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "women",
+          "googleVol": 4,
+          "appleVol": 0,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "BELGIUM",
+      "startLine": 197,
+      "keywords": [
+        {
+          "keyword": "Wandelen",
+          "googleVol": 33,
+          "appleVol": 51,
+          "notes": ""
+        },
+        {
+          "keyword": "calorieënteller",
+          "googleVol": 12,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "workout",
+          "googleVol": 94,
+          "appleVol": 111,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep",
+          "googleVol": 119,
+          "appleVol": 154,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 88,
+          "appleVol": 105,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 34,
+          "appleVol": 148,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 30,
+          "appleVol": 48,
+          "notes": ""
+        },
+        {
+          "keyword": "tracker",
+          "googleVol": 30,
+          "appleVol": 134,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 33,
+          "appleVol": 46,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 30,
+          "appleVol": 49,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 0,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 120,
+          "appleVol": 15,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 231,
+          "appleVol": 231,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 1,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 17,
+          "appleVol": 10,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 0,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 2,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "habit tracker",
+          "googleVol": 94,
+          "appleVol": 128,
+          "notes": ""
+        },
+        {
+          "keyword": "women",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "SWEEDEN",
+      "startLine": 237,
+      "keywords": [
+        {
+          "keyword": "music",
+          "googleVol": 161,
+          "appleVol": 327,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep",
+          "googleVol": 194,
+          "appleVol": 217,
+          "notes": ""
+        },
+        {
+          "keyword": "mindfulness",
+          "googleVol": 56,
+          "appleVol": 183,
+          "notes": ""
+        },
+        {
+          "keyword": "stress",
+          "googleVol": 37,
+          "appleVol": 130,
+          "notes": ""
+        },
+        {
+          "keyword": "mental health",
+          "googleVol": 104,
+          "appleVol": 110,
+          "notes": ""
+        },
+        {
+          "keyword": "Kalori",
+          "googleVol": 63,
+          "appleVol": 76,
+          "notes": ""
+        },
+        {
+          "keyword": "Makro",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Träning",
+          "googleVol": 0,
+          "appleVol": 216,
+          "notes": ""
+        },
+        {
+          "keyword": "Cykel",
+          "googleVol": 158,
+          "appleVol": 174,
+          "notes": ""
+        },
+        {
+          "keyword": "sport",
+          "googleVol": 271,
+          "appleVol": 225,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 5,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "män",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "fasta",
+          "googleVol": 35,
+          "appleVol": 16,
+          "notes": ""
+        },
+        {
+          "keyword": "sömn",
+          "googleVol": 96,
+          "appleVol": 93,
+          "notes": ""
+        },
+        {
+          "keyword": "men",
+          "googleVol": 9,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "mens",
+          "googleVol": 68,
+          "appleVol": 107,
+          "notes": ""
+        },
+        {
+          "keyword": "vikt",
+          "googleVol": 110,
+          "appleVol": 116,
+          "notes": ""
+        },
+        {
+          "keyword": "hälsa",
+          "googleVol": 0,
+          "appleVol": 547,
+          "notes": ""
+        },
+        {
+          "keyword": "näring",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "löpning",
+          "googleVol": 0,
+          "appleVol": 193,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 133,
+          "appleVol": 298,
+          "notes": ""
+        },
+        {
+          "keyword": "klimakteriet",
+          "googleVol": 32,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "vatten",
+          "googleVol": 0,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "muskler",
+          "googleVol": 0,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "mat",
+          "googleVol": 193,
+          "appleVol": 219,
+          "notes": ""
+        },
+        {
+          "keyword": "logg",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "steg",
+          "googleVol": 70,
+          "appleVol": 13,
+          "notes": ""
+        },
+        {
+          "keyword": "träning",
+          "googleVol": 209,
+          "appleVol": 216,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 154,
+          "appleVol": 183,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 82,
+          "appleVol": 84,
+          "notes": ""
+        },
+        {
+          "keyword": "period",
+          "googleVol": 70,
+          "appleVol": 68,
+          "notes": ""
+        },
+        {
+          "keyword": "tracker",
+          "googleVol": 70,
+          "appleVol": 68,
+          "notes": ""
+        },
+        {
+          "keyword": "vana",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "scanner",
+          "googleVol": 181,
+          "appleVol": 354,
+          "notes": ""
+        },
+        {
+          "keyword": "vanor",
+          "googleVol": 26,
+          "appleVol": 13,
+          "notes": ""
+        },
+        {
+          "keyword": "spårare (tracker)",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 4,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "kör",
+          "googleVol": 49,
+          "appleVol": 44,
+          "notes": ""
+        },
+        {
+          "keyword": "protein",
+          "googleVol": 0,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "eating",
+          "googleVol": 0,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "ätande",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "fitness",
+          "googleVol": 134,
+          "appleVol": 386,
+          "notes": ""
+        },
+        {
+          "keyword": "kalori",
+          "googleVol": 98,
+          "appleVol": 61,
+          "notes": ""
+        },
+        {
+          "keyword": "kalorier",
+          "googleVol": 0,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "Kaloriräknaren",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "aktivitetsmätare",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "tränare",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "makro",
+          "googleVol": 5,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "sport",
+          "googleVol": 270,
+          "appleVol": 297,
+          "notes": ""
+        },
+        {
+          "keyword": "löpning",
+          "googleVol": 168,
+          "appleVol": 193,
+          "notes": ""
+        },
+        {
+          "keyword": "fokus",
+          "googleVol": 87,
+          "appleVol": 87,
+          "notes": ""
+        },
+        {
+          "keyword": "inköpslista",
+          "googleVol": 110,
+          "appleVol": 120,
+          "notes": ""
+        },
+        {
+          "keyword": "recept",
+          "googleVol": 111,
+          "appleVol": 115,
+          "notes": ""
+        },
+        {
+          "keyword": "matlagning",
+          "googleVol": 26,
+          "appleVol": 21,
+          "notes": ""
+        },
+        {
+          "keyword": "träningsdagbok",
+          "googleVol": 87,
+          "appleVol": 87,
+          "notes": ""
+        },
+        {
+          "keyword": "stämning",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "humör",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "mood",
+          "googleVol": 13,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "vatten",
+          "googleVol": 5,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "stegräknare",
+          "googleVol": 11,
+          "appleVol": 6,
+          "notes": ""
+        },
+        {
+          "keyword": "workout",
+          "googleVol": 248,
+          "appleVol": 321,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep",
+          "googleVol": 193,
+          "appleVol": 216,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 128,
+          "appleVol": 297,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 166,
+          "appleVol": 181,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 82,
+          "appleVol": 81,
+          "notes": ""
+        },
+        {
+          "keyword": "habit tracker",
+          "googleVol": 226,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 153,
+          "appleVol": 171,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 5,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 9,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 224,
+          "appleVol": 237,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 1,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 26,
+          "appleVol": 7,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 26,
+          "appleVol": 6,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "habit tracker",
+          "googleVol": 177,
+          "appleVol": 226,
+          "notes": ""
+        },
+        {
+          "keyword": "women",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "cycle",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "NORWAY",
+      "startLine": 341,
+      "keywords": [
+        {
+          "keyword": "fitness",
+          "googleVol": 18,
+          "appleVol": 105,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 49,
+          "appleVol": 86,
+          "notes": ""
+        },
+        {
+          "keyword": "sport",
+          "googleVol": 105,
+          "appleVol": 60,
+          "notes": ""
+        },
+        {
+          "keyword": "mat",
+          "googleVol": 67,
+          "appleVol": 110,
+          "notes": ""
+        },
+        {
+          "keyword": "treningssenter",
+          "googleVol": 8,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "treningsdagbok",
+          "googleVol": 63,
+          "appleVol": 80,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 18,
+          "appleVol": 115,
+          "notes": ""
+        },
+        {
+          "keyword": "vekt",
+          "googleVol": 39,
+          "appleVol": 68,
+          "notes": ""
+        },
+        {
+          "keyword": "sykkel",
+          "googleVol": 9,
+          "appleVol": 6,
+          "notes": ""
+        },
+        {
+          "keyword": "oppskrifter",
+          "googleVol": 1,
+          "appleVol": 5,
+          "notes": ""
+        },
+        {
+          "keyword": "sporingsverktøy",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "vane",
+          "googleVol": 8,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "vaner",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "habits",
+          "googleVol": 12,
+          "appleVol": 9,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 8,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Kaloriteller",
+          "googleVol": 97,
+          "appleVol": 190,
+          "notes": ""
+        },
+        {
+          "keyword": "Kalori",
+          "googleVol": 8,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "Kaloridag",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Syklus",
+          "googleVol": 0,
+          "appleVol": 6,
+          "notes": ""
+        },
+        {
+          "keyword": "makroer",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "søvn",
+          "googleVol": 28,
+          "appleVol": 49,
+          "notes": ""
+        },
+        {
+          "keyword": "løp",
+          "googleVol": 10,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "kalori",
+          "googleVol": 7,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "humør",
+          "googleVol": 8,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "å løpe",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "løpe",
+          "googleVol": 22,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "løping",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "fottur",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "sykling",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "workout",
+          "googleVol": 108,
+          "appleVol": 159,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep",
+          "googleVol": 92,
+          "appleVol": 150,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 50,
+          "appleVol": 87,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 22,
+          "appleVol": 115,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 7,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "tracker",
+          "googleVol": 106,
+          "appleVol": 151,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 77,
+          "appleVol": 120,
+          "notes": ""
+        },
+        {
+          "keyword": "norway",
+          "googleVol": 18,
+          "appleVol": 23,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 18,
+          "appleVol": 30,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 47,
+          "appleVol": 81,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 53,
+          "appleVol": 52,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 8,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 8,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 3,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 0,
+          "appleVol": 10,
+          "notes": ""
+        },
+        {
+          "keyword": "habit tracker",
+          "googleVol": 147,
+          "appleVol": 180,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "USA",
+      "startLine": 407,
+      "keywords": [
+        {
+          "keyword": "ai fitness",
+          "googleVol": 79,
+          "appleVol": 35,
+          "notes": ""
+        },
+        {
+          "keyword": "food",
+          "googleVol": 1774,
+          "appleVol": 5100,
+          "notes": ""
+        },
+        {
+          "keyword": "workout",
+          "googleVol": 3597,
+          "appleVol": 3388,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep",
+          "googleVol": 991,
+          "appleVol": 1985,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 1237,
+          "appleVol": 1487,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 278,
+          "appleVol": 1209,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 624,
+          "appleVol": 1174,
+          "notes": ""
+        },
+        {
+          "keyword": "period",
+          "googleVol": 1386,
+          "appleVol": 1164,
+          "notes": ""
+        },
+        {
+          "keyword": "habits",
+          "googleVol": 106,
+          "appleVol": 372,
+          "notes": ""
+        },
+        {
+          "keyword": "period",
+          "googleVol": 1386,
+          "appleVol": 1164,
+          "notes": ""
+        },
+        {
+          "keyword": "tracker",
+          "googleVol": 379,
+          "appleVol": 917,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 1163,
+          "appleVol": 869,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 518,
+          "appleVol": 488,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 600,
+          "appleVol": 460,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 1675,
+          "appleVol": 519,
+          "notes": ""
+        },
+        {
+          "keyword": "protein",
+          "googleVol": 179,
+          "appleVol": 215,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 3498,
+          "appleVol": 5239,
+          "notes": ""
+        },
+        {
+          "keyword": "eating",
+          "googleVol": 214,
+          "appleVol": 266,
+          "notes": ""
+        },
+        {
+          "keyword": "AI Calorie",
+          "googleVol": 165,
+          "appleVol": 80,
+          "notes": ""
+        },
+        {
+          "keyword": "AI Calories",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "AI nutrition",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "ai food",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "meal scanner",
+          "googleVol": 2,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 483,
+          "appleVol": 184,
+          "notes": ""
+        },
+        {
+          "keyword": "exercises",
+          "googleVol": 53,
+          "appleVol": 76,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 976,
+          "appleVol": 301,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 246,
+          "appleVol": 655,
+          "notes": ""
+        },
+        {
+          "keyword": "macros tracker",
+          "googleVol": 0,
+          "appleVol": 111,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 249,
+          "appleVol": 1192,
+          "notes": ""
+        },
+        {
+          "keyword": "meal tracker",
+          "googleVol": 278,
+          "appleVol": 500,
+          "notes": ""
+        },
+        {
+          "keyword": "meal tracker free",
+          "googleVol": 255,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Habit tracker",
+          "googleVol": 986,
+          "appleVol": 1985,
+          "notes": ""
+        },
+        {
+          "keyword": "women's health",
+          "googleVol": 1,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "women health",
+          "googleVol": 2,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "women",
+          "googleVol": 230,
+          "appleVol": 79,
+          "notes": ""
+        },
+        {
+          "keyword": "mestruation",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Cycle",
+          "googleVol": 374,
+          "appleVol": 312,
+          "notes": ""
+        },
+        {
+          "keyword": "GPS Fitness",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "ai coach",
+          "googleVol": 63,
+          "appleVol": 92,
+          "notes": ""
+        },
+        {
+          "keyword": "motivation",
+          "googleVol": 734,
+          "appleVol": 2282,
+          "notes": ""
+        },
+        {
+          "keyword": "sport",
+          "googleVol": 1514,
+          "appleVol": 467,
+          "notes": ""
+        },
+        {
+          "keyword": "brain games",
+          "googleVol": 1406,
+          "appleVol": 2834,
+          "notes": ""
+        },
+        {
+          "keyword": "cognitive games",
+          "googleVol": 181,
+          "appleVol": 229,
+          "notes": ""
+        },
+        {
+          "keyword": "brain training",
+          "googleVol": 68,
+          "appleVol": 267,
+          "notes": ""
+        },
+        {
+          "keyword": "plan personalizado",
+          "googleVol": 1,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "nutrition plan",
+          "googleVol": 1,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "fitness plan",
+          "googleVol": 57,
+          "appleVol": 69,
+          "notes": ""
+        },
+        {
+          "keyword": "fitness plans",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "crossfit",
+          "googleVol": 86,
+          "appleVol": 318,
+          "notes": ""
+        },
+        {
+          "keyword": "pilates",
+          "googleVol": 879,
+          "appleVol": 756,
+          "notes": ""
+        },
+        {
+          "keyword": "yoga",
+          "googleVol": 472,
+          "appleVol": 866,
+          "notes": ""
+        },
+        {
+          "keyword": "cycling",
+          "googleVol": 210,
+          "appleVol": 252,
+          "notes": ""
+        },
+        {
+          "keyword": "cycling tracker",
+          "googleVol": 211,
+          "appleVol": 249,
+          "notes": ""
+        },
+        {
+          "keyword": "bmi",
+          "googleVol": 951,
+          "appleVol": 807,
+          "notes": ""
+        },
+        {
+          "keyword": "bmi calculator",
+          "googleVol": 955,
+          "appleVol": 1300,
+          "notes": ""
+        },
+        {
+          "keyword": "brain",
+          "googleVol": 241,
+          "appleVol": 241,
+          "notes": ""
+        },
+        {
+          "keyword": "cooking",
+          "googleVol": 2991,
+          "appleVol": 2501,
+          "notes": ""
+        },
+        {
+          "keyword": "recipes",
+          "googleVol": 557,
+          "appleVol": 193,
+          "notes": ""
+        },
+        {
+          "keyword": "meals",
+          "googleVol": 79,
+          "appleVol": 111,
+          "notes": ""
+        },
+        {
+          "keyword": "cook",
+          "googleVol": 1065,
+          "appleVol": 322,
+          "notes": ""
+        },
+        {
+          "keyword": "dinner",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "breakfast",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "lunch",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "prep",
+          "googleVol": 6,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "healthy",
+          "googleVol": 232,
+          "appleVol": 92,
+          "notes": ""
+        },
+        {
+          "keyword": "bodybuilding",
+          "googleVol": 7,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "scanner (only 1 food related)",
+          "googleVol": 1426,
+          "appleVol": 2576,
+          "notes": ""
+        },
+        {
+          "keyword": "keto",
+          "googleVol": 333,
+          "appleVol": 353,
+          "notes": ""
+        },
+        {
+          "keyword": "ketosis",
+          "googleVol": 0,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "glucose",
+          "googleVol": 94,
+          "appleVol": 336,
+          "notes": ""
+        },
+        {
+          "keyword": "insulin",
+          "googleVol": 1,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "hydration",
+          "googleVol": 57,
+          "appleVol": 86,
+          "notes": ""
+        },
+        {
+          "keyword": "steps",
+          "googleVol": 328,
+          "appleVol": 1618,
+          "notes": ""
+        },
+        {
+          "keyword": "luteal",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "ovulation",
+          "googleVol": 3,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "pcos",
+          "googleVol": 9,
+          "appleVol": 7,
+          "notes": ""
+        },
+        {
+          "keyword": "pcos tracker",
+          "googleVol": 41,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "lifting",
+          "googleVol": 140,
+          "appleVol": 186,
+          "notes": ""
+        },
+        {
+          "keyword": "hypertrophy",
+          "googleVol": 158,
+          "appleVol": 187,
+          "notes": ""
+        },
+        {
+          "keyword": "calisthenics",
+          "googleVol": 799,
+          "appleVol": 862,
+          "notes": ""
+        },
+        {
+          "keyword": "planner",
+          "googleVol": 394,
+          "appleVol": 2000,
+          "notes": ""
+        },
+        {
+          "keyword": "food scanner",
+          "googleVol": 320,
+          "appleVol": 894,
+          "notes": ""
+        },
+        {
+          "keyword": "photo calorie",
+          "googleVol": 1,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "nutrition scanner",
+          "googleVol": 179,
+          "appleVol": 222,
+          "notes": ""
+        },
+        {
+          "keyword": "carb counter",
+          "googleVol": 181,
+          "appleVol": 266,
+          "notes": ""
+        },
+        {
+          "keyword": "glucose tracker",
+          "googleVol": 125,
+          "appleVol": 164,
+          "notes": ""
+        },
+        {
+          "keyword": "keto tracker",
+          "googleVol": 209,
+          "appleVol": 247,
+          "notes": ""
+        },
+        {
+          "keyword": "meal prep",
+          "googleVol": 80,
+          "appleVol": 311,
+          "notes": ""
+        },
+        {
+          "keyword": "grocery list",
+          "googleVol": 227,
+          "appleVol": 311,
+          "notes": ""
+        },
+        {
+          "keyword": "water reminder",
+          "googleVol": 976,
+          "appleVol": 764,
+          "notes": ""
+        },
+        {
+          "keyword": "hydration tracker",
+          "googleVol": 193,
+          "appleVol": 238,
+          "notes": ""
+        },
+        {
+          "keyword": "workout planner",
+          "googleVol": 249,
+          "appleVol": 1354,
+          "notes": ""
+        },
+        {
+          "keyword": "gym log",
+          "googleVol": 111,
+          "appleVol": 153,
+          "notes": ""
+        },
+        {
+          "keyword": "lifting tracker",
+          "googleVol": 1,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "strength training",
+          "googleVol": 68,
+          "appleVol": 273,
+          "notes": ""
+        },
+        {
+          "keyword": "bodyweight workout",
+          "googleVol": 57,
+          "appleVol": 85,
+          "notes": ""
+        },
+        {
+          "keyword": "hiit timer",
+          "googleVol": 288,
+          "appleVol": 318,
+          "notes": ""
+        },
+        {
+          "keyword": "muscle builder",
+          "googleVol": 1,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "step counter",
+          "googleVol": 1107,
+          "appleVol": 2274,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "FRENCH",
+      "startLine": 529,
+      "keywords": [
+        {
+          "keyword": "Macros IA",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "sport",
+          "googleVol": 741,
+          "appleVol": 1332,
+          "notes": ""
+        },
+        {
+          "keyword": "regles",
+          "googleVol": 145,
+          "appleVol": 22,
+          "notes": ""
+        },
+        {
+          "keyword": "jeune",
+          "googleVol": 71,
+          "appleVol": 90,
+          "notes": ""
+        },
+        {
+          "keyword": "fitness",
+          "googleVol": 85,
+          "appleVol": 636,
+          "notes": ""
+        },
+        {
+          "keyword": "sommeil",
+          "googleVol": 176,
+          "appleVol": 514,
+          "notes": ""
+        },
+        {
+          "keyword": "poids",
+          "googleVol": 145,
+          "appleVol": 150,
+          "notes": ""
+        },
+        {
+          "keyword": "sante",
+          "googleVol": 852,
+          "appleVol": 1072,
+          "notes": ""
+        },
+        {
+          "keyword": "nutrition",
+          "googleVol": 226,
+          "appleVol": 209,
+          "notes": ""
+        },
+        {
+          "keyword": "running",
+          "googleVol": 361,
+          "appleVol": 775,
+          "notes": ""
+        },
+        {
+          "keyword": "femme",
+          "googleVol": 4,
+          "appleVol": 6,
+          "notes": ""
+        },
+        {
+          "keyword": "calculateur",
+          "googleVol": 37,
+          "appleVol": 32,
+          "notes": ""
+        },
+        {
+          "keyword": "coaching",
+          "googleVol": 0,
+          "appleVol": 6,
+          "notes": ""
+        },
+        {
+          "keyword": "cuisine",
+          "googleVol": 432,
+          "appleVol": 294,
+          "notes": ""
+        },
+        {
+          "keyword": "liste de courses",
+          "googleVol": 19,
+          "appleVol": 5,
+          "notes": ""
+        },
+        {
+          "keyword": "shopping",
+          "googleVol": 223,
+          "appleVol": 138,
+          "notes": ""
+        },
+        {
+          "keyword": "courses",
+          "googleVol": 22,
+          "appleVol": 29,
+          "notes": ""
+        },
+        {
+          "keyword": "focus",
+          "googleVol": 136,
+          "appleVol": 390,
+          "notes": ""
+        },
+        {
+          "keyword": "focal",
+          "googleVol": 4,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "coach",
+          "googleVol": 239,
+          "appleVol": 107,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 211,
+          "appleVol": 252,
+          "notes": ""
+        },
+        {
+          "keyword": "regime",
+          "googleVol": 155,
+          "appleVol": 144,
+          "notes": ""
+        },
+        {
+          "keyword": "regime alimentaire",
+          "googleVol": 0,
+          "appleVol": 8,
+          "notes": ""
+        },
+        {
+          "keyword": "Compteur de Calories",
+          "googleVol": 396,
+          "appleVol": 498,
+          "notes": ""
+        },
+        {
+          "keyword": "mental",
+          "googleVol": 14,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "compte-calories",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Calorie et Régime",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "compte calories",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "bien-être",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "santé mentalo",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Humeur",
+          "googleVol": 1,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "mental",
+          "googleVol": 14,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "motivation",
+          "googleVol": 53,
+          "appleVol": 366,
+          "notes": ""
+        },
+        {
+          "keyword": "cerveau",
+          "googleVol": 40,
+          "appleVol": 52,
+          "notes": ""
+        },
+        {
+          "keyword": "bien être",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "habitude",
+          "googleVol": 5,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "eau",
+          "googleVol": 5,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "humeur",
+          "googleVol": 0,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "vélo",
+          "googleVol": 42,
+          "appleVol": 12,
+          "notes": ""
+        },
+        {
+          "keyword": "méditation",
+          "googleVol": 4,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 91,
+          "appleVol": 365,
+          "notes": ""
+        },
+        {
+          "keyword": "bienêtre",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "course",
+          "googleVol": 178,
+          "appleVol": 592,
+          "notes": ""
+        },
+        {
+          "keyword": "course a pied",
+          "googleVol": 91,
+          "appleVol": 683,
+          "notes": ""
+        },
+        {
+          "keyword": "courir",
+          "googleVol": 503,
+          "appleVol": 683,
+          "notes": ""
+        },
+        {
+          "keyword": "randonnée",
+          "googleVol": 7,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "SLEEP",
+          "googleVol": 230,
+          "appleVol": 266,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep recorder",
+          "googleVol": 230,
+          "appleVol": 266,
+          "notes": ""
+        },
+        {
+          "keyword": "workout",
+          "googleVol": 117,
+          "appleVol": 268,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 281,
+          "appleVol": 322,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 211,
+          "appleVol": 254,
+          "notes": ""
+        },
+        {
+          "keyword": "habit tracker",
+          "googleVol": 324,
+          "appleVol": 392,
+          "notes": ""
+        },
+        {
+          "keyword": "tracker",
+          "googleVol": 73,
+          "appleVol": 285,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 41,
+          "appleVol": 150,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 52,
+          "appleVol": 60,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 56,
+          "appleVol": 64,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 312,
+          "appleVol": 35,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 223,
+          "appleVol": 443,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 2,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 252,
+          "appleVol": 252,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 201,
+          "appleVol": 201,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 2,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "habit tracker",
+          "googleVol": 324,
+          "appleVol": 392,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "ESPANISH",
+      "startLine": 612,
+      "keywords": [
+        {
+          "keyword": "calorías",
+          "googleVol": 30,
+          "appleVol": 9,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 226,
+          "appleVol": 94,
+          "notes": ""
+        },
+        {
+          "keyword": "sugar",
+          "googleVol": 7,
+          "appleVol": 8,
+          "notes": ""
+        },
+        {
+          "keyword": "azúcar",
+          "googleVol": 1,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "sueño",
+          "googleVol": 121,
+          "appleVol": 141,
+          "notes": ""
+        },
+        {
+          "keyword": "dormir",
+          "googleVol": 58,
+          "appleVol": 75,
+          "notes": ""
+        },
+        {
+          "keyword": "ciclo",
+          "googleVol": 6,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "Regla",
+          "googleVol": 279,
+          "appleVol": 294,
+          "notes": ""
+        },
+        {
+          "keyword": "ayuno",
+          "googleVol": 113,
+          "appleVol": 116,
+          "notes": ""
+        },
+        {
+          "keyword": "entrenamiento",
+          "googleVol": 106,
+          "appleVol": 103,
+          "notes": ""
+        },
+        {
+          "keyword": "nutrición",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "nutricion",
+          "googleVol": 67,
+          "appleVol": 65,
+          "notes": ""
+        },
+        {
+          "keyword": "Plan de Dieta",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Contador de Calorías",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "hábito",
+          "googleVol": 4,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "hábitos",
+          "googleVol": 10,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "habitos",
+          "googleVol": 79,
+          "appleVol": 96,
+          "notes": ""
+        },
+        {
+          "keyword": "wellness",
+          "googleVol": 10,
+          "appleVol": 16,
+          "notes": ""
+        },
+        {
+          "keyword": "bienestar",
+          "googleVol": 5,
+          "appleVol": 13,
+          "notes": ""
+        },
+        {
+          "keyword": "hormona",
+          "googleVol": 4,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "hormonas",
+          "googleVol": 6,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 0,
+          "appleVol": 7,
+          "notes": ""
+        },
+        {
+          "keyword": "peso",
+          "googleVol": 112,
+          "appleVol": 132,
+          "notes": ""
+        },
+        {
+          "keyword": "peso diario",
+          "googleVol": 6,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "tareas",
+          "googleVol": 5,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "mental",
+          "googleVol": 32,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "jogos mentales",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "entrenos",
+          "googleVol": 2,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "dieta",
+          "googleVol": 143,
+          "appleVol": 142,
+          "notes": ""
+        },
+        {
+          "keyword": "Plan de comidas",
+          "googleVol": 2,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "menu semanal",
+          "googleVol": 8,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "recetas",
+          "googleVol": 101,
+          "appleVol": 129,
+          "notes": ""
+        },
+        {
+          "keyword": "plan nutricional",
+          "googleVol": 2,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "plan de entrenamiento",
+          "googleVol": 0,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "plan personalizado",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "mujer",
+          "googleVol": 4,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "salud mujer",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "bmi",
+          "googleVol": 40,
+          "appleVol": 116,
+          "notes": ""
+        },
+        {
+          "keyword": "imc calculadora",
+          "googleVol": 278,
+          "appleVol": 116,
+          "notes": ""
+        },
+        {
+          "keyword": "imc",
+          "googleVol": 102,
+          "appleVol": 116,
+          "notes": ""
+        },
+        {
+          "keyword": "recomposicion",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "cerebro",
+          "googleVol": 8,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "rastreador de macros",
+          "googleVol": 6,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "Entrenamiento para mujeres",
+          "googleVol": 6,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "pedalear",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "caminar",
+          "googleVol": 46,
+          "appleVol": 52,
+          "notes": ""
+        },
+        {
+          "keyword": "corrida",
+          "googleVol": 4,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "correr",
+          "googleVol": 373,
+          "appleVol": 336,
+          "notes": ""
+        },
+        {
+          "keyword": "rutinas",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Ejercicios",
+          "googleVol": 106,
+          "appleVol": 103,
+          "notes": ""
+        },
+        {
+          "keyword": "Rutinas Gym",
+          "googleVol": 36,
+          "appleVol": 141,
+          "notes": ""
+        },
+        {
+          "keyword": "Rutinas",
+          "googleVol": 3,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Rutinas Gimnasio IA",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "bodybuilding",
+          "googleVol": 17,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "grasa",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "corre",
+          "googleVol": 9,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "camina",
+          "googleVol": 2,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "pedalea",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "sueño",
+          "googleVol": 125,
+          "appleVol": 141,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep",
+          "googleVol": 174,
+          "appleVol": 188,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 281,
+          "appleVol": 490,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 1,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 258,
+          "appleVol": 259,
+          "notes": ""
+        },
+        {
+          "keyword": "tracker",
+          "googleVol": 49,
+          "appleVol": 178,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 82,
+          "appleVol": 96,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 4,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 0,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 163,
+          "appleVol": 26,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 331,
+          "appleVol": 332,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 2,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 94,
+          "appleVol": 94,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 382,
+          "appleVol": 378,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 0,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "Habit tracker",
+          "googleVol": 289,
+          "appleVol": 293,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "BRAZIL",
+      "startLine": 688,
+      "keywords": [
+        {
+          "keyword": "treino",
+          "googleVol": 3008,
+          "appleVol": 2292,
+          "notes": ""
+        },
+        {
+          "keyword": "treinos",
+          "googleVol": 96,
+          "appleVol": 196,
+          "notes": ""
+        },
+        {
+          "keyword": "treino academia",
+          "googleVol": 391,
+          "appleVol": 1097,
+          "notes": ""
+        },
+        {
+          "keyword": "exercício",
+          "googleVol": 56,
+          "appleVol": 111,
+          "notes": ""
+        },
+        {
+          "keyword": "exercicio",
+          "googleVol": 348,
+          "appleVol": 21,
+          "notes": ""
+        },
+        {
+          "keyword": "sono",
+          "googleVol": 1143,
+          "appleVol": 569,
+          "notes": ""
+        },
+        {
+          "keyword": "dormir",
+          "googleVol": 178,
+          "appleVol": 119,
+          "notes": ""
+        },
+        {
+          "keyword": "monitor de sono",
+          "googleVol": 63,
+          "appleVol": 44,
+          "notes": ""
+        },
+        {
+          "keyword": "descanso",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 1368,
+          "appleVol": 661,
+          "notes": ""
+        },
+        {
+          "keyword": "ginasio",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Academia",
+          "googleVol": 1247,
+          "appleVol": 1011,
+          "notes": ""
+        },
+        {
+          "keyword": "saude",
+          "googleVol": 1454,
+          "appleVol": 1524,
+          "notes": ""
+        },
+        {
+          "keyword": "lembrete",
+          "googleVol": 1,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "corrida",
+          "googleVol": 1560,
+          "appleVol": 1655,
+          "notes": ""
+        },
+        {
+          "keyword": "caminhada",
+          "googleVol": 262,
+          "appleVol": 454,
+          "notes": ""
+        },
+        {
+          "keyword": "correr",
+          "googleVol": 247,
+          "appleVol": 421,
+          "notes": ""
+        },
+        {
+          "keyword": "musculação",
+          "googleVol": 0,
+          "appleVol": 7,
+          "notes": ""
+        },
+        {
+          "keyword": "musculacao",
+          "googleVol": 178,
+          "appleVol": 13,
+          "notes": ""
+        },
+        {
+          "keyword": "meditação",
+          "googleVol": 30,
+          "appleVol": 219,
+          "notes": ""
+        },
+        {
+          "keyword": "habito",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "hábito",
+          "googleVol": 268,
+          "appleVol": 18,
+          "notes": ""
+        },
+        {
+          "keyword": "hábitos",
+          "googleVol": 268,
+          "appleVol": 18,
+          "notes": ""
+        },
+        {
+          "keyword": "habitos",
+          "googleVol": 104,
+          "appleVol": 205,
+          "notes": ""
+        },
+        {
+          "keyword": "rotinas",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "período",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "periodo",
+          "googleVol": 0,
+          "appleVol": 6,
+          "notes": ""
+        },
+        {
+          "keyword": "mestrual",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "menstruação",
+          "googleVol": 15,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "jejum",
+          "googleVol": 11,
+          "appleVol": 15,
+          "notes": ""
+        },
+        {
+          "keyword": "jejum intermitente",
+          "googleVol": 1460,
+          "appleVol": 931,
+          "notes": ""
+        },
+        {
+          "keyword": "dieta",
+          "googleVol": 873,
+          "appleVol": 454,
+          "notes": ""
+        },
+        {
+          "keyword": "peso",
+          "googleVol": 189,
+          "appleVol": 128,
+          "notes": ""
+        },
+        {
+          "keyword": "Proteina",
+          "googleVol": 0,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "saúde",
+          "googleVol": 84,
+          "appleVol": 19,
+          "notes": ""
+        },
+        {
+          "keyword": "saude",
+          "googleVol": 1454,
+          "appleVol": 1524,
+          "notes": ""
+        },
+        {
+          "keyword": "comer",
+          "googleVol": 0,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "calorias ai",
+          "googleVol": 6,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 759,
+          "appleVol": 391,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Contador de Calorias",
+          "googleVol": 296,
+          "appleVol": 861,
+          "notes": ""
+        },
+        {
+          "keyword": "Diário alimentar",
+          "googleVol": 6,
+          "appleVol": 6,
+          "notes": ""
+        },
+        {
+          "keyword": "Diario alimentar",
+          "googleVol": 63,
+          "appleVol": 44,
+          "notes": ""
+        },
+        {
+          "keyword": "alimentar",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "feminina",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "mulher",
+          "googleVol": 111,
+          "appleVol": 10,
+          "notes": ""
+        },
+        {
+          "keyword": "saúde da mulher",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "treinador",
+          "googleVol": 111,
+          "appleVol": 88,
+          "notes": ""
+        },
+        {
+          "keyword": "nutrição com IA",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "nutrição IA",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "cérebro",
+          "googleVol": 35,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "cerebro",
+          "googleVol": 139,
+          "appleVol": 103,
+          "notes": ""
+        },
+        {
+          "keyword": "mental",
+          "googleVol": 0,
+          "appleVol": 14,
+          "notes": ""
+        },
+        {
+          "keyword": "saude mental",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "cognitivos",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "mente",
+          "googleVol": 57,
+          "appleVol": 49,
+          "notes": ""
+        },
+        {
+          "keyword": "jogos mentais",
+          "googleVol": 206,
+          "appleVol": 138,
+          "notes": ""
+        },
+        {
+          "keyword": "plano personalizado",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "personalizado",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "plano",
+          "googleVol": 6,
+          "appleVol": 6,
+          "notes": ""
+        },
+        {
+          "keyword": "plano de treino",
+          "googleVol": 6,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "pilates",
+          "googleVol": 246,
+          "appleVol": 160,
+          "notes": ""
+        },
+        {
+          "keyword": "yoga",
+          "googleVol": 551,
+          "appleVol": 304,
+          "notes": ""
+        },
+        {
+          "keyword": "ciclismo",
+          "googleVol": 0,
+          "appleVol": 64,
+          "notes": ""
+        },
+        {
+          "keyword": "IMC",
+          "googleVol": 319,
+          "appleVol": 196,
+          "notes": ""
+        },
+        {
+          "keyword": "culinária",
+          "googleVol": 9,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "receita",
+          "googleVol": 2,
+          "appleVol": 8,
+          "notes": ""
+        },
+        {
+          "keyword": "receitas",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "comidas",
+          "googleVol": 1,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 0,
+          "appleVol": 135,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 99,
+          "appleVol": 65,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 1161,
+          "appleVol": 32,
+          "notes": ""
+        },
+        {
+          "keyword": "running",
+          "googleVol": 1191,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 490,
+          "appleVol": 490,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 6,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "exercises",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 470,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 391,
+          "appleVol": 391,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 6,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 6,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Habit tracker",
+          "googleVol": 247,
+          "appleVol": 422,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "CANADA",
+      "startLine": 780,
+      "keywords": [
+        {
+          "keyword": "gym planner",
+          "googleVol": 3,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "food",
+          "googleVol": 295,
+          "appleVol": 821,
+          "notes": ""
+        },
+        {
+          "keyword": "workout",
+          "googleVol": 213,
+          "appleVol": 737,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep",
+          "googleVol": 175,
+          "appleVol": 642,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 163,
+          "appleVol": 591,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 259,
+          "appleVol": 460,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 207,
+          "appleVol": 352,
+          "notes": ""
+        },
+        {
+          "keyword": "habits",
+          "googleVol": 55,
+          "appleVol": 100,
+          "notes": ""
+        },
+        {
+          "keyword": "period",
+          "googleVol": 228,
+          "appleVol": 401,
+          "notes": ""
+        },
+        {
+          "keyword": "habits",
+          "googleVol": 68,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "tracker",
+          "googleVol": 68,
+          "appleVol": 402,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 217,
+          "appleVol": 376,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 77,
+          "appleVol": 125,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 93,
+          "appleVol": 107,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 187,
+          "appleVol": 31,
+          "notes": ""
+        },
+        {
+          "keyword": "protein",
+          "googleVol": 0,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 399,
+          "appleVol": 1317,
+          "notes": ""
+        },
+        {
+          "keyword": "eating",
+          "googleVol": 7,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "AI Calorie",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "AI Calories",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 64,
+          "appleVol": 100,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 145,
+          "appleVol": 23,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 52,
+          "appleVol": 69,
+          "notes": ""
+        },
+        {
+          "keyword": "macros tracker",
+          "googleVol": 4,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 120,
+          "appleVol": 404,
+          "notes": ""
+        },
+        {
+          "keyword": "meal tracker",
+          "googleVol": 82,
+          "appleVol": 133,
+          "notes": ""
+        },
+        {
+          "keyword": "Habit tracker",
+          "googleVol": 111,
+          "appleVol": 694,
+          "notes": ""
+        },
+        {
+          "keyword": "women",
+          "googleVol": 6,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "mestruation",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "Cycle",
+          "googleVol": 49,
+          "appleVol": 274,
+          "notes": ""
+        },
+        {
+          "keyword": "motivation",
+          "googleVol": 207,
+          "appleVol": 352,
+          "notes": ""
+        },
+        {
+          "keyword": "sport",
+          "googleVol": 312,
+          "appleVol": 179,
+          "notes": ""
+        },
+        {
+          "keyword": "brain games",
+          "googleVol": 228,
+          "appleVol": 401,
+          "notes": ""
+        },
+        {
+          "keyword": "cognitive games",
+          "googleVol": 1,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "brain training",
+          "googleVol": 32,
+          "appleVol": 77,
+          "notes": ""
+        },
+        {
+          "keyword": "crossfit",
+          "googleVol": 46,
+          "appleVol": 8,
+          "notes": ""
+        },
+        {
+          "keyword": "pilates",
+          "googleVol": 173,
+          "appleVol": 292,
+          "notes": ""
+        },
+        {
+          "keyword": "yoga",
+          "googleVol": 217,
+          "appleVol": 376,
+          "notes": ""
+        },
+        {
+          "keyword": "cycling",
+          "googleVol": 66,
+          "appleVol": 83,
+          "notes": ""
+        },
+        {
+          "keyword": "cycling tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "bmi",
+          "googleVol": 217,
+          "appleVol": 207,
+          "notes": ""
+        },
+        {
+          "keyword": "bmi calculator",
+          "googleVol": 217,
+          "appleVol": 62,
+          "notes": ""
+        },
+        {
+          "keyword": "brain",
+          "googleVol": 228,
+          "appleVol": 401,
+          "notes": ""
+        },
+        {
+          "keyword": "recipes",
+          "googleVol": 77,
+          "appleVol": 123,
+          "notes": ""
+        },
+        {
+          "keyword": "cook",
+          "googleVol": 122,
+          "appleVol": 20,
+          "notes": ""
+        },
+        {
+          "keyword": "healthy",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "scanner",
+          "googleVol": 204,
+          "appleVol": 992,
+          "notes": ""
+        },
+        {
+          "keyword": "glucose",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "insulin",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "hydration",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "steps",
+          "googleVol": 65,
+          "appleVol": 43,
+          "notes": ""
+        },
+        {
+          "keyword": "steps app",
+          "googleVol": 65,
+          "appleVol": 43,
+          "notes": ""
+        },
+        {
+          "keyword": "lifting",
+          "googleVol": 5,
+          "appleVol": 6,
+          "notes": ""
+        },
+        {
+          "keyword": "hypertrophy",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "nutrition scanner",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "food scanner",
+          "googleVol": 46,
+          "appleVol": 264,
+          "notes": ""
+        },
+        {
+          "keyword": "carb counter",
+          "googleVol": 31,
+          "appleVol": 47,
+          "notes": ""
+        },
+        {
+          "keyword": "glucose tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "keto tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "meal prep",
+          "googleVol": 2,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "grocery list",
+          "googleVol": 287,
+          "appleVol": 458,
+          "notes": ""
+        },
+        {
+          "keyword": "water reminder",
+          "googleVol": 55,
+          "appleVol": 312,
+          "notes": ""
+        },
+        {
+          "keyword": "hydration tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "workout planner",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "gym log",
+          "googleVol": 24,
+          "appleVol": 10,
+          "notes": ""
+        },
+        {
+          "keyword": "lifting tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "strength training",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "bodyweight workout",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "hiit timer",
+          "googleVol": 41,
+          "appleVol": 57,
+          "notes": ""
+        },
+        {
+          "keyword": "step counter",
+          "googleVol": 135,
+          "appleVol": 461,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "UK",
+      "startLine": 869,
+      "keywords": [
+        {
+          "keyword": "ketosis",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "glucose",
+          "googleVol": 1,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "insulin",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "hydration",
+          "googleVol": 0,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "steps",
+          "googleVol": 560,
+          "appleVol": 1185,
+          "notes": ""
+        },
+        {
+          "keyword": "lifting",
+          "googleVol": 2,
+          "appleVol": 12,
+          "notes": ""
+        },
+        {
+          "keyword": "hypertrophy",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "calisthenics",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "planner",
+          "googleVol": 62,
+          "appleVol": 833,
+          "notes": ""
+        },
+        {
+          "keyword": "food scanner",
+          "googleVol": 96,
+          "appleVol": 594,
+          "notes": ""
+        },
+        {
+          "keyword": "photo calorie",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "nutrition scanner",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "carb counter",
+          "googleVol": 43,
+          "appleVol": 63,
+          "notes": ""
+        },
+        {
+          "keyword": "glucose tracker",
+          "googleVol": 3,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "keto tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "meal prep",
+          "googleVol": 2,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "grocery list",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "water reminder",
+          "googleVol": 207,
+          "appleVol": 280,
+          "notes": ""
+        },
+        {
+          "keyword": "hydration tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "workout planner",
+          "googleVol": 86,
+          "appleVol": 489,
+          "notes": ""
+        },
+        {
+          "keyword": "gym log",
+          "googleVol": 34,
+          "appleVol": 48,
+          "notes": ""
+        },
+        {
+          "keyword": "lifting tracker",
+          "googleVol": 4,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "strength training",
+          "googleVol": 2,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "bodyweight workout",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "hiit timer",
+          "googleVol": 21,
+          "appleVol": 23,
+          "notes": ""
+        },
+        {
+          "keyword": "step counter",
+          "googleVol": 228,
+          "appleVol": 1293,
+          "notes": ""
+        },
+        {
+          "keyword": "gym planner",
+          "googleVol": 162,
+          "appleVol": 150,
+          "notes": ""
+        },
+        {
+          "keyword": "food (no health and fitness stuff)",
+          "googleVol": 93,
+          "appleVol": 1284,
+          "notes": ""
+        },
+        {
+          "keyword": "workout",
+          "googleVol": 406,
+          "appleVol": 989,
+          "notes": ""
+        },
+        {
+          "keyword": "workout planner",
+          "googleVol": 0,
+          "appleVol": 490,
+          "notes": ""
+        },
+        {
+          "keyword": "workout tracker",
+          "googleVol": 0,
+          "appleVol": 628,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep",
+          "googleVol": 294,
+          "appleVol": 908,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 340,
+          "appleVol": 1177,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 284,
+          "appleVol": 491,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 236,
+          "appleVol": 381,
+          "notes": ""
+        },
+        {
+          "keyword": "habits",
+          "googleVol": 85,
+          "appleVol": 122,
+          "notes": ""
+        },
+        {
+          "keyword": "period",
+          "googleVol": 279,
+          "appleVol": 489,
+          "notes": ""
+        },
+        {
+          "keyword": "tracker",
+          "googleVol": 10,
+          "appleVol": 22,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 324,
+          "appleVol": 532,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 127,
+          "appleVol": 173,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 68,
+          "appleVol": 169,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 389,
+          "appleVol": 64,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 465,
+          "appleVol": 148,
+          "notes": ""
+        },
+        {
+          "keyword": "eating",
+          "googleVol": 25,
+          "appleVol": 19,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 112,
+          "appleVol": 158,
+          "notes": ""
+        },
+        {
+          "keyword": "exercises",
+          "googleVol": 5,
+          "appleVol": 5,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 227,
+          "appleVol": 28,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 49,
+          "appleVol": 242,
+          "notes": ""
+        },
+        {
+          "keyword": "macros tracker",
+          "googleVol": 6,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 171,
+          "appleVol": 356,
+          "notes": ""
+        },
+        {
+          "keyword": "Habit tracker",
+          "googleVol": 175,
+          "appleVol": 990,
+          "notes": ""
+        },
+        {
+          "keyword": "Cycle",
+          "googleVol": 91,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "motivation",
+          "googleVol": 58,
+          "appleVol": 187,
+          "notes": ""
+        },
+        {
+          "keyword": "sport",
+          "googleVol": 390,
+          "appleVol": 239,
+          "notes": ""
+        },
+        {
+          "keyword": "brain games",
+          "googleVol": 383,
+          "appleVol": 578,
+          "notes": ""
+        },
+        {
+          "keyword": "cognitive games",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "brain training",
+          "googleVol": 54,
+          "appleVol": 683,
+          "notes": ""
+        },
+        {
+          "keyword": "crossfit",
+          "googleVol": 6,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "pilates",
+          "googleVol": 267,
+          "appleVol": 350,
+          "notes": ""
+        },
+        {
+          "keyword": "cycling",
+          "googleVol": 37,
+          "appleVol": 29,
+          "notes": ""
+        },
+        {
+          "keyword": "cycling tracker",
+          "googleVol": 50,
+          "appleVol": 75,
+          "notes": ""
+        },
+        {
+          "keyword": "bmi",
+          "googleVol": 167,
+          "appleVol": 242,
+          "notes": ""
+        },
+        {
+          "keyword": "bmi calculator",
+          "googleVol": 319,
+          "appleVol": 578,
+          "notes": ""
+        },
+        {
+          "keyword": "brain",
+          "googleVol": 262,
+          "appleVol": 453,
+          "notes": ""
+        },
+        {
+          "keyword": "recipes",
+          "googleVol": 99,
+          "appleVol": 140,
+          "notes": ""
+        },
+        {
+          "keyword": "cook",
+          "googleVol": 299,
+          "appleVol": 51,
+          "notes": ""
+        },
+        {
+          "keyword": "healthy",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "AUSTRALIA",
+      "startLine": 952,
+      "keywords": [
+        {
+          "keyword": "insulin",
+          "googleVol": 22,
+          "appleVol": 7,
+          "notes": ""
+        },
+        {
+          "keyword": "hydration",
+          "googleVol": 0,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "steps",
+          "googleVol": 49,
+          "appleVol": 213,
+          "notes": ""
+        },
+        {
+          "keyword": "lifting",
+          "googleVol": 2,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "hypertrophy",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "calisthenics",
+          "googleVol": 124,
+          "appleVol": 136,
+          "notes": ""
+        },
+        {
+          "keyword": "planner",
+          "googleVol": 78,
+          "appleVol": 212,
+          "notes": ""
+        },
+        {
+          "keyword": "food scanner",
+          "googleVol": 35,
+          "appleVol": 137,
+          "notes": ""
+        },
+        {
+          "keyword": "nutrition scanner",
+          "googleVol": 5,
+          "appleVol": 7,
+          "notes": ""
+        },
+        {
+          "keyword": "carb counter",
+          "googleVol": 28,
+          "appleVol": 38,
+          "notes": ""
+        },
+        {
+          "keyword": "glucose tracker",
+          "googleVol": 28,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "keto tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "meal prep",
+          "googleVol": 0,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "grocery list",
+          "googleVol": 80,
+          "appleVol": 135,
+          "notes": ""
+        },
+        {
+          "keyword": "water reminder",
+          "googleVol": 78,
+          "appleVol": 152,
+          "notes": ""
+        },
+        {
+          "keyword": "hydration tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "workout planner",
+          "googleVol": 92,
+          "appleVol": 172,
+          "notes": ""
+        },
+        {
+          "keyword": "gym log",
+          "googleVol": 1,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "lifting tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "strength training",
+          "googleVol": 22,
+          "appleVol": 30,
+          "notes": ""
+        },
+        {
+          "keyword": "bodyweight workout",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "hiit timer",
+          "googleVol": 35,
+          "appleVol": 45,
+          "notes": ""
+        },
+        {
+          "keyword": "step counter",
+          "googleVol": 38,
+          "appleVol": 213,
+          "notes": ""
+        },
+        {
+          "keyword": "gym planner",
+          "googleVol": 32,
+          "appleVol": 42,
+          "notes": ""
+        },
+        {
+          "keyword": "food",
+          "googleVol": 66,
+          "appleVol": 296,
+          "notes": ""
+        },
+        {
+          "keyword": "workout",
+          "googleVol": 119,
+          "appleVol": 229,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep",
+          "googleVol": 127,
+          "appleVol": 253,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 120,
+          "appleVol": 261,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 52,
+          "appleVol": 178,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 80,
+          "appleVol": 164,
+          "notes": ""
+        },
+        {
+          "keyword": "habits",
+          "googleVol": 43,
+          "appleVol": 54,
+          "notes": ""
+        },
+        {
+          "keyword": "period",
+          "googleVol": 186,
+          "appleVol": 183,
+          "notes": ""
+        },
+        {
+          "keyword": "tracker",
+          "googleVol": 52,
+          "appleVol": 171,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 141,
+          "appleVol": 148,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 64,
+          "appleVol": 78,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 36,
+          "appleVol": 31,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 193,
+          "appleVol": 19,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 214,
+          "appleVol": 370,
+          "notes": ""
+        },
+        {
+          "keyword": "eating",
+          "googleVol": 25,
+          "appleVol": 19,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 61,
+          "appleVol": 73,
+          "notes": ""
+        },
+        {
+          "keyword": "exercises",
+          "googleVol": 4,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 130,
+          "appleVol": 57,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 61,
+          "appleVol": 73,
+          "notes": ""
+        },
+        {
+          "keyword": "macros tracker",
+          "googleVol": 2,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 96,
+          "appleVol": 152,
+          "notes": ""
+        },
+        {
+          "keyword": "meal tracker",
+          "googleVol": 61,
+          "appleVol": 73,
+          "notes": ""
+        },
+        {
+          "keyword": "Habit tracker",
+          "googleVol": 120,
+          "appleVol": 241,
+          "notes": ""
+        },
+        {
+          "keyword": "Cycle",
+          "googleVol": 36,
+          "appleVol": 38,
+          "notes": ""
+        },
+        {
+          "keyword": "motivation",
+          "googleVol": 58,
+          "appleVol": 187,
+          "notes": ""
+        },
+        {
+          "keyword": "sport",
+          "googleVol": 69,
+          "appleVol": 80,
+          "notes": ""
+        },
+        {
+          "keyword": "brain games",
+          "googleVol": 383,
+          "appleVol": 578,
+          "notes": ""
+        },
+        {
+          "keyword": "cognitive games",
+          "googleVol": 2,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "brain training",
+          "googleVol": 41,
+          "appleVol": 148,
+          "notes": ""
+        },
+        {
+          "keyword": "crossfit",
+          "googleVol": 28,
+          "appleVol": 33,
+          "notes": ""
+        },
+        {
+          "keyword": "pilates",
+          "googleVol": 169,
+          "appleVol": 172,
+          "notes": ""
+        },
+        {
+          "keyword": "cycling",
+          "googleVol": 35,
+          "appleVol": 46,
+          "notes": ""
+        },
+        {
+          "keyword": "cycling tracker",
+          "googleVol": 31,
+          "appleVol": 13,
+          "notes": ""
+        },
+        {
+          "keyword": "bmi",
+          "googleVol": 84,
+          "appleVol": 101,
+          "notes": ""
+        },
+        {
+          "keyword": "bmi calculator",
+          "googleVol": 153,
+          "appleVol": 154,
+          "notes": ""
+        },
+        {
+          "keyword": "brain",
+          "googleVol": 162,
+          "appleVol": 158,
+          "notes": ""
+        },
+        {
+          "keyword": "recipes",
+          "googleVol": 54,
+          "appleVol": 65,
+          "notes": ""
+        },
+        {
+          "keyword": "cook",
+          "googleVol": 82,
+          "appleVol": 11,
+          "notes": ""
+        },
+        {
+          "keyword": "healthy",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "NEW ZEALAND",
+      "startLine": 1029,
+      "keywords": [
+        {
+          "keyword": "insulin",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "lifting",
+          "googleVol": 8,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "hypertrophy",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "calisthenics",
+          "googleVol": 19,
+          "appleVol": 22,
+          "notes": ""
+        },
+        {
+          "keyword": "planner",
+          "googleVol": 146,
+          "appleVol": 147,
+          "notes": ""
+        },
+        {
+          "keyword": "food scanner",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "carb counter",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "keto tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "meal prep",
+          "googleVol": 28,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "grocery list",
+          "googleVol": 0,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "water reminder",
+          "googleVol": 2,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "hydration tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "workout planner",
+          "googleVol": 22,
+          "appleVol": 75,
+          "notes": ""
+        },
+        {
+          "keyword": "gym log",
+          "googleVol": 1,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "lifting tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "strength training",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "bodyweight workout",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "hiit timer",
+          "googleVol": 19,
+          "appleVol": 22,
+          "notes": ""
+        },
+        {
+          "keyword": "step counter",
+          "googleVol": 127,
+          "appleVol": 129,
+          "notes": ""
+        },
+        {
+          "keyword": "gym planner",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "food",
+          "googleVol": 116,
+          "appleVol": 124,
+          "notes": ""
+        },
+        {
+          "keyword": "workout",
+          "googleVol": 155,
+          "appleVol": 147,
+          "notes": ""
+        },
+        {
+          "keyword": "sleep",
+          "googleVol": 141,
+          "appleVol": 142,
+          "notes": ""
+        },
+        {
+          "keyword": "gym",
+          "googleVol": 75,
+          "appleVol": 75,
+          "notes": ""
+        },
+        {
+          "keyword": "meditation",
+          "googleVol": 111,
+          "appleVol": 119,
+          "notes": ""
+        },
+        {
+          "keyword": "habit",
+          "googleVol": 29,
+          "appleVol": 103,
+          "notes": ""
+        },
+        {
+          "keyword": "habits",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "period",
+          "googleVol": 45,
+          "appleVol": 45,
+          "notes": ""
+        },
+        {
+          "keyword": "tracker",
+          "googleVol": 10,
+          "appleVol": 22,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 119,
+          "appleVol": 124,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 23,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 100,
+          "appleVol": 10,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 98,
+          "appleVol": 189,
+          "notes": ""
+        },
+        {
+          "keyword": "eating",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 1,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "exercises",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 34,
+          "appleVol": 33,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macros tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 22,
+          "appleVol": 25,
+          "notes": ""
+        },
+        {
+          "keyword": "meal tracker",
+          "googleVol": 19,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "Habit tracker",
+          "googleVol": 167,
+          "appleVol": 161,
+          "notes": ""
+        },
+        {
+          "keyword": "cycle",
+          "googleVol": 8,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "motivation",
+          "googleVol": 90,
+          "appleVol": 94,
+          "notes": ""
+        },
+        {
+          "keyword": "sport",
+          "googleVol": 48,
+          "appleVol": 6,
+          "notes": ""
+        },
+        {
+          "keyword": "brain games",
+          "googleVol": 162,
+          "appleVol": 147,
+          "notes": ""
+        },
+        {
+          "keyword": "cognitive games",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "brain training",
+          "googleVol": 48,
+          "appleVol": 14,
+          "notes": ""
+        },
+        {
+          "keyword": "crossfit",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "pilates",
+          "googleVol": 36,
+          "appleVol": 40,
+          "notes": ""
+        },
+        {
+          "keyword": "yoga",
+          "googleVol": 73,
+          "appleVol": 75,
+          "notes": ""
+        },
+        {
+          "keyword": "cycling",
+          "googleVol": 30,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "cycling tracker",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "bmi",
+          "googleVol": 8,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "bmi calculator",
+          "googleVol": 110,
+          "appleVol": 119,
+          "notes": ""
+        },
+        {
+          "keyword": "brain",
+          "googleVol": 53,
+          "appleVol": 99,
+          "notes": ""
+        },
+        {
+          "keyword": "recipes",
+          "googleVol": 0,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "cook",
+          "googleVol": 28,
+          "appleVol": 3,
+          "notes": ""
+        },
+        {
+          "keyword": "healthy",
+          "googleVol": 5,
+          "appleVol": 0,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "DENMARK",
+      "startLine": 1090,
+      "keywords": [
+        {
+          "keyword": "gym",
+          "googleVol": 34,
+          "appleVol": 6,
+          "notes": ""
+        },
+        {
+          "keyword": "period",
+          "googleVol": 1,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "period tracker",
+          "googleVol": 187,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "fasting",
+          "googleVol": 107,
+          "appleVol": 185,
+          "notes": ""
+        },
+        {
+          "keyword": "diet",
+          "googleVol": 4,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "weight",
+          "googleVol": 29,
+          "appleVol": 43,
+          "notes": ""
+        },
+        {
+          "keyword": "run",
+          "googleVol": 156,
+          "appleVol": 26,
+          "notes": ""
+        },
+        {
+          "keyword": "running(to query for all languages)",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "health",
+          "googleVol": 66,
+          "appleVol": 253,
+          "notes": ""
+        },
+        {
+          "keyword": "exercise",
+          "googleVol": 0,
+          "appleVol": 0,
+          "notes": ""
+        },
+        {
+          "keyword": "macro",
+          "googleVol": 4,
+          "appleVol": 4,
+          "notes": ""
+        },
+        {
+          "keyword": "macros",
+          "googleVol": 8,
+          "appleVol": 1,
+          "notes": ""
+        },
+        {
+          "keyword": "macro tracker",
+          "googleVol": 1,
+          "appleVol": 2,
+          "notes": ""
+        },
+        {
+          "keyword": "Habit tracker",
+          "googleVol": 78,
+          "appleVol": 142,
+          "notes": ""
+        }
+      ]
+    }
+  ],
+  "matrix": [
+    {
+      "keyword": "health",
+      "GERMAN": 1947,
+      "SWISS": 541,
+      "AUSTRIA": 200,
+      "DUTCH": 336,
+      "BELGIUM": 231,
+      "SWEEDEN": 0,
+      "NORWAY": 52,
+      "USA": 5239,
+      "FRENCH": 443,
+      "ESPANISH": 332,
+      "BRAZIL": 490,
+      "CANADA": 1317,
+      "UK": 148,
+      "AUSTRALIA": 370,
+      "NEW ZEALAND": 189,
+      "DENMARK": 253,
+      "maxAppleVol": 5239
+    },
+    {
+      "keyword": "food",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 5100,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 821,
+      "UK": 0,
+      "AUSTRALIA": 296,
+      "NEW ZEALAND": 124,
+      "DENMARK": 0,
+      "maxAppleVol": 5100
+    },
+    {
+      "keyword": "workout",
+      "GERMAN": 477,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 321,
+      "BELGIUM": 111,
+      "SWEEDEN": 321,
+      "NORWAY": 159,
+      "USA": 3388,
+      "FRENCH": 268,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 737,
+      "UK": 989,
+      "AUSTRALIA": 229,
+      "NEW ZEALAND": 147,
+      "DENMARK": 0,
+      "maxAppleVol": 3388
+    },
+    {
+      "keyword": "brain games",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 2834,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 401,
+      "UK": 578,
+      "AUSTRALIA": 578,
+      "NEW ZEALAND": 147,
+      "DENMARK": 0,
+      "maxAppleVol": 2834
+    },
+    {
+      "keyword": "scanner (only 1 food related)",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 2576,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 0,
+      "AUSTRALIA": 0,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 2576
+    },
+    {
+      "keyword": "cooking",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 2501,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 0,
+      "AUSTRALIA": 0,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 2501
+    },
+    {
+      "keyword": "motivation",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 2282,
+      "FRENCH": 366,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 352,
+      "UK": 187,
+      "AUSTRALIA": 187,
+      "NEW ZEALAND": 94,
+      "DENMARK": 0,
+      "maxAppleVol": 2282
+    },
+    {
+      "keyword": "step counter",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 2274,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 461,
+      "UK": 1293,
+      "AUSTRALIA": 213,
+      "NEW ZEALAND": 129,
+      "DENMARK": 0,
+      "maxAppleVol": 2274
+    },
+    {
+      "keyword": "planner",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 2000,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 833,
+      "AUSTRALIA": 212,
+      "NEW ZEALAND": 147,
+      "DENMARK": 0,
+      "maxAppleVol": 2000
+    },
+    {
+      "keyword": "sleep",
+      "GERMAN": 413,
+      "SWISS": 129,
+      "AUSTRIA": 0,
+      "DUTCH": 239,
+      "BELGIUM": 154,
+      "SWEEDEN": 216,
+      "NORWAY": 150,
+      "USA": 1985,
+      "FRENCH": 266,
+      "ESPANISH": 188,
+      "BRAZIL": 0,
+      "CANADA": 642,
+      "UK": 908,
+      "AUSTRALIA": 253,
+      "NEW ZEALAND": 142,
+      "DENMARK": 0,
+      "maxAppleVol": 1985
+    },
+    {
+      "keyword": "habit tracker",
+      "GERMAN": 820,
+      "SWISS": 218,
+      "AUSTRIA": 256,
+      "DUTCH": 277,
+      "BELGIUM": 128,
+      "SWEEDEN": 226,
+      "NORWAY": 180,
+      "USA": 1985,
+      "FRENCH": 392,
+      "ESPANISH": 293,
+      "BRAZIL": 422,
+      "CANADA": 694,
+      "UK": 990,
+      "AUSTRALIA": 241,
+      "NEW ZEALAND": 161,
+      "DENMARK": 142,
+      "maxAppleVol": 1985
+    },
+    {
+      "keyword": "steps",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 1618,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 43,
+      "UK": 1185,
+      "AUSTRALIA": 213,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 1618
+    },
+    {
+      "keyword": "gym",
+      "GERMAN": 755,
+      "SWISS": 116,
+      "AUSTRIA": 112,
+      "DUTCH": 105,
+      "BELGIUM": 105,
+      "SWEEDEN": 297,
+      "NORWAY": 87,
+      "USA": 1487,
+      "FRENCH": 322,
+      "ESPANISH": 490,
+      "BRAZIL": 661,
+      "CANADA": 591,
+      "UK": 1177,
+      "AUSTRALIA": 261,
+      "NEW ZEALAND": 75,
+      "DENMARK": 6,
+      "maxAppleVol": 1487
+    },
+    {
+      "keyword": "workout planner",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 1354,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 490,
+      "AUSTRALIA": 172,
+      "NEW ZEALAND": 75,
+      "DENMARK": 0,
+      "maxAppleVol": 1354
+    },
+    {
+      "keyword": "sport",
+      "GERMAN": 956,
+      "SWISS": 208,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 297,
+      "NORWAY": 60,
+      "USA": 467,
+      "FRENCH": 1332,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 179,
+      "UK": 239,
+      "AUSTRALIA": 80,
+      "NEW ZEALAND": 6,
+      "DENMARK": 0,
+      "maxAppleVol": 1332
+    },
+    {
+      "keyword": "bmi calculator",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 146,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 1300,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 62,
+      "UK": 578,
+      "AUSTRALIA": 154,
+      "NEW ZEALAND": 119,
+      "DENMARK": 0,
+      "maxAppleVol": 1300
+    },
+    {
+      "keyword": "food (no health and fitness stuff)",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 0,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 1284,
+      "AUSTRALIA": 0,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 1284
+    },
+    {
+      "keyword": "meditation",
+      "GERMAN": 550,
+      "SWISS": 151,
+      "AUSTRIA": 137,
+      "DUTCH": 223,
+      "BELGIUM": 148,
+      "SWEEDEN": 181,
+      "NORWAY": 115,
+      "USA": 1209,
+      "FRENCH": 365,
+      "ESPANISH": 3,
+      "BRAZIL": 0,
+      "CANADA": 460,
+      "UK": 491,
+      "AUSTRALIA": 178,
+      "NEW ZEALAND": 119,
+      "DENMARK": 0,
+      "maxAppleVol": 1209
+    },
+    {
+      "keyword": "macro tracker",
+      "GERMAN": 18,
+      "SWISS": 1,
+      "AUSTRIA": 1,
+      "DUTCH": 1,
+      "BELGIUM": 2,
+      "SWEEDEN": 0,
+      "NORWAY": 10,
+      "USA": 1192,
+      "FRENCH": 2,
+      "ESPANISH": 2,
+      "BRAZIL": 0,
+      "CANADA": 404,
+      "UK": 356,
+      "AUSTRALIA": 152,
+      "NEW ZEALAND": 25,
+      "DENMARK": 2,
+      "maxAppleVol": 1192
+    },
+    {
+      "keyword": "habit",
+      "GERMAN": 384,
+      "SWISS": 65,
+      "AUSTRIA": 106,
+      "DUTCH": 197,
+      "BELGIUM": 48,
+      "SWEEDEN": 81,
+      "NORWAY": 4,
+      "USA": 1174,
+      "FRENCH": 254,
+      "ESPANISH": 259,
+      "BRAZIL": 0,
+      "CANADA": 352,
+      "UK": 381,
+      "AUSTRALIA": 164,
+      "NEW ZEALAND": 103,
+      "DENMARK": 0,
+      "maxAppleVol": 1174
+    },
+    {
+      "keyword": "period",
+      "GERMAN": 18,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 68,
+      "NORWAY": 0,
+      "USA": 1164,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 401,
+      "UK": 489,
+      "AUSTRALIA": 183,
+      "NEW ZEALAND": 45,
+      "DENMARK": 2,
+      "maxAppleVol": 1164
+    },
+    {
+      "keyword": "scanner",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 354,
+      "NORWAY": 0,
+      "USA": 0,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 992,
+      "UK": 0,
+      "AUSTRALIA": 0,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 992
+    },
+    {
+      "keyword": "tracker",
+      "GERMAN": 443,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 205,
+      "BELGIUM": 134,
+      "SWEEDEN": 68,
+      "NORWAY": 151,
+      "USA": 917,
+      "FRENCH": 285,
+      "ESPANISH": 178,
+      "BRAZIL": 0,
+      "CANADA": 402,
+      "UK": 22,
+      "AUSTRALIA": 171,
+      "NEW ZEALAND": 22,
+      "DENMARK": 0,
+      "maxAppleVol": 917
+    },
+    {
+      "keyword": "food scanner",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 894,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 264,
+      "UK": 594,
+      "AUSTRALIA": 137,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 894
+    },
+    {
+      "keyword": "fasting",
+      "GERMAN": 443,
+      "SWISS": 69,
+      "AUSTRIA": 3,
+      "DUTCH": 176,
+      "BELGIUM": 46,
+      "SWEEDEN": 171,
+      "NORWAY": 120,
+      "USA": 869,
+      "FRENCH": 150,
+      "ESPANISH": 96,
+      "BRAZIL": 0,
+      "CANADA": 376,
+      "UK": 532,
+      "AUSTRALIA": 148,
+      "NEW ZEALAND": 124,
+      "DENMARK": 185,
+      "maxAppleVol": 869
+    },
+    {
+      "keyword": "yoga",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 866,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 304,
+      "CANADA": 376,
+      "UK": 0,
+      "AUSTRALIA": 0,
+      "NEW ZEALAND": 75,
+      "DENMARK": 0,
+      "maxAppleVol": 866
+    },
+    {
+      "keyword": "calisthenics",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 862,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 0,
+      "AUSTRALIA": 136,
+      "NEW ZEALAND": 22,
+      "DENMARK": 0,
+      "maxAppleVol": 862
+    },
+    {
+      "keyword": "bmi",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 105,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 807,
+      "FRENCH": 0,
+      "ESPANISH": 116,
+      "BRAZIL": 0,
+      "CANADA": 207,
+      "UK": 242,
+      "AUSTRALIA": 101,
+      "NEW ZEALAND": 4,
+      "DENMARK": 0,
+      "maxAppleVol": 807
+    },
+    {
+      "keyword": "water reminder",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 764,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 312,
+      "UK": 280,
+      "AUSTRALIA": 152,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 764
+    },
+    {
+      "keyword": "pilates",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 756,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 160,
+      "CANADA": 292,
+      "UK": 350,
+      "AUSTRALIA": 172,
+      "NEW ZEALAND": 40,
+      "DENMARK": 0,
+      "maxAppleVol": 756
+    },
+    {
+      "keyword": "brain training",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 267,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 77,
+      "UK": 683,
+      "AUSTRALIA": 148,
+      "NEW ZEALAND": 14,
+      "DENMARK": 0,
+      "maxAppleVol": 683
+    },
+    {
+      "keyword": "macros",
+      "GERMAN": 66,
+      "SWISS": 19,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 2,
+      "SWEEDEN": 6,
+      "NORWAY": 3,
+      "USA": 655,
+      "FRENCH": 201,
+      "ESPANISH": 378,
+      "BRAZIL": 391,
+      "CANADA": 69,
+      "UK": 242,
+      "AUSTRALIA": 73,
+      "NEW ZEALAND": 0,
+      "DENMARK": 1,
+      "maxAppleVol": 655
+    },
+    {
+      "keyword": "workout tracker",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 0,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 628,
+      "AUSTRALIA": 0,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 628
+    },
+    {
+      "keyword": "run",
+      "GERMAN": 66,
+      "SWISS": 20,
+      "AUSTRIA": 11,
+      "DUTCH": 109,
+      "BELGIUM": 15,
+      "SWEEDEN": 237,
+      "NORWAY": 81,
+      "USA": 519,
+      "FRENCH": 35,
+      "ESPANISH": 26,
+      "BRAZIL": 32,
+      "CANADA": 31,
+      "UK": 64,
+      "AUSTRALIA": 19,
+      "NEW ZEALAND": 10,
+      "DENMARK": 26,
+      "maxAppleVol": 519
+    },
+    {
+      "keyword": "meal tracker",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 500,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 133,
+      "UK": 0,
+      "AUSTRALIA": 73,
+      "NEW ZEALAND": 3,
+      "DENMARK": 0,
+      "maxAppleVol": 500
+    },
+    {
+      "keyword": "diet",
+      "GERMAN": 79,
+      "SWISS": 1,
+      "AUSTRIA": 2,
+      "DUTCH": 2,
+      "BELGIUM": 49,
+      "SWEEDEN": 3,
+      "NORWAY": 0,
+      "USA": 488,
+      "FRENCH": 60,
+      "ESPANISH": 0,
+      "BRAZIL": 135,
+      "CANADA": 125,
+      "UK": 173,
+      "AUSTRALIA": 78,
+      "NEW ZEALAND": 4,
+      "DENMARK": 4,
+      "maxAppleVol": 488
+    },
+    {
+      "keyword": "weight",
+      "GERMAN": 9,
+      "SWISS": 0,
+      "AUSTRIA": 10,
+      "DUTCH": 53,
+      "BELGIUM": 4,
+      "SWEEDEN": 4,
+      "NORWAY": 30,
+      "USA": 460,
+      "FRENCH": 64,
+      "ESPANISH": 4,
+      "BRAZIL": 65,
+      "CANADA": 107,
+      "UK": 169,
+      "AUSTRALIA": 31,
+      "NEW ZEALAND": 0,
+      "DENMARK": 43,
+      "maxAppleVol": 460
+    },
+    {
+      "keyword": "grocery list",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 311,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 458,
+      "UK": 0,
+      "AUSTRALIA": 135,
+      "NEW ZEALAND": 2,
+      "DENMARK": 0,
+      "maxAppleVol": 458
+    },
+    {
+      "keyword": "brain",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 241,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 401,
+      "UK": 453,
+      "AUSTRALIA": 158,
+      "NEW ZEALAND": 99,
+      "DENMARK": 0,
+      "maxAppleVol": 453
+    },
+    {
+      "keyword": "habits",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 9,
+      "USA": 372,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 122,
+      "AUSTRALIA": 54,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 372
+    },
+    {
+      "keyword": "keto",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 353,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 0,
+      "AUSTRALIA": 0,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 353
+    },
+    {
+      "keyword": "glucose",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 336,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 2,
+      "AUSTRALIA": 0,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 336
+    },
+    {
+      "keyword": "cook",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 322,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 20,
+      "UK": 51,
+      "AUSTRALIA": 11,
+      "NEW ZEALAND": 3,
+      "DENMARK": 0,
+      "maxAppleVol": 322
+    },
+    {
+      "keyword": "crossfit",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 318,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 8,
+      "UK": 2,
+      "AUSTRALIA": 33,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 318
+    },
+    {
+      "keyword": "hiit timer",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 318,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 57,
+      "UK": 23,
+      "AUSTRALIA": 45,
+      "NEW ZEALAND": 22,
+      "DENMARK": 0,
+      "maxAppleVol": 318
+    },
+    {
+      "keyword": "cycle",
+      "GERMAN": 79,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 312,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 274,
+      "UK": 1,
+      "AUSTRALIA": 38,
+      "NEW ZEALAND": 1,
+      "DENMARK": 0,
+      "maxAppleVol": 312
+    },
+    {
+      "keyword": "meal prep",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 311,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 4,
+      "UK": 4,
+      "AUSTRALIA": 4,
+      "NEW ZEALAND": 3,
+      "DENMARK": 0,
+      "maxAppleVol": 311
+    },
+    {
+      "keyword": "macro",
+      "GERMAN": 24,
+      "SWISS": 1,
+      "AUSTRIA": 0,
+      "DUTCH": 197,
+      "BELGIUM": 10,
+      "SWEEDEN": 7,
+      "NORWAY": 0,
+      "USA": 301,
+      "FRENCH": 252,
+      "ESPANISH": 94,
+      "BRAZIL": 0,
+      "CANADA": 23,
+      "UK": 28,
+      "AUSTRALIA": 57,
+      "NEW ZEALAND": 33,
+      "DENMARK": 4,
+      "maxAppleVol": 301
+    },
+    {
+      "keyword": "strength training",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 273,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 1,
+      "AUSTRALIA": 30,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 273
+    },
+    {
+      "keyword": "eating",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 2,
+      "NORWAY": 0,
+      "USA": 266,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 2,
+      "UK": 19,
+      "AUSTRALIA": 19,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 266
+    },
+    {
+      "keyword": "carb counter",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 266,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 47,
+      "UK": 63,
+      "AUSTRALIA": 38,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 266
+    },
+    {
+      "keyword": "cycling",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 252,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 83,
+      "UK": 29,
+      "AUSTRALIA": 46,
+      "NEW ZEALAND": 4,
+      "DENMARK": 0,
+      "maxAppleVol": 252
+    },
+    {
+      "keyword": "cycling tracker",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 249,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 75,
+      "AUSTRALIA": 13,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 249
+    },
+    {
+      "keyword": "keto tracker",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 247,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 0,
+      "AUSTRALIA": 0,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 247
+    },
+    {
+      "keyword": "hydration tracker",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 238,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 0,
+      "AUSTRALIA": 0,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 238
+    },
+    {
+      "keyword": "cognitive games",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 229,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 4,
+      "UK": 0,
+      "AUSTRALIA": 2,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 229
+    },
+    {
+      "keyword": "nutrition scanner",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 222,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 0,
+      "AUSTRALIA": 7,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 222
+    },
+    {
+      "keyword": "protein",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 2,
+      "NORWAY": 0,
+      "USA": 215,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 1,
+      "UK": 0,
+      "AUSTRALIA": 0,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 215
+    },
+    {
+      "keyword": "recipes",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 193,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 123,
+      "UK": 140,
+      "AUSTRALIA": 65,
+      "NEW ZEALAND": 2,
+      "DENMARK": 0,
+      "maxAppleVol": 193
+    },
+    {
+      "keyword": "hypertrophy",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 187,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 0,
+      "AUSTRALIA": 0,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 187
+    },
+    {
+      "keyword": "lifting",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 186,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 6,
+      "UK": 12,
+      "AUSTRALIA": 3,
+      "NEW ZEALAND": 1,
+      "DENMARK": 0,
+      "maxAppleVol": 186
+    },
+    {
+      "keyword": "exercise",
+      "GERMAN": 4,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 2,
+      "BELGIUM": 1,
+      "SWEEDEN": 2,
+      "NORWAY": 1,
+      "USA": 184,
+      "FRENCH": 2,
+      "ESPANISH": 2,
+      "BRAZIL": 0,
+      "CANADA": 100,
+      "UK": 158,
+      "AUSTRALIA": 73,
+      "NEW ZEALAND": 1,
+      "DENMARK": 0,
+      "maxAppleVol": 184
+    },
+    {
+      "keyword": "glucose tracker",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 164,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 0,
+      "AUSTRALIA": 0,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 164
+    },
+    {
+      "keyword": "gym log",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 153,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 10,
+      "UK": 48,
+      "AUSTRALIA": 2,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 153
+    },
+    {
+      "keyword": "gym planner",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 0,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 1,
+      "UK": 150,
+      "AUSTRALIA": 42,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 150
+    },
+    {
+      "keyword": "macros tracker",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 111,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 0,
+      "AUSTRALIA": 4,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 111
+    },
+    {
+      "keyword": "meals",
+      "GERMAN": 0,
+      "SWISS": 0,
+      "AUSTRIA": 0,
+      "DUTCH": 0,
+      "BELGIUM": 0,
+      "SWEEDEN": 0,
+      "NORWAY": 0,
+      "USA": 111,
+      "FRENCH": 0,
+      "ESPANISH": 0,
+      "BRAZIL": 0,
+      "CANADA": 0,
+      "UK": 0,
+      "AUSTRALIA": 0,
+      "NEW ZEALAND": 0,
+      "DENMARK": 0,
+      "maxAppleVol": 111
+    }
+  ]
+}

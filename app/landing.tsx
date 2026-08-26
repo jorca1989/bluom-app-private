@@ -114,6 +114,9 @@ export default function LandingPage() {
                 <a href="https://play.google.com/store/apps/details?id=com.jwfca.bluom" target="_blank" rel="noopener noreferrer" className="bg-slate-900 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:scale-105 transition-all no-underline">
                   <div className="text-left"><p className="text-[9px] uppercase font-bold opacity-60 m-0">Get it on</p><p className="text-base font-bold leading-none m-0">Google Play</p></div>
                 </a>
+                <a href="https://startupbase.io/products/bluom-app?utm_source=startupbase&utm_medium=badge&utm_campaign=launch-badge-dark" target="_blank" rel="noopener noreferrer" className="hover:scale-105 transition-all">
+                  <img src="https://statics.startupbase.io/site/badges/launched-on-sb-dark.svg" alt="Launched on StartupBase" height="55" style={{ height: '55px', width: 'auto' }} />
+                </a>
               </div>
               <p className="text-xs text-slate-400 mt-6 font-semibold uppercase tracking-widest">Trusted by 10,000+ early users · 14 languages</p>
             </div>

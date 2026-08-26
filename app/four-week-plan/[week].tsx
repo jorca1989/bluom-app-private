@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import { FREE_4_WEEK_PLAN, getWeekRoutineDays } from '@/utils/fourWeekPlanData';
 import { useTheme, type ThemeColors } from '@/context/ThemeContext';
+import { translateValue } from '@/utils/translateHelper';
 
 type WeekTemplate = {
   title: string;
@@ -78,7 +79,7 @@ export default function FourWeekPlanWeekScreen() {
   const params = useLocalSearchParams<{ week?: string }>();
   const { user: clerkUser } = useUser();
   const { isPro } = useAccessControl();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors: themeColors } = useTheme();
   const styles = useMemo(() => createStyles(themeColors), [themeColors]);
 
@@ -92,8 +93,8 @@ export default function FourWeekPlanWeekScreen() {
 
   const translateWorkoutLabel = React.useCallback((value?: string) => {
     if (!value) return '';
-    return t(`workouts.labels.${value}`, value) as string;
-  }, [t]);
+    return translateValue(value, i18n.language, t);
+  }, [t, i18n.language]);
 
   const translateMuscleList = React.useCallback((value?: string) => {
     if (!value) return '';
@@ -101,9 +102,9 @@ export default function FourWeekPlanWeekScreen() {
       .split(',')
       .map((part) => part.trim())
       .filter(Boolean)
-      .map((part) => t(`workouts.muscles.${part}`, translateWorkoutLabel(part)) as string)
+      .map((part) => translateValue(part, i18n.language, t))
       .join(', ');
-  }, [t, translateWorkoutLabel]);
+  }, [t, i18n.language]);
 
   const week = useMemo(() => {
     if (isPro && activePlans?.fitnessPlan?.workouts) {
