@@ -75,10 +75,11 @@ export default function LandingPage() {
   return (
     <>
       <Head>
-        <title>Bluom — One app. Every system in your body.</title>
-        <meta name="description" content="Nutrition, training, sleep, mood, cycle, supplements — finally unified. AI calorie scanner, partner-synced shopping, personalized plans for women's and men's health." />
-        <meta property="og:title" content="Bluom — One app. Every system in your body." />
-        <meta property="og:description" content="Precision Living. Power in Bloom." />
+        <title>Bluom | AI Calorie Scanner, Workout Tracker & Habit App</title>
+        <meta name="description" content="The ultimate health and fitness tracker. Unified macro tracker, workout log, meal scanner, period tracker, and focus timer to optimize your daily habits." />
+        <meta name="keywords" content="health and fitness tracker, macro tracker, ai calorie scanner, workout tracker, nutrition tracker, habit tracker app, cycle tracking app, focus timer app, weight loss app" />
+        <meta property="og:title" content="Bluom | AI Calorie Scanner, Workout Tracker & Habit App" />
+        <meta property="og:description" content="The ultimate health and fitness tracker. Unified macro tracker, workout log, meal scanner, period tracker, and focus timer to optimize your daily habits." />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&family=Instrument+Serif&display=swap" rel="stylesheet" />
