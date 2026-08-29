@@ -2,6 +2,7 @@ import '../global.css';
 import i18n, { restoreSavedLanguage } from '../i18n';
 import React, { useEffect, useRef, useState } from 'react';
 import { Stack, useRouter, useSegments, useRootNavigationState } from 'expo-router';
+import * as Linking from 'expo-linking';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View, Text, Platform } from 'react-native';
@@ -20,6 +21,7 @@ import { UserProvider } from '@/context/UserContext';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { registerForPushNotificationsAsync } from '@/utils/notifications';
+import { initAppsFlyer, setAppsFlyerCUID } from '@/utils/appsflyer';
 import { CelebrationProvider } from '@/context/CelebrationContext';
 import { AudioProvider } from '@/context/AudioContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
@@ -36,6 +38,11 @@ globalThis.Buffer = globalThis.Buffer ?? Buffer;
 export let pendingRouteAfterOnboarding: '/premium' | null = null;
 export function setPendingRouteAfterOnboarding(route: '/premium' | null) {
   pendingRouteAfterOnboarding = route;
+}
+
+export let pendingPrimaryFocus: string | null = null;
+export function setPendingPrimaryFocus(focus: string | null) {
+  pendingPrimaryFocus = focus;
 }
 
 const tokenCache = {
@@ -113,7 +120,27 @@ function InitialLayout() {
   const savePushToken = useMutation(api.users.savePushToken);
 
   useEffect(() => {
+    initAppsFlyer();
+    Linking.getInitialURL().then(url => {
+      if (url) {
+        const parsed = Linking.parse(url);
+        if (parsed.queryParams?.focus) {
+          setPendingPrimaryFocus(parsed.queryParams.focus as string);
+        }
+      }
+    });
+    const sub = Linking.addEventListener('url', event => {
+      const parsed = Linking.parse(event.url);
+      if (parsed.queryParams?.focus) {
+        setPendingPrimaryFocus(parsed.queryParams.focus as string);
+      }
+    });
+    return () => sub.remove();
+  }, []);
+
+  useEffect(() => {
     if (user?.id) {
+      setAppsFlyerCUID(user.id);
       registerForPushNotificationsAsync().then((token) => {
         if (token) {
           savePushToken({ clerkId: user.id, token });

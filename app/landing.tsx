@@ -4,9 +4,10 @@ import Head from 'expo-router/head';
 import { useUser } from '@clerk/clerk-expo';
 import { MASTER_ADMINS } from '../convex/permissions';
 import { Link } from 'expo-router';
-import { useMutation } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Asset } from 'expo-asset';
+import { DEFAULT_BLOG_ARTICLES, BlogArticle } from '@/constants/defaultArticles';
 
 export default function LandingPage() {
   if (Platform.OS !== 'web') return null;
@@ -37,6 +38,39 @@ export default function LandingPage() {
     try { setStatus('saving'); await submitTestUser({ email: email.trim(), source: 'landing' }); setStatus('done'); }
     catch { setStatus('error'); }
   };
+
+  const dbArticles = useQuery(api.admin.getPublishedArticles, {});
+  const landingArticles = useMemo(() => {
+    if (!dbArticles || dbArticles.length === 0) {
+      return DEFAULT_BLOG_ARTICLES.slice(0, 3);
+    }
+    const dbMapped: BlogArticle[] = dbArticles.map((a: any) => ({
+      _id: a._id,
+      slug: a.slug || a._id,
+      title: a.title,
+      category: a.category || 'Health',
+      emoji: '📖',
+      time: `${Math.max(3, Math.ceil((a.content?.length || 500) / 700))} min read`,
+      featuredImage:
+        a.featuredImage ||
+        'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1200&q=80',
+      excerpt:
+        a.content
+          ?.replace(/^#+\s+/gm, '')
+          ?.replace(/\*\*/g, '')
+          ?.slice(0, 150) + '...' || 'Read on Bluom.',
+      content: a.content || '',
+      author: 'Bluom Health Research Team',
+      publishedAt: new Date(a.createdAt || Date.now()).toISOString().slice(0, 10),
+      tags: a.tags || [a.category || 'Health'],
+    }));
+    const seen = new Set(dbMapped.map((a) => a.slug));
+    const merged = [
+      ...dbMapped,
+      ...DEFAULT_BLOG_ARTICLES.filter((a) => !seen.has(a.slug)),
+    ];
+    return merged.slice(0, 3);
+  }, [dbArticles]);
 
   return (
     <>
@@ -73,6 +107,7 @@ export default function LandingPage() {
               <a href="#wellness" className="hover:text-[#2563eb]">Wellness</a>
               <a href="#womens" className="hover:text-[#2563eb]">Women</a>
               <a href="#mens" className="hover:text-[#2563eb]">Men</a>
+              <a href="/blog" className="hover:text-[#2563eb]">Blog</a>
               <a href="#pricing" className="hover:text-[#2563eb]">Pricing</a>
               <a href="#faq" className="hover:text-[#2563eb]">FAQ</a>
               {isMasterAdmin && (
@@ -344,6 +379,77 @@ export default function LandingPage() {
             </div>
           </section>
 
+          {/* ── SECTION: BLOG & INSIGHTS ────────────────────────────── */}
+          <section id="blog" className="space-y-12">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div>
+                <span className="text-xs font-black uppercase tracking-widest text-[#2563eb]">Knowledge Hub</span>
+                <h2 className="text-4xl md:text-5xl font-black font-outfit text-slate-900 mt-2">
+                  Health, Longevity & <span className="font-serif-display text-[#2563eb]">Science</span>
+                </h2>
+                <p className="text-slate-500 font-inter font-medium mt-2 max-w-xl">
+                  Deep-dive research into metabolic flexibility, cycle syncing, autophagy, and nervous system regulation.
+                </p>
+              </div>
+              <a
+                href="/blog"
+                className="inline-flex items-center gap-2 text-sm font-extrabold text-[#2563eb] hover:text-blue-700 transition-colors no-underline group"
+              >
+                View all articles
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </a>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {landingArticles.map((article) => (
+                <article
+                  key={article.slug}
+                  className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all duration-300 overflow-hidden flex flex-col group"
+                >
+                  <a href={`/blog/${article.slug}`} className="block relative h-48 overflow-hidden bg-slate-100 no-underline">
+                    <img
+                      src={article.featuredImage}
+                      alt={article.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                    <span className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm text-slate-900 text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
+                      {article.category}
+                    </span>
+                  </a>
+
+                  <div className="p-6 flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 text-xs font-bold text-slate-400 mb-3">
+                        <span>{article.time}</span>
+                        <span>•</span>
+                        <span>{article.publishedAt}</span>
+                      </div>
+                      <h3 className="text-lg font-bold font-outfit text-slate-900 group-hover:text-blue-600 transition-colors leading-snug mb-3 line-clamp-2">
+                        <a href={`/blog/${article.slug}`} className="no-underline text-inherit">
+                          {article.title}
+                        </a>
+                      </h3>
+                      <p className="text-sm text-slate-600 font-inter leading-relaxed line-clamp-3 mb-4">
+                        {article.excerpt}
+                      </p>
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-400">By {article.author.replace('Bluom ', '')}</span>
+                      <a
+                        href={`/blog/${article.slug}`}
+                        className="text-xs font-extrabold text-[#2563eb] hover:text-blue-800 no-underline flex items-center gap-1 group-hover:translate-x-1 transition-transform"
+                      >
+                        Read article →
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
           {/* ── FINAL CTA ───────────────────────────────────────────── */}
           <section className="bg-gradient-to-br from-[#2563eb] to-blue-700 rounded-[40px] p-12 md:p-20 text-center text-white relative overflow-hidden">
             <h2 className="text-4xl md:text-6xl font-black font-outfit leading-tight mb-6">Start your <span className="font-serif-display">transformation</span> today.</h2>
@@ -384,13 +490,13 @@ export default function LandingPage() {
               </div>
 
               <div>
-                <h4 className="text-slate-900 font-black uppercase tracking-widest text-xs mb-4">For You</h4>
+                <h4 className="text-slate-900 font-black uppercase tracking-widest text-xs mb-4">Content & Blog</h4>
                 <div className="space-y-2.5 text-slate-500 text-sm font-semibold">
-                  <a href="#womens" className="block hover:text-[#2563eb]">Women's Health</a>
-                  <a href="#mens" className="block hover:text-[#2563eb]">Men's Health</a>
-                  <a href="#womens" className="block hover:text-[#2563eb]">Cycle & Pregnancy</a>
-                  <a href="#womens" className="block hover:text-[#2563eb]">Menopause</a>
-                  <a href="#mens" className="block hover:text-[#2563eb]">Supplements & Fasting</a>
+                  <a href="/blog" className="block text-blue-600 font-bold hover:text-blue-800">Knowledge Hub</a>
+                  <a href="/blog/autophagy-cellular-renewal-fasting" className="block hover:text-[#2563eb]">Autophagy & Fasting</a>
+                  <a href="/blog/cycle-syncing-female-hormones-training" className="block hover:text-[#2563eb]">Cycle Syncing</a>
+                  <a href="/blog/postpartum-recovery-pelvic-floor-core-rehab" className="block hover:text-[#2563eb]">Postpartum Rehab</a>
+                  <a href="/blog/muscle-protein-synthesis-hypertrophy-timing" className="block hover:text-[#2563eb]">Muscle Hypertrophy</a>
                 </div>
               </div>
 

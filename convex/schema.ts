@@ -94,11 +94,45 @@ export default defineSchema({
 
     partnerId: v.optional(v.id("users")), // For shared Todo/Grocery lists
 
+    // Primary Onboarding Focus & Workspace Tools
+    primaryFocus: v.optional(v.union(v.literal("fitness"), v.literal("mental_health"), v.literal("hormonal"), v.literal("holistic"))),
+    activeTools: v.optional(v.array(v.string())),
+
+    // AI Rate Limiter & Personalized Plan Tracking
+    lastAiUsageDate: v.optional(v.string()), // "YYYY-MM-DD"
+    dailyAiUsageCount: v.optional(v.number()),
+    planGeneratedAt: v.optional(v.number()),
+    planIsAiCustom: v.optional(v.boolean()),
 
     // Life Stage Tracking (Women's Health)
-    lifeStage: v.optional(v.union(v.literal("cycle"), v.literal("pregnancy"), v.literal("menopause"))),
+    lifeStage: v.optional(v.union(v.literal("cycle"), v.literal("pregnancy"), v.literal("postpartum"), v.literal("menopause"))),
     pregnancyStartDate: v.optional(v.number()), // timestamp
     lastPeriodDate: v.optional(v.number()), // timestamp
+    postpartumStartDate: v.optional(v.number()), // timestamp
+    deliveryDate: v.optional(v.number()), // timestamp
+    deliveryType: v.optional(v.union(v.literal("vaginal"), v.literal("c-section"))),
+    isBreastfeeding: v.optional(v.boolean()),
+
+    // ── Mental Health Branch ────────────────────────────────────────────────
+    mindfulnessGoal: v.optional(v.string()),
+    meditationExperience: v.optional(v.string()),
+    peakFocusWindow: v.optional(v.string()),
+    screenTimeRisk: v.optional(v.string()),
+    stressSymptomType: v.optional(v.array(v.string())),
+    preferredResetTool: v.optional(v.string()),
+    eveningRoutine: v.optional(v.string()),
+
+    // ── Hormonal Branch ────────────────────────────────────────────────────
+    pmsSeverityPattern: v.optional(v.array(v.string())),
+    energyCrashPattern: v.optional(v.string()),
+    dailyHydration: v.optional(v.string()),
+    bloodSugarStability: v.optional(v.string()),
+
+    // ── Fitness / Holistic Branch ──────────────────────────────────────────
+    dietaryObstacle: v.optional(v.string()),
+    dietingHistory: v.optional(v.string()),
+    equipmentAccess: v.optional(v.string()),
+    physicalLimitations: v.optional(v.array(v.string())),
 
     // Metadata
     createdAt: v.optional(v.float64()),
@@ -232,6 +266,9 @@ export default defineSchema({
   blogArticles: defineTable({
     title: v.string(),
     slug: v.string(),
+    focusKeyphrase: v.optional(v.string()),
+    imageAlt: v.optional(v.string()),
+    metaDescription: v.optional(v.string()),
     content: v.string(), // Markdown
     featuredImage: v.optional(v.string()),
     authorId: v.id("users"),
@@ -1075,6 +1112,9 @@ export default defineSchema({
     symptoms: v.array(v.string()),
     flow: v.optional(v.string()),
     ovulationPredicted: v.optional(v.boolean()),
+    ppMood: v.optional(v.string()),
+    ppLochia: v.optional(v.string()),
+    ppPain: v.optional(v.number()),
   }).index("by_user_date", ["userId", "date"]),
 
   vitalityLogs: defineTable({

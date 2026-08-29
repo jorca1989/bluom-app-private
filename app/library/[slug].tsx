@@ -46,6 +46,10 @@ const CATEGORY_COLORS: Record<string, string> = {
     'default':       '#2563eb',
 };
 
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { DEFAULT_BLOG_ARTICLES } from '@/constants/defaultArticles';
+
 export default function ArticleScreen() {
     const { slug, title, body, category, emoji, time } = useLocalSearchParams<{
         slug: string;
@@ -58,17 +62,42 @@ export default function ArticleScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
 
+    const articleKey = typeof slug === 'string' ? slug : '';
+
+    // Fetch from Convex if available
+    const dbArticle = useQuery(
+        api.admin.getArticleBySlug,
+        articleKey ? { slug: articleKey } : 'skip'
+    );
+
+    // Fallback search in default blog articles or static fasting articles
+    const defaultMatch = DEFAULT_BLOG_ARTICLES.find(
+        (a) => a.slug === articleKey || a._id === articleKey
+    );
+    const staticArticle = STATIC_ARTICLES[articleKey];
+
     // Inline article passed via params (mens-health / womens-health)
     const isInline = !!body;
 
-    const articleKey = typeof slug === 'string' ? slug : '';
-    const staticArticle = STATIC_ARTICLES[articleKey];
+    const displayTitle = isInline
+        ? title
+        : dbArticle?.title || defaultMatch?.title || staticArticle?.title || 'Article';
+    const displayBody = isInline
+        ? body
+        : dbArticle?.content || defaultMatch?.content || staticArticle?.content || '';
+    const displayCategory = isInline
+        ? category
+        : dbArticle?.category || defaultMatch?.category || staticArticle?.category || 'Health';
+    const displayEmoji = isInline
+        ? emoji
+        : defaultMatch?.emoji || staticArticle?.emoji || '📖';
+    const displayImage =
+        dbArticle?.featuredImage ||
+        defaultMatch?.featuredImage ||
+        staticArticle?.image ||
+        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800';
+    const displayTime = time || defaultMatch?.time || '5 min read';
 
-    const displayTitle    = isInline ? title    : (staticArticle?.title    ?? 'Article');
-    const displayBody     = isInline ? body     : (staticArticle?.content  ?? '');
-    const displayCategory = isInline ? category : (staticArticle?.category ?? '');
-    const displayEmoji    = isInline ? emoji    : (staticArticle?.emoji    ?? '📖');
-    const displayImage    = staticArticle?.image ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800';
     const accentColor = CATEGORY_COLORS[displayCategory ?? ''] ?? CATEGORY_COLORS['default'];
 
     return (

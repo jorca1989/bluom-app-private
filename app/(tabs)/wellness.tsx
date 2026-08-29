@@ -23,6 +23,8 @@ import { useTheme } from '@/context/ThemeContext';
 import { THEMES } from '@/context/ThemeContext';
 import type { ThemeColors } from '@/context/ThemeContext';
 import * as SecureStore from 'expo-secure-store';
+import { useActiveTools } from '@/hooks/useActiveTools';
+import SleeperView from '@/components/SleeperView';
 
 const { width } = Dimensions.get('window');
 
@@ -214,7 +216,7 @@ export default function WellnessScreen() {
   // ── Widget config ──
   const [showWellnessConfig, setShowWellnessConfig] = useState(false);
   const [wellnessWidgets, setWellnessWidgets] = useState<Set<WellnessWidgetId>>(
-    new Set(WELLNESS_WIDGETS.map(w => w.id))
+    new Set<WellnessWidgetId>(['kpis', 'quickActions', 'wellnessHubs'])
   );
   useEffect(() => {
     SecureStore.getItemAsync(WELLNESS_WIDGETS_KEY).then(val => {
@@ -279,6 +281,21 @@ export default function WellnessScreen() {
     setShowMoodModal(false);
     triggerSound(SoundEffect.WELLNESS_LOG);
   };
+
+  const { isToolActive, toggleTool } = useActiveTools();
+
+  if (!isToolActive('wellness')) {
+    return (
+      <SleeperView
+        title={t('wellness.title', 'Wellness & Mind')}
+        subtitle={t('sleeper.wellnessSubtitle', 'Mindfulness, sleep tracking & mood journals')}
+        description={t('sleeper.wellnessDescription', 'Wellness tracking is currently asleep in your workspace. You can activate it anytime to log mood, track sleep, and access guided meditations.')}
+        icon="leaf-outline"
+        accentColor="#8b5cf6"
+        onActivate={() => toggleTool('wellness')}
+      />
+    );
+  }
 
   if (!user) {
     return (

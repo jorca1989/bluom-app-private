@@ -105,21 +105,56 @@ export default function FocusModeScreen() {
             : t('focusMode.readyPrompt', 'Ready to dive in?')}
         </Text>
 
-        <TouchableOpacity
-          onPress={handleToggleSession}
-          activeOpacity={0.9}
-          className={`mt-12 w-full py-5 rounded-3xl items-center shadow-2xl ${isActive ? 'bg-white/10' : 'bg-blue-600'}`}
-        >
-          <Text className="text-xl font-black text-white">
-            {isActive
-              ? t('focusMode.pause', 'Pause Session')
-              : t('focusMode.start', 'Start Focusing')}
-          </Text>
-        </TouchableOpacity>
+        <View style={{ width: '100%', gap: 12, marginTop: 40 }}>
+          <TouchableOpacity
+            onPress={handleToggleSession}
+            activeOpacity={0.88}
+            style={{
+              width: '100%',
+              paddingVertical: 18,
+              borderRadius: 24,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: isActive ? '#f59e0b' : '#2563eb',
+              shadowColor: isActive ? '#f59e0b' : '#2563eb',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.35,
+              shadowRadius: 8,
+              elevation: 6,
+            }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: '900', color: '#ffffff' }}>
+              {isActive
+                ? t('focusMode.pause', 'Pause Session')
+                : t('focusMode.start', 'Start Focusing')}
+            </Text>
+          </TouchableOpacity>
+
+          {isActive && (
+            <TouchableOpacity
+              onPress={handleBack}
+              activeOpacity={0.88}
+              style={{
+                width: '100%',
+                paddingVertical: 16,
+                borderRadius: 24,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: themeColors.surface,
+                borderWidth: 2,
+                borderColor: '#ef4444',
+              }}
+            >
+              <Text style={{ fontSize: 16, fontWeight: '800', color: '#ef4444' }}>
+                {t('focusMode.endSession', 'End Session')}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
 
         {isActive && (
-          <Text className="text-slate-400 font-bold mt-6 text-xs uppercase tracking-[4px]">
-            {t('focusMode.tagline', 'Stay Focused • Bloom Deep')}
+          <Text style={{ color: themeColors.textMuted, fontWeight: '700', marginTop: 20, fontSize: 12, textTransform: 'uppercase', letterSpacing: 3 }}>
+            {t('focusMode.tagline', 'Stay Focused · Bloom Deep')}
           </Text>
         )}
       </View>

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   TextInput, Modal, ActivityIndicator, Alert, Image, Platform,
@@ -192,12 +192,246 @@ const previewStyles = StyleSheet.create({
   previewImage: { width: '100%', height: 200, borderRadius: 12, marginVertical: 10 },
 });
 
+// ── Yoast SEO & Readability Engine ────────────────────────
+const TRANSITION_WORDS = [
+  'accordingly', 'additionally', 'after', 'afterward', 'also', 'although', 'as a result',
+  'because', 'before', 'besides', 'certainly', 'consequently', 'conversely', 'despite',
+  'earlier', 'eventually', 'finally', 'first', 'for example', 'for instance', 'furthermore',
+  'hence', 'however', 'in addition', 'in conclusion', 'in contrast', 'in fact', 'in order to',
+  'in summary', 'indeed', 'initially', 'instead', 'lastly', 'later', 'likewise', 'meanwhile',
+  'moreover', 'nevertheless', 'next', 'nonetheless', 'notably', 'obviously', 'on the other hand',
+  'otherwise', 'overall', 'previously', 'second', 'similarly', 'specifically', 'subsequently',
+  'then', 'therefore', 'third', 'thus', 'to begin with', 'ultimately', 'whereas', 'while'
+];
+
+interface YoastScoreItem {
+  id: string;
+  title: string;
+  status: 'good' | 'ok' | 'bad'; // 🟢 🟠 🔴
+  message: string;
+}
+
+function calculateYoastAnalysis(
+  focusKeyphrase: string,
+  title: string,
+  content: string,
+  metaDescription: string,
+  imageAlt: string,
+  featuredImage: string
+) {
+  const fk = focusKeyphrase.trim().toLowerCase();
+  const t = title.trim().toLowerCase();
+  const c = content.trim();
+  const cLower = c.toLowerCase();
+  
+  // Clean text from markdown
+  const plainText = c
+    .replace(/^#+\s+/gm, '')
+    .replace(/\*\*/g, '')
+    .replace(/\*/g, '')
+    .replace(/!\[.*?\]\(.*?\)/g, '')
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1');
+
+  const words = plainText.split(/\s+/).filter(Boolean);
+  const wordCount = words.length;
+
+  const sentences = plainText.split(/[.!?]+/).map(s => s.trim()).filter(Boolean);
+  const totalSentences = sentences.length || 1;
+
+  const paragraphs = c.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+  const headings = c.split('\n').filter(l => l.startsWith('## ') || l.startsWith('### '));
+
+  // ─── 1. KEYPHRASE (SEO) CHECKS ───
+  const seo: YoastScoreItem[] = [];
+
+  if (!fk) {
+    seo.push({
+      id: 'fk-missing',
+      title: 'Focus Keyphrase',
+      status: 'bad',
+      message: 'Set a focus keyphrase to track SEO optimization score.',
+    });
+  } else {
+    // Keyphrase in Title
+    const hasInTitle = t.includes(fk);
+    const startsWithFk = t.indexOf(fk) <= 15;
+    if (hasInTitle && startsWithFk) {
+      seo.push({ id: 'seo-title-fk', title: 'Keyphrase in SEO title', status: 'good', message: 'The focus keyphrase appears near the beginning of the SEO title.' });
+    } else if (hasInTitle) {
+      seo.push({ id: 'seo-title-fk', title: 'Keyphrase in SEO title', status: 'ok', message: 'The focus keyphrase appears in the title, but not near the beginning.' });
+    } else {
+      seo.push({ id: 'seo-title-fk', title: 'Keyphrase in SEO title', status: 'bad', message: 'The focus keyphrase does not appear in the SEO title.' });
+    }
+
+    // SEO Title Length
+    const titleLen = title.trim().length;
+    if (titleLen >= 50 && titleLen <= 70) {
+      seo.push({ id: 'seo-title-len', title: 'SEO Title width', status: 'good', message: `Good job! Title length is ${titleLen} characters (ideal 50–70).` });
+    } else if (titleLen >= 40 && titleLen <= 80) {
+      seo.push({ id: 'seo-title-len', title: 'SEO Title width', status: 'ok', message: `Title is ${titleLen} characters. Aim between 50 and 70 characters for best Google display.` });
+    } else {
+      seo.push({ id: 'seo-title-len', title: 'SEO Title width', status: 'bad', message: `Title is ${titleLen} characters. It is either too short (<40) or too long (>80).` });
+    }
+
+    // Keyphrase in Meta Description
+    const metaDesc = metaDescription.trim().toLowerCase();
+    if (metaDesc && metaDesc.includes(fk)) {
+      seo.push({ id: 'seo-meta-fk', title: 'Keyphrase in meta description', status: 'good', message: 'The focus keyphrase appears in your meta description.' });
+    } else if (metaDesc) {
+      seo.push({ id: 'seo-meta-fk', title: 'Keyphrase in meta description', status: 'bad', message: 'The meta description does not contain your focus keyphrase.' });
+    } else {
+      seo.push({ id: 'seo-meta-fk', title: 'Meta description', status: 'bad', message: 'No meta description specified. An excerpt will be auto-generated.' });
+    }
+
+    // Keyphrase in Introduction
+    const firstPara = paragraphs[0]?.toLowerCase() || '';
+    if (firstPara.includes(fk)) {
+      seo.push({ id: 'seo-intro', title: 'Keyphrase in introduction', status: 'good', message: 'Your focus keyphrase appears in the first paragraph.' });
+    } else {
+      seo.push({ id: 'seo-intro', title: 'Keyphrase in introduction', status: 'bad', message: 'Your focus keyphrase does not appear in the first paragraph.' });
+    }
+
+    // Keyphrase Density
+    const fkMatches = (cLower.match(new RegExp(fk.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
+    const density = wordCount > 0 ? (fkMatches * fk.split(' ').length / wordCount) * 100 : 0;
+    if (density >= 0.5 && density <= 2.5) {
+      seo.push({ id: 'seo-density', title: 'Keyphrase density', status: 'good', message: `The focus keyphrase was found ${fkMatches} times (${density.toFixed(1)}% density). This is optimal.` });
+    } else if (fkMatches > 0 && density <= 3.5) {
+      seo.push({ id: 'seo-density', title: 'Keyphrase density', status: 'ok', message: `Keyphrase density is ${density.toFixed(1)}% (${fkMatches} times). Aim for 0.5% to 2.5%.` });
+    } else {
+      seo.push({ id: 'seo-density', title: 'Keyphrase density', status: 'bad', message: fkMatches === 0 ? 'The focus keyphrase was not found in the content.' : `Keyphrase density is ${density.toFixed(1)}%, which is over-optimized.` });
+    }
+
+    // Keyphrase in Slug
+    const slug = title.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+    const fkSlug = fk.replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+    if (slug.includes(fkSlug) || fk.split(' ').every(w => slug.includes(w))) {
+      seo.push({ id: 'seo-slug', title: 'Keyphrase in slug', status: 'good', message: 'Your focus keyphrase appears in the URL slug.' });
+    } else {
+      seo.push({ id: 'seo-slug', title: 'Keyphrase in slug', status: 'bad', message: 'Your focus keyphrase does not appear in the URL slug.' });
+    }
+  }
+
+  // Text Length
+  if (wordCount >= 600) {
+    seo.push({ id: 'seo-length', title: 'Text length', status: 'good', message: `The text contains ${wordCount} words. Excellent in-depth coverage.` });
+  } else if (wordCount >= 300) {
+    seo.push({ id: 'seo-length', title: 'Text length', status: 'ok', message: `The text contains ${wordCount} words (minimum 300 words met). 600+ words recommended for top rankings.` });
+  } else {
+    seo.push({ id: 'seo-length', title: 'Text length', status: 'bad', message: `The text contains only ${wordCount} words. This is below the minimum of 300 words.` });
+  }
+
+  // Images and Alt attributes
+  const hasImages = !!featuredImage || /!\[.*?\]\(.*?\)/.test(c);
+  const altContainsFk = (imageAlt.toLowerCase().includes(fk) && fk.length > 0) || (c.match(/!\[(.*?)\]\(.*?\)/g) || []).some(m => fk && m.toLowerCase().includes(fk));
+  if (hasImages && altContainsFk) {
+    seo.push({ id: 'seo-img-alt', title: 'Image Keyphrase alt attributes', status: 'good', message: 'Images contain alt attributes with your focus keyphrase.' });
+  } else if (hasImages) {
+    seo.push({ id: 'seo-img-alt', title: 'Image Keyphrase alt attributes', status: 'ok', message: 'Images are present, but alt attributes do not contain the focus keyphrase.' });
+  } else {
+    seo.push({ id: 'seo-img-alt', title: 'Images', status: 'bad', message: 'No images appear on this page. Add featured or in-content images.' });
+  }
+
+  // Internal and External Links
+  const internalLinks = (c.match(/\[.*?\]\((\/.*?)\)/g) || []).length;
+  const externalLinks = (c.match(/\[.*?\]\((https?:\/\/.*?)\)/g) || []).length;
+  if (internalLinks > 0 && externalLinks > 0) {
+    seo.push({ id: 'seo-links', title: 'Internal & Outbound links', status: 'good', message: `Great! Found ${internalLinks} internal link(s) and ${externalLinks} outbound reference link(s).` });
+  } else if (internalLinks > 0 || externalLinks > 0) {
+    seo.push({ id: 'seo-links', title: 'Links', status: 'ok', message: `Found ${internalLinks} internal and ${externalLinks} external links. Include both internal and external links.` });
+  } else {
+    seo.push({ id: 'seo-links', title: 'Links', status: 'bad', message: 'No outbound or internal links found in this copy.' });
+  }
+
+  // ─── 2. READABILITY CHECKS ───
+  const readability: YoastScoreItem[] = [];
+
+  // Sentence Length (> 20 words)
+  const longSentences = sentences.filter(s => s.split(/\s+/).length > 20);
+  const longSentencePct = totalSentences > 0 ? (longSentences.length / totalSentences) * 100 : 0;
+  if (longSentencePct <= 25) {
+    readability.push({ id: 'read-sentence-len', title: 'Sentence length', status: 'good', message: `${longSentencePct.toFixed(1)}% of sentences contain more than 20 words, which is under the 25% threshold.` });
+  } else if (longSentencePct <= 35) {
+    readability.push({ id: 'read-sentence-len', title: 'Sentence length', status: 'ok', message: `${longSentencePct.toFixed(1)}% of sentences contain more than 20 words. Try shortening a few.` });
+  } else {
+    readability.push({ id: 'read-sentence-len', title: 'Sentence length', status: 'bad', message: `${longSentencePct.toFixed(1)}% of sentences contain more than 20 words, which exceeds the 25% maximum.` });
+  }
+
+  // Paragraph Length (> 150 words)
+  const longParagraphs = paragraphs.filter(p => p.split(/\s+/).length > 150);
+  if (longParagraphs.length === 0) {
+    readability.push({ id: 'read-para-len', title: 'Paragraph length', status: 'good', message: 'None of the paragraphs are too long. All under 150 words.' });
+  } else {
+    readability.push({ id: 'read-para-len', title: 'Paragraph length', status: 'bad', message: `${longParagraphs.length} paragraph(s) contain more than 150 words. Shorten your paragraphs.` });
+  }
+
+  // Subheadings (H2, H3)
+  if (headings.length >= 2) {
+    readability.push({ id: 'read-subheadings', title: 'Subheading distribution', status: 'good', message: `Great! Found ${headings.length} subheadings breaking up the text.` });
+  } else if (headings.length === 1) {
+    readability.push({ id: 'read-subheadings', title: 'Subheading distribution', status: 'ok', message: 'You have 1 subheading. Add more H2/H3 subheadings to structure your copy.' });
+  } else {
+    readability.push({ id: 'read-subheadings', title: 'Subheading distribution', status: 'bad', message: 'No H2 or H3 subheadings found. Add subheadings to improve scannability.' });
+  }
+
+  // Transition Words
+  let transitionCount = 0;
+  for (const s of sentences) {
+    const sLow = s.toLowerCase();
+    if (TRANSITION_WORDS.some(tw => sLow.includes(tw))) {
+      transitionCount++;
+    }
+  }
+  const transitionPct = totalSentences > 0 ? (transitionCount / totalSentences) * 100 : 0;
+  if (transitionPct >= 30) {
+    readability.push({ id: 'read-transitions', title: 'Transition words', status: 'good', message: `${transitionPct.toFixed(1)}% of sentences contain transition words. Exceeds the 30% Yoast standard.` });
+  } else if (transitionPct >= 20) {
+    readability.push({ id: 'read-transitions', title: 'Transition words', status: 'ok', message: `${transitionPct.toFixed(1)}% of sentences contain transition words. Aim for at least 30%.` });
+  } else {
+    readability.push({ id: 'read-transitions', title: 'Transition words', status: 'bad', message: `Only ${transitionPct.toFixed(1)}% of sentences contain transition words. Use more transition words.` });
+  }
+
+  // Consecutive Sentences starting with same word
+  let hasConsecutive = false;
+  for (let i = 0; i < sentences.length - 2; i++) {
+    const w1 = sentences[i].split(/\s+/)[0]?.toLowerCase();
+    const w2 = sentences[i + 1].split(/\s+/)[0]?.toLowerCase();
+    const w3 = sentences[i + 2].split(/\s+/)[0]?.toLowerCase();
+    if (w1 && w1 === w2 && w2 === w3) {
+      hasConsecutive = true;
+      break;
+    }
+  }
+  if (!hasConsecutive) {
+    readability.push({ id: 'read-consecutive', title: 'Consecutive sentences', status: 'good', message: 'The text does not contain 3 consecutive sentences starting with the same word.' });
+  } else {
+    readability.push({ id: 'read-consecutive', title: 'Consecutive sentences', status: 'bad', message: '3 or more consecutive sentences start with the exact same word. Vary your sentence beginnings.' });
+  }
+
+  const countBadSeo = seo.filter(s => s.status === 'bad').length;
+  const countGoodSeo = seo.filter(s => s.status === 'good').length;
+  const overallSeo: 'good' | 'ok' | 'bad' = countBadSeo === 0 && countGoodSeo >= 4 ? 'good' : countBadSeo <= 2 ? 'ok' : 'bad';
+
+  const countBadRead = readability.filter(s => s.status === 'bad').length;
+  const countGoodRead = readability.filter(s => s.status === 'good').length;
+  const overallReadability: 'good' | 'ok' | 'bad' = countBadRead === 0 && countGoodRead >= 3 ? 'good' : countBadRead <= 1 ? 'ok' : 'bad';
+
+  return {
+    seo,
+    readability,
+    overallSeo,
+    overallReadability,
+    wordCount,
+  };
+}
+
 // ── Empty form factory ─────────────────────────────────────
 const emptyForm = () => ({
   title: '', titlePt: '', titleEs: '', titleFr: '', titleDe: '', titleNl: '',
   content: '', contentPt: '', contentEs: '', contentFr: '', contentDe: '', contentNl: '',
   categories: ['Wellness'] as string[], // multi-select; joined as comma string on save
   featuredImage: '', status: 'PUBLISHED' as 'PUBLISHED' | 'DRAFT',
+  focusKeyphrase: '', imageAlt: '', metaDescription: '',
 });
 
 export default function ContentCMS() {
@@ -268,6 +502,8 @@ export default function ContentCMS() {
     setImageModalVisible(false);
   };
 
+  const [yoastTab, setYoastTab] = useState<'seo' | 'readability'>('seo');
+
   const openNew = () => {
     setEditId(null); setForm(emptyForm()); setActiveLang('en');
     setContentSelection({ start: 0, end: 0 }); setPreviewMode(false);
@@ -295,6 +531,9 @@ export default function ContentCMS() {
       categories: cats,
       featuredImage: item.featuredImage ?? '',
       status: item.status ?? 'PUBLISHED',
+      focusKeyphrase: item.focusKeyphrase ?? '',
+      imageAlt: item.imageAlt ?? '',
+      metaDescription: item.metaDescription ?? '',
     });
     setActiveLang('en');
     setContentSelection({ start: 0, end: 0 }); setPreviewMode(false);
@@ -317,6 +556,9 @@ export default function ContentCMS() {
       status: form.status,
       category,
       featuredImage: form.featuredImage.trim() || undefined,
+      focusKeyphrase: form.focusKeyphrase.trim() || undefined,
+      imageAlt: form.imageAlt.trim() || undefined,
+      metaDescription: form.metaDescription.trim() || undefined,
       titlePt: form.titlePt.trim() || undefined,
       titleEs: form.titleEs.trim() || undefined,
       titleFr: form.titleFr.trim() || undefined,
@@ -353,6 +595,20 @@ export default function ContentCMS() {
   // ── Current lang content key helpers ──
   const titleKey = langKey('title', activeLang) as keyof ReturnType<typeof emptyForm>;
   const contentKey = langKey('content', activeLang) as keyof ReturnType<typeof emptyForm>;
+
+  // ── Real-time Yoast SEO & Readability Report ──
+  const yoastReport = useMemo(() => {
+    const currentTitle = (form as any)[titleKey] ?? '';
+    const currentContent = (form as any)[contentKey] ?? '';
+    return calculateYoastAnalysis(
+      form.focusKeyphrase,
+      currentTitle,
+      currentContent,
+      form.metaDescription,
+      form.imageAlt,
+      form.featuredImage
+    );
+  }, [form, titleKey, contentKey]);
 
   return (
     <View style={styles.container}>
@@ -567,6 +823,92 @@ export default function ContentCMS() {
               </>
             )}
 
+            {/* ── YOAST SEO & READABILITY SUITE ────────────────── */}
+            <View style={styles.yoastContainer}>
+              <View style={styles.yoastHeaderRow}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <Text style={styles.yoastTitle}>🚦 Yoast SEO Score</Text>
+                </View>
+                <View style={{ flexDirection: 'row', gap: 6 }}>
+                  <View style={[styles.yoastBadge, yoastReport.overallSeo === 'good' ? styles.bgGood : yoastReport.overallSeo === 'ok' ? styles.bgOk : styles.bgBad]}>
+                    <Text style={styles.yoastBadgeText}>SEO: {yoastReport.overallSeo === 'good' ? '🟢 Good' : yoastReport.overallSeo === 'ok' ? '🟠 OK' : '🔴 Needs work'}</Text>
+                  </View>
+                  <View style={[styles.yoastBadge, yoastReport.overallReadability === 'good' ? styles.bgGood : yoastReport.overallReadability === 'ok' ? styles.bgOk : styles.bgBad]}>
+                    <Text style={styles.yoastBadgeText}>Readability: {yoastReport.overallReadability === 'good' ? '🟢 Good' : yoastReport.overallReadability === 'ok' ? '🟠 OK' : '🔴 Needs work'}</Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* Focus Keyphrase */}
+              <Text style={styles.yoastFieldLabel}>🔑 Focus Keyphrase (Target Keyword)</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. intermittent fasting autophagy, cycle syncing"
+                value={form.focusKeyphrase}
+                onChangeText={setF('focusKeyphrase')}
+                autoCapitalize="none"
+              />
+
+              {/* Meta Description */}
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                <Text style={[styles.yoastFieldLabel, { marginBottom: 0 }]}>📝 Meta Description (Search snippet)</Text>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: form.metaDescription.length > 160 ? '#ef4444' : form.metaDescription.length >= 120 ? '#10b981' : '#64748b' }}>
+                  {form.metaDescription.length} / 160 chars
+                </Text>
+              </View>
+              <TextInput
+                style={[styles.input, { minHeight: 60 }]}
+                placeholder="Write a compelling 120–160 character summary containing your focus keyphrase..."
+                multiline
+                value={form.metaDescription}
+                onChangeText={setF('metaDescription')}
+              />
+
+              {/* Image Alt Text */}
+              <Text style={styles.yoastFieldLabel}>🖼 Image Alt Attribute (SEO description)</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. Intermittent fasting autophagy cellular diagram"
+                value={form.imageAlt}
+                onChangeText={setF('imageAlt')}
+              />
+
+              {/* Yoast Tabs */}
+              <View style={styles.yoastTabNav}>
+                <TouchableOpacity
+                  onPress={() => setYoastTab('seo')}
+                  style={[styles.yoastNavTab, yoastTab === 'seo' && styles.yoastNavTabActive]}
+                >
+                  <Text style={[styles.yoastNavTabText, yoastTab === 'seo' && styles.yoastNavTabTextActive]}>
+                    🔑 SEO Analysis ({yoastReport.seo.filter((s: YoastScoreItem) => s.status === 'good').length}/{yoastReport.seo.length})
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setYoastTab('readability')}
+                  style={[styles.yoastNavTab, yoastTab === 'readability' && styles.yoastNavTabActive]}
+                >
+                  <Text style={[styles.yoastNavTabText, yoastTab === 'readability' && styles.yoastNavTabTextActive]}>
+                    📖 Readability ({yoastReport.readability.filter((s: YoastScoreItem) => s.status === 'good').length}/{yoastReport.readability.length})
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Check Items List */}
+              <View style={styles.yoastList}>
+                {(yoastTab === 'seo' ? yoastReport.seo : yoastReport.readability).map((item: YoastScoreItem) => (
+                  <View key={item.id} style={styles.yoastCheckRow}>
+                    <Text style={styles.yoastDot}>
+                      {item.status === 'good' ? '🟢' : item.status === 'ok' ? '🟠' : '🔴'}
+                    </Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.yoastCheckTitle}>{item.title}</Text>
+                      <Text style={styles.yoastCheckMsg}>{item.message}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+
             {/* Completion summary */}
             <View style={styles.langProgress}>
               {LANGS.map(l => {
@@ -691,4 +1033,25 @@ const styles = StyleSheet.create({
   langProgress: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8, flexWrap: 'wrap' },
   langDot: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   langProgressTxt: { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
+
+  // Yoast Styles
+  yoastContainer: { backgroundColor: '#f8fafc', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#e2e8f0', marginVertical: 14 },
+  yoastHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, flexWrap: 'wrap', gap: 8 },
+  yoastTitle: { fontSize: 16, fontWeight: '900', color: '#0f172a' },
+  yoastBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
+  yoastBadgeText: { fontSize: 11, fontWeight: '800' },
+  bgGood: { backgroundColor: '#dcfce7' },
+  bgOk: { backgroundColor: '#ffedd5' },
+  bgBad: { backgroundColor: '#fee2e2' },
+  yoastFieldLabel: { fontSize: 12, fontWeight: '800', color: '#334155', marginTop: 8, marginBottom: 4 },
+  yoastTabNav: { flexDirection: 'row', gap: 8, marginTop: 12, marginBottom: 10 },
+  yoastNavTab: { flex: 1, paddingVertical: 8, paddingHorizontal: 10, borderRadius: 10, backgroundColor: '#e2e8f0', alignItems: 'center' },
+  yoastNavTabActive: { backgroundColor: '#2563eb' },
+  yoastNavTabText: { fontSize: 12, fontWeight: '700', color: '#475569' },
+  yoastNavTabTextActive: { color: '#ffffff' },
+  yoastList: { backgroundColor: '#ffffff', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#e2e8f0', gap: 10 },
+  yoastCheckRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  yoastDot: { fontSize: 12, marginTop: 2 },
+  yoastCheckTitle: { fontSize: 13, fontWeight: '800', color: '#1e293b' },
+  yoastCheckMsg: { fontSize: 12, color: '#64748b', lineHeight: 17, marginTop: 2 },
 });

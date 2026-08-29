@@ -226,11 +226,40 @@ export const updateUser = mutation({
       dailyProtein: v.optional(v.float64()),
       dailyCarbs: v.optional(v.float64()),
       dailyFat: v.optional(v.float64()),
+      commitmentLevel: v.optional(v.string()),
       isPremium: v.optional(v.boolean()),
       premiumExpiry: v.optional(v.float64()),
-      lifeStage: v.optional(v.union(v.literal("cycle"), v.literal("pregnancy"), v.literal("menopause"))),
+      primaryFocus: v.optional(v.union(v.literal("fitness"), v.literal("mental_health"), v.literal("hormonal"), v.literal("holistic"))),
+      activeTools: v.optional(v.array(v.string())),
+      lifeStage: v.optional(v.union(v.literal("cycle"), v.literal("pregnancy"), v.literal("postpartum"), v.literal("menopause"))),
       pregnancyStartDate: v.optional(v.number()),
       lastPeriodDate: v.optional(v.number()),
+      postpartumStartDate: v.optional(v.number()),
+      deliveryDate: v.optional(v.number()),
+      deliveryType: v.optional(v.union(v.literal("vaginal"), v.literal("c-section"))),
+      isBreastfeeding: v.optional(v.boolean()),
+      lastAiUsageDate: v.optional(v.string()),
+      dailyAiUsageCount: v.optional(v.number()),
+      planGeneratedAt: v.optional(v.number()),
+      planIsAiCustom: v.optional(v.boolean()),
+      // ── Mental Health Branch ──────────────────────────────────────
+      mindfulnessGoal: v.optional(v.string()),
+      meditationExperience: v.optional(v.string()),
+      peakFocusWindow: v.optional(v.string()),
+      screenTimeRisk: v.optional(v.string()),
+      stressSymptomType: v.optional(v.array(v.string())),
+      preferredResetTool: v.optional(v.string()),
+      eveningRoutine: v.optional(v.string()),
+      // ── Hormonal Branch ──────────────────────────────────────────
+      pmsSeverityPattern: v.optional(v.array(v.string())),
+      energyCrashPattern: v.optional(v.string()),
+      dailyHydration: v.optional(v.string()),
+      bloodSugarStability: v.optional(v.string()),
+      // ── Fitness / Holistic Branch ─────────────────────────────────
+      dietaryObstacle: v.optional(v.string()),
+      dietingHistory: v.optional(v.string()),
+      equipmentAccess: v.optional(v.string()),
+      physicalLimitations: v.optional(v.array(v.string())),
     }),
   },
   handler: async (ctx, args) => {
@@ -467,7 +496,46 @@ export const savePushToken = mutation({
       .withIndex('by_clerk_id', (q) => q.eq('clerkId', args.clerkId))
       .unique();
     if (user) {
-      await ctx.db.patch(user._id, { expoPushToken: args.token });
+      await ctx.db.patch(user._id, { expoPushToken: args.token, updatedAt: Date.now() });
     }
+  },
+});
+
+/**
+ * AI Gate Rate Limiter:
+ * Allows 1 free AI execution per calendar day for non-Pro users.
+ * Returns { allowed: boolean, error?: "LIMIT_REACHED", remaining: number }
+ */
+export const checkAndIncrementAiUsage = mutation({
+  args: { clerkId: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_clerk_id', (q) => q.eq('clerkId', args.clerkId))
+      .unique();
+
+    if (!user) {
+      return { allowed: false, error: 'USER_NOT_FOUND', remaining: 0 };
+    }
+
+    if (user.isPremium || user.isAdmin) {
+      return { allowed: true, remaining: 999 };
+    }
+
+    const todayISO = new Date().toISOString().slice(0, 10);
+    const lastDate = user.lastAiUsageDate;
+    const currentCount = lastDate === todayISO ? (user.dailyAiUsageCount ?? 0) : 0;
+
+    if (currentCount >= 1) {
+      return { allowed: false, error: 'LIMIT_REACHED', remaining: 0 };
+    }
+
+    await ctx.db.patch(user._id, {
+      lastAiUsageDate: todayISO,
+      dailyAiUsageCount: currentCount + 1,
+      updatedAt: Date.now(),
+    });
+
+    return { allowed: true, remaining: 0 };
   },
 });

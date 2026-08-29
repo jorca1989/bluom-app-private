@@ -21,7 +21,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useUser, useAuth } from '@clerk/clerk-expo';
 import { useMutation, useQuery, useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -42,7 +42,8 @@ import type {
 } from '@/types';
 
 // ─── Import the flag setter from _layout ─────────────────────────────────────
-import { setPendingRouteAfterOnboarding } from './_layout';
+import { setPendingRouteAfterOnboarding, pendingPrimaryFocus } from './_layout';
+import { useActiveTools, PrimaryFocus } from '@/hooks/useActiveTools';
 
 import HeightRuler from '@/components/onboarding/HeightRuler';
 import ScrollWheelPicker from '@/components/onboarding/ScrollWheelPicker';
@@ -53,7 +54,6 @@ import GoalEstimator from '@/components/onboarding/GoalEstimator';
 import { useTheme, THEMES, THEME_ORDER, type ThemeColors, type ThemeKey } from '@/context/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
-const WELCOME_LOGO = require('../assets/images/logo.png');
 
 // --- Types ---
 
@@ -88,283 +88,509 @@ interface StepGroup {
 
 // --- Configuration ---
 
-const getStepGroups = (t: any): StepGroup[] => [
-  {
+const getStepGroups = (t: any, primaryFocus?: string): StepGroup[] => {
+  const groups: StepGroup[] = [];
+
+  // Step 1: "What brings you to BLÜOM today?" (Rendered if not pre-set via deep link)
+  if (!primaryFocus) {
+    groups.push({
+      id: 'primaryFocus',
+      title: t('onboarding.groups.journeyTitle', 'Your Journey'),
+      questions: [{
+        id: 'primaryFocus',
+        question: t('onboarding.questions.whatBringsYou', 'What brings you to BLÜOM today?'),
+        type: 'select_with_info',
+        hasInfo: true,
+        options: [
+          { label: t('onboarding.focus.fitness', '🏋️ Fitness & Nutrition'), value: 'fitness', info: t('onboarding.focus.fitnessInfo', 'Targeted macros, smart workouts & body recomposition protocols') },
+          { label: t('onboarding.focus.mental', '🧘 Mental Health & Calm'), value: 'mental_health', info: t('onboarding.focus.mentalInfo', 'Mindfulness, sleep recovery, stress mitigation & focus routines') },
+          { label: t('onboarding.focus.hormonal', '🔬 Peak Biology'), value: 'hormonal', info: t('onboarding.focus.hormonalInfo', 'Gender-optimised daily fluctuation patterns, energy, hormonal vitality & cycle intelligence') },
+          { label: t('onboarding.focus.holistic', '🌿 Holistic Health'), value: 'holistic', info: t('onboarding.focus.holisticInfo', 'Complete 360° life performance architecture across body and mind') },
+        ]
+      }]
+    });
+  }
+
+  // Gender
+  groups.push({
     id: 'gender',
-    title: t('onboarding.groups.identityTitle'),
+    title: t('onboarding.groups.identityTitle', 'Identity'),
     questions: [{
       id: 'gender',
-      question: t('onboarding.questions.gender'),
+      question: t('onboarding.questions.gender', 'What is your biological sex?'),
       type: 'select',
-      options: [{ label: t('onboarding.questions.genderMale'), value: 'male' }, { label: t('onboarding.questions.genderFemale'), value: 'female' }],
-      subtitle: t('onboarding.questions.genderSub')
+      options: [
+        { label: t('onboarding.questions.genderMale', 'Male'), value: 'male' },
+        { label: t('onboarding.questions.genderFemale', 'Female'), value: 'female' }
+      ],
+      subtitle: t('onboarding.questions.genderSub', 'Used to calibrate metabolic equations and cycle intelligence')
     }]
-  },
-  {
+  });
+
+  // Age (defaults to 25)
+  groups.push({
     id: 'age',
-    title: t('onboarding.groups.identityTitle'),
-    questions: [{ id: 'age', question: t('onboarding.questions.age'), type: 'scroll_wheel', min: 13, max: 100 }]
-  },
-  {
-    id: 'height',
-    title: t('onboarding.groups.biometricsTitle'),
-    questions: [{ id: 'height', question: t('onboarding.questions.height'), type: 'scroll_wheel', min: 100, max: 230, suffix: 'cm' }]
-  },
-  {
-    id: 'weight',
-    title: t('onboarding.groups.biometricsTitle'),
-    questions: [{ id: 'weight', question: t('onboarding.questions.weight'), type: 'horizontal_ruler', min: 30, max: 200, suffix: 'kg' }]
-  },
-  {
-    id: 'targetWeight',
-    title: t('onboarding.groups.biometricsTitle'),
-    questions: [{ id: 'targetWeight', question: t('onboarding.questions.targetWeight'), type: 'horizontal_ruler', min: 30, max: 200, suffix: 'kg', subtitle: t('onboarding.questions.targetWeightSub') }]
-  },
-  {
-    id: 'fitnessGoal',
-    title: t('onboarding.groups.trainingTitle'),
-    questions: [{
+    title: t('onboarding.groups.identityTitle', 'Identity'),
+    questions: [{ id: 'age', question: t('onboarding.questions.age', 'What is your age?'), type: 'scroll_wheel', min: 16, max: 100 }]
+  });
+
+  // Biometric weights + height (skipped for mental_health — not relevant)
+  if (primaryFocus !== 'mental_health') {
+    groups.push({
+      id: 'height',
+      title: t('onboarding.groups.biometricsTitle', 'Biometrics'),
+      // min/max are overridden dynamically in renderQuestion based on unit system
+      questions: [{ id: 'height', question: t('onboarding.questions.height', 'What is your height?'), type: 'scroll_wheel', min: 120, max: 230 }]
+    });
+    groups.push({
+      id: 'weight',
+      title: t('onboarding.groups.biometricsTitle', 'Biometrics'),
+      questions: [{ id: 'weight', question: t('onboarding.questions.weight', 'What is your current weight?'), type: 'horizontal_ruler', min: 30, max: 200 }]
+    });
+    groups.push({
+      id: 'targetWeight',
+      title: t('onboarding.groups.biometricsTitle', 'Biometrics'),
+      questions: [{ id: 'targetWeight', question: t('onboarding.questions.targetWeight', 'What is your target weight?'), type: 'horizontal_ruler', min: 30, max: 200, subtitle: t('onboarding.questions.targetWeightSub', 'Helps compute your caloric surplus or deficit target') }]
+    });
+  }
+
+  // Training & fitness goals (for fitness and holistic)
+  if (primaryFocus === 'fitness' || primaryFocus === 'holistic' || !primaryFocus) {
+    groups.push({
       id: 'fitnessGoal',
-      question: t('onboarding.questions.fitnessGoal'),
-      type: 'select_with_info',
-      hasInfo: true,
-      options: [
-        { label: t('onboarding.questions.goalLoseWeight'), value: 'lose_weight', info: t('onboarding.questions.goalLoseWeightInfo') },
-        { label: t('onboarding.questions.goalBuildMuscle'), value: 'build_muscle', info: t('onboarding.questions.goalBuildMuscleInfo') },
-        { label: t('onboarding.questions.goalMaintain'), value: 'maintain', info: t('onboarding.questions.goalMaintainInfo') },
-        { label: t('onboarding.questions.goalEndurance'), value: 'improve_endurance', info: t('onboarding.questions.goalEnduranceInfo') },
-        { label: t('onboarding.questions.goalGeneralHealth'), value: 'general_health', info: t('onboarding.questions.goalGeneralHealthInfo') },
-        { label: t('onboarding.questions.goalBodyRecomp', 'Body Recomposition'), value: 'body_recomp', info: t('onboarding.questions.goalBodyRecompInfo', 'Lose fat and gain muscle simultaneously. Best for those who want to reshape their physique without drastic weight changes.') },
-      ]
-    }]
-  },
-  {
-    id: 'experience',
-    title: t('onboarding.groups.trainingTitle'),
-    questions: [{
+      title: t('onboarding.groups.trainingTitle', 'Training & Goals'),
+      questions: [{
+        id: 'fitnessGoal',
+        question: t('onboarding.questions.fitnessGoal', 'What is your primary fitness goal?'),
+        type: 'select_with_info',
+        hasInfo: true,
+        options: [
+          { label: t('onboarding.questions.goalLoseWeight', 'Fat Loss'), value: 'lose_weight', info: t('onboarding.questions.goalLoseWeightInfo', 'Shed excess body fat while preserving lean muscle mass') },
+          { label: t('onboarding.questions.goalBuildMuscle', 'Build Muscle'), value: 'build_muscle', info: t('onboarding.questions.goalBuildMuscleInfo', 'Hypertrophy focused training with calculated caloric surplus') },
+          { label: t('onboarding.questions.goalMaintain', 'Maintain & Tone'), value: 'maintain', info: t('onboarding.questions.goalMaintainInfo', 'Sustain current body composition and optimize vitality') },
+          { label: t('onboarding.questions.goalEndurance', 'Improve Endurance'), value: 'improve_endurance', info: t('onboarding.questions.goalEnduranceInfo', 'Aerobic capacity, stamina and cardiovascular conditioning') },
+          { label: t('onboarding.questions.goalGeneralHealth', 'Longevity & Health'), value: 'general_health', info: t('onboarding.questions.goalGeneralHealthInfo', 'Joint health, cardiovascular durability and sustained daily energy') },
+          { label: t('onboarding.questions.goalBodyRecomp', 'Body Recomposition'), value: 'body_recomp', info: t('onboarding.questions.goalBodyRecompInfo', 'Lose fat and gain muscle simultaneously at maintenance calories.') },
+        ]
+      }]
+    });
+
+    groups.push({
       id: 'experience',
-      question: t('onboarding.questions.experience'),
-      type: 'stepped_slider',
-      sliderSteps: [
-        { value: 'beginner', label: t('onboarding.questions.expBeginner'), description: t('onboarding.slider.beginnerDesc', 'New to fitness or just getting started') },
-        { value: 'intermediate', label: t('onboarding.questions.expIntermediate'), description: t('onboarding.slider.intermediateDesc', 'Regular training for 1-3 years') },
-        { value: 'advanced', label: t('onboarding.questions.expAdvanced'), description: t('onboarding.slider.advancedDesc', 'Serious training for 3+ years') }
-      ]
-    }]
-  },
-  {
-    id: 'workoutPreference',
-    title: t('onboarding.groups.trainingTitle'),
-    questions: [{
+      title: t('onboarding.groups.trainingTitle', 'Training & Goals'),
+      questions: [{
+        id: 'experience',
+        question: t('onboarding.questions.experience', 'What is your training experience?'),
+        type: 'stepped_slider',
+        sliderSteps: [
+          { value: 'beginner', label: t('onboarding.questions.expBeginner', 'Beginner'), description: t('onboarding.slider.beginnerDesc', 'New to fitness or just getting started') },
+          { value: 'intermediate', label: t('onboarding.questions.expIntermediate', 'Intermediate'), description: t('onboarding.slider.intermediateDesc', 'Regular training for 1-3 years') },
+          { value: 'advanced', label: t('onboarding.questions.expAdvanced', 'Advanced'), description: t('onboarding.slider.advancedDesc', 'Serious training for 3+ years') }
+        ]
+      }]
+    });
+
+    groups.push({
       id: 'workoutPreference',
-      question: t('onboarding.questions.workoutStyle'),
-      type: 'select_with_info',
-      hasInfo: true,
-      options: [
-        { label: t('onboarding.questions.wsStrength'), value: 'strength', info: t('onboarding.questions.wsStrengthInfo') },
-        { label: t('onboarding.questions.wsCardio'), value: 'cardio', info: t('onboarding.questions.wsCardioInfo') },
-        { label: t('onboarding.questions.wsHiit'), value: 'hiit', info: t('onboarding.questions.wsHiitInfo') },
-        { label: t('onboarding.questions.wsYoga'), value: 'yoga', info: t('onboarding.questions.wsYogaInfo') },
-        { label: t('onboarding.questions.wsCrossfit'), value: 'crossfit', info: t('onboarding.questions.wsCrossfitInfo') },
-        { label: t('onboarding.questions.wsPilates'), value: 'pilates', info: t('onboarding.questions.wsPilatesInfo') },
-        { label: t('onboarding.questions.wsMixed'), value: 'mixed', info: t('onboarding.questions.wsMixedInfo') }
-      ]
-    }]
-  },
-  {
-    id: 'activityLevel',
-    title: t('onboarding.groups.activityTitle'),
-    questions: [{
+      title: t('onboarding.groups.trainingTitle', 'Training & Goals'),
+      questions: [{
+        id: 'workoutPreference',
+        question: t('onboarding.questions.workoutStyle', 'Preferred workout style'),
+        type: 'select_with_info',
+        hasInfo: true,
+        options: [
+          { label: t('onboarding.questions.wsStrength', 'Strength & Weights'), value: 'strength', info: t('onboarding.questions.wsStrengthInfo', 'Barbells, dumbbells and resistance equipment') },
+          { label: t('onboarding.questions.wsCardio', 'Cardio & Running'), value: 'cardio', info: t('onboarding.questions.wsCardioInfo', 'Running, cycling and steady state cardio') },
+          { label: t('onboarding.questions.wsHiit', 'HIIT & Circuit'), value: 'hiit', info: t('onboarding.questions.wsHiitInfo', 'High intensity intervals for maximum metabolic output') },
+          { label: t('onboarding.questions.wsYoga', 'Yoga & Mobility'), value: 'yoga', info: t('onboarding.questions.wsYogaInfo', 'Flexibility, joint health and breathwork') },
+          { label: t('onboarding.questions.wsCrossfit', 'Functional Fitness'), value: 'crossfit', info: t('onboarding.questions.wsCrossfitInfo', 'Dynamic high-power functional training') },
+          { label: t('onboarding.questions.wsPilates', 'Pilates & Core'), value: 'pilates', info: t('onboarding.questions.wsPilatesInfo', 'Deep core stability and postural alignment') },
+          { label: t('onboarding.questions.wsMixed', 'Mixed Training'), value: 'mixed', info: t('onboarding.questions.wsMixedInfo', 'Balanced combination across disciplines') }
+        ]
+      }]
+    });
+
+    groups.push({
       id: 'activityLevel',
-      question: t('onboarding.questions.activityLevel'),
-      type: 'stepped_slider',
-      subtitle: t('onboarding.questions.activitySub'),
-      sliderSteps: [
-        { value: 'sedentary', label: t('onboarding.questions.actSedentary'), description: t('onboarding.slider.sedentaryDesc', 'Office job, minimal movement') },
-        { value: 'lightly_active', label: t('onboarding.questions.actLightlyActive'), description: t('onboarding.slider.lightlyActiveDesc', 'Light walks, occasional activity') },
-        { value: 'moderately_active', label: t('onboarding.questions.actModeratelyActive'), description: t('onboarding.slider.modActiveDesc', 'Regular exercise 3-4x per week') },
-        { value: 'very_active', label: t('onboarding.questions.actVeryActive'), description: t('onboarding.slider.veryActiveDesc', 'Intense training 5-6x per week') },
-        { value: 'extremely_active', label: t('onboarding.questions.actExtremelyActive'), description: t('onboarding.slider.extremeActiveDesc', 'Athlete-level daily training') }
-      ]
-    }]
-  },
-  {
-    id: 'timeAvailable',
-    title: t('onboarding.groups.activityTitle'),
-    questions: [{
+      title: t('onboarding.groups.activityTitle', 'Activity'),
+      questions: [{
+        id: 'activityLevel',
+        question: t('onboarding.questions.activityLevel', 'Daily Activity Level'),
+        type: 'stepped_slider',
+        subtitle: t('onboarding.questions.activitySub', 'Excluding workouts'),
+        sliderSteps: [
+          { value: 'sedentary', label: t('onboarding.questions.actSedentary', 'Sedentary'), description: t('onboarding.slider.sedentaryDesc', 'Office job, minimal movement') },
+          { value: 'lightly_active', label: t('onboarding.questions.actLightlyActive', 'Lightly Active'), description: t('onboarding.slider.lightlyActiveDesc', 'Light walks, occasional activity') },
+          { value: 'moderately_active', label: t('onboarding.questions.actModeratelyActive', 'Moderately Active'), description: t('onboarding.slider.modActiveDesc', 'Regular movement 3-4x per week') },
+          { value: 'very_active', label: t('onboarding.questions.actVeryActive', 'Very Active'), description: t('onboarding.slider.veryActiveDesc', 'Intense movement 5-6x per week') },
+          { value: 'extremely_active', label: t('onboarding.questions.actExtremelyActive', 'Extremely Active'), description: t('onboarding.slider.extremeActiveDesc', 'Physical job + daily training') }
+        ]
+      }]
+    });
+
+    groups.push({
       id: 'timeAvailable',
-      question: t('onboarding.questions.weeklyTime'),
-      type: 'select',
-      options: [
-        { label: '< 2h', value: '1' },
-        { label: '2–4h', value: '3' },
-        { label: '4–6h', value: '5' },
-        { label: '6+h', value: '7' },
-      ]
-    }]
-  },
-  {
-    id: 'commitment',
-    title: t('onboarding.groups.commitmentTitle'),
-    description: t('onboarding.groups.commitmentDesc'),
-    questions: [{
-      id: 'commitmentLevel',
-      question: t('onboarding.questions.commitmentApproach'),
-      type: 'select_with_info',
-      hasInfo: true,
-      toastFeedback: t('onboarding.questions.commitToast'),
-      options: [
-        { label: t('onboarding.questions.commitEasy'), value: 'easy', info: t('onboarding.questions.commitEasyInfo') },
-        { label: t('onboarding.questions.commitBalanced'), value: 'balanced', info: t('onboarding.questions.commitBalancedInfo') },
-        { label: t('onboarding.questions.commitMaximum'), value: 'maximum', info: t('onboarding.questions.commitMaximumInfo') }
-      ]
-    }]
-  },
-  {
+      title: t('onboarding.groups.activityTitle', 'Activity'),
+      questions: [{
+        id: 'timeAvailable',
+        question: t('onboarding.questions.weeklyTime', 'Weekly time available for workouts'),
+        type: 'select',
+        options: [
+          { label: '< 2h', value: '1' },
+          { label: '2–4h', value: '3' },
+          { label: '4–6h', value: '5' },
+          { label: '6+h', value: '7' },
+        ]
+      }]
+    });
+
+    groups.push({
+      id: 'commitment',
+      title: t('onboarding.groups.commitmentTitle', 'Commitment'),
+      description: t('onboarding.groups.commitmentDesc', 'How aggressively do you want to pace your results?'),
+      questions: [{
+        id: 'commitmentLevel',
+        question: t('onboarding.questions.commitmentApproach', 'Select your pace'),
+        type: 'select_with_info',
+        hasInfo: true,
+        toastFeedback: t('onboarding.questions.commitToast', 'Calibrating protocol difficulty...'),
+        options: [
+          { label: t('onboarding.questions.commitEasy', 'Sustainable & Gentle'), value: 'easy', info: t('onboarding.questions.commitEasyInfo', 'Gradual sustainable habit building') },
+          { label: t('onboarding.questions.commitBalanced', 'Balanced & Steady'), value: 'balanced', info: t('onboarding.questions.commitBalancedInfo', 'Optimal balance of progress and flexibility') },
+          { label: t('onboarding.questions.commitMaximum', 'Maximum Focus'), value: 'maximum', info: t('onboarding.questions.commitMaximumInfo', 'Strict discipline for accelerated transformations') }
+        ]
+      }]
+    });
+  }
+
+  // ── MENTAL HEALTH BRANCH: Cognitive & Somatic questions ───────────────
+  if (primaryFocus === 'mental_health') {
+    groups.push({
+      id: 'mindfulnessGoal',
+      title: t('onboarding.groups.mindTitle', 'Mind Architecture'),
+      questions: [{
+        id: 'mindfulnessGoal',
+        question: t('onboarding.questions.mindfulnessGoal', 'What is your primary mindfulness objective?'),
+        type: 'select_with_info',
+        hasInfo: true,
+        options: [
+          { label: t('onboarding.questions.mgFocus', 'Deep Focus & ADHD Control'), value: 'deep_focus', info: t('onboarding.questions.mgFocusInfo', 'Structured attention training, flow-state protocols, and distraction filtering') },
+          { label: t('onboarding.questions.mgAnxiety', 'Anxiety & Panic Relief'), value: 'anxiety_relief', info: t('onboarding.questions.mgAnxietyInfo', 'Acute nervous system regulation and somatic calming techniques') },
+          { label: t('onboarding.questions.mgEmotional', 'Emotional Resilience'), value: 'emotional_resilience', info: t('onboarding.questions.mgEmotionalInfo', 'Mood stability, emotional intelligence, and inner regulation tools') },
+          { label: t('onboarding.questions.mgSleep', 'Sleep Onset & Night Racing Thoughts'), value: 'sleep_onset', info: t('onboarding.questions.mgSleepInfo', 'Wind-down protocols, cognitive quieting and parasympathetic activation') },
+        ]
+      }]
+    });
+
+    groups.push({
+      id: 'meditationExperience',
+      title: t('onboarding.groups.mindTitle', 'Mind Architecture'),
+      questions: [{
+        id: 'meditationExperience',
+        question: t('onboarding.questions.meditationExp', 'Your mindfulness & meditation experience'),
+        type: 'stepped_slider',
+        sliderSteps: [
+          { value: 'beginner', label: t('onboarding.questions.medBeginner', 'Beginner'), description: t('onboarding.slider.medBeginnerDesc', 'Never practiced — completely new') },
+          { value: 'sporadic', label: t('onboarding.questions.medSporadic', 'Sporadic'), description: t('onboarding.slider.medSporadicDesc', 'Tried apps like Headspace / Calm, fell off') },
+          { value: 'consistent', label: t('onboarding.questions.medConsistent', 'Consistent'), description: t('onboarding.slider.medConsistentDesc', 'Weekly practice, some structure') },
+          { value: 'advanced', label: t('onboarding.questions.medAdvanced', 'Advanced'), description: t('onboarding.slider.medAdvancedDesc', 'Daily breathwork / mindfulness practitioner') },
+        ]
+      }]
+    });
+
+    groups.push({
+      id: 'peakFocusWindow',
+      title: t('onboarding.groups.mindTitle', 'Mind Architecture'),
+      questions: [{
+        id: 'peakFocusWindow',
+        question: t('onboarding.questions.peakFocusWindow', 'When are you most mentally clear & focused?'),
+        type: 'select',
+        options: [
+          { label: t('onboarding.questions.pfwEarlyMorning', '🌅 Early Morning (6 AM – 9 AM)'), value: 'early_morning' },
+          { label: t('onboarding.questions.pfwLateMorning', '☀️ Late Morning (9 AM – 12 PM)'), value: 'late_morning' },
+          { label: t('onboarding.questions.pfwAfternoon', '🌤 Afternoon (1 PM – 5 PM)'), value: 'afternoon' },
+          { label: t('onboarding.questions.pfwNightOwl', '🌙 Night Owl (8 PM – Midnight)'), value: 'night_owl' },
+        ]
+      }]
+    });
+
+    groups.push({
+      id: 'screenTimeRisk',
+      title: t('onboarding.groups.mindTitle', 'Mind Architecture'),
+      questions: [{
+        id: 'screenTimeRisk',
+        question: t('onboarding.questions.screenTimeRisk', 'Daily screen time / digital fatigue'),
+        type: 'select',
+        options: [
+          { label: t('onboarding.questions.strUnder3h', 'Under 3 hours — minimal digital strain'), value: 'under_3h' },
+          { label: t('onboarding.questions.str3_6h', '3–6 hours — moderate desk fatigue'), value: '3_6h' },
+          { label: t('onboarding.questions.str6_9h', '6–9 hours — heavy screen exposure & blue light'), value: '6_9h' },
+          { label: t('onboarding.questions.str9plus', '9+ hours — severe mental exhaustion'), value: '9h_plus' },
+        ]
+      }]
+    });
+
+    groups.push({
+      id: 'stressSymptomType',
+      title: t('onboarding.groups.somaticTitle', 'Somatic & Nervous System'),
+      questions: [{
+        id: 'stressSymptomType',
+        question: t('onboarding.questions.stressSymptoms', 'How does stress physically manifest in you? (Select all that apply)'),
+        type: 'multiselect',
+        options: [
+          { label: t('onboarding.questions.ssJaw', 'Jaw clenching or teeth grinding'), value: 'jaw_clenching' },
+          { label: t('onboarding.questions.ssShoulder', 'Tight shoulders / shallow chest breathing'), value: 'tight_shoulders' },
+          { label: t('onboarding.questions.ssBrainFog', 'Brain fog & afternoon fatigue'), value: 'brain_fog' },
+          { label: t('onboarding.questions.ssStomach', 'Nervous stomach or digestive changes'), value: 'nervous_stomach' },
+          { label: t('onboarding.questions.ssRestless', 'Restless legs or physical agitation'), value: 'restless_legs' },
+        ]
+      }]
+    });
+
+    groups.push({
+      id: 'preferredResetTool',
+      title: t('onboarding.groups.somaticTitle', 'Somatic & Nervous System'),
+      questions: [{
+        id: 'preferredResetTool',
+        question: t('onboarding.questions.preferredReset', 'Preferred nervous system reset method'),
+        type: 'select_with_info',
+        hasInfo: true,
+        options: [
+          { label: t('onboarding.questions.prtBreathwork', 'Box Breathing & 4-7-8 Breathwork'), value: 'breathwork', info: t('onboarding.questions.prtBreathworkInfo', 'Parasympathetic activation via controlled respiratory patterns') },
+          { label: t('onboarding.questions.prtSoundscapes', 'Nature Soundscapes & Binaural Beats'), value: 'soundscapes', info: t('onboarding.questions.prtSoundscapesInfo', 'Immersive audio environments for deep nervous system relaxation') },
+          { label: t('onboarding.questions.prtJournaling', '3-Minute Cognitive Journaling Prompts'), value: 'journaling', info: t('onboarding.questions.prtJournalingInfo', 'Short structured writing to offload mental load and clarify thoughts') },
+          { label: t('onboarding.questions.prtCold', 'Cold Exposure & Somatic Body Scans'), value: 'cold_somatic', info: t('onboarding.questions.prtColdInfo', 'Controlled stress inoculation and body-awareness grounding techniques') },
+        ]
+      }]
+    });
+
+    groups.push({
+      id: 'eveningRoutine',
+      title: t('onboarding.groups.somaticTitle', 'Somatic & Nervous System'),
+      questions: [{
+        id: 'eveningRoutine',
+        question: t('onboarding.questions.eveningRoutine', 'Your current evening wind-down consistency'),
+        type: 'stepped_slider',
+        sliderSteps: [
+          { value: 'erratic', label: t('onboarding.questions.erErratic', 'Erratic'), description: t('onboarding.slider.erraticDesc', 'Work or scroll until falling asleep') },
+          { value: 'semi_regular', label: t('onboarding.questions.erSemiRegular', 'Semi-Regular'), description: t('onboarding.slider.semiRegularDesc', 'Occasional reading or quiet time') },
+          { value: 'strict_protocol', label: t('onboarding.questions.erStrict', 'Strict Protocol'), description: t('onboarding.slider.strictProtocolDesc', 'Consistent cutoff times and dim lights') },
+        ]
+      }]
+    });
+  }
+
+  // Lifestyle: Sleep & Stress (Always included for all focuses)
+  groups.push({
     id: 'sleepHours',
-    title: t('onboarding.groups.lifestyleTitle'),
-    questions: [{ id: 'sleepHours', question: t('onboarding.questions.sleepHours'), type: 'scroll_wheel', min: 3, max: 12, suffix: 'h' }]
-  },
-  {
+    title: t('onboarding.groups.lifestyleTitle', 'Recovery & Mind'),
+    questions: [{ id: 'sleepHours', question: t('onboarding.questions.sleepHours', 'Average nightly sleep'), type: 'scroll_wheel', min: 3, max: 12, suffix: 'h' }]
+  });
+
+  groups.push({
     id: 'stressLevel',
-    title: t('onboarding.groups.lifestyleTitle'),
+    title: t('onboarding.groups.lifestyleTitle', 'Recovery & Mind'),
     questions: [{
       id: 'stressLevel',
-      question: t('onboarding.questions.stressLevel'),
+      question: t('onboarding.questions.stressLevel', 'Current daily stress level'),
       type: 'stepped_slider',
       sliderSteps: [
-        { value: 'low', label: t('onboarding.questions.stressLow'), description: t('onboarding.slider.stressLowDesc', 'Relaxed, manageable daily life') },
-        { value: 'moderate', label: t('onboarding.questions.stressMod'), description: t('onboarding.slider.stressModDesc', 'Some pressure but coping well') },
-        { value: 'high', label: t('onboarding.questions.stressHigh'), description: t('onboarding.slider.stressHighDesc', 'Frequent stress affecting wellbeing') },
-        { value: 'very_high', label: t('onboarding.questions.stressVeryHigh'), description: t('onboarding.slider.stressVeryHighDesc', 'Overwhelmed, struggling to manage') }
+        { value: 'low', label: t('onboarding.questions.stressLow', 'Low'), description: t('onboarding.slider.stressLowDesc', 'Relaxed, manageable daily life') },
+        { value: 'moderate', label: t('onboarding.questions.stressMod', 'Moderate'), description: t('onboarding.slider.stressModDesc', 'Some pressure but coping well') },
+        { value: 'high', label: t('onboarding.questions.stressHigh', 'High'), description: t('onboarding.slider.stressHighDesc', 'Frequent stress affecting wellbeing') },
+        { value: 'very_high', label: t('onboarding.questions.stressVeryHigh', 'Very High'), description: t('onboarding.slider.stressVeryHighDesc', 'Overwhelmed, struggling to manage') }
       ]
     }]
-  },
-  {
+  });
+
+  groups.push({
     id: 'lifeStressor',
-    title: t('onboarding.groups.lifestyleTitle'),
+    title: t('onboarding.groups.lifestyleTitle', 'Recovery & Mind'),
     questions: [{
       id: 'lifeStressor',
-      question: t('onboarding.questions.mainStressors'),
+      question: t('onboarding.questions.mainStressors', 'Primary life stressors'),
       type: 'multiselect',
       options: [
-        { label: t('onboarding.questions.stressorWork'), value: 'Work/Career' },
-        { label: t('onboarding.questions.stressorFamily'), value: 'Family/Parenting' },
-        { label: t('onboarding.questions.stressorFinances'), value: 'Financial Planning' },
-        { label: t('onboarding.questions.stressorHealth'), value: 'Health/Self-Care' },
-        { label: t('onboarding.questions.stressorSocial'), value: 'Social/Relationships' },
-        { label: t('onboarding.questions.stressorSleep'), value: 'Sleep' },
-        { label: t('onboarding.questions.stressorPurpose'), value: 'Purpose' },
-        { label: t('onboarding.questions.stressorTime'), value: 'Time' },
-        { label: t('onboarding.questions.stressorEnvironment'), value: 'Environment' },
-        { label: t('onboarding.questions.stressorBurnout'), value: 'Burnout' },
-        { label: t('onboarding.questions.stressorOverwhelm'), value: 'Overwhelm' },
-        { label: t('onboarding.questions.stressorLoneliness'), value: 'Loneliness' },
+        { label: t('onboarding.questions.stressorWork', 'Work & Career'), value: 'Work/Career' },
+        { label: t('onboarding.questions.stressorFamily', 'Family & Home'), value: 'Family/Parenting' },
+        { label: t('onboarding.questions.stressorFinances', 'Financial Goals'), value: 'Financial Planning' },
+        { label: t('onboarding.questions.stressorHealth', 'Health & Physical'), value: 'Health/Self-Care' },
+        { label: t('onboarding.questions.stressorSleep', 'Poor Sleep Quality'), value: 'Sleep' },
+        { label: t('onboarding.questions.stressorTime', 'Lack of Time'), value: 'Time' },
       ]
     }]
-  },
-  {
-    id: 'motivation',
-    title: t('onboarding.groups.mindsetTitle'),
-    description: t('onboarding.groups.mindsetDesc'),
-    questions: [{
-      id: 'motivation',
-      question: t('onboarding.questions.motivations'),
-      type: 'multiselect',
-      options: [
-        { label: t('onboarding.questions.motivHealth'), value: 'Health' },
-        { label: t('onboarding.questions.motivAppearance'), value: 'Appearance' },
-        { label: t('onboarding.questions.motivEnergy'), value: 'Energy' },
-        { label: t('onboarding.questions.motivStrength'), value: 'Strength' },
-        { label: t('onboarding.questions.motivConfidence'), value: 'Confidence' },
-        { label: t('onboarding.questions.motivLongevity'), value: 'Longevity' }
-      ]
-    }]
-  },
-  {
-    id: 'challenges',
-    title: t('onboarding.groups.mindsetTitle'),
-    questions: [{
-      id: 'challenges',
-      question: t('onboarding.questions.challenges'),
-      type: 'multiselect',
-      options: [
-        { label: t('onboarding.questions.chalTime'), value: 'Time' },
-        { label: t('onboarding.questions.chalMotivation'), value: 'Motivation' },
-        { label: t('onboarding.questions.chalKnowledge'), value: 'Knowledge' },
-        { label: t('onboarding.questions.chalConsistency'), value: 'Consistency' },
-        { label: t('onboarding.questions.chalDiet'), value: 'Diet' },
-        { label: t('onboarding.questions.chalSocial'), value: 'Social Support' }
-      ]
-    }]
-  },
-  {
-    id: 'coachingStyle',
-    title: t('onboarding.groups.mindsetTitle'),
-    questions: [{
-      id: 'coachingStyle',
-      question: t('onboarding.questions.coachingStyle'),
-      type: 'select',
-      options: [
-        { label: t('onboarding.questions.csDirect'), value: 'Direct & Disciplined' },
-        { label: t('onboarding.questions.csEncouraging'), value: 'Encouraging & Gentle' },
-        { label: t('onboarding.questions.csData'), value: 'Data-Driven & Analytical' }
-      ]
-    }]
-  },
-  {
-    id: 'nutritionPreference',
-    title: t('onboarding.groups.dietTitle'),
-    questions: [{
+  });
+
+  // ── PEAK BIOLOGY BRANCH: Gender-neutral metabolic mapping ─────────────────
+  // Female-specific PMS questions are injected in the STEP_GROUPS useMemo after gender is known.
+  // Male-specific androgen questions are also injected there.
+  if (primaryFocus === 'hormonal') {
+    groups.push({
+      id: 'energyCrashPattern',
+      title: t('onboarding.groups.hormonalTitle', 'Peak Biology'),
+      questions: [{
+        id: 'energyCrashPattern',
+        question: t('onboarding.questions.energyCrash', 'Daily energy fluctuation pattern'),
+        type: 'select',
+        options: [
+          { label: t('onboarding.questions.ecStable', 'Stable all day'), value: 'stable' },
+          { label: t('onboarding.questions.ecAfternoon', 'Sudden 2 PM – 4 PM exhaustion'), value: 'afternoon_crash' },
+          { label: t('onboarding.questions.ecMorning', 'Morning sluggishness requiring caffeine'), value: 'morning_sluggish' },
+          { label: t('onboarding.questions.ecNight', 'Alert at night, foggy in the morning'), value: 'night_owl' },
+        ]
+      }]
+    });
+
+    groups.push({
+      id: 'dailyHydration',
+      title: t('onboarding.groups.hormonalTitle', 'Peak Biology'),
+      questions: [{
+        id: 'dailyHydration',
+        question: t('onboarding.questions.dailyHydration', 'Daily hydration & electrolyte protocol'),
+        type: 'select',
+        options: [
+          { label: t('onboarding.questions.dhUnder1l', 'Under 1 Liter — Chronic dehydration'), value: 'under_1l' },
+          { label: t('onboarding.questions.dh1_2l', '1–2 Liters — Plain water only'), value: '1_2l' },
+          { label: t('onboarding.questions.dh2_3l', '2–3 Liters — Consistent hydration'), value: '2_3l' },
+          { label: t('onboarding.questions.dhElectrolytes', 'High intake with deliberate electrolytes'), value: 'electrolytes' },
+        ]
+      }]
+    });
+
+    groups.push({
+      id: 'bloodSugarStability',
+      title: t('onboarding.groups.hormonalTitle', 'Peak Biology'),
+      questions: [{
+        id: 'bloodSugarStability',
+        question: t('onboarding.questions.bloodSugarStability', 'Blood sugar & satiety response'),
+        type: 'select',
+        options: [
+          { label: t('onboarding.questions.bssHanger', '"Hanger", shakiness if meals are delayed'), value: 'hanger' },
+          { label: t('onboarding.questions.bssGrazing', 'Constant grazing throughout the day'), value: 'grazing' },
+          { label: t('onboarding.questions.bssFasting', 'Can easily fast 14–16 hours'), value: 'extended_fast' },
+          { label: t('onboarding.questions.bssStable', 'Consistent energy — no major swings'), value: 'stable' },
+        ]
+      }]
+    });
+  }
+
+  // Nutrition approach (if not pure mental_health)
+  if (primaryFocus !== 'mental_health') {
+    groups.push({
       id: 'nutritionPreference',
-      question: t('onboarding.questions.dietApproach'),
-      type: 'select_with_info',
-      hasInfo: true,
-      options: [
-        { label: t('onboarding.questions.dietHighProtein'), value: 'high_protein', info: t('onboarding.questions.dietHighProteinInfo') },
-        { label: t('onboarding.questions.dietLowCarb'), value: 'low_carb', info: t('onboarding.questions.dietLowCarbInfo') },
-        { label: t('onboarding.questions.dietBalanced'), value: 'balanced', info: t('onboarding.questions.dietBalancedInfo') },
-        { label: t('onboarding.questions.dietPlantBased'), value: 'plant_based', info: t('onboarding.questions.dietPlantBasedInfo') },
-        { label: t('onboarding.questions.dietFlexible'), value: 'flexible', info: t('onboarding.questions.dietFlexibleInfo') }
-      ]
-    }]
-  },
-  {
-    id: 'mealFrequency',
-    title: t('onboarding.groups.dietTitle'),
-    questions: [{
+      title: t('onboarding.groups.dietTitle', 'Nutrition'),
+      questions: [{
+        id: 'nutritionPreference',
+        question: t('onboarding.questions.dietApproach', 'Preferred Nutrition Strategy'),
+        type: 'select_with_info',
+        hasInfo: true,
+        options: [
+          { label: t('onboarding.questions.dietHighProtein', 'High Protein'), value: 'high_protein', info: t('onboarding.questions.dietHighProteinInfo', 'Targeted lean protein for satiety and muscular repair') },
+          { label: t('onboarding.questions.dietLowCarb', 'Low Carb / Ketogenic'), value: 'low_carb', info: t('onboarding.questions.dietLowCarbInfo', 'Controlled carbohydrate intake for insulin sensitivity') },
+          { label: t('onboarding.questions.dietBalanced', 'Mediterranean / Balanced'), value: 'balanced', info: t('onboarding.questions.dietBalancedInfo', 'Whole grains, healthy fats and balanced macronutrients') },
+          { label: t('onboarding.questions.dietPlantBased', 'Plant-Based / Vegan'), value: 'plant_based', info: t('onboarding.questions.dietPlantBasedInfo', '100% plant-powered micronutrient richness') },
+          { label: t('onboarding.questions.dietFlexible', 'Flexible / IIFYM'), value: 'flexible', info: t('onboarding.questions.dietFlexibleInfo', 'Track macros without rigid food restrictions') }
+        ]
+      }]
+    });
+
+    groups.push({
       id: 'mealFrequency',
-      question: t('onboarding.questions.mealsPerDay'),
-      type: 'select',
-      options: [
-        { label: t('onboarding.questions.meals2'), value: '2' },
-        { label: t('onboarding.questions.meals3'), value: '3' },
-        { label: t('onboarding.questions.meals4'), value: '4' },
-        { label: t('onboarding.questions.meals6'), value: '6' },
-      ]
-    }]
-  },
-  {
-    id: 'peakEnergy',
-    title: t('onboarding.groups.dietTitle'),
-    questions: [{
-      id: 'peakEnergy',
-      question: t('onboarding.questions.peakEnergy'),
-      type: 'select',
-      options: [
-        { label: t('onboarding.questions.peakEarlyMorning'), value: 'Early Morning' },
-        { label: t('onboarding.questions.peakMidday'), value: 'Mid-Day' },
-        { label: t('onboarding.questions.peakEvening'), value: 'Evening' },
-        { label: t('onboarding.questions.peakLateNight'), value: 'Late Night' },
-      ]
-    }]
-  },
-  {
+      title: t('onboarding.groups.dietTitle', 'Nutrition'),
+      questions: [{
+        id: 'mealFrequency',
+        question: t('onboarding.questions.mealsPerDay', 'Meals per day'),
+        type: 'select',
+        options: [
+          { label: '2 meals', value: '2' },
+          { label: '3 meals', value: '3' },
+          { label: '4 meals', value: '4' },
+          { label: '5+ meals', value: '5' },
+        ]
+      }]
+    });
+  }
+
+  // ── FITNESS / HOLISTIC BRANCH: Behavioral & Equipment questions ─────────
+  if (primaryFocus === 'fitness' || primaryFocus === 'holistic') {
+    groups.push({
+      id: 'dietaryObstacle',
+      title: t('onboarding.groups.metabolicTitle', 'Metabolic Profile'),
+      questions: [{
+        id: 'dietaryObstacle',
+        question: t('onboarding.questions.dietaryObstacle', 'Biggest nutritional roadblock'),
+        type: 'select_with_info',
+        hasInfo: true,
+        options: [
+          { label: t('onboarding.questions.doLateSnacking', 'Late-night snacking & binge eating'), value: 'late_snacking', info: t('onboarding.questions.doLateSnackingInfo', 'AI will design evening satiety protocols and dopamine-aligned alternatives') },
+          { label: t('onboarding.questions.doMealPrep', 'No time for meal prep / relying on takeout'), value: 'meal_prep', info: t('onboarding.questions.doMealPrepInfo', 'Quick 15-min meal templates and smart restaurant ordering frameworks') },
+          { label: t('onboarding.questions.doLowProtein', 'Under-eating protein during busy workdays'), value: 'low_protein', info: t('onboarding.questions.doLowProteinInfo', 'Protein-first structuring of every meal and snack') },
+          { label: t('onboarding.questions.doSocial', 'Social eating and weekend alcohol consumption'), value: 'social', info: t('onboarding.questions.doSocialInfo', 'Flexible eating strategies and damage-control protocols for social events') },
+          { label: t('onboarding.questions.doEmotional', 'Emotional eating linked to daily stress'), value: 'emotional', info: t('onboarding.questions.doEmotionalInfo', 'Behavioural triggers identification and mindful eating anchors') },
+        ]
+      }]
+    });
+
+    groups.push({
+      id: 'dietingHistory',
+      title: t('onboarding.groups.metabolicTitle', 'Metabolic Profile'),
+      questions: [{
+        id: 'dietingHistory',
+        question: t('onboarding.questions.dietingHistory', 'Dieting & weight history'),
+        type: 'select_with_info',
+        hasInfo: true,
+        options: [
+          { label: t('onboarding.questions.dhFirstTime', 'First time attempting body recomposition'), value: 'first_time', info: t('onboarding.questions.dhFirstTimeInfo', 'Clean slate — we build solid foundations with no conflicting habits') },
+          { label: t('onboarding.questions.dhYoYo', 'Yo-yo dieting history (lose & gain back)'), value: 'yo_yo', info: t('onboarding.questions.dhYoYoInfo', 'Metabolic repair phase first — diet breaks and reverse dieting protocols') },
+          { label: t('onboarding.questions.dhChronic', 'Chronic calorie restriction / slow metabolic adaptation'), value: 'chronic_restriction', info: t('onboarding.questions.dhChronicInfo', 'Gradual reverse diet to restore metabolic rate before deficit phase') },
+          { label: t('onboarding.questions.dhAthlete', 'Consistent athletic performance baseline'), value: 'athletic_baseline', info: t('onboarding.questions.dhAthleteInfo', 'Periodised nutrition cycling matched to training blocks') },
+        ]
+      }]
+    });
+
+    groups.push({
+      id: 'equipmentAccess',
+      title: t('onboarding.groups.metabolicTitle', 'Metabolic Profile'),
+      questions: [{
+        id: 'equipmentAccess',
+        question: t('onboarding.questions.equipmentAccess', 'Training equipment & access'),
+        type: 'select_with_info',
+        hasInfo: true,
+        options: [
+          { label: t('onboarding.questions.eaGym', 'Commercial Gym — Full equipment'), value: 'commercial_gym', info: t('onboarding.questions.eaGymInfo', 'Barbell racks, cables, machines, and full free-weight suite') },
+          { label: t('onboarding.questions.eaHomeGym', 'Home Gym — Basic setup'), value: 'home_gym', info: t('onboarding.questions.eaHomeGymInfo', 'Dumbbells, bench, pull-up bar, and resistance bands') },
+          { label: t('onboarding.questions.eaCalisthenics', 'Calisthenics & Bodyweight Only'), value: 'calisthenics', info: t('onboarding.questions.eaCalisthenicsInfo', 'Zero equipment — gravity and progressive skill-based resistance') },
+          { label: t('onboarding.questions.eaMinimalist', 'Minimalist / Travel Setup'), value: 'minimalist', info: t('onboarding.questions.eaMinimalistInfo', 'Resistance bands, suspension trainers, and hotel-friendly protocols') },
+        ]
+      }]
+    });
+
+    groups.push({
+      id: 'physicalLimitations',
+      title: t('onboarding.groups.metabolicTitle', 'Metabolic Profile'),
+      questions: [{
+        id: 'physicalLimitations',
+        question: t('onboarding.questions.physicalLimitations', 'Joint discomfort & mobility restrictions (Select all that apply)'),
+        type: 'multiselect',
+        options: [
+          { label: t('onboarding.questions.plBack', 'Lower back sensitivity'), value: 'lower_back' },
+          { label: t('onboarding.questions.plKnee', 'Knee pain during deep squats or running'), value: 'knee_pain' },
+          { label: t('onboarding.questions.plShoulder', 'Shoulder impingement or wrist tightness'), value: 'shoulder_wrist' },
+          { label: t('onboarding.questions.plNone', 'None — 100% pain-free movement'), value: 'none' },
+        ]
+      }]
+    });
+  }
+
+  // Final 12-month milestone goal
+  groups.push({
     id: 'goal',
-    title: t('onboarding.groups.trainingTitle'),
-    questions: [{ id: 'goal', question: t('onboarding.questions.milestone'), type: 'text', placeholder: t('onboarding.questions.milestonePlaceholder') }]
-  },
-];
+    title: t('onboarding.groups.visionTitle', 'Vision'),
+    questions: [{ id: 'goal', question: t('onboarding.questions.milestone', 'What is your single biggest health goal for the next 12 months?'), type: 'text', placeholder: t('onboarding.questions.milestonePlaceholder', 'e.g., Run a half marathon, drop 5kg fat, sleep 8h consistently...') }]
+  });
+
+  return groups;
+};
 
 // Transition toasts — shown inline via Toast component (no Modal)
 // Defined as a function so it can use the t() translation function
@@ -373,6 +599,23 @@ const getTransitionMessages = (t: (key: string, fallback: string) => string): { 
   'motivation': { title: t('onboarding.transition.understood', 'Understood.'), subtitle: t('onboarding.transition.mentalFramework', 'Building your mental framework...'), emoji: "🧠" },
   'nutritionPreference': { title: t('onboarding.transition.almostThere', 'Almost there!'), subtitle: t('onboarding.transition.nutritionPlan', 'Designing your nutrition plan...'), emoji: "🥗" },
 });
+
+// ── CalibrationCounter: uses addListener to show integer % values ──────────
+// The Animated.Text interpolation approach renders raw float values like
+// 51.4002384... This component instead reads the animated value via a listener
+// and rounds it to show clean 0-100 integers.
+function CalibrationCounter({ animValue, color }: { animValue: Animated.Value; color: string }) {
+  const [pct, setPct] = React.useState(0);
+  React.useEffect(() => {
+    const id = animValue.addListener(({ value }) => setPct(Math.round(value)));
+    return () => animValue.removeListener(id);
+  }, [animValue]);
+  return (
+    <Text style={{ fontSize: 36, fontWeight: '900', color }}>
+      {pct}%
+    </Text>
+  );
+}
 
 const WELCOME_SLIDES = [
   {
@@ -408,6 +651,15 @@ export default function OnboardingScreen() {
   const { user: clerkUser } = useUser();
   const insets = useSafeAreaInsets();
 
+  const params = useLocalSearchParams<{ focus?: string }>();
+  const initialFocus = (params.focus && ['fitness', 'mental_health', 'hormonal', 'holistic'].includes(params.focus))
+    ? params.focus
+    : (pendingPrimaryFocus && ['fitness', 'mental_health', 'hormonal', 'holistic'].includes(pendingPrimaryFocus))
+      ? pendingPrimaryFocus
+      : undefined;
+
+  const { applyPreset } = useActiveTools();
+
   const onboardUser = useMutation(api.onboarding.onboardUser);
   const updateUser = useMutation(api.users.updateUser);
   const convexUser = useQuery(api.users.getUserByClerkId, clerkUser?.id ? { clerkId: clerkUser.id } : 'skip');
@@ -416,7 +668,14 @@ export default function OnboardingScreen() {
   const [showWelcome, setShowWelcome] = useState(true);
   const [currentWelcomeSlide, setCurrentWelcomeSlide] = useState(0);
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
-  const [answers, setAnswers] = useState<any>({});
+  const [answers, setAnswers] = useState<any>({
+    age: 25,
+    height: 165,
+    weight: 65,
+    targetWeight: 60,
+    sleepHours: 7,
+    ...(initialFocus ? { primaryFocus: initialFocus } : {}),
+  });
   const [unitSystem, setUnitSystem] = useState<'metric' | 'imperial'>('metric');
   const [units, setUnits] = useState<{ weight: string; height: string; volume: string }>({ weight: 'kg', height: 'cm', volume: 'ml' });
   const [showResults, setShowResults] = useState(false);
@@ -427,17 +686,35 @@ export default function OnboardingScreen() {
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [currentLang, setCurrentLang] = useState(i18n.language || 'en');
 
+  // ── Calibration Interstitial ───────────────────────────────────────────
+  const [showCalibration, setShowCalibration] = useState(false);
+  const calibrationProgress = useRef(new Animated.Value(0)).current;
+  const calibrationCounter = useRef(new Animated.Value(0)).current;
+  const calibrationRotation = useRef(new Animated.Value(0)).current;
+
+  const CALIBRATION_STEPS = [
+    'Calibrating metabolic profile & biometric baseline...',
+    'Mapping hormonal rhythms & recovery pathways...',
+    'Synthesizing custom 28-day performance architecture...',
+    'Protocol 100% complete.',
+  ];
+  const [calibrationStepIdx, setCalibrationStepIdx] = useState(0);
+
+  // Anti-cascading lock for auto-advance questions
+  const isAdvancingRef = useRef(false);
+  const lastAdvanceTimeRef = useRef(0);
+
   // Theme picker on welcome slide 3
   const { theme: activeTheme, setTheme: setActiveTheme, colors: themeColors } = useTheme();
   const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const [pendingThemePick, setPendingThemePick] = useState<ThemeKey | null>(null);
 
   const STEP_GROUPS = React.useMemo(() => {
-    const baseGroups = getStepGroups(t);
+    const baseGroups = getStepGroups(t, answers.primaryFocus);
     const gender = answers.gender;
-    const lifestyleIndex = baseGroups.findIndex(g => g.id === 'sleepHours'); // Changed from 'lifestyle' to 'sleepHours' as 'lifestyle' group is gone
+    const lifestyleIndex = baseGroups.findIndex(g => g.id === 'sleepHours');
 
-    if (gender === 'female') {
+    if (gender === 'female' && answers.primaryFocus !== 'mental_health') {
       const womensGroups: StepGroup[] = [
         {
           id: 'lifeStage',
@@ -450,6 +727,7 @@ export default function OnboardingScreen() {
             options: [
               { label: t('womensHealth.stage.cycle', 'Menstruating / Cycle'), value: 'cycle' },
               { label: t('womensHealth.stage.pregnancy', 'Pregnancy'), value: 'pregnancy' },
+              { label: t('womensHealth.stage.postpartum', 'Postpartum'), value: 'postpartum' },
               { label: t('womensHealth.stage.menopause', 'Menopause / Post-menopause'), value: 'menopause' },
             ]
           }]
@@ -524,7 +802,7 @@ export default function OnboardingScreen() {
         copy.push(...womensGroups);
       }
       return copy;
-    } else if (gender === 'male') {
+    } else if (gender === 'male' && answers.primaryFocus !== 'mental_health') {
       const mensGroups: StepGroup[] = [
         {
           id: 'trainingMode',
@@ -573,24 +851,53 @@ export default function OnboardingScreen() {
           }]
         }
       ];
+
+      // For Peak Biology male users — add androgen / testosterone signal questions
+      const maleHormonalGroups: StepGroup[] = answers.primaryFocus === 'hormonal' ? [
+        {
+          id: 'pmsSeverityPattern', // reusing field id for male analogue symptoms
+          title: t('onboarding.groups.hormonalTitle', 'Peak Biology'),
+          questions: [{
+            id: 'pmsSeverityPattern',
+            question: t('onboarding.questions.maleHormonalSymptoms', 'Which symptoms do you experience? (Select all that apply)'),
+            type: 'multiselect',
+            options: [
+              { label: t('onboarding.questions.mhsLibido', 'Low libido or drive'), value: 'low_libido' },
+              { label: t('onboarding.questions.mhsFatigue', 'Persistent fatigue despite sleep'), value: 'fatigue' },
+              { label: t('onboarding.questions.mhsMood', 'Mood swings, irritability or low motivation'), value: 'mood_swings' },
+              { label: t('onboarding.questions.mhsFog', 'Brain fog or difficulty concentrating'), value: 'brain_fog' },
+              { label: t('onboarding.questions.mhsBodyComp', 'Fat gain, muscle loss without change in habits'), value: 'body_comp_change' },
+              { label: t('onboarding.questions.mhsSleep', 'Poor sleep quality or night sweats'), value: 'poor_sleep' },
+            ]
+          }]
+        }
+      ] : [];
+
       const copy = [...baseGroups];
-      if (lifestyleIndex !== -1) {
-        copy.splice(lifestyleIndex, 0, ...mensGroups);
-      } else {
-        copy.push(...mensGroups);
-      }
+      const insertAt = lifestyleIndex !== -1 ? lifestyleIndex : copy.length;
+      copy.splice(insertAt, 0, ...mensGroups, ...maleHormonalGroups);
       return copy;
     }
     return baseGroups;
-  }, [t, answers.gender]);
+  }, [t, answers.gender, answers.primaryFocus]);
 
   const LANG_OPTIONS = [
-    { code: 'pt', flag: '🇵🇹', label: 'PT' },
     { code: 'en', flag: '🇬🇧', label: 'EN' },
+    { code: 'pt', flag: '🇵🇹', label: 'PT' },
     { code: 'es', flag: '🇪🇸', label: 'ES' },
     { code: 'fr', flag: '🇫🇷', label: 'FR' },
     { code: 'de', flag: '🇩🇪', label: 'DE' },
     { code: 'nl', flag: '🇳🇱', label: 'NL' },
+    { code: 'bg', flag: '🇧🇬', label: 'BG' },
+    { code: 'da', flag: '🇩🇰', label: 'DA' },
+    { code: 'el', flag: '🇬🇷', label: 'EL' },
+    { code: 'lt', flag: '🇱🇹', label: 'LT' },
+    { code: 'lv', flag: '🇱🇻', label: 'LV' },
+    { code: 'no', flag: '🇳🇴', label: 'NO' },
+    { code: 'pl', flag: '🇵🇱', label: 'PL' },
+    { code: 'ro', flag: '🇷🇴', label: 'RO' },
+    { code: 'sv', flag: '🇸🇪', label: 'SV' },
+    { code: 'tr', flag: '🇹🇷', label: 'TR' },
   ];
 
   const handleLangChange = (code: string) => {
@@ -600,7 +907,7 @@ export default function OnboardingScreen() {
     setShowLangPicker(false);
   };
 
-  const currentLangOption = LANG_OPTIONS.find(l => l.code === currentLang) || LANG_OPTIONS[1];
+  const currentLangOption = LANG_OPTIONS.find(l => l.code === currentLang) || LANG_OPTIONS[0];
 
   // Toast state (unified — handles both inline feedback AND transition messages)
   const [toastVisible, setToastVisible] = useState(false);
@@ -638,26 +945,13 @@ export default function OnboardingScreen() {
     if (toastFeedback) {
       showToast(toastFeedback);
     }
-    const currentGroup = STEP_GROUPS[currentGroupIndex];
-    if (currentGroup && currentGroup.questions.length === 1) {
-      const q = currentGroup.questions[0];
-      if (q.type === 'select' || q.type === 'select_with_info') {
-        setTimeout(() => {
-          const transition = getTransitionMessages(t)[currentGroup.id];
-          if (transition) {
-            showToast(transition.subtitle, transition.title, transition.emoji);
-            setTimeout(() => advanceGroup(), 2000);
-          } else {
-            advanceGroup();
-          }
-        }, 400);
-      }
-    }
   };
 
   const handleWelcomeNext = () => {
     if (currentWelcomeSlide < 2) {
-      setCurrentWelcomeSlide(prev => prev + 1);
+      const nextSlide = currentWelcomeSlide + 1;
+      slidesRef.current?.scrollToIndex({ index: nextSlide, animated: true });
+      setCurrentWelcomeSlide(nextSlide);
     } else {
       setShowWelcome(false);
     }
@@ -771,34 +1065,35 @@ export default function OnboardingScreen() {
   const handleFinalSubmit = async () => {
     setIsSubmitting(true);
     try {
-      const w = parseFloat(answers.weight) || 0;
+      const w = parseFloat(answers.weight) || 65;
       const weightKg = units.weight === 'kg' ? w : w * 0.453592;
-      // HeightRuler always calls onValueChange with a cm value (it converts
-      // inches → cm internally via Math.round(inches * 2.54)).  Do NOT apply
-      // a second ft→cm conversion here — that's what caused the 40000+ cal bug.
-      const heightCm = parseFloat(answers.height) || 170;
-      const age = parseFloat(answers.age) || 30;
-      const gender = answers.gender as 'male' | 'female';
+      const heightCm = parseFloat(answers.height) || 165;
+      const age = parseFloat(answers.age) || 25;
+      const gender = (answers.gender as 'male' | 'female') || 'female';
+      const weeklyTime = answers.timeAvailable ? parseFloat(answers.timeAvailable) : 3;
+      const mealsCount = answers.mealFrequency ? parseFloat(answers.mealFrequency) : 3;
+      const parsedWeeklyTime = isNaN(weeklyTime) ? 3 : weeklyTime;
+      const parsedMealsCount = isNaN(mealsCount) ? 3 : mealsCount;
 
       const dataToSave = {
         name: clerkUser?.firstName ?? 'User',
         age,
-        biologicalSex: gender,
+        biologicalSex: gender || 'female',
         weight: weightKg,
         height: heightCm,
         targetWeight: answers.targetWeight
           ? (units.weight === 'kg' ? parseFloat(answers.targetWeight) : parseFloat(answers.targetWeight) * 0.453592)
           : undefined,
-        fitnessGoal: answers.fitnessGoal,
-        fitnessExperience: answers.experience,
-        workoutPreference: answers.workoutPreference,
-        weeklyWorkoutTime: parseFloat(answers.timeAvailable),
-        activityLevel: answers.activityLevel,
-        nutritionApproach: answers.nutritionPreference,
-        mealsPerDay: parseFloat(answers.mealFrequency),
+        fitnessGoal: answers.fitnessGoal || 'general_health',
+        fitnessExperience: answers.experience || 'intermediate',
+        workoutPreference: answers.workoutPreference || 'mixed',
+        weeklyWorkoutTime: parsedWeeklyTime,
+        activityLevel: answers.activityLevel || 'moderately_active',
+        nutritionApproach: answers.nutritionPreference || 'balanced',
+        mealsPerDay: parsedMealsCount,
         peakEnergy: answers.peakEnergy,
         sleepHours: parseFloat(answers.sleepHours?.toString() || '7'),
-        stressLevel: answers.stressLevel,
+        stressLevel: answers.stressLevel || 'moderate',
         lifeStressor: answers.lifeStressor,
         motivations: answers.motivation || [],
         challenges: answers.challenges || [],
@@ -806,12 +1101,30 @@ export default function OnboardingScreen() {
         commitmentLevel: answers.commitmentLevel,
         preferredUnits: { weight: units.weight, height: units.height, volume: units.volume || 'ml' },
         preferredLanguage: currentLang,
-        // Note: preferredTheme is intentionally NOT in this bulk payload — it is
-        // persisted separately via setActiveTheme() in the onboarding theme popup
-        // through `users.updateUser`. Adding it here would crash if the deployed
-        // Convex `onboardUser` validator hasn't been redeployed yet.
+        primaryFocus: (answers.primaryFocus as PrimaryFocus) || 'holistic',
         twelveMonthGoal: answers.goal,
+        // ── Mental Health Branch ───────────────────────────────────────────
+        mindfulnessGoal: answers.mindfulnessGoal,
+        meditationExperience: answers.meditationExperience,
+        peakFocusWindow: answers.peakFocusWindow,
+        screenTimeRisk: answers.screenTimeRisk,
+        stressSymptomType: answers.stressSymptomType,
+        preferredResetTool: answers.preferredResetTool,
+        eveningRoutine: answers.eveningRoutine,
+        // ── Hormonal Branch ───────────────────────────────────────────────
+        pmsSeverityPattern: answers.pmsSeverityPattern,
+        energyCrashPattern: answers.energyCrashPattern,
+        dailyHydration: answers.dailyHydration,
+        bloodSugarStability: answers.bloodSugarStability,
+        // ── Fitness / Holistic Branch ──────────────────────────────────────
+        dietaryObstacle: answers.dietaryObstacle,
+        dietingHistory: answers.dietingHistory,
+        equipmentAccess: answers.equipmentAccess,
+        physicalLimitations: answers.physicalLimitations,
       };
+
+      // ── Apply workspace preset based on focus ────────────────────────────
+      await applyPreset((answers.primaryFocus as PrimaryFocus) || 'holistic', gender);
 
       // ── Set the flag BEFORE the mutation fires ────────────────────────────
       // _layout.tsx will read this synchronously when convexUser.age updates.
@@ -979,24 +1292,43 @@ export default function OnboardingScreen() {
     }
 
     if (q.type === 'scroll_wheel') {
-      const numVal = parseFloat(val) || q.min || 0;
       const isWeight = q.id.toLowerCase().includes('weight');
       const isHeight = q.id.toLowerCase().includes('height');
-      const currentUnit = isWeight ? units.weight : isHeight ? units.height : undefined;
+      const currentUnit = isWeight ? units.weight : isHeight ? units.height : (q.suffix || '');
       const unitOpts = isWeight ? ['kg', 'lbs'] : isHeight ? ['cm', 'ft'] : undefined;
+      // Weight: kg 30-200, lbs 70-440. Height: cm 120-230, ft shown as inches 48-84 (4ft–7ft)
+      const minVal = isWeight
+        ? (units.weight === 'lbs' ? 70 : 30)
+        : isHeight
+          ? (units.height === 'ft' ? 48 : 120)
+          : (q.min || 0);
+      const maxVal = isWeight
+        ? (units.weight === 'lbs' ? 440 : 200)
+        : isHeight
+          ? (units.height === 'ft' ? 84 : 230)
+          : (q.max || 100);
+      const heightSuffix = isHeight && units.height === 'ft' ? 'in' : currentUnit;
+      const numVal = parseFloat(val) || minVal;
       return (
         <ScrollWheelPicker
-          min={q.min || 0}
-          max={q.max || 100}
+          min={minVal}
+          max={maxVal}
           value={numVal}
           onChange={(v) => handleAnswer(q.id, v.toString())}
-          suffix={q.suffix || currentUnit}
+          suffix={isHeight ? heightSuffix : currentUnit}
           unitToggle={unitOpts && currentUnit ? {
             options: unitOpts,
             selected: currentUnit,
             onToggle: (u) => {
-              if (isWeight) setUnits(prev => ({ ...prev, weight: u }));
-              else if (isHeight) setUnits(prev => ({ ...prev, height: u }));
+              if (isWeight) {
+                setUnits(prev => ({ ...prev, weight: u }));
+                setUnitSystem(u === 'kg' ? 'metric' : 'imperial');
+              } else if (isHeight) {
+                setUnits(prev => ({ ...prev, height: u }));
+                setUnitSystem(u === 'cm' ? 'metric' : 'imperial');
+                // Reset height answer when switching units to avoid showing 185cm as 185ft
+                handleAnswer(q.id, '');
+              }
             }
           } : undefined}
         />
@@ -1004,21 +1336,26 @@ export default function OnboardingScreen() {
     }
 
     if (q.type === 'horizontal_ruler') {
-      const numVal = parseFloat(val) || q.min || 0;
       const isWeight = q.id.toLowerCase().includes('weight');
-      const currentUnit = isWeight ? units.weight : undefined;
+      const currentUnit = isWeight ? units.weight : (q.suffix || '');
       const unitOpts = isWeight ? ['kg', 'lbs'] : undefined;
+      const minVal = isWeight ? (units.weight === 'lbs' ? 70 : 30) : (q.min || 0);
+      const maxVal = isWeight ? (units.weight === 'lbs' ? 440 : 200) : (q.max || 200);
+      const numVal = parseFloat(val) || (isWeight ? (units.weight === 'lbs' ? 150 : 65) : q.min || 0);
       return (
         <HorizontalRulerPicker
-          min={q.min || 0}
-          max={q.max || 200}
+          min={minVal}
+          max={maxVal}
           value={numVal}
           onChange={(v) => handleAnswer(q.id, v.toString())}
-          suffix={q.suffix || currentUnit}
+          suffix={currentUnit}
           unitToggle={unitOpts && currentUnit ? {
             options: unitOpts,
             selected: currentUnit,
-            onToggle: (u) => setUnits(prev => ({ ...prev, weight: u }))
+            onToggle: (u) => {
+              setUnits(prev => ({ ...prev, weight: u }));
+              setUnitSystem(u === 'kg' ? 'metric' : 'imperial');
+            }
           } : undefined}
         />
       );
@@ -1072,6 +1409,9 @@ export default function OnboardingScreen() {
       </View>
     );
 
+    const isMental = answers.primaryFocus === 'mental_health';
+    const isHormonal = answers.primaryFocus === 'hormonal';
+
     return (
       <Modal visible={showResults} animationType="slide">
         <SafeAreaView style={styles.resultsContainer}>
@@ -1079,48 +1419,148 @@ export default function OnboardingScreen() {
             <Text style={styles.resultsHeader}>{t('onboarding.results.title', 'Your Blueprint')}</Text>
             <Text style={styles.resultsSub}>{t('onboarding.results.subtitle', 'Your personalised plan across 3 pillars.')}</Text>
 
-            {/* ── Pillar 1: Nutrition ── */}
-            <PillarCard emoji="🥗" title={t('onboarding.results.nutritionPillar', 'Nutrition')} color="#2563eb">
-              <View style={styles.pillarCalRow}>
-                <Text style={styles.pillarCalVal}>{calculatedResults?.dailyCalories}</Text>
-                <Text style={styles.pillarCalLabel}>{t('onboarding.results.kcalDay', 'kcal / day')}</Text>
-              </View>
-              {/* Solid Locker */}
-              <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 72 }}>
-                <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.surface, opacity: 1 }]} />
-                <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
-                  <Lock size={14} color={themeColors.text} />
-                  <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+            {/* ── Dynamic Pillar 1 ── */}
+            {isMental ? (
+              <PillarCard emoji="🧠" title={t('onboarding.results.mentalPillar', 'Mental Health')} color="#059669">
+                <View style={styles.pillarCalRow}>
+                  <Text style={[styles.pillarCalVal, { fontSize: 22, color: '#059669' }]}>Cognitive Architecture</Text>
                 </View>
-              </View>
-            </PillarCard>
+                <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 72 }}>
+                  <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.surface, opacity: 1 }]} />
+                  <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
+                    <Lock size={14} color={themeColors.text} />
+                    <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+                  </View>
+                </View>
+              </PillarCard>
+            ) : isHormonal ? (
+              <PillarCard emoji="🔬" title={t('onboarding.results.biologyPillar', 'Peak Biology')} color="#ec4899">
+                <View style={styles.pillarCalRow}>
+                  <Text style={[styles.pillarCalVal, { fontSize: 22, color: '#ec4899' }]}>Circadian Rhythm</Text>
+                </View>
+                <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 72 }}>
+                  <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.surface, opacity: 1 }]} />
+                  <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
+                    <Lock size={14} color={themeColors.text} />
+                    <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+                  </View>
+                </View>
+              </PillarCard>
+            ) : (
+              <PillarCard emoji="🥗" title={t('onboarding.results.nutritionPillar', 'Nutrition')} color="#2563eb">
+                <View style={styles.pillarCalRow}>
+                  <Text style={styles.pillarCalVal}>{calculatedResults?.dailyCalories}</Text>
+                  <Text style={styles.pillarCalLabel}>{t('onboarding.results.kcalDay', 'kcal / day')}</Text>
+                </View>
+                <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 72 }}>
+                  <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.surface, opacity: 1 }]} />
+                  <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
+                    <Lock size={14} color={themeColors.text} />
+                    <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+                  </View>
+                </View>
+              </PillarCard>
+            )}
 
-            {/* ── Pillar 2: Fitness ── */}
-            <PillarCard emoji="🏋️" title={t('onboarding.results.fitnessPillar', 'Fitness')} color="#7c3aed">
-              <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 160 }}>
-                <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.surface, opacity: 1 }]} />
-                <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
-                  <Lock size={14} color={themeColors.text} />
-                  <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+            {/* ── Dynamic Pillar 2 ── */}
+            {isMental ? (
+              <PillarCard emoji="😴" title={t('onboarding.results.sleepPillar', 'Recovery')} color="#4f46e5">
+                <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 160 }}>
+                  <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.surface, opacity: 1 }]} />
+                  <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
+                    <Lock size={14} color={themeColors.text} />
+                    <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+                  </View>
                 </View>
-              </View>
-            </PillarCard>
+              </PillarCard>
+            ) : (
+              <PillarCard emoji="🏋️" title={t('onboarding.results.fitnessPillar', 'Fitness')} color="#7c3aed">
+                {isHormonal ? (
+                  <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 160 }}>
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.surface, opacity: 1 }]} />
+                    <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
+                      <Lock size={14} color={themeColors.text} />
+                      <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+                    </View>
+                  </View>
+                ) : (
+                  <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 160 }}>
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.surface, opacity: 1 }]} />
+                    <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
+                      <Lock size={14} color={themeColors.text} />
+                      <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+                    </View>
+                  </View>
+                )}
+              </PillarCard>
+            )}
 
-            {/* ── Pillar 3: Mental Health ── */}
-            <PillarCard emoji="🧠" title={t('onboarding.results.mentalPillar', 'Mental Health')} color="#059669">
-              <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 160 }}>
-                <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.surface, opacity: 1 }]} />
-                <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
-                  <Lock size={14} color={themeColors.text} />
-                  <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+            {/* ── Dynamic Pillar 3 ── */}
+            <PillarCard emoji={isMental ? '🧘' : isHormonal ? '🥗' : '🧠'} title={isMental ? 'Somatic Movement' : isHormonal ? t('onboarding.results.nutritionPillar', 'Nutrition') : t('onboarding.results.mentalPillar', 'Mental Health')} color={isMental ? '#0d9488' : isHormonal ? '#2563eb' : '#059669'}>
+              {isHormonal ? (
+                <>
+                  <View style={styles.pillarCalRow}>
+                    <Text style={styles.pillarCalVal}>{calculatedResults?.dailyCalories}</Text>
+                    <Text style={styles.pillarCalLabel}>{t('onboarding.results.kcalDay', 'kcal / day')}</Text>
+                  </View>
+                  <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 72 }}>
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.surface, opacity: 1 }]} />
+                    <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
+                      <Lock size={14} color={themeColors.text} />
+                      <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+                    </View>
+                  </View>
+                </>
+              ) : (
+                <View style={{ borderRadius: 12, overflow: 'hidden', marginTop: 8, height: 160 }}>
+                  <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.surface, opacity: 1 }]} />
+                  <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }]}>
+                    <Lock size={14} color={themeColors.text} />
+                    <Text style={{ fontSize: 11, fontWeight: '800', color: themeColors.text }}>{t('onboarding.results.proInsights', 'PRO INSIGHTS')}</Text>
+                  </View>
                 </View>
-              </View>
+              )}
             </PillarCard>
           </ScrollView>
 
           {/* Fixed footer button */}
           <View style={[styles.resultsFooter, { paddingBottom: Math.max(insets.bottom, 20) }]}>
-            <TouchableOpacity style={styles.primaryBtn} onPress={handleFinalSubmit} disabled={isSubmitting}>
+            <TouchableOpacity
+              style={styles.primaryBtn}
+              onPress={() => {
+                // Show calibration interstitial first, it calls handleFinalSubmit on complete
+                setShowCalibration(true);
+                setCalibrationStepIdx(0);
+                calibrationProgress.setValue(0);
+                calibrationCounter.setValue(0);
+                calibrationRotation.setValue(0);
+
+                // Rotate ring continuously
+                Animated.loop(
+                  Animated.timing(calibrationRotation, { toValue: 1, duration: 2000, useNativeDriver: true })
+                ).start();
+
+                // Animate progress fill & counter from 0→100 over 3.6s
+                Animated.parallel([
+                  Animated.timing(calibrationProgress, { toValue: 1, duration: 3600, useNativeDriver: false }),
+                  Animated.timing(calibrationCounter, { toValue: 100, duration: 3600, useNativeDriver: false }),
+                ]).start();
+
+                // Cycle step text every 900ms
+                let step = 0;
+                const stepInterval = setInterval(() => {
+                  step += 1;
+                  if (step < 4) setCalibrationStepIdx(step);
+                  else clearInterval(stepInterval);
+                }, 900);
+
+                // After 3.6s, run the actual submit
+                setTimeout(() => {
+                  handleFinalSubmit();
+                }, 3600);
+              }}
+              disabled={isSubmitting}
+            >
               {isSubmitting
                 ? <ActivityIndicator color={themeColors.onPrimary} />
                 : <Text style={styles.primaryBtnText}>{t('onboarding.results.continueToPlan', 'Continue to Plan')}</Text>
@@ -1132,142 +1572,253 @@ export default function OnboardingScreen() {
     );
   };
 
+  // ── Calibration Interstitial ─────────────────────────────────────────────
+  const renderCalibration = () => {
+    const spin = calibrationRotation.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+    const ringSize = 180;
+    const strokeWidth = 8;
+    const radius = (ringSize - strokeWidth * 2) / 2;
+    const circumference = 2 * Math.PI * radius;
+
+    return (
+      <Modal visible={showCalibration} animationType="fade" statusBarTranslucent>
+        <View style={{ flex: 1, backgroundColor: themeColors.bg, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 }}>
+
+          {/* Rotating Halo Ring */}
+          <View style={{ width: ringSize, height: ringSize, alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>
+            {/* Static track */}
+            <View style={{
+              position: 'absolute',
+              width: ringSize,
+              height: ringSize,
+              borderRadius: ringSize / 2,
+              borderWidth: strokeWidth,
+              borderColor: themeColors.surfaceMuted,
+            }} />
+
+            {/* Animated rotating arc */}
+            <Animated.View style={{
+              position: 'absolute',
+              width: ringSize,
+              height: ringSize,
+              borderRadius: ringSize / 2,
+              borderWidth: strokeWidth,
+              borderColor: themeColors.primary,
+              borderTopColor: 'transparent',
+              borderRightColor: 'transparent',
+              transform: [{ rotate: spin }],
+            }} />
+
+            {/* Integer % counter in center — must use listener to avoid decimal overflow */}
+            <CalibrationCounter animValue={calibrationCounter} color={themeColors.primary} />
+          </View>
+
+          {/* BLÜOM wordmark or spark icon */}
+          <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: themeColors.surfaceMuted, alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
+            <Sparkles size={24} color={themeColors.primary} />
+          </View>
+
+          {/* Dynamic step label */}
+          <Text style={{ fontSize: 15, fontWeight: '700', color: themeColors.primary, marginBottom: 12, textAlign: 'center', letterSpacing: 0.3 }}>
+            {t('onboarding.calibration.title', 'Building Your Protocol')}
+          </Text>
+          <Text style={{ fontSize: 13, color: themeColors.textMuted, textAlign: 'center', lineHeight: 20, paddingHorizontal: 16 }}>
+            {CALIBRATION_STEPS[calibrationStepIdx]}
+          </Text>
+
+          {/* Animated progress bar */}
+          <View style={{ width: '100%', height: 4, backgroundColor: themeColors.surfaceMuted, borderRadius: 2, marginTop: 40, overflow: 'hidden' }}>
+            <Animated.View style={{
+              height: '100%',
+              backgroundColor: themeColors.primary,
+              borderRadius: 2,
+              width: calibrationProgress.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }),
+            }} />
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
   // ─── Main render ─────────────────────────────────────────────────────────
+
+  const SCREEN_WIDTH = Dimensions.get('window').width;
 
   return (
     <View style={{ flex: 1, backgroundColor: themeColors.bg }}>
       {showWelcome ? (
-        <LinearGradient colors={[themeColors.bgGradientFrom, themeColors.bgGradientTo]} style={styles.fullscreen}>
-          <SafeAreaView style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center' }} edges={['top', 'bottom']}>
-            <ScrollView contentContainerStyle={{ alignItems: 'center', paddingHorizontal: 30, paddingTop: 40, paddingBottom: Math.max(20, insets.bottom) }} style={{ flex: 1, width: '100%' }} showsVerticalScrollIndicator={false}>
-              {currentWelcomeSlide === 0 && (
-                <>
-                  <Image source={WELCOME_LOGO} style={{ width: 140, height: 40, marginBottom: 40 }} resizeMode="contain" />
-                  <Text style={styles.welcomeTitle}>{t('onboarding.welcome.slide1Title', 'Your Life, Optimized.')}</Text>
-                  <Text style={styles.welcomeSubtitle}>{t('onboarding.welcome.slide1Sub', 'AI Life Management')}</Text>
-                  <Text style={styles.welcomeDesc}>{t('onboarding.welcome.slide1Desc', 'Welcome to Bluom. The only system that integrates your Nutrition, Movement, and Mind into one seamless flow.')}</Text>
-                </>
-              )}
-              {currentWelcomeSlide === 1 && (
-                <>
-                  <View style={{ flexDirection: 'row', gap: 12, marginBottom: 40 }}>
-                    <View style={styles.pillarCard}>
-                      <Ionicons name="sunny" size={28} color={themeColors.primary} />
-                      <Text style={styles.pillarText}>{t('onboarding.welcome.pillarNutrition', 'Nutrition')}</Text>
-                    </View>
-                    <View style={styles.pillarCard}>
-                      <Ionicons name="barbell" size={28} color={themeColors.primary} />
-                      <Text style={styles.pillarText}>{t('onboarding.welcome.pillarMove', 'Treino')}</Text>
-                    </View>
-                    <View style={styles.pillarCard}>
-                      <Ionicons name="leaf" size={28} color={themeColors.primary} />
-                      <Text style={styles.pillarText}>{t('onboarding.welcome.pillarMind', 'Mind')}</Text>
-                    </View>
-                  </View>
-                  <Text style={styles.welcomeTitle}>{t('onboarding.welcome.slide2Title', 'A Complete Ecosystem')}</Text>
-                  <Text style={styles.welcomeSubtitle}>{t('onboarding.welcome.slide2Sub', 'Beyond the Pillars')}</Text>
-                  <Text style={styles.welcomeDesc}>{t('onboarding.welcome.slide2Desc', "Includes specialized protocols for Men & Women's health, Productivity architecture, and Mindset & Meditation.")}</Text>
-                </>
-              )}
-              {currentWelcomeSlide === 2 && (
-                <>
-                  <View style={styles.iconCircle}>
-                    <Sparkles size={60} color={themeColors.primary} />
-                  </View>
-                  <Text style={styles.welcomeTitle}>{t('onboarding.welcome.slide3Title', 'Your Blueprint')}</Text>
-                  <Text style={styles.welcomeSubtitle}>{t('onboarding.welcome.slide3Sub', 'Ready to Evolve?')}</Text>
-                  <Text style={styles.welcomeDesc}>{t('onboarding.welcome.slide3Desc', 'Answer a few quick questions to get your custom nutrition plan and workout recommendations.')}</Text>
-
-                  {/* ── Inline Theme Picker ─────────────────────────────── */}
-                  <View style={styles.themePickerWrap}>
-                    <Text style={styles.themePickerLabel}>
-                      {t('onboarding.welcome.themePrompt', 'Which colour speaks to you?')}
-                    </Text>
-                    <View style={styles.themePickerRow}>
-                      {THEME_ORDER.map((key) => {
-                        const th = THEMES[key];
-                        const isActive = activeTheme === key;
-                        return (
-                          <TouchableOpacity
-                            key={key}
-                            data-testid={`onboarding-theme-${key}`}
-                            activeOpacity={0.85}
-                            onPress={() => setPendingThemePick(key)}
-                            style={[
-                              styles.themePickerSwatch,
-                              { backgroundColor: th.swatch },
-                              isActive && { borderColor: th.colors.primary, borderWidth: 3 },
-                            ]}
-                          >
-                            {isActive && (
-                              <View style={[styles.themePickerCheck, { backgroundColor: th.colors.primary }]}>
-                                <Check size={11} color={th.colors.onPrimary} />
-                              </View>
-                            )}
-                          </TouchableOpacity>
-                        );
-                      })}
-                    </View>
-                  </View>
-                </>
-              )}
-            </ScrollView>
-
-            <View style={{ alignItems: 'center', width: '100%', paddingBottom: Math.max(20, insets.bottom) }}>
-              {/* ── Medical Disclaimer (Disabled) ──────────────────────────
-              <View style={{
-                backgroundColor: 'rgba(255,255,255,0.12)',
-                borderRadius: 12,
-                paddingHorizontal: 18,
-                paddingVertical: 10,
-                marginHorizontal: 24,
-                marginBottom: 16,
+        <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top', 'bottom']}>
+          {/* ── Top Header with Logo and Language Selector ── */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 12, paddingBottom: 8 }}>
+            <Image source={THEMES[activeTheme]?.logo || THEMES['default'].logo} style={{ width: 120, height: 32 }} resizeMode="contain" />
+            <TouchableOpacity
+              onPress={() => setShowLangPicker(v => !v)}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: '#ffffff',
                 borderWidth: 1,
-                borderColor: 'rgba(255,255,255,0.2)',
-              }}>
-                <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', textAlign: 'center', lineHeight: 16 }}>
-                  {t('onboarding.disclaimer', 'Bluom provides general wellness information only. Always consult a qualified healthcare professional for medical advice, diagnosis, or treatment.')}
-                </Text>
-              </View>
-              ────────────────────────────────────────────────────────── */}
-              <View style={styles.dotsContainer}>
-                <View style={[styles.dot, currentWelcomeSlide === 0 && styles.activeDot]} />
-                <View style={[styles.dot, currentWelcomeSlide === 1 && styles.activeDot]} />
-                <View style={[styles.dot, currentWelcomeSlide === 2 && styles.activeDot]} />
-              </View>
-              <TouchableOpacity style={styles.welcomeBtn} onPress={handleWelcomeNext}>
-                <Text style={styles.welcomeBtnText}>
-                  {currentWelcomeSlide === 2 ? t('onboarding.welcome.letsGo', "Let's Go!") : t('onboarding.welcome.next', 'Next')}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </SafeAreaView>
+                borderColor: themeColors.border,
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+                borderRadius: 16,
+                gap: 6,
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={{ fontSize: 16 }}>{currentLangOption.flag}</Text>
+              <Text style={{ fontSize: 13, fontWeight: '700', color: themeColors.text }}>{currentLangOption.label}</Text>
+              <Ionicons name="chevron-down" size={12} color={themeColors.textMuted} />
+            </TouchableOpacity>
+          </View>
 
-          {/* Floating language selector */}
-          <View style={{ position: 'absolute', bottom: 140, right: 24 }}>
-            {showLangPicker && (
-              <View style={styles.langPickerPopup}>
+          {/* Language Selector Dropdown Modal/Popup */}
+          {showLangPicker && (
+            <View style={{ position: 'absolute', top: insets.top + 48, right: 24, zIndex: 1000, backgroundColor: '#ffffff', borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, padding: 6, maxHeight: 320, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 8 }}>
+              <ScrollView showsVerticalScrollIndicator={false}>
                 {LANG_OPTIONS.map(lang => (
                   <TouchableOpacity
                     key={lang.code}
-                    style={[styles.langOption, currentLang === lang.code && styles.langOptionActive]}
+                    style={[styles.langOption, currentLang === lang.code && { backgroundColor: themeColors.surfaceMuted }]}
                     onPress={() => handleLangChange(lang.code)}
                   >
                     <Text style={styles.langFlag}>{lang.flag}</Text>
                     <Text style={[styles.langCode, currentLang === lang.code && { color: themeColors.primary, fontWeight: '800' }]}>{lang.label}</Text>
                   </TouchableOpacity>
                 ))}
+              </ScrollView>
+            </View>
+          )}
+
+          {/* ── Swipeable Welcome Slides ── */}
+          <FlatList
+            ref={slidesRef}
+            data={[0, 1, 2]}
+            keyExtractor={item => item.toString()}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onMomentumScrollEnd={(e) => {
+              const idx = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+              setCurrentWelcomeSlide(idx);
+            }}
+            renderItem={({ item: slideIndex }) => (
+              <View style={{ width: SCREEN_WIDTH, paddingHorizontal: 20, justifyContent: 'center', flex: 1 }}>
+                <View style={{
+                  backgroundColor: '#ffffff',
+                  borderRadius: 24,
+                  paddingHorizontal: 20,
+                  paddingVertical: 20,
+                  borderWidth: 1,
+                  borderColor: themeColors.border,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.08,
+                  shadowRadius: 12,
+                  elevation: 4,
+                  alignItems: 'center',
+                }}>
+                  {slideIndex === 0 && (
+                    <>
+                      <View style={[styles.iconCircle, { marginBottom: 12 }]}>
+                        <Sparkles size={40} color={themeColors.primary} />
+                      </View>
+                      <Text style={styles.welcomeTitle}>{t('onboarding.welcome.slide1Title', 'Your Life, Optimized.')}</Text>
+                      <Text style={styles.welcomeSubtitle}>{t('onboarding.welcome.slide1Sub', 'AI Life Management')}</Text>
+                      <Text style={styles.welcomeDesc}>{t('onboarding.welcome.slide1Desc', 'Welcome to Bluom. The only system that integrates your Nutrition, Movement, and Mind into one seamless flow.')}</Text>
+                    </>
+                  )}
+                  {slideIndex === 1 && (
+                    <>
+                      <View style={{ flexDirection: 'row', gap: 6, marginBottom: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <View style={[styles.compactPillarPill, { backgroundColor: themeColors.surfaceMuted, borderColor: themeColors.border }]}>
+                          <Ionicons name="sunny" size={14} color={themeColors.primary} />
+                          <Text style={[styles.compactPillarText, { color: themeColors.text }]}>{t('onboarding.welcome.pillarNutrition', 'Nutrition')}</Text>
+                        </View>
+                        <View style={[styles.compactPillarPill, { backgroundColor: themeColors.surfaceMuted, borderColor: themeColors.border }]}>
+                          <Ionicons name="barbell" size={14} color={themeColors.primary} />
+                          <Text style={[styles.compactPillarText, { color: themeColors.text }]}>{t('onboarding.welcome.pillarMove', 'Treino')}</Text>
+                        </View>
+                        <View style={[styles.compactPillarPill, { backgroundColor: themeColors.surfaceMuted, borderColor: themeColors.border }]}>
+                          <Ionicons name="leaf" size={14} color={themeColors.primary} />
+                          <Text style={[styles.compactPillarText, { color: themeColors.text }]}>{t('onboarding.welcome.pillarMind', 'Mind')}</Text>
+                        </View>
+                      </View>
+                      <Text style={styles.welcomeTitle}>{t('onboarding.welcome.slide2Title', 'A Complete Ecosystem')}</Text>
+                      <Text style={styles.welcomeSubtitle}>{t('onboarding.welcome.slide2Sub', 'Beyond the Pillars')}</Text>
+                      <Text style={styles.welcomeDesc}>{t('onboarding.welcome.slide2Desc', "Includes specialized protocols for Men & Women's health, Productivity architecture, and Mindset & Meditation.")}</Text>
+                    </>
+                  )}
+                  {slideIndex === 2 && (
+                    <>
+                      <View style={[styles.iconCircle, { marginBottom: 10 }]}>
+                        <Sparkles size={38} color={themeColors.primary} />
+                      </View>
+                      <Text style={styles.welcomeTitle}>{t('onboarding.welcome.slide3Title', 'Your Blueprint')}</Text>
+                      <Text style={styles.welcomeSubtitle}>{t('onboarding.welcome.slide3Sub', 'Ready to Evolve?')}</Text>
+                      <Text style={styles.welcomeDesc}>{t('onboarding.welcome.slide3Desc', 'Answer a few quick questions to get your custom nutrition plan and workout recommendations.')}</Text>
+
+                      {/* ── Inline Theme Picker ─────────────────────────────── */}
+                      <View style={styles.themePickerWrap}>
+                        <Text style={styles.themePickerLabel}>
+                          {t('onboarding.welcome.themePrompt', 'Which colour speaks to you?')}
+                        </Text>
+                        <View style={styles.themePickerRow}>
+                          {THEME_ORDER.map((key) => {
+                            const th = THEMES[key];
+                            const isActive = activeTheme === key;
+                            return (
+                              <TouchableOpacity
+                                key={key}
+                                data-testid={`onboarding-theme-${key}`}
+                                activeOpacity={0.85}
+                                onPress={() => setPendingThemePick(key)}
+                                style={[
+                                  styles.themePickerSwatch,
+                                  { backgroundColor: th.swatch },
+                                  isActive && { borderColor: th.colors.primary, borderWidth: 3 },
+                                ]}
+                              >
+                                {isActive && (
+                                  <View style={[styles.themePickerCheck, { backgroundColor: th.colors.primary }]}>
+                                    <Check size={10} color={th.colors.onPrimary} />
+                                  </View>
+                                )}
+                              </TouchableOpacity>
+                            );
+                          })}
+                        </View>
+                      </View>
+                    </>
+                  )}
+                </View>
               </View>
             )}
-            <TouchableOpacity
-              style={styles.langFab}
-              onPress={() => setShowLangPicker(v => !v)}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.langFabFlag}>{currentLangOption.flag}</Text>
+          />
+
+          {/* ── Fixed Bottom Actions ── */}
+          <View style={{ alignItems: 'center', width: '100%', paddingHorizontal: 24, paddingBottom: Math.max(16, insets.bottom) }}>
+            <View style={styles.dotsContainer}>
+              {[0, 1, 2].map((idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  onPress={() => {
+                    slidesRef.current?.scrollToIndex({ index: idx, animated: true });
+                    setCurrentWelcomeSlide(idx);
+                  }}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <View style={[styles.dot, currentWelcomeSlide === idx && styles.activeDot]} />
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity style={styles.welcomeBtn} onPress={handleWelcomeNext} activeOpacity={0.85}>
+              <Text style={styles.welcomeBtnText}>
+                {currentWelcomeSlide === 2 ? t('onboarding.welcome.letsGo', "Let's Go!") : t('onboarding.welcome.next', 'Next')}
+              </Text>
             </TouchableOpacity>
           </View>
-        </LinearGradient>
+        </SafeAreaView>
       ) : (
         <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top']}>
           {/* Unified Toast — handles both feedback and transition messages */}
@@ -1286,6 +1837,7 @@ export default function OnboardingScreen() {
 
           {renderEstimator()}
           {renderResults()}
+          {renderCalibration()}
 
           {/* Header */}
           <View style={styles.header}>
@@ -1415,15 +1967,15 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: c.bg },
   scrollContent: { padding: 24, paddingBottom: 100 },
 
-  iconCircle: { width: 120, height: 120, borderRadius: 60, alignItems: 'center', justifyContent: 'center', marginBottom: 40, backgroundColor: c.surfaceMuted },
-  welcomeTitle: { fontSize: 32, fontWeight: '800', color: c.text, textAlign: 'center', marginBottom: 12 },
-  welcomeSubtitle: { fontSize: 18, fontWeight: '600', color: c.primary, textAlign: 'center', marginBottom: 16 },
-  welcomeDesc: { fontSize: 16, color: c.textMuted, textAlign: 'center', lineHeight: 24, paddingHorizontal: 20 },
-  dotsContainer: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 32, marginTop: 48 },
+  iconCircle: { width: 72, height: 72, borderRadius: 36, alignItems: 'center', justifyContent: 'center', marginBottom: 12, backgroundColor: c.surfaceMuted },
+  welcomeTitle: { fontSize: 24, fontWeight: '800', color: c.text, textAlign: 'center', marginBottom: 4 },
+  welcomeSubtitle: { fontSize: 14, fontWeight: '600', color: c.primary, textAlign: 'center', marginBottom: 8 },
+  welcomeDesc: { fontSize: 13, color: c.textMuted, textAlign: 'center', lineHeight: 19, paddingHorizontal: 8 },
+  dotsContainer: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 14, marginTop: 12 },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: c.surfaceMuted },
   activeDot: { backgroundColor: c.primary, width: 20 },
-  welcomeBtn: { backgroundColor: c.primary, width: '85%', maxWidth: 350, padding: 18, borderRadius: 16, alignItems: 'center', marginBottom: 20 },
-  welcomeBtnText: { color: c.onPrimary, fontSize: 18, fontWeight: 'bold' },
+  welcomeBtn: { backgroundColor: c.primary, width: '85%', maxWidth: 350, padding: 15, borderRadius: 16, alignItems: 'center', marginBottom: 10 },
+  welcomeBtnText: { color: c.onPrimary, fontSize: 16, fontWeight: 'bold' },
 
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16, gap: 16, backgroundColor: c.bg },
   progressTrack: { flex: 1, height: 6, backgroundColor: c.surfaceMuted, borderRadius: 3, overflow: 'hidden' },
@@ -1452,6 +2004,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   radioCircleSelected: { borderColor: c.primary, backgroundColor: c.primary },
   pillarCard: { width: 100, height: 140, borderRadius: 16, borderWidth: 2, borderColor: c.primary, backgroundColor: c.surfaceMuted, justifyContent: 'center', alignItems: 'center', gap: 8, padding: 4 },
   pillarText: { fontWeight: '700', fontSize: 14, color: c.primary },
+  compactPillarPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 16, borderWidth: 1 },
+  compactPillarText: { fontSize: 13, fontWeight: '700' },
   optionText: { flex: 1, fontSize: 16, color: c.text, fontWeight: '500' },
 
   chipContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
@@ -1530,27 +2084,27 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   langCode: { fontSize: 13, fontWeight: '600', color: c.text },
 
   // Theme picker (welcome slide 3)
-  themePickerWrap: { marginTop: 28, alignItems: 'center', width: '100%' },
-  themePickerLabel: { fontSize: 14, fontWeight: '600', color: c.text, marginBottom: 14 },
-  themePickerRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'center' },
+  themePickerWrap: { marginTop: 20, alignItems: 'center', width: '100%' },
+  themePickerLabel: { fontSize: 13, fontWeight: '700', color: c.text, marginBottom: 12 },
+  themePickerRow: { flexDirection: 'row', gap: 8, justifyContent: 'center', alignItems: 'center' },
   themePickerSwatch: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     borderWidth: 1.5,
-    borderColor: 'rgba(0,0,0,0.08)',
+    borderColor: 'rgba(0,0,0,0.12)',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
-    shadowRadius: 4,
+    shadowRadius: 3,
     elevation: 2,
   },
   themePickerCheck: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
     alignItems: 'center',
     justifyContent: 'center',
   },

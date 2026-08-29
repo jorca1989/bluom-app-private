@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Modal, TextInput, Alert, Animated, Dimensions,
-  KeyboardAvoidingView, Platform, ActivityIndicator,
+  KeyboardAvoidingView, Platform, ActivityIndicator, Switch,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -44,7 +44,7 @@ const QUIZ_KEY = 'bluom_womens_quiz_v1';
 // ─────────────────────────────────────────────────────────────
 // TYPES
 // ─────────────────────────────────────────────────────────────
-type LifeStage = 'cycle' | 'pregnancy' | 'menopause';
+type LifeStage = 'cycle' | 'pregnancy' | 'postpartum' | 'menopause';
 
 interface WomensProfile {
   birthControl:   string; // 'none'|'pill'|'iud'|'implant'|'other'
@@ -268,21 +268,31 @@ function getPregnancyStats(startDate: number, t: Function) {
   const days     = Math.floor((Date.now() - startDate) / (1000 * 60 * 60 * 24));
   const weeks    = Math.floor(days / 7);
   const trimester = weeks < 14 ? 1 : weeks < 28 ? 2 : 3;
-  const sizes     = ['🌱','🫘','🫘','🫐','🫘','🍇','🍊','🟣','🍋','🍋','🍎','🥑','🥔','🫑','🥒','🟠','🍆','🎃','🍍','🍈','🍈','🍉','🎃'];
-  const milestones = [
-    t('womensHealth.milestone.0','Coração a bater'),
-    t('womensHealth.milestone.1','Dedos a formar-se'),
-    t('womensHealth.milestone.2','Primeiros pontapés possíveis'),
-    t('womensHealth.milestone.3','Audição a desenvolver-se'),
-    t('womensHealth.milestone.4','O bebé já pode sonhar'),
-    t('womensHealth.milestone.5','Pulmões a maturar'),
-    t('womensHealth.milestone.6','A praticar a respiração'),
-    t('womensHealth.milestone.7','A aproximar-se do termo'),
+  const sizes     = [
+    '🌱', '🫘', '🫘', '🫐', '🫘', '🍇', '🍊', '🟣', '🍋', '🍋',
+    '🍎', '🥑', '🥔', '🫑', '🥒', '🟠', '🍆', '🥭', '🫑', '🍅',
+    '🍌', '🥕', '🌽', '🥭', '🌽', '🥦', '🥬', '🥦', '🍆', '🥒',
+    '🥬', '🥥', '🥬', '🍍', '🍈', '🍈', '🥬', '🎃', '🍉', '🍉',
+    '👶'
   ];
+  const milestones = [
+    t('womensHealth.milestone.0','Heartbeat detected'),
+    t('womensHealth.milestone.1','Fingers forming'),
+    t('womensHealth.milestone.2','First kicks possible'),
+    t('womensHealth.milestone.3','Hearing developing'),
+    t('womensHealth.milestone.4','Baby can dream'),
+    t('womensHealth.milestone.5','Lungs maturing'),
+    t('womensHealth.milestone.6','Practising breathing'),
+    t('womensHealth.milestone.7','Approaching full term'),
+  ];
+  // Clamp weeks to valid range; anything >= 40 is at term
+  const displayWeeks = Math.min(weeks, 40);
   return {
-    weeks, trimester, progress: Math.min(weeks / 40, 1),
-    emoji: sizes[Math.min(weeks, sizes.length - 1)],
-    milestone: milestones[Math.floor(weeks / 5)] ?? t('womensHealth.milestone.default','A crescer forte'),
+    weeks: displayWeeks, trimester, progress: Math.min(displayWeeks / 40, 1),
+    emoji: displayWeeks >= 40 ? '👶' : sizes[Math.min(displayWeeks, sizes.length - 1)],
+    milestone: displayWeeks >= 40
+      ? t('womensHealth.milestone.term', 'Baby at full term · Ready for the world!')
+      : milestones[Math.floor(displayWeeks / 5)] ?? t('womensHealth.milestone.default','Growing strong'),
   };
 }
 
@@ -481,7 +491,9 @@ export default function WomensHealthScreen() {
   const [showPrivacy,     setShowPrivacy]     = useState(false);
   const [showArticle,     setShowArticle]     = useState<typeof LEARN_ARTICLES[0] | null>(null);
   const [showSupps,       setShowSupps]       = useState(false);
-
+  const [showTransitionModal, setShowTransitionModal] = useState(false);
+  const [deliveryTypeInput, setDeliveryTypeInput] = useState<'vaginal' | 'c-section'>('vaginal');
+  const [isBreastfeedingInput, setIsBreastfeedingInput] = useState(true);
   // ── Quiz ──
   const [quizLoading, setQuizLoading] = useState(true);
   const [quizDone,    setQuizDone]    = useState(false);
@@ -495,6 +507,9 @@ export default function WomensHealthScreen() {
   const [flow,         setFlow]         = useState<string>('');
   const [babyMovement, setBabyMovement] = useState(5);
   const [hotFlash,     setHotFlash]     = useState(5);
+  const [ppMood,       setPpMood]       = useState<string>('');
+  const [ppLochia,     setPpLochia]     = useState<string>('');
+  const [ppPain,       setPpPain]       = useState<number>(1);
 
   // ── Pelvic timer ──
   const [kegelActive,  setKegelActive]  = useState(false);
@@ -635,6 +650,9 @@ export default function WomensHealthScreen() {
         flow: lifeStage === 'cycle' ? flow : undefined,
         babyMovement: lifeStage === 'pregnancy' ? babyMovement : undefined,
         hotFlashSeverity: lifeStage === 'menopause' ? hotFlash : undefined,
+        ppMood: lifeStage === 'postpartum' ? ppMood : undefined,
+        ppLochia: lifeStage === 'postpartum' ? ppLochia : undefined,
+        ppPain: lifeStage === 'postpartum' ? ppPain : undefined,
       });
       Alert.alert(t('womensHealth.loggedTitle','Registado ✓'), t('womensHealth.loggedMsg','Os teus bio-marcadores diários foram guardados.'));
       setShowBioModal(false);
@@ -833,6 +851,36 @@ export default function WomensHealthScreen() {
                 </View>
               </>
             )}
+            {lifeStage === 'postpartum' && (
+              <>
+                <Text style={s.bioLabel}>{t('womensHealth.ppMood', 'Postpartum Mood')}</Text>
+                <View style={s.flowRow}>
+                  {(['Good', 'Baby Blues', 'Anxious', 'Overwhelmed', 'Numb'] as const).map(m => (
+                    <TouchableOpacity key={m} style={[s.flowChip, ppMood === m && s.flowChipActive, { marginBottom: 8 }]} onPress={() => setPpMood(m)}>
+                      <Text style={[s.flowTxt, ppMood === m && { color: '#fff' }]}>{t(`womensHealth.ppMoodOpt.${m.replace(/\s/g, '')}`, m)}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                
+                <Text style={s.bioLabel}>{t('womensHealth.ppLochia', 'Lochia / Bleeding')}</Text>
+                <View style={s.flowRow}>
+                  {(['None', 'Light', 'Medium', 'Heavy'] as const).map(m => (
+                    <TouchableOpacity key={m} style={[s.flowChip, ppLochia === m && s.flowChipActive]} onPress={() => setPpLochia(m)}>
+                      <Text style={[s.flowTxt, ppLochia === m && { color: '#fff' }]}>{t(`womensHealth.flowOpt.${m.toLowerCase()}`, m)}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                <Text style={s.bioLabel}>{t('womensHealth.ppPain', 'Incision / Pelvic Pain (1-10)')}</Text>
+                <View style={s.dotRow}>
+                  {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
+                    <TouchableOpacity key={n} style={[s.dot, ppPain >= n && { backgroundColor: '#e11d48', borderColor: '#e11d48' }]} onPress={() => setPpPain(n)}>
+                      <Text style={[s.dotTxt, ppPain >= n && s.dotTxtActive]}>{n}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </>
+            )}
             {lifeStage === 'menopause' && (
               <>
                 <Text style={s.bioLabel}>{t('womensHealth.hotFlash', 'Intensidade das afrontamentos (1–10)')}</Text>
@@ -937,18 +985,22 @@ export default function WomensHealthScreen() {
       <Modal visible={showStageSelect} transparent animationType="fade">
         <View style={s.stageOverlay}>
           <View style={s.stageCard}>
-            <Text style={s.stageTitle}>{t('womensHealth.lifeStage', 'Fase de Vida')}</Text>
-            {(['cycle', 'pregnancy', 'menopause'] as LifeStage[]).map(stage => (
+            <Text style={s.stageTitle}>{t('womensHealth.lifeStage', 'Life Stage')}</Text>
+            {(['cycle', 'pregnancy', 'postpartum', 'menopause'] as LifeStage[]).map(stage => (
               <TouchableOpacity key={stage}
                 style={[s.stageOption, lifeStage === stage && s.stageOptionActive]}
                 onPress={() => {
                   setLifeStage(stage);
-                  updateUser({ userId: convexUser!._id, updates: { lifeStage: stage } });
+                  const updates: any = { lifeStage: stage };
+                  if (stage === 'postpartum') {
+                    updates.postpartumStartDate = Date.now();
+                  }
+                  updateUser({ userId: convexUser!._id, updates });
                   setShowStageSelect(false);
                 }}>
-                <Text style={s.stageEmoji}>{stage === 'cycle' ? '🔄' : stage === 'pregnancy' ? '🤰' : '🌡️'}</Text>
+                <Text style={s.stageEmoji}>{stage === 'cycle' ? '🔄' : stage === 'pregnancy' ? '🤰' : stage === 'postpartum' ? '🤱' : '🌡️'}</Text>
                 <Text style={[s.stageLabel, lifeStage === stage && { color: '#e11d48', fontWeight: '800' }]}>
-                  {stage === 'cycle' ? t('womensHealth.menstrualCycle', 'Ciclo Menstrual') : stage === 'pregnancy' ? t('womensHealth.pregnancy', 'Gravidez') : t('womensHealth.menopause', 'Menopausa')}
+                  {stage === 'cycle' ? t('womensHealth.menstrualCycle', 'Menstrual Cycle') : stage === 'pregnancy' ? t('womensHealth.pregnancy', 'Pregnancy') : stage === 'postpartum' ? t('womensHealth.postpartum', 'Postpartum') : t('womensHealth.menopause', 'Menopause')}
                 </Text>
                 {lifeStage === stage && <Ionicons name="checkmark-circle" size={20} color="#e11d48" />}
               </TouchableOpacity>
@@ -966,11 +1018,11 @@ export default function WomensHealthScreen() {
           <Ionicons name="arrow-back" size={20} color="#e11d48" />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <Text style={s.headerTitle}>{t('womensHealth.title', 'Saúde Feminina')}</Text>
-          <Text style={s.headerSub}>{t('womensHealth.headerSub', 'Inteligência hormonal')} · {t(`womensHealth.stage.${lifeStage}`, lifeStage)}</Text>
+          <Text style={s.headerTitle}>{t('womensHealth.title', 'Women\'s Health')}</Text>
+          <Text style={s.headerSub}>{t('womensHealth.headerSub', 'Hormonal intelligence')} · {t(`womensHealth.stage.${lifeStage}`, lifeStage)}</Text>
         </View>
         <TouchableOpacity style={s.stageBtn} onPress={() => setShowStageSelect(true)}>
-          <Text style={s.stageBtnEmoji}>{lifeStage === 'cycle' ? '🔄' : lifeStage === 'pregnancy' ? '🤰' : '🌡️'}</Text>
+          <Text style={s.stageBtnEmoji}>{lifeStage === 'cycle' ? '🔄' : lifeStage === 'pregnancy' ? '🤰' : lifeStage === 'postpartum' ? '🤱' : '🌡️'}</Text>
           <Ionicons name="chevron-down" size={13} color="#e11d48" />
         </TouchableOpacity>
         <TouchableOpacity
@@ -994,10 +1046,10 @@ export default function WomensHealthScreen() {
       {/* ── TAB BAR ── */}
       <View style={s.tabBar}>
         {[
-          { id: 'today',    label: t('womensHealth.tabToday', 'Hoje'),    emoji: '☀️' },
-          { id: 'cycle',    label: lifeStage === 'pregnancy' ? t('womensHealth.tabBaby', 'Bebé') : lifeStage === 'menopause' ? t('womensHealth.tabTracker', 'Tracker') : t('womensHealth.tabCycle', 'Ciclo'), emoji: lifeStage === 'pregnancy' ? '👶' : '📅' },
+          { id: 'today',    label: t('womensHealth.tabToday', 'Today'),    emoji: '☀️' },
+          { id: 'cycle',    label: lifeStage === 'pregnancy' ? t('womensHealth.tabBaby', 'Baby') : lifeStage === 'menopause' ? t('womensHealth.tabTracker', 'Tracker') : t('womensHealth.tabCycle', 'Cycle'), emoji: lifeStage === 'pregnancy' ? '👶' : '📅' },
           { id: 'insights', label: t('womensHealth.tabInsights', 'Insights'), emoji: '✦' },
-          { id: 'learn',    label: t('womensHealth.tabLearn', 'Aprender'),    emoji: '📚' },
+          { id: 'learn',    label: t('womensHealth.tabLearn', 'Learn'),    emoji: '📚' },
         ].map(tab => (
           <TouchableOpacity key={tab.id} style={[s.tab, activeTab === tab.id && s.tabActive]} onPress={() => setActiveTab(tab.id as any)}>
             <Text style={s.tabEmoji}>{tab.emoji}</Text>
@@ -1041,8 +1093,8 @@ export default function WomensHealthScreen() {
               <LinearGradient colors={['#be185d', '#9d174d']} style={s.phaseHero}>
                 <View style={s.phaseHeroTop}>
                   <View>
-                    <Text style={s.phaseDay}>{t('womensHealth.trimester','Trimestre')} {pregnancyStats.trimester}</Text>
-                    <Text style={s.phaseName}>{t('womensHealth.week','Semana')} {pregnancyStats.weeks}</Text>
+                    <Text style={s.phaseDay}>{t('womensHealth.trimester','Trimester')} {pregnancyStats.trimester}</Text>
+                    <Text style={s.phaseName}>{t('womensHealth.week','Week')} {pregnancyStats.weeks}</Text>
                     <Text style={s.phaseHormone}>{pregnancyStats.milestone}</Text>
                   </View>
                   <Text style={{ fontSize: 52 }}>{pregnancyStats.emoji}</Text>
@@ -1050,33 +1102,86 @@ export default function WomensHealthScreen() {
                 <View style={s.pregnancyBar}>
                   <View style={[s.pregnancyBarFill, { width: `${pregnancyStats.progress * 100}%` as any }]} />
                 </View>
-                <Text style={s.pregnancyBarLbl}>{40 - pregnancyStats.weeks} {t('womensHealth.weeksToGo','semanas restantes')}</Text>
+                <Text style={s.pregnancyBarLbl}>{40 - pregnancyStats.weeks} {t('womensHealth.weeksToGo','weeks to go')}</Text>
+                
+                <TouchableOpacity 
+                  onPress={() => setShowTransitionModal(true)}
+                  style={{ marginTop: 16, backgroundColor: 'rgba(255,255,255,0.22)', borderRadius: 14, paddingVertical: 12, alignItems: 'center' }}>
+                  <Text style={{ color: '#fff', fontWeight: '800' }}>👶 {t('womensHealth.babyArrived', 'Baby is here!')}</Text>
+                </TouchableOpacity>
               </LinearGradient>
             )}
+
+            {/* Postpartum hero */}
+            {lifeStage === 'postpartum' && (() => {
+              const ppStartDate = convexUser?.deliveryDate ?? convexUser?.postpartumStartDate;
+              const ppWeek = ppStartDate
+                ? Math.max(1, Math.floor((Date.now() - ppStartDate) / (1000 * 60 * 60 * 24 * 7)) + 1)
+                : 1;
+              const isCSection = convexUser?.deliveryType === 'c-section';
+              const ppMilestone = ppWeek <= 2 
+                ? (isCSection ? t('womensHealth.ppc1', 'Incision healing, restricted lifting') : t('womensHealth.ppv1', 'Pelvic floor swelling, lochia'))
+                : ppWeek <= 6 
+                ? (isCSection ? t('womensHealth.ppc2', 'Core gently knitting, restrict lifting') : t('womensHealth.ppv2', 'Pelvic floor regaining tone'))
+                : t('womensHealth.ppc3', 'Cleared for gentle movement, focus on core');
+
+              return (
+              <LinearGradient colors={['#be185d', '#ec4899']} style={s.phaseHero}>
+                <View style={s.phaseHeroTop}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={s.phaseDay}>{t('womensHealth.postpartumRecovery', 'Postpartum Recovery')}</Text>
+                    <Text style={s.phaseName}>{t('womensHealth.week', 'Week')} {ppWeek}</Text>
+                    <Text style={s.phaseHormone}>{ppMilestone}</Text>
+                  </View>
+                  <Text style={{ fontSize: 52 }}>🤱</Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => setShowPelvicModal(true)}
+                  style={{
+                    marginTop: 16,
+                    backgroundColor: 'rgba(255,255,255,0.22)',
+                    borderRadius: 14,
+                    paddingVertical: 12,
+                    paddingHorizontal: 18,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                  }}
+                  activeOpacity={0.85}
+                >
+                  <Ionicons name="fitness" size={18} color="#ffffff" />
+                  <Text style={{ color: '#ffffff', fontWeight: '800', fontSize: 14 }}>
+                    {t('womensHealth.startPelvic', 'Pelvic Floor & Core Protocol')}
+                  </Text>
+                </TouchableOpacity>
+              </LinearGradient>
+              );
+            })()}
 
             {/* Menopause hero */}
             {lifeStage === 'menopause' && (
               <LinearGradient colors={['#7c3aed', '#5b21b6']} style={s.phaseHero}>
-                <Text style={s.phaseName}>{t('womensHealth.menopauseTracker','Monitor de Menopausa')}</Text>
-                <Text style={s.phaseDesc}>{t('womensHealth.menopauseDesc','Regista afrontamentos, humor e alterações de sono. O teu quadro hormonal importa.')}</Text>
+                <Text style={s.phaseName}>{t('womensHealth.menopauseTracker','Menopause Tracker')}</Text>
+                <Text style={s.phaseDesc}>{t('womensHealth.menopauseDesc','Track hot flashes, mood and sleep changes. Your hormonal picture matters.')}</Text>
                 <View style={s.scoreCircle}>
                   <Text style={s.scoreVal}>{score}%</Text>
-                  <Text style={s.scoreLbl}>{t('womensHealth.adherence','aderência')}</Text>
+                  <Text style={s.scoreLbl}>{t('womensHealth.adherence','adherence')}</Text>
                 </View>
               </LinearGradient>
             )}
 
             {/* Today's actions */}
-            <Text style={s.sectionTitle}>{t('womensHealth.dailyProtocols','Protocolos Diários')}</Text>
+            <Text style={s.sectionTitle}>{t('womensHealth.dailyProtocols','Daily Protocols')}</Text>
 
             {/* Cycle sync cards */}
             {phase && (
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.syncScroll}>
                 {[
-                  { title: t('womensHealth.workout', '🏋️ Treino'), body: phase.workout,   color: '#eff6ff', border: '#bfdbfe' },
-                  { title: t('womensHealth.nutrition', '🥗 Nutrição'), body: phase.nutrition,  color: '#f0fdf4', border: '#bbf7d0' },
-                  { title: t('womensHealth.mood', '😌 Humor'), body: phase.mood,       color: '#f5f3ff', border: '#ddd6fe' },
-                  { title: t('womensHealth.energy', '⚡ Energia'), body: phase.energy,   color: '#fffbeb', border: '#fde68a' },
+                  { title: t('womensHealth.workout', '🏋️ Workout'), body: phase.workout,   color: '#eff6ff', border: '#bfdbfe' },
+                  { title: t('womensHealth.nutrition', '🥗 Nutrition'), body: phase.nutrition,  color: '#f0fdf4', border: '#bbf7d0' },
+                  { title: t('womensHealth.mood', '😌 Mood'), body: phase.mood,       color: '#f5f3ff', border: '#ddd6fe' },
+                  { title: t('womensHealth.energy', '⚡ Energy'), body: phase.energy,   color: '#fffbeb', border: '#fde68a' },
                 ].map((c, i) => (
                   <View key={i} style={[s.syncCard, { backgroundColor: c.color, borderColor: c.border }]}>
                     <Text style={s.syncCardTitle}>{c.title}</Text>
@@ -1088,8 +1193,8 @@ export default function WomensHealthScreen() {
 
             {/* Action tiles */}
             {[
-              { icon: 'pulse-outline',   label: t('womensHealth.biolog','Bio-Registo Diário'),       sub: `${t('womensHealth.biologSub','Humor, energia, sintomas')}${lifeStage === 'cycle' ? ', '+t('womensHealth.flowLow','fluxo') : ''}`, onPress: () => setShowBioModal(true),   color: '#fdf2f8' },
-              { icon: 'fitness-outline', label: t('womensHealth.pelvic','Protocolo Pélvico'),          sub: t('womensHealth.pelvicSub2','Core, pavimento & postura'),                                                                                 onPress: () => setShowPelvicModal(true), color: '#fdf2f8' },
+              { icon: 'pulse-outline',   label: t('womensHealth.biolog','Daily Bio-Log'),       sub: `${t('womensHealth.biologSub','Mood, energy, symptoms')}${lifeStage === 'cycle' ? ', '+t('womensHealth.flowLow','flow') : ''}`, onPress: () => setShowBioModal(true),   color: '#fdf2f8' },
+              { icon: 'fitness-outline', label: t('womensHealth.pelvic','Pelvic Protocol'),          sub: t('womensHealth.pelvicSub2','Core, pelvic floor & posture'),                                                                                 onPress: () => setShowPelvicModal(true), color: '#fdf2f8' },
               { icon: 'flask-outline',   label: t('womensHealth.vitStack', 'Vitality Stack'),      sub: `${suppStack.length} ${t('womensHealth.personalisedSupps', 'personalised supplements')}`,                                              onPress: () => setShowSupps(true),       color: '#fdf2f8' },
             ].map((a, i) => (
               <TouchableOpacity key={i} style={s.actionTile} onPress={a.onPress} activeOpacity={0.8}>
@@ -1113,7 +1218,7 @@ export default function WomensHealthScreen() {
             {/* 28-day ring tracker */}
             {lifeStage === 'cycle' && phase && (
               <>
-                <Text style={s.sectionTitle}>{t('womensHealth.calendar','Calendário 28 Dias')}</Text>
+          <Text style={s.sectionTitle}>{t('womensHealth.calendar','Calendário 28 Dias')}</Text>
                 <View style={s.calendarGrid}>
                   {Array.from({ length: 28 }, (_, i) => {
                     const d = i + 1;
@@ -1172,18 +1277,51 @@ export default function WomensHealthScreen() {
             {/* Pregnancy tracker */}
             {lifeStage === 'pregnancy' && pregnancyStats && (
               <>
-                <Text style={s.sectionTitle}>{t('womensHealth.pregnancyTimeline','Linha do Tempo da Gravidez')}</Text>
+                <Text style={s.sectionTitle}>{t('womensHealth.pregnancyTimeline','Pregnancy Timeline')}</Text>
                 {/* Week-by-week */}
                 {[1,2,3].map(tri => (
                   <View key={tri} style={s.trimesterBlock}>
                     <Text style={s.trimesterTitle}>{t('womensHealth.trimester','Trimestre')} {tri} {tri === pregnancyStats.trimester ? t('womensHealth.youAreHere','← estás aqui') : ''}</Text>
                     <Text style={s.trimesterRange}>
-                      {tri === 1 ? t('womensHealth.tri1','Semanas 1–13 · Formação dos órgãos, náuseas, fadiga') :
-                       tri === 2 ? t('womensHealth.tri2','Semanas 14–27 · Energia de volta, bebé mexe, ecografia anatómica') :
-                                   t('womensHealth.tri3','Semanas 28–40 · Crescimento, preparação, planeamento do parto')}
+                      {tri === 1 ? t('womensHealth.tri1','Weeks 1–13 · Organ formation, nausea, fatigue') : tri === 2 ? t('womensHealth.tri2','Weeks 14–27 · Energy returns, baby moves, anomaly scan') : t('womensHealth.tri3','Weeks 28–40 · Growth, preparation, birth planning')}
                     </Text>
                   </View>
                 ))}
+              </>
+            )}
+
+            {/* Postpartum tracker */}
+            {lifeStage === 'postpartum' && (
+              <>
+                <Text style={s.sectionTitle}>{t('womensHealth.newbornTracker','Newborn Tracker')}</Text>
+                <View style={{ flexDirection: 'row', gap: 12, marginBottom: 24 }}>
+                  <TouchableOpacity style={[s.actionTile, { flex: 1, backgroundColor: '#f0fdf4', padding: 12 }]} activeOpacity={0.7} onPress={() => Alert.alert(t('womensHealth.loggedTitle', 'Logged'), t('womensHealth.feedLogged', 'Feed tracked successfully!'))}>
+                    <Text style={{ fontSize: 28, textAlign: 'center', marginBottom: 8 }}>🍼</Text>
+                    <Text style={{ textAlign: 'center', fontWeight: '700', color: '#166534' }}>{t('womensHealth.logFeed', 'Feed')}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[s.actionTile, { flex: 1, backgroundColor: '#eff6ff', padding: 12 }]} activeOpacity={0.7} onPress={() => Alert.alert(t('womensHealth.loggedTitle', 'Logged'), t('womensHealth.diaperLogged', 'Diaper change tracked successfully!'))}>
+                    <Text style={{ fontSize: 28, textAlign: 'center', marginBottom: 8 }}>🧻</Text>
+                    <Text style={{ textAlign: 'center', fontWeight: '700', color: '#1d4ed8' }}>{t('womensHealth.logDiaper', 'Diaper')}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[s.actionTile, { flex: 1, backgroundColor: '#fdf2f8', padding: 12 }]} activeOpacity={0.7} onPress={() => Alert.alert(t('womensHealth.loggedTitle', 'Logged'), t('womensHealth.sleepLogged', 'Baby sleep logged successfully!'))}>
+                    <Text style={{ fontSize: 28, textAlign: 'center', marginBottom: 8 }}>💤</Text>
+                    <Text style={{ textAlign: 'center', fontWeight: '700', color: '#be185d' }}>{t('womensHealth.logSleep', 'Sleep')}</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <Text style={s.sectionTitle}>{t('womensHealth.recoveryTimeline','Your Recovery Timeline')}</Text>
+                <View style={s.trimesterBlock}>
+                  <Text style={s.trimesterTitle}>{t('womensHealth.weeks1to2', 'Weeks 1–2')}</Text>
+                  <Text style={s.trimesterRange}>{convexUser?.deliveryType === 'c-section' ? t('womensHealth.cSecRec1', 'Incision healing, restricted lifting, manage lochia.') : t('womensHealth.vagRec1', 'Pelvic floor swelling, manage lochia and rest.')}</Text>
+                </View>
+                <View style={s.trimesterBlock}>
+                  <Text style={s.trimesterTitle}>{t('womensHealth.weeks3to6', 'Weeks 3–6')}</Text>
+                  <Text style={s.trimesterRange}>{t('womensHealth.rec2', 'Bleeding tapers off, gentle walks, core begins knitting.')}</Text>
+                </View>
+                <View style={s.trimesterBlock}>
+                  <Text style={s.trimesterTitle}>{t('womensHealth.weeks6plus', 'Weeks 6+')}</Text>
+                  <Text style={s.trimesterRange}>{t('womensHealth.rec3', 'Typically cleared for exercise. Slowly return to impact/lifting.')}</Text>
+                </View>
               </>
             )}
 
@@ -1331,6 +1469,64 @@ export default function WomensHealthScreen() {
           </TouchableOpacity>
         </SafeAreaView>
       </Modal>
+      {/* Postpartum Transition Modal */}
+      <Modal visible={showTransitionModal} animationType="slide" transparent>
+        <View style={s.stageOverlay}>
+          <View style={s.stageCard}>
+            <Text style={s.stageTitle}>{t('womensHealth.ppModalTitle', 'Welcome to Postpartum!')}</Text>
+            
+            <Text style={{ fontWeight: '600', color: themeColors.text, marginBottom: 8 }}>{t('womensHealth.deliveryType', 'Delivery Type')}</Text>
+            <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
+              <TouchableOpacity
+                style={[s.stageOption, deliveryTypeInput === 'vaginal' && s.stageOptionActive, { flex: 1, marginBottom: 0 }]}
+                onPress={() => setDeliveryTypeInput('vaginal')}
+              >
+                <Text style={s.stageLabel}>{t('womensHealth.vaginal', 'Vaginal')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[s.stageOption, deliveryTypeInput === 'c-section' && s.stageOptionActive, { flex: 1, marginBottom: 0 }]}
+                onPress={() => setDeliveryTypeInput('c-section')}
+              >
+                <Text style={s.stageLabel}>{t('womensHealth.cSection', 'C-Section')}</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+              <Text style={{ fontWeight: '600', color: themeColors.text }}>{t('womensHealth.breastfeeding', 'Are you breastfeeding?')}</Text>
+              <Switch value={isBreastfeedingInput} onValueChange={setIsBreastfeedingInput} trackColor={{ true: '#e11d48' }} />
+            </View>
+            <Text style={{ fontSize: 12, color: themeColors.textMuted, marginBottom: 20 }}>
+              {t('womensHealth.bfNote', 'This adjusts your daily nutrition & hydration goals.')}
+            </Text>
+
+            <TouchableOpacity 
+              style={s.saveBtn} 
+              onPress={async () => {
+                if (convexUser?._id) {
+                  await updateUser({ 
+                    userId: convexUser._id, 
+                    updates: { 
+                      lifeStage: 'postpartum', 
+                      deliveryDate: Date.now(), 
+                      postpartumStartDate: Date.now(), 
+                      deliveryType: deliveryTypeInput, 
+                      isBreastfeeding: isBreastfeedingInput 
+                    } 
+                  });
+                }
+                setShowTransitionModal(false);
+              }}
+            >
+              <Text style={s.saveBtnTxt}>{t('common.save', 'Save & Continue')}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={s.stageCancelBtn} onPress={() => setShowTransitionModal(false)}>
+              <Text style={{ color: themeColors.textMuted, fontWeight: '600' }}>{t('common.cancel', 'Cancel')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
     </SafeAreaView>
   );
 }

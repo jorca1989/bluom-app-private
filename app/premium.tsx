@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useUser } from '@clerk/clerk-expo';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
@@ -224,6 +224,51 @@ export default function PremiumScreen() {
   
   const weeklyPriceStr = "Just " + currencySymbol + (annualPriceNumber / 52).toFixed(2) + " / wk — save 50%";
 
+  const params = useLocalSearchParams<{ focus?: string }>();
+  const effectiveFocus = params.focus || convexUser?.primaryFocus || 'holistic';
+
+  const heroSubtitle = useMemo(() => {
+    switch (effectiveFocus) {
+      case 'fitness':
+        return t('premium.heroSubFitness', 'Your AI-powered fitness & nutrition engine');
+      case 'mental_health':
+        return t('premium.heroSubMental', 'Your calm, focus & emotional wellness companion');
+      case 'hormonal':
+        return t('premium.heroSubHormonal', 'Sync your health with your hormonal rhythm');
+      default:
+        return t('premium.heroSub', 'A comprehensive system for peak human performance.');
+    }
+  }, [effectiveFocus, t]);
+
+  const sortedFeatures = useMemo(() => {
+    const raw = getFeatures(t);
+    if (effectiveFocus === 'mental_health') {
+      return [
+        raw.find(f => f.icon === '🧠')!,
+        raw.find(f => f.icon === '🤖')!,
+        raw.find(f => f.icon === '🧪')!,
+        ...raw.filter(f => !['🧠', '🤖', '🧪'].includes(f.icon)),
+      ].filter(Boolean);
+    }
+    if (effectiveFocus === 'hormonal') {
+      return [
+        raw.find(f => f.icon === '🌸')!,
+        raw.find(f => f.icon === '🥗')!,
+        raw.find(f => f.icon === '⚡')!,
+        ...raw.filter(f => !['🌸', '🥗', '⚡'].includes(f.icon)),
+      ].filter(Boolean);
+    }
+    if (effectiveFocus === 'fitness') {
+      return [
+        raw.find(f => f.icon === '🏋️')!,
+        raw.find(f => f.icon === '🥗')!,
+        raw.find(f => f.icon === '👁️')!,
+        ...raw.filter(f => !['🏋️', '🥗', '👁️'].includes(f.icon)),
+      ].filter(Boolean);
+    }
+    return raw;
+  }, [effectiveFocus, t]);
+
   if (!isClerkLoaded || convexUser === undefined) {
     return <View style={[styles.root, styles.center]}><ActivityIndicator color="#d4af37" size="large" /></View>;
   }
@@ -262,7 +307,7 @@ export default function PremiumScreen() {
           <View style={styles.heroTextWrap}>
             <Text style={styles.heroEyebrow}>✦ BLUOM PRO</Text>
             <Text style={styles.heroHeadline}>{t('premium.heroTitle', 'Peak Biology,')}{`\n`}{t('premium.heroTitle2', 'Fully Unlocked.')}</Text>
-            <Text style={styles.heroSub}>{t('premium.heroSub', 'A comprehensive system for peak human performance.')}</Text>
+            <Text style={styles.heroSub}>{heroSubtitle}</Text>
           </View>
         </View>
 
@@ -283,7 +328,7 @@ export default function PremiumScreen() {
               <View style={styles.section}>
                 <Text style={styles.sectionEyebrow}>{t('premium.everythingLabel', 'EVERYTHING INCLUDED')}</Text>
                 <Text style={styles.sectionTitle}>{t('premium.featuresTitle', 'The Pro Advantage')}</Text>
-                {FEATURES.map((f, i) => <FeatureRow key={f.title} {...f} index={i} />)}
+                {sortedFeatures.map((f, i) => <FeatureRow key={f.title} {...f} index={i} />)}
               </View>
 
               {/* ── Divider ── */}

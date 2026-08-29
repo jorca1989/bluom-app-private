@@ -502,6 +502,26 @@ export default function HabitHubScreen() {
                                 onChangeText={(t) => setNewHabit({ ...newHabit, name: t })}
                             />
                         </View>
+                        {user?.lifeStage === 'postpartum' && (
+                            <View style={styles.inputGroup}>
+                                <Text style={styles.inputLabel}>{t('wellness.habits.postpartumSuggestions', 'Postpartum Suggestions')}</Text>
+                                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+                                    {[
+                                        { name: t('wellness.habits.ppHydration', 'Hydration for Lactation'), icon: 'Droplets', category: 'health' },
+                                        { name: t('wellness.habits.ppStretch', 'One Gentle Stretch'), icon: 'Leaf', category: 'health' },
+                                        { name: t('wellness.habits.ppProtein', 'Protein-Rich Meal'), icon: 'Apple', category: 'health' }
+                                    ].map(s => (
+                                        <TouchableOpacity 
+                                            key={s.name}
+                                            style={{ backgroundColor: themeColors.surface, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: themeColors.border }}
+                                            onPress={() => setNewHabit({ ...newHabit, name: s.name, icon: s.icon, category: s.category as any, targetDays: 7 })}
+                                        >
+                                            <Text style={{ color: themeColors.text }}>{s.name}</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </ScrollView>
+                            </View>
+                        )}
                         <View style={styles.inputGroup}>
                             <Text style={styles.inputLabel}>{t('wellness.habits.targetDays', 'Target Days per Week')}</Text>
                             <View style={styles.daysSelector}>

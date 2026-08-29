@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Homepage / Landing -->
+  <url>
+    <loc>https://www.bluom.app/</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Blog Hub -->
+  <url>
+    <loc>https://www.bluom.app/blog</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Blog Articles -->
+  <url>
+    <loc>https://www.bluom.app/blog/intermittent-fasting-autophagy-cellular-renewal</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1200&amp;q=80</image:loc>
+      <image:title>Intermittent Fasting Autophagy: How Fasting Renews Cells</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.bluom.app/blog/cortisol-sleep-stress-nervous-system-resets</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=1200&amp;q=80</image:loc>
+      <image:title>Cortisol Sleep Stress: How to Lower Nighttime Stress Levels</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.bluom.app/blog/cycle-syncing-workouts-female-hormones</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&amp;q=80</image:loc>
+      <image:title>Cycle Syncing Workouts: Aligning Training with Hormones</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.bluom.app/blog/postpartum-recovery-core-pelvic-floor-guide</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=1200&amp;q=80</image:loc>
+      <image:title>Postpartum Recovery Core: How to Safely Rebuild Strength</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.bluom.app/blog/muscle-protein-synthesis-hypertrophy-guide</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&amp;q=80</image:loc>
+      <image:title>Muscle Protein Synthesis Hypertrophy: Maximize Muscle Growth</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.bluom.app/blog/metabolic-flexibility-fat-burning-energy</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1200&amp;q=80</image:loc>
+      <image:title>Metabolic Flexibility: Transition from Glucose to Fat Burning</image:title>
+    </image:image>
+  </url>
+
+  <!-- Company Pages -->
+  <url>
+    <loc>https://www.bluom.app/about</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.bluom.app/support</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.bluom.app/feedback</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Legal Documents -->
+  <url>
+    <loc>https://www.bluom.app/legal/privacy</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.bluom.app/legal/terms</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.bluom.app/legal/ai-safety</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.bluom.app/legal/refund-policy</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.bluom.app/legal/subscription-faq</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.bluom.app/legal/data-deletion</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+</urlset>

@@ -32,6 +32,7 @@ import { getCustomerInfoSafe } from '@/utils/revenuecat';
 import { useTheme } from '@/context/ThemeContext';
 import { THEMES } from '@/context/ThemeContext';
 import type { ThemeColors } from '@/context/ThemeContext';
+import { useActiveTools, ToolKey, PrimaryFocus, ALL_TOOLS } from '@/hooks/useActiveTools';
 
 // ─────────────────────────────────────────────────────────────
 // DICEBEAR AVATAR OPTIONS (Avataaars)
@@ -187,8 +188,11 @@ export default function ProfileScreen() {
 
   // ── Widget config ──
   const allProfileWidgetIds = PROFILE_WIDGETS.map(w => w.id);
-  const [visibleProfileWidgets, setVisibleProfileWidgets] = useState<Set<ProfileWidgetId>>(new Set(allProfileWidgetIds));
+  const DEFAULT_PROFILE_WIDGETS: ProfileWidgetId[] = ['hero', 'achievements', 'stats', 'account', 'support'];
+  const [visibleProfileWidgets, setVisibleProfileWidgets] = useState<Set<ProfileWidgetId>>(new Set(DEFAULT_PROFILE_WIDGETS));
   const [showProfileWidgetConfig, setShowProfileWidgetConfig] = useState(false);
+
+  const { activeTools, isToolActive, toggleTool, applyPreset } = useActiveTools();
 
   // ── Theme integration (Dark Mode toggle now flips between 'black' and 'default') ──
   const { theme: activeTheme, setTheme, colors: themeColors } = useTheme();
@@ -236,6 +240,7 @@ export default function ProfileScreen() {
   const [showAvatarPick, setShowAvatarPick] = useState(false);
   const [tempConfig, setTempConfig] = useState<AvatarConfig>(defaultAvatarConfig);
   const [tempBgIdx, setTempBgIdx] = useState(0);
+  const [showAllTools, setShowAllTools] = useState(false);
 
   const [rcInfo, setRcInfo] = useState<any>(null);
   const [rcLoading, setRcLoading] = useState(false);
@@ -599,17 +604,115 @@ export default function ProfileScreen() {
             </>
           )}
           <MenuRow
-            icon={<TrendingDown size={18} color="#ef4444" />} iconBg="#fee2e2"
-            label={t('profile.sugarControl', 'Sugar Control')} sub={t('profile.sugarControlSub', '90-day reset + daily check-ins')}
-            onPress={() => router.push('/sugar-dashboard')}
-          />
-          <View style={s.divider} />
-          <MenuRow
             icon={<RefreshCcw size={18} color="#f97316" />} iconBg="#fff7ed"
             label={t('profile.restartGoal', 'Reiniciar Objetivo')} sub={t('profile.restartGoalSub', 'Redefinir biómetràs e onboarding')}
             onPress={handleReset}
           />
         </Section>}
+
+        {/* ── ACTIVE WORKSPACE & TOOLS HUB ── */}
+        <Section title={t('profile.workspaceHub', 'Active Workspace & Tools')}>
+          {/* Preset selector pills */}
+          <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 14 }}>
+            <Text style={{ fontSize: 12, fontWeight: '700', color: themeColors.textMuted, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.8 }}>
+              {t('profile.quickPresets', 'Quick Presets')}
+            </Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+              {[
+                { id: 'fitness', label: '🏋️ Fitness', focus: 'fitness' as PrimaryFocus },
+                { id: 'mental_health', label: '🧘 Mental Calm', focus: 'mental_health' as PrimaryFocus },
+                { id: 'hormonal', label: '🔄 Hormonal', focus: 'hormonal' as PrimaryFocus },
+                { id: 'holistic', label: '🌿 Holistic', focus: 'holistic' as PrimaryFocus },
+              ].map(preset => (
+                <TouchableOpacity
+                  key={preset.id}
+                  onPress={() => applyPreset(preset.focus)}
+                  style={{
+                    backgroundColor: themeColors.surfaceMuted,
+                    borderWidth: 1,
+                    borderColor: themeColors.border,
+                    paddingHorizontal: 14,
+                    paddingVertical: 8,
+                    borderRadius: 16,
+                  }}
+                  activeOpacity={0.75}
+                >
+                  <Text style={{ fontSize: 13, fontWeight: '700', color: themeColors.text }}>{preset.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+          <View style={s.divider} />
+
+          {/* Individual tool toggle list */}
+          {(() => {
+            const allTools = [
+              { key: 'aiCoach' as ToolKey, icon: '💬', label: t('profile.aiCoach', 'AI Coach'), sub: t('profile.aiCoachSub', 'Intelligent health guidance') },
+              { key: 'fuel' as ToolKey, icon: '🍽️', label: t('profile.fuel', 'Nutrition (Fuel Tab)'), sub: t('profile.fuelSub', 'Calorie & macro management') },
+              { key: 'move' as ToolKey, icon: '💪', label: t('profile.move', 'Movement (Move Tab)'), sub: t('profile.moveSub', 'Workouts & step tracking') },
+              { key: 'wellness' as ToolKey, icon: '🧘', label: t('profile.wellness', 'Wellness (Mente Tab)'), sub: t('profile.wellnessSub', 'Mindfulness & sleep') },
+              { key: 'womens' as ToolKey, icon: '♀', label: t('profile.womensHealth', "Women's Health"), sub: t('profile.womensSub', 'Cycle & hormonal intelligence') },
+              { key: 'mens' as ToolKey, icon: '♂', label: t('profile.mensHealth', "Men's Health"), sub: t('profile.mensSub', 'Male vitality & performance') },
+              { key: 'fasting' as ToolKey, icon: '⏱️', label: t('profile.fastingTracker', 'Fasting Tracker'), sub: t('profile.fastingSub', 'Intermittent fasting protocols') },
+              { key: 'recipes' as ToolKey, icon: '🍳', label: t('profile.recipes', 'Recipe Library'), sub: t('profile.recipesSub', 'Macro-balanced meal ideas') },
+              { key: 'workouts' as ToolKey, icon: '🏋️', label: t('profile.workouts', 'Workout Library'), sub: t('profile.workoutsSub', 'Video workouts & routines') },
+              { key: 'metabolic' as ToolKey, icon: '📊', label: t('profile.metabolic', 'Metabolic Hub'), sub: t('profile.metabolicSub', 'Glucose & metabolic metrics') },
+              { key: 'dental' as ToolKey, icon: '🦷', label: t('profile.dentalHub', 'Dental Health Hub'), sub: t('profile.dentalSub', 'Oral hygiene routines') },
+              { key: 'pulse' as ToolKey, icon: '❤️', label: t('profile.pulseCheck', 'Pulse Check'), sub: t('profile.pulseSub', 'Heart & biometric sync') },
+              { key: 'tasks' as ToolKey, icon: '✅', label: t('profile.productivity', 'Productivity Hub'), sub: t('profile.productivitySub', 'Goals & daily focus tasks') },
+              { key: 'library' as ToolKey, icon: '📚', label: t('profile.library', 'Bluom Library'), sub: t('profile.librarySub', 'Science-backed guides') },
+            ];
+
+            const displayedTools = showAllTools ? allTools : allTools.slice(0, 4);
+
+            return (
+              <>
+                {displayedTools.map((item, idx, arr) => {
+                  const active = isToolActive(item.key);
+                  return (
+                    <React.Fragment key={item.key}>
+                      <View style={[s.menuRow, { paddingVertical: 12 }]}>
+                        <View style={[s.menuIcon, { backgroundColor: active ? 'rgba(37,99,235,0.1)' : themeColors.surfaceMuted }]}>
+                          <Text style={{ fontSize: 18 }}>{item.icon}</Text>
+                        </View>
+                        <View style={s.menuText}>
+                          <Text style={[s.menuLabel, !active && { color: themeColors.textMuted }]}>{item.label}</Text>
+                          <Text style={s.menuSub}>{item.sub}</Text>
+                        </View>
+                        <Switch
+                          value={active}
+                          onValueChange={() => toggleTool(item.key)}
+                          trackColor={{ true: themeColors.primary, false: themeColors.surfaceMuted }}
+                          thumbColor="#ffffff"
+                        />
+                      </View>
+                      {idx < arr.length - 1 && <View style={s.divider} />}
+                    </React.Fragment>
+                  );
+                })}
+
+                {/* View More / Show Less Drawer Toggle */}
+                <View style={s.divider} />
+                <TouchableOpacity
+                  onPress={() => setShowAllTools(prev => !prev)}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingVertical: 12,
+                    gap: 6,
+                    backgroundColor: themeColors.surfaceMuted,
+                  }}
+                  activeOpacity={0.75}
+                >
+                  <Text style={{ fontSize: 13, fontWeight: '700', color: themeColors.primary }}>
+                    {showAllTools ? t('common.showLess', 'Show Less ▴') : `${t('common.viewMore', 'View More Tools')} (+${allTools.length - 4}) ▾`}
+                  </Text>
+                </TouchableOpacity>
+              </>
+            );
+          })()}
+        </Section>
 
         {/* ── HEALTH & TRACKING ── */}
         {isPW('health') && <Section title={t('profile.sectionHealth', 'Saúde e Monitorização')}>
@@ -634,6 +737,12 @@ export default function ProfileScreen() {
             label={t('profile.fastingTracker', 'Rastreador de Jejum')} sub={t('profile.fastingTrackerSub', 'Protocolos, temporizadores e sequências')}
             onPress={() => router.push('/fasting')}
           />
+          <View style={s.divider} />
+          <MenuRow
+            icon={<TrendingDown size={18} color="#ef4444" />} iconBg="#fee2e2"
+            label={t('profile.sugarControl', 'Sugar Control')} sub={t('profile.sugarControlSub', '90-day reset + daily check-ins')}
+            onPress={() => router.push('/sugar-dashboard')}
+          />
         </Section>}
 
         {/* ── TOOLS ── */}
@@ -643,6 +752,7 @@ export default function ProfileScreen() {
             label={t('profile.aiCoach', 'Treinador IA')} sub={t('profile.aiCoachSub', 'O teu especialista em saúde de precisão')}
             onPress={() => router.push('/ai-coach')}
           />
+          <View style={s.divider} />
           <MenuRow
             icon={<Dumbbell size={18} color="#7c3aed" />} iconBg="#ede9fe"
             label={t('profile.move', 'Movimento')} sub={t('profile.moveSub', 'Treinos, passos e registo de exercício')}

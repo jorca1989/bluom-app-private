@@ -13,10 +13,10 @@ export default ({ config }) => {
             name: "Bluom",
             slug: "bolt-expo-nativewind",
             owner: "ggovsaas",
-            version: "1.0.43",
+            version: "1.0.44",
             scheme: "bluom",
             userInterfaceStyle: "automatic",
-            runtimeVersion: "1.0.43",
+            runtimeVersion: "1.0.44",
             // New Architecture DISABLED — react-native-maps 1.20.1 doesn't support Fabric
             // (AIRMap view manager fails to register). Re-enable when react-native-maps ships
             // New Arch support, or after migrating to @teovilla/react-native-web-maps.
@@ -24,7 +24,7 @@ export default ({ config }) => {
             privacyPolicyUrl: "https://www.bluom.app/legal/privacy",
             ios: {
                 bundleIdentifier: "com.jwfca.bluom",
-                buildNumber: "68",
+                buildNumber: "69",
                 appleTeamId: "TJSGDC6873",
                 googleServicesFile: "./GoogleService-Info.plist",
                 entitlements: {
@@ -78,7 +78,7 @@ export default ({ config }) => {
             },
             android: {
                 package: "com.jwfca.bluom",
-                versionCode: 68,
+                versionCode: 69,
                 googleServicesFile: "./google-services.json",
                 splash: {
                     image: "./assets/images/logo.png",
@@ -141,6 +141,9 @@ export default ({ config }) => {
                 // ── Push Notifications ────────────────────────────────────────────
                 "expo-notifications",
 
+                // ── AppsFlyer Attribution ──────────────────────────────────────────
+                "react-native-appsflyer",
+
                 // ── Location & GPS ───────────────────────────────────────────────
                 [
                     "expo-location",
@@ -181,6 +184,21 @@ export default ({ config }) => {
     }
 
     const plugins = [...base.expo.plugins, ["expo-build-properties", buildProps]];
+
+    // Custom plugin to fix react-native-appsflyer's bizarre hardcoded '2.4.10' standard lib version.
+    // This injects `ext.kotlin_stdlib_version = "2.1.20"` into the root build.gradle.
+    const withAppsFlyerKotlinFix = (config) => {
+        return require('@expo/config-plugins').withProjectBuildGradle(config, (cfg) => {
+            if (cfg.modResults.language === 'groovy') {
+                if (!cfg.modResults.contents.includes('kotlin_stdlib_version')) {
+                    cfg.modResults.contents = cfg.modResults.contents + '\n\next {\n    kotlin_stdlib_version = "2.1.20"\n}\n';
+                }
+            }
+            return cfg;
+        });
+    };
+
+    plugins.push(withAppsFlyerKotlinFix);
 
     return {
         ...base.expo,

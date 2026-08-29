@@ -30,6 +30,7 @@ export interface ThemeDefinition {
   label: string;
   className: string;
   swatch: string; // representative color shown in the picker
+  logo: any; // dynamically loaded logo for the theme
   colors: ThemeColors;
 }
 
@@ -39,6 +40,7 @@ export const THEMES: Record<ThemeKey, ThemeDefinition> = {
     label: 'Stone',
     className: 'theme-default',
     swatch: '#F5F4F0',
+    logo: require('../assets/images/logo.png'),
     colors: {
       bg: '#F5F4F0',
       bgGradientFrom: '#F5F4F0',
@@ -59,6 +61,7 @@ export const THEMES: Record<ThemeKey, ThemeDefinition> = {
     label: 'Blush',
     className: 'theme-pink',
     swatch: '#FDE7EF',
+    logo: { uri: 'https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/pink.png' },
     colors: {
       bg: '#FDE7EF',
       bgGradientFrom: '#FDE7EF',
@@ -79,6 +82,7 @@ export const THEMES: Record<ThemeKey, ThemeDefinition> = {
     label: 'Meadow',
     className: 'theme-green',
     swatch: '#DFFFD0',
+    logo: { uri: 'https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/green.png' },
     colors: {
       bg: '#DFFFD0',
       bgGradientFrom: '#DFFFD0',
@@ -99,6 +103,7 @@ export const THEMES: Record<ThemeKey, ThemeDefinition> = {
     label: 'Navy',
     className: 'theme-navy',
     swatch: '#1D375A',
+    logo: { uri: 'https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/Black.png' },
     colors: {
       bg: '#1D375A',
       bgGradientFrom: '#1D375A',
@@ -119,6 +124,7 @@ export const THEMES: Record<ThemeKey, ThemeDefinition> = {
     label: 'Obsidian',
     className: 'theme-black',
     swatch: '#000000',
+    logo: { uri: 'https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/Black.png' },
     colors: {
       bg: '#000000',
       bgGradientFrom: '#000000',
@@ -139,6 +145,7 @@ export const THEMES: Record<ThemeKey, ThemeDefinition> = {
     label: 'Iris',
     className: 'theme-violet',
     swatch: '#E8DFFF',
+    logo: { uri: 'https://pub-4fce1c6ae7bb4045806c88b43ee6ab5d.r2.dev/Purpleviolet.png' },
     colors: {
       bg: '#E8DFFF',
       bgGradientFrom: '#E8DFFF',

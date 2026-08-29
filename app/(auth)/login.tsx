@@ -248,6 +248,18 @@ export default function LoginScreen() {
                   </LinearGradient>
                 </TouchableOpacity>
 
+                {/* 
+                <View style={styles.divider}>
+                  <View style={styles.dividerLine} />
+                  <Text style={styles.dividerText}>{t('common.or', 'or').toUpperCase()}</Text>
+                  <View style={styles.dividerLine} />
+                </View>
+
+                <View style={{ gap: 10 }}>
+                  <GoogleSignInButton disabled={loading} />
+                  {Platform.OS === 'ios' && <AppleSignInButton disabled={loading} />}
+                </View>
+                */}
               </>
             )}
           </View>
@@ -271,25 +283,36 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   header: { marginBottom: 40 },
   title: { fontSize: 32, fontWeight: 'bold', color: c.text, marginBottom: 8 },
   subtitle: { fontSize: 16, color: c.textMuted, lineHeight: 24 },
-  errorContainer: { backgroundColor: '#fee2e2', padding: 12, borderRadius: 8, marginBottom: 24 },
-  errorText: { color: '#dc2626', fontSize: 14, textAlign: 'center' },
-  form: { flex: 1 },
-  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: c.surface, borderRadius: 12, marginBottom: 16, paddingHorizontal: 16, borderWidth: 1, borderColor: c.border },
+  errorContainer: { backgroundColor: '#fee2e2', padding: 12, borderRadius: 12, marginBottom: 20 },
+  errorText: { color: '#dc2626', fontSize: 14, textAlign: 'center', fontWeight: '600' },
+  form: {
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: c.border,
+  },
+  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: c.surface, borderRadius: 14, marginBottom: 16, paddingHorizontal: 16, borderWidth: 1, borderColor: c.border },
   inputIconWrapper: { marginRight: 12 },
   eyeIconWrapper: { marginLeft: 12, padding: 4 },
-  input: { flex: 1, height: 56, fontSize: 16, color: c.text },
-  primaryButton: { marginTop: 8, marginBottom: 24, borderRadius: 12, overflow: 'hidden', shadowColor: c.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
+  input: { flex: 1, height: 54, fontSize: 16, color: c.text },
+  primaryButton: { marginTop: 8, marginBottom: 18, borderRadius: 14, overflow: 'hidden', shadowColor: c.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.25, shadowRadius: 8, elevation: 4 },
   gradientButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16, gap: 8 },
-  primaryButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
+  primaryButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
   buttonDisabled: { opacity: 0.6 },
-  divider: { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },
+  divider: { flexDirection: 'row', alignItems: 'center', marginVertical: 18 },
   dividerLine: { flex: 1, height: 1, backgroundColor: c.border },
-  dividerText: { paddingHorizontal: 16, color: c.textMuted, fontSize: 14 },
-  googleButton: { backgroundColor: c.surface, borderWidth: 1, borderColor: c.border, paddingVertical: 16, borderRadius: 12, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 },
-  googleButtonText: { color: c.text, fontSize: 16, fontWeight: '600' },
-  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 32 },
+  dividerText: { paddingHorizontal: 16, color: c.textMuted, fontSize: 13, fontWeight: '600' },
+  googleButton: { backgroundColor: c.surface, borderWidth: 1, borderColor: c.border, paddingVertical: 14, borderRadius: 14, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 },
+  googleButtonText: { color: c.text, fontSize: 15, fontWeight: '700' },
+  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 28 },
   footerText: { fontSize: 14, color: c.textMuted },
-  footerLink: { fontSize: 14, color: c.primary, fontWeight: '600' },
+  footerLink: { fontSize: 14, color: c.primary, fontWeight: '700' },
 });
 
 const styles = createStyles(THEMES.default.colors);

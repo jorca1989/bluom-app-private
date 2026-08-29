@@ -154,11 +154,24 @@ export const getDailyMacros = query({
       }
     );
 
+    // Postpartum / Breastfeeding macro adjustments
+    let extraCalories = 0;
+    let extraProtein = 0;
+    let extraCarbs = 0;
+    let extraFat = 0;
+
+    if (user.lifeStage === "postpartum" && user.isBreastfeeding) {
+      extraCalories = 500;
+      extraProtein = 25;
+      extraCarbs = 50;
+      extraFat = 20;
+    }
+
     const target = {
-      calories: user.dailyCalories ?? 2000,
-      protein: user.dailyProtein ?? 150,
-      carbs: user.dailyCarbs ?? 225,
-      fat: user.dailyFat ?? 67,
+      calories: (user.dailyCalories ?? 2000) + extraCalories,
+      protein: (user.dailyProtein ?? 150) + extraProtein,
+      carbs: (user.dailyCarbs ?? 225) + extraCarbs,
+      fat: (user.dailyFat ?? 67) + extraFat,
     };
 
     const remaining = {

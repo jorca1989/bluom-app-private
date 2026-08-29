@@ -38,6 +38,8 @@ import ProgramWorkoutWidget from '@/components/move/ProgramWorkoutWidget';
 import MoveQuickActions from '@/components/move/MoveQuickActions';
 import MoveInsights from '@/components/move/MoveInsights';
 import OutdoorActivityBanner from '@/components/move/OutdoorActivityBanner';
+import { useActiveTools } from '@/hooks/useActiveTools';
+import SleeperView from '@/components/SleeperView';
 import OutdoorActivityModal from '@/components/move/modals/OutdoorActivityModal';
 import ActiveWorkoutModal, { ActiveExercise } from '@/components/move/modals/ActiveWorkoutModal';
 import WorkoutDetailModal from '@/components/move/modals/WorkoutDetailModal';
@@ -66,6 +68,7 @@ const MOVE_WIDGETS: { id: MoveWidgetId; emoji: string; labelKey: string; default
   { id: 'proBanner',       emoji: '🔒', labelKey: 'move.widgets.blueprintCompleteBanner', defaultLabel: 'Blueprint complete upgrade banner' },
 ];
 const ALL_MOVE_WIDGET_IDS = MOVE_WIDGETS.map(w => w.id);
+const DEFAULT_MOVE_WIDGET_IDS: MoveWidgetId[] = ['kpis', 'swipeable', 'quickActions', 'todayActivities', 'proBanner'];
 const MOVE_WIDGETS_KEY = 'bluom_move_widgets_v1';
 
 const safeNumber = (val: string | number, fallback = 0) => {
@@ -99,6 +102,7 @@ function addDays(date: Date, days: number) {
 
 export default function MoveScreen() {
   const router = useRouter();
+  const { isToolActive, toggleTool } = useActiveTools();
   const [showRoutineModal, setShowRoutineModal] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false); // Disabled for production
   const params = useLocalSearchParams<{ openWorkouts?: string }>();
@@ -112,7 +116,7 @@ export default function MoveScreen() {
   const mwStyles = useMemo(() => createMwStyles(themeColors), [themeColors]);
 
   // ── Widget config ──
-  const [visibleMoveWidgets, setVisibleMoveWidgets] = useState<Set<MoveWidgetId>>(new Set(ALL_MOVE_WIDGET_IDS));
+  const [visibleMoveWidgets, setVisibleMoveWidgets] = useState<Set<MoveWidgetId>>(new Set(DEFAULT_MOVE_WIDGET_IDS));
   const [showMoveWidgetConfig, setShowMoveWidgetConfig] = useState(false);
 
   useEffect(() => {
@@ -123,8 +127,7 @@ export default function MoveScreen() {
           const parsed = JSON.parse(raw);
           if (!Array.isArray(parsed)) return;
           const savedWidgets = parsed.filter((id): id is MoveWidgetId => ALL_MOVE_WIDGET_IDS.includes(id));
-          const newDefaultWidgets = ALL_MOVE_WIDGET_IDS.filter(id => !parsed.includes(id));
-          setVisibleMoveWidgets(new Set([...savedWidgets, ...newDefaultWidgets]));
+          setVisibleMoveWidgets(new Set(savedWidgets));
         }
       } catch { /* ignore */ }
     })();
@@ -458,8 +461,41 @@ export default function MoveScreen() {
   }, [dbWorkouts, convexUser?.biologicalSex]);
 
 
+  // ── Postpartum Check ──
+  const postpartumWeeks = useMemo(() => {
+    if (convexUser?.lifeStage !== 'postpartum') return 0;
+    const start = convexUser.deliveryDate || convexUser.postpartumStartDate;
+    if (!start) return 1;
+    return Math.max(1, Math.floor((Date.now() - start) / (1000 * 60 * 60 * 24 * 7)) + 1);
+  }, [convexUser?.lifeStage, convexUser?.deliveryDate, convexUser?.postpartumStartDate]);
+  const isEarlyPostpartum = convexUser?.lifeStage === 'postpartum' && postpartumWeeks <= 6;
+
   // ── Workout display routine: Prioritize AI Plan > DB workouts > static ──
   const initialWorkouts = useMemo(() => {
+    // 0. Postpartum Recovery Override
+    if (isEarlyPostpartum) {
+      return [{
+        dayNum: 1,
+        dayTitle: t('move.postpartumRecovery', 'Postpartum Recovery'),
+        muscleGroups: t('move.pelvicFloor', 'Pelvic Floor & Core'),
+        exercises: [
+          { id: 'pp-1', name: t('move.kegels', 'Kegel Holds'), primaryMuscle: 'Pelvic Floor', sets: 3, reps: '10 sec hold', equipment: 'None' },
+          { id: 'pp-2', name: t('move.diaphragmatic', 'Diaphragmatic Breathing'), primaryMuscle: 'Core', sets: 3, reps: '10', equipment: 'None' },
+          { id: 'pp-3', name: t('move.pelvicTilts', 'Pelvic Tilts'), primaryMuscle: 'Core', sets: 2, reps: '10', equipment: 'Mat' },
+        ],
+      },
+      {
+        dayNum: 2,
+        dayTitle: t('move.gentleMobility', 'Gentle Mobility'),
+        muscleGroups: t('move.fullBody', 'Full Body'),
+        exercises: [
+          { id: 'pp-4', name: t('move.catCow', 'Cat-Cow Stretch'), primaryMuscle: 'Back', sets: 2, reps: '10', equipment: 'Mat' },
+          { id: 'pp-5', name: t('move.birdDogMod', 'Modified Bird-Dog'), primaryMuscle: 'Core', sets: 3, reps: '8 per side', equipment: 'Mat' },
+          { id: 'pp-6', name: t('move.gluteBridge', 'Glute Bridges (No Weight)'), primaryMuscle: 'Glutes', sets: 3, reps: '12', equipment: 'Mat' },
+        ],
+      }];
+    }
+
     // 1. If we have a personalized AI plan, map its workouts to RoutineDay format
     const aiWorkouts = activePlans?.fitnessPlan?.workouts;
     if (aiWorkouts && aiWorkouts.length > 0) {
@@ -488,7 +524,7 @@ export default function MoveScreen() {
     }
     // 3. Fall back to the static free template
     return getWeekRoutineDays(currentWeekIndex);
-  }, [currentWeekIndex, activePlans?.fitnessPlan, dbWorkouts, convexUser, t]);
+  }, [isEarlyPostpartum, currentWeekIndex, activePlans?.fitnessPlan, dbWorkouts, convexUser, t]);
 
 
   const [workouts, setWorkouts] = useState<any[]>(initialWorkouts as any);
@@ -815,6 +851,19 @@ export default function MoveScreen() {
       Alert.alert('Error', e?.message ?? 'Failed to delete steps entry');
     }
   };
+
+  if (!isToolActive('move')) {
+    return (
+      <SleeperView
+        title={t('move.title', 'Move & Workouts')}
+        subtitle={t('sleeper.moveSubtitle', 'Workout plans, step tracking & activity logs')}
+        description={t('sleeper.moveDescription', 'Movement tracking is currently asleep in your workspace. You can activate it anytime to start guided workouts, track active minutes, and log exercises.')}
+        icon="barbell-outline"
+        accentColor="#7c3aed"
+        onActivate={() => toggleTool('move')}
+      />
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]} edges={['top']}>

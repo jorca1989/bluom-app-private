@@ -204,81 +204,112 @@ type OnboardingArgs = {
 export const onboardUser = mutation({
   args: {
     clerkId: v.string(),
-    name: v.optional(v.string()), // Made optional as per request
-    biologicalSex: v.union(v.literal("male"), v.literal("female")),
-    age: v.number(),
-    weight: v.number(),
-    height: v.number(),
+    name: v.optional(v.string()),
+    biologicalSex: v.optional(v.union(v.literal("male"), v.literal("female"))),
+    age: v.optional(v.number()),
+    weight: v.optional(v.number()),
+    height: v.optional(v.number()),
     targetWeight: v.optional(v.number()),
-    fitnessGoal: v.string(),
-    fitnessExperience: v.string(),
-    workoutPreference: v.string(),
-    weeklyWorkoutTime: v.number(),
-    activityLevel: v.string(),
-    nutritionApproach: v.string(),
-    sleepHours: v.number(),
-    stressLevel: v.string(),
-    motivations: v.array(v.string()),
-    challenges: v.array(v.string()),
-    mealsPerDay: v.number(),
-    twelveMonthGoal: v.optional(v.string()), // Renamed from threeMonthGoal
+    fitnessGoal: v.optional(v.string()),
+    fitnessExperience: v.optional(v.string()),
+    workoutPreference: v.optional(v.string()),
+    weeklyWorkoutTime: v.optional(v.number()),
+    activityLevel: v.optional(v.string()),
+    nutritionApproach: v.optional(v.string()),
+    sleepHours: v.optional(v.number()),
+    stressLevel: v.optional(v.string()),
+    motivations: v.optional(v.array(v.string())),
+    challenges: v.optional(v.array(v.string())),
+    mealsPerDay: v.optional(v.number()),
+    twelveMonthGoal: v.optional(v.string()),
     peakEnergy: v.optional(v.string()),
-    // Backwards-compatible: older clients send a string, new onboarding sends string[]
     lifeStressor: v.optional(v.union(v.string(), v.array(v.string()))),
-    coachingStyle: v.optional(v.string()), // Made optional per request
-    commitmentLevel: v.optional(v.string()), // 'easy', 'balanced', 'maximum'
-    preferredLanguage: v.optional(v.string()), // Added for localization support
-    preferredTheme: v.optional(v.string()), // Theme palette key
+    coachingStyle: v.optional(v.string()),
+    commitmentLevel: v.optional(v.string()),
+    primaryFocus: v.optional(v.union(v.literal("fitness"), v.literal("mental_health"), v.literal("hormonal"), v.literal("holistic"))),
+    activeTools: v.optional(v.array(v.string())),
+    preferredLanguage: v.optional(v.string()),
+    preferredTheme: v.optional(v.string()),
     preferredUnits: v.optional(v.object({
       weight: v.string(),
       height: v.string(),
       volume: v.optional(v.string()),
     })),
+    // ── Mental Health Branch ──────────────────────────────────────────────
+    mindfulnessGoal: v.optional(v.string()),
+    meditationExperience: v.optional(v.string()),
+    peakFocusWindow: v.optional(v.string()),
+    screenTimeRisk: v.optional(v.string()),
+    stressSymptomType: v.optional(v.array(v.string())),
+    preferredResetTool: v.optional(v.string()),
+    eveningRoutine: v.optional(v.string()),
+    // ── Hormonal Branch ──────────────────────────────────────────────────
+    pmsSeverityPattern: v.optional(v.array(v.string())),
+    energyCrashPattern: v.optional(v.string()),
+    dailyHydration: v.optional(v.string()),
+    bloodSugarStability: v.optional(v.string()),
+    // ── Fitness / Holistic Branch ─────────────────────────────────────────
+    dietaryObstacle: v.optional(v.string()),
+    dietingHistory: v.optional(v.string()),
+    equipmentAccess: v.optional(v.string()),
+    physicalLimitations: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    console.log("Onboarding mutation v2 called with:", args.preferredLanguage);
-    // STEP 1: Use args directly as numbers
-    const age = args.age;
-    const weight = args.weight;
-    const height = args.height;
-    const targetWeight = args.targetWeight;
-    const weeklyWorkoutTime = args.weeklyWorkoutTime;
-    const sleepHours = args.sleepHours;
-    const mealsPerDay = args.mealsPerDay;
+    console.log("Onboarding mutation v2 called with:", args.preferredLanguage, "primaryFocus:", args.primaryFocus);
+    // Safe numeric inputs with defaults
+    const biologicalSex = args.biologicalSex || 'female';
+    const age = (args.age && !isNaN(args.age)) ? args.age : 25;
+    const weight = (args.weight && !isNaN(args.weight)) ? args.weight : 65;
+    const height = (args.height && !isNaN(args.height)) ? args.height : 165;
+    const targetWeight = (args.targetWeight && !isNaN(args.targetWeight)) ? args.targetWeight : weight;
+    const weeklyWorkoutTime = (args.weeklyWorkoutTime && !isNaN(args.weeklyWorkoutTime)) ? args.weeklyWorkoutTime : 3;
+    const sleepHours = (args.sleepHours && !isNaN(args.sleepHours)) ? args.sleepHours : 7;
+    const mealsPerDay = (args.mealsPerDay && !isNaN(args.mealsPerDay)) ? args.mealsPerDay : 3;
 
-    // Validate inputs
-    if (isNaN(age) || isNaN(weight) || isNaN(height)) {
-      throw new Error(
-        "Invalid numeric input for age, weight, or height. Please ensure all values are valid numbers."
-      );
-    }
+    const activityLevel = args.activityLevel || 'moderately_active';
+    const fitnessGoal = args.fitnessGoal || 'general_health';
+    const fitnessExperience = args.fitnessExperience || 'intermediate';
+    const workoutPreference = args.workoutPreference || 'mixed';
+    const nutritionApproach = args.nutritionApproach || 'balanced';
+    const stressLevel = args.stressLevel || 'moderate';
+    const motivations = args.motivations || [];
+    const challenges = args.challenges || [];
 
     // STEP 2: Calculate BMR (Basal Metabolic Rate)
-    const bmr = calculateBMR(weight, height, age, args.biologicalSex);
+    const bmr = calculateBMR(weight, height, age, biologicalSex);
 
     // STEP 3: Calculate TDEE (Total Daily Energy Expenditure)
-    const tdee = calculateTDEE(bmr, args.activityLevel);
+    const tdee = calculateTDEE(bmr, activityLevel);
 
     // STEP 4: Adjust calories for fitness goal and commitment level
-    const dailyCalories = adjustCaloriesForGoal(tdee, args.fitnessGoal, args.commitmentLevel);
+    const dailyCalories = adjustCaloriesForGoal(tdee, fitnessGoal, args.commitmentLevel);
 
     // STEP 5: Calculate macro split
     const macros = calculateMacros(
       dailyCalories,
       weight,
-      args.fitnessGoal,
-      args.nutritionApproach
+      fitnessGoal,
+      nutritionApproach
     );
 
     // STEP 6: Calculate holistic score
     const holisticScore = calculateHolisticScore({
       ...args,
-      age: args.age,
-      weight: args.weight,
-      height: args.height,
-      weeklyWorkoutTime: args.weeklyWorkoutTime,
-      sleepHours: args.sleepHours,
-      mealsPerDay: args.mealsPerDay,
+      biologicalSex,
+      age,
+      weight,
+      height,
+      weeklyWorkoutTime,
+      sleepHours,
+      mealsPerDay,
+      activityLevel,
+      fitnessGoal,
+      fitnessExperience,
+      workoutPreference,
+      nutritionApproach,
+      stressLevel,
+      motivations,
+      challenges,
     });
 
     // STEP 7: Find existing user or create if webhook hasn't fired yet
@@ -344,8 +375,11 @@ export const onboardUser = mutation({
       // DataModel types are generated from schema; during transition, cast to allow string[] storage.
       lifeStressor: lifeStressors as any,
 
-      coachingStyle: args.coachingStyle,
       commitmentLevel: args.commitmentLevel,
+      primaryFocus: args.primaryFocus,
+      activeTools: args.activeTools,
+      planGeneratedAt: Date.now(),
+      planIsAiCustom: true,
       ...(args.preferredLanguage && { preferredLanguage: args.preferredLanguage }),
       ...(args.preferredTheme && { preferredTheme: args.preferredTheme }),
       ...(args.preferredUnits && {
@@ -354,6 +388,24 @@ export const onboardUser = mutation({
           volume: args.preferredUnits.volume ?? 'ml'
         }
       }),
+      // ── Mental Health Branch ──────────────────────────────────────────────
+      ...(args.mindfulnessGoal && { mindfulnessGoal: args.mindfulnessGoal }),
+      ...(args.meditationExperience && { meditationExperience: args.meditationExperience }),
+      ...(args.peakFocusWindow && { peakFocusWindow: args.peakFocusWindow }),
+      ...(args.screenTimeRisk && { screenTimeRisk: args.screenTimeRisk }),
+      ...(args.stressSymptomType && { stressSymptomType: args.stressSymptomType }),
+      ...(args.preferredResetTool && { preferredResetTool: args.preferredResetTool }),
+      ...(args.eveningRoutine && { eveningRoutine: args.eveningRoutine }),
+      // ── Hormonal Branch ──────────────────────────────────────────────────
+      ...(args.pmsSeverityPattern && { pmsSeverityPattern: args.pmsSeverityPattern }),
+      ...(args.energyCrashPattern && { energyCrashPattern: args.energyCrashPattern }),
+      ...(args.dailyHydration && { dailyHydration: args.dailyHydration }),
+      ...(args.bloodSugarStability && { bloodSugarStability: args.bloodSugarStability }),
+      // ── Fitness / Holistic Branch ─────────────────────────────────────────
+      ...(args.dietaryObstacle && { dietaryObstacle: args.dietaryObstacle }),
+      ...(args.dietingHistory && { dietingHistory: args.dietingHistory }),
+      ...(args.equipmentAccess && { equipmentAccess: args.equipmentAccess }),
+      ...(args.physicalLimitations && { physicalLimitations: args.physicalLimitations }),
 
       // Calculated targets (Mifflin-St Jeor)
       dailyCalories: Math.round(dailyCalories),

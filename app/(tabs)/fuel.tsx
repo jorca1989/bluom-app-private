@@ -36,6 +36,10 @@ import type { ThemeColors } from '@/context/ThemeContext';
 import CoachMark from '@/components/CoachMark';
 import PhotoRecognitionModal from '@/components/PhotoRecognitionModal';
 import FoodDetailsModal from '@/components/fuel/modals/FoodDetailsModal';
+import { useActiveTools } from '@/hooks/useActiveTools';
+import SleeperView from '@/components/SleeperView';
+
+const DEFAULT_FUEL_WIDGETS: FuelWidgetId[] = ['dayCalendar', 'calories', 'macros', 'fasting', 'meals', 'quickActions', 'utilities'];
 
 // New Components
 import CalorieSummary from '@/components/fuel/CalorieSummary';
@@ -164,6 +168,7 @@ export default function FuelScreen() {
   const deleteFoodEntry = useMutation(api.food.deleteFoodEntry);
   const addWaterOz = useMutation(api.daily.addWaterOz);
   const upsertExternalFood = useMutation(api.foodCatalog.upsertExternalFood);
+  const { isToolActive, toggleTool } = useActiveTools();
 
   // Modals & State
   const [selectedMeal, setSelectedMeal] = useState<MealName>('Lunch');
@@ -195,7 +200,7 @@ export default function FuelScreen() {
   // ── Widget config ──
   const [showFuelConfig, setShowFuelConfig] = useState(false);
   const [fuelWidgets, setFuelWidgets] = useState<Set<FuelWidgetId>>(
-    new Set(FUEL_WIDGETS.map(w => w.id))
+    new Set(DEFAULT_FUEL_WIDGETS)
   );
   useEffect(() => {
     SecureStore.getItemAsync(FUEL_WIDGETS_KEY).then(val => {
@@ -345,6 +350,19 @@ export default function FuelScreen() {
       try { router.setParams({ openRecipes: undefined } as any); } catch {}
     }
   }, [params, router]);
+
+  if (!isToolActive('fuel')) {
+    return (
+      <SleeperView
+        title={t('fuel.title', 'Fuel & Nutrition')}
+        subtitle={t('sleeper.nutritionSubtitle', 'Meal tracking, macros & fasting')}
+        description={t('sleeper.fuelDescription', 'Nutrition tracking is currently asleep in your workspace. You can activate it anytime to log meals, track macros, and monitor hydration.')}
+        icon="restaurant-outline"
+        accentColor="#16a34a"
+        onActivate={() => toggleTool('fuel')}
+      />
+    );
+  }
 
   if (isLoading) {
     return (

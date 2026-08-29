@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable, Dimensions } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/context/ThemeContext';
@@ -18,7 +18,7 @@ interface SteppedSliderProps {
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const TRACK_PADDING = 40;
+const TRACK_PADDING = 36;
 const TRACK_WIDTH = SCREEN_WIDTH - TRACK_PADDING * 2;
 
 export default function SteppedSlider({
@@ -27,6 +27,7 @@ export default function SteppedSlider({
   onChange,
 }: SteppedSliderProps) {
   const { colors } = useTheme();
+  const lastIndexRef = useRef(selectedIndex);
   
   const stepWidth = TRACK_WIDTH / Math.max(1, steps.length - 1);
   const translateX = useSharedValue(selectedIndex * stepWidth);
@@ -34,16 +35,20 @@ export default function SteppedSlider({
 
   React.useEffect(() => {
     translateX.value = withSpring(selectedIndex * stepWidth, { damping: 20, stiffness: 200 });
+    lastIndexRef.current = selectedIndex;
   }, [selectedIndex, stepWidth, translateX]);
 
-  const updateIndex = (newIndex: number) => {
-    if (newIndex >= 0 && newIndex < steps.length && newIndex !== selectedIndex) {
+  const updateIndex = useCallback((newIndex: number) => {
+    if (newIndex >= 0 && newIndex < steps.length && newIndex !== lastIndexRef.current) {
+      lastIndexRef.current = newIndex;
       Haptics.selectionAsync();
       onChange(newIndex);
     }
-  };
+  }, [steps.length, onChange]);
 
   const panGesture = Gesture.Pan()
+    .activeOffsetX([-8, 8])
+    .failOffsetY([-15, 15])
     .onStart(() => {
       startX.value = translateX.value;
     })
@@ -51,6 +56,11 @@ export default function SteppedSlider({
       let nextX = startX.value + event.translationX;
       nextX = Math.max(0, Math.min(nextX, TRACK_WIDTH));
       translateX.value = nextX;
+      
+      const liveIndex = Math.round(nextX / stepWidth);
+      if (liveIndex >= 0 && liveIndex < steps.length) {
+        runOnJS(updateIndex)(liveIndex);
+      }
     })
     .onEnd(() => {
       const closestIndex = Math.round(translateX.value / stepWidth);
@@ -76,33 +86,33 @@ export default function SteppedSlider({
         👉 Drag the slider to adjust
       </Text>
 
-      <View style={[styles.trackContainer, { width: TRACK_WIDTH }]}>
-        <View style={[styles.track, { backgroundColor: colors.border }]} />
-        <Animated.View style={[styles.filledTrack, { backgroundColor: colors.primary }, filledTrackStyle]} />
-        
-        {steps.map((_, index) => {
-          const isPassed = index <= selectedIndex;
-          return (
-            <Pressable
-              key={index}
-              style={[
-                styles.dotContainer,
-                { left: index * stepWidth - 10 }
-              ]}
-              onPress={() => updateIndex(index)}
-            >
-              <View style={[
-                styles.dot,
-                { 
-                  backgroundColor: isPassed ? colors.primary : colors.surface,
-                  borderColor: isPassed ? colors.primary : colors.border
-                }
-              ]} />
-            </Pressable>
-          );
-        })}
+      <GestureDetector gesture={panGesture}>
+        <View style={[styles.trackContainer, { width: TRACK_WIDTH }]} collapsable={false}>
+          <View style={[styles.track, { backgroundColor: colors.border }]} />
+          <Animated.View style={[styles.filledTrack, { backgroundColor: colors.primary }, filledTrackStyle]} />
+          
+          {steps.map((_, index) => {
+            const isPassed = index <= selectedIndex;
+            return (
+              <Pressable
+                key={index}
+                style={[
+                  styles.dotContainer,
+                  { left: index * stepWidth - 14 }
+                ]}
+                onPress={() => updateIndex(index)}
+              >
+                <View style={[
+                  styles.dot,
+                  { 
+                    backgroundColor: isPassed ? colors.primary : colors.surface,
+                    borderColor: isPassed ? colors.primary : colors.border
+                  }
+                ]} />
+              </Pressable>
+            );
+          })}
 
-        <GestureDetector gesture={panGesture}>
           <Animated.View style={[
             styles.thumb, 
             { backgroundColor: colors.primary, shadowColor: colors.primary },
@@ -110,8 +120,8 @@ export default function SteppedSlider({
           ]}>
             <View style={styles.thumbInner} />
           </Animated.View>
-        </GestureDetector>
-      </View>
+        </View>
+      </GestureDetector>
 
       <View style={styles.infoContainer}>
         <Text style={[styles.label, { color: colors.text }]}>
@@ -129,18 +139,18 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     width: '100%',
-    paddingVertical: 20,
+    paddingVertical: 16,
   },
   hintText: {
-    fontSize: 14,
-    marginBottom: 40,
-    fontWeight: '500',
+    fontSize: 13,
+    marginBottom: 32,
+    fontWeight: '600',
   },
   trackContainer: {
-    height: 40,
+    height: 48,
     justifyContent: 'center',
     position: 'relative',
-    marginBottom: 40,
+    marginBottom: 36,
   },
   track: {
     height: 8,
@@ -155,34 +165,36 @@ const styles = StyleSheet.create({
   },
   dotContainer: {
     position: 'absolute',
-    width: 20,
-    height: 40,
+    width: 28,
+    height: 48,
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 2,
   },
   dot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
     borderWidth: 2,
   },
   thumb: {
     position: 'absolute',
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    left: -16,
+    left: -18,
+    zIndex: 10,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.35,
     shadowRadius: 6,
     elevation: 8,
   },
   thumbInner: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
     backgroundColor: '#fff',
   },
   infoContainer: {
@@ -190,14 +202,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   label: {
-    fontSize: 32,
-    fontWeight: '700',
-    marginBottom: 12,
+    fontSize: 28,
+    fontWeight: '900',
+    marginBottom: 10,
     textAlign: 'center',
   },
   description: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 15,
+    lineHeight: 22,
     textAlign: 'center',
   },
 });

@@ -68,6 +68,8 @@ import type { ThemeColors } from '@/context/ThemeContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
+import { useActiveTools, ToolKey } from '@/hooks/useActiveTools';
+
 // ─────────────────────────────────────────────────────────────
 // WIDGET CONFIG
 // ─────────────────────────────────────────────────────────────
@@ -92,14 +94,14 @@ interface WidgetMeta {
 }
 
 const WIDGET_REGISTRY: WidgetMeta[] = [
-  { id: 'weather', labelKey: 'home.weather.label', descKey: 'home.weather.desc', emoji: '☁️', defaultEnabled: true },
+  { id: 'weather', labelKey: 'home.weather.label', descKey: 'home.weather.desc', emoji: '☁️', defaultEnabled: false },
   { id: 'greeting', labelKey: 'home.greeting.label', descKey: 'home.greeting.desc', emoji: '☀️', defaultEnabled: true },
   { id: 'vitality', labelKey: 'home.vitality.label', descKey: 'home.vitality.desc', emoji: '⚡', defaultEnabled: true },
   { id: 'balance', labelKey: 'home.balance.label', descKey: 'home.balance.desc', emoji: '🔥', defaultEnabled: true },
   { id: 'kpis', labelKey: 'home.kpis.label', descKey: 'home.kpis.desc', emoji: '📊', defaultEnabled: true },
-  { id: 'achievements', labelKey: 'home.achievements.label', descKey: 'home.achievements.desc', emoji: '🏆', defaultEnabled: true },
+  { id: 'achievements', labelKey: 'home.achievements.label', descKey: 'home.achievements.desc', emoji: '🏆', defaultEnabled: false },
   { id: 'quick_actions', labelKey: 'home.quick.label', descKey: 'home.quick.desc', emoji: '⚡', defaultEnabled: true },
-  { id: 'trends', labelKey: 'home.trends.label', descKey: 'home.trends.desc', emoji: '📈', defaultEnabled: true },
+  { id: 'trends', labelKey: 'home.trends.label', descKey: 'home.trends.desc', emoji: '📈', defaultEnabled: false },
   { id: 'discover', labelKey: 'home.discover.label', descKey: 'home.discover.desc', emoji: '🧭', defaultEnabled: true },
   { id: 'north_star', labelKey: 'home.northStar.label', descKey: 'home.northStar.desc', emoji: '🌟', defaultEnabled: true },
 ];
@@ -137,6 +139,7 @@ export default function HomeScreen() {
   const mb = useMemo(() => createMb(themeColors), [themeColors]);
   const kpi = useMemo(() => createKpi(themeColors), [themeColors]);
 
+  const { isToolActive } = useActiveTools();
   const [enabledWidgets, setEnabledWidgets] = useState<Set<WidgetId>>(
     new Set(WIDGET_REGISTRY.filter(w => w.defaultEnabled).map(w => w.id))
   );
@@ -717,28 +720,43 @@ export default function HomeScreen() {
   };
 
   const wDiscover = () => {
-    const discoverItems = [
-      { icon: MessageSquare, label: t('home.discover.aiCoach', 'AI Coach'), path: '/ai-coach', color: '#2563eb', bg: 'rgba(37,99,235,0.12)' },
+    const rawDiscoverItems: { icon: any; label: string; path: string; color: string; bg: string; toolKey: ToolKey }[] = [
+      { icon: MessageSquare, label: t('home.discover.aiCoach', 'AI Coach'), path: '/ai-coach', color: '#2563eb', bg: 'rgba(37,99,235,0.12)', toolKey: 'aiCoach' },
       {
         icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♀</Text>,
-        label: t('home.discover.women', 'Women'), path: '/womens-health', color: '#db2777', bg: 'rgba(219,39,119,0.12)'
+        label: t('home.discover.women', 'Women'), path: '/womens-health', color: '#db2777', bg: 'rgba(219,39,119,0.12)', toolKey: 'womens'
       },
       {
         icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♂</Text>,
-        label: t('home.discover.men', 'Men'), path: '/mens-health', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)'
+        label: t('home.discover.men', 'Men'), path: '/mens-health', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)', toolKey: 'mens'
       },
-      { icon: Clock, label: t('home.discover.fasting', 'Fasting'), path: '/fasting', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
-      { icon: BookOpen, label: t('home.discover.library', 'Library'), path: '/library', color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
-      { icon: CheckCircle, label: t('home.discover.tasks', 'Tasks'), path: '/todo', color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
-      { icon: Timer, label: t('home.discover.focus', 'Focus'), path: '/focus-mode', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
-      { icon: Utensils, label: t('home.discover.recipes', 'Recipes'), path: '/recipes', color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
-      { icon: Play, label: t('home.discover.workouts', 'Workouts'), path: '/workouts', color: '#16a34a', bg: 'rgba(22,163,74,0.12)' },
-      { icon: TrendingDown, label: t('home.discover.metabolic', 'Metabolic'), path: '/sugar-dashboard', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
-      { icon: ToothIcon, label: t('home.discover.dental', 'Dental Hub'), path: '/dental-hub', color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)' },
-      { icon: Heart, label: t('home.discover.pulse', 'Pulse Check'), path: '/pulse-checker', color: '#f43f5e', bg: 'rgba(244,63,94,0.12)' },
+      { icon: Clock, label: t('home.discover.fasting', 'Fasting'), path: '/fasting', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', toolKey: 'fasting' },
+      { icon: BookOpen, label: t('home.discover.library', 'Library'), path: '/library', color: '#10b981', bg: 'rgba(16,185,129,0.12)', toolKey: 'library' },
+      { icon: CheckCircle, label: t('home.discover.tasks', 'Tasks'), path: '/todo', color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)', toolKey: 'tasks' },
+      { icon: Timer, label: t('home.discover.focus', 'Focus'), path: '/focus-mode', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)', toolKey: 'focus' },
+      { icon: Utensils, label: t('home.discover.recipes', 'Recipes'), path: '/recipes', color: '#f97316', bg: 'rgba(249,115,22,0.12)', toolKey: 'recipes' },
+      { icon: Play, label: t('home.discover.workouts', 'Workouts'), path: '/workouts', color: '#16a34a', bg: 'rgba(22,163,74,0.12)', toolKey: 'workouts' },
+      { icon: TrendingDown, label: t('home.discover.metabolic', 'Metabolic'), path: '/sugar-dashboard', color: '#ef4444', bg: 'rgba(239,68,68,0.12)', toolKey: 'metabolic' },
+      { icon: ToothIcon, label: t('home.discover.dental', 'Dental Hub'), path: '/dental-hub', color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)', toolKey: 'dental' },
+      { icon: Heart, label: t('home.discover.pulse', 'Pulse Check'), path: '/pulse-checker', color: '#f43f5e', bg: 'rgba(244,63,94,0.12)', toolKey: 'pulse' },
     ];
 
-    const shown = showAllDiscover ? discoverItems : discoverItems.slice(0, 6);
+    const activeItems = rawDiscoverItems.filter(item => isToolActive(item.toolKey));
+    
+    // Always append permanent Customize Hub tile
+    const discoverItems = [
+      ...activeItems,
+      {
+        icon: Settings2,
+        label: t('home.discover.customize', '+ Customize'),
+        path: '/(tabs)/profile',
+        color: '#64748b',
+        bg: 'rgba(100,116,139,0.12)',
+        toolKey: 'customize' as any,
+      }
+    ];
+
+    const shown = showAllDiscover ? discoverItems : discoverItems.slice(0, 8);
     const cols = discoveryColumns ?? 4;
     return (
       <View style={s.card}>
@@ -766,10 +784,12 @@ export default function HomeScreen() {
             );
           })}
         </View>
-        <TouchableOpacity style={s.showMore} onPress={() => setShowAllDiscover(p => !p)}>
-          <Text style={s.showMoreTxt}>{showAllDiscover ? t('home.discover.showLess', 'Show Less') : t('home.discover.viewAll', 'View All')}</Text>
-          {showAllDiscover ? <ChevronUp size={13} color="#2563eb" /> : <ChevronDown size={13} color="#2563eb" />}
-        </TouchableOpacity>
+        {discoverItems.length > 8 && (
+          <TouchableOpacity style={s.showMore} onPress={() => setShowAllDiscover(p => !p)}>
+            <Text style={s.showMoreTxt}>{showAllDiscover ? t('home.discover.showLess', 'Show Less') : t('home.discover.viewAll', 'View All')}</Text>
+            {showAllDiscover ? <ChevronUp size={13} color="#2563eb" /> : <ChevronDown size={13} color="#2563eb" />}
+          </TouchableOpacity>
+        )}
       </View>
     );
   };
@@ -836,7 +856,7 @@ export default function HomeScreen() {
 
       {/* TOP BAR */}
       <View style={[s.topBar, { backgroundColor: themeColors.bg }]}>
-        <Image source={require('../../assets/images/logo.png')} style={s.topLogo} resizeMode="contain" />
+        <Image source={THEMES[homeActiveTheme]?.logo || THEMES['default'].logo} style={s.topLogo} resizeMode="contain" />
         <TouchableOpacity style={s.cBtn} onPress={() => setShowCustomize(true)} activeOpacity={0.75}>
           <Settings2 size={17} color="#475569" />
         </TouchableOpacity>

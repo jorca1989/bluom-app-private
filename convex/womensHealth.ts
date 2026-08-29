@@ -13,6 +13,9 @@ export const logBioCheck = mutation({
         hotFlashSeverity: v.optional(v.number()),
         symptoms: v.array(v.string()), // For cycle/menopause/pregnancy
         flow: v.optional(v.string()), // For cycle
+        ppMood: v.optional(v.string()), // For postpartum
+        ppLochia: v.optional(v.string()), // For postpartum
+        ppPain: v.optional(v.number()), // For postpartum
     },
     handler: async (ctx, args) => {
         // 1. Log Vitality (Mood + Energy)
@@ -52,6 +55,9 @@ export const logBioCheck = mutation({
             await ctx.db.patch(existingCycle._id, {
                 symptoms: args.symptoms,
                 flow: args.flow,
+                ppMood: args.ppMood,
+                ppLochia: args.ppLochia,
+                ppPain: args.ppPain,
             });
         } else {
             await ctx.db.insert("cycleLogs", {
@@ -59,6 +65,9 @@ export const logBioCheck = mutation({
                 date: args.date,
                 symptoms: args.symptoms,
                 flow: args.flow,
+                ppMood: args.ppMood,
+                ppLochia: args.ppLochia,
+                ppPain: args.ppPain,
             });
         }
     },

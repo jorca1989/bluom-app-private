@@ -185,6 +185,19 @@ export default function SignupScreen() {
                   </LinearGradient>
                 </TouchableOpacity>
 
+                {/* 
+                <View style={styles.divider}>
+                  <View style={styles.dividerLine} />
+                  <Text style={styles.dividerText}>{t('common.or', 'or').toUpperCase()}</Text>
+                  <View style={styles.dividerLine} />
+                </View>
+
+                <View style={{ gap: 10 }}>
+                  <GoogleSignInButton disabled={loading} />
+                  {Platform.OS === 'ios' && <AppleSignInButton disabled={loading} />}
+                </View>
+                */}
+
                 <View style={styles.footer}>
                   <Text style={styles.footerText}>{t('auth.signup.alreadyAccount', 'Already have an account? ')}</Text>
                   <TouchableOpacity onPress={() => router.push('/login')}>
@@ -207,11 +220,22 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   header: { marginBottom: 40 },
   title: { fontSize: 32, fontWeight: 'bold', color: c.text },
   subtitle: { fontSize: 16, color: c.textMuted },
-  errorContainer: { backgroundColor: '#fee2e2', padding: 12, borderRadius: 8, marginBottom: 24 },
-  errorText: { color: '#dc2626', textAlign: 'center' },
-  form: { flex: 1 },
-  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: c.surface, borderRadius: 12, marginBottom: 16, paddingHorizontal: 16, borderWidth: 1, borderColor: c.border },
-  input: { flex: 1, height: 56, fontSize: 16, color: c.text },
+  errorContainer: { backgroundColor: '#fee2e2', padding: 12, borderRadius: 12, marginBottom: 20 },
+  errorText: { color: '#dc2626', textAlign: 'center', fontWeight: '600' },
+  form: {
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: c.border,
+  },
+  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: c.surface, borderRadius: 14, marginBottom: 16, paddingHorizontal: 16, borderWidth: 1, borderColor: c.border },
+  input: { flex: 1, height: 54, fontSize: 16, color: c.text },
   codeInput: {
     flex: 0,
     width: '100%',
@@ -219,7 +243,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: c.surface,
     borderWidth: 2,
     borderColor: c.primary,
-    borderRadius: 12,
+    borderRadius: 14,
     color: c.text,
     textAlign: 'center',
     fontSize: 26,
@@ -228,15 +252,15 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: 12,
     marginBottom: 16,
   },
-  primaryButton: { borderRadius: 12, overflow: 'hidden' },
+  primaryButton: { borderRadius: 14, overflow: 'hidden', marginTop: 8 },
   gradientButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16, gap: 8 },
-  primaryButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  divider: { flexDirection: 'row', alignItems: 'center', marginTop: 14, marginBottom: 14 },
+  primaryButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  divider: { flexDirection: 'row', alignItems: 'center', marginTop: 16, marginBottom: 16 },
   dividerLine: { flex: 1, height: 1, backgroundColor: c.border },
-  dividerText: { paddingHorizontal: 16, color: c.textMuted, fontSize: 14, fontWeight: '600' },
-  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 20, paddingBottom: 40 },
+  dividerText: { paddingHorizontal: 16, color: c.textMuted, fontSize: 13, fontWeight: '600' },
+  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 24, paddingBottom: 20 },
   footerText: { fontSize: 14, color: c.textMuted },
-  footerLink: { fontSize: 14, color: c.primary, fontWeight: '600' },
+  footerLink: { fontSize: 14, color: c.primary, fontWeight: '700' },
 });
 
 const styles = createStyles(THEMES.default.colors);

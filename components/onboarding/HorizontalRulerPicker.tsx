@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, NativeSyntheticEvent, NativeScrollEvent, Dimensions } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/context/ThemeContext';
@@ -13,7 +13,7 @@ interface HorizontalRulerPickerProps {
   unitToggle?: { options: string[]; selected: string; onToggle: (unit: string) => void };
 }
 
-const TICK_SPACING = 12;
+const TICK_SPACING = 20;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function HorizontalRulerPicker({
@@ -27,6 +27,8 @@ export default function HorizontalRulerPicker({
 }: HorizontalRulerPickerProps) {
   const { colors } = useTheme();
   const flatListRef = useRef<FlatList>(null);
+  const lastHapticRef = useRef(0);
+  const isDraggingRef = useRef(false);
   
   const data = useMemo(() => {
     const items = [];
@@ -38,38 +40,70 @@ export default function HorizontalRulerPicker({
 
   const [currentIndex, setCurrentIndex] = useState(() => {
     const idx = data.findIndex(d => d === value);
-    return idx >= 0 ? idx : 0;
+    return idx >= 0 ? idx : Math.floor(data.length / 2);
   });
 
+  // Sync index on value prop change ONLY when not actively dragging
   useEffect(() => {
-    const idx = data.findIndex(d => d === value);
-    if (idx !== currentIndex && idx >= 0) {
-      setCurrentIndex(idx);
-      flatListRef.current?.scrollToIndex({ index: idx, animated: true, viewPosition: 0.5 });
+    if (!isDraggingRef.current) {
+      const idx = data.findIndex(d => d === value);
+      if (idx >= 0 && idx !== currentIndex) {
+        setCurrentIndex(idx);
+        flatListRef.current?.scrollToOffset({ offset: idx * TICK_SPACING, animated: false });
+      }
     }
   }, [value, data]);
+
+  const triggerHaptic = useCallback(() => {
+    const now = Date.now();
+    if (now - lastHapticRef.current > 70) {
+      lastHapticRef.current = now;
+      Haptics.selectionAsync();
+    }
+  }, []);
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(offsetX / TICK_SPACING);
-    if (index !== currentIndex && index >= 0 && index < data.length) {
+    if (index >= 0 && index < data.length && index !== currentIndex) {
       setCurrentIndex(index);
-      Haptics.selectionAsync();
-      onChange(data[index]);
+      triggerHaptic();
     }
+  };
+
+  const handleScrollBeginDrag = () => {
+    isDraggingRef.current = true;
+  };
+
+  const handleScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    isDraggingRef.current = false;
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.max(0, Math.min(Math.round(offsetX / TICK_SPACING), data.length - 1));
+    setCurrentIndex(index);
+    onChange(data[index]);
+  };
+
+  const handleMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    isDraggingRef.current = false;
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.max(0, Math.min(Math.round(offsetX / TICK_SPACING), data.length - 1));
+    setCurrentIndex(index);
+    onChange(data[index]);
   };
 
   const renderItem = ({ item, index }: { item: number; index: number }) => {
     const isMajor = item % 10 === 0;
+    const isMid = item % 5 === 0 && !isMajor;
     
     return (
       <View style={[styles.tickContainer, { width: TICK_SPACING }]}>
         <View style={[
           styles.tick, 
           { 
-            height: isMajor ? 32 : 16, 
-            backgroundColor: isMajor ? colors.textMuted : colors.border,
-            width: isMajor ? 2 : 1,
+            height: isMajor ? 36 : isMid ? 24 : 14, 
+            backgroundColor: isMajor ? colors.primary : isMid ? colors.textMuted : colors.border,
+            width: isMajor ? 2.5 : isMid ? 1.5 : 1,
+            borderRadius: 1,
           }
         ]} />
         {isMajor && (
@@ -114,7 +148,7 @@ export default function HorizontalRulerPicker({
       )}
 
       <View style={styles.valueDisplay}>
-        <Text style={[styles.valueText, { color: colors.primary }]}>{data[currentIndex]}</Text>
+        <Text style={[styles.valueText, { color: colors.primary }]}>{data[currentIndex] ?? value}</Text>
         {suffix && <Text style={[styles.suffixText, { color: colors.textMuted }]}>{suffix}</Text>}
       </View>
 
@@ -130,6 +164,9 @@ export default function HorizontalRulerPicker({
           snapToInterval={TICK_SPACING}
           decelerationRate="fast"
           onScroll={handleScroll}
+          onScrollBeginDrag={handleScrollBeginDrag}
+          onScrollEndDrag={handleScrollEndDrag}
+          onMomentumScrollEnd={handleMomentumScrollEnd}
           scrollEventThrottle={16}
           contentContainerStyle={{ paddingHorizontal }}
           initialScrollIndex={currentIndex}
@@ -147,7 +184,7 @@ const styles = StyleSheet.create({
   },
   unitToggleContainer: {
     flexDirection: 'row',
-    marginBottom: 32,
+    marginBottom: 28,
   },
   unitPill: {
     paddingHorizontal: 20,
@@ -162,19 +199,20 @@ const styles = StyleSheet.create({
   valueDisplay: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    marginBottom: 24,
+    marginBottom: 20,
   },
   valueText: {
     fontSize: 56,
-    fontWeight: '700',
+    fontWeight: '900',
+    fontVariant: ['tabular-nums'],
   },
   suffixText: {
-    fontSize: 24,
-    fontWeight: '500',
+    fontSize: 22,
+    fontWeight: '600',
     marginLeft: 8,
   },
   rulerContainer: {
-    height: 80,
+    height: 85,
     width: '100%',
     position: 'relative',
   },
@@ -190,7 +228,7 @@ const styles = StyleSheet.create({
   },
   tickContainer: {
     alignItems: 'center',
-    height: 60,
+    height: 65,
   },
   tick: {
     borderRadius: 1,
@@ -198,7 +236,7 @@ const styles = StyleSheet.create({
   tickLabel: {
     position: 'absolute',
     bottom: 0,
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 11,
+    fontWeight: '600',
   },
 });
