@@ -1294,18 +1294,18 @@ export default function WomensHealthScreen() {
             {lifeStage === 'postpartum' && (
               <>
                 <Text style={s.sectionTitle}>{t('womensHealth.newbornTracker','Newborn Tracker')}</Text>
-                <View style={{ flexDirection: 'row', gap: 12, marginBottom: 24 }}>
-                  <TouchableOpacity style={[s.actionTile, { flex: 1, backgroundColor: '#f0fdf4', padding: 12 }]} activeOpacity={0.7} onPress={() => Alert.alert(t('womensHealth.loggedTitle', 'Logged'), t('womensHealth.feedLogged', 'Feed tracked successfully!'))}>
-                    <Text style={{ fontSize: 28, textAlign: 'center', marginBottom: 8 }}>🍼</Text>
-                    <Text style={{ textAlign: 'center', fontWeight: '700', color: '#166534' }}>{t('womensHealth.logFeed', 'Feed')}</Text>
+                <View style={{ flexDirection: 'row', gap: 8, marginBottom: 24 }}>
+                  <TouchableOpacity style={[s.actionTile, { flex: 1, backgroundColor: '#f0fdf4', paddingVertical: 10, paddingHorizontal: 4 }]} activeOpacity={0.7} onPress={() => Alert.alert(t('womensHealth.loggedTitle', 'Logged'), t('womensHealth.feedLogged', 'Feed tracked successfully!'))}>
+                    <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 2 }}>🍼</Text>
+                    <Text adjustsFontSizeToFit numberOfLines={1} style={{ textAlign: 'center', fontWeight: '700', color: '#166534', fontSize: 13 }}>{t('womensHealth.logFeed', 'Feed')}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={[s.actionTile, { flex: 1, backgroundColor: '#eff6ff', padding: 12 }]} activeOpacity={0.7} onPress={() => Alert.alert(t('womensHealth.loggedTitle', 'Logged'), t('womensHealth.diaperLogged', 'Diaper change tracked successfully!'))}>
-                    <Text style={{ fontSize: 28, textAlign: 'center', marginBottom: 8 }}>🧻</Text>
-                    <Text style={{ textAlign: 'center', fontWeight: '700', color: '#1d4ed8' }}>{t('womensHealth.logDiaper', 'Diaper')}</Text>
+                  <TouchableOpacity style={[s.actionTile, { flex: 1, backgroundColor: '#eff6ff', paddingVertical: 10, paddingHorizontal: 4 }]} activeOpacity={0.7} onPress={() => Alert.alert(t('womensHealth.loggedTitle', 'Logged'), t('womensHealth.diaperLogged', 'Diaper change tracked successfully!'))}>
+                    <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 2 }}>🧻</Text>
+                    <Text adjustsFontSizeToFit numberOfLines={1} style={{ textAlign: 'center', fontWeight: '700', color: '#1d4ed8', fontSize: 13 }}>{t('womensHealth.logDiaper', 'Diaper')}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={[s.actionTile, { flex: 1, backgroundColor: '#fdf2f8', padding: 12 }]} activeOpacity={0.7} onPress={() => Alert.alert(t('womensHealth.loggedTitle', 'Logged'), t('womensHealth.sleepLogged', 'Baby sleep logged successfully!'))}>
-                    <Text style={{ fontSize: 28, textAlign: 'center', marginBottom: 8 }}>💤</Text>
-                    <Text style={{ textAlign: 'center', fontWeight: '700', color: '#be185d' }}>{t('womensHealth.logSleep', 'Sleep')}</Text>
+                  <TouchableOpacity style={[s.actionTile, { flex: 1, backgroundColor: '#fdf2f8', paddingVertical: 10, paddingHorizontal: 4 }]} activeOpacity={0.7} onPress={() => Alert.alert(t('womensHealth.loggedTitle', 'Logged'), t('womensHealth.sleepLogged', 'Baby sleep logged successfully!'))}>
+                    <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 2 }}>💤</Text>
+                    <Text adjustsFontSizeToFit numberOfLines={1} style={{ textAlign: 'center', fontWeight: '700', color: '#be185d', fontSize: 13 }}>{t('womensHealth.logSleep', 'Sleep')}</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -1481,13 +1481,13 @@ export default function WomensHealthScreen() {
                 style={[s.stageOption, deliveryTypeInput === 'vaginal' && s.stageOptionActive, { flex: 1, marginBottom: 0 }]}
                 onPress={() => setDeliveryTypeInput('vaginal')}
               >
-                <Text style={s.stageLabel}>{t('womensHealth.vaginal', 'Vaginal')}</Text>
+                <Text style={[s.stageLabel, deliveryTypeInput === 'vaginal' && { color: '#e11d48', fontWeight: '800' }]}>{t('womensHealth.vaginal', 'Vaginal')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[s.stageOption, deliveryTypeInput === 'c-section' && s.stageOptionActive, { flex: 1, marginBottom: 0 }]}
                 onPress={() => setDeliveryTypeInput('c-section')}
               >
-                <Text style={s.stageLabel}>{t('womensHealth.cSection', 'C-Section')}</Text>
+                <Text style={[s.stageLabel, deliveryTypeInput === 'c-section' && { color: '#e11d48', fontWeight: '800' }]}>{t('womensHealth.cSection', 'C-Section')}</Text>
               </TouchableOpacity>
             </View>
 

@@ -35,7 +35,11 @@ export const submitReview = mutation({
 export const getUserReviewStatus = query({
   args: {},
   handler: async (ctx) => {
-    const user = await requireCurrentUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return { hasSubmittedRecently: false, latestReviewAt: null };
+    const user = await ctx.db.query("users").withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject)).first();
+    if (!user) return { hasSubmittedRecently: false, latestReviewAt: null };
+    
     const latestReview = await ctx.db.query("reviews").withIndex("by_user_created_at", (q) => q.eq("userId", user._id)).order("desc").first();
     return { hasSubmittedRecently: !!latestReview && latestReview.createdAt >= Date.now() - RECENT_REVIEW_WINDOW_MS, latestReviewAt: latestReview?.createdAt ?? null };
   },

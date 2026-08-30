@@ -168,10 +168,10 @@ export default function LandingPage() {
           {/* ── PILLAR STRIP ─────────────────────────────────────────── */}
           <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { k: 'Fuel', d: 'AI calorie scanner', c: '#2563eb' },
-              { k: 'Move', d: '1000+ exercises', c: '#5fc660' },
-              { k: 'Mind', d: 'Meditate · journal · grow', c: '#a855f7' },
-              { k: 'You', d: "Women's & men's health", c: '#ef8a34' },
+              { k: 'Fuel', d: 'Macro tracker & Ai calorie counter', c: '#2563eb' },
+              { k: 'Move', d: 'Fitness tracker & running tracker', c: '#5fc660' },
+              { k: 'Mind', d: 'Meditation, sleep & habits tracker', c: '#a855f7' },
+              { k: 'You', d: "Women & Men health, fasting timer", c: '#ef8a34' },
             ].map((p) => (
               <div key={p.k} className="bg-white rounded-2xl p-6 border border-slate-100">
                 <span className="text-xs font-black uppercase tracking-widest" style={{ color: p.c }}>{p.k}</span>
@@ -190,10 +190,10 @@ export default function LandingPage() {
               <h2 className="text-4xl md:text-5xl font-black font-outfit text-slate-900 leading-tight mt-3 mb-6">Snap your plate. <span className="font-serif-display text-[#2563eb]">We do the math.</span></h2>
               <p className="text-lg text-slate-500 font-inter font-medium mb-8">Point your camera at any meal — AI detects food, portions, and macros in seconds. Or scan barcodes. Or search 1M+ foods in 14 languages.</p>
               <ul className="space-y-3 text-slate-700 font-inter font-semibold">
-                <li>📸 AI photo macro scanner</li>
-                <li>🌍 Multi-language database (EN, PT, ES, FR, DE, NL, PL, TR + 8 more)</li>
-                <li>💧 Smart hydration tied to body weight & climate</li>
-                <li>🍽️ 5 meal slots for premium · custom foods · barcodes</li>
+                <li>📸 Ai calorie counter & macro tracker</li>
+                <li>🌍 Ai meal Maker & guided recipes</li>
+                <li>💧 Metabolic tracker, keto tracker app, glucose tracker app</li>
+                <li>🍽️ Personalized meal plans & shopping list</li>
               </ul>
             </div>
           </section>
@@ -205,10 +205,10 @@ export default function LandingPage() {
               <h2 className="text-4xl md:text-5xl font-black font-outfit text-slate-900 leading-tight mt-3 mb-6">From recipe to <span className="font-serif-display text-orange-600">receipt</span>, in one tap.</h2>
               <p className="text-lg text-slate-500 font-inter font-medium mb-8">Cook smarter. Shop faster. Share with your partner — one list, two phones, real-time sync.</p>
               <ul className="space-y-3 text-slate-700 font-inter font-semibold">
-                <li>🛒 Recipe → shopping list in one tap</li>
+                <li>🛒 Smart shopping list and meal plans</li>
                 <li>👥 Partner-synced grocery lists</li>
-                <li>🗂️ Smart category sorting (Produce, Dairy, Pantry…)</li>
-                <li>👨‍🍳 Chef-curated recipes with full macros & steps</li>
+                <li>🗂️ Dieting protocols: keto tracker app, glucose tracker app</li>
+                <li>👨‍🍳 Guided recipes & Ai meal Maker</li>
               </ul>
             </div>
             <div className="rounded-[32px] bg-white border border-slate-100 overflow-hidden p-4 shadow-xl shadow-orange-900/5">
@@ -234,7 +234,7 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              <p className="text-sm text-slate-400 font-inter">Browse by muscle group · gender-specific variants · AI-generated splits (PPL, Upper/Lower, Full Body).</p>
+              <p className="text-sm text-slate-400 font-inter">Personalized fitness plan, fitness tracker, running tracker, steps counter, and more.</p>
             </div>
           </section>
 
@@ -273,10 +273,10 @@ export default function LandingPage() {
               <h2 className="text-4xl md:text-5xl font-black font-outfit text-slate-900 leading-tight mt-3 mb-6">Your mind deserves a <span className="font-serif-display text-violet-600">gym</span> too.</h2>
               <p className="text-lg text-slate-500 font-inter font-medium mb-8">Meditate. Journal. Grow. Your streak literally blooms in the Mind Garden.</p>
               <ul className="space-y-3 text-slate-700 font-inter font-semibold">
-                <li>🧘 Guided meditations in 15 languages</li>
-                <li>🎧 AI-Vibes soundscapes for deep work & wind-down</li>
-                <li>🌱 Mind Garden — XP, levels, tokens per session</li>
-                <li>📝 Mood, gratitude, journal with sentiment tracking</li>
+                <li>🧘 Meditation, guided meditation & Focus app</li>
+                <li>🎧 Peak biology soundscapes & fasting timer</li>
+                <li>🌱 Habits tracker — XP, levels, tokens per session</li>
+                <li>📝 Mood tracker, sleep tracker, & journalling</li>
               </ul>
               <div className="mt-8 rounded-2xl border border-slate-100 overflow-hidden">
                 <img src={imgGamesHub} alt="Mind games hub" className="w-full h-auto object-contain" />

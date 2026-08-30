@@ -286,7 +286,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   errorContainer: { backgroundColor: '#fee2e2', padding: 12, borderRadius: 12, marginBottom: 20 },
   errorText: { color: '#dc2626', fontSize: 14, textAlign: 'center', fontWeight: '600' },
   form: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderRadius: 24,
     padding: 24,
     shadowColor: '#000',

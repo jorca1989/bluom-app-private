@@ -471,9 +471,16 @@ export const createArticle = mutation({
     },
     handler: async (ctx, args) => {
         const admin = await checkAdminPower(ctx);
+        const convexUser = await ctx.db
+          .query("users")
+          .withIndex("by_clerk_id", (q) => q.eq("clerkId", admin.subject))
+          .first();
+
+        if (!convexUser) throw new Error("User not found in DB");
+
         const articleId = await ctx.db.insert("blogArticles", {
             ...args,
-            authorId: admin.subject as any,
+            authorId: convexUser._id,
             tags: [],
             updatedAt: Date.now(),
             createdAt: Date.now(),

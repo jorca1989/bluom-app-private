@@ -1656,7 +1656,7 @@ export default function OnboardingScreen() {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: '#ffffff',
+                backgroundColor: themeColors.surface,
                 borderWidth: 1,
                 borderColor: themeColors.border,
                 paddingHorizontal: 12,
@@ -1674,7 +1674,7 @@ export default function OnboardingScreen() {
 
           {/* Language Selector Dropdown Modal/Popup */}
           {showLangPicker && (
-            <View style={{ position: 'absolute', top: insets.top + 48, right: 24, zIndex: 1000, backgroundColor: '#ffffff', borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, padding: 6, maxHeight: 320, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 8 }}>
+            <View style={{ position: 'absolute', top: insets.top + 48, right: 24, zIndex: 1000, backgroundColor: themeColors.surface, borderWidth: 1, borderColor: themeColors.border, borderRadius: 16, padding: 6, maxHeight: 320, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 8 }}>
               <ScrollView showsVerticalScrollIndicator={false}>
                 {LANG_OPTIONS.map(lang => (
                   <TouchableOpacity
@@ -1705,7 +1705,7 @@ export default function OnboardingScreen() {
             renderItem={({ item: slideIndex }) => (
               <View style={{ width: SCREEN_WIDTH, paddingHorizontal: 20, justifyContent: 'center', flex: 1 }}>
                 <View style={{
-                  backgroundColor: '#ffffff',
+                  backgroundColor: themeColors.surface,
                   borderRadius: 24,
                   paddingHorizontal: 20,
                   paddingVertical: 20,
