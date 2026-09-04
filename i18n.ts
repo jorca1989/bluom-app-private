@@ -9,10 +9,13 @@ import esHome from './locales/es/translation.json';
 import frHome from './locales/fr/translation.json';
 import nlHome from './locales/nl/translation.json';
 import deHome from './locales/de/translation.json';
+import itHome from './locales/it/translation.json';
 import plHome from './locales/pl/translation.json';
 import svHome from './locales/sv/translation.json';
 import noHome from './locales/no/translation.json';
 import daHome from './locales/da/translation.json';
+import fiHome from './locales/fi/translation.json';
+import hgHome from './locales/hg/translation.json';
 import trHome from './locales/tr/translation.json';
 import elHome from './locales/el/translation.json';
 import bgHome from './locales/bg/translation.json';
@@ -27,10 +30,14 @@ const resources = {
   fr: { translation: frHome },
   nl: { translation: nlHome },
   de: { translation: deHome },
+  it: { translation: itHome },
   pl: { translation: plHome },
   sv: { translation: svHome },
   no: { translation: noHome },
   da: { translation: daHome },
+  fi: { translation: fiHome },
+  hg: { translation: hgHome },
+  hu: { translation: hgHome },
   tr: { translation: trHome },
   el: { translation: elHome },
   bg: { translation: bgHome },
@@ -40,18 +47,19 @@ const resources = {
 };
 
 const LANG_KEY = 'app_language';
-const supported = ['pt', 'es', 'fr', 'nl', 'de', 'pl', 'sv', 'no', 'da', 'tr', 'el', 'bg', 'ro', 'lt', 'lv', 'en'];
+const supported = ['pt', 'es', 'fr', 'nl', 'de', 'it', 'pl', 'sv', 'no', 'da', 'fi', 'hg', 'hu', 'tr', 'el', 'bg', 'ro', 'lt', 'lv', 'en'];
 
 // Detect device locale and map to supported language
 function detectLanguage(): string {
   const locales = Localization.getLocales?.() ?? [];
   for (const loc of locales) {
-    const tag = loc.languageTag ?? '';    // e.g. "pt-PT", "en-US"
-    const lang = loc.languageCode ?? ''; // e.g. "pt", "en"
-    const byTag = supported.find(s => tag.toLowerCase().startsWith(s));
-    if (byTag) return byTag;
-    const byLang = supported.find(s => s === lang.toLowerCase());
-    if (byLang) return byLang;
+    const tag = (loc.languageTag ?? '').toLowerCase();    // e.g. "pt-PT", "en-US", "fi-FI", "it-IT", "hu-HU"
+    const lang = (loc.languageCode ?? '').toLowerCase(); // e.g. "pt", "en", "fi", "it", "hu"
+    if (tag.startsWith('hu') || lang === 'hu') return 'hg';
+    const byTag = supported.find(s => tag.startsWith(s));
+    if (byTag) return byTag === 'hu' ? 'hg' : byTag;
+    const byLang = supported.find(s => s === lang);
+    if (byLang) return byLang === 'hu' ? 'hg' : byLang;
   }
   return 'en';
 }

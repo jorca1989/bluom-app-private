@@ -6,8 +6,8 @@ import {
   Modal,
   TouchableOpacity,
   ScrollView,
-  Image,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -158,7 +158,7 @@ export default function WorkoutDetailModal({
               >
                 <View style={styles.thumbBox}>
                   {ex.thumbnailUrl ? (
-                    <Image source={{ uri: ex.thumbnailUrl }} style={styles.thumbImage} resizeMode="cover" />
+                    <Image source={{ uri: ex.thumbnailUrl }} style={styles.thumbImage} contentFit="cover" cachePolicy="memory-disk" />
                   ) : (
                     <Ionicons name="barbell-outline" size={22} color="#94a3b8" />
                   )}
@@ -236,7 +236,7 @@ export default function WorkoutDetailModal({
 }
 
 const createStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.surface },
+  container: { flex: 1, backgroundColor: c.bg },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -267,15 +267,15 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 8,
-    backgroundColor: '#eff6ff',
+    backgroundColor: c.scheme === 'dark' ? 'rgba(59, 130, 246, 0.12)' : '#eff6ff',
     marginHorizontal: 16,
     marginBottom: 16,
     padding: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#dbeafe',
+    borderColor: c.scheme === 'dark' ? 'rgba(59, 130, 246, 0.25)' : '#dbeafe',
   },
-  infoText: { flex: 1, fontSize: 12, color: '#1e40af', lineHeight: 17 },
+  infoText: { flex: 1, fontSize: 12, color: c.scheme === 'dark' ? '#93c5fd' : '#1e40af', lineHeight: 17 },
 
   list: { paddingHorizontal: 16, gap: 10 },
 

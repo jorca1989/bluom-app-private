@@ -213,7 +213,9 @@
       "aiChef": "YZ Şefi",
       "aiChefDesc": "Tara ve oluştur",
       "personalPlan": "Planım",
-      "personalPlanDesc": "30 Günlük YZ Rutini"
+      "personalPlanDesc": "30 Günlük YZ Rutini",
+      "nutritionInsights": "Beslenme İncelemeleri",
+      "nutritionInsightsDesc": "Detaylı makro analizi"
     },
     "widgets": {
       "title": "Beslenme Bölümleri",
@@ -232,6 +234,19 @@
     "caloriesShort": "cal",
     "insights": {
       "title": "Beslenme Analizleri"
+    },
+    "detailedInsights": {
+      "title": "Ayrıntılı Besin Değerleri",
+      "calories": "Kalori",
+      "protein": "Toplam Protein",
+      "carbs": "Toplam Karbonhidrat",
+      "fiber": "Diyet Lifi",
+      "sugar": "Toplam Şeker",
+      "fat": "Toplam Yağ",
+      "saturatedFat": "Doymuş Yağ",
+      "polyunsaturatedFat": "Çoklu Doymamış Yağ",
+      "monounsaturatedFat": "Tekli Doymamış Yağ",
+      "transFat": "Trans Yağ"
     }
   },
   "modals": {
@@ -290,7 +305,9 @@
       "addCustomTitle": "Özel Yemek Ekle",
       "addCustomSub": "Veritabanında olmayan bir bileşeni veya yemeği hızla ekle.",
       "createRecipeTitle": "Tarif Oluştur",
-      "createRecipeSub": "Kaydedilmiş bir öğünde birden fazla malzemeyi birleştirerek kaydı kolaylaştır."
+      "createRecipeSub": "Kaydedilmiş bir öğünde birden fazla malzemeyi birleştirerek kaydı kolaylaştır.",
+      "addFood": "Besin Ekle",
+      "addRecipe": "Tarif Ekle"
     },
     "addFood": {
       "title": "Özel Yemek Ekle",
@@ -302,7 +319,12 @@
       "p": "Protein (g)",
       "c": "Karbonhidrat (g)",
       "f": "Yağ (g)",
-      "save": "Özel Yemeği Kaydet"
+      "save": "Özel Yemeği Kaydet",
+      "nextReview": "İleri: İncele",
+      "reviewSave": "İncele ve Kaydet",
+      "by": "hazırlayan:",
+      "saving": "Kaydediliyor...",
+      "saveFood": "Besini Kaydet"
     },
     "createRecipe": {
       "title": "Tarif Oluştur",
@@ -335,12 +357,14 @@
     },
     "logRecipe": {
       "title": "Öğün Kaydet",
-      "logged": "Başarıyla kaydedildi!",
-      "addedTo": "Şuraya eklendi:",
+      "logged": "Kaydedildi!",
+      "addedTo": "Öğüne eklendi:",
       "logToMeal": "Öğüne Kaydet",
-      "qty": "Miktar (Porsiyon)",
-      "skip": "Atla",
-      "logTo": "Şuraya kaydet:"
+      "qty": "Miktar",
+      "skip": "Geç",
+      "logTo": "Kaydet:",
+      "titleRecipe": "Tarif Ekle",
+      "titleFood": "Besin Ekle"
     },
     "sugar": {
       "scanTitle": "Ürünü Analiz Et",
@@ -413,18 +437,18 @@
     "quizHeroSub": "Kendi protokolünü oluşturmak için 4 soru — doğal testosteron optimizasyonundan profesyonel sporcu yönetimine kadar. Tüm veriler gizlidir.",
     "alreadyLoaded": "Profilinden yüklendi",
     "articleDisclaimer": "Eğitici içeriktir, tıbbi tavsiye değildir. Kişisel rehberlik için her zaman bir doktora danışın.",
-    "vitalityCheckin": "Zindelik Kaydı",
-    "vitalitySub": "Her alanı dürüstçe değerlendir. T-Opt puanın gerçek zamanlı güncellenir.",
-    "tOptScore": "T-OPT PUANI",
-    "drivePillar": "Zindelik / Libido",
+    "vitalityCheckin": "Canlılık Kontrolü",
+    "vitalitySub": "Her sütunu dürüstçe değerlendirin. T-Opt skorunuz anında güncellenir.",
+    "tOptScore": "T-OPT SKORU",
+    "drivePillar": "Enerji / Libido",
     "recoveryPillar": "Toparlanma Durumu",
     "focusPillar": "Zihinsel Odak",
     "sleepPillar": "Uyku Kalitesi",
-    "moodSynced": "Zihin bölümünden senkronize edilen ruh hali",
+    "moodSynced": "Ruh hali Wellness'tan senkronize edildi",
     "updateStatus": "Sistem Durumunu Güncelle",
     "pelvicTitle": "Pelvik Güç Protokolü",
-    "pelvicSub": "Erektil fonksiyonu, idrar kontrolünü, cinsel performansı ve merkez bölge stabilitesini geliştirir.",
-    "pelvicInstructions": "5sn Kas → 5sn Gevşe → Tekrarla. 10–15 döngü. Günlük uygulama 4–6 haftada sonuç verir.",
+    "pelvicSub": "Erektil fonksiyonu, idrar kontrolünü, cinsel performansı ve merkez stabilitesini geliştirir.",
+    "pelvicInstructions": "5 sn sıkın → 5 sn gevşeyin → tekrarlayın. 10–15 döngü. Günlük uygulama 4–6 haftada sonuç verir.",
     "startProtocol": "Protokolü Başlat",
     "finishLog": "Bitir ve Kaydet",
     "yourStack": "Takviye Listen",
@@ -465,7 +489,7 @@
     "peakWeekTool": "Zirve Haftası Aracı",
     "openProtocol": "Protokolü Aç →",
     "dailyProtocols": "Günlük Protokoller",
-    "pelvicActionSub": "Merkez bölge, erektil ve idrar fonksiyonu",
+    "pelvicActionSub": "Merkez, ereksiyon ve idrar fonksiyonu",
     "core": "temel",
     "critical": "⚠️ Kritik",
     "sevenDayTrend": "7 Günlük Zindelik Trendi",
@@ -771,7 +795,7 @@
     "unlockDeepAnalyticsSub": "Geçmişe, kayıtlara ve kayıtlara uyum sağlama konusunda IA ​​ile ilgili bilgiler."
   },
   "todo": {
-    "title": "Verimlilik Merkezi",
+    "title": "Verimlilik",
     "open": "açık",
     "done": "tamamlandı",
     "urgent_count": "{{count}} acil",
@@ -932,17 +956,17 @@
     },
     "darkMode": "Karanlık Mod",
     "comingSoon": "Çok Yakında",
-    "dayNum": "Day {{num}}",
+    "dayNum": "{{num}}. Gün",
     "weekNum": "Week {{num}}",
     "search": "Aramak",
     "all": "Tüm",
     "various": "Çeşitli",
-    "beginner": "Acemi",
-    "intermediate": "Orta seviye",
-    "advanced": "Gelişmiş",
-    "veteran": "Kıdemli",
+    "beginner": "Başlangıç",
+    "intermediate": "Orta Seviye",
+    "advanced": "İleri Seviye",
+    "veteran": "Deneyimli",
     "units": {
-      "kg": "kilogram",
+      "kg": "kg",
       "minKm": "dk/km"
     },
     "couldNotSave": "Kaydedilemedi.",
@@ -953,7 +977,24 @@
     "clear": "Temizlemek",
     "back": "Geri",
     "notReady": "Hazır değil",
-    "upgradeToPro": "Pro'ya yükseltin"
+    "upgradeToPro": "Pro'ya yükseltin",
+    "servings": "porsiyon",
+    "protein": "Protein",
+    "carbs": "Karbonhidrat",
+    "fat": "Yağ",
+    "kcal": "kcal",
+    "proteinShort": "P",
+    "carbsShort": "K",
+    "fatShort": "Y",
+    "openSettings": "Ayarları Aç",
+    "checkSettings": "Ayarları Kontrol Et",
+    "configError": "Yapılandırma hatası",
+    "disconnect": "Bağlantıyı Kes",
+    "start": "Başlat",
+    "yes": "Evet",
+    "resume": "Devam Et",
+    "pause": "Duraklat",
+    "today": "Bugün"
   },
   "wellness": {
     "title": "Esenlik",
@@ -1543,15 +1584,15 @@
     },
     "lifeGoalsHub": {
       "title": "Hayat Hedefleri",
-      "pending": "Bekleyenler",
-      "savings": "Birikimler",
-      "achieved": "Başarılanlar",
+      "pending": "Bekleyen",
+      "savings": "Birikim",
+      "achieved": "Tamamlanan",
       "link": "Bağlantı",
-      "markAchieved": "Başarıldı Olarak İşaretle",
-      "noGoals": "Hedef yok. Bir tane ekle!",
+      "markAchieved": "Tamamlandı Olarak İşaretle",
+      "noGoals": "Hedef bulunamadı. Yeni bir tane ekle!",
       "newLifeGoal": "Yeni Hayat Hedefi",
       "labelTitle": "Başlık",
-      "phVisitJapan": "ör. Japonya'yı gezmek",
+      "phVisitJapan": "örn. Japonya'ya git",
       "labelCategory": "Kategori",
       "labelType": "Tür",
       "standardGoal": "Standart Hedef",
@@ -1560,12 +1601,13 @@
       "targetDate": "Hedef Tarih (YYYY-AA-GG)",
       "webLink": "Web Bağlantısı (İsteğe bağlı)",
       "description": "Açıklama (İsteğe bağlı)",
+      "phDetails": "Detaylar...",
       "createGoal": "Hedef Oluştur",
       "congrats": "Tebrikler!",
-      "achievedMsg": "Bir hayat hedefine ulaştın! 🎉",
+      "achievedMsg": "Bir hayat hedefini başardın! 🎉",
       "deleteGoal": "Hedefi Sil",
       "areYouSure": "Emin misin?",
-      "errNoTitle": "Lütfen hedef için bir başlık girin.",
+      "errNoTitle": "Lütfen bir hedef başlığı girin.",
       "successAdded": "Hedef başarıyla eklendi!",
       "errFailed": "Hedef eklenemedi.",
       "cat_All": "Hepsi",
@@ -1629,7 +1671,7 @@
     "fuelSub": "Öğün planı ve yemek kaydı",
     "wellness": "Esenlik",
     "wellnessSub": "Ruh hali, uyku ve meditasyon",
-    "productivity": "Verimlilik Merkezi",
+    "productivity": "Verimlilik",
     "productivitySub": "Görevler, odak ve hedefler",
     "library": "Bluom Kütüphanesi",
     "librarySub": "Seçilmiş bilgiler ve protokoller",
@@ -1843,8 +1885,8 @@
     "unlockStack": "Vitamin Listeni Aç",
     "unlockStackSub": "Döngü evrene göre kişiselleştirilmiş takviye önerilerini gör.",
     "pelvicTitle": "Pelvik Güç Protokolü",
-    "pelvicSub": "Pelvik tabanı güçlendirir, krampları azaltır ve merkez bölgeyi destekler",
-    "pelvicInstructions": "5sn Kas → 5sn Gevşe → Tekrarla. Seans başına 10 döngü.",
+    "pelvicSub": "Pelvik tabanı güçlendirir, krampları hafifletir ve merkez bölgeyi destekler",
+    "pelvicInstructions": "5 sn sıkın → 5 sn gevşeyin → tekrarlayın. Seans başına 10 döngü.",
     "stopSession": "Seansı Durdur",
     "startTimer": "Zamanlayıcıyı Başlat",
     "lifeStage": "Yaşam Evresi",
@@ -1856,7 +1898,8 @@
     "stage": {
       "cycle": "döngü",
       "pregnancy": "hamilelik",
-      "menopause": "menopoz"
+      "menopause": "menopoz",
+      "postpartum": "Doğum Sonrası"
     },
     "tabToday": "Bugün",
     "tabBaby": "Bebek",
@@ -2017,6 +2060,19 @@
         "pmsDesc": "Reduce mood swings and pain",
         "perimenopause": "Perimenopause Support",
         "perimenopauseDesc": "Manage symptoms"
+      },
+      "lastPeriodDate": {
+        "question": "Son Adet Tarihi (SAT) — Son adetin ne zaman başladı?"
+      },
+      "conceptionDate": {
+        "question": "Hamile Kalma Tarihi — Kesin döllenme tarihini biliyor musun?",
+        "skip": "Henüz bilmiyorum"
+      },
+      "cycleRegularity": {
+        "question": "Adet döngünü nasıl tanımlarsın?",
+        "regular": "Düzenli (24–35 günlük döngü)",
+        "irregular": "Düzensiz / tahmin edilemez",
+        "unknown": "Emin değilim"
       }
     },
     "symptomsList": {
@@ -2045,7 +2101,43 @@
       "light": "Hafif",
       "medium": "Orta",
       "heavy": "Yoğun"
-    }
+    },
+    "postpartum": "Doğum Sonrası",
+    "ppPain": "Dikiş / Pelvik Ağrı (1-10)",
+    "ppMood": "Doğum Sonrası Ruh Hali",
+    "ppLochia": "Losi / Kanama",
+    "ppc1": "Dikiş iyileşmesi, ağır kaldırmaktan kaçının",
+    "ppv1": "Pelvik taban şişliği, losi",
+    "ppc2": "Merkez bölge toparlanması, zorlanmayı sınırlayın",
+    "ppv2": "Pelvik taban sıkılığını yeniden kazanıyor",
+    "startPelvic": "Pelvik Taban ve Merkez Protokolü",
+    "cSecRec1": "Dikiş iyileşmesi, dinlenme ve losi takibi.",
+    "vagRec1": "Pelvik taban toparlanması, dinlenme ve losi takibi.",
+    "babyHereBtn": "Bebek dünyaya geldi!",
+    "babyIsHere": "Bebek dünyaya geldi!",
+    "postpartumRecovery": "Doğum Sonrası Toparlanma",
+    "transitionTitle": "Doğum Sonrası Döneme Hoş Geldiniz",
+    "deliveryDate": "Doğum Tarihi",
+    "deliveryType": "Doğum Türü",
+    "vaginal": "Normal Doğum",
+    "cSection": "Sezaryen",
+    "isBreastfeeding": "Emziriyor musunuz?",
+    "saveTransition": "Dönemi Başlat",
+    "ppWeek": "Doğum Sonrası {{week}}. Hafta",
+    "newborn": "Yenidoğan Takibi",
+    "feed": "Beslenme",
+    "diaper": "Bez",
+    "sleep": "Bebek Uykusu",
+    "lochia": "Losi / Kanama",
+    "pain": "Dikiş / Pelvik Ağrı",
+    "pelvicFloor": "Pelvik Taban ve Merkez",
+    "anxious": "Endişeli",
+    "overwhelmed": "Bunalmış",
+    "numb": "Duygusuz",
+    "happy": "Bağ Kurmuş & Mutlu",
+    "heavy": "Yoğun",
+    "light": "Hafif",
+    "none": "Yok"
   },
   "move": {
     "widgets": {
@@ -2064,11 +2156,11 @@
     "activeTime": "Active Time",
     "burnedToday": "Burned Today",
     "steps": "Steps",
-    "syncedFromHealth": "Synced from Health",
-    "continueJourney": "Continue Your Journey",
-    "freeUsers28DaysFull": "Free users get a full 28-day blueprint. When your 28 days finish, upgrade to Pro to continue your transformation with an AI-generated plan that adapts every cycle.",
-    "freePlanComplete": "Blueprint complete — upgrade to continue",
-    "upgradeToPro": "Go Pro",
+    "syncedFromHealth": "Sağlık uygulamasından senkronize",
+    "continueJourney": "Dönüşümünüze Devam Edin",
+    "freeUsers28DaysFull": "Ücretsiz plan 28 günlük tam program içerir. Her döngüde uyum sağlayan planlar için Pro'ya geçin.",
+    "freePlanComplete": "Temel plan tamamlandı — devam etmek için yükseltin",
+    "upgradeToPro": "Pro'ya Yükselt",
     "health": "Health",
     "deleteActivity": "Delete Activity",
     "deleteConfirm": "Are you sure you want to delete this activity?",
@@ -2076,7 +2168,7 @@
     "logToStart": "Log a workout or sync steps to get started",
     "workoutCompleted": "Workout Completed!",
     "workoutSaved": "Great job! Your activity was saved.",
-    "addExercise": "Add Exercise",
+    "addExercise": "Egzersiz Ekle",
     "proAddExerciseDesc": "Upgrade to Pro to add exercises to your plan.",
     "removeExercise": "Remove Exercise",
     "proRemoveExerciseDesc": "Upgrade to Pro to customize your routine.",
@@ -2095,9 +2187,9 @@
     "addSteps": "Add Steps",
     "enterStepsCount": "Enter steps count",
     "todaysActivities": "Today's Activities",
-    "insightsTitle": "Workout Insights",
-    "detailInfo": "Tap any exercise to view details. Pro users can add or remove exercises.",
-    "startDayWorkout": "Start Day {{day}} Workout",
+    "insightsTitle": "Antrenman İncelemeleri",
+    "detailInfo": "Ayrıntılar için egzersize dokunun. Pro kullanıcılar egzersiz ekleyip çıkarabilir.",
+    "startDayWorkout": "{{day}}. Gün Antrenmanını Başlat",
     "fourWeekPlan": "4 Haftalık Plan",
     "fourWeekPlanDesc": "Harekete geçmenizi sağlayacak ücretsiz bir şablon.",
     "freeTemplate": "ÜCRETSİZ ŞABLON",
@@ -2106,24 +2198,24 @@
     "proPlanAdapts": "Kişiselleştirilmiş planınız siz ilerledikçe uyarlanır.",
     "freeUsers28Days": "Ücretsiz kullanıcılar 28 günlük tam bir plan alır. Yolculuğunuza devam etmek için Pro'ya yükseltin.",
     "viewWeek": "Haftayı görüntüle",
-    "dayPreview": "{{day}}. Gün Önizlemesi",
-    "weekOverview": "Haftaya Genel Bakış",
+    "dayPreview": "{{day}}. Gün Önizleme",
+    "weekOverview": "Haftalık Genel Bakış",
     "personalisedTraining": "Kişiselleştirilmiş Eğitim",
     "upgradeDetail": "Planınıza egzersiz eklemek veya egzersizleri kaldırmak için Pro'ya yükseltin.",
-    "finish": "Sona ermek",
+    "finish": "Tamamla",
     "duration": "Süre",
     "volume": "Hacim",
-    "sets": "Setler",
-    "setShort": "AYARLAMAK",
-    "previousShort": "ÖNCESİ",
-    "kgShort": "KİLOGRAM",
-    "repsShort": "TEMSİLCİLER",
-    "addSet": "+ Set ekle",
+    "sets": "Set",
+    "setShort": "SET",
+    "previousShort": "ÖNCEKİ",
+    "kgShort": "KG",
+    "repsShort": "TEKRAR",
+    "addSet": "+ Set Ekle",
     "exerciseVolume": "Egzersiz Hacmi",
-    "nextExercise": "Sonraki Alıştırma",
+    "nextExercise": "Sonraki Egzersiz",
     "restTimer": "Dinlenme Zamanlayıcısı",
     "iAmReady": "Hazırım",
-    "turnOff": "Kapamak",
+    "turnOff": "Kapat",
     "durationMinutes": "Süre (Dakika)",
     "distanceKm": "Mesafe (km)",
     "pace": "Tempo",
@@ -2146,10 +2238,10 @@
     "daysPerWeek": "gün/hafta",
     "daysPerWeekText": "{{days}} gün/hafta",
     "weekOfTotal": "{{total}} haftanın {{current}}. haftası",
-    "weekProgress": "{{totalWeeks}} haftanın {{currentWeek}}. haftası",
-    "upNext": "Sıradaki",
+    "weekProgress": "Hafta: {{currentWeek}} / {{totalWeeks}}",
+    "upNext": "Sırada",
     "exercisesCount": "{{count}} egzersiz",
-    "startWorkout": "Antrenmana Başla",
+    "startWorkout": "Antrenmanı Başlat",
     "viewWorkout": "Antrenmanı Gör",
     "noVideoAvailable": "Video mevcut değil",
     "instructions": "Talimatlar",
@@ -2173,25 +2265,25 @@
     "noExercisesMatch": "Farklı bir arama terimi deneyin veya kas grubuna göre göz atın",
     "activity": "Etkinlik",
     "weeklyProgress": "Haftalık İlerleme",
-    "sessions": "Oturumlar",
+    "sessions": "Seans",
     "totalTime": "Toplam Süre",
     "calories": "Kalori",
-    "thisWeekVsLastWeek": "Bu Hafta ve Geçen Hafta Karşılaştırması",
+    "thisWeekVsLastWeek": "Bu Hafta vs Geçen Hafta",
     "calorieBurnTrend": "Kalori Yakma Trendi",
-    "thisWeekTotal": "Bu hafta toplam",
-    "vsLastWeek": "Geçen haftaya kıyasla %{{val}}",
-    "consistencyStreak": "Tutarlılık Çizgisi",
+    "thisWeekTotal": "Bu haftaki toplam",
+    "vsLastWeek": "Geçen haftaya göre %{{val}}",
+    "consistencyStreak": "İstikrar Serisi",
     "daysCount": "{{count}} gün",
-    "onFire": "Yanıyor!",
-    "keepGoing": "Devam et",
-    "avgSessionLength": "Ort. Oturum Uzunluğu",
-    "workoutMix": "Egzersiz Karışımı",
+    "onFire": "🔥 Harika gidiyorsun!",
+    "keepGoing": "Devam et!",
+    "avgSessionLength": "Ort. Seans Süresi",
+    "workoutMix": "Antrenman Çeşitliliği",
     "mostActiveDay": "En Aktif Gün",
-    "sessions_count": "{{count}} oturum",
+    "sessions_count": "{{count}} seans",
     "noWorkoutDataYet": "Henüz antrenman verisi yok",
-    "logToUnlockTrends": "Trendlerin kilidini açmak için oturumları günlüğe kaydedin.",
-    "unlockProAnalysis": "Pro Insights'ın kilidini açın",
-    "unlockProDesc": "Haftadan haftaya trendleri, kişisel en iyileri ve seri analizini alın.",
+    "logToUnlockTrends": "Trendleri görmek için seans kaydedin.",
+    "unlockProAnalysis": "Pro Analizin Kilidini Aç",
+    "unlockProDesc": "Trendleri, hacim takibini ve kişisel rekorları görün.",
     "your4WeekProgram": "4 Haftalık Programınız",
     "yourProRotatingPlan": "Profesyonel Dönüşüm Planınız",
     "proPlanDesc": "Move'daki yapay zeka planınız her hafta ilerlemenize göre uyarlanır. Yukarıdaki 4 haftalık şablonu temel olarak kullanın veya planınızın sizi otomatik olarak yönlendirmesine izin verin.",
@@ -2237,7 +2329,12 @@
     "outdoorBannerLive": "DIŞ MEKAN",
     "outdoorBannerRecord": "Kayıt\nEtkinlik",
     "outdoorBannerSub": "GPS izleme • Canlı istatistikler",
-    "outdoorBannerTapToStart": "Başlamak için dokunun"
+    "outdoorBannerTapToStart": "Başlamak için dokunun",
+    "routeLoaded": "Rota yüklendi",
+    "waypointsLoaded": "{{count}} ara nokta.",
+    "gpxRoutes": "GPX Rotaları",
+    "gpxRoutesDesc": "GPX dosyası yükleme yakında.\nReferans rotayı görüntülemek için Wikiloc .gpx dosyalarını yükleyebileceksiniz.",
+    "log": "Kaydet"
   },
   "premium": {
     "heroTitle": "Biyolojinin",
@@ -3326,7 +3423,7 @@
       "nuts": "Nuts"
     },
     "swapConfirmBtn": "Swap meal",
-    "hubTitle": "Meal Hub",
+    "hubTitle": "Öğünler",
     "hubSub": "28-day personalized nutrition",
     "heroTitlePro": "AI Personalization Plan",
     "heroTitleFree": "28-Day Meal Plan",
@@ -5637,7 +5734,12 @@
     "breakfast": "Kahvaltı",
     "lunch": "Öğle Yemeği",
     "dinner": "Akşam Yemeği",
-    "snack": "Ara Öğün"
+    "snack": "Ara Öğün",
+    "saveToMyFoods": "Besinlerime Kaydet",
+    "saveAsRecipe": "Tarif Olarak Kaydet",
+    "savedToMyFoodsSuccess": "Besinlerime Kaydedildi!",
+    "savedAsRecipeSuccess": "Tarif Olarak Kaydedildi!",
+    "addToDiary": "Günlüğe Ekle"
   },
   "dental": {
     "finishedTitle": "Diş Fırçalama Tamamlandı!",
@@ -5705,5 +5807,141 @@
     "stressLow": "Düşük",
     "stressModerate": "Orta",
     "stressHigh": "Yüksek"
+  },
+  "integrations": {
+    "title": "Bağlantılar",
+    "subtitle": "Cihazlarınızdan ve uygulamalarınızdan veri senkronize edin",
+    "privacyNotice": "Bluom yalnızca aşağıda listelenen veri türlerini okur. Sağlık verilerinizi asla satmayız. Ayarlar → Hesap bölümünden istediğiniz zaman bağlantıyı kesebilirsiniz.",
+    "healthLog": "Sağlık Günlüğü",
+    "healthLogSub": "Bugün içe aktarılan ölçümleri görüntüleyin",
+    "sourcesConnected": "{{count}} kaynak bağlandı",
+    "sourcesConnectedPlural": "{{count}} kaynak bağlandı",
+    "recentImportedData": "Son İçe Aktarılan Veriler",
+    "deletionNotice": "Bluom hesabınızı silerseniz, sunucularımızdaki tüm senkronize veriler 30 gün içinde kalıcı olarak silinir.",
+    "categories": {
+      "activity": "Aktivite ve Fitness",
+      "biometrics": "Vücut Ölçümleri",
+      "nutrition": "Beslenme",
+      "sleep": "Uyku ve Toparlanma"
+    },
+    "card": {
+      "comingSoon": "Yakında",
+      "neverSynced": "Hiç senkronize edilmedi",
+      "justNow": "Az önce",
+      "minsAgo": "{{mins}} dk önce",
+      "hoursAgo": "{{hours}} sa önce",
+      "daysAgo": "{{days}} gün önce",
+      "lastSync": "Son Senkronizasyon: {{time}}",
+      "hideDetails": "Ayrıntıları gizle",
+      "readingDataTypes": "{{count}} veri türü okunuyor",
+      "dataWeAccess": "ERİŞTİĞİMİZ VERİLER",
+      "howWeUseIt": "NASIL KULLANIYORUZ",
+      "syncNow": "Şimdi Senkronize Et"
+    },
+    "alerts": {
+      "disconnectTitle": "{{name}} Bağlantısını Kes",
+      "disconnectHealthMsg": "Sağlık verilerini okumayı durduracağız. Geçmiş senkronize verileriniz korunacaktır.",
+      "healthConnFailed": "Sağlık Bağlantısı Başarısız",
+      "healthKitFailedIos": "Bluom HealthKit'i başlatamadı. Lütfen iOS Ayarlarından izinleri kontrol edin.",
+      "healthConnectFailedAndroid": "Verilerinizi senkronize etmek için Health Connect izinlerini onaylayın.",
+      "disconnectStravaTitle": "Strava Bağlantısını Kes",
+      "disconnectStravaMsg": "Strava aktivitelerini içe aktarmayı durduracağız. Mevcut kayıtlarınız korunacaktır.",
+      "disconnectedTitle": "Bağlantı Kesildi",
+      "stravaDisconnectedMsg": "Strava bağlantısı kesildi.",
+      "syncComplete": "Senkronizasyon Tamamlandı",
+      "syncCompleteDetails": "Adım: {{steps}}\nKalori: {{calories}} kcal\nMesafe: {{distance}} km",
+      "stravaSynced": "Strava Senkronize Edildi",
+      "stravaSyncedDetails": "{{count}} yeni aktivite içe aktarıldı.",
+      "syncFailed": "Senkronizasyon Başarısız",
+      "stravaSyncFailedDetails": "Strava aktiviteleri senkronize edilemedi."
+    },
+    "items": {
+      "apple_health": {
+        "name": "Apple Health",
+        "subtitle": "Adımlar, antrenmanlar, uyku ve fazlası",
+        "dataPoints": [
+          "Adımlar ve yürüme mesafesi",
+          "Aktif yakılan kalori",
+          "Antrenman seansları",
+          "Vücut ağırlığı",
+          "Uyku süresi",
+          "Kalp atış hızı"
+        ],
+        "purpose": "Adımlarınız ve aktif kalorileriniz günlük hedefinizi günceller. Kilo takibi ilerlemenizle senkronize olur. Kalp atış hızı ve uyku verileri Canlılık skorunuzu hesaplar."
+      },
+      "google_health": {
+        "name": "Health Connect",
+        "subtitle": "Adımlar, antrenmanlar, uyku ve fazlası",
+        "dataPoints": [
+          "Adımlar ve yürüme mesafesi",
+          "Aktif yakılan kalori",
+          "Antrenman seansları",
+          "Vücut ağırlığı",
+          "Uyku seansları",
+          "Kalp atış hızı"
+        ],
+        "purpose": "Adımlarınız ve aktif kalorileriniz günlük hedefinizi günceller. Kilo takibi ilerlemenizle senkronize olur. Kalp atış hızı ve uyku verileri Canlılık skorunuzu hesaplar."
+      },
+      "strava": {
+        "name": "Strava",
+        "subtitle": "Koşu, bisiklet ve açık hava sporları",
+        "dataPoints": [
+          "Aktivite türü ve adı",
+          "Süre ve mesafe",
+          "Yakılan kalori",
+          "Ortalama kalp atış hızı"
+        ],
+        "purpose": "Strava aktiviteleri antrenman olarak otomatik aktarılır; manuel giriş yapmadan kalori geçmişiniz güncel kalır."
+      },
+      "withings": {
+        "name": "Withings",
+        "subtitle": "Akıllı tartılar ve sağlık monitörleri",
+        "dataPoints": [
+          "Vücut ağırlığı",
+          "Vücut yağ oranı %",
+          "Kas kütlesi"
+        ],
+        "purpose": "Vücut kompozisyonu kalori hedeflerinizin doğruluğunu artırır ve zaman içindeki gelişiminizi gösterir."
+      },
+      "samsung_health": {
+        "name": "Samsung Health",
+        "subtitle": "Galaxy Watch & Galaxy Ring",
+        "dataPoints": [
+          "Adımlar",
+          "Kalp atış hızı",
+          "Uyku evreleri",
+          "Vücut kompozisyonu"
+        ],
+        "purpose": "Samsung Health verileri günlük aktivite günlüğünüzü tamamlar ve toparlanma skorlarınızı zenginleştirir."
+      },
+      "oura": {
+        "name": "Oura Ring",
+        "subtitle": "Gelişmiş uyku ve hazır oluş skorları",
+        "dataPoints": [
+          "Uyku süresi ve evreleri",
+          "Hazır oluş skoru",
+          "Kalp atış hızı değişkenliği",
+          "Vücut sıcaklığı trendi"
+        ],
+        "purpose": "Oura verileri gece Wellness skorunuzu güçlendirir ve Hareket planınızdaki toparlanma önerilerini yönlendirir."
+      },
+      "myfitnesspal": {
+        "name": "MyFitnessPal",
+        "subtitle": "Yemek günlüğü ve beslenme",
+        "dataPoints": [
+          "Günlük tüketilen kalori",
+          "Makrolar (protein, karbonhidrat, yağ)",
+          "Su tüketimi"
+        ],
+        "purpose": "MFP günlüğünüzü içe aktarmak mükerrer girişleri önler ve Beslenme toplamlarınızı kesin tutar."
+      }
+    }
+  },
+  "disclaimer": {
+    "medical": "Bluom yalnızca genel sağlık bilgisi sağlar. Tıbbi tavsiye, tanı veya tedavi için daima bir hekime danışın."
+  },
+  "sleeper": {
+    "sleepingStatus": "Modül Uyku Modunda",
+    "activateBtn": "Bu Modülü Etkinleştir"
   }
 }

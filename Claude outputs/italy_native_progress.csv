@@ -1,0 +1,201 @@
+country,keyword_en,keyword_it,platform,traffic,search_ads
+Italy,food,cibo,google_play,275,
+Italy,food,cibo,app_store,275,5
+Italy,workout,allenamento,google_play,295,
+Italy,workout,allenamento,app_store,295,5
+Italy,weight,peso,google_play,186,
+Italy,weight,peso,app_store,186,5
+Italy,fasting,digiuno,google_play,0,
+Italy,fasting,digiuno,app_store,0,5
+Italy,ai fitness,fitness ai,google_play,0,
+Italy,ai fitness,fitness ai,app_store,0,5
+Italy,gym,palestra,google_play,6,
+Italy,gym,palestra,app_store,6,5
+Italy,meditation,meditazione,google_play,3,
+Italy,meditation,meditazione,app_store,3,5
+Italy,period,ciclo,google_play,469,
+Italy,period,ciclo,app_store,469,54
+Italy,mestruation,mestruazioni,google_play,84,
+Italy,mestruation,mestruazioni,app_store,90,24
+Italy,habits,abitudini,google_play,2,
+Italy,habits,abitudini,app_store,2,5
+Italy,tracker,monitoraggio,google_play,No Data,
+Italy,tracker,monitoraggio,app_store,No Data,5
+Italy,diet,dieta,google_play,239,
+Italy,diet,dieta,app_store,261,5
+Italy,run,corsa,google_play,344,
+Italy,run,corsa,app_store,344,47
+Italy,protein,proteine,google_play,6,
+Italy,protein,proteine,app_store,6,5
+Italy,health,salute,google_play,694,
+Italy,health,salute,app_store,694,61
+Italy,AI Calorie,calorie ai,google_play,1,
+Italy,AI Calorie,calorie ai,app_store,1,5
+Italy,eating,mangiare,google_play,1,
+Italy,eating,mangiare,app_store,1,5
+Italy,habit,abitudine,google_play,No Data,
+Italy,habit,abitudine,app_store,No Data,5
+Italy,AI Calories,calorie ia,google_play,0,
+Italy,AI Calories,calorie ia,app_store,0,-
+Italy,AI nutrition,nutrizione ai,google_play,No Data,
+Italy,AI nutrition,nutrizione ai,app_store,No Data,-
+Italy,sleep,sonno,google_play,3,
+Italy,sleep,sonno,app_store,6,5
+Italy,ai food,cibo ai,google_play,2,
+Italy,ai food,cibo ai,app_store,2,-
+Italy,meal scanner,scanner pasti,google_play,No Data,
+Italy,meal scanner,scanner pasti,app_store,No Data,-
+Italy,exercise,esercizio,google_play,No Data,
+Italy,exercise,esercizio,app_store,No Data,5
+Italy,exercises,esercizi,google_play,73,
+Italy,exercises,esercizi,app_store,73,5
+Italy,macro,macro,google_play,0,
+Italy,macro,macro,app_store,0,5
+Italy,macros,macro nutrienti,google_play,No Data,
+Italy,macros,macro nutrienti,app_store,No Data,-
+Italy,macros tracker,monitoraggio macro,google_play,No Data,
+Italy,macros tracker,monitoraggio macro,app_store,No Data,-
+Italy,macro tracker,tracciamento macro,google_play,No Data,
+Italy,macro tracker,tracciamento macro,app_store,No Data,-
+Italy,meal tracker,monitoraggio pasti,google_play,No Data,
+Italy,meal tracker,monitoraggio pasti,app_store,No Data,-
+Italy,meal tracker free,monitoraggio pasti gratis,google_play,No Data,
+Italy,meal tracker free,monitoraggio pasti gratis,app_store,No Data,-
+Italy,habit tracker,monitoraggio abitudini,google_play,No Data,
+Italy,habit tracker,monitoraggio abitudini,app_store,No Data,-
+Italy,women's health,salute femminile,google_play,No Data,
+Italy,women's health,salute femminile,app_store,No Data,5
+Italy,menstrual cycle,ciclo mestruale,google_play,463,
+Italy,menstrual cycle,ciclo mestruale,app_store,463,53
+Italy,GPS fitness,fitness gps,google_play,No Data,
+Italy,GPS fitness,fitness gps,app_store,No Data,-
+Italy,ai coach,coach ai,google_play,2,
+Italy,ai coach,coach ai,app_store,2,-
+Italy,motivation,motivazione,google_play,2,
+Italy,motivation,motivazione,app_store,2,5
+Italy,sports,sport,google_play,506,
+Italy,sports,sport,app_store,506,55
+Italy,brain gym,ginnastica mentale,google_play,No Data,
+Italy,brain gym,ginnastica mentale,app_store,No Data,-
+Italy,cognitive games,giochi cognitivi,google_play,No Data,
+Italy,cognitive games,giochi cognitivi,app_store,No Data,5
+Italy,brain games,giochi mentali,google_play,76,
+Italy,brain games,giochi mentali,app_store,76,5
+Italy,personal plan,piano personale,google_play,No Data,
+Italy,personal plan,piano personale,app_store,No Data,-
+Italy,nutrition plan,piano alimentare,google_play,125,
+Italy,nutrition plan,piano alimentare,app_store,125,5
+Italy,workout plan,piano di allenamento,google_play,3,
+Italy,workout plan,piano di allenamento,app_store,3,5
+Italy,workout plans,piani di allenamento,google_play,No Data,
+Italy,workout plans,piani di allenamento,app_store,No Data,-
+Italy,crossfit,crossfit,google_play,4,
+Italy,crossfit,crossfit,app_store,4,5
+Italy,pilates,pilates,google_play,310,
+Italy,pilates,pilates,app_store,310,45
+Italy,yoga,yoga,google_play,281,
+Italy,yoga,yoga,app_store,281,43
+Italy,cycling tracker,monitoraggio ciclismo,google_play,No Data,
+Italy,cycling tracker,monitoraggio ciclismo,app_store,No Data,-
+Italy,cycling,ciclismo,google_play,98,
+Italy,cycling,ciclismo,app_store,98,5
+Italy,bmi,bmi,google_play,143,
+Italy,bmi,bmi,app_store,143,31
+Italy,bmi calculator,calcolatore bmi,google_play,12,
+Italy,bmi calculator,calcolatore bmi,app_store,12,23
+Italy,brain,cervello,google_play,2,
+Italy,brain,cervello,app_store,12,5
+Italy,meals,pasti,google_play,No Data,
+Italy,meals,pasti,app_store,No Data,5
+Italy,cooking,cucina,google_play,618,
+Italy,cooking,cucina,app_store,618,58
+Italy,recipes,ricette,google_play,182,
+Italy,recipes,ricette,app_store,182,5
+Italy,cooking2,cucinare,google_play,118,
+Italy,cooking2,cucinare,app_store,118,28
+Italy,breakfast,colazione,google_play,No Data,
+Italy,breakfast,colazione,app_store,117,No Data
+Italy,dinner,cena,google_play,No Data,
+Italy,dinner,cena,app_store,No Data,5
+Italy,lunch,pranzo,google_play,No Data,
+Italy,lunch,pranzo,app_store,No Data,5
+Italy,meal prep,preparazione pasti,google_play,No Data,
+Italy,meal prep,preparazione pasti,app_store,No Data,-
+Italy,healthy,sano,google_play,No Data,
+Italy,healthy,sano,app_store,No Data,5
+Italy,bodybuilding,bodybuilding,google_play,1,
+Italy,bodybuilding,bodybuilding,app_store,1,5
+Italy,scanner,scanner,google_play,604,
+Italy,scanner,scanner,app_store,604,58
+Italy,keto,keto,google_play,89,
+Italy,keto,keto,app_store,89,5
+Italy,ketosis,chetosi,google_play,No Data,
+Italy,ketosis,chetosi,app_store,No Data,-
+Italy,glucose,glucosio,google_play,1,
+Italy,glucose,glucosio,app_store,1,5
+Italy,insulin,insulina,google_play,No Data,
+Italy,insulin,insulina,app_store,No Data,-
+Italy,hydration,idratazione,google_play,No Data,
+Italy,hydration,idratazione,app_store,No Data,5
+Italy,steps,passi,google_play,13,
+Italy,steps,passi,app_store,13,5
+Italy,luteal phase,fase luteale,google_play,No Data,
+Italy,luteal phase,fase luteale,app_store,No Data,-
+Italy,ovulation,ovulazione,google_play,49,
+Italy,ovulation,ovulazione,app_store,49,15
+Italy,pcos,pcos,google_play,84,
+Italy,pcos,pcos,app_store,3,5
+Italy,pcos tracker,monitoraggio pcos,google_play,No Data,
+Italy,pcos tracker,monitoraggio pcos,app_store,No Data,-
+Italy,hypertrophy,ipertrofia,google_play,No Data,
+Italy,hypertrophy,ipertrofia,app_store,No Data,-
+Italy,bodyweight training,allenamento a corpo libero,google_play,No Data,
+Italy,bodyweight training,allenamento a corpo libero,app_store,No Data,6
+Italy,weightlifting,sollevamento pesi,google_play,No Data,
+Italy,weightlifting,sollevamento pesi,app_store,No Data,-
+Italy,planner,pianificatore,google_play,1,
+Italy,planner,pianificatore,app_store,1,5
+Italy,food scanner,scanner cibo,google_play,9,
+Italy,food scanner,scanner cibo,app_store,9,5
+Italy,calories from photo,calorie da foto,google_play,No Data,
+Italy,calories from photo,calorie da foto,app_store,No Data,-
+Italy,nutrition scanner,scanner nutrizionale,google_play,No Data,
+Italy,nutrition scanner,scanner nutrizionale,app_store,No Data,5
+Italy,carb counter,contatore carboidrati,google_play,No Data,
+Italy,carb counter,contatore carboidrati,app_store,No Data,5
+Italy,glucose tracker,monitoraggio glucosio,google_play,No Data,
+Italy,glucose tracker,monitoraggio glucosio,app_store,No Data,-
+Italy,keto tracker,monitoraggio keto,google_play,No Data,
+Italy,keto tracker,monitoraggio keto,app_store,No Data,-
+Italy,meal preparation,preparazione culinaria,google_play,No Data,
+Italy,meal preparation,preparazione culinaria,app_store,No Data,-
+Italy,grocery list,lista della spesa,google_play,223,
+Italy,grocery list,lista della spesa,app_store,223,5
+Italy,water reminder,promemoria acqua,google_play,62,
+Italy,water reminder,promemoria acqua,app_store,62,19
+Italy,hydration tracker,monitoraggio idratazione,google_play,No Data,
+Italy,hydration tracker,monitoraggio idratazione,app_store,No Data,-
+Italy,workout planner,pianificatore allenamento,google_play,No Data,
+Italy,workout planner,pianificatore allenamento,app_store,No Data,-
+Italy,gym log,diario palestra,google_play,0,
+Italy,gym log,diario palestra,app_store,0,5
+Italy,weightlifting tracker,monitoraggio sollevamento pesi,google_play,No Data,
+Italy,weightlifting tracker,monitoraggio sollevamento pesi,app_store,No Data,-
+Italy,strength training,allenamento della forza,google_play,No Data,
+Italy,strength training,allenamento della forza,app_store,No Data,5
+Italy,bodyweight workout,workout a corpo libero,google_play,No Data,
+Italy,bodyweight workout,workout a corpo libero,app_store,No Data,-
+Italy,hiit timer,timer hiit,google_play,No Data,
+Italy,hiit timer,timer hiit,app_store,No Data,5
+Italy,muscle builder,costruzione muscolare,google_play,No Data,
+Italy,muscle builder,costruzione muscolare,app_store,No Data,-
+Italy,pedometer,contapassi,google_play,212,
+Italy,pedometer,contapassi,app_store,212,5
+Italy,nutrition,nutrizione,google_play,7,
+Italy,nutrition,nutrizione,app_store,7,5
+Italy,nutrition calculator,calcolatore nutrizionale,google_play,No Data,
+Italy,nutrition calculator,calcolatore nutrizionale,app_store,No Data,5
+Italy,free nutrition tracking app,app monitoraggio nutrizione gratis,google_play,No Data,
+Italy,free nutrition tracking app,app monitoraggio nutrizione gratis,app_store,No Data,-
+Italy,nutrition tracker,monitoraggio nutrizione,google_play,No Data,
+Italy,nutrition tracker,monitoraggio nutrizione,app_store,No Data,-

@@ -673,9 +673,9 @@ export default function MealHubScreen() {
         <TouchableOpacity onPress={() => router.back()} style={ms.backBtn}>
           <Ionicons name="chevron-back" size={22} color={themeColors.text} />
         </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={ms.headerTitle}>{t('meals.hubTitle', 'Meal Hub')}</Text>
-          <Text style={ms.headerSub}>{t('meals.hubSub', '28-day personalised nutrition')}</Text>
+        <View style={{ flex: 1, minWidth: 0, paddingRight: 4 }}>
+          <Text style={ms.headerTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{t('meals.hubTitle', 'Meal Hub')}</Text>
+          <Text style={ms.headerSub} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{t('meals.hubSub', '28-day personalised nutrition')}</Text>
         </View>
         {isPro && (
           <View style={ms.proBadge}>

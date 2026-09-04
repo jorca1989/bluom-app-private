@@ -311,7 +311,7 @@ export default function SingleExerciseLogModal({
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: c.surfaceMuted,
+    backgroundColor: c.bg,
   },
   header: {
     flexDirection: 'row',

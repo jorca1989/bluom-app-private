@@ -214,42 +214,41 @@ export default function ActiveWorkoutModal({
 
                   {isExpanded && (
                     <View style={styles.exExpandedContent}>
-                      {(ex.thumbnailUrl || ex.videoUrl) ? (
-                        <View style={styles.videoBox}>
-                          {ex.videoUrl ? (
-                            ex.videoUrl.toLowerCase().endsWith('.gif') ? (
-                              <Image 
-                                source={{ uri: ex.videoUrl }} 
-                                style={styles.videoPlayerInline} 
-                                contentFit="cover" 
+                      {(() => {
+                        const rawMedia = ex.videoUrl || ex.thumbnailUrl || (ex as any).imageUrl || (ex as any).image;
+                        if (!rawMedia) return null;
+                        const lower = rawMedia.toLowerCase().split('?')[0];
+                        const isVideo =
+                          lower.endsWith('.mp4') ||
+                          lower.endsWith('.mov') ||
+                          lower.endsWith('.webm') ||
+                          lower.endsWith('.m3u8') ||
+                          lower.includes('/video/');
+
+                        return (
+                          <View style={styles.videoBox}>
+                            {isVideo ? (
+                              <Video
+                                source={{ uri: rawMedia }}
+                                posterSource={ex.thumbnailUrl ? { uri: ex.thumbnailUrl } : undefined}
+                                usePoster={!!ex.thumbnailUrl}
+                                style={styles.videoPlayerInline}
+                                resizeMode={ResizeMode.COVER}
+                                useNativeControls
+                                shouldPlay
+                                isLooping
                               />
                             ) : (
-                                <Video
-                                  source={{ uri: ex.videoUrl }}
-                                  style={styles.videoPlayerInline}
-                                  resizeMode={ResizeMode.COVER}
-                                  useNativeControls
-                                  shouldPlay
-                                  isLooping
-                                />
-                            )
-                          ) : (
-                            <TouchableOpacity
-                              activeOpacity={1}
-                              style={styles.videoPlaceholder}
-                            >
-                                {ex.thumbnailUrl ? (
-                                  <Image source={{ uri: ex.thumbnailUrl }} style={styles.videoImage} contentFit="cover" />
-                                ) : (
-                                <View style={styles.videoImage} /> // Blank dark bg
-                              )}
-                              <View style={styles.playIconOverlay}>
-                                <Ionicons name="image-outline" size={48} color="rgba(255,255,255,0.8)" />
-                              </View>
-                            </TouchableOpacity>
-                          )}
-                        </View>
-                      ) : null}
+                              <Image
+                                source={{ uri: rawMedia }}
+                                style={styles.videoPlayerInline}
+                                contentFit="cover"
+                                cachePolicy="memory-disk"
+                              />
+                            )}
+                          </View>
+                        );
+                      })()}
 
                       {/* Sets Header */}
                       <View style={styles.setsHeader}>
@@ -263,7 +262,7 @@ export default function ActiveWorkoutModal({
                       {/* Sets Rows */}
                       {ex.sets.map((set, setIdx) => (
                         <View key={set.id} style={[styles.setRow, set.completed && styles.setRowCompleted]}>
-                          <Text style={[styles.setNum, set.completed && { color: '#0f172a' }]}>{setIdx + 1}</Text>
+                          <Text style={[styles.setNum, set.completed && { color: themeColors.textMuted }]}>{setIdx + 1}</Text>
                           <Text style={styles.setPrev}>
                             {set.previousWeight && set.previousReps 
                               ? `${set.previousWeight}${t('common.units.kg', 'kg')} x ${set.previousReps}` 
@@ -370,7 +369,7 @@ export default function ActiveWorkoutModal({
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: c.surface,
+    backgroundColor: c.bg,
   },
   header: {
     flexDirection: 'row',
@@ -701,10 +700,10 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     marginTop: 12,
     paddingVertical: 10,
     paddingHorizontal: 14,
-    backgroundColor: '#eff6ff',
+    backgroundColor: c.scheme === 'dark' ? 'rgba(59, 130, 246, 0.15)' : '#eff6ff',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#dbeafe',
+    borderColor: c.scheme === 'dark' ? 'rgba(59, 130, 246, 0.3)' : '#dbeafe',
   },
   exVolumeText: {
     fontSize: 13,

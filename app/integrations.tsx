@@ -36,6 +36,7 @@ import { api } from '../convex/_generated/api';
 import { useHealthSync } from '../hooks/useHealthSync';
 import { getBottomContentPadding } from '../utils/layout';
 import { HealthDataViewer } from '../components/HealthDataViewer';
+import { useTranslation } from 'react-i18next';
 
 // ─── Types ────────────────────────────────────────────────────
 interface IntegrationDef {
@@ -195,23 +196,24 @@ const INTEGRATIONS: IntegrationDef[] = [
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────
-function formatLastSync(ts: number | null | undefined): string {
-  if (!ts) return 'Never synced';
+function formatLastSync(ts: number | null | undefined, t: any): string {
+  if (!ts) return t('integrations.card.neverSynced', 'Never synced');
   const diff = Date.now() - ts;
   const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return 'Just now';
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return t('integrations.card.justNow', 'Just now');
+  if (mins < 60) return t('integrations.card.minsAgo', '{{mins}}m ago', { mins });
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.floor(hours / 24)}d ago`;
+  if (hours < 24) return t('integrations.card.hoursAgo', '{{hours}}h ago', { hours });
+  const days = Math.floor(hours / 24);
+  return t('integrations.card.daysAgo', '{{days}}d ago', { days });
 }
 
-function categoryLabel(cat: IntegrationDef['category']): string {
+function categoryLabel(cat: IntegrationDef['category'], t: any): string {
   switch (cat) {
-    case 'activity': return 'Activity & Fitness';
-    case 'biometrics': return 'Body Metrics';
-    case 'nutrition': return 'Nutrition';
-    case 'sleep': return 'Sleep & Recovery';
+    case 'activity': return t('integrations.categories.activity', 'Activity & Fitness');
+    case 'biometrics': return t('integrations.categories.biometrics', 'Body Metrics');
+    case 'nutrition': return t('integrations.categories.nutrition', 'Nutrition');
+    case 'sleep': return t('integrations.categories.sleep', 'Sleep & Recovery');
   }
 }
 
@@ -225,6 +227,7 @@ function IntegrationCard({
   lastSync,
   onToggle,
   onSync,
+  t,
 }: {
   item: IntegrationDef;
   connected: boolean;
@@ -232,9 +235,14 @@ function IntegrationCard({
   lastSync: number | null | undefined;
   onToggle: () => void;
   onSync: () => void;
+  t: any;
 }) {
   const [expanded, setExpanded] = useState(false);
   const comingSoon = item.platform === 'coming_soon';
+
+  const localizedName = t(`integrations.items.${item.id}.name`, item.name);
+  const localizedSubtitle = t(`integrations.items.${item.id}.subtitle`, item.subtitle);
+  const localizedPurpose = t(`integrations.items.${item.id}.purpose`, item.purpose);
 
   return (
     <View style={[card.wrap, comingSoon && card.wrapDimmed]}>
@@ -246,17 +254,17 @@ function IntegrationCard({
 
         <View style={card.info}>
           <View style={card.nameRow}>
-            <Text style={card.name}>{item.name}</Text>
+            <Text style={card.name}>{localizedName}</Text>
             {comingSoon && (
               <View style={card.badge}>
-                <Text style={card.badgeText}>Coming soon</Text>
+                <Text style={card.badgeText}>{t('integrations.card.comingSoon', 'Coming soon')}</Text>
               </View>
             )}
           </View>
-          <Text style={card.sub}>{item.subtitle}</Text>
+          <Text style={card.sub}>{localizedSubtitle}</Text>
           {connected && (
             <Text style={[card.syncTime, { color: '#0f172a', fontWeight: '800' }]}>
-              Last Sync: {formatLastSync(lastSync)}
+              {t('integrations.card.lastSync', 'Last Sync: {{time}}', { time: formatLastSync(lastSync, t) })}
             </Text>
           )}
         </View>
@@ -282,7 +290,9 @@ function IntegrationCard({
             activeOpacity={0.7}
           >
             <Text style={card.expandLabel}>
-              {expanded ? 'Hide details' : `Reading ${item.dataPoints.length} data types`}
+              {expanded
+                ? t('integrations.card.hideDetails', 'Hide details')
+                : t('integrations.card.readingDataTypes', 'Reading {{count}} data types', { count: item.dataPoints.length })}
             </Text>
             <Ionicons
               name={expanded ? 'chevron-up' : 'chevron-down'}
@@ -294,17 +304,20 @@ function IntegrationCard({
           {expanded && (
             <View style={card.details}>
               {/* Data points */}
-              <Text style={card.detailTitle}>DATA WE ACCESS</Text>
-              {item.dataPoints.map((dp) => (
-                <View key={dp} style={card.dpRow}>
-                  <Ionicons name="checkmark-circle" size={14} color={item.iconColor} />
-                  <Text style={card.dpText}>{dp}</Text>
-                </View>
-              ))}
+              <Text style={card.detailTitle}>{t('integrations.card.dataWeAccess', 'DATA WE ACCESS')}</Text>
+              {item.dataPoints.map((dp, idx) => {
+                const localizedDp = t(`integrations.items.${item.id}.dataPoints.${idx}`, dp);
+                return (
+                  <View key={dp} style={card.dpRow}>
+                    <Ionicons name="checkmark-circle" size={14} color={item.iconColor} />
+                    <Text style={card.dpText}>{localizedDp}</Text>
+                  </View>
+                );
+              })}
 
               {/* Purpose string — this is what Apple reviewers look for */}
-              <Text style={[card.detailTitle, { marginTop: 12 }]}>HOW WE USE IT</Text>
-              <Text style={card.purposeText}>{item.purpose}</Text>
+              <Text style={[card.detailTitle, { marginTop: 12 }]}>{t('integrations.card.howWeUseIt', 'HOW WE USE IT')}</Text>
+              <Text style={card.purposeText}>{localizedPurpose}</Text>
 
               {/* Sync now button */}
               {connected && (
@@ -319,7 +332,7 @@ function IntegrationCard({
                   ) : (
                     <>
                       <Ionicons name="refresh" size={14} color="#ffffff" />
-                      <Text style={card.syncBtnText}>Sync Now</Text>
+                      <Text style={card.syncBtnText}>{t('integrations.card.syncNow', 'Sync Now')}</Text>
                     </>
                   )}
                 </TouchableOpacity>
@@ -407,6 +420,7 @@ export default function IntegrationsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser } = useUser();
+  const { t } = useTranslation();
 
   const convexUser = useQuery(
     api.users.getUserByClerkId,
@@ -440,24 +454,24 @@ export default function IntegrationsScreen() {
     if (item.id === 'apple_health' || item.id === 'google_health') {
       if (healthConnected) {
         Alert.alert(
-          `Disconnect ${item.name}`,
-          'We will stop reading health data. Your historical synced data will be kept.',
+          t('integrations.alerts.disconnectTitle', `Disconnect ${item.name}`, { name: item.name }),
+          t('integrations.alerts.disconnectHealthMsg', 'We will stop reading health data. Your historical synced data will be kept.'),
           [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Disconnect', style: 'destructive', onPress: disconnectHealth },
+            { text: t('common.cancel', 'Cancel'), style: 'cancel' },
+            { text: t('common.disconnect', 'Disconnect'), style: 'destructive', onPress: disconnectHealth },
           ]
         );
       } else {
         const ok = await connectHealth();
         if (!ok) {
           Alert.alert(
-            'Health Connection Failed',
+            t('integrations.alerts.healthConnFailed', 'Health Connection Failed'),
             Platform.OS === 'ios'
-              ? 'Bluom was unable to initialize HealthKit. This could be due to missing entitlements, a build configuration error, or the OS blocking the request. Ensure you have made a fresh native build with the latest config.'
-              : 'Please grant Health Connect permissions to sync your data.',
+              ? t('integrations.alerts.healthKitFailedIos', 'Bluom was unable to initialize HealthKit. This could be due to missing entitlements, a build configuration error, or the OS blocking the request. Ensure you have made a fresh native build with the latest config.')
+              : t('integrations.alerts.healthConnectFailedAndroid', 'Please grant Health Connect permissions to sync your data.'),
             [
-              { text: 'Check Settings', onPress: () => Linking.openSettings() },
-              { text: 'Cancel', style: 'cancel' },
+              { text: t('common.checkSettings', 'Check Settings'), onPress: () => Linking.openSettings() },
+              { text: t('common.cancel', 'Cancel'), style: 'cancel' },
             ]
           );
         } else {
@@ -472,16 +486,18 @@ export default function IntegrationsScreen() {
     if (item.id === 'strava') {
       if (stravaConnected) {
         Alert.alert(
-          'Disconnect Strava',
-          'We will stop importing Strava activities. Your existing logs will be kept.',
+          t('integrations.alerts.disconnectStravaTitle', 'Disconnect Strava'),
+          t('integrations.alerts.disconnectStravaMsg', 'We will stop importing Strava activities. Your existing logs will be kept.'),
           [
-            { text: 'Cancel', style: 'cancel' },
+            { text: t('common.cancel', 'Cancel'), style: 'cancel' },
             {
-              text: 'Disconnect',
+              text: t('common.disconnect', 'Disconnect'),
               style: 'destructive',
               onPress: () => {
-                // TODO: call convex mutation to clear strava tokens when you build the settings page
-                Alert.alert('Disconnected', 'Strava has been disconnected.');
+                Alert.alert(
+                  t('integrations.alerts.disconnectedTitle', 'Disconnected'),
+                  t('integrations.alerts.stravaDisconnectedMsg', 'Strava has been disconnected.')
+                );
               },
             },
           ]
@@ -490,7 +506,10 @@ export default function IntegrationsScreen() {
         // Launch Strava OAuth — deep-link back with ?code=xxx
         const clientId = process.env.EXPO_PUBLIC_STRAVA_CLIENT_ID;
         if (!clientId) {
-          Alert.alert('Configuration error', 'Strava client ID is not set.');
+          Alert.alert(
+            t('common.configError', 'Configuration error'),
+            t('integrations.alerts.stravaClientIdMissing', 'Strava client ID is not set.')
+          );
           return;
         }
         const redirectUri = 'https://bluom.app/strava-callback';
@@ -500,7 +519,7 @@ export default function IntegrationsScreen() {
       }
       return;
     }
-  }, [convexUser, healthConnected, connectHealth, disconnectHealth, syncHealth, stravaConnected]);
+  }, [convexUser, healthConnected, connectHealth, disconnectHealth, syncHealth, stravaConnected, t]);
 
   const handleSync = useCallback(async (item: IntegrationDef) => {
     if (!convexUser?._id) return;
@@ -509,8 +528,12 @@ export default function IntegrationsScreen() {
       const result = await syncHealth(convexUser._id);
       if (result) {
         Alert.alert(
-          'Sync Complete',
-          `Steps: ${result.steps.toLocaleString()}\nCalories: ${result.activeCalories} kcal\nDistance: ${result.distanceKm} km`
+          t('integrations.alerts.syncComplete', 'Sync Complete'),
+          t('integrations.alerts.syncCompleteDetails', `Steps: ${result.steps.toLocaleString()}\nCalories: ${result.activeCalories} kcal\nDistance: ${result.distanceKm} km`, {
+            steps: result.steps.toLocaleString(),
+            calories: result.activeCalories,
+            distance: result.distanceKm,
+          })
         );
       }
       return;
@@ -521,14 +544,20 @@ export default function IntegrationsScreen() {
       try {
         const count = await syncStrava({});
         setStravaLastSync(Date.now());
-        Alert.alert('Strava Synced', `${count ?? 0} new activities imported.`);
+        Alert.alert(
+          t('integrations.alerts.stravaSynced', 'Strava Synced'),
+          t('integrations.alerts.stravaSyncedDetails', `${count ?? 0} new activities imported.`, { count: count ?? 0 })
+        );
       } catch (e: any) {
-        Alert.alert('Sync Failed', e?.message ?? 'Could not sync Strava activities.');
+        Alert.alert(
+          t('integrations.alerts.syncFailed', 'Sync Failed'),
+          e?.message ?? t('integrations.alerts.stravaSyncFailedDetails', 'Could not sync Strava activities.')
+        );
       } finally {
         setStravaSyncing(false);
       }
     }
-  }, [convexUser, syncHealth, syncStrava]);
+  }, [convexUser, syncHealth, syncStrava, t]);
 
   // ── Resolve per-item connection state ────────────────────────
   const isConnected = (item: IntegrationDef): boolean => {
@@ -551,10 +580,11 @@ export default function IntegrationsScreen() {
 
   // ── Show only platform-relevant integrations ─────────────────
   const visible = (item: IntegrationDef) => {
-    // Show all integrations so the user knows they exist, 
-    // even if they are on web or the wrong platform.
     return true;
   };
+
+  const connectedCount = [healthConnected, stravaConnected].filter(Boolean).length;
+
   return (
     <SafeAreaView style={[s.container, { backgroundColor: '#f8fafc' }]} edges={['top', 'bottom']}>
       {/* Header - Aligned to match Exercise Library */}
@@ -563,8 +593,8 @@ export default function IntegrationsScreen() {
           <Ionicons name="arrow-back" size={24} color="#0f172a" />
         </TouchableOpacity>
         <View style={s.headerText}>
-          <Text style={s.title}>Connections</Text>
-          <Text style={s.subtitle}>Sync data from your devices & apps</Text>
+          <Text style={s.title}>{t('integrations.title', 'Connections')}</Text>
+          <Text style={s.subtitle}>{t('integrations.subtitle', 'Sync data from your devices & apps')}</Text>
         </View>
       </View>
 
@@ -580,7 +610,7 @@ export default function IntegrationsScreen() {
         <View style={s.privacyBanner}>
           <Ionicons name="shield-checkmark" size={18} color="#059669" />
           <Text style={s.privacyText}>
-            Bluom only reads the data types listed below. We never sell your health data. You can disconnect at any time and request full deletion from Settings → Account.
+            {t('integrations.privacyNotice', 'Bluom only reads the data types listed below. We never sell your health data. You can disconnect at any time and request full deletion from Settings → Account.')}
           </Text>
         </View>
 
@@ -602,20 +632,21 @@ export default function IntegrationsScreen() {
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             <Ionicons name="clipboard-outline" size={18} color="#2563eb" />
             <View>
-              <Text style={{ fontSize: 13, fontWeight: '800', color: '#0f172a' }}>Health Log</Text>
-              <Text style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>View today’s imported metrics</Text>
+              <Text style={{ fontSize: 13, fontWeight: '800', color: '#0f172a' }}>{t('integrations.healthLog', 'Health Log')}</Text>
+              <Text style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{t('integrations.healthLogSub', 'View today’s imported metrics')}</Text>
             </View>
           </View>
           <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
         </TouchableOpacity>
 
         {/* Connected count */}
-        {(healthConnected || stravaConnected) && (
+        {connectedCount > 0 && (
           <View style={s.connectedBadge}>
             <Ionicons name="checkmark-circle" size={14} color="#059669" />
             <Text style={s.connectedBadgeText}>
-              {[healthConnected, stravaConnected].filter(Boolean).length} source
-              {[healthConnected, stravaConnected].filter(Boolean).length > 1 ? 's' : ''} connected
+              {connectedCount === 1
+                ? t('integrations.sourcesConnected', '1 source connected', { count: 1 })
+                : t('integrations.sourcesConnectedPlural', '{{count}} sources connected', { count: connectedCount })}
             </Text>
           </View>
         )}
@@ -626,7 +657,7 @@ export default function IntegrationsScreen() {
           if (!items.length) return null;
           return (
             <View key={cat} style={s.section}>
-              <Text style={s.sectionTitle}>{categoryLabel(cat)}</Text>
+              <Text style={s.sectionTitle}>{categoryLabel(cat, t)}</Text>
               {items.map((item) => (
                 <IntegrationCard
                   key={item.id}
@@ -636,6 +667,7 @@ export default function IntegrationsScreen() {
                   lastSync={lastSyncFor(item)}
                   onToggle={() => handleToggle(item)}
                   onSync={() => handleSync(item)}
+                  t={t}
                 />
               ))}
             </View>
@@ -645,7 +677,7 @@ export default function IntegrationsScreen() {
         {/* Data deletion notice */}
         {!!convexUser?._id && (
           <View style={{ marginBottom: 22 }}>
-            <Text style={[s.sectionTitle, { marginBottom: 10 }]}>Recent Imported Data</Text>
+            <Text style={[s.sectionTitle, { marginBottom: 10 }]}>{t('integrations.recentImportedData', 'Recent Imported Data')}</Text>
             <HealthDataViewer userId={convexUser._id} />
           </View>
         )}
@@ -653,7 +685,7 @@ export default function IntegrationsScreen() {
         <View style={s.deletionNotice}>
           <Ionicons name="information-circle-outline" size={16} color="#64748b" />
           <Text style={s.deletionText}>
-            If you delete your Bluom account, all synced health data stored on our servers is permanently deleted within 30 days. Local device data managed by Apple Health or Google Health Connect is unaffected.
+            {t('integrations.deletionNotice', 'If you delete your Bluom account, all synced health data stored on our servers is permanently deleted within 30 days. Local device data managed by Apple Health or Google Health Connect is unaffected.')}
           </Text>
         </View>
       </ScrollView>

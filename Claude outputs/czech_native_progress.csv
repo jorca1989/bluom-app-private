@@ -1,0 +1,201 @@
+country,keyword_en,keyword_cs,platform,traffic,search_ads
+czech,food,jídlo,GP,No Data,
+czech,food,jídlo,AS,No Data,5
+czech,workout,cvičení,GP,32,
+czech,workout,cvičení,AS,32,5
+czech,weight,váha,GP,90,
+czech,weight,váha,AS,90,32
+czech,fasting,půst,GP,0,
+czech,fasting,půst,AS,0,5
+czech,ai fitness,fitness ai,GP,No Data,
+czech,ai fitness,fitness ai,AS,No Data,-
+czech,gym,posilovna,GP,No Data,
+czech,gym,posilovna,AS,No Data,-
+czech,meditation,meditace,GP,5,
+czech,meditation,meditace,AS,5,5
+czech,period,menstruace,GP,40,
+czech,period,menstruace,AS,40,18
+czech,mestruation,menstruace2,GP,25,
+czech,mestruation,menstruace2,AS,40,18
+czech,habits,návyky,GP,No Data,
+czech,habits,návyky,AS,No Data,5
+czech,tracker,sledování,GP,No Data,
+czech,tracker,sledování,AS,No Data,5
+czech,diet,dieta,GP,4,
+czech,diet,dieta,AS,4,5
+czech,run,běh,GP,5,
+czech,run,běh,AS,5,20
+czech,protein,protein,GP,0,
+czech,protein,protein,AS,0,5
+czech,health,zdraví,GP,0,
+czech,health,zdraví,AS,0,5
+czech,AI Calorie,kalorie ai,GP,No Data,
+czech,AI Calorie,kalorie ai,AS,No Data,5
+czech,eating,jedení,GP,No Data,
+czech,eating,jedení,AS,No Data,-
+czech,habit,návyk,GP,No Data,
+czech,habit,návyk,AS,No Data,-
+czech,AI Calories,kalorie z ai,GP,No Data,
+czech,AI Calories,kalorie z ai,AS,No Data,-
+czech,AI nutrition,výživa ai,GP,No Data,
+czech,AI nutrition,výživa ai,AS,No Data,-
+czech,sleep,spánek,GP,0,
+czech,sleep,spánek,AS,0,5
+czech,ai food,jídlo ai,GP,No Data,
+czech,ai food,jídlo ai,AS,No Data,5
+czech,meal scanner,skener jídla,GP,No Data,
+czech,meal scanner,skener jídla,AS,No Data,-
+czech,exercise,cvičení2,GP,57,
+czech,exercise,cvičení2,AS,32,5
+czech,exercises,cviky,GP,1,
+czech,exercises,cviky,AS,1,5
+czech,macro,makro,GP,147,
+czech,macro,makro,AS,147,41
+czech,macros,makra,GP,1,
+czech,macros,makra,AS,No Data,-
+czech,macros tracker,sledování makra,GP,No Data,
+czech,macros tracker,sledování makra,AS,No Data,-
+czech,macro tracker,sledovač makra,GP,No Data,
+czech,macro tracker,sledovač makra,AS,No Data,-
+czech,meal tracker,sledování jídla,GP,No Data,
+czech,meal tracker,sledování jídla,AS,No Data,5
+czech,meal tracker free,sledování jídla zdarma,GP,No Data,
+czech,meal tracker free,sledování jídla zdarma,AS,No Data,-
+czech,habit tracker,sledování návyků,GP,No Data,
+czech,habit tracker,sledování návyků,AS,No Data,5
+czech,women's health,zdraví žen,GP,No Data,
+czech,women's health,zdraví žen,AS,No Data,-
+czech,menstrual cycle,menstruační cyklus,GP,No Data,
+czech,menstrual cycle,menstruační cyklus,AS,No Data,5
+czech,GPS fitness,gps fitness,GP,0,
+czech,GPS fitness,gps fitness,AS,0,5
+czech,ai coach,ai trenér,GP,No Data,
+czech,ai coach,ai trenér,AS,No Data,-
+czech,motivation,motivace,GP,No Data,
+czech,motivation,motivace,AS,No Data,5
+czech,sports,sport,GP,215,
+czech,sports,sport,AS,215,52
+czech,brain gym,trénink mozku,GP,No Data,
+czech,brain gym,trénink mozku,AS,No Data,5
+czech,cognitive games,kognitivní hry,GP,No Data,
+czech,cognitive games,kognitivní hry,AS,No Data,-
+czech,brain games,hry pro mozek,GP,No Data,
+czech,brain games,hry pro mozek,AS,No Data,-
+czech,personal plan,osobní plán,GP,No Data,
+czech,personal plan,osobní plán,AS,No Data,-
+czech,nutrition plan,jídelníček,GP,No Data,
+czech,nutrition plan,jídelníček,AS,No Data,5
+czech,workout plan,tréninkový plán,GP,No Data,
+czech,workout plan,tréninkový plán,AS,No Data,5
+czech,workout plans,tréninkové plány,GP,No Data,
+czech,workout plans,tréninkové plány,AS,No Data,-
+czech,crossfit,crossfit,GP,0,
+czech,crossfit,crossfit,AS,0,5
+czech,pilates,pilates,GP,95,
+czech,pilates,pilates,AS,95,33
+czech,yoga,jóga,GP,No Data,
+czech,yoga,jóga,AS,No Data,5
+czech,cycling tracker,sledování cyklistiky,GP,No Data,
+czech,cycling tracker,sledování cyklistiky,AS,No Data,-
+czech,cycling,cyklistika,GP,No Data,
+czech,cycling,cyklistika,AS,No Data,5
+czech,bmi,bmi,GP,84,
+czech,bmi,bmi,AS,84,31
+czech,bmi calculator,kalkulačka bmi,GP,No Data,
+czech,bmi calculator,kalkulačka bmi,AS,No Data,5
+czech,brain,mozek,GP,No Data,
+czech,brain,mozek,AS,No Data,5
+czech,meals,jídla,GP,No Data,
+czech,meals,jídla,AS,No Data,5
+czech,cooking,vaření,GP,73,
+czech,cooking,vaření,AS,11,35
+czech,recipes,recepty,GP,41,
+czech,recipes,recepty,AS,67,5
+czech,cooking2,vařit,GP,0,
+czech,cooking2,vařit,AS,No Data,5
+czech,breakfast,snídaně,GP,No Data,
+czech,breakfast,snídaně,AS,No Data,-
+czech,dinner,večeře,GP,No Data,
+czech,dinner,večeře,AS,No Data,5
+czech,lunch,oběd,GP,No Data,
+czech,lunch,oběd,AS,No Data,5
+czech,meal prep,příprava jídla,GP,No Data,
+czech,meal prep,příprava jídla,AS,No Data,-
+czech,healthy,zdravý,GP,No Data,
+czech,healthy,zdravý,AS,No Data,5
+czech,bodybuilding,kulturistika,GP,No Data,
+czech,bodybuilding,kulturistika,AS,No Data,-
+czech,scanner,skener,GP,162,
+czech,scanner,skener,AS,162,5
+czech,keto,keto,GP,2,
+czech,keto,keto,AS,2,5
+czech,ketosis,ketóza,GP,No Data,
+czech,ketosis,ketóza,AS,No Data,-
+czech,glucose,glukóza,GP,No Data,
+czech,glucose,glukóza,AS,No Data,-
+czech,insulin,inzulín,GP,No Data,
+czech,insulin,inzulín,AS,No Data,-
+czech,hydration,hydratace,GP,No Data,
+czech,hydration,hydratace,AS,No Data,-
+czech,steps,kroky,GP,14,
+czech,steps,kroky,AS,14,9
+czech,luteal phase,luteální fáze,GP,No Data,
+czech,luteal phase,luteální fáze,AS,No Data,-
+czech,ovulation,ovulace,GP,No Data,
+czech,ovulation,ovulace,AS,No Data,6
+czech,pcos,pcos,GP,0,
+czech,pcos,pcos,AS,0,5
+czech,pcos tracker,sledování pcos,GP,No Data,
+czech,pcos tracker,sledování pcos,AS,No Data,-
+czech,hypertrophy,hypertrofie,GP,No Data,
+czech,hypertrophy,hypertrofie,AS,No Data,-
+czech,bodyweight training,trénink s vlastní vahou,GP,No Data,
+czech,bodyweight training,trénink s vlastní vahou,AS,No Data,-
+czech,weightlifting,vzpírání,GP,No Data,
+czech,weightlifting,vzpírání,AS,No Data,-
+czech,planner,plánovač,GP,0,
+czech,planner,plánovač,AS,0,5
+czech,food scanner,skener potravin,GP,No Data,
+czech,food scanner,skener potravin,AS,No Data,5
+czech,calories from photo,kalorie z fotky,GP,No Data,
+czech,calories from photo,kalorie z fotky,AS,No Data,-
+czech,nutrition scanner,výživový skener,GP,No Data,
+czech,nutrition scanner,výživový skener,AS,No Data,-
+czech,carb counter,počítadlo sacharidů,GP,No Data,
+czech,carb counter,počítadlo sacharidů,AS,No Data,5
+czech,glucose tracker,sledování glukózy,GP,No Data,
+czech,glucose tracker,sledování glukózy,AS,No Data,-
+czech,keto tracker,sledování keto,GP,No Data,
+czech,keto tracker,sledování keto,AS,No Data,-
+czech,meal preparation,příprava jídel,GP,No Data,
+czech,meal preparation,příprava jídel,AS,No Data,-
+czech,grocery list,nákupní seznam,GP,37,
+czech,grocery list,nákupní seznam,AS,37,5
+czech,water reminder,připomínka pití vody,GP,No Data,
+czech,water reminder,připomínka pití vody,AS,No Data,-
+czech,hydration tracker,sledování hydratace,GP,No Data,
+czech,hydration tracker,sledování hydratace,AS,No Data,-
+czech,workout planner,plánovač tréninku,GP,No Data,
+czech,workout planner,plánovač tréninku,AS,No Data,-
+czech,gym log,deník posilovny,GP,No Data,
+czech,gym log,deník posilovny,AS,No Data,-
+czech,weightlifting tracker,sledování vzpírání,GP,No Data,
+czech,weightlifting tracker,sledování vzpírání,AS,No Data,-
+czech,strength training,silový trénink,GP,No Data,
+czech,strength training,silový trénink,AS,No Data,-
+czech,bodyweight workout,trénink s vahou těla,GP,No Data,
+czech,bodyweight workout,trénink s vahou těla,AS,No Data,-
+czech,hiit timer,hiit časovač,GP,No Data,
+czech,hiit timer,hiit časovač,AS,No Data,-
+czech,muscle builder,budování svalů,GP,No Data,
+czech,muscle builder,budování svalů,AS,No Data,-
+czech,pedometer,krokoměr,GP,5,
+czech,pedometer,krokoměr,AS,5,16
+czech,nutrition,výživa,GP,No Data,
+czech,nutrition,výživa,AS,No Data,5
+czech,nutrition calculator,kalkulačka výživy,GP,No Data,
+czech,nutrition calculator,kalkulačka výživy,AS,No Data,-
+czech,free nutrition tracking app,bezplatná aplikace pro sledování výživy,GP,No Data,
+czech,free nutrition tracking app,bezplatná aplikace pro sledování výživy,AS,No Data,5
+czech,nutrition tracker,sledování výživy,GP,No Data,
+czech,nutrition tracker,sledování výživy,AS,No Data,-

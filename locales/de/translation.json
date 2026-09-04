@@ -149,10 +149,10 @@
     "activeTime": "Aktive Zeit",
     "burnedToday": "Heute verbrannt",
     "steps": "Schritte",
-    "syncedFromHealth": "Synchronisiert mit Health",
-    "continueJourney": "Setze deine Reise fort",
-    "freeUsers28DaysFull": "Kostenlose Nutzer erhalten einen vollständigen 28-Tage-Plan. Nach Ablauf der 28 Tage kannst du auf Pro upgraden, um deine Transformation mit einem KI-generierten Plan fortzusetzen, der sich an jeden Zyklus anpasst.",
-    "freePlanComplete": "Plan abgeschlossen — Upgrade für Fortsetzung",
+    "syncedFromHealth": "Aus Health synchronisiert",
+    "continueJourney": "Setze deine Transformation fort",
+    "freeUsers28DaysFull": "Der kostenlose Plan umfasst 28 Tage. Upgrade auf Pro für adaptive Trainingspläne in jedem Zyklus.",
+    "freePlanComplete": "Basisplan abgeschlossen — upgrade für Fortsetzung",
     "upgradeToPro": "Auf Pro upgraden",
     "health": "Gesundheit",
     "deleteActivity": "Aktivität löschen",
@@ -184,7 +184,7 @@
     "addStepsAction": "Schritte hinzufügen",
     "customExercise": "Eigene Übung",
     "aiPlan": "KI-Plan",
-    "insightsTitle": "Workout-Analysen",
+    "insightsTitle": "Trainings-Einblicke",
     "streakTrends": "{{streak}}-Tage-Serie - tippen für Trends",
     "tapWeeklyTrends": "Tippen, um wöchentliche Trends zu sehen",
     "upgradeTrends": "Upgrade für wöchentliche Trends und mehr",
@@ -192,26 +192,26 @@
     "daysPerWeekText": "{{days}} Tage/Woche",
     "weekOfTotal": "Woche {{current}} von {{total}}",
     "weekProgress": "Woche {{currentWeek}} von {{totalWeeks}}",
-    "upNext": "Als nächstes",
+    "upNext": "Als Nächstes",
     "exercisesCount": "{{count}} Übungen",
     "startWorkout": "Training starten",
     "viewWorkout": "Training ansehen",
-    "dayPreview": "Tag {{day}} Vorschau",
+    "dayPreview": "Vorschau Tag {{day}}",
     "weekOverview": "Wochenübersicht",
-    "detailInfo": "Tippe auf eine Übung, um Details zu sehen. Pro-Nutzer können Übungen hinzufügen oder entfernen.",
-    "startDayWorkout": "Workout starten - Tag {{day}}",
-    "finish": "Beenden",
+    "detailInfo": "Tippe auf eine Übung für Details. Pro-Nutzer können Übungen anpassen.",
+    "startDayWorkout": "Training Tag {{day}} starten",
+    "finish": "Abschließen",
     "duration": "Dauer",
     "volume": "Volumen",
     "sets": "Sätze",
-    "setShort": "SÄTZE",
+    "setShort": "SATZ",
     "previousShort": "VORHER",
     "kgShort": "KG",
-    "repsShort": "REPS",
+    "repsShort": "WDH",
     "addSet": "+ Satz hinzufügen",
     "exerciseVolume": "Übungsvolumen",
     "nextExercise": "Nächste Übung",
-    "restTimer": "Pausentimer",
+    "restTimer": "Pausen-Timer",
     "iAmReady": "Ich bin bereit",
     "turnOff": "Ausschalten",
     "durationMinutes": "Dauer (Minuten)",
@@ -251,22 +251,22 @@
     "sessions": "Einheiten",
     "totalTime": "Gesamtzeit",
     "calories": "Kalorien",
-    "thisWeekVsLastWeek": "Diese Woche vs letzte Woche",
-    "calorieBurnTrend": "Trend Kalorienverbrauch",
+    "thisWeekVsLastWeek": "Diese Woche vs. Letzte Woche",
+    "calorieBurnTrend": "Kalorienverbrauch-Trend",
     "thisWeekTotal": "Gesamt diese Woche",
-    "vsLastWeek": "{{val}}% vs letzte Woche",
-    "consistencyStreak": "Konstanz-Serie",
+    "vsLastWeek": "{{val}}% vs. letzte Woche",
+    "consistencyStreak": "Beständigkeits-Serie",
     "daysCount": "{{count}} Tage",
-    "onFire": "Stark unterwegs!",
-    "keepGoing": "Weitermachen",
-    "avgSessionLength": "Durchschnittliche Dauer",
-    "workoutMix": "Workout-Mix",
+    "onFire": "🔥 Unglaublich!",
+    "keepGoing": "Weiter so!",
+    "avgSessionLength": "Durchschnittl. Trainingsdauer",
+    "workoutMix": "Trainings-Mix",
     "mostActiveDay": "Aktivster Tag",
     "sessions_count": "{{count}} Einheiten",
     "noWorkoutDataYet": "Noch keine Trainingsdaten",
-    "logToUnlockTrends": "Trage Einheiten ein, um Trends freizuschalten.",
-    "unlockProAnalysis": "Pro-Analysen freischalten",
-    "unlockProDesc": "Erhalte Wochentrends, persönliche Bestleistungen und Serienanalyse.",
+    "logToUnlockTrends": "Protokolliere Einheiten für Trends.",
+    "unlockProAnalysis": "Pro-Analyse freischalten",
+    "unlockProDesc": "Erhalte Trends, Volumen-Tracking und Bestleistungen.",
     "your4WeekProgram": "Dein 4-Wochen-Programm",
     "yourProRotatingPlan": "Dein rotierender Pro-Plan",
     "proPlanDesc": "Dein KI-Plan in Move passt sich jede Woche an deinen Fortschritt an. Nutze die 4-Wochen-Vorlage als Basis oder lass dich automatisch führen.",
@@ -322,7 +322,12 @@
     "outdoorBannerLive": "OUTDOOR",
     "outdoorBannerRecord": "Aufnehmen\nAktivität",
     "outdoorBannerSub": "GPS-Tracking • Live-Statistiken",
-    "outdoorBannerTapToStart": "Zum Starten tippen"
+    "outdoorBannerTapToStart": "Zum Starten tippen",
+    "routeLoaded": "Route geladen",
+    "waypointsLoaded": "{{count}} Wegpunkte.",
+    "gpxRoutes": "GPX-Routen",
+    "gpxRoutesDesc": "GPX-Dateiupload in Kürze.\nDu kannst Wikiloc-.gpx-Dateien hochladen, um Referenzpfade einzublenden.",
+    "log": "Eintragen"
   },
   "tabs": {
     "home": "Home",
@@ -405,7 +410,9 @@
       "aiChef": "KI-Koch",
       "aiChefDesc": "Scannen & Erstellen",
       "personalPlan": "Mein Plan",
-      "personalPlanDesc": "KI 30-Tage-Routine"
+      "personalPlanDesc": "KI 30-Tage-Routine",
+      "nutritionInsights": "Ernährungsanalyse",
+      "nutritionInsightsDesc": "Detaillierte Makro-Aufschlüsselung"
     },
     "widgets": {
       "title": "Ernährungs-Sektionen",
@@ -424,6 +431,19 @@
     "caloriesShort": "cal",
     "insights": {
       "title": "Ernährungseinblicke"
+    },
+    "detailedInsights": {
+      "title": "Detaillierte Nährwerte",
+      "calories": "Kalorien",
+      "protein": "Gesamtprotein",
+      "carbs": "Gesamtkohlenhydrate",
+      "fiber": "Ballaststoffe",
+      "sugar": "Gesamtzucker",
+      "fat": "Gesamtfett",
+      "saturatedFat": "Gesättigte Fettsäuren",
+      "polyunsaturatedFat": "Mehrfach ungesättigte Fettsäuren",
+      "monounsaturatedFat": "Einfach ungesättigte Fettsäuren",
+      "transFat": "Transfette"
     }
   },
   "modals": {
@@ -482,7 +502,9 @@
       "addCustomTitle": "Benutzerdefiniertes Lebensmittel hinzufügen",
       "addCustomSub": "Füge schnell eine Zutat oder ein Lebensmittel hinzu, das nicht in der Datenbank ist.",
       "createRecipeTitle": "Ein Rezept erstellen",
-      "createRecipeSub": "Kombiniere mehrere Zutaten in einer gespeicherten Mahlzeit für ein einfacheres Logging."
+      "createRecipeSub": "Kombiniere mehrere Zutaten in einer gespeicherten Mahlzeit für ein einfacheres Logging.",
+      "addFood": "Lebensmittel hinzufügen",
+      "addRecipe": "Rezept hinzufügen"
     },
     "addFood": {
       "title": "Benutzerdefiniertes Lebensmittel hinzufügen",
@@ -494,7 +516,12 @@
       "p": "Protein (g)",
       "c": "Kohlenhydrate (g)",
       "f": "Fett (g)",
-      "save": "Benutzerdefiniertes Lebensmittel speichern"
+      "save": "Benutzerdefiniertes Lebensmittel speichern",
+      "nextReview": "Weiter: Überprüfen",
+      "reviewSave": "Überprüfen & Speichern",
+      "by": "von",
+      "saving": "Speichern...",
+      "saveFood": "Lebensmittel speichern"
     },
     "createRecipe": {
       "title": "Rezept erstellen",
@@ -527,12 +554,14 @@
     },
     "logRecipe": {
       "title": "Mahlzeit erfassen",
-      "logged": "Erfolgreich erfasst!",
-      "addedTo": "Hinzugefügt zu deinem",
-      "logToMeal": "In Mahlzeit erfassen",
-      "qty": "Menge (Portionen)",
+      "logged": "Eingetragen!",
+      "addedTo": "Hinzugefügt zu",
+      "logToMeal": "Zu Mahlzeit eintragen",
+      "qty": "Menge",
       "skip": "Überspringen",
-      "logTo": "Erfassen in"
+      "logTo": "Eintragen in",
+      "titleRecipe": "Rezept hinzufügen",
+      "titleFood": "Lebensmittel hinzufügen"
     },
     "sugar": {
       "scanTitle": "Produkt analysieren",
@@ -606,17 +635,17 @@
     "alreadyLoaded": "Bereits aus deinem Profil geladen",
     "articleDisclaimer": "Bildungsinhalt, keine medizinische Beratung. Konsultiere einen Arzt.",
     "vitalityCheckin": "Vitalitäts-Check",
-    "vitalitySub": "Bewerte jede Säule ehrlich. Dein T-Opt Score aktualisiert sich in Echtzeit.",
-    "tOptScore": "T-OPT SCORE",
-    "drivePillar": "Vitalität / Libido",
-    "recoveryPillar": "Erholungszustand",
+    "vitalitySub": "Bewerte jede Säule ehrlich. Dein T-Opt-Score aktualisiert sich in Echtzeit.",
+    "tOptScore": "T-OPT-SCORE",
+    "drivePillar": "Antrieb / Libido",
+    "recoveryPillar": "Erholungsstatus",
     "focusPillar": "Mentaler Fokus",
     "sleepPillar": "Schlafqualität",
-    "moodSynced": "Stimmung von Wellness synchronisiert",
+    "moodSynced": "Stimmung aus Wellness synchronisiert",
     "updateStatus": "Systemstatus aktualisieren",
-    "pelvicTitle": "Beckenboden-Power Protokoll",
-    "pelvicSub": "Verbessert Erektionsfähigkeit, Blasenkontrolle und Core-Stabilität.",
-    "pelvicInstructions": "Anspannen 5s → Entspannen 5s. 10–15 Wiederholungen täglich.",
+    "pelvicTitle": "Beckenboden-Kraftprotokoll",
+    "pelvicSub": "Verbessert Erektionsfunktion, Blasenkontrolle, sexuelle Leistungsfähigkeit und Rumpfstabilität.",
+    "pelvicInstructions": "5s anspannen → 5s entspannen → wiederholen. 10–15 Zyklen. Tägliche Praxis zeigt Ergebnisse in 4–6 Wochen.",
     "startProtocol": "Protokoll starten",
     "finishLog": "Beenden & Speichern",
     "yourStack": "Dein Stack",
@@ -657,7 +686,7 @@
     "peakWeekTool": "Peak Week Werkzeug",
     "openProtocol": "Protokoll öffnen →",
     "dailyProtocols": "Tägliche Protokolle",
-    "pelvicActionSub": "Core, Erektion & Blasenkontrolle",
+    "pelvicActionSub": "Rumpf, Erektions- & Blasenfunktion",
     "core": "Basis",
     "critical": "⚠️ Kritisch",
     "sevenDayTrend": "7-Tage Vitalitätstrend",
@@ -963,7 +992,7 @@
     "unlockDeepAnalyticsSub": "Insights com IA, die sich an Ihre Geschichte, Padrões und Sintomas Registas anpassen."
   },
   "todo": {
-    "title": "Produktivitäts-Zentrum",
+    "title": "Produktivität",
     "open": "offen",
     "done": "erledigt",
     "urgent_count": "{{count}} dringend",
@@ -1128,9 +1157,9 @@
     "all": "Alle",
     "various": "Verschiedene",
     "beginner": "Anfänger",
-    "intermediate": "Mittelstufe",
-    "advanced": "Fortgeschritten",
-    "veteran": "Veteran",
+    "intermediate": "Fortgeschritten",
+    "advanced": "Erfahren",
+    "veteran": "Experte",
     "dayNum": "Tag {{num}}",
     "weekNum": "Woche {{num}}",
     "units": {
@@ -1145,7 +1174,24 @@
     "clear": "Klar",
     "back": "Zurück",
     "notReady": "Nicht bereit",
-    "upgradeToPro": "Upgrade auf Pro"
+    "upgradeToPro": "Upgrade auf Pro",
+    "servings": "Portionen",
+    "protein": "Protein",
+    "carbs": "Kohlenhydrate",
+    "fat": "Fett",
+    "kcal": "kcal",
+    "proteinShort": "P",
+    "carbsShort": "K",
+    "fatShort": "F",
+    "openSettings": "Einstellungen öffnen",
+    "checkSettings": "Einstellungen prüfen",
+    "configError": "Konfigurationsfehler",
+    "disconnect": "Trennen",
+    "start": "Start",
+    "yes": "Ja",
+    "resume": "Fortsetzen",
+    "pause": "Pause",
+    "today": "Heute"
   },
   "wellness": {
     "title": "Wellness",
@@ -1785,31 +1831,32 @@
     },
     "lifeGoalsHub": {
       "title": "Lebensziele",
-      "pending": "Offen",
-      "savings": "Ersparnisse",
+      "pending": "Ausstehend",
+      "savings": "Sparen",
       "achieved": "Erreicht",
       "link": "Link",
       "markAchieved": "Als erreicht markieren",
-      "noGoals": "Keine Ziele vorhanden.",
+      "noGoals": "Keine Ziele gefunden. Erstelle eines!",
       "newLifeGoal": "Neues Lebensziel",
       "labelTitle": "Titel",
-      "phVisitJapan": "z.B. Japan bereisen",
+      "phVisitJapan": "z.B. Reise nach Japan",
       "labelCategory": "Kategorie",
       "labelType": "Typ",
       "standardGoal": "Standardziel",
       "savingsGoal": "Sparziel",
-      "targetCost": "Zielbetrag (Optional)",
+      "targetCost": "Zielkosten (Optional)",
       "targetDate": "Zieldatum (JJJJ-MM-TT)",
       "webLink": "Web-Link (Optional)",
       "description": "Beschreibung (Optional)",
+      "phDetails": "Details...",
       "createGoal": "Ziel erstellen",
-      "congrats": "Glückwunsch!",
-      "achievedMsg": "Ziel erreicht! 🎉",
+      "congrats": "Herzlichen Glückwunsch!",
+      "achievedMsg": "Du hast ein Lebensziel erreicht! 🎉",
       "deleteGoal": "Ziel löschen",
       "areYouSure": "Bist du sicher?",
-      "errNoTitle": "Bitte gib einen Titel ein.",
-      "successAdded": "Ziel hinzugefügt!",
-      "errFailed": "Fehler beim Hinzufügen.",
+      "errNoTitle": "Bitte gib einen Zieltitel ein.",
+      "successAdded": "Ziel erfolgreich hinzugefügt!",
+      "errFailed": "Ziel konnte nicht hinzugefügt werden.",
       "cat_All": "Alle",
       "cat_Work": "Arbeit",
       "cat_Travel": "Reisen",
@@ -1871,7 +1918,7 @@
     "fuelSub": "Mahlzeitenplan und Lebensmittellog",
     "wellness": "Wellness",
     "wellnessSub": "Stimmung, Schlaf und Meditation",
-    "productivity": "Produktivitäts-Hub",
+    "productivity": "Produktivität",
     "productivitySub": "Aufgaben, Fokus und Ziele",
     "library": "Bluom Bibliothek",
     "librarySub": "Kuratiertes Wissen und Protokolle",
@@ -2084,10 +2131,10 @@
     "pillReminderSub": "Tracke deine Medikamente und Supplemente sicher",
     "unlockStack": "Schalte deinen Vitamin-Stack frei",
     "unlockStackSub": "Sieh dir personalisierte Supplement-Empfehlungen für deine Zyklusphase an.",
-    "pelvicTitle": "Beckenboden-Power Protokoll",
-    "pelvicSub": "Stärkt den Beckenboden, lindert Krämpfe und unterstützt den Core",
-    "pelvicInstructions": "Anspannen 5s → Entspannen 5s → Wiederholen. 10 Zyklen pro Sitzung.",
-    "stopSession": "Sitzung stoppen",
+    "pelvicTitle": "Beckenboden-Kraftprotokoll",
+    "pelvicSub": "Stärkt den Beckenboden, lindert Krämpfe und stützt den Rumpf",
+    "pelvicInstructions": "5s anspannen → 5s entspannen → wiederholen. 10 Zyklen pro Einheit.",
+    "stopSession": "Einheit beenden",
     "startTimer": "Timer starten",
     "lifeStage": "Lebensphase",
     "menstrualCycle": "Menstruationszyklus",
@@ -2098,7 +2145,8 @@
     "stage": {
       "cycle": "Zyklus",
       "pregnancy": "Schwangerschaft",
-      "menopause": "Menopause"
+      "menopause": "Menopause",
+      "postpartum": "Wochenbett"
     },
     "tabToday": "Heute",
     "tabBaby": "Baby",
@@ -2269,9 +2317,16 @@
       },
       "cycleRegularity": {
         "question": "Wie würdest du deinen Zyklus beschreiben?",
-        "regular": "Regelmäßig (24-35 Tage)",
+        "regular": "Regelmäßig (24–35 Tage Zyklus)",
         "irregular": "Unregelmäßig / unvorhersehbar",
-        "unknown": "Ich bin nicht sicher"
+        "unknown": "Ich bin mir nicht sicher"
+      },
+      "lastPeriodDate": {
+        "question": "Letzte Periode — Wann hat deine letzte Menstruation begonnen?"
+      },
+      "conceptionDate": {
+        "question": "Empfängnisdatum — Kennst du dein genaues Empfängnisdatum?",
+        "skip": "Ich weiß es noch nicht"
       }
     },
     "symptomsList": {
@@ -2300,7 +2355,43 @@
       "light": "Leicht",
       "medium": "Mittel",
       "heavy": "Stark"
-    }
+    },
+    "postpartum": "Wochenbett",
+    "ppPain": "Wund- / Beckenschmerz (1-10)",
+    "ppMood": "Stimmung nach der Geburt",
+    "ppLochia": "Wochenfluss",
+    "ppc1": "Wundheilung, Heben einschränken",
+    "ppv1": "Beckenbodenschwellung, Wochenfluss",
+    "ppc2": "Sanfte Rumpfaktivierung, Heben einschränken",
+    "ppv2": "Beckenboden gewinnt Tonus zurück",
+    "startPelvic": "Beckenboden- & Rumpf-Protokoll",
+    "cSecRec1": "Wundheilung, Heben einschränken, Wochenfluss beachten.",
+    "vagRec1": "Beckenbodenschwellung, Ruhe und Wochenfluss beachten.",
+    "babyHereBtn": "Baby ist da!",
+    "babyIsHere": "Baby ist da!",
+    "postpartumRecovery": "Rückbildung & Erholung",
+    "transitionTitle": "Willkommen zur Rückbildung",
+    "deliveryDate": "Geburtsdatum",
+    "deliveryType": "Geburtsart",
+    "vaginal": "Vaginal",
+    "cSection": "Kaiserschnitt",
+    "isBreastfeeding": "Stillen?",
+    "saveTransition": "Rückbildung starten",
+    "ppWeek": "Woche {{week}} nach der Geburt",
+    "newborn": "Neugeborenen-Tracker",
+    "feed": "Fütterung",
+    "diaper": "Windel",
+    "sleep": "Babyschlaf",
+    "lochia": "Wochenfluss",
+    "pain": "Wund- / Beckenschmerz",
+    "pelvicFloor": "Beckenboden & Rumpf",
+    "anxious": "Besorgt",
+    "overwhelmed": "Überfordert",
+    "numb": "Abgestumpft",
+    "happy": "Verbunden & Glücklich",
+    "heavy": "Stark",
+    "light": "Leicht",
+    "none": "Keine"
   },
   "premium": {
     "heroTitle": "Deine Biologie,",
@@ -3631,7 +3722,7 @@
       "nuts": "Nuesse"
     },
     "swapConfirmBtn": "Mahlzeit tauschen",
-    "hubTitle": "Meal Hub",
+    "hubTitle": "Mahlzeiten",
     "hubSub": "28 Tage personalisierte Ernaehrung",
     "heroTitlePro": "KI-Personalisierungsplan",
     "heroTitleFree": "28-Tage-Mahlzeitenplan",
@@ -5706,8 +5797,9 @@
     "snack": "Snack",
     "saveToMyFoods": "In Meine Lebensmittel speichern",
     "saveAsRecipe": "Als Rezept speichern",
-    "savedToMyFoodsSuccess": "In Meine Lebensmittel gespeichert! Sie finden es in der Suche.",
-    "savedAsRecipeSuccess": "Als Rezept gespeichert! Sie finden es in der Suche."
+    "savedToMyFoodsSuccess": "In Meine Lebensmittel gespeichert!",
+    "savedAsRecipeSuccess": "Als Rezept gespeichert!",
+    "addToDiary": "Zum Tagebuch hinzufügen"
   },
   "dental": {
     "finishedTitle": "Zähneputzen abgeschlossen!",
@@ -5775,5 +5867,141 @@
     "stressLow": "Niedrig",
     "stressModerate": "Mäßig",
     "stressHigh": "Hoch"
+  },
+  "integrations": {
+    "title": "Verbindungen",
+    "subtitle": "Synchronisiere Daten von deinen Geräten & Apps",
+    "privacyNotice": "Bluom liest nur die unten aufgeführten Datentypen. Wir verkaufen deine Gesundheitsdaten niemals. Du kannst die Verbindung jederzeit trennen und in Einstellungen → Konto die vollständige Löschung anfordern.",
+    "healthLog": "Gesundheitsprotokoll",
+    "healthLogSub": "Heute importierte Messwerte anzeigen",
+    "sourcesConnected": "{{count}} Quelle verbunden",
+    "sourcesConnectedPlural": "{{count}} Quellen verbunden",
+    "recentImportedData": "Kürzlich importierte Daten",
+    "deletionNotice": "Wenn du dein Bluom-Konto löschst, werden alle synchronisierten Gesundheitsdaten auf unseren Servern innerhalb von 30 Tagen endgültig gelöscht. Lokale Gerätedaten bleiben unberührt.",
+    "categories": {
+      "activity": "Aktivität & Fitness",
+      "biometrics": "Körperdaten",
+      "nutrition": "Ernährung",
+      "sleep": "Schlaf & Erholung"
+    },
+    "card": {
+      "comingSoon": "Demnächst",
+      "neverSynced": "Nie synchronisiert",
+      "justNow": "Gerade eben",
+      "minsAgo": "vor {{mins}} Min.",
+      "hoursAgo": "vor {{hours}} Std.",
+      "daysAgo": "vor {{days}} Tagen",
+      "lastSync": "Letzte Synchronisierung: {{time}}",
+      "hideDetails": "Details ausblenden",
+      "readingDataTypes": "{{count}} Datentypen werden gelesen",
+      "dataWeAccess": "ZUGRIFF AUF DATEN",
+      "howWeUseIt": "VERWENDUNG",
+      "syncNow": "Jetzt synchronisieren"
+    },
+    "alerts": {
+      "disconnectTitle": "{{name}} trennen",
+      "disconnectHealthMsg": "Wir lesen keine weiteren Gesundheitsdaten ein. Deine bisherigen synchronisierten Daten bleiben erhalten.",
+      "healthConnFailed": "Gesundheitsverbindung fehlgeschlagen",
+      "healthKitFailedIos": "Bluom konnte HealthKit nicht initialisieren. Bitte überprüfe die Berechtigungen in den iOS-Einstellungen.",
+      "healthConnectFailedAndroid": "Bitte erteile Health Connect die Berechtigungen zur Synchronisierung.",
+      "disconnectStravaTitle": "Strava trennen",
+      "disconnectStravaMsg": "Wir importieren keine Strava-Aktivitäten mehr. Deine bestehenden Einträge bleiben erhalten.",
+      "disconnectedTitle": "Getrennt",
+      "stravaDisconnectedMsg": "Strava wurde getrennt.",
+      "syncComplete": "Synchronisierung abgeschlossen",
+      "syncCompleteDetails": "Schritte: {{steps}}\nKalorien: {{calories}} kcal\nDistanz: {{distance}} km",
+      "stravaSynced": "Strava synchronisiert",
+      "stravaSyncedDetails": "{{count}} neue Aktivitäten importiert.",
+      "syncFailed": "Synchronisierung fehlgeschlagen",
+      "stravaSyncFailedDetails": "Strava-Aktivitäten konnten nicht synchronisiert werden."
+    },
+    "items": {
+      "apple_health": {
+        "name": "Apple Health",
+        "subtitle": "Schritte, Workouts, Schlaf & mehr",
+        "dataPoints": [
+          "Schritte & Gehstrecke",
+          "Aktive Kalorien",
+          "Trainingseinheiten",
+          "Körpergewicht",
+          "Schlafdauer",
+          "Herzfrequenz"
+        ],
+        "purpose": "Deine Schritte und aktiven Kalorien aktualisieren dein tägliches Ziel. Gewicht wird mit dem Fortschrittstracker synchronisiert. Herzfrequenz und Schlaf berechnen deine Vitalitätswerte."
+      },
+      "google_health": {
+        "name": "Health Connect",
+        "subtitle": "Schritte, Workouts, Schlaf & mehr",
+        "dataPoints": [
+          "Schritte & Gehstrecke",
+          "Aktive Kalorien",
+          "Trainingseinheiten",
+          "Körpergewicht",
+          "Schlafeinheiten",
+          "Herzfrequenz"
+        ],
+        "purpose": "Deine Schritte und aktiven Kalorien aktualisieren dein tägliches Ziel. Gewicht wird mit dem Fortschrittstracker synchronisiert. Herzfrequenz und Schlaf berechnen deinen Vitalitätsscore."
+      },
+      "strava": {
+        "name": "Strava",
+        "subtitle": "Laufen, Radfahren & Outdoor-Sport",
+        "dataPoints": [
+          "Aktivitätstyp & Name",
+          "Dauer & Distanz",
+          "Verbrannte Kalorien",
+          "Durchschnittliche Herzfrequenz"
+        ],
+        "purpose": "Strava-Aktivitäten werden automatisch als Trainings importiert, damit dein Kalorienverbrauch und Trainingsverlauf ohne manuelles Eintragen exakt bleiben."
+      },
+      "withings": {
+        "name": "Withings",
+        "subtitle": "Smarte Waagen & Gesundheitsmonitore",
+        "dataPoints": [
+          "Körpergewicht",
+          "Körperfettanteil %",
+          "Muskelmasse"
+        ],
+        "purpose": "Körperzusammensetzungsdaten verbessern die Genauigkeit deiner Kalorienziele und visualisieren deine Entwicklung."
+      },
+      "samsung_health": {
+        "name": "Samsung Health",
+        "subtitle": "Galaxy Watch & Galaxy Ring",
+        "dataPoints": [
+          "Schritte",
+          "Herzfrequenz",
+          "Schlafphasen",
+          "Körperzusammensetzung"
+        ],
+        "purpose": "Samsung Health-Daten füllen dein tägliches Aktivitätsprotokoll und optimieren deine Schlaf- und Erholungsscores."
+      },
+      "oura": {
+        "name": "Oura Ring",
+        "subtitle": "Fortschrittliche Schlaf- & Bereitschaftswerte",
+        "dataPoints": [
+          "Schlafdauer & -phasen",
+          "Bereitschaftsscore",
+          "Herzfrequenzvariabilität",
+          "Körpertemperaturtrend"
+        ],
+        "purpose": "Oura-Schlafdaten treiben deinen nächtlichen Wellness-Score an und informieren Erholungsempfehlungen in deinem Move-Plan."
+      },
+      "myfitnesspal": {
+        "name": "MyFitnessPal",
+        "subtitle": "Ernährungstagebuch & Nährwerte",
+        "dataPoints": [
+          "Täglich konsumierte Kalorien",
+          "Makros (Protein, Kohlenhydrate, Fett)",
+          "Wasseraufnahme"
+        ],
+        "purpose": "Der Import deines MFP-Tagebuchs verhindert doppelte Einträge und hält deine Nährwertsummen stets präzise."
+      }
+    }
+  },
+  "disclaimer": {
+    "medical": "Bluom bietet ausschließlich allgemeine Wellness-Informationen. Wende dich bei medizinischen Fragen stets an qualifiziertes medizinisches Fachpersonal."
+  },
+  "sleeper": {
+    "sleepingStatus": "Modul pausiert",
+    "activateBtn": "Dieses Modul aktivieren"
   }
 }

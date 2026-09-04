@@ -1413,7 +1413,7 @@ const createS = (c: ThemeColors) => StyleSheet.create({
   pelvicStartBtn: { borderRadius: 18, paddingHorizontal: 48, paddingVertical: 16, width: '80%', alignItems: 'center' },
   pelvicStartTxt: { color: '#fff', fontWeight: '800', fontSize: 16 },
   pelvicFinishBtn: { backgroundColor: c.surfaceMuted, borderRadius: 18, paddingHorizontal: 48, paddingVertical: 16, borderWidth: 1, borderColor: c.border, width: '80%', alignItems: 'center' },
-  pelvicFinishTxt: { color: '#fff', fontWeight: '800', fontSize: 16 },
+  pelvicFinishTxt: { color: c.text, fontWeight: '800', fontSize: 16 },
 
   // Supplement modal
   suppGroupHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },

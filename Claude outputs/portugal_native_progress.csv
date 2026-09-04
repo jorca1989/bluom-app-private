@@ -1,0 +1,201 @@
+country,keyword_en,keyword_pt,platform,traffic,search_ads
+portugal,food,comida,GP,58,
+portugal,food,comida,AS,306,49
+portugal,workout,treino,GP,163,
+portugal,workout,treino,AS,258,45
+portugal,weight,peso,GP,154,
+portugal,weight,peso,AS,154,5
+portugal,fasting,jejum,GP,5,
+portugal,fasting,jejum,AS,5,5
+portugal,ai fitness,fitness ia,GP,No Data,
+portugal,ai fitness,fitness ia,AS,No Data,5
+portugal,gym,ginásio,GP,No Data,
+portugal,gym,ginásio,AS,No Data,5
+portugal,meditation,meditação,GP,1,
+portugal,meditation,meditação,AS,1,5
+portugal,period,período,GP,No Data,
+portugal,period,período,AS,No Data,5
+portugal,mestruation,menstruação,GP,2,
+portugal,mestruation,menstruação,AS,2,5
+portugal,habits,hábitos,GP,0,
+portugal,habits,hábitos,AS,0,5
+portugal,tracker,monitorização,GP,No Data,
+portugal,tracker,monitorização,AS,No Data,5
+portugal,diet,dieta,GP,2,
+portugal,diet,dieta,AS,2,5
+portugal,run,corrida,GP,208,
+portugal,run,corrida,AS,208,40
+portugal,protein,proteína,GP,No Data,
+portugal,protein,proteína,AS,No Data,5
+portugal,health,saúde,GP,14,
+portugal,health,saúde,AS,14,32
+portugal,AI Calorie,calorias ia,GP,No Data,
+portugal,AI Calorie,calorias ia,AS,No Data,-
+portugal,eating,comer,GP,No Data,
+portugal,eating,comer,AS,No Data,5
+portugal,habit,hábito,GP,No Data,
+portugal,habit,hábito,AS,No Data,5
+portugal,AI Calories,calorias de ia,GP,No Data,
+portugal,AI Calories,calorias de ia,AS,No Data,-
+portugal,AI nutrition,nutrição ia,GP,No Data,
+portugal,AI nutrition,nutrição ia,AS,No Data,-
+portugal,sleep,sono,GP,23,
+portugal,sleep,sono,AS,23,43
+portugal,ai food,comida ia,GP,No Data,
+portugal,ai food,comida ia,AS,No Data,-
+portugal,meal scanner,scanner de refeições,GP,No Data,
+portugal,meal scanner,scanner de refeições,AS,No Data,-
+portugal,exercise,exercício,GP,No Data,
+portugal,exercise,exercício,AS,No Data,5
+portugal,exercises,exercícios,GP,No Data,
+portugal,exercises,exercícios,AS,No Data,5
+portugal,macro,macro,GP,5,
+portugal,macro,macro,AS,5,19
+portugal,macros,macronutrientes,GP,No Data,
+portugal,macros,macronutrientes,AS,No Data,-
+portugal,macros tracker,monitorização de macros,GP,No Data,
+portugal,macros tracker,monitorização de macros,AS,No Data,-
+portugal,macro tracker,rastreador de macros,GP,No Data,
+portugal,macro tracker,rastreador de macros,AS,No Data,5
+portugal,meal tracker,monitorização de refeições,GP,No Data,
+portugal,meal tracker,monitorização de refeições,AS,No Data,-
+portugal,meal tracker free,monitorização de refeições grátis,GP,No Data,
+portugal,meal tracker free,monitorização de refeições grátis,AS,No Data,-
+portugal,habit tracker,monitorização de hábitos,GP,No Data,
+portugal,habit tracker,monitorização de hábitos,AS,No Data,-
+portugal,women's health,saúde da mulher,GP,No Data,
+portugal,women's health,saúde da mulher,AS,No Data,-
+portugal,menstrual cycle,ciclo menstrual,GP,59,
+portugal,menstrual cycle,ciclo menstrual,AS,59,22
+portugal,GPS fitness,fitness gps,GP,No Data,
+portugal,GPS fitness,fitness gps,AS,No Data,-
+portugal,ai coach,treinador ia,GP,No Data,
+portugal,ai coach,treinador ia,AS,No Data,-
+portugal,motivation,motivação,GP,No Data,
+portugal,motivation,motivação,AS,1,5
+portugal,sports,desporto,GP,68,
+portugal,sports,desporto,AS,68,5
+portugal,brain gym,ginástica cerebral,GP,No Data,
+portugal,brain gym,ginástica cerebral,AS,No Data,-
+portugal,cognitive games,jogos cognitivos,GP,No Data,
+portugal,cognitive games,jogos cognitivos,AS,No Data,-
+portugal,brain games,jogos para o cérebro,GP,No Data,
+portugal,brain games,jogos para o cérebro,AS,No Data,5
+portugal,personal plan,plano pessoal,GP,No Data,
+portugal,personal plan,plano pessoal,AS,No Data,-
+portugal,nutrition plan,plano alimentar,GP,No Data,
+portugal,nutrition plan,plano alimentar,AS,No Data,5
+portugal,workout plan,plano de treino,GP,1,
+portugal,workout plan,plano de treino,AS,1,5
+portugal,workout plans,planos de treino,GP,No Data,
+portugal,workout plans,planos de treino,AS,No Data,-
+portugal,crossfit,crossfit,GP,5,
+portugal,crossfit,crossfit,AS,5,7
+portugal,pilates,pilates,GP,99,
+portugal,pilates,pilates,AS,99,29
+portugal,yoga,ioga,GP,2,
+portugal,yoga,ioga,AS,2,7
+portugal,cycling tracker,monitorização de ciclismo,GP,No Data,
+portugal,cycling tracker,monitorização de ciclismo,AS,No Data,-
+portugal,cycling,ciclismo,GP,9,
+portugal,cycling,ciclismo,AS,9,8
+portugal,bmi,imc,GP,6,
+portugal,bmi,imc,AS,1,5
+portugal,bmi calculator,calculadora de imc,GP,No Data,
+portugal,bmi calculator,calculadora de imc,AS,No Data,5
+portugal,brain,cérebro,GP,1,
+portugal,brain,cérebro,AS,No Data,5
+portugal,meals,refeições,GP,2,
+portugal,meals,refeições,AS,2,7
+portugal,cooking,cozinhar,GP,51,
+portugal,cooking,cozinhar,AS,51,20
+portugal,recipes,receitas,GP,2,
+portugal,recipes,receitas,AS,2,5
+portugal,cooking2,cozinha,GP,72,
+portugal,cooking2,cozinha,AS,114,31
+portugal,breakfast,pequeno-almoço,GP,No Data,
+portugal,breakfast,pequeno-almoço,AS,No Data,-
+portugal,dinner,jantar,GP,No Data,
+portugal,dinner,jantar,AS,No Data,5
+portugal,lunch,almoço,GP,No Data,
+portugal,lunch,almoço,AS,No Data,5
+portugal,meal prep,preparação de refeições,GP,No Data,
+portugal,meal prep,preparação de refeições,AS,No Data,-
+portugal,healthy,saudável,GP,No Data,
+portugal,healthy,saudável,AS,No Data,5
+portugal,bodybuilding,musculação,GP,1,
+portugal,bodybuilding,musculação,AS,1,5
+portugal,scanner,scanner,GP,498,
+portugal,scanner,scanner,AS,498,61
+portugal,keto,keto,GP,47,
+portugal,keto,keto,AS,1,5
+portugal,ketosis,cetose,GP,No Data,
+portugal,ketosis,cetose,AS,No Data,-
+portugal,glucose,glicose,GP,No Data,
+portugal,glucose,glicose,AS,No Data,5
+portugal,insulin,insulina,GP,No Data,
+portugal,insulin,insulina,AS,No Data,-
+portugal,hydration,hidratação,GP,No Data,
+portugal,hydration,hidratação,AS,No Data,5
+portugal,steps,passos,GP,2,
+portugal,steps,passos,AS,2,5
+portugal,luteal phase,fase lútea,GP,No Data,
+portugal,luteal phase,fase lútea,AS,No Data,-
+portugal,ovulation,ovulação,GP,No Data,
+portugal,ovulation,ovulação,AS,No Data,5
+portugal,pcos,sop,GP,No Data,
+portugal,pcos,sop,AS,No Data,-
+portugal,pcos tracker,monitorização de sop,GP,No Data,
+portugal,pcos tracker,monitorização de sop,AS,No Data,-
+portugal,hypertrophy,hipertrofia,GP,No Data,
+portugal,hypertrophy,hipertrofia,AS,No Data,-
+portugal,bodyweight training,treino com peso corporal,GP,No Data,
+portugal,bodyweight training,treino com peso corporal,AS,No Data,-
+portugal,weightlifting,levantamento de peso,GP,No Data,
+portugal,weightlifting,levantamento de peso,AS,No Data,-
+portugal,planner,planeador,GP,0,
+portugal,planner,planeador,AS,0,5
+portugal,food scanner,scanner de comida,GP,No Data,
+portugal,food scanner,scanner de comida,AS,No Data,-
+portugal,calories from photo,calorias da foto,GP,No Data,
+portugal,calories from photo,calorias da foto,AS,No Data,-
+portugal,nutrition scanner,scanner nutricional,GP,No Data,
+portugal,nutrition scanner,scanner nutricional,AS,No Data,-
+portugal,carb counter,contador de carboidratos,GP,No Data,
+portugal,carb counter,contador de carboidratos,AS,No Data,-
+portugal,glucose tracker,monitorização de glicose,GP,No Data,
+portugal,glucose tracker,monitorização de glicose,AS,No Data,-
+portugal,keto tracker,monitorização keto,GP,No Data,
+portugal,keto tracker,monitorização keto,AS,No Data,-
+portugal,meal preparation,preparação de comida,GP,No Data,
+portugal,meal preparation,preparação de comida,AS,No Data,-
+portugal,grocery list,lista de compras,GP,145,
+portugal,grocery list,lista de compras,AS,145,5
+portugal,water reminder,lembrete de água,GP,No Data,
+portugal,water reminder,lembrete de água,AS,No Data,5
+portugal,hydration tracker,monitorização de hidratação,GP,No Data,
+portugal,hydration tracker,monitorização de hidratação,AS,No Data,-
+portugal,workout planner,planeador de treinos,GP,No Data,
+portugal,workout planner,planeador de treinos,AS,No Data,-
+portugal,gym log,diário de ginásio,GP,No Data,
+portugal,gym log,diário de ginásio,AS,No Data,-
+portugal,weightlifting tracker,monitorização de levantamento de peso,GP,No Data,
+portugal,weightlifting tracker,monitorização de levantamento de peso,AS,No Data,-
+portugal,strength training,treino de força,GP,No Data,
+portugal,strength training,treino de força,AS,No Data,-
+portugal,bodyweight workout,treino com peso do corpo,GP,No Data,
+portugal,bodyweight workout,treino com peso do corpo,AS,No Data,-
+portugal,hiit timer,temporizador hiit,GP,No Data,
+portugal,hiit timer,temporizador hiit,AS,No Data,5
+portugal,muscle builder,construtor muscular,GP,No Data,
+portugal,muscle builder,construtor muscular,AS,No Data,-
+portugal,pedometer,pedómetro,GP,0,
+portugal,pedometer,pedómetro,AS,0,5
+portugal,nutrition,nutrição,GP,1,
+portugal,nutrition,nutrição,AS,1,5
+portugal,nutrition calculator,calculadora nutricional,GP,No Data,
+portugal,nutrition calculator,calculadora nutricional,AS,No Data,-
+portugal,free nutrition tracking app,aplicação gratuita de monitorização nutricional,GP,No Data,
+portugal,free nutrition tracking app,aplicação gratuita de monitorização nutricional,AS,No Data,-
+portugal,nutrition tracker,monitorização nutricional,GP,No Data,
+portugal,nutrition tracker,monitorização nutricional,AS,No Data,-

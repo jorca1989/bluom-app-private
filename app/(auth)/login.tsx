@@ -248,7 +248,7 @@ export default function LoginScreen() {
                   </LinearGradient>
                 </TouchableOpacity>
 
-                {/* 
+                {/* ── Social Auth ── */}
                 <View style={styles.divider}>
                   <View style={styles.dividerLine} />
                   <Text style={styles.dividerText}>{t('common.or', 'or').toUpperCase()}</Text>
@@ -259,7 +259,6 @@ export default function LoginScreen() {
                   <GoogleSignInButton disabled={loading} />
                   {Platform.OS === 'ios' && <AppleSignInButton disabled={loading} />}
                 </View>
-                */}
               </>
             )}
           </View>
@@ -297,7 +296,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     borderWidth: 1,
     borderColor: c.border,
   },
-  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: c.surface, borderRadius: 14, marginBottom: 16, paddingHorizontal: 16, borderWidth: 1, borderColor: c.border },
+  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: c.surfaceMuted, borderRadius: 14, marginBottom: 16, paddingHorizontal: 16, borderWidth: 1, borderColor: c.border },
   inputIconWrapper: { marginRight: 12 },
   eyeIconWrapper: { marginLeft: 12, padding: 4 },
   input: { flex: 1, height: 54, fontSize: 16, color: c.text },

@@ -105,8 +105,8 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
 
     const handleDelete = (goalId: Id<"lifeGoals">) => {
         Alert.alert(t('wellness.lifeGoalsHub.deleteGoal', 'Delete Goal'), t('wellness.lifeGoalsHub.areYouSure', 'Are you sure?'), [
-            { text: "Cancel", style: "cancel" },
-            { text: "Delete", style: "destructive", onPress: () => deleteGoal({ goalId }) }
+            { text: t('common.cancel', 'Cancel'), style: "cancel" },
+            { text: t('common.delete', 'Delete'), style: "destructive", onPress: () => deleteGoal({ goalId }) }
         ]);
     };
 
@@ -276,7 +276,7 @@ export default function LifeGoalsHub({ userId, onClose }: LifeGoalsHubProps) {
                                 <TextInput style={styles.input} placeholder="https://..." value={newWeblink} onChangeText={setNewWeblink} autoCapitalize="none" />
 
                                 <Text style={styles.label}>{t('wellness.lifeGoalsHub.description', 'Description (Optional)')}</Text>
-                                <TextInput style={[styles.input, { height: 80 }]} multiline placeholder="Details..." value={newDesc} onChangeText={setNewDesc} />
+                                <TextInput style={[styles.input, { height: 80 }]} multiline placeholder={t('wellness.lifeGoalsHub.phDetails', 'Details...')} value={newDesc} onChangeText={setNewDesc} />
 
                                 <TouchableOpacity style={styles.mainButton} onPress={handleCreate}>
                                     <Text style={styles.mainButtonText}>{t('wellness.lifeGoalsHub.createGoal', 'Create Goal')}</Text>

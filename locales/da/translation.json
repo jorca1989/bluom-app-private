@@ -213,7 +213,9 @@
       "aiChef": "AI Kok",
       "aiChefDesc": "Scan og opret",
       "personalPlan": "Min plan",
-      "personalPlanDesc": "30-dages AI-rutine"
+      "personalPlanDesc": "30-dages AI-rutine",
+      "nutritionInsights": "Ernæringsindsigt",
+      "nutritionInsightsDesc": "Dybdegående makroanalyse"
     },
     "widgets": {
       "title": "Kostsektioner",
@@ -232,6 +234,19 @@
     "caloriesShort": "cal",
     "insights": {
       "title": "Ernæringsindsigt"
+    },
+    "detailedInsights": {
+      "title": "Detaljeret Ernæring",
+      "calories": "Kalorier",
+      "protein": "Total Protein",
+      "carbs": "Total Kulhydrat",
+      "fiber": "Kostfibre",
+      "sugar": "Sukkerarter",
+      "fat": "Total Fedt",
+      "saturatedFat": "Mættet fedt",
+      "polyunsaturatedFat": "Flerumættet fedt",
+      "monounsaturatedFat": "Enkeltumættet fedt",
+      "transFat": "Transfedt"
     }
   },
   "modals": {
@@ -290,7 +305,9 @@
       "addCustomTitle": "Tilføj brugerdefineret mad",
       "addCustomSub": "Tilføj hurtigt en ingrediens eller madvare, der ikke er i databasen.",
       "createRecipeTitle": "Opret en opskrift",
-      "createRecipeSub": "Kombiner flere ingredienser i et gemt måltid for nem registrering."
+      "createRecipeSub": "Kombiner flere ingredienser i et gemt måltid for nem registrering.",
+      "addFood": "Tilføj mad",
+      "addRecipe": "Tilføj opskrift"
     },
     "addFood": {
       "title": "Tilføj brugerdefineret mad",
@@ -302,7 +319,12 @@
       "p": "Protein (g)",
       "c": "Kulhydrater (g)",
       "f": "Fedt (g)",
-      "save": "Gem brugerdefineret mad"
+      "save": "Gem brugerdefineret mad",
+      "nextReview": "Næste: Gennemgå",
+      "reviewSave": "Gennemgå & Gem",
+      "by": "af",
+      "saving": "Gemmer...",
+      "saveFood": "Gem fødevare"
     },
     "createRecipe": {
       "title": "Opret opskrift",
@@ -335,12 +357,14 @@
     },
     "logRecipe": {
       "title": "Registrer måltid",
-      "logged": "Registrering lykkedes!",
-      "addedTo": "Tilføjet til din",
-      "logToMeal": "Registrer til måltid",
-      "qty": "Mængde (portioner)",
+      "logged": "Logget!",
+      "addedTo": "Tilføjet til dit måltid",
+      "logToMeal": "Log til måltid",
+      "qty": "Mængde",
       "skip": "Spring over",
-      "logTo": "Registrer til"
+      "logTo": "Log til",
+      "titleRecipe": "Tilføj opskrift",
+      "titleFood": "Tilføj mad"
     },
     "sugar": {
       "scanTitle": "Analyser produkt",
@@ -413,20 +437,20 @@
     "quizHeroSub": "4 spørgsmål til at opbygge din protokol — fra naturlig optimering til håndtering af assisterede atleter. Alle data er private.",
     "alreadyLoaded": "Allerede indlæst fra din profil",
     "articleDisclaimer": "Uddannelsesmæssigt indhold, ikke lægelig rådgivning. Konsulter altid en læge for personlig vejledning.",
-    "vitalityCheckin": "Vitalitetstjek",
+    "vitalityCheckin": "Vitalitets-tjek",
     "vitalitySub": "Vurder hver søjle ærligt. Din T-Opt score opdateres i realtid.",
     "tOptScore": "T-OPT SCORE",
-    "drivePillar": "Vitalitet / Libido",
+    "drivePillar": "Drivkraft / Libido",
     "recoveryPillar": "Restitutionsstatus",
     "focusPillar": "Mentalt fokus",
     "sleepPillar": "Søvnkvalitet",
     "moodSynced": "Humør synkroniseret fra Wellness",
     "updateStatus": "Opdater systemstatus",
-    "pelvicTitle": "Bækkenbundsprotokol",
-    "pelvicSub": "Forbedrer erektil funktion, urinvejskontrol, seksuel ydeevne og kerne-stabilitet.",
+    "pelvicTitle": "Bækkenbunds-styrkeprotokol",
+    "pelvicSub": "Forbedrer erektil funktion, blærekontrol, seksuel ydeevne og core-stabilitet.",
     "pelvicInstructions": "Spænd 5s → Slap af 5s → Gentag. 10–15 cyklusser. Daglig træning giver resultater på 4–6 uger.",
     "startProtocol": "Start protokol",
-    "finishLog": "Afslut og registrer",
+    "finishLog": "Afslut & Gem",
     "yourStack": "Din Stack",
     "unlockStack": "Lås op for din Stack",
     "unlockStackSub": "Opgrader til Pro for at se personlige anbefalinger baseret på dine mål.",
@@ -465,7 +489,7 @@
     "peakWeekTool": "Peak Week Værktøj",
     "openProtocol": "Åbn protokol →",
     "dailyProtocols": "Daglige protokoller",
-    "pelvicActionSub": "Kerne, erektil & urinfunktion",
+    "pelvicActionSub": "Core, rejsning & blærefunktion",
     "core": "basis",
     "critical": "⚠️ Kritisk",
     "sevenDayTrend": "7-dages vitalitetstrend",
@@ -794,7 +818,7 @@
     }
   },
   "todo": {
-    "title": "Produktivitetscenter",
+    "title": "Produktivitet",
     "open": "åbne",
     "done": "afsluttede",
     "urgent_count": "{{count}} vigtige",
@@ -959,7 +983,7 @@
     "all": "Alle",
     "various": "Forskellige",
     "beginner": "Begynder",
-    "intermediate": "Mellem",
+    "intermediate": "Mellemniveau",
     "advanced": "Avanceret",
     "veteran": "Veteran",
     "dayNum": "Dag {{num}}",
@@ -976,7 +1000,24 @@
     "clear": "Clear",
     "back": "Back",
     "notReady": "Not ready",
-    "upgradeToPro": "Upgrade to Pro"
+    "upgradeToPro": "Upgrade to Pro",
+    "servings": "portioner",
+    "protein": "Protein",
+    "carbs": "Kulhydrater",
+    "fat": "Fedt",
+    "kcal": "kcal",
+    "proteinShort": "P",
+    "carbsShort": "K",
+    "fatShort": "F",
+    "openSettings": "Åbn Indstillinger",
+    "checkSettings": "Tjek Indstillinger",
+    "configError": "Konfigurationsfejl",
+    "disconnect": "Afbryd",
+    "start": "Start",
+    "yes": "Ja",
+    "resume": "Genoptag",
+    "pause": "Pause",
+    "today": "I dag"
   },
   "wellness": {
     "title": "Velvære",
@@ -1566,29 +1607,30 @@
     },
     "lifeGoalsHub": {
       "title": "Livsmål",
-      "pending": "Afventende",
+      "pending": "Afventer",
       "savings": "Opsparing",
       "achieved": "Opnået",
       "link": "Link",
       "markAchieved": "Marker som opnået",
-      "noGoals": "Ingen mål. Tilføj et!",
-      "newLifeGoal": "Nyt livsmål",
+      "noGoals": "Ingen mål fundet. Opret et nyt!",
+      "newLifeGoal": "Nyt Livsmål",
       "labelTitle": "Titel",
-      "phVisitJapan": "f.eks. Besøge Japan",
+      "phVisitJapan": "f.eks. Rejse til Japan",
       "labelCategory": "Kategori",
       "labelType": "Type",
       "standardGoal": "Standardmål",
       "savingsGoal": "Opsparingsmål",
-      "targetCost": "Målbeløb (valgfrit)",
+      "targetCost": "Målbeløb (Valgfrit)",
       "targetDate": "Måldato (ÅÅÅÅ-MM-DD)",
-      "webLink": "Weblink (valgfrit)",
-      "description": "Beskrivelse (valgfrit)",
-      "createGoal": "Opret mål",
+      "webLink": "Weblink (Valgfrit)",
+      "description": "Beskrivelse (Valgfrit)",
+      "phDetails": "Detaljer...",
+      "createGoal": "Opret Mål",
       "congrats": "Tillykke!",
-      "achievedMsg": "Du har opnået et livsmål! 🎉",
-      "deleteGoal": "Slet mål",
+      "achievedMsg": "Du har nået et livsmål! 🎉",
+      "deleteGoal": "Slet Mål",
       "areYouSure": "Er du sikker?",
-      "errNoTitle": "Indtast venligst en titel til målet.",
+      "errNoTitle": "Indtast venligst en måltitel.",
       "successAdded": "Mål tilføjet!",
       "errFailed": "Kunne ikke tilføje mål.",
       "cat_All": "Alle",
@@ -1702,7 +1744,7 @@
     "fuelSub": "Måltidsplan og madlogning",
     "wellness": "Velvære",
     "wellnessSub": "Humør, søvn og meditation",
-    "productivity": "Produktivitetshub",
+    "productivity": "Produktivitet",
     "productivitySub": "Opgaver, fokus og mål",
     "library": "Bluom Bibliotek",
     "librarySub": "Kuratat viden og protokoller",
@@ -1915,9 +1957,9 @@
     "pillReminderSub": "Hold sikkert styr på dine mediciner og tilskud",
     "unlockStack": "Lås op for din Vitamin-stack",
     "unlockStackSub": "Se dine personlige anbefalinger af tilskud til din cyklusfase.",
-    "pelvicTitle": "Bækkenbundsprotokol",
-    "pelvicSub": "Styrker bækkenbunden, reducerer kramper og støtter kernen",
-    "pelvicInstructions": "Spænd 5s → Slap af 5s → Gentag. Lav 10 cyklusser pr. session.",
+    "pelvicTitle": "Bækkenbunds-styrkeprotokol",
+    "pelvicSub": "Styrker bækkenbunden, lindrer kramper og støtter coremuskulaturen",
+    "pelvicInstructions": "Spænd 5s → Slap af 5s → Gentag. 10 cyklusser per session.",
     "stopSession": "Stop session",
     "startTimer": "Start timer",
     "lifeStage": "Livsfase",
@@ -1929,7 +1971,8 @@
     "stage": {
       "cycle": "Menstruerende / Cyklus",
       "pregnancy": "Graviditet",
-      "menopause": "Overgangsalder / Post-overgangsalder"
+      "menopause": "Overgangsalder / Post-overgangsalder",
+      "postpartum": "Efter fødsel"
     },
     "tabToday": "I dag",
     "tabBaby": "Baby",
@@ -2090,6 +2133,19 @@
         "pmsDesc": "Reduce mood swings and pain",
         "perimenopause": "Perimenopause Support",
         "perimenopauseDesc": "Manage symptoms"
+      },
+      "lastPeriodDate": {
+        "question": "Sidste menstruation — Hvornår startede din sidste menstruation?"
+      },
+      "conceptionDate": {
+        "question": "Undfangelsesdato — Kender du den præcise undfangelsesdato?",
+        "skip": "Jeg ved det ikke endnu"
+      },
+      "cycleRegularity": {
+        "question": "Hvordan vil du beskrive din cyklus?",
+        "regular": "Regelmæssig (24–35 dages cyklus)",
+        "irregular": "Uregelmæssig / uforudsigelig",
+        "unknown": "Jeg er ikke sikker"
       }
     },
     "symptomsList": {
@@ -2150,7 +2206,42 @@
       "iud": "Spiral (hormonel)",
       "implant": "Implantat / indsprøjtning",
       "other": "Anden metode"
-    }
+    },
+    "postpartum": "Efter fødsel",
+    "ppPain": "Sår- / Bækkensmerter (1-10)",
+    "ppMood": "Humør efter fødsel",
+    "ppLochia": "Barselsflåd / Blødning",
+    "ppc1": "Sårheling, undgå tunge løft",
+    "ppv1": "Hævelse i bækkenbund, barselsflåd",
+    "ppc2": "Skånsom coreaktivering, begræns løft",
+    "ppv2": "Bækkenbunden genvinder spændstighed",
+    "startPelvic": "Bækkenbunds- & Core-protokol",
+    "cSecRec1": "Sårheling, undgå tunge løft og følg barselsflåd.",
+    "vagRec1": "Bækkenbundshævelse, hvil og følg barselsflåd.",
+    "babyHereBtn": "Babyen er her!",
+    "babyIsHere": "Babyen er her!",
+    "postpartumRecovery": "Efterfødselsrestitution",
+    "transitionTitle": "Velkommen til efterfødselsforløbet",
+    "deliveryDate": "Fødselsdato",
+    "deliveryType": "Fødselsmåde",
+    "vaginal": "Vaginal",
+    "cSection": "Kejsersnit",
+    "isBreastfeeding": "Ammer du?",
+    "saveTransition": "Start efterfødselsforløb",
+    "ppWeek": "Uge {{week}} efter fødslen",
+    "newborn": "Nyfødt-tracker",
+    "feed": "Måltid",
+    "diaper": "Ble",
+    "sleep": "Babysøvn",
+    "lochia": "Barselsflåd / Blødning",
+    "pelvicFloor": "Bækkenbund & Core",
+    "anxious": "Bekymret",
+    "overwhelmed": "Overvældet",
+    "numb": "Følelsesløs",
+    "happy": "Knyttet & Glad",
+    "heavy": "Kraftig",
+    "light": "Let",
+    "none": "Ingen"
   },
   "move": {
     "widgets": {
@@ -2169,11 +2260,11 @@
     "activeTime": "Aktiv tid",
     "burnedToday": "Forbrændt i dag",
     "steps": "Skridt",
-    "syncedFromHealth": "Synkroniseret fra Sundhed",
-    "continueJourney": "Fortsæt din rejse",
-    "freeUsers28DaysFull": "Gratis brugere får en komplet 28-dages plan. Når de 28 dage er gået, kan du opgradere til Pro for at fortsætte din transformation med en AI-genereret plan, der tilpasser sig hver cyklus.",
-    "freePlanComplete": "Plan fuldført — opgrader for at fortsætte",
-    "upgradeToPro": "Få Pro",
+    "syncedFromHealth": "Synkroniseret fra Health",
+    "continueJourney": "Fortsæt din transformation",
+    "freeUsers28DaysFull": "Den gratis plan indeholder 28 dage. Opgrader til Pro for adaptive planer.",
+    "freePlanComplete": "Grundplan fuldført — opgrader for at fortsætte",
+    "upgradeToPro": "Opgrader til Pro",
     "health": "Sundhed",
     "deleteActivity": "Slet aktivitet",
     "deleteConfirm": "Er du sikker på, at du vil slette denne aktivitet?",
@@ -2204,22 +2295,22 @@
     "addStepsAction": "Tilføj skridt",
     "customExercise": "Tilpasset øvelse",
     "aiPlan": "AI-plan",
-    "insightsTitle": "Træningsindsigter",
+    "insightsTitle": "Træningsindsigt",
     "streakTrends": "{{streak}}-day streak - Tap to view trends",
     "tapWeeklyTrends": "Tap to view weekly trends",
     "upgradeTrends": "Upgrade to unlock weekly trends & more",
     "daysPerWeek": "dage/uge",
     "daysPerWeekText": "{{days}} dage/uge",
     "weekOfTotal": "Uge {{current}} de {{total}}",
-    "weekProgress": "Uge {{currentWeek}} de {{totalWeeks}}",
+    "weekProgress": "Uge {{currentWeek}} af {{totalWeeks}}",
     "upNext": "Næste",
     "exercisesCount": "{{count}} øvelser",
-    "startWorkout": "Start Træning",
-    "viewWorkout": "Se Træning",
-    "dayPreview": "Dag {{day}} forhåndsvisning",
+    "startWorkout": "Start træning",
+    "viewWorkout": "Se træning",
+    "dayPreview": "Dag {{day}} Forhåndsvisning",
     "weekOverview": "Ugeoversigt",
-    "detailInfo": "Tryk på en øvelse for at se detaljer. Pro-brugere kan tilføje eller fjerne øvelser.",
-    "startDayWorkout": "Start træning - Dag {{day}}",
+    "detailInfo": "Tryk på en øvelse for detaljer. Pro-brugere kan tilpasse øvelser.",
+    "startDayWorkout": "Start Dag {{day}} Træning",
     "finish": "Afslut",
     "duration": "Varighed",
     "volume": "Volumen",
@@ -2227,11 +2318,11 @@
     "setShort": "SÆT",
     "previousShort": "FORRIGE",
     "kgShort": "KG",
-    "repsShort": "REPS",
+    "repsShort": "GENT.",
     "addSet": "+ Tilføj sæt",
-    "exerciseVolume": "Øvelsesvolumen",
+    "exerciseVolume": "Træningsvolumen",
     "nextExercise": "Næste øvelse",
-    "restTimer": "Hviletimer",
+    "restTimer": "Pausetimer",
     "iAmReady": "Jeg er klar",
     "turnOff": "Slå fra",
     "durationMinutes": "Varighed (minutter)",
@@ -2268,25 +2359,25 @@
     "medium": "Medium",
     "high": "High",
     "weeklyProgress": "Ugentlig fremgang",
-    "sessions": "Sessioner",
+    "sessions": "Pas",
     "totalTime": "Samlet tid",
     "calories": "Kalorier",
-    "thisWeekVsLastWeek": "Denne uge vs sidste uge",
-    "calorieBurnTrend": "Calorie Burn Trend",
-    "thisWeekTotal": "This week total",
-    "vsLastWeek": "{{val}}% vs last week",
-    "consistencyStreak": "Consistency Streak",
-    "daysCount": "{{count}} days",
-    "onFire": "On fire!",
-    "keepGoing": "Fortsæt",
-    "avgSessionLength": "Avg Session Length",
-    "workoutMix": "Workout Mix",
+    "thisWeekVsLastWeek": "Denne uge vs Sidste uge",
+    "calorieBurnTrend": "Kalorieforbrændingstrend",
+    "thisWeekTotal": "I alt denne uge",
+    "vsLastWeek": "{{val}}% vs sidste uge",
+    "consistencyStreak": "Kontinuitetsstime",
+    "daysCount": "{{count}} dage",
+    "onFire": "🔥 Fantastisk form!",
+    "keepGoing": "Fortsæt det gode arbejde!",
+    "avgSessionLength": "Gns. pasvarighed",
+    "workoutMix": "Træningsmix",
     "mostActiveDay": "Mest aktive dag",
-    "sessions_count": "{{count}} sessions",
-    "noWorkoutDataYet": "No workout data yet",
-    "logToUnlockTrends": "Log sessions to unlock trends.",
-    "unlockProAnalysis": "Lås op for Pro-indsigter",
-    "unlockProDesc": "Få uge-for-uge-trends, personlige rekorder og serieanalyse.",
+    "sessions_count": "{{count}} pas",
+    "noWorkoutDataYet": "Ingen træningsdata endnu",
+    "logToUnlockTrends": "Log træningspas for at låse op for trends.",
+    "unlockProAnalysis": "Lås op for Pro-analyse",
+    "unlockProDesc": "Få trends, volumen-sporing og personlige rekorder.",
     "your4WeekProgram": "Dit 4-ugers program",
     "yourProRotatingPlan": "Din Pro roterende plan",
     "proPlanDesc": "Your AI plan in Move adapts each week based on your progress. Use the 4-week template above as a baseline, or let your plan guide you automatically.",
@@ -2343,7 +2434,12 @@
     "outdoorBannerLive": "UDENDØRS",
     "outdoorBannerRecord": "Optag\nAktivitet",
     "outdoorBannerSub": "GPS-sporing • Live statistik",
-    "outdoorBannerTapToStart": "Tryk for at starte"
+    "outdoorBannerTapToStart": "Tryk for at starte",
+    "routeLoaded": "Rute indlæst",
+    "waypointsLoaded": "{{count}} rutepunkter.",
+    "gpxRoutes": "GPX-ruter",
+    "gpxRoutesDesc": "GPX-upload kommer snart.\nDu vil kunne uploade Wikiloc .gpx-filer som referencerute.",
+    "log": "Log"
   },
   "premium": {
     "heroTitle": "Din biologi,",
@@ -3672,7 +3768,7 @@
       "nuts": "Nødder"
     },
     "swapConfirmBtn": "Skift måltid",
-    "hubTitle": "Måltidshub",
+    "hubTitle": "Måltider",
     "hubSub": "28-dages personlig ernæring",
     "heroTitlePro": "AI Personlig Ernæringsplan",
     "heroTitleFree": "28-Dages Måltidsplan",
@@ -5744,7 +5840,12 @@
     "breakfast": "Morgenmad",
     "lunch": "Frokost",
     "dinner": "Aftensmad",
-    "snack": "Snack"
+    "snack": "Snack",
+    "saveToMyFoods": "Gem i Mine fødevarer",
+    "saveAsRecipe": "Gem som opskrift",
+    "savedToMyFoodsSuccess": "Gemt i Mine fødevarer!",
+    "savedAsRecipeSuccess": "Gemt som opskrift!",
+    "addToDiary": "Føj til dagbog"
   },
   "dental": {
     "finishedTitle": "Børstning fuldført!",
@@ -5812,5 +5913,141 @@
     "stressLow": "Lav",
     "stressModerate": "Moderat",
     "stressHigh": "Høj"
+  },
+  "integrations": {
+    "title": "Forbindelser",
+    "subtitle": "Synkroniser data fra dine enheder og apps",
+    "privacyNotice": "Bluom læser kun datatyperne nedenfor. Vi sælger aldrig dine sundhedsdata. Du kan altid afbryde forbindelsen i Indstillinger → Konto.",
+    "healthLog": "Sundhedslog",
+    "healthLogSub": "Se dagens importerede målinger",
+    "sourcesConnected": "{{count}} kilde forbundet",
+    "sourcesConnectedPlural": "{{count}} kilder forbundet",
+    "recentImportedData": "Senest importerede data",
+    "deletionNotice": "Hvis du sletter din Bluom-konto, slettes alle synkroniserede sundhedsdata permanent inden for 30 dage.",
+    "categories": {
+      "activity": "Aktivitet & Fitness",
+      "biometrics": "Kropsmålinger",
+      "nutrition": "Ernæring",
+      "sleep": "Søvn & Restitution"
+    },
+    "card": {
+      "comingSoon": "Kommer snart",
+      "neverSynced": "Aldrig synkroniseret",
+      "justNow": "Lige nu",
+      "minsAgo": "{{mins}}m siden",
+      "hoursAgo": "{{hours}}t siden",
+      "daysAgo": "{{days}}d siden",
+      "lastSync": "Sidste synkronisering: {{time}}",
+      "hideDetails": "Skjul detaljer",
+      "readingDataTypes": "Læser {{count}} datatyper",
+      "dataWeAccess": "DATA VI HAR ADGANG TIL",
+      "howWeUseIt": "HVORDAN VI BRUGER DET",
+      "syncNow": "Synkroniser nu"
+    },
+    "alerts": {
+      "disconnectTitle": "Afbryd {{name}}",
+      "disconnectHealthMsg": "Vi stopper med at læse sundhedsdata. Dine historiske synkroniserede data bevares.",
+      "healthConnFailed": "Sundhedsforbindelse mislykkedes",
+      "healthKitFailedIos": "Bluom kunne ikke starte HealthKit. Kontroller tilladelser i iOS-indstillinger.",
+      "healthConnectFailedAndroid": "Giv tilladelse i Health Connect for at synkronisere data.",
+      "disconnectStravaTitle": "Afbryd Strava",
+      "disconnectStravaMsg": "Vi stopper med at importere Strava-aktiviteter. Dine eksisterende logs bevares.",
+      "disconnectedTitle": "Afbrudt",
+      "stravaDisconnectedMsg": "Strava er blevet afbrudt.",
+      "syncComplete": "Synkronisering fuldført",
+      "syncCompleteDetails": "Skridt: {{steps}}\nKalorier: {{calories}} kcal\nDistance: {{distance}} km",
+      "stravaSynced": "Strava synkroniseret",
+      "stravaSyncedDetails": "{{count}} nye aktiviteter importeret.",
+      "syncFailed": "Synkronisering mislykkedes",
+      "stravaSyncFailedDetails": "Kunne ikke synkronisere Strava-aktiviteter."
+    },
+    "items": {
+      "apple_health": {
+        "name": "Apple Health",
+        "subtitle": "Skridt, træning, søvn og mere",
+        "dataPoints": [
+          "Skridt og gåafstand",
+          "Aktive forbrændte kalorier",
+          "Træningspas",
+          "Kropsvægt",
+          "Søvnvarighed",
+          "Puls"
+        ],
+        "purpose": "Skridt og aktive kalorier opdaterer dit daglige forbrændingsmål. Vægt synkroniseres til fremgang. Puls og søvn beregner Vitalitetsscore."
+      },
+      "google_health": {
+        "name": "Health Connect",
+        "subtitle": "Skridt, træning, søvn og mere",
+        "dataPoints": [
+          "Skridt og gåafstand",
+          "Aktive forbrændte kalorier",
+          "Træningspas",
+          "Kropsvægt",
+          "Søvnforløb",
+          "Puls"
+        ],
+        "purpose": "Skridt og aktive kalorier opdaterer dit daglige forbrændingsmål. Vægt synkroniseres til fremgang. Puls og søvn beregner Vitalitetsscore."
+      },
+      "strava": {
+        "name": "Strava",
+        "subtitle": "Løb, cykling og udendørssport",
+        "dataPoints": [
+          "Aktivitetstype & navn",
+          "Varighed & distance",
+          "Forbrændte kalorier",
+          "Gennemsnitlig puls"
+        ],
+        "purpose": "Strava-aktiviteter importeres automatisk som træning for præcis kalorieberegning uden manuel indtastning."
+      },
+      "withings": {
+        "name": "Withings",
+        "subtitle": "Smarte vægte og sundhedsmonitorer",
+        "dataPoints": [
+          "Kropsvægt",
+          "Fedtprocent %",
+          "Muskelmasse"
+        ],
+        "purpose": "Kropssammensætning forbedrer kaloriemål og viser din udvikling over tid."
+      },
+      "samsung_health": {
+        "name": "Samsung Health",
+        "subtitle": "Galaxy Watch & Galaxy Ring",
+        "dataPoints": [
+          "Skridt",
+          "Puls",
+          "Søvnfaser",
+          "Kropssammensætning"
+        ],
+        "purpose": "Samsung Health-data supplerer din daglige aktivitetslog og forbedrer restitutionsscorer."
+      },
+      "oura": {
+        "name": "Oura Ring",
+        "subtitle": "Avancerede søvn- og parathedsscore",
+        "dataPoints": [
+          "Søvnvarighed & faser",
+          "Parathedsscore",
+          "Pulsvariabilitet (HRV)",
+          "Kropstemperaturtrend"
+        ],
+        "purpose": "Oura-søvndata giver indsigt i nattens wellness og vejleder restitutionsanbefalinger i dit Move-program."
+      },
+      "myfitnesspal": {
+        "name": "MyFitnessPal",
+        "subtitle": "Maddagbog og ernæring",
+        "dataPoints": [
+          "Daglige kalorier indtaget",
+          "Makronæringsstoffer (protein, kulhydrat, fedt)",
+          "Vandindtag"
+        ],
+        "purpose": "Import af MFP-dagbogen forhindrer dobbeltindtastning og holder dine ernæringstotaler præcise."
+      }
+    }
+  },
+  "disclaimer": {
+    "medical": "Bluom leverer udelukkende generel sundhedsinformation. Rådfør dig altid med en læge ved medicinske spørgsmål."
+  },
+  "sleeper": {
+    "sleepingStatus": "Modul sat på pause",
+    "activateBtn": "Aktivér dette modul"
   }
 }

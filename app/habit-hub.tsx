@@ -70,44 +70,261 @@ const iconOptions = [
     { name: 'Moon', iconName: 'moon' }
 ];
 
-const getDefaultHabits = (t: any): Array<{name: string; icon: string; displayCategory: HabitCategory; backendCategory: 'routine' | 'physical' | 'mental'; targetDaysPerWeek: number;}> => [
-        { name: t('wellness.habits.defWater', 'Drink 8 glasses of water'), icon: 'Droplets', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
-        { name: t('wellness.habits.defVitamins', 'Take daily vitamins'), icon: 'Pill', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
-        { name: t('wellness.habits.defNature', 'Spend time in nature'), icon: 'Leaf', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 5 },
-        { name: t('wellness.habits.defSleep', 'Get 8 hours of sleep'), icon: 'Moon', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
-        { name: t('wellness.habits.defScreen', 'Limit screen time'), icon: 'Phone', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
-        { name: t('wellness.habits.defExercise', 'Exercise for 30 minutes'), icon: 'Dumbbell', displayCategory: 'fitness', backendCategory: 'physical', targetDaysPerWeek: 4 },
-        { name: t('wellness.habits.defMeditate', 'Meditate for 10 minutes'), icon: 'Brain', displayCategory: 'mindfulness', backendCategory: 'mental', targetDaysPerWeek: 5 },
-        { name: t('wellness.habits.defGratitude', 'Practice gratitude'), icon: 'Heart', displayCategory: 'mindfulness', backendCategory: 'mental', targetDaysPerWeek: 5 },
-        { name: t('wellness.habits.defSocial', 'Connect with friends/family'), icon: 'Users', displayCategory: 'social', backendCategory: 'mental', targetDaysPerWeek: 3 },
-        { name: t('wellness.habits.defRead', 'Read for 30 minutes'), icon: 'Book', displayCategory: 'learning', backendCategory: 'mental', targetDaysPerWeek: 4 },
-    ];
+const getDefaultHabits = (): Array<{name: string; icon: string; displayCategory: HabitCategory; backendCategory: 'routine' | 'physical' | 'mental'; targetDaysPerWeek: number;}> => [
+    { name: 'Drink 8 glasses of water', icon: 'Droplets', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
+    { name: 'Take daily vitamins', icon: 'Pill', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
+    { name: 'Spend time in nature', icon: 'Leaf', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 5 },
+    { name: 'Get 8 hours of sleep', icon: 'Moon', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
+    { name: 'Limit screen time', icon: 'Phone', displayCategory: 'health', backendCategory: 'routine', targetDaysPerWeek: 7 },
+    { name: 'Exercise for 30 minutes', icon: 'Dumbbell', displayCategory: 'fitness', backendCategory: 'physical', targetDaysPerWeek: 4 },
+    { name: 'Meditate for 10 minutes', icon: 'Brain', displayCategory: 'mindfulness', backendCategory: 'mental', targetDaysPerWeek: 5 },
+    { name: 'Practice gratitude', icon: 'Heart', displayCategory: 'mindfulness', backendCategory: 'mental', targetDaysPerWeek: 5 },
+    { name: 'Connect with friends/family', icon: 'Users', displayCategory: 'social', backendCategory: 'mental', targetDaysPerWeek: 3 },
+    { name: 'Read for 30 minutes', icon: 'Book', displayCategory: 'learning', backendCategory: 'mental', targetDaysPerWeek: 4 },
+];
 
-// Maps the default habit's English seed-name → its i18n key, so habits
-// stored in the DB in ANY language are displayed in the current UI language.
+// Maps default habit seed-names across ANY language to its i18n key.
 const DEFAULT_HABIT_NAME_MAP: Record<string, string> = {
-    'Drink 8 glasses of water':   'wellness.habits.defWater',
-    'Take daily vitamins':         'wellness.habits.defVitamins',
-    'Spend time in nature':        'wellness.habits.defNature',
-    'Get 8 hours of sleep':        'wellness.habits.defSleep',
-    'Limit screen time':           'wellness.habits.defScreen',
-    'Exercise for 30 minutes':     'wellness.habits.defExercise',
-    'Meditate for 10 minutes':     'wellness.habits.defMeditate',
-    'Practice gratitude':          'wellness.habits.defGratitude',
+    // English
+    'Drink 8 glasses of water': 'wellness.habits.defWater',
+    'Take daily vitamins': 'wellness.habits.defVitamins',
+    'Spend time in nature': 'wellness.habits.defNature',
+    'Get 8 hours of sleep': 'wellness.habits.defSleep',
+    'Limit screen time': 'wellness.habits.defScreen',
+    'Exercise for 30 minutes': 'wellness.habits.defExercise',
+    'Meditate for 10 minutes': 'wellness.habits.defMeditate',
+    'Practice gratitude': 'wellness.habits.defGratitude',
     'Connect with friends/family': 'wellness.habits.defSocial',
-    'Read for 30 minutes':         'wellness.habits.defRead',
-    // PT seeds (in case habits were first created in Portuguese)
-    'Beber 8 copos de água':       'wellness.habits.defWater',
-    'Tomar vitaminas diárias':     'wellness.habits.defVitamins',
-    'Passar tempo na natureza':    'wellness.habits.defNature',
-    'Dormir 8 horas':              'wellness.habits.defSleep',
-    'Limitar tempo de ecrã':       'wellness.habits.defScreen',
+    'Read for 30 minutes': 'wellness.habits.defRead',
+
+    // German
+    '1.5L Wasser trinken': 'wellness.habits.defWater',
+    '8 Gläser Wasser trinken': 'wellness.habits.defWater',
+    'Vitamine nehmen': 'wellness.habits.defVitamins',
+    'Täglich Vitamine einnehmen': 'wellness.habits.defVitamins',
+    'Zeit in der Natur': 'wellness.habits.defNature',
+    'Zeit in der Natur verbringen': 'wellness.habits.defNature',
+    '8 Stunden Schlaf': 'wellness.habits.defSleep',
+    '8 Stunden schlafen': 'wellness.habits.defSleep',
+    'Bildschirmzeit begrenzen': 'wellness.habits.defScreen',
+    '30 Min Training': 'wellness.habits.defExercise',
+    '30 Minuten Sport treiben': 'wellness.habits.defExercise',
+    '10 Min Meditation': 'wellness.habits.defMeditate',
+    '10 Minuten meditieren': 'wellness.habits.defMeditate',
+    'Dankbarkeit üben': 'wellness.habits.defGratitude',
+    'Dankbarkeit praktizieren': 'wellness.habits.defGratitude',
+    'Freunde/Familie treffen': 'wellness.habits.defSocial',
+    'Mit Freunden/Familie austauschen': 'wellness.habits.defSocial',
+    '30 Min lesen': 'wellness.habits.defRead',
+    '30 Minuten lesen': 'wellness.habits.defRead',
+
+    // French
+    "Boire 1.5 litres d'eau": 'wellness.habits.defWater',
+    "Prendre mes vitamines quotidiennes": 'wellness.habits.defVitamins',
+    "Passer du temps dehors dans la nature": 'wellness.habits.defNature',
+    "Dormir au moins 8 heures": 'wellness.habits.defSleep',
+    "Limiter mon temps d'ecran le soir": 'wellness.habits.defScreen',
+    "Limiter mon temps d'écran le soir": 'wellness.habits.defScreen',
+    "Faire une seance de sport ou marcher activement": 'wellness.habits.defExercise',
+    "Faire une séance de sport de 30 minutes": 'wellness.habits.defExercise',
+    "Méditer 10 minutes": 'wellness.habits.defMeditate',
+    "Pratiquer la gratitude": 'wellness.habits.defGratitude',
+    "Voir des amis / proches": 'wellness.habits.defSocial',
+    "Lire pendant 30 minutes": 'wellness.habits.defRead',
+
+    // Portuguese
+    'Beber 8 copos de água': 'wellness.habits.defWater',
+    'Beber 1.5L de água': 'wellness.habits.defWater',
+    'Tomar vitaminas diárias': 'wellness.habits.defVitamins',
+    'Tomar suplementação diária': 'wellness.habits.defVitamins',
+    'Passar tempo na natureza': 'wellness.habits.defNature',
+    'Dormir 8 horas': 'wellness.habits.defSleep',
+    'Limitar tempo de ecrã': 'wellness.habits.defScreen',
+    'Limitar o tempo de ecrã': 'wellness.habits.defScreen',
     'Fazer 30 minutos de exercício': 'wellness.habits.defExercise',
-    'Meditar 10 minutos':          'wellness.habits.defMeditate',
-    'Praticar gratidão':           'wellness.habits.defGratitude',
-    'Ligar a amigos/família':      'wellness.habits.defSocial',
-    'Ler 30 minutos':              'wellness.habits.defRead',
+    'Exercitar 30 minutos': 'wellness.habits.defExercise',
+    'Meditar 10 minutos': 'wellness.habits.defMeditate',
+    'Praticar gratidão': 'wellness.habits.defGratitude',
+    'Ligar a amigos/família': 'wellness.habits.defSocial',
+    'Conectar com amigos/família': 'wellness.habits.defSocial',
+    'Ler 30 minutos': 'wellness.habits.defRead',
+
+    // Spanish
+    'Beber 1.5L agua': 'wellness.habits.defWater',
+    'Tomar suplementos': 'wellness.habits.defVitamins',
+    'Tiempo en la naturaleza': 'wellness.habits.defNature',
+    'Limitar pantallas': 'wellness.habits.defScreen',
+    '30 min ejercicio': 'wellness.habits.defExercise',
+    '10 min meditación': 'wellness.habits.defMeditate',
+    'Practicar gratitud': 'wellness.habits.defGratitude',
+    'Contactar con amigos/familia': 'wellness.habits.defSocial',
+    'Leer 30 min': 'wellness.habits.defRead',
+
+    // Dutch
+    '1,5L water drinken': 'wellness.habits.defWater',
+    'Vitamines innemen': 'wellness.habits.defVitamins',
+    'In de natuur zijn': 'wellness.habits.defNature',
+    '8 uur slapen': 'wellness.habits.defSleep',
+    'Schermtijd beperken': 'wellness.habits.defScreen',
+    '30 min bewegen': 'wellness.habits.defExercise',
+    '10 min mediteren': 'wellness.habits.defMeditate',
+    'Dankbaarheid oefenen': 'wellness.habits.defGratitude',
+    'Vrienden/familie contacten': 'wellness.habits.defSocial',
+    '30 min lezen': 'wellness.habits.defRead',
+
+    // Polish
+    'Wypij 1.5L wody': 'wellness.habits.defWater',
+    'Weź suplementy': 'wellness.habits.defVitamins',
+    'Spędź czas na naturze': 'wellness.habits.defNature',
+    'Śpij 8 godzin': 'wellness.habits.defSleep',
+    'Ogranicz czas przed ekranem': 'wellness.habits.defScreen',
+    'Ćwicz przez 30 minut': 'wellness.habits.defExercise',
+    'Medytuj przez 10 minut': 'wellness.habits.defMeditate',
+    'Praktykuj wdzięczność': 'wellness.habits.defGratitude',
+    'Spotkaj się ze znajomymi/rodziną': 'wellness.habits.defSocial',
+    'Czytaj przez 30 minut': 'wellness.habits.defRead',
+
+    // Danish / Norwegian / Swedish
+    'Drik 1,5L vand': 'wellness.habits.defWater',
+    'Drikk 1.5L vann': 'wellness.habits.defWater',
+    'Drick 1.5L vatten': 'wellness.habits.defWater',
+    'Tag kosttilskud': 'wellness.habits.defVitamins',
+    'Ta daglige kosttilskudd': 'wellness.habits.defVitamins',
+    'Ta kosttillskott': 'wellness.habits.defVitamins',
+    'Brug tid i naturen': 'wellness.habits.defNature',
+    'Spendera tid i naturen': 'wellness.habits.defNature',
+    'Sove 8 timer': 'wellness.habits.defSleep',
+    'Sova 8 timmar': 'wellness.habits.defSleep',
+    'Begræns skærmtid': 'wellness.habits.defScreen',
+    'Begrens skjermtid': 'wellness.habits.defScreen',
+    'Begränsa skärmtid': 'wellness.habits.defScreen',
+    'Træn i 30 minutter': 'wellness.habits.defExercise',
+    'Tren i 30 minutter': 'wellness.habits.defExercise',
+    'Träna 30 minuter': 'wellness.habits.defExercise',
+    'Mediter i 10 minutter': 'wellness.habits.defMeditate',
+    'Meditera 10 minuter': 'wellness.habits.defMeditate',
+    'Praktiser taknemmelighed': 'wellness.habits.defGratitude',
+    'Praktiser takknemlighet': 'wellness.habits.defGratitude',
+    'Utöva tacksamhet': 'wellness.habits.defGratitude',
+    'Vær sammen med venner/familie': 'wellness.habits.defSocial',
+    'Vær sosial med venner/familie': 'wellness.habits.defSocial',
+    'Träffa vänner/familj': 'wellness.habits.defSocial',
+    'Læs i 30 minutter': 'wellness.habits.defRead',
+    'Les i 30 minutter': 'wellness.habits.defRead',
+    'Läs 30 minuter': 'wellness.habits.defRead',
+
+    // Turkish
+    '1.5L su iç': 'wellness.habits.defWater',
+    'Günlük takviyeleri al': 'wellness.habits.defVitamins',
+    'Doğada vakit geçir': 'wellness.habits.defNature',
+    '8 saat uyu': 'wellness.habits.defSleep',
+    'Ekran süresini sınırla': 'wellness.habits.defScreen',
+    '30 dakika egzersiz yap': 'wellness.habits.defExercise',
+    '10 dakika meditasyon yap': 'wellness.habits.defMeditate',
+    'Şükran pratiği yap': 'wellness.habits.defGratitude',
+    'Arkadaşlarla/aileyle bağ kur': 'wellness.habits.defSocial',
+    '30 dakika oku': 'wellness.habits.defRead',
+
+    // Bulgarian, Greek, Lithuanian, Latvian, Romanian
+    'Пийте 8 чаши вода': 'wellness.habits.defWater',
+    'Вземайте витамини всеки ден': 'wellness.habits.defVitamins',
+    'Прекарвайте време сред природата': 'wellness.habits.defNature',
+    'Спете 8 часа': 'wellness.habits.defSleep',
+    'Ограничете времето пред екрана': 'wellness.habits.defScreen',
+    'Тренирайте 30 минути': 'wellness.habits.defExercise',
+    'Медитирайте 10 минути': 'wellness.habits.defMeditate',
+    'Практикувайте благодарност': 'wellness.habits.defGratitude',
+    'Общувайте с приятели/семейство': 'wellness.habits.defSocial',
+    'Четете 30 минути': 'wellness.habits.defRead',
+    'Πίνετε 8 ποτήρια νερό': 'wellness.habits.defWater',
+    'Λαμβάνετε καθημερινά βιταμίνες': 'wellness.habits.defVitamins',
+    'Περάστε χρόνο στη φύση': 'wellness.habits.defNature',
+    'Κοιμηθείτε 8 ώρες': 'wellness.habits.defSleep',
+    'Περιορίστε τον χρόνο οθόνης': 'wellness.habits.defScreen',
+    'Άσκηση για 30 λεπτά': 'wellness.habits.defExercise',
+    'Διαλογισμός για 10 λεπτά': 'wellness.habits.defMeditate',
+    'Εξασκηθείτε στην ευγνωμοσύνη': 'wellness.habits.defGratitude',
+    'Συνδεθείτε με φίλους/οικογένεια': 'wellness.habits.defSocial',
+    'Διαβάστε για 30 λεπτά': 'wellness.habits.defRead',
+    'Išgerkite 8 stiklines vandens': 'wellness.habits.defWater',
+    'Kasdien vartokite vitaminų': 'wellness.habits.defVitamins',
+    'Praleiskite laiką gamtoje': 'wellness.habits.defNature',
+    'Miegokite 8 valandas': 'wellness.habits.defSleep',
+    'Apribokite ekrano laiką': 'wellness.habits.defScreen',
+    'Mankštinkitės 30 minučių': 'wellness.habits.defExercise',
+    'Medituokite 10 minučių': 'wellness.habits.defMeditate',
+    'Praktikuokite dėkingumą': 'wellness.habits.defGratitude',
+    'Bendraukite su draugais / šeima': 'wellness.habits.defSocial',
+    'Skaitykite 30 minučių': 'wellness.habits.defRead',
+    'Izdzeriet 8 glāzes ūdens': 'wellness.habits.defWater',
+    'Lietojiet vitamīnus katru dienu': 'wellness.habits.defVitamins',
+    'Pavadiet laiku dabā': 'wellness.habits.defNature',
+    'Guliet 8 stundas': 'wellness.habits.defSleep',
+    'Ierobežojiet ekrāna laiku': 'wellness.habits.defScreen',
+    'Vingrojiet 30 minūtes': 'wellness.habits.defExercise',
+    'Meditējiet 10 minūtes': 'wellness.habits.defMeditate',
+    'Praktizējiet pateicību': 'wellness.habits.defGratitude',
+    'Sazinieties ar draugiem/ģimeni': 'wellness.habits.defSocial',
+    'Lasiet 30 minūtes': 'wellness.habits.defRead',
+    'Bea 8 pahare de apă': 'wellness.habits.defWater',
+    'Luați zilnic vitamine': 'wellness.habits.defVitamins',
+    'Petreceți timp în natură': 'wellness.habits.defNature',
+    'Dormiți 8 ore': 'wellness.habits.defSleep',
+    'Limitați timpul petrecut pe ecran': 'wellness.habits.defScreen',
+    'Faceți exerciții fizice timp de 30 de minute': 'wellness.habits.defExercise',
+    'Meditați timp de 10 minute': 'wellness.habits.defMeditate',
+    'Exersează-ți recunoștința': 'wellness.habits.defGratitude',
+    'Conectează-te cu prietenii/familia': 'wellness.habits.defSocial',
+    'Citește timp de 30 de minute': 'wellness.habits.defRead',
 };
+
+function resolveHabitName(rawName: string, t: any): string {
+    if (!rawName) return '';
+    const trimmed = rawName.trim();
+    if (DEFAULT_HABIT_NAME_MAP[trimmed]) {
+        return t(DEFAULT_HABIT_NAME_MAP[trimmed], trimmed);
+    }
+    const lower = trimmed.toLowerCase();
+    for (const [key, val] of Object.entries(DEFAULT_HABIT_NAME_MAP)) {
+        if (key.toLowerCase() === lower) {
+            return t(val, trimmed);
+        }
+    }
+
+    // Keyword heuristics to translate any seed name variation across languages
+    if (lower.includes('wasser') || lower.includes('water') || lower.includes('eau') || lower.includes('água') || lower.includes('agua') || lower.includes('vand') || lower.includes('vann') || lower.includes('vatten') || lower.includes('su ') || lower.includes('su iç') || lower.includes('вода') || lower.includes('νερό') || lower.includes('vandens') || lower.includes('ūdens') || lower.includes('apă')) {
+        return t('wellness.habits.defWater', trimmed);
+    }
+    if (lower.includes('vitamin') || lower.includes('suplement') || lower.includes('kosttilskud') || lower.includes('takviye') || lower.includes('витамин') || lower.includes('βιταμίν')) {
+        return t('wellness.habits.defVitamins', trimmed);
+    }
+    if (lower.includes('natur') || lower.includes('nature') || lower.includes('natureza') || lower.includes('doğa') || lower.includes('природ') || lower.includes('φύση') || lower.includes('gamtoje') || lower.includes('dabā')) {
+        return t('wellness.habits.defNature', trimmed);
+    }
+    if (lower.includes('schlaf') || lower.includes('sleep') || lower.includes('sommeil') || lower.includes('dormir') || lower.includes('dormi') || lower.includes('slapen') || lower.includes('spędź') || lower.includes('śpij') || lower.includes('sov') || lower.includes('uyu') || lower.includes('сън') || lower.includes('сп') || lower.includes('ύπν') || lower.includes('mieg') || lower.includes('gul')) {
+        return t('wellness.habits.defSleep', trimmed);
+    }
+    if (lower.includes('bildschirm') || lower.includes('screen') || lower.includes('ecran') || lower.includes('écran') || lower.includes('ecrã') || lower.includes('pantalla') || lower.includes('scherm') || lower.includes('ekran') || lower.includes('skærm') || lower.includes('skjerm') || lower.includes('skärm') || lower.includes('екран') || lower.includes('οθόν') || lower.includes('ekrano') || lower.includes('ekrāna')) {
+        return t('wellness.habits.defScreen', trimmed);
+    }
+    if (lower.includes('training') || lower.includes('exercise') || lower.includes('sport') || lower.includes('exercício') || lower.includes('ejercicio') || lower.includes('bewegen') || lower.includes('ćwicz') || lower.includes('træn') || lower.includes('tren') || lower.includes('träna') || lower.includes('egzersiz') || lower.includes('тренир') || lower.includes('упражн') || lower.includes('άσκηση') || lower.includes('mankšt') || lower.includes('vingro')) {
+        return t('wellness.habits.defExercise', trimmed);
+    }
+    if (lower.includes('medit') || lower.includes('médit') || lower.includes('medyt') || lower.includes('медитир') || lower.includes('διαλογισμ')) {
+        return t('wellness.habits.defMeditate', trimmed);
+    }
+    if (lower.includes('dankbar') || lower.includes('gratitude') || lower.includes('gratid') || lower.includes('gratitud') || lower.includes('dankbaar') || lower.includes('wdzięcz') || lower.includes('taknemmelig') || lower.includes('takknemlig') || lower.includes('tacksam') || lower.includes('şükran') || lower.includes('благодарност') || lower.includes('ευγνωμοσύνη') || lower.includes('dėkingum') || lower.includes('pateicīb') || lower.includes('recunoștință') || lower.includes('praktika')) {
+        return t('wellness.habits.defGratitude', trimmed);
+    }
+    if (lower.includes('freund') || lower.includes('famil') || lower.includes('friend') || lower.includes('amis') || lower.includes('proches') || lower.includes('amig') || lower.includes('vriend') || lower.includes('znajom') || lower.includes('venner') || lower.includes('vänner') || lower.includes('arkadaş') || lower.includes('aile') || lower.includes('приятел') || lower.includes('семейств') || lower.includes('φίλους') || lower.includes('οικογένει') || lower.includes('draug') || lower.includes('ģimen') || lower.includes('prieten')) {
+        return t('wellness.habits.defSocial', trimmed);
+    }
+    if (lower.includes('lesen') || lower.includes('lese') || lower.includes('read') || lower.includes('lire') || lower.includes('ler') || lower.includes('leer') || lower.includes('lezen') || lower.includes('czytaj') || lower.includes('læs') || lower.includes('les ') || lower.includes('läs') || lower.includes('oku') || lower.includes('чет') || lower.includes('διαβάστε') || lower.includes('skait') || lower.includes('las ') || lower.includes('citește')) {
+        return t('wellness.habits.defRead', trimmed);
+    }
+
+    return trimmed;
+}
 
 export default function HabitHubScreen() {
   const { colors: themeColors } = useTheme();
@@ -150,7 +367,7 @@ export default function HabitHubScreen() {
 
         (async () => {
             try {
-                for (const h of getDefaultHabits(t)) {
+                for (const h of getDefaultHabits()) {
                     await createHabit({
                         userId: user._id,
                         name: h.name,
@@ -379,10 +596,8 @@ export default function HabitHubScreen() {
                                                     </View>
                                                     <View style={styles.habitInfo}>
                                                         <Text style={styles.habitName}>
-                                            {DEFAULT_HABIT_NAME_MAP[habit.name]
-                                                ? t(DEFAULT_HABIT_NAME_MAP[habit.name], habit.name)
-                                                : habit.name}
-                                        </Text>
+                                                            {resolveHabitName(habit.name, t)}
+                                                        </Text>
                                                         <Text style={styles.habitStreak}>
                                                             {t('wellness.habits.dayStreak', {
                                                                 count: habit.streak,

@@ -34,20 +34,22 @@ function StatRow({ icon, iconColor, iconBg, label, value, sub, trend, trendUp }:
     label: string; value: string; sub?: string;
     trend?: string; trendUp?: boolean;
 }) {
+    const { colors: themeColors } = useTheme();
+    const dynamicStatStyles = React.useMemo(() => createStatStyles(themeColors), [themeColors]);
     return (
-        <View style={statStyles.row}>
-            <View style={[statStyles.iconBox, { backgroundColor: iconBg }]}>
+        <View style={dynamicStatStyles.row}>
+            <View style={[dynamicStatStyles.iconBox, { backgroundColor: iconBg }]}>
                 <Ionicons name={icon as any} size={20} color={iconColor} />
             </View>
-            <View style={statStyles.textCol}>
-                <Text style={statStyles.label}>{label}</Text>
-                <Text style={statStyles.value}>{value}</Text>
-                {sub ? <Text style={statStyles.sub}>{sub}</Text> : null}
+            <View style={dynamicStatStyles.textCol}>
+                <Text style={dynamicStatStyles.label}>{label}</Text>
+                <Text style={dynamicStatStyles.value}>{value}</Text>
+                {sub ? <Text style={dynamicStatStyles.sub}>{sub}</Text> : null}
             </View>
             {trend ? (
-                <View style={[statStyles.trendPill, { backgroundColor: trendUp ? '#dcfce7' : '#fee2e2' }]}>
+                <View style={[dynamicStatStyles.trendPill, { backgroundColor: trendUp ? '#dcfce7' : '#fee2e2' }]}>
                     <Ionicons name={trendUp ? 'trending-up' : 'trending-down'} size={12} color={trendUp ? '#16a34a' : '#dc2626'} />
-                    <Text style={[statStyles.trendText, { color: trendUp ? '#16a34a' : '#dc2626' }]}>{trend}</Text>
+                    <Text style={[dynamicStatStyles.trendText, { color: trendUp ? '#16a34a' : '#dc2626' }]}>{trend}</Text>
                 </View>
             ) : null}
         </View>
@@ -55,14 +57,16 @@ function StatRow({ icon, iconColor, iconBg, label, value, sub, trend, trendUp }:
 }
 
 function MiniBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
+    const { colors: themeColors } = useTheme();
+    const dynamicBarStyles = React.useMemo(() => createBarStyles(themeColors), [themeColors]);
     const pct = max === 0 ? 0 : Math.min(1, value / max);
     return (
-        <View style={barStyles.row}>
-            <Text style={barStyles.label}>{label}</Text>
-            <View style={barStyles.bg}>
-                <View style={[barStyles.fill, { width: `${Math.round(pct * 100)}%`, backgroundColor: color }]} />
+        <View style={dynamicBarStyles.row}>
+            <Text style={dynamicBarStyles.label}>{label}</Text>
+            <View style={dynamicBarStyles.bg}>
+                <View style={[dynamicBarStyles.fill, { width: `${Math.round(pct * 100)}%`, backgroundColor: color }]} />
             </View>
-            <Text style={barStyles.val}>{value}</Text>
+            <Text style={dynamicBarStyles.val}>{value}</Text>
         </View>
     );
 }

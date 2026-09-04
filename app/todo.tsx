@@ -768,9 +768,11 @@ export default function ProductivityHub() {
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
           <Ionicons name="arrow-back" size={20} color={themeColors.text} />
         </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={s.topTitle}>{t('todo.title')}</Text>
-          <Text style={s.topSub}>
+        <View style={{ flex: 1, minWidth: 0, paddingRight: 4 }}>
+          <Text style={s.topTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
+            {t('todo.title')}
+          </Text>
+          <Text style={s.topSub} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
             {totalCount - completedCount} {t('todo.open')} · {completedCount} {t('todo.done')}
             {urgentCount > 0 ? ` · ${t('todo.urgent_count', { count: urgentCount })}` : ''}
           </Text>
@@ -779,13 +781,13 @@ export default function ProductivityHub() {
           style={[s.topIcon, convexUser?.partnerId && s.topIconActive]}
           onPress={() => isPro ? setShowPartner(true) : setShowUpgrade(true)}
         >
-          <Ionicons name="people-outline" size={19} color={convexUser?.partnerId ? '#10b981' : '#475569'} />
+          <Ionicons name="people-outline" size={18} color={convexUser?.partnerId ? '#10b981' : '#475569'} />
         </TouchableOpacity>
         <TouchableOpacity style={s.topIcon} onPress={async () => { if (convexUser?._id) await seedRoutine({ userId: convexUser._id }); }}>
-          <Ionicons name="refresh-outline" size={19} color="#475569" />
+          <Ionicons name="refresh-outline" size={18} color="#475569" />
         </TouchableOpacity>
         <TouchableOpacity style={s.topIcon} onPress={shareWhatsApp}>
-          <Ionicons name="logo-whatsapp" size={19} color="#25d366" />
+          <Ionicons name="logo-whatsapp" size={18} color="#25d366" />
         </TouchableOpacity>
       </View>
 
@@ -1020,11 +1022,11 @@ const createS = (c: ThemeColors) => StyleSheet.create({
   quizKnowSub:    { fontSize: 11, color: '#4ade80', marginTop: 6, fontWeight: '600' },
 
   // ── Top Bar ──
-  topBar:   { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 8, backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted },
-  backBtn:  { width: 36, height: 36, borderRadius: 18, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
-  topTitle: { fontSize: 17, fontWeight: '900', color: c.text },
+  topBar:   { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 12, gap: 6, backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: c.surfaceMuted },
+  backBtn:  { width: 34, height: 34, borderRadius: 17, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
+  topTitle: { fontSize: 16, fontWeight: '900', color: c.text },
   topSub:   { fontSize: 11, color: c.textMuted, fontWeight: '600', marginTop: 1 },
-  topIcon:  { width: 36, height: 36, borderRadius: 11, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
+  topIcon:  { width: 34, height: 34, borderRadius: 10, backgroundColor: c.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
   topIconActive: { backgroundColor: '#ecfdf5' },
 
   scroll: { paddingHorizontal: 16, paddingTop: 12 },

@@ -47,7 +47,28 @@ export default function ExerciseDetailModal({
   const instructions = getLocalizedListField(exercise, 'instructions', lang);
   const primaryMuscles: string[] = exercise.primaryMuscles ?? exercise.muscleGroups ?? [];
   const secondaryMuscles: string[] = exercise.secondaryMuscles ?? [];
-  const videoUrl: string | null = exercise.videoUrl ?? exercise.thumbnailUrl ?? null;
+  const mediaUrl: string | null =
+    exercise.videoUrl ||
+    exercise.gifUrl ||
+    exercise.thumbnailUrl ||
+    exercise.imageUrl ||
+    exercise.image ||
+    exercise.thumbnail ||
+    null;
+
+  const isVideo = useMemo(() => {
+    if (!mediaUrl) return false;
+    const lower = mediaUrl.toLowerCase().split('?')[0];
+    return (
+      lower.endsWith('.mp4') ||
+      lower.endsWith('.mov') ||
+      lower.endsWith('.webm') ||
+      lower.endsWith('.m3u8') ||
+      lower.includes('/video/')
+    );
+  }, [mediaUrl]);
+
+  const posterUrl = exercise.thumbnailUrl || exercise.imageUrl || exercise.image || exercise.thumbnail || undefined;
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
@@ -88,22 +109,25 @@ export default function ExerciseDetailModal({
             <View style={[styles.lockedContent, !canSeeDetails && styles.lockedContentBlurred]} pointerEvents={canSeeDetails ? 'auto' : 'none'}>
 
               {/* Video / Media */}
-              {videoUrl ? (
+              {mediaUrl ? (
                 <View style={[styles.mediaBox, !canSeeDetails && styles.mediaBoxBlurred]}>
-                  {videoUrl.toLowerCase().endsWith('.gif') ? (
-                    <Image
-                      source={{ uri: videoUrl }}
-                      style={styles.mediaImage}
-                      contentFit="cover"
-                    />
-                  ) : (
+                  {isVideo ? (
                     <Video
-                      source={{ uri: videoUrl }}
+                      source={{ uri: mediaUrl }}
+                      posterSource={posterUrl ? { uri: posterUrl } : undefined}
+                      usePoster={!!posterUrl}
                       style={styles.mediaImage}
                       resizeMode={ResizeMode.COVER}
                       useNativeControls={canSeeDetails}
                       shouldPlay
                       isLooping
+                    />
+                  ) : (
+                    <Image
+                      source={{ uri: mediaUrl }}
+                      style={styles.mediaImage}
+                      contentFit="cover"
+                      cachePolicy="memory-disk"
                     />
                   )}
                   {!canSeeDetails && (

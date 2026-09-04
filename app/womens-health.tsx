@@ -973,7 +973,7 @@ export default function WomensHealthScreen() {
           </Animated.View>
           <Text style={[s.pelvicInstructions, { color: themeColors.textMuted }]}>{t('womensHealth.pelvicInstructions', 'Contrai 5s → Relaxa 5s → Repete. Faz 10 ciclos por sessão.')}</Text>
           <TouchableOpacity style={[s.pelvicBtn, { backgroundColor: kegelActive ? themeColors.text : '#e11d48' }]} onPress={() => setKegelActive(p => !p)}>
-            <Text style={s.pelvicBtnTxt}>{kegelActive ? t('womensHealth.stopSession', 'Parar Sessão') : t('womensHealth.startTimer', 'Iniciar Timer')}</Text>
+            <Text style={[s.pelvicBtnTxt, { color: kegelActive ? themeColors.bg : '#fff' }]}>{kegelActive ? t('womensHealth.stopSession', 'Parar Sessão') : t('womensHealth.startTimer', 'Iniciar Timer')}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => { setKegelActive(false); setShowPelvicModal(false); }} style={{ marginTop: 16 }}>
             <Text style={{ color: themeColors.textMuted, fontWeight: '600' }}>{t('common.close', 'Fechar')}</Text>

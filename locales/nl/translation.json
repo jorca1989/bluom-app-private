@@ -149,11 +149,11 @@
     "activeTime": "Actieve tijd",
     "burnedToday": "Vandaag verbrand",
     "steps": "Stappen",
-    "syncedFromHealth": "Gesynchroniseerd met Health",
-    "continueJourney": "Verveolg je reis",
-    "freeUsers28DaysFull": "Gratis gebruikers ontvangen een compleet 28-dagen plan. Na afloop van de 28 dagen kun je upgraden naar Pro om je transformatie voort te zetten met een door AI gegenereerd plan dat zich aan elke cyclus aanpast.",
-    "freePlanComplete": "Plan voltooid — upgrade naar Pro om door te gaan",
-    "upgradeToPro": "Upgrade naar Pro",
+    "syncedFromHealth": "Gesynchroniseerd via Health",
+    "continueJourney": "Vervolg je transformatie",
+    "freeUsers28DaysFull": "Het gratis plan bevat een compleet 28-dagen programma. Upgrade naar Pro voor adaptieve plannen.",
+    "freePlanComplete": "Basisplan voltooid — upgrade om door te gaan",
+    "upgradeToPro": "Upgraden naar Pro",
     "health": "Gezondheid",
     "deleteActivity": "Activiteit verwijderen",
     "deleteConfirm": "Weet je zeker dat je deze activiteit wilt verwijderen?",
@@ -194,25 +194,25 @@
     "weekProgress": "Week {{currentWeek}} van {{totalWeeks}}",
     "upNext": "Volgende",
     "exercisesCount": "{{count}} oefeningen",
-    "startWorkout": "Start Training",
-    "viewWorkout": "Bekijk Training",
-    "dayPreview": "Dag {{day}} voorbeeld",
+    "startWorkout": "Start Workout",
+    "viewWorkout": "Bekijk Workout",
+    "dayPreview": "Voorbeeld Dag {{day}}",
     "weekOverview": "Weekoverzicht",
-    "detailInfo": "Tik op een oefening om de details te bekijken. Pro-gebruikers kunnen oefeningen toevoegen of verwijderen.",
-    "startDayWorkout": "Start training - Dag {{day}}",
+    "detailInfo": "Tik op een oefening voor details. Pro-gebruikers kunnen oefeningen aanpassen.",
+    "startDayWorkout": "Start Dag {{day}} Workout",
     "finish": "Voltooien",
     "duration": "Duur",
     "volume": "Volume",
     "sets": "Sets",
-    "setShort": "SETS",
+    "setShort": "SET",
     "previousShort": "VORIGE",
     "kgShort": "KG",
     "repsShort": "REPS",
     "addSet": "+ Set toevoegen",
-    "exerciseVolume": "Oefenvolume",
+    "exerciseVolume": "Oefeningsvolume",
     "nextExercise": "Volgende oefening",
     "restTimer": "Rusttimer",
-    "iAmReady": "Ik ben klaar",
+    "iAmReady": "Ik ben er klaar voor",
     "turnOff": "Uitschakelen",
     "durationMinutes": "Duur (minuten)",
     "totalVolume": "Totaal volume",
@@ -251,23 +251,23 @@
     "sessions": "Sessies",
     "totalTime": "Totale tijd",
     "calories": "Calorieën",
-    "thisWeekVsLastWeek": "Deze week vs vorige week",
-    "calorieBurnTrend": "Trend calorieverbranding",
+    "thisWeekVsLastWeek": "Deze week vs. Vorige week",
+    "calorieBurnTrend": "Calorieverbranding trend",
     "thisWeekTotal": "Totaal deze week",
-    "vsLastWeek": "{{val}}% vs vorige week",
-    "consistencyStreak": "Consistentiereeks",
+    "vsLastWeek": "{{val}}% vs. vorige week",
+    "consistencyStreak": "Consistentie-reeks",
     "daysCount": "{{count}} dagen",
-    "onFire": "Lekker bezig!",
-    "keepGoing": "Doorgaan",
-    "avgSessionLength": "Gemiddelde sessieduur",
+    "onFire": "🔥 Uitstekend bezig!",
+    "keepGoing": "Ga zo door!",
+    "avgSessionLength": "Gem. sessieduur",
     "workoutMix": "Trainingsmix",
     "mostActiveDay": "Meest actieve dag",
     "sessions_count": "{{count}} sessies",
     "noWorkoutDataYet": "Nog geen trainingsgegevens",
     "logToUnlockTrends": "Log sessies om trends te ontgrendelen.",
-    "unlockProAnalysis": "Ontgrendel Pro-inzichten",
-    "unlockProDesc": "Krijg week-op-week trends, persoonlijke records en reeksanalyse.",
-    "your4WeekProgram": "Je 4-wekenprogramma",
+    "unlockProAnalysis": "Ontgrendel Pro-analyse",
+    "unlockProDesc": "Krijg trends, volume-tracking en persoonlijke records.",
+    "your4WeekProgram": "Jouw 4-Weken Programma",
     "yourProRotatingPlan": "Je roterende Pro-plan",
     "proPlanDesc": "Je AI-plan in Move past zich elke week aan op basis van je voortgang. Gebruik het 4-wekenmodel als basis of laat je plan je automatisch begeleiden.",
     "goToMoveTab": "Ga naar Move ->",
@@ -322,7 +322,12 @@
     "outdoorBannerLive": "BUITEN",
     "outdoorBannerRecord": "Opnemen\nActiviteit",
     "outdoorBannerSub": "GPS-tracking • Live statistieken",
-    "outdoorBannerTapToStart": "Tik om te starten"
+    "outdoorBannerTapToStart": "Tik om te starten",
+    "routeLoaded": "Route geladen",
+    "waypointsLoaded": "{{count}} routepunten.",
+    "gpxRoutes": "GPX-routes",
+    "gpxRoutesDesc": "GPX-bestand upload binnenkort beschikbaar.\nJe kunt Wikiloc .gpx-bestanden uploaden als referentieroute.",
+    "log": "Loggen"
   },
   "tabs": {
     "home": "Home",
@@ -405,7 +410,9 @@
       "aiChef": "AI Chef",
       "aiChefDesc": "Scannen en creëren",
       "personalPlan": "Mijn plan",
-      "personalPlanDesc": "30-dagen AI routine"
+      "personalPlanDesc": "30-dagen AI routine",
+      "nutritionInsights": "Voedingsinzichten",
+      "nutritionInsightsDesc": "Gedetailleerde macro-analyse"
     },
     "widgets": {
       "title": "Voeding secties",
@@ -424,6 +431,19 @@
     "caloriesShort": "cal",
     "insights": {
       "title": "Voedingsinzichten"
+    },
+    "detailedInsights": {
+      "title": "Gedetailleerde Voedingswaarden",
+      "calories": "Calorieën",
+      "protein": "Totale Eiwitten",
+      "carbs": "Totale Koolhydraten",
+      "fiber": "Voedingsvezels",
+      "sugar": "Totale Suikers",
+      "fat": "Totaal Vet",
+      "saturatedFat": "Verzadigd Vet",
+      "polyunsaturatedFat": "Meervoudig Onverzadigd Vet",
+      "monounsaturatedFat": "Enkelvoudig Onverzadigd Vet",
+      "transFat": "Transvetten"
     }
   },
   "modals": {
@@ -482,7 +502,9 @@
       "addCustomTitle": "Aangepast eten toevoegen",
       "addCustomSub": "Voeg snel een ingrediënt of voedingsmiddel toe dat niet in de database staat.",
       "createRecipeTitle": "Een recept maken",
-      "createRecipeSub": "Combineer meerdere ingrediënten in een opgeslagen maaltijd voor gemakkelijke registratie."
+      "createRecipeSub": "Combineer meerdere ingrediënten in een opgeslagen maaltijd voor gemakkelijke registratie.",
+      "addFood": "Voedingsmiddel toevoegen",
+      "addRecipe": "Recept toevoegen"
     },
     "addFood": {
       "title": "Aangepast eten toevoegen",
@@ -494,7 +516,12 @@
       "p": "Eiwitten (g)",
       "c": "Koolhydraten (g)",
       "f": "Vetten (g)",
-      "save": "Aangepast eten opslaan"
+      "save": "Aangepast eten opslaan",
+      "nextReview": "Volgende: Controleren",
+      "reviewSave": "Controleren & Opslaan",
+      "by": "door",
+      "saving": "Opslaan...",
+      "saveFood": "Voeding opslaan"
     },
     "createRecipe": {
       "title": "Recept maken",
@@ -527,12 +554,14 @@
     },
     "logRecipe": {
       "title": "Maaltijd registreren",
-      "logged": "Succesvol geregistreerd!",
+      "logged": "Gelogd!",
       "addedTo": "Toegevoegd aan je",
-      "logToMeal": "Registreren bij maaltijd",
-      "qty": "Hoeveelheid (porties)",
+      "logToMeal": "Aan maaltijd toevoegen",
+      "qty": "Hoeveelheid",
       "skip": "Overslaan",
-      "logTo": "Registreren bij"
+      "logTo": "Loggen in",
+      "titleRecipe": "Recept toevoegen",
+      "titleFood": "Voedingsmiddel toevoegen"
     },
     "sugar": {
       "scanTitle": "Product analyseren",
@@ -605,20 +634,20 @@
     "quizHeroSub": "4 vragen om je protocol te bouwen — van natuurlijke optimalisatie tot enhanced atleetbeheer. Alle gegevens zijn privé.",
     "alreadyLoaded": "Al geladen uit je profiel",
     "articleDisclaimer": "Educatieve inhoud, geen medisch advies. Raadpleeg altijd een arts.",
-    "vitalityCheckin": "Vitaliteitsregistratie",
-    "vitalitySub": "Beoordeel elke pijler eerlijk. Je T-Opt score wordt realtime bijgewerkt.",
-    "tOptScore": "T-OPT SCORE",
-    "drivePillar": "Vitaliteit / Libido",
+    "vitalityCheckin": "Vitaliteitscheck",
+    "vitalitySub": "Beoordeel elke pijler eerlijk. Je T-Opt-score wordt direct bijgewerkt.",
+    "tOptScore": "T-OPT-SCORE",
+    "drivePillar": "Energie / Libido",
     "recoveryPillar": "Herstelstatus",
-    "focusPillar": "Mentale Focus",
+    "focusPillar": "Mentale focus",
     "sleepPillar": "Slaapkwaliteit",
-    "moodSynced": "Stemming gesynchroniseerd uit Wellness",
+    "moodSynced": "Stemming gesynchroniseerd vanuit Wellness",
     "updateStatus": "Systeemstatus bijwerken",
-    "pelvicTitle": "Pelvic Power Protocol",
-    "pelvicSub": "Verbeter erectiele functie, urinecontrole, seksuele prestaties en core-stabiliteit.",
-    "pelvicInstructions": "Aanspannen 5s → Ontspannen 5s → Herhalen. 10–15 cycli. Dagelijkse oefening geeft resultaat in 4–6 weken.",
-    "startProtocol": "Protocol starten",
-    "finishLog": "Beëindigen & Registreren",
+    "pelvicTitle": "Bekkenbodem Krachtprotocol",
+    "pelvicSub": "Verbetert erectiele functie, blaascontrole, seksuele prestaties en core-stabiliteit.",
+    "pelvicInstructions": "5s aanspannen → 5s ontspannen → herhalen. 10–15 cycli. Dagelijkse oefening geeft resultaat in 4–6 weken.",
+    "startProtocol": "Start protocol",
+    "finishLog": "Voltooien & Opslaan",
     "yourStack": "Jouw Stack",
     "unlockStack": "Ontgrendel jouw Stack",
     "unlockStackSub": "Upgrade naar Pro voor gepersonaliseerde aanbevelingen op basis van jouw doelen.",
@@ -657,7 +686,7 @@
     "peakWeekTool": "Peak Week Tool",
     "openProtocol": "Open Protocol →",
     "dailyProtocols": "Dagelijkse Protocollen",
-    "pelvicActionSub": "Core, erectiele & urinefunctie",
+    "pelvicActionSub": "Core, erectie- & blaasfunctie",
     "core": "basis",
     "critical": "⚠️ Kritiek",
     "sevenDayTrend": "7-daagse Vitaliteitstrend",
@@ -963,7 +992,7 @@
     "unlockDeepAnalyticsSub": "Inzichten die zich aanpassen aan de geschiedenis, padrões en sintomas registraties."
   },
   "todo": {
-    "title": "Productiviteitscentrum",
+    "title": "Productiviteit",
     "open": "open",
     "done": "voltooid",
     "urgent_count": "{{count}} urgent",
@@ -1145,7 +1174,24 @@
     "clear": "Duidelijk",
     "back": "Rug",
     "notReady": "Niet klaar",
-    "upgradeToPro": "Upgrade naar Pro"
+    "upgradeToPro": "Upgrade naar Pro",
+    "servings": "porties",
+    "protein": "Eiwit",
+    "carbs": "Koolhydraten",
+    "fat": "Vet",
+    "kcal": "kcal",
+    "proteinShort": "E",
+    "carbsShort": "K",
+    "fatShort": "V",
+    "openSettings": "Instellingen openen",
+    "checkSettings": "Instellingen controleren",
+    "configError": "Configuratiefout",
+    "disconnect": "Ontkoppelen",
+    "start": "Start",
+    "yes": "Ja",
+    "resume": "Hervatten",
+    "pause": "Pauze",
+    "today": "Vandaag"
   },
   "wellness": {
     "title": "Welzijn",
@@ -1786,35 +1832,36 @@
     "lifeGoalsHub": {
       "title": "Levensdoelen",
       "pending": "In afwachting",
-      "savings": "Spaardoelen",
+      "savings": "Sparen",
       "achieved": "Behaald",
-      "newLifeGoal": "Nieuw levensdoel",
-      "cat_Work": "Werk",
-      "cat_Travel": "Reizen",
-      "cat_Health": "Gezondheid",
-      "cat_Personal": "Persoonlijk",
       "link": "Link",
-      "markAchieved": "Mark bereikt",
+      "markAchieved": "Als behaald markeren",
       "noGoals": "Geen doelen gevonden. Voeg er een toe!",
+      "newLifeGoal": "Nieuw Levensdoel",
       "labelTitle": "Titel",
-      "phVisitJapan": "bijv. Bezoek Japan",
+      "phVisitJapan": "bijv. Japan bezoeken",
       "labelCategory": "Categorie",
       "labelType": "Type",
       "standardGoal": "Standaard doel",
-      "savingsGoal": "Besparingsdoel",
-      "targetCost": "Doelkosten (optioneel)",
+      "savingsGoal": "Spaardoel",
+      "targetCost": "Doelbedrag (Optioneel)",
       "targetDate": "Streefdatum (JJJJ-MM-DD)",
-      "webLink": "Weblink (optioneel)",
-      "description": "Beschrijving (optioneel)",
-      "createGoal": "Doel creëren",
+      "webLink": "Weblink (Optioneel)",
+      "description": "Beschrijving (Optioneel)",
+      "phDetails": "Details...",
+      "createGoal": "Doel aanmaken",
       "congrats": "Gefeliciteerd!",
-      "achievedMsg": "Je hebt een levensdoel bereikt! 🎉",
+      "achievedMsg": "Je hebt een levensdoel behaald! 🎉",
       "deleteGoal": "Doel verwijderen",
       "areYouSure": "Weet je het zeker?",
       "errNoTitle": "Voer een doeltitel in.",
       "successAdded": "Doel succesvol toegevoegd!",
       "errFailed": "Kan doel niet toevoegen.",
-      "cat_All": "Alle"
+      "cat_All": "Alle",
+      "cat_Work": "Werk",
+      "cat_Travel": "Reizen",
+      "cat_Health": "Gezondheid",
+      "cat_Personal": "Persoonlijk"
     }
   },
   "profile": {
@@ -1851,7 +1898,7 @@
     "move": "Beweging",
     "fuel": "Voeding",
     "wellness": "Welzijn",
-    "productivity": "Productiviteit Hub",
+    "productivity": "Productiviteit",
     "library": "Bluom Bibliotheek",
     "settings": "Instellingen",
     "title": "Profiel",
@@ -2114,15 +2161,16 @@
     "pillReminderSub": "Volg uw medicijnen en supplementen veilig",
     "unlockStack": "Ontgrendel uw vitaminestapel",
     "unlockStackSub": "Bekijk uw persoonlijke supplementaanbevelingen voor uw cyclusfase.",
-    "pelvicTitle": "Bekkenkrachtprotocol",
-    "pelvicSub": "Versterk uw bekkenbodem, verminder krampen en ondersteun uw core",
-    "pelvicInstructions": "Contract 5s → Relax 5s → Herhaal. Voer 10 cycli per sessie uit.",
+    "pelvicTitle": "Bekkenbodem Krachtprotocol",
+    "pelvicSub": "Versterkt de bekkenbodem, verlicht krampen en ondersteunt de core",
+    "pelvicInstructions": "5s aanspannen → 5s ontspannen → herhalen. 10 cycli per sessie.",
     "stopSession": "Sessie stoppen",
-    "startTimer": "Starttimer",
+    "startTimer": "Timer starten",
     "stage": {
       "cycle": "Cyclus",
       "pregnancy": "Zwangerschap",
-      "menopause": "Menopauze"
+      "menopause": "Menopauze",
+      "postpartum": "Postpartum"
     },
     "setupSubPreg": "Wanneer was je conceptiedatum?",
     "setupSubCycle": "Wanneer begon je laatste menstruatie?",
@@ -2268,10 +2316,17 @@
         "weight_hormones": "Hormonaal gewichtsevenwicht"
       },
       "cycleRegularity": {
-        "question": "Hoe zou je je cyclus beschrijven?",
-        "regular": "Regelmatig (24-35 dagen)",
+        "question": "Hoe zou je je cyclus omschrijven?",
+        "regular": "Regelmatig (cyclus van 24–35 dagen)",
         "irregular": "Onregelmatig / onvoorspelbaar",
         "unknown": "Ik weet het niet zeker"
+      },
+      "lastPeriodDate": {
+        "question": "Laatste menstruatie — Wanneer begon je laatste menstruatie?"
+      },
+      "conceptionDate": {
+        "question": "Conceptiedatum — Weet je de exacte datum van conceptie?",
+        "skip": "Ik weet het nog niet"
       }
     },
     "symptomsList": {
@@ -2300,7 +2355,43 @@
       "light": "Licht",
       "medium": "Gemiddeld",
       "heavy": "Hevig"
-    }
+    },
+    "postpartum": "Postpartum",
+    "ppPain": "Wond- / Bekkenpijn (1-10)",
+    "ppMood": "Postpartum stemming",
+    "ppLochia": "Lochia / Bloeding",
+    "ppc1": "Wondgenezing, zwaar tillen vermijden",
+    "ppv1": "Bekkenbodemzwelling, lochia",
+    "ppc2": "Core zacht activeren, rustig opbouwen",
+    "ppv2": "Bekkenbodem hervindt spierspanning",
+    "startPelvic": "Bekkenbodem & Core Protocol",
+    "cSecRec1": "Wondgenezing, tillen vermijden en lochia opvolgen.",
+    "vagRec1": "Bekkenbodemzwelling, rust en lochia opvolgen.",
+    "babyHereBtn": "De baby is er!",
+    "babyIsHere": "De baby is er!",
+    "postpartumRecovery": "Postpartum herstel",
+    "transitionTitle": "Welkom bij postpartum herstel",
+    "deliveryDate": "Bevallingsdatum",
+    "deliveryType": "Type bevalling",
+    "vaginal": "Vaginaal",
+    "cSection": "Keizersnede",
+    "isBreastfeeding": "Borstvoeding?",
+    "saveTransition": "Start postpartum traject",
+    "ppWeek": "Week {{week}} postpartum",
+    "newborn": "Pasgeboren tracker",
+    "feed": "Voeding",
+    "diaper": "Luier",
+    "sleep": "Babyslaap",
+    "lochia": "Lochia / Bloeding",
+    "pain": "Wond- / Bekkenpijn",
+    "pelvicFloor": "Bekkenbodem & Core",
+    "anxious": "Bezorgd",
+    "overwhelmed": "Overweldigd",
+    "numb": "Afgevlakt",
+    "happy": "Verbonden & Blij",
+    "heavy": "Veel",
+    "light": "Licht",
+    "none": "Geen"
   },
   "premium": {
     "heroTitle": "Jouw Biologie,",
@@ -3581,7 +3672,7 @@
       "nuts": "Noten"
     },
     "swapConfirmBtn": "Maaltijd wisselen",
-    "hubTitle": "Meal Hub",
+    "hubTitle": "Maaltijden",
     "hubSub": "28 dagen persoonlijke voeding",
     "heroTitlePro": "AI-personalisatieplan",
     "heroTitleFree": "28-dagen maaltijdplan",
@@ -5655,9 +5746,10 @@
     "dinner": "Avondeten",
     "snack": "Snack",
     "saveToMyFoods": "Opslaan in Mijn Voedingsmiddelen",
-    "saveAsRecipe": "Opslaan als Recept",
-    "savedToMyFoodsSuccess": "Opgeslagen in Mijn Voedingsmiddelen! Je kunt het vinden in de zoekfunctie.",
-    "savedAsRecipeSuccess": "Opgeslagen als Recept! Je kunt het vinden in de zoekfunctie."
+    "saveAsRecipe": "Opslaan als recept",
+    "savedToMyFoodsSuccess": "Opgeslagen in Mijn Voedingsmiddelen!",
+    "savedAsRecipeSuccess": "Opgeslagen als recept!",
+    "addToDiary": "Aan dagboek toevoegen"
   },
   "dental": {
     "finishedTitle": "Poetsen voltooid!",
@@ -5725,5 +5817,141 @@
     "stressLow": "Laag",
     "stressModerate": "Matig",
     "stressHigh": "Hoog"
+  },
+  "integrations": {
+    "title": "Verbindingen",
+    "subtitle": "Synchroniseer gegevens van je apparaten en apps",
+    "privacyNotice": "Bluom leest alleen de onderstaande gegevenstypen. We verkopen je gezondheidsgegevens nooit. Je kunt op elk moment ontkoppelen en volledige verwijdering aanvragen via Instellingen → Account.",
+    "healthLog": "Gezondheidslogboek",
+    "healthLogSub": "Bekijk de vandaag geïmporteerde metingen",
+    "sourcesConnected": "{{count}} bron verbonden",
+    "sourcesConnectedPlural": "{{count}} bronnen verbonden",
+    "recentImportedData": "Recent geïmporteerde gegevens",
+    "deletionNotice": "Als je je Bluom-account verwijdert, worden alle gesynchroniseerde gegevens op onze servers binnen 30 dagen definitief verwijderd. Lokale apparaatgegevens blijven onaangeroerd.",
+    "categories": {
+      "activity": "Activiteit & Fitness",
+      "biometrics": "Lichaamsmetingen",
+      "nutrition": "Voeding",
+      "sleep": "Slaap & Herstel"
+    },
+    "card": {
+      "comingSoon": "Binnenkort",
+      "neverSynced": "Nooit gesynchroniseerd",
+      "justNow": "Zojuist",
+      "minsAgo": "{{mins}}m geleden",
+      "hoursAgo": "{{hours}}u geleden",
+      "daysAgo": "{{days}}d geleden",
+      "lastSync": "Laatste synchronisatie: {{time}}",
+      "hideDetails": "Details verbergen",
+      "readingDataTypes": "Leest {{count}} gegevenstypen",
+      "dataWeAccess": "GEGEVENS WAAR WE TOEGANG TOE HEBBEN",
+      "howWeUseIt": "HOE WE HET GEBRUIKEN",
+      "syncNow": "Nu synchroniseren"
+    },
+    "alerts": {
+      "disconnectTitle": "{{name}} ontkoppelen",
+      "disconnectHealthMsg": "We stoppen met het uitlezen van gezondheidsgegevens. Je historische gesynchroniseerde gegevens blijven bewaard.",
+      "healthConnFailed": "Gezondheidsverbinding mislukt",
+      "healthKitFailedIos": "Bluom kon HealthKit niet initialiseren. Controleer de machtigingen in de iOS-instellingen.",
+      "healthConnectFailedAndroid": "Verleen machtigingen in Health Connect om je gegevens te synchroniseren.",
+      "disconnectStravaTitle": "Strava ontkoppelen",
+      "disconnectStravaMsg": "We importeren geen Strava-activiteiten meer. Je bestaande logs blijven bewaard.",
+      "disconnectedTitle": "Ontkoppeld",
+      "stravaDisconnectedMsg": "Strava is ontkoppeld.",
+      "syncComplete": "Synchronisatie voltooid",
+      "syncCompleteDetails": "Stappen: {{steps}}\nCalorieën: {{calories}} kcal\nAfstand: {{distance}} km",
+      "stravaSynced": "Strava gesynchroniseerd",
+      "stravaSyncedDetails": "{{count}} nieuwe activiteiten geïmporteerd.",
+      "syncFailed": "Synchronisatie mislukt",
+      "stravaSyncFailedDetails": "Kon Strava-activiteiten niet synchroniseren."
+    },
+    "items": {
+      "apple_health": {
+        "name": "Apple Health",
+        "subtitle": "Stappen, workouts, slaap & meer",
+        "dataPoints": [
+          "Stappen & wandelafstand",
+          "Actief verbrande calorieën",
+          "Workoutsessies",
+          "Lichaamsgewicht",
+          "Slaapduur",
+          "Hartslag"
+        ],
+        "purpose": "Je stappen en actieve calorieën werken je dagelijkse doel bij. Gewicht synchroniseert met je voortgangstracker. Hartslag en slaap berekenen je Vitaliteitsscores."
+      },
+      "google_health": {
+        "name": "Health Connect",
+        "subtitle": "Stappen, workouts, slaap & meer",
+        "dataPoints": [
+          "Stappen & wandelafstand",
+          "Actief verbrande calorieën",
+          "Workoutsessies",
+          "Lichaamsgewicht",
+          "Slaapsessies",
+          "Hartslag"
+        ],
+        "purpose": "Je stappen en actieve calorieën werken je dagelijkse doel bij. Gewicht synchroniseert met je voortgangstracker. Hartslag en slaap berekenen je Vitaliteitsscore."
+      },
+      "strava": {
+        "name": "Strava",
+        "subtitle": "Hardlopen, fietsen & buitensporten",
+        "dataPoints": [
+          "Activiteitstype & naam",
+          "Duur & afstand",
+          "Verbrande calorieën",
+          "Gemiddelde hartslag"
+        ],
+        "purpose": "Strava-activiteiten worden automatisch geïmporteerd als workouts zodat je calorieverbruik en trainingsgeschiedenis actueel blijven."
+      },
+      "withings": {
+        "name": "Withings",
+        "subtitle": "Slimme weegschalen & gezondheidsmonitors",
+        "dataPoints": [
+          "Lichaamsgewicht",
+          "Vetpercentage %",
+          "Spiermassa"
+        ],
+        "purpose": "Lichaamssamenstelling verbetert de nauwkeurigheid van je caloriedoelen en toont je voortgang over tijd."
+      },
+      "samsung_health": {
+        "name": "Samsung Health",
+        "subtitle": "Galaxy Watch & Galaxy Ring",
+        "dataPoints": [
+          "Stappen",
+          "Hartslag",
+          "Slaapfasen",
+          "Lichaamssamenstelling"
+        ],
+        "purpose": "Samsung Health-gegevens vullen je dagelijkse activiteitenlogboek en verrijken je slaap- en herstelscores."
+      },
+      "oura": {
+        "name": "Oura Ring",
+        "subtitle": "Geavanceerde slaap- & gereedheidsscores",
+        "dataPoints": [
+          "Slaapduur & -fasen",
+          "Gereedheidsscore",
+          "Hartslagvariabiliteit (HRV)",
+          "Lichaamstemperatuurtrend"
+        ],
+        "purpose": "Oura-slaapgegevens voeden je nachtelijke Wellness-score en bepalen herstelaanbevelingen in je Move-plan."
+      },
+      "myfitnesspal": {
+        "name": "MyFitnessPal",
+        "subtitle": "Voedingsdagboek & calorieën",
+        "dataPoints": [
+          "Dagelijks geconsumeerde calorieën",
+          "Macro's (eiwitten, koolhydraten, vet)",
+          "Waterinname"
+        ],
+        "purpose": "Het importeren van je MFP-dagboek voorkomt dubbele invoer en houdt je voedingstotalen exact."
+      }
+    }
+  },
+  "disclaimer": {
+    "medical": "Bluom biedt uitsluitend algemene wellnessinformatie. Raadpleeg altijd een gekwalificeerde arts voor medisch advies, diagnose of behandeling."
+  },
+  "sleeper": {
+    "sleepingStatus": "Module in rust",
+    "activateBtn": "Activeer deze module"
   }
 }

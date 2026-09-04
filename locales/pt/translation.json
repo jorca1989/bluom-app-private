@@ -150,10 +150,10 @@
     "burnedToday": "Queimado Hoje",
     "steps": "Passos",
     "syncedFromHealth": "Sincronizado da Saúde",
-    "continueJourney": "Continue a Sua Jornada",
-    "freeUsers28DaysFull": "Os utilizadores gratuitos recebem um plano completo de 28 dias. Quando os seus 28 dias terminarem, atualize para Pro para continuar a sua transformação com um plano gerado por IA que se adapta a cada ciclo.",
-    "freePlanComplete": "Plano concluído — atualize para continuar",
-    "upgradeToPro": "Obter Pro",
+    "continueJourney": "Continua a Tua Transformação",
+    "freeUsers28DaysFull": "O plano gratuito inclui um programa completo de 28 dias. Atualiza para o Pro para continuar com adaptações inteligentes a cada ciclo.",
+    "freePlanComplete": "Plano base concluído — atualiza para continuar",
+    "upgradeToPro": "Atualizar para Pro",
     "health": "Saúde",
     "deleteActivity": "Eliminar Atividade",
     "deleteConfirm": "Tem a certeza que deseja eliminar esta atividade?",
@@ -184,7 +184,7 @@
     "addStepsAction": "Adicionar passos",
     "customExercise": "Criar Exercício",
     "aiPlan": "Plano de IA",
-    "insightsTitle": "Análises dos treinos",
+    "insightsTitle": "Insights de Treino",
     "streakTrends": "Sequência de {{streak}} dias - toque para ver tendências",
     "tapWeeklyTrends": "Toque para ver tendências semanais",
     "upgradeTrends": "Atualize para desbloquear tendências semanais e mais",
@@ -192,15 +192,15 @@
     "daysPerWeekText": "{{days}} dias/semana",
     "weekOfTotal": "Semana {{current}} de {{total}}",
     "weekProgress": "Semana {{currentWeek}} de {{totalWeeks}}",
-    "upNext": "A seguir",
+    "upNext": "A Seguir",
     "exercisesCount": "{{count}} exercícios",
-    "startWorkout": "Iniciar Treino",
+    "startWorkout": "Começar Treino",
     "viewWorkout": "Ver Treino",
-    "dayPreview": "Pré-visualização do dia {{day}}",
-    "weekOverview": "Visão geral da semana",
-    "detailInfo": "Toque em qualquer exercício para ver os detalhes. Utilizadores Pro podem adicionar ou remover exercícios.",
-    "startDayWorkout": "Iniciar treino do dia {{day}}",
-    "finish": "Terminar",
+    "dayPreview": "Pré-visualização Dia {{day}}",
+    "weekOverview": "Visão Geral da Semana",
+    "detailInfo": "Toca em qualquer exercício para ver detalhes. Utilizadores Pro podem adicionar ou remover exercícios.",
+    "startDayWorkout": "Começar Treino Dia {{day}}",
+    "finish": "Concluir",
     "duration": "Duração",
     "volume": "Volume",
     "sets": "Séries",
@@ -209,11 +209,11 @@
     "kgShort": "KG",
     "repsShort": "REPS",
     "addSet": "+ Adicionar série",
-    "exerciseVolume": "Volume do exercício",
-    "nextExercise": "Próximo exercício",
-    "restTimer": "Temporizador de descanso",
+    "exerciseVolume": "Volume do Exercício",
+    "nextExercise": "Próximo Exercício",
+    "restTimer": "Temporizador de Descanso",
     "iAmReady": "Estou pronto",
-    "turnOff": "Desligar",
+    "turnOff": "Desativar",
     "durationMinutes": "Duração (minutos)",
     "totalVolume": "Volume total",
     "logActivity": "Registar atividade",
@@ -244,27 +244,27 @@
     "pace": "Ritmo",
     "intensity": "Intensidade",
     "estimatedBurn": "Queima estimada",
-    "weeklyProgress": "Progresso semanal",
+    "weeklyProgress": "Progresso Semanal",
     "sessions": "Sessões",
-    "totalTime": "Tempo total",
+    "totalTime": "Tempo Total",
     "calories": "Calorias",
-    "thisWeekVsLastWeek": "Esta semana vs semana passada",
-    "calorieBurnTrend": "Tendência de calorias queimadas",
+    "thisWeekVsLastWeek": "Esta Semana vs Semana Passada",
+    "calorieBurnTrend": "Tendência de Calorias Queimadas",
     "thisWeekTotal": "Total desta semana",
     "vsLastWeek": "{{val}}% vs semana passada",
-    "consistencyStreak": "Sequência de consistência",
+    "consistencyStreak": "Sequência de Consistência",
     "daysCount": "{{count}} dias",
-    "onFire": "Em grande!",
-    "keepGoing": "Continue",
-    "avgSessionLength": "Duração média da sessão",
-    "workoutMix": "Mistura de treinos",
-    "mostActiveDay": "Dia mais ativo",
+    "onFire": "🔥 Em alta!",
+    "keepGoing": "Continua!",
+    "avgSessionLength": "Duração Média da Sessão",
+    "workoutMix": "Mix de Treinos",
+    "mostActiveDay": "Dia Mais Ativo",
     "sessions_count": "{{count}} sessões",
     "noWorkoutDataYet": "Ainda sem dados de treino",
-    "logToUnlockTrends": "Registe sessões para desbloquear tendências.",
-    "unlockProAnalysis": "Desbloquear análises Pro",
-    "unlockProDesc": "Obtenha tendências semana a semana, recordes pessoais e análise de sequências.",
-    "your4WeekProgram": "O seu programa de 4 semanas",
+    "logToUnlockTrends": "Regista sessões para desbloquear tendências.",
+    "unlockProAnalysis": "Desbloquear Análise Pro",
+    "unlockProDesc": "Obtém tendências, volume e recordes pessoais.",
+    "your4WeekProgram": "O Teu Programa de 4 Semanas",
     "yourProRotatingPlan": "O seu plano Pro rotativo",
     "proPlanDesc": "O seu plano de IA no Move adapta-se todas as semanas com base no seu progresso. Use o modelo de 4 semanas como base ou deixe o seu plano guiá-lo automaticamente.",
     "goToMoveTab": "Ir para o separador Move ->",
@@ -322,7 +322,12 @@
     "outdoorBannerLive": "EXTERIOR",
     "outdoorBannerRecord": "Gravar\nAtividade",
     "outdoorBannerSub": "Rastreamento GPS • Estatísticas ao vivo",
-    "outdoorBannerTapToStart": "Toque para começar"
+    "outdoorBannerTapToStart": "Toque para começar",
+    "routeLoaded": "Rota carregada",
+    "waypointsLoaded": "{{count}} pontos de passagem.",
+    "gpxRoutes": "Rotas GPX",
+    "gpxRoutesDesc": "Importação de ficheiros GPX em breve.\nPoderás carregar ficheiros .gpx do Wikiloc para sobrepor um percurso de referência.",
+    "log": "Registar"
   },
   "tabs": {
     "home": "Início",
@@ -405,7 +410,9 @@
       "aiChef": "Chef IA",
       "aiChefDesc": "Escanear e criar",
       "personalPlan": "O Meu Plano",
-      "personalPlanDesc": "Rotina IA 30-Dias"
+      "personalPlanDesc": "Rotina IA 30-Dias",
+      "nutritionInsights": "Análise de Nutrição",
+      "nutritionInsightsDesc": "Exploração detalhada de macros"
     },
     "widgets": {
       "title": "Secções do Fuel",
@@ -424,6 +431,19 @@
     "caloriesShort": "cal",
     "insights": {
       "title": "Informações nutricionais"
+    },
+    "detailedInsights": {
+      "title": "Nutrição Detalhada",
+      "calories": "Calorias",
+      "protein": "Proteína Total",
+      "carbs": "Hidratos de Carbono Totais",
+      "fiber": "Fibra Dietética",
+      "sugar": "Açúcares Totais",
+      "fat": "Gordura Total",
+      "saturatedFat": "Gordura Saturada",
+      "polyunsaturatedFat": "Gordura Polinsaturada",
+      "monounsaturatedFat": "Gordura Monoinsaturada",
+      "transFat": "Gordura Trans"
     }
   },
   "modals": {
@@ -482,7 +502,9 @@
       "addCustomTitle": "Adicionar Comida Personalizada",
       "addCustomSub": "Adicione rapidamente um ingrediente ou comida que não esteja na base de dados.",
       "createRecipeTitle": "Criar uma Receita",
-      "createRecipeSub": "Combine vários ingredientes numa refeição guardada para facilitar o registo."
+      "createRecipeSub": "Combine vários ingredientes numa refeição guardada para facilitar o registo.",
+      "addFood": "Adicionar Alimento",
+      "addRecipe": "Adicionar Receita"
     },
     "addFood": {
       "title": "Adicionar Comida Personalizada",
@@ -494,7 +516,12 @@
       "p": "Proteína (g)",
       "c": "Hidratos (g)",
       "f": "Gordura (g)",
-      "save": "Guardar Comida Personalizada"
+      "save": "Guardar Comida Personalizada",
+      "nextReview": "Seguinte: Rever",
+      "reviewSave": "Rever e Guardar",
+      "by": "por",
+      "saving": "A guardar...",
+      "saveFood": "Guardar Alimento"
     },
     "createRecipe": {
       "title": "Criar Receita",
@@ -526,12 +553,14 @@
     },
     "logRecipe": {
       "title": "Registar Refeição",
-      "logged": "Registado com sucesso!",
-      "addedTo": "Adicionado ao seu",
+      "logged": "Registado!",
+      "addedTo": "Adicionado ao teu",
       "logToMeal": "Registar na Refeição",
-      "qty": "Quantidade (Porções)",
+      "qty": "Quantidade",
       "skip": "Saltar",
-      "logTo": "Registar no"
+      "logTo": "Registar em",
+      "titleRecipe": "Adicionar Receita",
+      "titleFood": "Adicionar Alimento"
     },
     "sugar": {
       "scanTitle": "Analisar Produto",
@@ -606,7 +635,7 @@
     "articleDisclaimer": "Conteúdo educativo, não aconselhamento médico. Consulta sempre um médico para orientação personalizada.",
     "vitalityCheckin": "Registo de Vitalidade",
     "vitalitySub": "Avalia cada pilar honestamente. O teu T-Opt score atualiza em tempo real.",
-    "tOptScore": "PONTUAÇÃO T-OPT",
+    "tOptScore": "T-OPT SCORE",
     "drivePillar": "Vitalidade / Líbido",
     "recoveryPillar": "Estado de Recuperação",
     "focusPillar": "Foco Mental",
@@ -962,7 +991,7 @@
     "unlockDeepAnalyticsSub": "Insights com IA que se adaptam ao seu histórico, padrões e sintomas registrados."
   },
   "todo": {
-    "title": "Centro de Produtividade",
+    "title": "Produtividade",
     "open": "em aberto",
     "done": "concluídas",
     "urgent_count": "{{count}} urgente",
@@ -1126,7 +1155,7 @@
     "search": "Pesquisar",
     "all": "Todos",
     "various": "Vários",
-    "beginner": "Principiante",
+    "beginner": "Iniciante",
     "intermediate": "Intermédio",
     "advanced": "Avançado",
     "veteran": "Veterano",
@@ -1144,7 +1173,24 @@
     "clear": "Claro",
     "back": "Voltar",
     "notReady": "Não está pronto",
-    "upgradeToPro": "Atualizar para Pro"
+    "upgradeToPro": "Atualizar para Pro",
+    "servings": "porções",
+    "protein": "Proteína",
+    "carbs": "Hidratos",
+    "fat": "Gordura",
+    "kcal": "kcal",
+    "proteinShort": "P",
+    "carbsShort": "H",
+    "fatShort": "G",
+    "openSettings": "Abrir Definições",
+    "checkSettings": "Verificar Definições",
+    "configError": "Erro de configuração",
+    "disconnect": "Desligar",
+    "start": "Iniciar",
+    "yes": "Sim",
+    "resume": "Retomar",
+    "pause": "Pausa",
+    "today": "Hoje"
   },
   "wellness": {
     "title": "Bem-estar",
@@ -1786,30 +1832,31 @@
     "lifeGoalsHub": {
       "title": "Objetivos de Vida",
       "pending": "Pendentes",
-      "savings": "Poupanças",
-      "achieved": "Conquistados",
+      "savings": "Poupança",
+      "achieved": "Alcançados",
       "link": "Link",
-      "markAchieved": "Marcar como Conquistado",
-      "noGoals": "Sem objetivos. Adiciona um!",
+      "markAchieved": "Marcar como Concluído",
+      "noGoals": "Nenhum objetivo encontrado. Adiciona um!",
       "newLifeGoal": "Novo Objetivo de Vida",
       "labelTitle": "Título",
-      "phVisitJapan": "ex. Visitar o Japão",
+      "phVisitJapan": "ex: Visitar o Japão",
       "labelCategory": "Categoria",
       "labelType": "Tipo",
       "standardGoal": "Objetivo Padrão",
-      "savingsGoal": "Objetivo de Poupança",
-      "targetCost": "Custo Alvo (Opcional)",
-      "targetDate": "Data Alvo (AAAA-MM-DD)",
+      "savingsGoal": "Meta de Poupança",
+      "targetCost": "Custo Estimado (Opcional)",
+      "targetDate": "Data Limite (AAAA-MM-DD)",
       "webLink": "Link Web (Opcional)",
       "description": "Descrição (Opcional)",
+      "phDetails": "Detalhes...",
       "createGoal": "Criar Objetivo",
       "congrats": "Parabéns!",
-      "achievedMsg": "Conquistaste um objetivo de vida! 🎉",
-      "deleteGoal": "Apagar Objetivo",
+      "achievedMsg": "Alcançaste um objetivo de vida! 🎉",
+      "deleteGoal": "Eliminar Objetivo",
       "areYouSure": "Tens a certeza?",
       "errNoTitle": "Por favor insere um título para o objetivo.",
       "successAdded": "Objetivo adicionado com sucesso!",
-      "errFailed": "Falha ao adicionar objetivo.",
+      "errFailed": "Erro ao adicionar objetivo.",
       "cat_All": "Todos",
       "cat_Work": "Trabalho",
       "cat_Travel": "Viagens",
@@ -1871,7 +1918,7 @@
     "fuelSub": "Plano de refeições e registo de alimentos",
     "wellness": "Bem-estar",
     "wellnessSub": "Humor, sono e meditação",
-    "productivity": "Hub de Produtividade",
+    "productivity": "Produtividade",
     "productivitySub": "Tarefas, foco e objetivos",
     "library": "Biblioteca Bluom",
     "librarySub": "Conhecimento curado e protocolos",
@@ -2098,7 +2145,8 @@
     "stage": {
       "cycle": "ciclo",
       "pregnancy": "gravidez",
-      "menopause": "menopausa"
+      "menopause": "menopausa",
+      "postpartum": "Pós-parto"
     },
     "tabToday": "Hoje",
     "tabBaby": "Bebé",
@@ -2269,9 +2317,16 @@
       },
       "cycleRegularity": {
         "question": "Como descreverias o teu ciclo?",
-        "regular": "Regular (24-35 dias)",
+        "regular": "Regular (ciclo de 24–35 dias)",
         "irregular": "Irregular / imprevisível",
         "unknown": "Não tenho a certeza"
+      },
+      "lastPeriodDate": {
+        "question": "Última Menstruação (DUM) — Quando começou o teu último período?"
+      },
+      "conceptionDate": {
+        "question": "Data de Conceção — Sabes a data exata da tua conceção?",
+        "skip": "Ainda não sei"
       }
     },
     "symptomsList": {
@@ -2300,7 +2355,43 @@
       "light": "Ligeiro",
       "medium": "Médio",
       "heavy": "Intenso"
-    }
+    },
+    "postpartum": "Pós-parto",
+    "ppPain": "Dor na Incisão / Pélvica (1-10)",
+    "ppMood": "Humor Pós-Parto",
+    "ppLochia": "Lóquios / Sangramento",
+    "ppc1": "Cicatrização da incisão, evitar carregar pesos",
+    "ppv1": "Inchaço no pavimento pélvico, lóquios",
+    "ppc2": "Core a recuperar suavemente, restringir esforço",
+    "ppv2": "Pavimento pélvico a recuperar tónus",
+    "startPelvic": "Protocolo Pélvico e Core",
+    "cSecRec1": "Cicatrização da incisão, evitar pesos e gerir lóquios.",
+    "vagRec1": "Inchaço pélvico, descanso e gestão de lóquios.",
+    "babyHereBtn": "O bebé chegou!",
+    "babyIsHere": "O bebé chegou!",
+    "postpartumRecovery": "Recuperação Pós-Parto",
+    "transitionTitle": "Bem-vinda à Recuperação Pós-Parto",
+    "deliveryDate": "Data do Parto",
+    "deliveryType": "Tipo de Parto",
+    "vaginal": "Vaginal",
+    "cSection": "Cesariana",
+    "isBreastfeeding": "A amamentar?",
+    "saveTransition": "Iniciar Jornada Pós-Parto",
+    "ppWeek": "Semana {{week}} Pós-Parto",
+    "newborn": "Registo do Recém-Nascido",
+    "feed": "Amamentação",
+    "diaper": "Fralda",
+    "sleep": "Sono do Bebé",
+    "lochia": "Lóquios / Sangramento",
+    "pain": "Dor na Incisão / Pélvica",
+    "pelvicFloor": "Pavimento Pélvico e Core",
+    "anxious": "Ansiosa",
+    "overwhelmed": "Sobrecarregada",
+    "numb": "Apática",
+    "happy": "Conectada e Feliz",
+    "heavy": "Intenso",
+    "light": "Leve",
+    "none": "Nenhum"
   },
   "premium": {
     "heroTitle": "A Tua Biologia,",
@@ -3628,7 +3719,7 @@
       "nuts": "Frutos secos"
     },
     "swapConfirmBtn": "Trocar refeicao",
-    "hubTitle": "Meal Hub",
+    "hubTitle": "Refeições",
     "hubSub": "Nutricao personalizada de 28 dias",
     "heroTitlePro": "Plano personalizado por IA",
     "heroTitleFree": "Plano alimentar de 28 dias",
@@ -5701,10 +5792,11 @@
     "lunch": "Almoço",
     "dinner": "Jantar",
     "snack": "Snack",
-    "saveToMyFoods": "Guardar em Meus Alimentos",
+    "saveToMyFoods": "Guardar nos Meus Alimentos",
     "saveAsRecipe": "Guardar como Receita",
-    "savedToMyFoodsSuccess": "Guardado em Meus Alimentos! Pode encontrá-lo na pesquisa.",
-    "savedAsRecipeSuccess": "Guardado como Receita! Pode encontrá-lo na pesquisa."
+    "savedToMyFoodsSuccess": "Guardado nos Meus Alimentos!",
+    "savedAsRecipeSuccess": "Guardado como Receita!",
+    "addToDiary": "Adicionar ao Diário"
   },
   "dental": {
     "finishedTitle": "Escovação concluída!",
@@ -5772,5 +5864,141 @@
     "stressLow": "Baixo",
     "stressModerate": "Moderado",
     "stressHigh": "Alto"
+  },
+  "integrations": {
+    "title": "Conexões",
+    "subtitle": "Sincroniza dados dos teus dispositivos e apps",
+    "privacyNotice": "O Bluom só lê os tipos de dados listados abaixo. Nunca vendemos os teus dados de saúde. Podes desligar a qualquer momento e solicitar a eliminação total em Definições → Conta.",
+    "healthLog": "Registo de Saúde",
+    "healthLogSub": "Vê as métricas importadas hoje",
+    "sourcesConnected": "{{count}} fonte ligada",
+    "sourcesConnectedPlural": "{{count}} fontes ligadas",
+    "recentImportedData": "Dados Importados Recentes",
+    "deletionNotice": "Se eliminares a tua conta Bluom, todos os dados de saúde sincronizados guardados nos nossos servidores são eliminados permanentemente em 30 dias. Os dados no dispositivo geridos pelo Apple Health ou Google Health Connect não são afetados.",
+    "categories": {
+      "activity": "Atividade e Fitness",
+      "biometrics": "Métricas Corporais",
+      "nutrition": "Nutrição",
+      "sleep": "Sono e Recuperação"
+    },
+    "card": {
+      "comingSoon": "Em breve",
+      "neverSynced": "Nunca sincronizado",
+      "justNow": "Agora mesmo",
+      "minsAgo": "há {{mins}}m",
+      "hoursAgo": "há {{hours}}h",
+      "daysAgo": "há {{days}}d",
+      "lastSync": "Última Sincronização: {{time}}",
+      "hideDetails": "Ocultar detalhes",
+      "readingDataTypes": "A ler {{count}} tipos de dados",
+      "dataWeAccess": "DADOS QUE ACEDEMOS",
+      "howWeUseIt": "COMO UTILIZAMOS",
+      "syncNow": "Sincronizar Agora"
+    },
+    "alerts": {
+      "disconnectTitle": "Desligar {{name}}",
+      "disconnectHealthMsg": "Deixaremos de ler os dados de saúde. Os teus dados históricos sincronizados serão mantidos.",
+      "healthConnFailed": "Falha na Ligação de Saúde",
+      "healthKitFailedIos": "O Bluom não conseguiu inicializar o HealthKit. Verifica se concedeste as permissões necessárias nas Definições do iOS.",
+      "healthConnectFailedAndroid": "Concede permissões no Health Connect para sincronizar os teus dados.",
+      "disconnectStravaTitle": "Desligar Strava",
+      "disconnectStravaMsg": "Deixaremos de importar atividades do Strava. Os teus registos existentes serão mantidos.",
+      "disconnectedTitle": "Desligado",
+      "stravaDisconnectedMsg": "O Strava foi desligado.",
+      "syncComplete": "Sincronização Concluída",
+      "syncCompleteDetails": "Passos: {{steps}}\nCalorias: {{calories}} kcal\nDistância: {{distance}} km",
+      "stravaSynced": "Strava Sincronizado",
+      "stravaSyncedDetails": "{{count}} novas atividades importadas.",
+      "syncFailed": "Falha na Sincronização",
+      "stravaSyncFailedDetails": "Não foi possível sincronizar as atividades do Strava."
+    },
+    "items": {
+      "apple_health": {
+        "name": "Apple Health",
+        "subtitle": "Passos, treinos, sono e mais",
+        "dataPoints": [
+          "Passos e distância percorrida",
+          "Calorias ativas queimadas",
+          "Sessões de treino",
+          "Peso corporal",
+          "Duração do sono",
+          "Frequência cardíaca"
+        ],
+        "purpose": "O número de passos e as calorias ativas atualizam a tua meta de queima diária. O peso sincroniza com o registo de progresso. Os batimentos e sono calculam os scores de Vitalidade e otimizam os protocolos de Saúde Masculina e Feminina."
+      },
+      "google_health": {
+        "name": "Health Connect",
+        "subtitle": "Passos, treinos, sono e mais",
+        "dataPoints": [
+          "Passos e distância percorrida",
+          "Calorias ativas queimadas",
+          "Sessões de treino",
+          "Peso corporal",
+          "Sessões de sono",
+          "Frequência cardíaca"
+        ],
+        "purpose": "O número de passos e as calorias ativas atualizam a tua meta de queima diária. O peso sincroniza com o registo de progresso. O ritmo cardíaco e sono calculam a tua pontuação de Vitalidade."
+      },
+      "strava": {
+        "name": "Strava",
+        "subtitle": "Corrida, ciclismo e desportos ao ar livre",
+        "dataPoints": [
+          "Tipo e nome da atividade",
+          "Duração e distância",
+          "Calorias queimadas",
+          "Frequência cardíaca média"
+        ],
+        "purpose": "As atividades do Strava são importadas automaticamente como treinos para manter o histórico e gasto calórico precisos sem registo manual."
+      },
+      "withings": {
+        "name": "Withings",
+        "subtitle": "Balanças inteligentes e monitores de saúde",
+        "dataPoints": [
+          "Peso corporal",
+          "% Gordura corporal",
+          "Massa muscular"
+        ],
+        "purpose": "A composição corporal melhora a precisão das tuas metas calóricas e mostra a tua evolução ao longo do tempo."
+      },
+      "samsung_health": {
+        "name": "Samsung Health",
+        "subtitle": "Galaxy Watch e Galaxy Ring",
+        "dataPoints": [
+          "Passos",
+          "Frequência cardíaca",
+          "Fases do sono",
+          "Composição corporal"
+        ],
+        "purpose": "Os dados do Samsung Health preenchem o teu registo de atividade diário e enriquecem os scores de sono e recuperação."
+      },
+      "oura": {
+        "name": "Oura Ring",
+        "subtitle": "Métricas avançadas de sono e prontidão",
+        "dataPoints": [
+          "Duração e fases do sono",
+          "Score de prontidão",
+          "Variabilidade cardíaca (VFC)",
+          "Tendência de temperatura corporal"
+        ],
+        "purpose": "Os dados do Oura alimentam o score noturno de Bem-estar e informam as recomendações de recuperação no teu plano de Treino."
+      },
+      "myfitnesspal": {
+        "name": "MyFitnessPal",
+        "subtitle": "Diário alimentar e nutrição",
+        "dataPoints": [
+          "Calorias diárias consumidas",
+          "Macronutrientes (proteína, hidratos, gordura)",
+          "Ingestão de água"
+        ],
+        "purpose": "Importar o teu diário do MFP evita registos duplicados, mantendo os totais de Nutrição sempre exatos."
+      }
+    }
+  },
+  "disclaimer": {
+    "medical": "O Bluom fornece apenas informações gerais de bem-estar. Consulta sempre um profissional de saúde qualificado para aconselhamento, diagnóstico ou tratamento médico."
+  },
+  "sleeper": {
+    "sleepingStatus": "Módulo em Espera",
+    "activateBtn": "Ativar Este Módulo"
   }
 }

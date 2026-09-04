@@ -1,0 +1,201 @@
+country,keyword_en,keyword_fi,platform,traffic,search_ads
+Finland,food,ruoka,google_play,43,
+Finland,food,ruoka,app_store,39,25
+Finland,workout,treeni,google_play,25,
+Finland,workout,treeni,app_store,1,5
+Finland,weight,paino,google_play,1,
+Finland,weight,paino,app_store,1,5
+Finland,fasting,paasto,google_play,25,
+Finland,fasting,paasto,app_store,No Data,5
+Finland,ai fitness,tekoäly kuntoilu,google_play,No Data,
+Finland,ai fitness,tekoäly kuntoilu,app_store,No Data,-
+Finland,gym,kuntosali,google_play,16,
+Finland,gym,kuntosali,app_store,4,8
+Finland,meditation,meditaatio,google_play,No Data,
+Finland,meditation,meditaatio,app_store,No Data,5
+Finland,period,kuukautiset,google_play,36,
+Finland,period,kuukautiset,app_store,36,23
+Finland,mestruation,kuukautiset,google_play,36,
+Finland,mestruation,kuukautiset,app_store,36,23
+Finland,habits,tavat,google_play,No Data,
+Finland,habits,tavat,app_store,No Data,-
+Finland,tracker,seuranta,google_play,No Data,
+Finland,tracker,seuranta,app_store,No Data,5
+Finland,diet,dieetti,google_play,No Data,
+Finland,diet,dieetti,app_store,No Data,5
+Finland,run,juoksu,google_play,9,
+Finland,run,juoksu,app_store,9,10
+Finland,protein,proteiini,google_play,No Data,
+Finland,protein,proteiini,app_store,No Data,-
+Finland,health,terveys,google_play,45,
+Finland,health,terveys,app_store,71,47
+Finland,AI Calorie,AI-kalori,google_play,No Data,
+Finland,AI Calorie,AI-kalori,app_store,No Data,-
+Finland,eating,syöminen,google_play,No Data,
+Finland,eating,syöminen,app_store,No Data,5
+Finland,habit,tapa,google_play,No Data,
+Finland,habit,tapa,app_store,No Data,5
+Finland,AI Calories,AI-kalorit,google_play,No Data,
+Finland,AI Calories,AI-kalorit,app_store,No Data,-
+Finland,AI nutrition,AI-ravitsemus,google_play,No Data,
+Finland,AI nutrition,AI-ravitsemus,app_store,No Data,-
+Finland,sleep,uni,google_play,91,
+Finland,sleep,uni,app_store,75,38
+Finland,ai food,AI-ruoka,google_play,No Data,
+Finland,ai food,AI-ruoka,app_store,No Data,-
+Finland,meal scanner,ateriaskanneri,google_play,No Data,
+Finland,meal scanner,ateriaskanneri,app_store,No Data,-
+Finland,exercise,liikunta,google_play,No Data,
+Finland,exercise,liikunta,app_store,No Data,5
+Finland,exercises,harjoitukset,google_play,No Data,
+Finland,exercises,harjoitukset,app_store,No Data,5
+Finland,macro,makro,google_play,No Data,
+Finland,macro,makro,app_store,No Data,5
+Finland,macros,makrot,google_play,No Data,
+Finland,macros,makrot,app_store,No Data,-
+Finland,macros tracker,makroseuranta,google_play,No Data,
+Finland,macros tracker,makroseuranta,app_store,No Data,5
+Finland,macro tracker,makrolaskuri,google_play,No Data,
+Finland,macro tracker,makrolaskuri,app_store,No Data,5
+Finland,meal tracker,ateriaseuranta,google_play,No Data,
+Finland,meal tracker,ateriaseuranta,app_store,No Data,5
+Finland,meal tracker free,ilmainen ateriaseuranta,google_play,No Data,
+Finland,meal tracker free,ilmainen ateriaseuranta,app_store,No Data,-
+Finland,habit tracker,tapaseuranta,google_play,No Data,
+Finland,habit tracker,tapaseuranta,app_store,No Data,-
+Finland,women's health,naisten terveys,google_play,No Data,
+Finland,women's health,naisten terveys,app_store,No Data,5
+Finland,menstrual cycle,kuukautiskierto,google_play,No Data,
+Finland,menstrual cycle,kuukautiskierto,app_store,No Data,5
+Finland,GPS fitness,GPS kuntoilu,google_play,No Data,
+Finland,GPS fitness,GPS kuntoilu,app_store,No Data,-
+Finland,ai coach,tekoälyvalmentaja,google_play,No Data,
+Finland,ai coach,tekoälyvalmentaja,app_store,No Data,-
+Finland,motivation,motivaatio,google_play,No Data,
+Finland,motivation,motivaatio,app_store,No Data,5
+Finland,sports,urheilu,google_play,No Data,
+Finland,sports,urheilu,app_store,No Data,5
+Finland,brain gym,aivojumppa,google_play,No Data,
+Finland,brain gym,aivojumppa,app_store,No Data,5
+Finland,cognitive games,kognitiiviset pelit,google_play,No Data,
+Finland,cognitive games,kognitiiviset pelit,app_store,No Data,-
+Finland,brain games,aivopelit,google_play,No Data,
+Finland,brain games,aivopelit,app_store,No Data,5
+Finland,personal plan,henkilökohtainen suunnitelma,google_play,No Data,
+Finland,personal plan,henkilökohtainen suunnitelma,app_store,No Data,-
+Finland,nutrition plan,ravitsemussuunnitelma,google_play,No Data,
+Finland,nutrition plan,ravitsemussuunnitelma,app_store,No Data,-
+Finland,workout plan,kuntoilusuunnitelma,google_play,No Data,
+Finland,workout plan,kuntoilusuunnitelma,app_store,No Data,-
+Finland,workout plans,kuntoilusuunnitelmat,google_play,No Data,
+Finland,workout plans,kuntoilusuunnitelmat,app_store,No Data,-
+Finland,crossfit,crossfit,google_play,14,
+Finland,crossfit,crossfit,app_store,6,7
+Finland,pilates,pilates,google_play,1,
+Finland,pilates,pilates,app_store,1,5
+Finland,yoga,jooga,google_play,No Data,
+Finland,yoga,jooga,app_store,No Data,5
+Finland,cycling tracker,pyöräilyseuranta,google_play,No Data,
+Finland,cycling tracker,pyöräilyseuranta,app_store,No Data,-
+Finland,cycling,pyöräily,google_play,60,
+Finland,cycling,pyöräily,app_store,8,30
+Finland,bmi,bmi,google_play,4,
+Finland,bmi,bmi,app_store,4,5
+Finland,bmi calculator,bmi-laskuri,google_play,No Data,
+Finland,bmi calculator,bmi-laskuri,app_store,No Data,-
+Finland,brain,aivot,google_play,No Data,
+Finland,brain,aivot,app_store,No Data,5
+Finland,meals,ateriat,google_play,No Data,
+Finland,meals,ateriat,app_store,No Data,-
+Finland,cooking,ruoanlaitto,google_play,No Data,
+Finland,cooking,ruoanlaitto,app_store,No Data,5
+Finland,recipes,reseptit,google_play,No Data,
+Finland,recipes,reseptit,app_store,No Data,5
+Finland,cooking2,kokkaus,google_play,No Data,
+Finland,cooking2,kokkaus,app_store,No Data,-
+Finland,breakfast,aamiainen,google_play,No Data,
+Finland,breakfast,aamiainen,app_store,No Data,5
+Finland,dinner,illallinen,google_play,No Data,
+Finland,dinner,illallinen,app_store,No Data,5
+Finland,lunch,lounas,google_play,No Data,
+Finland,lunch,lounas,app_store,No Data,5
+Finland,meal prep,valmistelu,google_play,No Data,
+Finland,meal prep,valmistelu,app_store,No Data,-
+Finland,healthy,terveellinen,google_play,No Data,
+Finland,healthy,terveellinen,app_store,No Data,5
+Finland,bodybuilding,kehonrakennus,google_play,No Data,
+Finland,bodybuilding,kehonrakennus,app_store,No Data,5
+Finland,scanner,skanneri,google_play,54,
+Finland,scanner,skanneri,app_store,54,5
+Finland,keto,keto,google_play,1,
+Finland,keto,keto,app_store,1,5
+Finland,ketosis,ketoosi,google_play,No Data,
+Finland,ketosis,ketoosi,app_store,No Data,-
+Finland,glucose,glukoosi,google_play,No Data,
+Finland,glucose,glukoosi,app_store,No Data,5
+Finland,insulin,insuliini,google_play,No Data,
+Finland,insulin,insuliini,app_store,No Data,-
+Finland,hydration,nesteytys,google_play,No Data,
+Finland,hydration,nesteytys,app_store,No Data,5
+Finland,steps,askeleet,google_play,5,
+Finland,steps,askeleet,app_store,5,5
+Finland,luteal phase,luteaalivaihe,google_play,No Data,
+Finland,luteal phase,luteaalivaihe,app_store,No Data,-
+Finland,ovulation,ovulaatio,google_play,No Data,
+Finland,ovulation,ovulaatio,app_store,No Data,5
+Finland,pcos,pcos,google_play,4,
+Finland,pcos,pcos,app_store,4,5
+Finland,pcos tracker,pcos-seuranta,google_play,No Data,
+Finland,pcos tracker,pcos-seuranta,app_store,No Data,-
+Finland,hypertrophy,hypertrofia,google_play,No Data,
+Finland,hypertrophy,hypertrofia,app_store,No Data,-
+Finland,bodyweight training,kehonpainoharjoittelu,google_play,No Data,
+Finland,bodyweight training,kehonpainoharjoittelu,app_store,No Data,-
+Finland,weightlifting,painonnosto,google_play,No Data,
+Finland,weightlifting,painonnosto,app_store,No Data,5
+Finland,planner,suunnittelija,google_play,No Data,
+Finland,planner,suunnittelija,app_store,No Data,5
+Finland,food scanner,ruokaskanneri,google_play,No Data,
+Finland,food scanner,ruokaskanneri,app_store,No Data,5
+Finland,calories from photo,kalorit kuvasta,google_play,No Data,
+Finland,calories from photo,kalorit kuvasta,app_store,No Data,-
+Finland,nutrition scanner,ravitsemusskanneri,google_play,No Data,
+Finland,nutrition scanner,ravitsemusskanneri,app_store,No Data,5
+Finland,carb counter,hiilihydraattilaskuri,google_play,No Data,
+Finland,carb counter,hiilihydraattilaskuri,app_store,No Data,5
+Finland,glucose tracker,glukoosiseuranta,google_play,No Data,
+Finland,glucose tracker,glukoosiseuranta,app_store,No Data,-
+Finland,keto tracker,ketoseuranta,google_play,No Data,
+Finland,keto tracker,ketoseuranta,app_store,No Data,-
+Finland,meal preparation,ruoanvalmistus,google_play,No Data,
+Finland,meal preparation,ruoanvalmistus,app_store,No Data,-
+Finland,grocery list,ostoslista,google_play,4,
+Finland,grocery list,ostoslista,app_store,4,-
+Finland,water reminder,vesimuistutus,google_play,No Data,
+Finland,water reminder,vesimuistutus,app_store,No Data,-
+Finland,hydration tracker,nesteytysseuranta,google_play,No Data,
+Finland,hydration tracker,nesteytysseuranta,app_store,No Data,-
+Finland,workout planner,treenisuunnittelija,google_play,No Data,
+Finland,workout planner,treenisuunnittelija,app_store,No Data,-
+Finland,gym log,salipäiväkirja,google_play,No Data,
+Finland,gym log,salipäiväkirja,app_store,No Data,-
+Finland,weightlifting tracker,painonnostoseuranta,google_play,No Data,
+Finland,weightlifting tracker,painonnostoseuranta,app_store,No Data,-
+Finland,strength training,voimaharjoittelu,google_play,No Data,
+Finland,strength training,voimaharjoittelu,app_store,No Data,5
+Finland,bodyweight workout,kehonpainotreeni,google_play,No Data,
+Finland,bodyweight workout,kehonpainotreeni,app_store,No Data,-
+Finland,hiit timer,hiit-ajastin,google_play,No Data,
+Finland,hiit timer,hiit-ajastin,app_store,No Data,-
+Finland,muscle builder,lihaksenrakentaja,google_play,No Data,
+Finland,muscle builder,lihaksenrakentaja,app_store,No Data,-
+Finland,pedometer,askelmittari,google_play,60,
+Finland,pedometer,askelmittari,app_store,60,34
+Finland,nutrition,ravitsemus,google_play,No Data,
+Finland,nutrition,ravitsemus,app_store,No Data,5
+Finland,nutrition calculator,ravitsemuslaskuri,google_play,No Data,
+Finland,nutrition calculator,ravitsemuslaskuri,app_store,No Data,-
+Finland,free nutrition tracking app,ilmainen ravitsemusseurantasovellus,google_play,No Data,
+Finland,free nutrition tracking app,ilmainen ravitsemusseurantasovellus,app_store,No Data,-
+Finland,nutrition tracker,ravitsemusseuranta,google_play,No Data,
+Finland,nutrition tracker,ravitsemusseuranta,app_store,No Data,5

@@ -1014,7 +1014,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   fastingBanner: {
      marginHorizontal: 20,
      marginTop: 24,
-     backgroundColor: c.text,
+     backgroundColor: c.scheme === 'dark' ? c.surfaceMuted : '#1e293b',
      borderRadius: 24,
      padding: 24,
      overflow: 'hidden',
@@ -1042,13 +1042,13 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     fontSize: 12 
   },
   fastingTime: {
-    color: 'white', 
+    color: '#ffffff', 
     fontWeight: '900', 
     fontSize: 26, 
     marginBottom: 4,
   },
   fastingSubtitle: {
-    color: c.textMuted, 
+    color: 'rgba(255,255,255,0.65)', 
     fontWeight: '500', 
     fontSize: 14,
   },

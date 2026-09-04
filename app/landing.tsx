@@ -39,6 +39,51 @@ export default function LandingPage() {
     catch { setStatus('error'); }
   };
 
+  const FAQ_ITEMS: [string, string][] = [
+    ['Does it sync with Apple Health and Google Fit?', 'Yes — steps, active calories, and workouts flow in automatically.'],
+    ['Is my data private?', 'Your data is yours. We never sell it. Full GDPR export and deletion available anytime.'],
+    ['Can I cancel anytime?', 'Yes. Monthly and yearly plans cancel in two taps. No questions asked.'],
+    ['What languages are supported?', '14 languages including English, Portuguese, Spanish, French, German, Dutch, Polish, Turkish.'],
+    ['Does the AI calorie scanner actually work?', 'It uses a vision model trained on millions of meals. Always editable if it gets a portion wrong.'],
+    ['Is there a women\'s health mode?', 'Yes — Cycle, Pregnancy, and Menopause modes with phase-aware insights and a pelvic floor timer.'],
+  ];
+
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQ_ITEMS.map(([q, a]) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  };
+
+  const organizationJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Bluom',
+    url: 'https://www.bluom.app',
+    logo: 'https://www.bluom.app/logo.png',
+    sameAs: [
+      'https://apps.apple.com/pt/app/bluom-nutrition-fitness-ai/id6759072102',
+      'https://play.google.com/store/apps/details?id=com.jwfca.bluom',
+    ],
+  };
+
+  const softwareAppJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Bluom',
+    applicationCategory: 'HealthApplication',
+    operatingSystem: 'iOS, Android',
+    description: "All-in-one health and fitness tracker with an AI calorie scanner, macro tracker, workout tracker, habit tracker, weight loss tools, cycle tracker, glucose/keto tracker, dental health tracker, camera-based pulse (HRV) tracker, and a focus timer.",
+    url: 'https://www.bluom.app',
+    image: 'https://www.bluom.app/logo.png',
+    offers: [
+      { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'USD' },
+      { '@type': 'Offer', name: 'Premium', price: '11.99', priceCurrency: 'USD' },
+    ],
+  };
   const dbArticles = useQuery(api.admin.getPublishedArticles, {});
   const landingArticles = useMemo(() => {
     if (!dbArticles || dbArticles.length === 0) {
@@ -75,11 +120,32 @@ export default function LandingPage() {
   return (
     <>
       <Head>
-        <title>Bluom | AI Calorie Scanner, Workout Tracker & Habit App</title>
-        <meta name="description" content="The ultimate health and fitness tracker. Unified macro tracker, workout log, meal scanner, period tracker, and focus timer to optimize your daily habits." />
-        <meta name="keywords" content="health and fitness tracker, macro tracker, ai calorie scanner, workout tracker, nutrition tracker, habit tracker app, cycle tracking app, focus timer app, weight loss app" />
-        <meta property="og:title" content="Bluom | AI Calorie Scanner, Workout Tracker & Habit App" />
-        <meta property="og:description" content="The ultimate health and fitness tracker. Unified macro tracker, workout log, meal scanner, period tracker, and focus timer to optimize your daily habits." />
+        <title>Bluom | AI Calorie Scanner, Macro Tracker & Habit Tracker App</title>
+        <meta name="description" content="All-in-one health and fitness tracker: AI calorie scanner, macro tracker, workout tracker, habit tracker, weight loss tools, and cycle & glucose tracking — unified in one app instead of seven." />
+        <meta name="keywords" content="health and fitness tracker, macro tracker app, ai calorie scanner, workout tracker, habit tracker app, weight loss app, cycle tracking app, glucose tracker app, keto tracker app, running tracker app, focus timer app" />
+        <link rel="canonical" href="https://www.bluom.app/" />
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.bluom.app/" />
+        <meta property="og:title" content="Bluom | AI Calorie Scanner, Macro Tracker & Habit Tracker App" />
+        <meta property="og:description" content="All-in-one health and fitness tracker: AI calorie scanner, macro tracker, workout tracker, habit tracker, weight loss tools, and cycle & glucose tracking — unified in one app instead of seven." />
+        <meta property="og:image" content="https://www.bluom.app/logo.png" />
+        <meta property="og:site_name" content="Bluom" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="https://www.bluom.app/" />
+        <meta name="twitter:title" content="Bluom | AI Calorie Scanner, Macro Tracker & Habit Tracker App" />
+        <meta name="twitter:description" content="All-in-one health and fitness tracker: AI calorie scanner, macro tracker, workout tracker, habit tracker, weight loss tools, and cycle & glucose tracking." />
+        <meta name="twitter:image" content="https://www.bluom.app/logo.png" />
+
+        {/* Structured data — helps both classic search snippets and AI/LLM answer engines cite Bluom accurately */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&family=Instrument+Serif&display=swap" rel="stylesheet" />
@@ -108,6 +174,7 @@ export default function LandingPage() {
               <a href="#wellness" className="hover:text-[#2563eb]">Wellness</a>
               <a href="#womens" className="hover:text-[#2563eb]">Women</a>
               <a href="#mens" className="hover:text-[#2563eb]">Men</a>
+              <a href="#tools" className="hover:text-[#2563eb]">Tools</a>
               <a href="/blog" className="hover:text-[#2563eb]">Blog</a>
               <a href="#pricing" className="hover:text-[#2563eb]">Pricing</a>
               <a href="#faq" className="hover:text-[#2563eb]">FAQ</a>
@@ -277,6 +344,7 @@ export default function LandingPage() {
                 <li>🎧 Peak biology soundscapes & fasting timer</li>
                 <li>🌱 Habits tracker — XP, levels, tokens per session</li>
                 <li>📝 Mood tracker, sleep tracker, & journalling</li>
+                <li>💊 Medication & supplement reminders — any pill, any schedule</li>
               </ul>
               <div className="mt-8 rounded-2xl border border-slate-100 overflow-hidden">
                 <img src={imgGamesHub} alt="Mind games hub" className="w-full h-auto object-contain" />
@@ -329,6 +397,31 @@ export default function LandingPage() {
             </div>
           </section>
 
+          {/* ── SECTION: PRECISION TOOLS ────────────────────────────── */}
+          <section id="tools">
+            <div className="text-center mb-12">
+              <span className="text-[#2563eb] text-xs font-black uppercase tracking-widest">Precision Tools</span>
+              <h2 className="text-4xl md:text-5xl font-black font-outfit text-slate-900 leading-tight mt-3 mb-4">Six more tools <span className="font-serif-display text-[#2563eb]">hiding inside</span> Bluom.</h2>
+              <p className="text-lg text-slate-500 font-inter font-medium max-w-2xl mx-auto">Features most trackers don't even attempt — built in, not bolted on.</p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              {[
+                { icon: '🩸', title: 'Metabolic Hub', desc: 'A glucose tracker and keto tracker in one command center — net carbs, fat/carb ratio, ketosis state, and a keto-safe food list.', color: 'bg-red-50 border-red-100', accent: 'text-red-600' },
+                { icon: '🦷', title: 'Dental Health Hub', desc: 'A 2-minute guided brushing timer, sensitive-teeth map, flossing & mouthwash checklist, and an AI dental scan.', color: 'bg-cyan-50 border-cyan-100', accent: 'text-cyan-700' },
+                { icon: '❤️', title: 'PPG Pulse Tracker', desc: 'Point your camera at your fingertip for a heart rate, HRV, and stress reading — no wearable required.', color: 'bg-rose-50 border-rose-100', accent: 'text-rose-600' },
+                { icon: '🎯', title: 'Focus Mode', desc: 'A distraction-free focus timer for deep work sessions, with productivity tracking for Pro users.', color: 'bg-indigo-50 border-indigo-100', accent: 'text-indigo-600' },
+                { icon: '🏆', title: 'Achievements', desc: 'XP-style badges — Food Detective, Protein Streak, Ocean Mind — that turn daily consistency into a game.', color: 'bg-amber-50 border-amber-100', accent: 'text-amber-600' },
+                { icon: '⌚', title: 'Wearable Sync', desc: 'Apple Health, Health Connect, Samsung Health, Oura Ring, Galaxy Watch & Ring, and Strava — synced automatically.', color: 'bg-slate-50 border-slate-200', accent: 'text-slate-700' },
+              ].map((t) => (
+                <div key={t.title} className={`rounded-3xl p-8 border ${t.color}`}>
+                  <div className="text-4xl mb-4">{t.icon}</div>
+                  <h3 className={`text-xl font-black font-outfit mb-3 ${t.accent}`}>{t.title}</h3>
+                  <p className="text-slate-600 font-inter text-sm leading-relaxed">{t.desc}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* ── PRICING ─────────────────────────────────────────────── */}
           <section id="pricing">
             <div className="text-center mb-12">
@@ -362,14 +455,7 @@ export default function LandingPage() {
               <h2 className="text-4xl md:text-5xl font-black font-outfit text-slate-900 leading-tight mt-3">Questions, answered.</h2>
             </div>
             <div className="space-y-3">
-              {[
-                ['Does it sync with Apple Health and Google Fit?', 'Yes — steps, active calories, and workouts flow in automatically.'],
-                ['Is my data private?', 'Your data is yours. We never sell it. Full GDPR export and deletion available anytime.'],
-                ['Can I cancel anytime?', 'Yes. Monthly and yearly plans cancel in two taps. No questions asked.'],
-                ['What languages are supported?', '14 languages including English, Portuguese, Spanish, French, German, Dutch, Polish, Turkish.'],
-                ['Does the AI calorie scanner actually work?', 'It uses a vision model trained on millions of meals. Always editable if it gets a portion wrong.'],
-                ['Is there a women\'s health mode?', 'Yes — Cycle, Pregnancy, and Menopause modes with phase-aware insights and a pelvic floor timer.'],
-              ].map(([q, a]) => (
+              {FAQ_ITEMS.map(([q, a]) => (
                 <details key={q} className="bg-white rounded-2xl border border-slate-100 p-6 group">
                   <summary className="font-bold font-inter text-slate-900 cursor-pointer list-none flex justify-between items-center">
                     {q}<span className="text-[#2563eb] text-2xl font-black group-open:rotate-45 transition-transform">+</span>
@@ -486,6 +572,7 @@ export default function LandingPage() {
                   <a href="#move" className="block hover:text-[#2563eb]">Move & Workouts</a>
                   <a href="#plans" className="block hover:text-[#2563eb]">Personalized Plans</a>
                   <a href="#wellness" className="block hover:text-[#2563eb]">Wellness & Mind Garden</a>
+                  <a href="#tools" className="block hover:text-[#2563eb]">Precision Tools</a>
                   <a href="#pricing" className="block hover:text-[#2563eb]">Pricing</a>
                 </div>
               </div>

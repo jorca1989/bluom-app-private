@@ -97,12 +97,12 @@ export default function FoodDetailsModal({ visible, onClose, item, itemType, onL
   const hasMinerals = sodium !== undefined || potassium !== undefined || iron !== undefined || calcium !== undefined || magnesium !== undefined || zinc !== undefined || vitaminA !== undefined || vitaminC !== undefined;  return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
       {activeItem ? (
-        <SafeAreaView style={styles.modalContainer} edges={['bottom']}>
+        <SafeAreaView style={[styles.modalContainer, { backgroundColor: themeColors.bg }]} edges={['top', 'bottom']}>
           {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.headerTitle} numberOfLines={1}>Food Details</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <Ionicons name="close" size={24} color="#64748b" />
+          <View style={[styles.header, { backgroundColor: themeColors.surface, borderBottomColor: themeColors.border }]}>
+            <Text style={[styles.headerTitle, { color: themeColors.text }]} numberOfLines={1}>Food Details</Text>
+            <TouchableOpacity onPress={onClose} style={[styles.closeBtn, { backgroundColor: themeColors.surfaceMuted }]}>
+              <Ionicons name="close" size={24} color={themeColors.textMuted} />
             </TouchableOpacity>
           </View>
 
@@ -242,25 +242,25 @@ export default function FoodDetailsModal({ visible, onClose, item, itemType, onL
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   modalContainer: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: c.bg,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: c.border,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#0f172a',
+    color: c.text,
   },
   closeBtn: {
     padding: 6,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: c.surfaceMuted,
     borderRadius: 20,
   },
   scrollContent: {
@@ -270,7 +270,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   infoCard: {
     flexDirection: 'row',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     padding: 20,
     borderRadius: 20,
     alignItems: 'center',
@@ -290,7 +290,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 16,
-    backgroundColor: '#eff6ff',
+    backgroundColor: c.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -301,12 +301,12 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   foodName: {
     fontSize: 20,
     fontWeight: '900',
-    color: '#0f172a',
+    color: c.text,
     marginBottom: 4,
   },
   foodSub: {
     fontSize: 14,
-    color: '#64748b',
+    color: c.textMuted,
     fontWeight: '600',
     marginBottom: 8,
   },
@@ -320,16 +320,16 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#cbd5e1',
-    backgroundColor: '#f8fafc',
+    borderColor: c.border,
+    backgroundColor: c.surfaceMuted,
   },
   badgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#475569',
+    color: c.textMuted,
   },
   caloriesCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     padding: 24,
     borderRadius: 20,
     alignItems: 'center',
@@ -342,16 +342,16 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   calText: {
     fontSize: 48,
     fontWeight: '900',
-    color: '#0f172a',
+    color: c.text,
   },
   calLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#64748b',
+    color: c.textMuted,
     marginTop: 4,
   },
   breakdownCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     padding: 20,
     borderRadius: 20,
     shadowColor: '#000',
@@ -369,11 +369,11 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   breakdownTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#0f172a',
+    color: c.text,
   },
   sectionDesc: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: c.textMuted,
     marginBottom: 12,
     fontWeight: '500',
   },
@@ -400,26 +400,26 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   macroLabelText: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#1e293b',
+    color: c.text,
   },
   subMacroLabelText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#475569',
+    color: c.textMuted,
   },
   macroValText: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0f172a',
+    color: c.text,
   },
   subMacroValText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#64748b',
+    color: c.textMuted,
   },
   noDataText: {
     fontSize: 13,
-    color: '#94a3b8',
+    color: c.textMuted,
     textAlign: 'center',
     paddingVertical: 12,
     fontStyle: 'italic',
@@ -427,9 +427,9 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   footer: {
     paddingHorizontal: 20,
     paddingTop: 20,
-    backgroundColor: '#ffffff',
+    backgroundColor: c.surface,
     borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
+    borderTopColor: c.border,
   },
   addBtn: {
     backgroundColor: '#3b82f6',

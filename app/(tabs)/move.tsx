@@ -470,6 +470,33 @@ export default function MoveScreen() {
   }, [convexUser?.lifeStage, convexUser?.deliveryDate, convexUser?.postpartumStartDate]);
   const isEarlyPostpartum = convexUser?.lifeStage === 'postpartum' && postpartumWeeks <= 6;
 
+  const FALLBACK_MUSCLE_THUMBS: Record<string, string> = {
+    chest: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=400',
+    back: 'https://images.unsplash.com/photo-1603287681836-b174ce5074c2?auto=format&fit=crop&q=80&w=400',
+    legs: 'https://images.unsplash.com/photo-1574681533083-bf41eb47b2c0?auto=format&fit=crop&q=80&w=400',
+    glutes: 'https://images.unsplash.com/photo-1574681533083-bf41eb47b2c0?auto=format&fit=crop&q=80&w=400',
+    core: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=400',
+    shoulders: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=400',
+    arms: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=400',
+    cardio: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&q=80&w=400',
+    default: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=400',
+  };
+
+  const getFallbackThumb = (name?: string, muscle?: string): string => {
+    if (videoWorkoutExercises && videoWorkoutExercises.length > 0 && name) {
+      const match = videoWorkoutExercises.find(
+        (v: any) => v.name && v.name.toLowerCase().includes(name.toLowerCase()) && (v.thumbnailUrl || v.videoUrl)
+      );
+      if (match?.thumbnailUrl) return match.thumbnailUrl;
+      if (match?.videoUrl) return match.videoUrl;
+    }
+    const m = (muscle || '').toLowerCase();
+    for (const [k, url] of Object.entries(FALLBACK_MUSCLE_THUMBS)) {
+      if (m.includes(k)) return url;
+    }
+    return FALLBACK_MUSCLE_THUMBS.default;
+  };
+
   // ── Workout display routine: Prioritize AI Plan > DB workouts > static ──
   const initialWorkouts = useMemo(() => {
     // 0. Postpartum Recovery Override
@@ -479,9 +506,9 @@ export default function MoveScreen() {
         dayTitle: t('move.postpartumRecovery', 'Postpartum Recovery'),
         muscleGroups: t('move.pelvicFloor', 'Pelvic Floor & Core'),
         exercises: [
-          { id: 'pp-1', name: t('move.kegels', 'Kegel Holds'), primaryMuscle: 'Pelvic Floor', sets: 3, reps: '10 sec hold', equipment: 'None' },
-          { id: 'pp-2', name: t('move.diaphragmatic', 'Diaphragmatic Breathing'), primaryMuscle: 'Core', sets: 3, reps: '10', equipment: 'None' },
-          { id: 'pp-3', name: t('move.pelvicTilts', 'Pelvic Tilts'), primaryMuscle: 'Core', sets: 2, reps: '10', equipment: 'Mat' },
+          { id: 'pp-1', name: t('move.kegels', 'Kegel Holds'), primaryMuscle: 'Pelvic Floor', sets: 3, reps: '10 sec hold', equipment: 'None', thumbnailUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&q=80&w=400' },
+          { id: 'pp-2', name: t('move.diaphragmatic', 'Diaphragmatic Breathing'), primaryMuscle: 'Core', sets: 3, reps: '10', equipment: 'None', thumbnailUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=400' },
+          { id: 'pp-3', name: t('move.pelvicTilts', 'Pelvic Tilts'), primaryMuscle: 'Core', sets: 2, reps: '10', equipment: 'Mat', thumbnailUrl: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=400' },
         ],
       },
       {
@@ -489,9 +516,9 @@ export default function MoveScreen() {
         dayTitle: t('move.gentleMobility', 'Gentle Mobility'),
         muscleGroups: t('move.fullBody', 'Full Body'),
         exercises: [
-          { id: 'pp-4', name: t('move.catCow', 'Cat-Cow Stretch'), primaryMuscle: 'Back', sets: 2, reps: '10', equipment: 'Mat' },
-          { id: 'pp-5', name: t('move.birdDogMod', 'Modified Bird-Dog'), primaryMuscle: 'Core', sets: 3, reps: '8 per side', equipment: 'Mat' },
-          { id: 'pp-6', name: t('move.gluteBridge', 'Glute Bridges (No Weight)'), primaryMuscle: 'Glutes', sets: 3, reps: '12', equipment: 'Mat' },
+          { id: 'pp-4', name: t('move.catCow', 'Cat-Cow Stretch'), primaryMuscle: 'Back', sets: 2, reps: '10', equipment: 'Mat', thumbnailUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=400' },
+          { id: 'pp-5', name: t('move.birdDogMod', 'Modified Bird-Dog'), primaryMuscle: 'Core', sets: 3, reps: '8 per side', equipment: 'Mat', thumbnailUrl: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=400' },
+          { id: 'pp-6', name: t('move.gluteBridge', 'Glute Bridges (No Weight)'), primaryMuscle: 'Glutes', sets: 3, reps: '12', equipment: 'Mat', thumbnailUrl: 'https://images.unsplash.com/photo-1574681533083-bf41eb47b2c0?auto=format&fit=crop&q=80&w=400' },
         ],
       }];
     }
@@ -505,16 +532,20 @@ export default function MoveScreen() {
         muscleGroups: t(`db.${(Array.isArray(w.muscleGroups) ? w.muscleGroups.join('') : (w.muscleGroups || w.focus || 'FullBody')).replace(/\s+/g, '')}`, Array.isArray(w.muscleGroups)
           ? w.muscleGroups.join(', ')
           : (w.muscleGroups || w.focus || 'Full Body')),
-        exercises: (w.exercises || []).map((ex: any, j: number) => ({
-          id: `ai-d${idx + 1}-e${j}`,
-          name: t(`db.${(ex.name || '').replace(/\s+/g, '')}`, ex.name || 'Exercise'),
-          thumbnailUrl: ex.thumbnailUrl || '',
-          videoUrl: ex.videoUrl || '',
-          primaryMuscle: t(`db.${(Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || 'Various')).replace(/\s+/g, '')}`, Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || 'Various')),
-          equipment: t(`db.${(ex.equipment || '').replace(/\s+/g, '')}`, ex.equipment || 'Various'),
-          sets: typeof ex.sets === 'number' ? ex.sets : (parseInt(String(ex.sets)) || 3),
-          reps: ex.reps !== undefined ? String(ex.reps) : '10',
-        })),
+        exercises: (w.exercises || []).map((ex: any, j: number) => {
+          const muscle = Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || 'Various');
+          const thumb = ex.thumbnailUrl || getFallbackThumb(ex.name, muscle);
+          return {
+            id: `ai-d${idx + 1}-e${j}`,
+            name: t(`db.${(ex.name || '').replace(/\s+/g, '')}`, ex.name || 'Exercise'),
+            thumbnailUrl: thumb,
+            videoUrl: ex.videoUrl || '',
+            primaryMuscle: t(`db.${(muscle).replace(/\s+/g, '')}`, muscle),
+            equipment: t(`db.${(ex.equipment || '').replace(/\s+/g, '')}`, ex.equipment || 'Various'),
+            sets: typeof ex.sets === 'number' ? ex.sets : (parseInt(String(ex.sets)) || 3),
+            reps: ex.reps !== undefined ? String(ex.reps) : '10',
+          };
+        }),
       }));
     }
     // 2. Try DB workouts (api.videoWorkouts.list) — undefined means still loading

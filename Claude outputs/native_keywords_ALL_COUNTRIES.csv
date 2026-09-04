@@ -1,0 +1,1169 @@
+country,keyword_en,keyword_native,platform,traffic,search_ads
+Finland,food,ruoka,google_play,43,
+Finland,food,ruoka,app_store,39,25
+Finland,workout,treeni,google_play,25,
+Finland,workout,treeni,app_store,1,5
+Finland,weight,paino,google_play,1,
+Finland,weight,paino,app_store,1,5
+Finland,fasting,paasto,google_play,25,
+Finland,fasting,paasto,app_store,No Data,5
+Finland,ai fitness,tekoäly kuntoilu,google_play,No Data,
+Finland,ai fitness,tekoäly kuntoilu,app_store,No Data,-
+Finland,gym,kuntosali,google_play,16,
+Finland,gym,kuntosali,app_store,4,8
+Finland,meditation,meditaatio,google_play,No Data,
+Finland,meditation,meditaatio,app_store,No Data,5
+Finland,period,kuukautiset,google_play,36,
+Finland,period,kuukautiset,app_store,36,23
+Finland,mestruation,kuukautiset,google_play,36,
+Finland,mestruation,kuukautiset,app_store,36,23
+Finland,habits,tavat,google_play,No Data,
+Finland,habits,tavat,app_store,No Data,-
+Finland,tracker,seuranta,google_play,No Data,
+Finland,tracker,seuranta,app_store,No Data,5
+Finland,diet,dieetti,google_play,No Data,
+Finland,diet,dieetti,app_store,No Data,5
+Finland,run,juoksu,google_play,9,
+Finland,run,juoksu,app_store,9,10
+Finland,protein,proteiini,google_play,No Data,
+Finland,protein,proteiini,app_store,No Data,-
+Finland,health,terveys,google_play,45,
+Finland,health,terveys,app_store,71,47
+Finland,AI Calorie,AI-kalori,google_play,No Data,
+Finland,AI Calorie,AI-kalori,app_store,No Data,-
+Finland,eating,syöminen,google_play,No Data,
+Finland,eating,syöminen,app_store,No Data,5
+Finland,habit,tapa,google_play,No Data,
+Finland,habit,tapa,app_store,No Data,5
+Finland,AI Calories,AI-kalorit,google_play,No Data,
+Finland,AI Calories,AI-kalorit,app_store,No Data,-
+Finland,AI nutrition,AI-ravitsemus,google_play,No Data,
+Finland,AI nutrition,AI-ravitsemus,app_store,No Data,-
+Finland,sleep,uni,google_play,91,
+Finland,sleep,uni,app_store,75,38
+Finland,ai food,AI-ruoka,google_play,No Data,
+Finland,ai food,AI-ruoka,app_store,No Data,-
+Finland,meal scanner,ateriaskanneri,google_play,No Data,
+Finland,meal scanner,ateriaskanneri,app_store,No Data,-
+Finland,exercise,liikunta,google_play,No Data,
+Finland,exercise,liikunta,app_store,No Data,5
+Finland,exercises,harjoitukset,google_play,No Data,
+Finland,exercises,harjoitukset,app_store,No Data,5
+Finland,macro,makro,google_play,No Data,
+Finland,macro,makro,app_store,No Data,5
+Finland,macros,makrot,google_play,No Data,
+Finland,macros,makrot,app_store,No Data,-
+Finland,macros tracker,makroseuranta,google_play,No Data,
+Finland,macros tracker,makroseuranta,app_store,No Data,5
+Finland,macro tracker,makrolaskuri,google_play,No Data,
+Finland,macro tracker,makrolaskuri,app_store,No Data,5
+Finland,meal tracker,ateriaseuranta,google_play,No Data,
+Finland,meal tracker,ateriaseuranta,app_store,No Data,5
+Finland,meal tracker free,ilmainen ateriaseuranta,google_play,No Data,
+Finland,meal tracker free,ilmainen ateriaseuranta,app_store,No Data,-
+Finland,habit tracker,tapaseuranta,google_play,No Data,
+Finland,habit tracker,tapaseuranta,app_store,No Data,-
+Finland,women's health,naisten terveys,google_play,No Data,
+Finland,women's health,naisten terveys,app_store,No Data,5
+Finland,menstrual cycle,kuukautiskierto,google_play,No Data,
+Finland,menstrual cycle,kuukautiskierto,app_store,No Data,5
+Finland,GPS fitness,GPS kuntoilu,google_play,No Data,
+Finland,GPS fitness,GPS kuntoilu,app_store,No Data,-
+Finland,ai coach,tekoälyvalmentaja,google_play,No Data,
+Finland,ai coach,tekoälyvalmentaja,app_store,No Data,-
+Finland,motivation,motivaatio,google_play,No Data,
+Finland,motivation,motivaatio,app_store,No Data,5
+Finland,sports,urheilu,google_play,No Data,
+Finland,sports,urheilu,app_store,No Data,5
+Finland,brain gym,aivojumppa,google_play,No Data,
+Finland,brain gym,aivojumppa,app_store,No Data,5
+Finland,cognitive games,kognitiiviset pelit,google_play,No Data,
+Finland,cognitive games,kognitiiviset pelit,app_store,No Data,-
+Finland,brain games,aivopelit,google_play,No Data,
+Finland,brain games,aivopelit,app_store,No Data,5
+Finland,personal plan,henkilökohtainen suunnitelma,google_play,No Data,
+Finland,personal plan,henkilökohtainen suunnitelma,app_store,No Data,-
+Finland,nutrition plan,ravitsemussuunnitelma,google_play,No Data,
+Finland,nutrition plan,ravitsemussuunnitelma,app_store,No Data,-
+Finland,workout plan,kuntoilusuunnitelma,google_play,No Data,
+Finland,workout plan,kuntoilusuunnitelma,app_store,No Data,-
+Finland,workout plans,kuntoilusuunnitelmat,google_play,No Data,
+Finland,workout plans,kuntoilusuunnitelmat,app_store,No Data,-
+Finland,crossfit,crossfit,google_play,14,
+Finland,crossfit,crossfit,app_store,6,7
+Finland,pilates,pilates,google_play,1,
+Finland,pilates,pilates,app_store,1,5
+Finland,yoga,jooga,google_play,No Data,
+Finland,yoga,jooga,app_store,No Data,5
+Finland,cycling tracker,pyöräilyseuranta,google_play,No Data,
+Finland,cycling tracker,pyöräilyseuranta,app_store,No Data,-
+Finland,cycling,pyöräily,google_play,60,
+Finland,cycling,pyöräily,app_store,8,30
+Finland,bmi,bmi,google_play,4,
+Finland,bmi,bmi,app_store,4,5
+Finland,bmi calculator,bmi-laskuri,google_play,No Data,
+Finland,bmi calculator,bmi-laskuri,app_store,No Data,-
+Finland,brain,aivot,google_play,No Data,
+Finland,brain,aivot,app_store,No Data,5
+Finland,meals,ateriat,google_play,No Data,
+Finland,meals,ateriat,app_store,No Data,-
+Finland,cooking,ruoanlaitto,google_play,No Data,
+Finland,cooking,ruoanlaitto,app_store,No Data,5
+Finland,recipes,reseptit,google_play,No Data,
+Finland,recipes,reseptit,app_store,No Data,5
+Finland,cooking2,kokkaus,google_play,No Data,
+Finland,cooking2,kokkaus,app_store,No Data,-
+Finland,breakfast,aamiainen,google_play,No Data,
+Finland,breakfast,aamiainen,app_store,No Data,5
+Finland,dinner,illallinen,google_play,No Data,
+Finland,dinner,illallinen,app_store,No Data,5
+Finland,lunch,lounas,google_play,No Data,
+Finland,lunch,lounas,app_store,No Data,5
+Finland,meal prep,valmistelu,google_play,No Data,
+Finland,meal prep,valmistelu,app_store,No Data,-
+Finland,healthy,terveellinen,google_play,No Data,
+Finland,healthy,terveellinen,app_store,No Data,5
+Finland,bodybuilding,kehonrakennus,google_play,No Data,
+Finland,bodybuilding,kehonrakennus,app_store,No Data,5
+Finland,scanner,skanneri,google_play,54,
+Finland,scanner,skanneri,app_store,54,5
+Finland,keto,keto,google_play,1,
+Finland,keto,keto,app_store,1,5
+Finland,ketosis,ketoosi,google_play,No Data,
+Finland,ketosis,ketoosi,app_store,No Data,-
+Finland,glucose,glukoosi,google_play,No Data,
+Finland,glucose,glukoosi,app_store,No Data,5
+Finland,insulin,insuliini,google_play,No Data,
+Finland,insulin,insuliini,app_store,No Data,-
+Finland,hydration,nesteytys,google_play,No Data,
+Finland,hydration,nesteytys,app_store,No Data,5
+Finland,steps,askeleet,google_play,5,
+Finland,steps,askeleet,app_store,5,5
+Finland,luteal phase,luteaalivaihe,google_play,No Data,
+Finland,luteal phase,luteaalivaihe,app_store,No Data,-
+Finland,ovulation,ovulaatio,google_play,No Data,
+Finland,ovulation,ovulaatio,app_store,No Data,5
+Finland,pcos,pcos,google_play,4,
+Finland,pcos,pcos,app_store,4,5
+Finland,pcos tracker,pcos-seuranta,google_play,No Data,
+Finland,pcos tracker,pcos-seuranta,app_store,No Data,-
+Finland,hypertrophy,hypertrofia,google_play,No Data,
+Finland,hypertrophy,hypertrofia,app_store,No Data,-
+Finland,bodyweight training,kehonpainoharjoittelu,google_play,No Data,
+Finland,bodyweight training,kehonpainoharjoittelu,app_store,No Data,-
+Finland,weightlifting,painonnosto,google_play,No Data,
+Finland,weightlifting,painonnosto,app_store,No Data,5
+Finland,planner,suunnittelija,google_play,No Data,
+Finland,planner,suunnittelija,app_store,No Data,5
+Finland,food scanner,ruokaskanneri,google_play,No Data,
+Finland,food scanner,ruokaskanneri,app_store,No Data,5
+Finland,calories from photo,kalorit kuvasta,google_play,No Data,
+Finland,calories from photo,kalorit kuvasta,app_store,No Data,-
+Finland,nutrition scanner,ravitsemusskanneri,google_play,No Data,
+Finland,nutrition scanner,ravitsemusskanneri,app_store,No Data,5
+Finland,carb counter,hiilihydraattilaskuri,google_play,No Data,
+Finland,carb counter,hiilihydraattilaskuri,app_store,No Data,5
+Finland,glucose tracker,glukoosiseuranta,google_play,No Data,
+Finland,glucose tracker,glukoosiseuranta,app_store,No Data,-
+Finland,keto tracker,ketoseuranta,google_play,No Data,
+Finland,keto tracker,ketoseuranta,app_store,No Data,-
+Finland,meal preparation,ruoanvalmistus,google_play,No Data,
+Finland,meal preparation,ruoanvalmistus,app_store,No Data,-
+Finland,grocery list,ostoslista,google_play,4,
+Finland,grocery list,ostoslista,app_store,4,-
+Finland,water reminder,vesimuistutus,google_play,No Data,
+Finland,water reminder,vesimuistutus,app_store,No Data,-
+Finland,hydration tracker,nesteytysseuranta,google_play,No Data,
+Finland,hydration tracker,nesteytysseuranta,app_store,No Data,-
+Finland,workout planner,treenisuunnittelija,google_play,No Data,
+Finland,workout planner,treenisuunnittelija,app_store,No Data,-
+Finland,gym log,salipäiväkirja,google_play,No Data,
+Finland,gym log,salipäiväkirja,app_store,No Data,-
+Finland,weightlifting tracker,painonnostoseuranta,google_play,No Data,
+Finland,weightlifting tracker,painonnostoseuranta,app_store,No Data,-
+Finland,strength training,voimaharjoittelu,google_play,No Data,
+Finland,strength training,voimaharjoittelu,app_store,No Data,5
+Finland,bodyweight workout,kehonpainotreeni,google_play,No Data,
+Finland,bodyweight workout,kehonpainotreeni,app_store,No Data,-
+Finland,hiit timer,hiit-ajastin,google_play,No Data,
+Finland,hiit timer,hiit-ajastin,app_store,No Data,-
+Finland,muscle builder,lihaksenrakentaja,google_play,No Data,
+Finland,muscle builder,lihaksenrakentaja,app_store,No Data,-
+Finland,pedometer,askelmittari,google_play,60,
+Finland,pedometer,askelmittari,app_store,60,34
+Finland,nutrition,ravitsemus,google_play,No Data,
+Finland,nutrition,ravitsemus,app_store,No Data,5
+Finland,nutrition calculator,ravitsemuslaskuri,google_play,No Data,
+Finland,nutrition calculator,ravitsemuslaskuri,app_store,No Data,-
+Finland,free nutrition tracking app,ilmainen ravitsemusseurantasovellus,google_play,No Data,
+Finland,free nutrition tracking app,ilmainen ravitsemusseurantasovellus,app_store,No Data,-
+Finland,nutrition tracker,ravitsemusseuranta,google_play,No Data,
+Finland,nutrition tracker,ravitsemusseuranta,app_store,No Data,5
+Italy,food,cibo,google_play,275,
+Italy,food,cibo,app_store,275,5
+Italy,workout,allenamento,google_play,295,
+Italy,workout,allenamento,app_store,295,5
+Italy,weight,peso,google_play,186,
+Italy,weight,peso,app_store,186,5
+Italy,fasting,digiuno,google_play,0,
+Italy,fasting,digiuno,app_store,0,5
+Italy,ai fitness,fitness ai,google_play,0,
+Italy,ai fitness,fitness ai,app_store,0,5
+Italy,gym,palestra,google_play,6,
+Italy,gym,palestra,app_store,6,5
+Italy,meditation,meditazione,google_play,3,
+Italy,meditation,meditazione,app_store,3,5
+Italy,period,ciclo,google_play,469,
+Italy,period,ciclo,app_store,469,54
+Italy,mestruation,mestruazioni,google_play,84,
+Italy,mestruation,mestruazioni,app_store,90,24
+Italy,habits,abitudini,google_play,2,
+Italy,habits,abitudini,app_store,2,5
+Italy,tracker,monitoraggio,google_play,No Data,
+Italy,tracker,monitoraggio,app_store,No Data,5
+Italy,diet,dieta,google_play,239,
+Italy,diet,dieta,app_store,261,5
+Italy,run,corsa,google_play,344,
+Italy,run,corsa,app_store,344,47
+Italy,protein,proteine,google_play,6,
+Italy,protein,proteine,app_store,6,5
+Italy,health,salute,google_play,694,
+Italy,health,salute,app_store,694,61
+Italy,AI Calorie,calorie ai,google_play,1,
+Italy,AI Calorie,calorie ai,app_store,1,5
+Italy,eating,mangiare,google_play,1,
+Italy,eating,mangiare,app_store,1,5
+Italy,habit,abitudine,google_play,No Data,
+Italy,habit,abitudine,app_store,No Data,5
+Italy,AI Calories,calorie ia,google_play,0,
+Italy,AI Calories,calorie ia,app_store,0,-
+Italy,AI nutrition,nutrizione ai,google_play,No Data,
+Italy,AI nutrition,nutrizione ai,app_store,No Data,-
+Italy,sleep,sonno,google_play,3,
+Italy,sleep,sonno,app_store,6,5
+Italy,ai food,cibo ai,google_play,2,
+Italy,ai food,cibo ai,app_store,2,-
+Italy,meal scanner,scanner pasti,google_play,No Data,
+Italy,meal scanner,scanner pasti,app_store,No Data,-
+Italy,exercise,esercizio,google_play,No Data,
+Italy,exercise,esercizio,app_store,No Data,5
+Italy,exercises,esercizi,google_play,73,
+Italy,exercises,esercizi,app_store,73,5
+Italy,macro,macro,google_play,0,
+Italy,macro,macro,app_store,0,5
+Italy,macros,macro nutrienti,google_play,No Data,
+Italy,macros,macro nutrienti,app_store,No Data,-
+Italy,macros tracker,monitoraggio macro,google_play,No Data,
+Italy,macros tracker,monitoraggio macro,app_store,No Data,-
+Italy,macro tracker,tracciamento macro,google_play,No Data,
+Italy,macro tracker,tracciamento macro,app_store,No Data,-
+Italy,meal tracker,monitoraggio pasti,google_play,No Data,
+Italy,meal tracker,monitoraggio pasti,app_store,No Data,-
+Italy,meal tracker free,monitoraggio pasti gratis,google_play,No Data,
+Italy,meal tracker free,monitoraggio pasti gratis,app_store,No Data,-
+Italy,habit tracker,monitoraggio abitudini,google_play,No Data,
+Italy,habit tracker,monitoraggio abitudini,app_store,No Data,-
+Italy,women's health,salute femminile,google_play,No Data,
+Italy,women's health,salute femminile,app_store,No Data,5
+Italy,menstrual cycle,ciclo mestruale,google_play,463,
+Italy,menstrual cycle,ciclo mestruale,app_store,463,53
+Italy,GPS fitness,fitness gps,google_play,No Data,
+Italy,GPS fitness,fitness gps,app_store,No Data,-
+Italy,ai coach,coach ai,google_play,2,
+Italy,ai coach,coach ai,app_store,2,-
+Italy,motivation,motivazione,google_play,2,
+Italy,motivation,motivazione,app_store,2,5
+Italy,sports,sport,google_play,506,
+Italy,sports,sport,app_store,506,55
+Italy,brain gym,ginnastica mentale,google_play,No Data,
+Italy,brain gym,ginnastica mentale,app_store,No Data,-
+Italy,cognitive games,giochi cognitivi,google_play,No Data,
+Italy,cognitive games,giochi cognitivi,app_store,No Data,5
+Italy,brain games,giochi mentali,google_play,76,
+Italy,brain games,giochi mentali,app_store,76,5
+Italy,personal plan,piano personale,google_play,No Data,
+Italy,personal plan,piano personale,app_store,No Data,-
+Italy,nutrition plan,piano alimentare,google_play,125,
+Italy,nutrition plan,piano alimentare,app_store,125,5
+Italy,workout plan,piano di allenamento,google_play,3,
+Italy,workout plan,piano di allenamento,app_store,3,5
+Italy,workout plans,piani di allenamento,google_play,No Data,
+Italy,workout plans,piani di allenamento,app_store,No Data,-
+Italy,crossfit,crossfit,google_play,4,
+Italy,crossfit,crossfit,app_store,4,5
+Italy,pilates,pilates,google_play,310,
+Italy,pilates,pilates,app_store,310,45
+Italy,yoga,yoga,google_play,281,
+Italy,yoga,yoga,app_store,281,43
+Italy,cycling tracker,monitoraggio ciclismo,google_play,No Data,
+Italy,cycling tracker,monitoraggio ciclismo,app_store,No Data,-
+Italy,cycling,ciclismo,google_play,98,
+Italy,cycling,ciclismo,app_store,98,5
+Italy,bmi,bmi,google_play,143,
+Italy,bmi,bmi,app_store,143,31
+Italy,bmi calculator,calcolatore bmi,google_play,12,
+Italy,bmi calculator,calcolatore bmi,app_store,12,23
+Italy,brain,cervello,google_play,2,
+Italy,brain,cervello,app_store,12,5
+Italy,meals,pasti,google_play,No Data,
+Italy,meals,pasti,app_store,No Data,5
+Italy,cooking,cucina,google_play,618,
+Italy,cooking,cucina,app_store,618,58
+Italy,recipes,ricette,google_play,182,
+Italy,recipes,ricette,app_store,182,5
+Italy,cooking2,cucinare,google_play,118,
+Italy,cooking2,cucinare,app_store,118,28
+Italy,breakfast,colazione,google_play,No Data,
+Italy,breakfast,colazione,app_store,117,No Data
+Italy,dinner,cena,google_play,No Data,
+Italy,dinner,cena,app_store,No Data,5
+Italy,lunch,pranzo,google_play,No Data,
+Italy,lunch,pranzo,app_store,No Data,5
+Italy,meal prep,preparazione pasti,google_play,No Data,
+Italy,meal prep,preparazione pasti,app_store,No Data,-
+Italy,healthy,sano,google_play,No Data,
+Italy,healthy,sano,app_store,No Data,5
+Italy,bodybuilding,bodybuilding,google_play,1,
+Italy,bodybuilding,bodybuilding,app_store,1,5
+Italy,scanner,scanner,google_play,604,
+Italy,scanner,scanner,app_store,604,58
+Italy,keto,keto,google_play,89,
+Italy,keto,keto,app_store,89,5
+Italy,ketosis,chetosi,google_play,No Data,
+Italy,ketosis,chetosi,app_store,No Data,-
+Italy,glucose,glucosio,google_play,1,
+Italy,glucose,glucosio,app_store,1,5
+Italy,insulin,insulina,google_play,No Data,
+Italy,insulin,insulina,app_store,No Data,-
+Italy,hydration,idratazione,google_play,No Data,
+Italy,hydration,idratazione,app_store,No Data,5
+Italy,steps,passi,google_play,13,
+Italy,steps,passi,app_store,13,5
+Italy,luteal phase,fase luteale,google_play,No Data,
+Italy,luteal phase,fase luteale,app_store,No Data,-
+Italy,ovulation,ovulazione,google_play,49,
+Italy,ovulation,ovulazione,app_store,49,15
+Italy,pcos,pcos,google_play,84,
+Italy,pcos,pcos,app_store,3,5
+Italy,pcos tracker,monitoraggio pcos,google_play,No Data,
+Italy,pcos tracker,monitoraggio pcos,app_store,No Data,-
+Italy,hypertrophy,ipertrofia,google_play,No Data,
+Italy,hypertrophy,ipertrofia,app_store,No Data,-
+Italy,bodyweight training,allenamento a corpo libero,google_play,No Data,
+Italy,bodyweight training,allenamento a corpo libero,app_store,No Data,6
+Italy,weightlifting,sollevamento pesi,google_play,No Data,
+Italy,weightlifting,sollevamento pesi,app_store,No Data,-
+Italy,planner,pianificatore,google_play,1,
+Italy,planner,pianificatore,app_store,1,5
+Italy,food scanner,scanner cibo,google_play,9,
+Italy,food scanner,scanner cibo,app_store,9,5
+Italy,calories from photo,calorie da foto,google_play,No Data,
+Italy,calories from photo,calorie da foto,app_store,No Data,-
+Italy,nutrition scanner,scanner nutrizionale,google_play,No Data,
+Italy,nutrition scanner,scanner nutrizionale,app_store,No Data,5
+Italy,carb counter,contatore carboidrati,google_play,No Data,
+Italy,carb counter,contatore carboidrati,app_store,No Data,5
+Italy,glucose tracker,monitoraggio glucosio,google_play,No Data,
+Italy,glucose tracker,monitoraggio glucosio,app_store,No Data,-
+Italy,keto tracker,monitoraggio keto,google_play,No Data,
+Italy,keto tracker,monitoraggio keto,app_store,No Data,-
+Italy,meal preparation,preparazione culinaria,google_play,No Data,
+Italy,meal preparation,preparazione culinaria,app_store,No Data,-
+Italy,grocery list,lista della spesa,google_play,223,
+Italy,grocery list,lista della spesa,app_store,223,5
+Italy,water reminder,promemoria acqua,google_play,62,
+Italy,water reminder,promemoria acqua,app_store,62,19
+Italy,hydration tracker,monitoraggio idratazione,google_play,No Data,
+Italy,hydration tracker,monitoraggio idratazione,app_store,No Data,-
+Italy,workout planner,pianificatore allenamento,google_play,No Data,
+Italy,workout planner,pianificatore allenamento,app_store,No Data,-
+Italy,gym log,diario palestra,google_play,0,
+Italy,gym log,diario palestra,app_store,0,5
+Italy,weightlifting tracker,monitoraggio sollevamento pesi,google_play,No Data,
+Italy,weightlifting tracker,monitoraggio sollevamento pesi,app_store,No Data,-
+Italy,strength training,allenamento della forza,google_play,No Data,
+Italy,strength training,allenamento della forza,app_store,No Data,5
+Italy,bodyweight workout,workout a corpo libero,google_play,No Data,
+Italy,bodyweight workout,workout a corpo libero,app_store,No Data,-
+Italy,hiit timer,timer hiit,google_play,No Data,
+Italy,hiit timer,timer hiit,app_store,No Data,5
+Italy,muscle builder,costruzione muscolare,google_play,No Data,
+Italy,muscle builder,costruzione muscolare,app_store,No Data,-
+Italy,pedometer,contapassi,google_play,212,
+Italy,pedometer,contapassi,app_store,212,5
+Italy,nutrition,nutrizione,google_play,7,
+Italy,nutrition,nutrizione,app_store,7,5
+Italy,nutrition calculator,calcolatore nutrizionale,google_play,No Data,
+Italy,nutrition calculator,calcolatore nutrizionale,app_store,No Data,5
+Italy,free nutrition tracking app,app monitoraggio nutrizione gratis,google_play,No Data,
+Italy,free nutrition tracking app,app monitoraggio nutrizione gratis,app_store,No Data,-
+Italy,nutrition tracker,monitoraggio nutrizione,google_play,No Data,
+Italy,nutrition tracker,monitoraggio nutrizione,app_store,No Data,-
+Poland,food,jedzenie,google_play,135,
+Poland,food,jedzenie,app_store,135,5
+Poland,workout,trening,google_play,143,
+Poland,workout,trening,app_store,143,5
+Poland,weight,waga,google_play,144,
+Poland,weight,waga,app_store,144,5
+Poland,fasting,post,google_play,119,
+Poland,fasting,post,app_store,119,39
+Poland,ai fitness,fitness ai,google_play,No Data,
+Poland,ai fitness,fitness ai,app_store,No Data,-
+Poland,gym,siłownia,google_play,No Data,
+Poland,gym,siłownia,app_store,No Data,5
+Poland,meditation,medytacja,google_play,25,
+Poland,meditation,medytacja,app_store,25,5
+Poland,period,okres,google_play,30,
+Poland,period,okres,app_store,30,5
+Poland,mestruation,miesiączka,google_play,No Data,
+Poland,mestruation,miesiączka,app_store,No Data,5
+Poland,habits,nawyki,google_play,43,
+Poland,habits,nawyki,app_store,43,5
+Poland,tracker,monitorowanie,google_play,No Data,
+Poland,tracker,monitorowanie,app_store,No Data,5
+Poland,diet,dieta,google_play,133,
+Poland,diet,dieta,app_store,133,5
+Poland,run,bieganie,google_play,162,
+Poland,run,bieganie,app_store,162,48
+Poland,protein,białko,google_play,No Data,
+Poland,protein,białko,app_store,No Data,5
+Poland,health,zdrowie,google_play,241,
+Poland,health,zdrowie,app_store,241,62
+Poland,AI Calorie,kalorie ai,google_play,No Data,
+Poland,AI Calorie,kalorie ai,app_store,No Data,5
+Poland,eating,jedzenie2,google_play,135,
+Poland,eating,jedzenie2,app_store,135,5
+Poland,habit,nawyk,google_play,No Data,
+Poland,habit,nawyk,app_store,No Data,5
+Poland,AI Calories,kalorie ia,google_play,No Data,
+Poland,AI Calories,kalorie ia,app_store,No Data,-
+Poland,AI nutrition,odżywianie ai,google_play,No Data,
+Poland,AI nutrition,odżywianie ai,app_store,No Data,-
+Poland,sleep,sen,google_play,54,
+Poland,sleep,sen,app_store,6,5
+Poland,ai food,jedzenie ai,google_play,No Data,
+Poland,ai food,jedzenie ai,app_store,6,5
+Poland,meal scanner,skaner posiłków,google_play,No Data,
+Poland,meal scanner,skaner posiłków,app_store,No Data,-
+Poland,exercise,ćwiczenie,google_play,4,
+Poland,exercise,ćwiczenie,app_store,No Data,6
+Poland,exercises,ćwiczenia,google_play,6,
+Poland,exercises,ćwiczenia,app_store,30,No Data
+Poland,macro,makro,google_play,212,
+Poland,macro,makro,app_store,212,57
+Poland,macros,makroskładniki,google_play,No Data,
+Poland,macros,makroskładniki,app_store,No Data,-
+Poland,macros tracker,monitorowanie makro,google_play,No Data,
+Poland,macros tracker,monitorowanie makro,app_store,No Data,-
+Poland,macro tracker,śledzenie makro,google_play,No Data,
+Poland,macro tracker,śledzenie makro,app_store,No Data,5
+Poland,meal tracker,monitorowanie posiłków,google_play,No Data,
+Poland,meal tracker,monitorowanie posiłków,app_store,No Data,-
+Poland,meal tracker free,monitorowanie posiłków za darmo,google_play,No Data,
+Poland,meal tracker free,monitorowanie posiłków za darmo,app_store,No Data,-
+Poland,habit tracker,monitorowanie nawyków,google_play,No Data,
+Poland,habit tracker,monitorowanie nawyków,app_store,No Data,-
+Poland,women's health,zdrowie kobiet,google_play,No Data,
+Poland,women's health,zdrowie kobiet,app_store,No Data,-
+Poland,menstrual cycle,cykl miesiączkowy,google_play,10,
+Poland,menstrual cycle,cykl miesiączkowy,app_store,10,-
+Poland,GPS fitness,fitness gps,google_play,No Data,
+Poland,GPS fitness,fitness gps,app_store,No Data,-
+Poland,ai coach,trener ai,google_play,No Data,
+Poland,ai coach,trener ai,app_store,No Data,-
+Poland,motivation,motywacja,google_play,No Data,
+Poland,motivation,motywacja,app_store,No Data,5
+Poland,sports,sport,google_play,201,
+Poland,sports,sport,app_store,201,56
+Poland,brain gym,gimnastyka mózgu,google_play,No Data,
+Poland,brain gym,gimnastyka mózgu,app_store,No Data,-
+Poland,cognitive games,gry poznawcze,google_play,No Data,
+Poland,cognitive games,gry poznawcze,app_store,No Data,-
+Poland,brain games,gry dla mózgu,google_play,No Data,
+Poland,brain games,gry dla mózgu,app_store,No Data,-
+Poland,personal plan,plan osobisty,google_play,No Data,
+Poland,personal plan,plan osobisty,app_store,No Data,-
+Poland,nutrition plan,plan żywieniowy,google_play,No Data,
+Poland,nutrition plan,plan żywieniowy,app_store,No Data,5
+Poland,workout plan,plan treningowy,google_play,82,
+Poland,workout plan,plan treningowy,app_store,82,5
+Poland,workout plans,plany treningowe,google_play,No Data,
+Poland,workout plans,plany treningowe,app_store,No Data,5
+Poland,crossfit,crossfit,google_play,0,
+Poland,crossfit,crossfit,app_store,0,5
+Poland,pilates,pilates,google_play,130,
+Poland,pilates,pilates,app_store,130,41
+Poland,yoga,joga,google_play,79,
+Poland,yoga,joga,app_store,79,31
+Poland,cycling tracker,monitorowanie kolarstwa,google_play,No Data,
+Poland,cycling tracker,monitorowanie kolarstwa,app_store,No Data,-
+Poland,cycling,kolarstwo,google_play,7,
+Poland,cycling,kolarstwo,app_store,7,8
+Poland,bmi,bmi,google_play,138,
+Poland,bmi,bmi,app_store,138,42
+Poland,bmi calculator,kalkulator bmi,google_play,148,
+Poland,bmi calculator,kalkulator bmi,app_store,148,45
+Poland,brain,mózg,google_play,No Data,
+Poland,brain,mózg,app_store,No Data,5
+Poland,meals,posiłki,google_play,1,
+Poland,meals,posiłki,app_store,1,7
+Poland,cooking,gotowanie,google_play,121,
+Poland,cooking,gotowanie,app_store,121,39
+Poland,recipes,przepisy,google_play,131,
+Poland,recipes,przepisy,app_store,131,38
+Poland,cooking2,gotować,google_play,No Data,
+Poland,cooking2,gotować,app_store,No Data,5
+Poland,breakfast,śniadanie,google_play,No Data,
+Poland,breakfast,śniadanie,app_store,No Data,5
+Poland,dinner,kolacja,google_play,No Data,
+Poland,dinner,kolacja,app_store,No Data,-
+Poland,lunch,obiad,google_play,No Data,
+Poland,lunch,obiad,app_store,No Data,6
+Poland,meal prep,przygotowanie posiłków,google_play,No Data,
+Poland,meal prep,przygotowanie posiłków,app_store,No Data,-
+Poland,healthy,zdrowy,google_play,No Data,
+Poland,healthy,zdrowy,app_store,No Data,5
+Poland,bodybuilding,kulturystyka,google_play,No Data,
+Poland,bodybuilding,kulturystyka,app_store,No Data,5
+Poland,scanner,skaner,google_play,152,
+Poland,scanner,skaner,app_store,152,5
+Poland,keto,keto,google_play,40,
+Poland,keto,keto,app_store,40,5
+Poland,ketosis,ketoza,google_play,No Data,
+Poland,ketosis,ketoza,app_store,No Data,-
+Poland,glucose,glukoza,google_play,No Data,
+Poland,glucose,glukoza,app_store,No Data,-
+Poland,insulin,insulina,google_play,No Data,
+Poland,insulin,insulina,app_store,No Data,-
+Poland,hydration,nawodnienie,google_play,No Data,
+Poland,hydration,nawodnienie,app_store,No Data,5
+Poland,steps,kroki,google_play,125,
+Poland,steps,kroki,app_store,125,40
+Poland,luteal phase,faza lutealna,google_play,No Data,
+Poland,luteal phase,faza lutealna,app_store,No Data,-
+Poland,ovulation,owulacja,google_play,No Data,
+Poland,ovulation,owulacja,app_store,No Data,5
+Poland,pcos,pcos,google_play,0,
+Poland,pcos,pcos,app_store,0,5
+Poland,pcos tracker,monitorowanie pcos,google_play,No Data,
+Poland,pcos tracker,monitorowanie pcos,app_store,No Data,-
+Poland,hypertrophy,hipertrofia,google_play,No Data,
+Poland,hypertrophy,hipertrofia,app_store,No Data,-
+Poland,bodyweight training,trening z masą ciała,google_play,No Data,
+Poland,bodyweight training,trening z masą ciała,app_store,No Data,-
+Poland,weightlifting,podnoszenie ciężarów,google_play,No Data,
+Poland,weightlifting,podnoszenie ciężarów,app_store,No Data,-
+Poland,planner,planer,google_play,149,
+Poland,planner,planer,app_store,149,5
+Poland,food scanner,skaner jedzenia,google_play,No Data,
+Poland,food scanner,skaner jedzenia,app_store,No Data,-
+Poland,calories from photo,kalorie ze zdjęcia,google_play,No Data,
+Poland,calories from photo,kalorie ze zdjęcia,app_store,No Data,-
+Poland,nutrition scanner,skaner żywieniowy,google_play,No Data,
+Poland,nutrition scanner,skaner żywieniowy,app_store,No Data,-
+Poland,carb counter,licznik węglowodanów,google_play,No Data,
+Poland,carb counter,licznik węglowodanów,app_store,No Data,5
+Poland,glucose tracker,monitorowanie glukozy,google_play,No Data,
+Poland,glucose tracker,monitorowanie glukozy,app_store,No Data,-
+Poland,keto tracker,monitorowanie keto,google_play,No Data,
+Poland,keto tracker,monitorowanie keto,app_store,No Data,-
+Poland,meal preparation,przygotowywanie posiłków,google_play,No Data,
+Poland,meal preparation,przygotowywanie posiłków,app_store,No Data,-
+Poland,grocery list,lista zakupów,google_play,No Data,
+Poland,grocery list,lista zakupów,app_store,No Data,5
+Poland,water reminder,przypomnienie o wodzie,google_play,4,
+Poland,water reminder,przypomnienie o wodzie,app_store,4,15
+Poland,hydration tracker,monitorowanie nawodnienia,google_play,No Data,
+Poland,hydration tracker,monitorowanie nawodnienia,app_store,No Data,-
+Poland,workout planner,planer treningów,google_play,No Data,
+Poland,workout planner,planer treningów,app_store,No Data,-
+Poland,gym log,dziennik siłowni,google_play,No Data,
+Poland,gym log,dziennik siłowni,app_store,No Data,-
+Poland,weightlifting tracker,monitorowanie podnoszenia ciężarów,google_play,No Data,
+Poland,weightlifting tracker,monitorowanie podnoszenia ciężarów,app_store,No Data,-
+Poland,strength training,trening siłowy,google_play,0,
+Poland,strength training,trening siłowy,app_store,0,5
+Poland,bodyweight workout,trening z ciężarem ciała,google_play,No Data,
+Poland,bodyweight workout,trening z ciężarem ciała,app_store,No Data,-
+Poland,hiit timer,timer hiit,google_play,No Data,
+Poland,hiit timer,timer hiit,app_store,No Data,5
+Poland,muscle builder,budowanie mięśni,google_play,No Data,
+Poland,muscle builder,budowanie mięśni,app_store,No Data,-
+Poland,pedometer,krokomierz,google_play,181,
+Poland,pedometer,krokomierz,app_store,181,52
+Poland,nutrition,odżywianie,google_play,No Data,
+Poland,nutrition,odżywianie,app_store,No Data,5
+Poland,nutrition calculator,kalkulator żywieniowy,google_play,No Data,
+Poland,nutrition calculator,kalkulator żywieniowy,app_store,No Data,-
+Poland,free nutrition tracking app,darmowa aplikacja do monitorowania odżywiania,google_play,No Data,
+Poland,free nutrition tracking app,darmowa aplikacja do monitorowania odżywiania,app_store,No Data,-
+Poland,nutrition tracker,monitorowanie odżywiania,google_play,No Data,
+Poland,nutrition tracker,monitorowanie odżywiania,app_store,No Data,-
+portugal,food,comida,GP,58,
+portugal,food,comida,AS,306,49
+portugal,workout,treino,GP,163,
+portugal,workout,treino,AS,258,45
+portugal,weight,peso,GP,154,
+portugal,weight,peso,AS,154,5
+portugal,fasting,jejum,GP,5,
+portugal,fasting,jejum,AS,5,5
+portugal,ai fitness,fitness ia,GP,No Data,
+portugal,ai fitness,fitness ia,AS,No Data,5
+portugal,gym,ginásio,GP,No Data,
+portugal,gym,ginásio,AS,No Data,5
+portugal,meditation,meditação,GP,1,
+portugal,meditation,meditação,AS,1,5
+portugal,period,período,GP,No Data,
+portugal,period,período,AS,No Data,5
+portugal,mestruation,menstruação,GP,2,
+portugal,mestruation,menstruação,AS,2,5
+portugal,habits,hábitos,GP,0,
+portugal,habits,hábitos,AS,0,5
+portugal,tracker,monitorização,GP,No Data,
+portugal,tracker,monitorização,AS,No Data,5
+portugal,diet,dieta,GP,2,
+portugal,diet,dieta,AS,2,5
+portugal,run,corrida,GP,208,
+portugal,run,corrida,AS,208,40
+portugal,protein,proteína,GP,No Data,
+portugal,protein,proteína,AS,No Data,5
+portugal,health,saúde,GP,14,
+portugal,health,saúde,AS,14,32
+portugal,AI Calorie,calorias ia,GP,No Data,
+portugal,AI Calorie,calorias ia,AS,No Data,-
+portugal,eating,comer,GP,No Data,
+portugal,eating,comer,AS,No Data,5
+portugal,habit,hábito,GP,No Data,
+portugal,habit,hábito,AS,No Data,5
+portugal,AI Calories,calorias de ia,GP,No Data,
+portugal,AI Calories,calorias de ia,AS,No Data,-
+portugal,AI nutrition,nutrição ia,GP,No Data,
+portugal,AI nutrition,nutrição ia,AS,No Data,-
+portugal,sleep,sono,GP,23,
+portugal,sleep,sono,AS,23,43
+portugal,ai food,comida ia,GP,No Data,
+portugal,ai food,comida ia,AS,No Data,-
+portugal,meal scanner,scanner de refeições,GP,No Data,
+portugal,meal scanner,scanner de refeições,AS,No Data,-
+portugal,exercise,exercício,GP,No Data,
+portugal,exercise,exercício,AS,No Data,5
+portugal,exercises,exercícios,GP,No Data,
+portugal,exercises,exercícios,AS,No Data,5
+portugal,macro,macro,GP,5,
+portugal,macro,macro,AS,5,19
+portugal,macros,macronutrientes,GP,No Data,
+portugal,macros,macronutrientes,AS,No Data,-
+portugal,macros tracker,monitorização de macros,GP,No Data,
+portugal,macros tracker,monitorização de macros,AS,No Data,-
+portugal,macro tracker,rastreador de macros,GP,No Data,
+portugal,macro tracker,rastreador de macros,AS,No Data,5
+portugal,meal tracker,monitorização de refeições,GP,No Data,
+portugal,meal tracker,monitorização de refeições,AS,No Data,-
+portugal,meal tracker free,monitorização de refeições grátis,GP,No Data,
+portugal,meal tracker free,monitorização de refeições grátis,AS,No Data,-
+portugal,habit tracker,monitorização de hábitos,GP,No Data,
+portugal,habit tracker,monitorização de hábitos,AS,No Data,-
+portugal,women's health,saúde da mulher,GP,No Data,
+portugal,women's health,saúde da mulher,AS,No Data,-
+portugal,menstrual cycle,ciclo menstrual,GP,59,
+portugal,menstrual cycle,ciclo menstrual,AS,59,22
+portugal,GPS fitness,fitness gps,GP,No Data,
+portugal,GPS fitness,fitness gps,AS,No Data,-
+portugal,ai coach,treinador ia,GP,No Data,
+portugal,ai coach,treinador ia,AS,No Data,-
+portugal,motivation,motivação,GP,No Data,
+portugal,motivation,motivação,AS,1,5
+portugal,sports,desporto,GP,68,
+portugal,sports,desporto,AS,68,5
+portugal,brain gym,ginástica cerebral,GP,No Data,
+portugal,brain gym,ginástica cerebral,AS,No Data,-
+portugal,cognitive games,jogos cognitivos,GP,No Data,
+portugal,cognitive games,jogos cognitivos,AS,No Data,-
+portugal,brain games,jogos para o cérebro,GP,No Data,
+portugal,brain games,jogos para o cérebro,AS,No Data,5
+portugal,personal plan,plano pessoal,GP,No Data,
+portugal,personal plan,plano pessoal,AS,No Data,-
+portugal,nutrition plan,plano alimentar,GP,No Data,
+portugal,nutrition plan,plano alimentar,AS,No Data,5
+portugal,workout plan,plano de treino,GP,1,
+portugal,workout plan,plano de treino,AS,1,5
+portugal,workout plans,planos de treino,GP,No Data,
+portugal,workout plans,planos de treino,AS,No Data,-
+portugal,crossfit,crossfit,GP,5,
+portugal,crossfit,crossfit,AS,5,7
+portugal,pilates,pilates,GP,99,
+portugal,pilates,pilates,AS,99,29
+portugal,yoga,ioga,GP,2,
+portugal,yoga,ioga,AS,2,7
+portugal,cycling tracker,monitorização de ciclismo,GP,No Data,
+portugal,cycling tracker,monitorização de ciclismo,AS,No Data,-
+portugal,cycling,ciclismo,GP,9,
+portugal,cycling,ciclismo,AS,9,8
+portugal,bmi,imc,GP,6,
+portugal,bmi,imc,AS,1,5
+portugal,bmi calculator,calculadora de imc,GP,No Data,
+portugal,bmi calculator,calculadora de imc,AS,No Data,5
+portugal,brain,cérebro,GP,1,
+portugal,brain,cérebro,AS,No Data,5
+portugal,meals,refeições,GP,2,
+portugal,meals,refeições,AS,2,7
+portugal,cooking,cozinhar,GP,51,
+portugal,cooking,cozinhar,AS,51,20
+portugal,recipes,receitas,GP,2,
+portugal,recipes,receitas,AS,2,5
+portugal,cooking2,cozinha,GP,72,
+portugal,cooking2,cozinha,AS,114,31
+portugal,breakfast,pequeno-almoço,GP,No Data,
+portugal,breakfast,pequeno-almoço,AS,No Data,-
+portugal,dinner,jantar,GP,No Data,
+portugal,dinner,jantar,AS,No Data,5
+portugal,lunch,almoço,GP,No Data,
+portugal,lunch,almoço,AS,No Data,5
+portugal,meal prep,preparação de refeições,GP,No Data,
+portugal,meal prep,preparação de refeições,AS,No Data,-
+portugal,healthy,saudável,GP,No Data,
+portugal,healthy,saudável,AS,No Data,5
+portugal,bodybuilding,musculação,GP,1,
+portugal,bodybuilding,musculação,AS,1,5
+portugal,scanner,scanner,GP,498,
+portugal,scanner,scanner,AS,498,61
+portugal,keto,keto,GP,47,
+portugal,keto,keto,AS,1,5
+portugal,ketosis,cetose,GP,No Data,
+portugal,ketosis,cetose,AS,No Data,-
+portugal,glucose,glicose,GP,No Data,
+portugal,glucose,glicose,AS,No Data,5
+portugal,insulin,insulina,GP,No Data,
+portugal,insulin,insulina,AS,No Data,-
+portugal,hydration,hidratação,GP,No Data,
+portugal,hydration,hidratação,AS,No Data,5
+portugal,steps,passos,GP,2,
+portugal,steps,passos,AS,2,5
+portugal,luteal phase,fase lútea,GP,No Data,
+portugal,luteal phase,fase lútea,AS,No Data,-
+portugal,ovulation,ovulação,GP,No Data,
+portugal,ovulation,ovulação,AS,No Data,5
+portugal,pcos,sop,GP,No Data,
+portugal,pcos,sop,AS,No Data,-
+portugal,pcos tracker,monitorização de sop,GP,No Data,
+portugal,pcos tracker,monitorização de sop,AS,No Data,-
+portugal,hypertrophy,hipertrofia,GP,No Data,
+portugal,hypertrophy,hipertrofia,AS,No Data,-
+portugal,bodyweight training,treino com peso corporal,GP,No Data,
+portugal,bodyweight training,treino com peso corporal,AS,No Data,-
+portugal,weightlifting,levantamento de peso,GP,No Data,
+portugal,weightlifting,levantamento de peso,AS,No Data,-
+portugal,planner,planeador,GP,0,
+portugal,planner,planeador,AS,0,5
+portugal,food scanner,scanner de comida,GP,No Data,
+portugal,food scanner,scanner de comida,AS,No Data,-
+portugal,calories from photo,calorias da foto,GP,No Data,
+portugal,calories from photo,calorias da foto,AS,No Data,-
+portugal,nutrition scanner,scanner nutricional,GP,No Data,
+portugal,nutrition scanner,scanner nutricional,AS,No Data,-
+portugal,carb counter,contador de carboidratos,GP,No Data,
+portugal,carb counter,contador de carboidratos,AS,No Data,-
+portugal,glucose tracker,monitorização de glicose,GP,No Data,
+portugal,glucose tracker,monitorização de glicose,AS,No Data,-
+portugal,keto tracker,monitorização keto,GP,No Data,
+portugal,keto tracker,monitorização keto,AS,No Data,-
+portugal,meal preparation,preparação de comida,GP,No Data,
+portugal,meal preparation,preparação de comida,AS,No Data,-
+portugal,grocery list,lista de compras,GP,145,
+portugal,grocery list,lista de compras,AS,145,5
+portugal,water reminder,lembrete de água,GP,No Data,
+portugal,water reminder,lembrete de água,AS,No Data,5
+portugal,hydration tracker,monitorização de hidratação,GP,No Data,
+portugal,hydration tracker,monitorização de hidratação,AS,No Data,-
+portugal,workout planner,planeador de treinos,GP,No Data,
+portugal,workout planner,planeador de treinos,AS,No Data,-
+portugal,gym log,diário de ginásio,GP,No Data,
+portugal,gym log,diário de ginásio,AS,No Data,-
+portugal,weightlifting tracker,monitorização de levantamento de peso,GP,No Data,
+portugal,weightlifting tracker,monitorização de levantamento de peso,AS,No Data,-
+portugal,strength training,treino de força,GP,No Data,
+portugal,strength training,treino de força,AS,No Data,-
+portugal,bodyweight workout,treino com peso do corpo,GP,No Data,
+portugal,bodyweight workout,treino com peso do corpo,AS,No Data,-
+portugal,hiit timer,temporizador hiit,GP,No Data,
+portugal,hiit timer,temporizador hiit,AS,No Data,5
+portugal,muscle builder,construtor muscular,GP,No Data,
+portugal,muscle builder,construtor muscular,AS,No Data,-
+portugal,pedometer,pedómetro,GP,0,
+portugal,pedometer,pedómetro,AS,0,5
+portugal,nutrition,nutrição,GP,1,
+portugal,nutrition,nutrição,AS,1,5
+portugal,nutrition calculator,calculadora nutricional,GP,No Data,
+portugal,nutrition calculator,calculadora nutricional,AS,No Data,-
+portugal,free nutrition tracking app,aplicação gratuita de monitorização nutricional,GP,No Data,
+portugal,free nutrition tracking app,aplicação gratuita de monitorização nutricional,AS,No Data,-
+portugal,nutrition tracker,monitorização nutricional,GP,No Data,
+portugal,nutrition tracker,monitorização nutricional,AS,No Data,-
+czech,food,jídlo,GP,No Data,
+czech,food,jídlo,AS,No Data,5
+czech,workout,cvičení,GP,32,
+czech,workout,cvičení,AS,32,5
+czech,weight,váha,GP,90,
+czech,weight,váha,AS,90,32
+czech,fasting,půst,GP,0,
+czech,fasting,půst,AS,0,5
+czech,ai fitness,fitness ai,GP,No Data,
+czech,ai fitness,fitness ai,AS,No Data,-
+czech,gym,posilovna,GP,No Data,
+czech,gym,posilovna,AS,No Data,-
+czech,meditation,meditace,GP,5,
+czech,meditation,meditace,AS,5,5
+czech,period,menstruace,GP,40,
+czech,period,menstruace,AS,40,18
+czech,mestruation,menstruace2,GP,25,
+czech,mestruation,menstruace2,AS,40,18
+czech,habits,návyky,GP,No Data,
+czech,habits,návyky,AS,No Data,5
+czech,tracker,sledování,GP,No Data,
+czech,tracker,sledování,AS,No Data,5
+czech,diet,dieta,GP,4,
+czech,diet,dieta,AS,4,5
+czech,run,běh,GP,5,
+czech,run,běh,AS,5,20
+czech,protein,protein,GP,0,
+czech,protein,protein,AS,0,5
+czech,health,zdraví,GP,0,
+czech,health,zdraví,AS,0,5
+czech,AI Calorie,kalorie ai,GP,No Data,
+czech,AI Calorie,kalorie ai,AS,No Data,5
+czech,eating,jedení,GP,No Data,
+czech,eating,jedení,AS,No Data,-
+czech,habit,návyk,GP,No Data,
+czech,habit,návyk,AS,No Data,-
+czech,AI Calories,kalorie z ai,GP,No Data,
+czech,AI Calories,kalorie z ai,AS,No Data,-
+czech,AI nutrition,výživa ai,GP,No Data,
+czech,AI nutrition,výživa ai,AS,No Data,-
+czech,sleep,spánek,GP,0,
+czech,sleep,spánek,AS,0,5
+czech,ai food,jídlo ai,GP,No Data,
+czech,ai food,jídlo ai,AS,No Data,5
+czech,meal scanner,skener jídla,GP,No Data,
+czech,meal scanner,skener jídla,AS,No Data,-
+czech,exercise,cvičení2,GP,57,
+czech,exercise,cvičení2,AS,32,5
+czech,exercises,cviky,GP,1,
+czech,exercises,cviky,AS,1,5
+czech,macro,makro,GP,147,
+czech,macro,makro,AS,147,41
+czech,macros,makra,GP,1,
+czech,macros,makra,AS,No Data,-
+czech,macros tracker,sledování makra,GP,No Data,
+czech,macros tracker,sledování makra,AS,No Data,-
+czech,macro tracker,sledovač makra,GP,No Data,
+czech,macro tracker,sledovač makra,AS,No Data,-
+czech,meal tracker,sledování jídla,GP,No Data,
+czech,meal tracker,sledování jídla,AS,No Data,5
+czech,meal tracker free,sledování jídla zdarma,GP,No Data,
+czech,meal tracker free,sledování jídla zdarma,AS,No Data,-
+czech,habit tracker,sledování návyků,GP,No Data,
+czech,habit tracker,sledování návyků,AS,No Data,5
+czech,women's health,zdraví žen,GP,No Data,
+czech,women's health,zdraví žen,AS,No Data,-
+czech,menstrual cycle,menstruační cyklus,GP,No Data,
+czech,menstrual cycle,menstruační cyklus,AS,No Data,5
+czech,GPS fitness,gps fitness,GP,0,
+czech,GPS fitness,gps fitness,AS,0,5
+czech,ai coach,ai trenér,GP,No Data,
+czech,ai coach,ai trenér,AS,No Data,-
+czech,motivation,motivace,GP,No Data,
+czech,motivation,motivace,AS,No Data,5
+czech,sports,sport,GP,215,
+czech,sports,sport,AS,215,52
+czech,brain gym,trénink mozku,GP,No Data,
+czech,brain gym,trénink mozku,AS,No Data,5
+czech,cognitive games,kognitivní hry,GP,No Data,
+czech,cognitive games,kognitivní hry,AS,No Data,-
+czech,brain games,hry pro mozek,GP,No Data,
+czech,brain games,hry pro mozek,AS,No Data,-
+czech,personal plan,osobní plán,GP,No Data,
+czech,personal plan,osobní plán,AS,No Data,-
+czech,nutrition plan,jídelníček,GP,No Data,
+czech,nutrition plan,jídelníček,AS,No Data,5
+czech,workout plan,tréninkový plán,GP,No Data,
+czech,workout plan,tréninkový plán,AS,No Data,5
+czech,workout plans,tréninkové plány,GP,No Data,
+czech,workout plans,tréninkové plány,AS,No Data,-
+czech,crossfit,crossfit,GP,0,
+czech,crossfit,crossfit,AS,0,5
+czech,pilates,pilates,GP,95,
+czech,pilates,pilates,AS,95,33
+czech,yoga,jóga,GP,No Data,
+czech,yoga,jóga,AS,No Data,5
+czech,cycling tracker,sledování cyklistiky,GP,No Data,
+czech,cycling tracker,sledování cyklistiky,AS,No Data,-
+czech,cycling,cyklistika,GP,No Data,
+czech,cycling,cyklistika,AS,No Data,5
+czech,bmi,bmi,GP,84,
+czech,bmi,bmi,AS,84,31
+czech,bmi calculator,kalkulačka bmi,GP,No Data,
+czech,bmi calculator,kalkulačka bmi,AS,No Data,5
+czech,brain,mozek,GP,No Data,
+czech,brain,mozek,AS,No Data,5
+czech,meals,jídla,GP,No Data,
+czech,meals,jídla,AS,No Data,5
+czech,cooking,vaření,GP,73,
+czech,cooking,vaření,AS,11,35
+czech,recipes,recepty,GP,41,
+czech,recipes,recepty,AS,67,5
+czech,cooking2,vařit,GP,0,
+czech,cooking2,vařit,AS,No Data,5
+czech,breakfast,snídaně,GP,No Data,
+czech,breakfast,snídaně,AS,No Data,-
+czech,dinner,večeře,GP,No Data,
+czech,dinner,večeře,AS,No Data,5
+czech,lunch,oběd,GP,No Data,
+czech,lunch,oběd,AS,No Data,5
+czech,meal prep,příprava jídla,GP,No Data,
+czech,meal prep,příprava jídla,AS,No Data,-
+czech,healthy,zdravý,GP,No Data,
+czech,healthy,zdravý,AS,No Data,5
+czech,bodybuilding,kulturistika,GP,No Data,
+czech,bodybuilding,kulturistika,AS,No Data,-
+czech,scanner,skener,GP,162,
+czech,scanner,skener,AS,162,5
+czech,keto,keto,GP,2,
+czech,keto,keto,AS,2,5
+czech,ketosis,ketóza,GP,No Data,
+czech,ketosis,ketóza,AS,No Data,-
+czech,glucose,glukóza,GP,No Data,
+czech,glucose,glukóza,AS,No Data,-
+czech,insulin,inzulín,GP,No Data,
+czech,insulin,inzulín,AS,No Data,-
+czech,hydration,hydratace,GP,No Data,
+czech,hydration,hydratace,AS,No Data,-
+czech,steps,kroky,GP,14,
+czech,steps,kroky,AS,14,9
+czech,luteal phase,luteální fáze,GP,No Data,
+czech,luteal phase,luteální fáze,AS,No Data,-
+czech,ovulation,ovulace,GP,No Data,
+czech,ovulation,ovulace,AS,No Data,6
+czech,pcos,pcos,GP,0,
+czech,pcos,pcos,AS,0,5
+czech,pcos tracker,sledování pcos,GP,No Data,
+czech,pcos tracker,sledování pcos,AS,No Data,-
+czech,hypertrophy,hypertrofie,GP,No Data,
+czech,hypertrophy,hypertrofie,AS,No Data,-
+czech,bodyweight training,trénink s vlastní vahou,GP,No Data,
+czech,bodyweight training,trénink s vlastní vahou,AS,No Data,-
+czech,weightlifting,vzpírání,GP,No Data,
+czech,weightlifting,vzpírání,AS,No Data,-
+czech,planner,plánovač,GP,0,
+czech,planner,plánovač,AS,0,5
+czech,food scanner,skener potravin,GP,No Data,
+czech,food scanner,skener potravin,AS,No Data,5
+czech,calories from photo,kalorie z fotky,GP,No Data,
+czech,calories from photo,kalorie z fotky,AS,No Data,-
+czech,nutrition scanner,výživový skener,GP,No Data,
+czech,nutrition scanner,výživový skener,AS,No Data,-
+czech,carb counter,počítadlo sacharidů,GP,No Data,
+czech,carb counter,počítadlo sacharidů,AS,No Data,5
+czech,glucose tracker,sledování glukózy,GP,No Data,
+czech,glucose tracker,sledování glukózy,AS,No Data,-
+czech,keto tracker,sledování keto,GP,No Data,
+czech,keto tracker,sledování keto,AS,No Data,-
+czech,meal preparation,příprava jídel,GP,No Data,
+czech,meal preparation,příprava jídel,AS,No Data,-
+czech,grocery list,nákupní seznam,GP,37,
+czech,grocery list,nákupní seznam,AS,37,5
+czech,water reminder,připomínka pití vody,GP,No Data,
+czech,water reminder,připomínka pití vody,AS,No Data,-
+czech,hydration tracker,sledování hydratace,GP,No Data,
+czech,hydration tracker,sledování hydratace,AS,No Data,-
+czech,workout planner,plánovač tréninku,GP,No Data,
+czech,workout planner,plánovač tréninku,AS,No Data,-
+czech,gym log,deník posilovny,GP,No Data,
+czech,gym log,deník posilovny,AS,No Data,-
+czech,weightlifting tracker,sledování vzpírání,GP,No Data,
+czech,weightlifting tracker,sledování vzpírání,AS,No Data,-
+czech,strength training,silový trénink,GP,No Data,
+czech,strength training,silový trénink,AS,No Data,-
+czech,bodyweight workout,trénink s vahou těla,GP,No Data,
+czech,bodyweight workout,trénink s vahou těla,AS,No Data,-
+czech,hiit timer,hiit časovač,GP,No Data,
+czech,hiit timer,hiit časovač,AS,No Data,-
+czech,muscle builder,budování svalů,GP,No Data,
+czech,muscle builder,budování svalů,AS,No Data,-
+czech,pedometer,krokoměr,GP,5,
+czech,pedometer,krokoměr,AS,5,16
+czech,nutrition,výživa,GP,No Data,
+czech,nutrition,výživa,AS,No Data,5
+czech,nutrition calculator,kalkulačka výživy,GP,No Data,
+czech,nutrition calculator,kalkulačka výživy,AS,No Data,-
+czech,free nutrition tracking app,bezplatná aplikace pro sledování výživy,GP,No Data,
+czech,free nutrition tracking app,bezplatná aplikace pro sledování výživy,AS,No Data,5
+czech,nutrition tracker,sledování výživy,GP,No Data,
+czech,nutrition tracker,sledování výživy,AS,No Data,-
+mexico,food,comida,GP,523,
+mexico,food,comida,AS,523,56
+mexico,workout,entrenamiento,GP,286,
+mexico,workout,entrenamiento,AS,166,5
+mexico,weight,peso,GP,84,
+mexico,weight,peso,AS,84,5
+mexico,fasting,ayuno,GP,4,
+mexico,fasting,ayuno,AS,4,5
+mexico,ai fitness,fitness ia,GP,No Data,
+mexico,ai fitness,fitness ia,AS,No Data,-
+mexico,gym,gimnasio,GP,51,
+mexico,gym,gimnasio,AS,51,5
+mexico,meditation,meditación,GP,0,
+mexico,meditation,meditación,AS,0,5
+mexico,period,periodo,GP,417,
+mexico,period,periodo,AS,303,48
+mexico,mestruation,menstruación,GP,10,
+mexico,mestruation,menstruación,AS,No Data,5
+mexico,habits,hábitos,GP,0,
+mexico,habits,hábitos,AS,0,5
+mexico,tracker,seguimiento,GP,10,
+mexico,tracker,seguimiento,AS,0,5
+mexico,diet,dieta,GP,123,
+mexico,diet,dieta,AS,123,5
+mexico,run,correr,GP,233,
+mexico,run,correr,AS,179,39
+mexico,protein,proteína,GP,No Data,
+mexico,protein,proteína,AS,No Data,5
+mexico,health,salud,GP,528,
+mexico,health,salud,AS,528,57
+mexico,AI Calorie,calorías ia,GP,No Data,
+mexico,AI Calorie,calorías ia,AS,No Data,-
+mexico,eating,comer,GP,8,
+mexico,eating,comer,AS,8,24
+mexico,habit,hábito,GP,No Data,
+mexico,habit,hábito,AS,No Data,5
+mexico,AI Calories,calorías de ia,GP,No Data,
+mexico,AI Calories,calorías de ia,AS,No Data,-
+mexico,AI nutrition,nutrición ia,GP,No Data,
+mexico,AI nutrition,nutrición ia,AS,No Data,-
+mexico,sleep,sueño,GP,115,
+mexico,sleep,sueño,AS,115,5
+mexico,ai food,comida ia,GP,No Data,
+mexico,ai food,comida ia,AS,No Data,-
+mexico,meal scanner,escáner de comidas,GP,No Data,
+mexico,meal scanner,escáner de comidas,AS,No Data,5
+mexico,exercise,ejercicio,GP,381,
+mexico,exercise,ejercicio,AS,381,52
+mexico,exercises,ejercicios,GP,No Data,
+mexico,exercises,ejercicios,AS,77,5
+mexico,macro,macro,GP,140,
+mexico,macro,macro,AS,12,5
+mexico,macros,macros,GP,No Data,
+mexico,macros,macros,AS,205,42
+mexico,macros tracker,seguimiento de macros,GP,No Data,
+mexico,macros tracker,seguimiento de macros,AS,No Data,-
+mexico,macro tracker,rastreador de macros,GP,No Data,
+mexico,macro tracker,rastreador de macros,AS,No Data,5
+mexico,meal tracker,seguimiento de comidas,GP,No Data,
+mexico,meal tracker,seguimiento de comidas,AS,No Data,5
+mexico,meal tracker free,seguimiento de comidas gratis,GP,No Data,
+mexico,meal tracker free,seguimiento de comidas gratis,AS,No Data,-
+mexico,habit tracker,seguimiento de hábitos,GP,0,
+mexico,habit tracker,seguimiento de hábitos,AS,0,5
+mexico,women's health,salud de la mujer,GP,No Data,
+mexico,women's health,salud de la mujer,AS,No Data,-
+mexico,menstrual cycle,ciclo menstrual,GP,241,
+mexico,menstrual cycle,ciclo menstrual,AS,241,43
+mexico,GPS fitness,fitness gps,GP,No Data,
+mexico,GPS fitness,fitness gps,AS,No Data,-
+mexico,ai coach,entrenador ia,GP,No Data,
+mexico,ai coach,entrenador ia,AS,No Data,-
+mexico,motivation,motivación,GP,No Data,
+mexico,motivation,motivación,AS,No Data,5
+mexico,sports,deportes,GP,423,
+mexico,sports,deportes,AS,542,57
+mexico,brain gym,gimnasia cerebral,GP,No Data,
+mexico,brain gym,gimnasia cerebral,AS,1,-
+mexico,cognitive games,juegos cognitivos,GP,No Data,
+mexico,cognitive games,juegos cognitivos,AS,No Data,-
+mexico,brain games,juegos mentales,GP,97,
+mexico,brain games,juegos mentales,AS,371,52
+mexico,personal plan,plan personal,GP,No Data,
+mexico,personal plan,plan personal,AS,No Data,5
+mexico,nutrition plan,plan de alimentación,GP,2,
+mexico,nutrition plan,plan de alimentación,AS,2,5
+mexico,workout plan,plan de entrenamiento,GP,2,
+mexico,workout plan,plan de entrenamiento,AS,2,5
+mexico,workout plans,planes de entrenamiento,GP,No Data,
+mexico,workout plans,planes de entrenamiento,AS,No Data,-
+mexico,crossfit,crossfit,GP,2,
+mexico,crossfit,crossfit,AS,2,5
+mexico,pilates,pilates,GP,37,
+mexico,pilates,pilates,AS,37,35
+mexico,yoga,yoga,GP,41,
+mexico,yoga,yoga,AS,41,34
+mexico,cycling tracker,seguimiento de ciclismo,GP,No Data,
+mexico,cycling tracker,seguimiento de ciclismo,AS,No Data,-
+mexico,cycling,ciclismo,GP,74,
+mexico,cycling,ciclismo,AS,74,25
+mexico,bmi,imc,GP,16,
+mexico,bmi,imc,AS,16,24
+mexico,bmi calculator,calculadora de imc,GP,No Data,
+mexico,bmi calculator,calculadora de imc,AS,No Data,5
+mexico,brain,cerebro,GP,62,
+mexico,brain,cerebro,AS,62,5
+mexico,meals,comidas,GP,3,
+mexico,meals,comidas,AS,3,5
+mexico,cooking,cocinar,GP,22,
+mexico,cooking,cocinar,AS,13,5
+mexico,recipes,recetas,GP,97,
+mexico,recipes,recetas,AS,97,5
+mexico,cooking2,cocina,GP,427,
+mexico,cooking2,cocina,AS,445,54
+mexico,breakfast,desayuno,GP,No Data,
+mexico,breakfast,desayuno,AS,No Data,5
+mexico,dinner,cena,GP,No Data,
+mexico,dinner,cena,AS,No Data,5
+mexico,lunch,almuerzo,GP,No Data,
+mexico,lunch,almuerzo,AS,No Data,5
+mexico,meal prep,preparación de comidas,GP,No Data,
+mexico,meal prep,preparación de comidas,AS,No Data,-
+mexico,bodybuilding,musculación,GP,No Data,
+mexico,bodybuilding,musculación,AS,No Data,5
+mexico,scanner,escáner,GP,11,
+mexico,scanner,escáner,AS,11,5
+mexico,healthy,saludable,GP,0,
+mexico,healthy,saludable,AS,0,5
+mexico,hypertrophy,hipertrofia,GP,No Data,
+mexico,hypertrophy,hipertrofia,AS,No Data,-
+mexico,bodyweight training,entrenamiento con peso corporal,GP,No Data,
+mexico,bodyweight training,entrenamiento con peso corporal,AS,No Data,-
+mexico,weightlifting,levantamiento de pesas,GP,No Data,
+mexico,weightlifting,levantamiento de pesas,AS,No Data,-
+mexico,planner,planificador,GP,47,
+mexico,planner,planificador,AS,47,5
+mexico,food scanner,escáner de alimentos,GP,No Data,
+mexico,food scanner,escáner de alimentos,AS,No Data,5
+mexico,calories from photo,calorías de foto,GP,No Data,
+mexico,calories from photo,calorías de foto,AS,No Data,-
+mexico,nutrition scanner,escáner nutricional,GP,No Data,
+mexico,nutrition scanner,escáner nutricional,AS,No Data,5
+mexico,carb counter,contador de carbohidratos,GP,No Data,
+mexico,carb counter,contador de carbohidratos,AS,No Data,5
+mexico,glucose tracker,seguimiento de glucosa,GP,No Data,
+mexico,glucose tracker,seguimiento de glucosa,AS,No Data,-
+mexico,keto tracker,seguimiento keto,GP,No Data,
+mexico,keto tracker,seguimiento keto,AS,No Data,-
+mexico,meal preparation,preparación de alimentos,GP,No Data,
+mexico,meal preparation,preparación de alimentos,AS,No Data,-
+mexico,grocery list,lista de compras,GP,38,
+mexico,grocery list,lista de compras,AS,38,5
+mexico,water reminder,recordatorio de agua,GP,0,
+mexico,water reminder,recordatorio de agua,AS,0,5
+mexico,hydration tracker,seguimiento de hidratación,GP,No Data,
+mexico,hydration tracker,seguimiento de hidratación,AS,No Data,-
+mexico,workout planner,planificador de entrenamientos,GP,No Data,
+mexico,workout planner,planificador de entrenamientos,AS,No Data,5
+mexico,gym log,diario de gimnasio,GP,No Data,
+mexico,gym log,diario de gimnasio,AS,No Data,-
+mexico,weightlifting tracker,seguimiento de levantamiento de pesas,GP,No Data,
+mexico,weightlifting tracker,seguimiento de levantamiento de pesas,AS,No Data,-
+mexico,strength training,entrenamiento de fuerza,GP,0,
+mexico,strength training,entrenamiento de fuerza,AS,0,5
+mexico,bodyweight workout,rutina con peso corporal,GP,0,
+mexico,bodyweight workout,rutina con peso corporal,AS,0,5
+mexico,hiit timer,temporizador hiit,GP,No Data,
+mexico,hiit timer,temporizador hiit,AS,No Data,5
