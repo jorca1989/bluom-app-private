@@ -22,17 +22,15 @@ import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import Avatar, { AvatarConfig } from '@/components/Avatar';
 import {
-  Sparkles, RefreshCcw, TrendingDown, MessageSquare, Clock,
-  LayoutGrid, BookOpen, Calendar, Zap, Bug, Scale,
-  LogOut, Settings, Settings2, Trophy, ChevronRight, Star,
-  Utensils, Dumbbell, Heart, Brain,
+  Sparkles, RefreshCcw, Bug,
+  LogOut, Settings, Settings2,
 } from 'lucide-react-native';
 import AchievementsCard from '@/components/achievementcard';
 import { getCustomerInfoSafe } from '@/utils/revenuecat';
 import { useTheme } from '@/context/ThemeContext';
 import { THEMES } from '@/context/ThemeContext';
 import type { ThemeColors } from '@/context/ThemeContext';
-import { useActiveTools, ToolKey, PrimaryFocus, ALL_TOOLS } from '@/hooks/useActiveTools';
+import { useActiveTools, type PrimaryFocus, type ToolKey } from '@/hooks/useActiveTools';
 
 // ─────────────────────────────────────────────────────────────
 // DICEBEAR AVATAR OPTIONS (Avataaars)
@@ -114,14 +112,13 @@ const AVATAR_BG_KEY = 'bluom_avatar_bg_v1';
 // ─────────────────────────────────────────────────────────────
 // WIDGET TOGGLE SYSTEM
 // ─────────────────────────────────────────────────────────────
-type ProfileWidgetId = 'hero' | 'achievements' | 'stats' | 'account' | 'health' | 'tools' | 'support';
+type ProfileWidgetId = 'hero' | 'achievements' | 'stats' | 'account' | 'workspace' | 'support';
 const PROFILE_WIDGETS: { id: ProfileWidgetId; emoji: string; labelKey: string }[] = [
   { id: 'hero',         emoji: '👤', labelKey: 'profile.widgets.hero' },
   { id: 'achievements', emoji: '🏆', labelKey: 'profile.widgets.achievements' },
   { id: 'stats',        emoji: '📊', labelKey: 'profile.widgets.stats' },
   { id: 'account',      emoji: '🔑', labelKey: 'profile.widgets.account' },
-  { id: 'health',       emoji: '❤️', labelKey: 'profile.widgets.health' },
-  { id: 'tools',        emoji: '🛠️', labelKey: 'profile.widgets.tools' },
+  { id: 'workspace',    emoji: '🧩', labelKey: 'profile.widgets.workspace' },
   { id: 'support',      emoji: '💬', labelKey: 'profile.widgets.support' },
 ];
 const PROFILE_WIDGETS_KEY = 'bluom_profile_widgets_v1';
@@ -181,18 +178,17 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
 
   const convexUser = useQuery(api.users.getUserByClerkId, clerkUser?.id ? { clerkId: clerkUser.id } : 'skip');
-  const dbAchievements = (useQuery(api.achievements.getUserAchievements, convexUser?._id ? { userId: convexUser._id } : 'skip') ?? []) as any[];
   const gardenState = useQuery(api.mindworld.getGardenState, convexUser?._id ? { userId: convexUser._id } : 'skip');
   const resetOnboarding = useMutation(api.users.resetOnboarding);
   const { t } = useTranslation();
 
   // ── Widget config ──
   const allProfileWidgetIds = PROFILE_WIDGETS.map(w => w.id);
-  const DEFAULT_PROFILE_WIDGETS: ProfileWidgetId[] = ['hero', 'achievements', 'stats', 'account', 'support'];
+  const DEFAULT_PROFILE_WIDGETS: ProfileWidgetId[] = ['hero', 'achievements', 'stats', 'account', 'workspace', 'support'];
   const [visibleProfileWidgets, setVisibleProfileWidgets] = useState<Set<ProfileWidgetId>>(new Set(DEFAULT_PROFILE_WIDGETS));
   const [showProfileWidgetConfig, setShowProfileWidgetConfig] = useState(false);
-
-  const { activeTools, isToolActive, toggleTool, applyPreset } = useActiveTools();
+  const { isToolActive, toggleTool, applyPreset } = useActiveTools();
+  const [showAllTools, setShowAllTools] = useState(false);
 
   // ── Theme integration (Dark Mode toggle now flips between 'black' and 'default') ──
   const { theme: activeTheme, setTheme, colors: themeColors } = useTheme();
@@ -204,8 +200,15 @@ export default function ProfileScreen() {
       try {
         const raw = await SecureStore.getItemAsync(PROFILE_WIDGETS_KEY);
         if (raw) {
-          const parsed: ProfileWidgetId[] = JSON.parse(raw);
-          setVisibleProfileWidgets(new Set(parsed));
+          const parsed: unknown = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            const valid = parsed.filter((id): id is ProfileWidgetId =>
+              typeof id === 'string' && allProfileWidgetIds.includes(id as ProfileWidgetId),
+            );
+            // The workspace configurator replaced legacy direct-tool sections.
+            if (!valid.includes('workspace')) valid.push('workspace');
+            setVisibleProfileWidgets(new Set(valid));
+          }
         }
       } catch { /* ignore */ }
     })();
@@ -240,10 +243,9 @@ export default function ProfileScreen() {
   const [showAvatarPick, setShowAvatarPick] = useState(false);
   const [tempConfig, setTempConfig] = useState<AvatarConfig>(defaultAvatarConfig);
   const [tempBgIdx, setTempBgIdx] = useState(0);
-  const [showAllTools, setShowAllTools] = useState(false);
-
   const [rcInfo, setRcInfo] = useState<any>(null);
   const [rcLoading, setRcLoading] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   // Derived
   const name = convexUser?.name ?? clerkUser?.fullName ?? 'Athlete';
@@ -253,7 +255,6 @@ export default function ProfileScreen() {
   const level = gardenState?.level ?? 1;
   const xp = gardenState?.xp ?? 0;
   const tokens = gardenState?.tokens ?? 0;
-  const unlockedCount = dbAchievements.length;
   const avatarGradient = AVATAR_BG_PAIRS[0];
 
   // Stats — respect the user's preferred unit system
@@ -274,10 +275,27 @@ export default function ProfileScreen() {
     : '—';
   const streak = gardenState?.meditationStreak ?? 0;
 
-  const handleSignOut = () => Alert.alert(t('profile.signOutTitle', 'Sign Out'), t('profile.signOutMsg', 'Are you sure you want to sign out?'), [
+  const handleSignOut = () => {
+    if (isSigningOut) return;
+    Alert.alert(t('profile.signOutTitle', 'Sign Out'), t('profile.signOutMsg', 'Are you sure you want to sign out?'), [
     { text: t('common.cancel', 'Cancelar'), style: 'cancel' },
-    { text: t('profile.signOut', 'Sign Out'), style: 'destructive', onPress: async () => { try { await signOut(); router.replace('/login'); } catch { } } },
-  ]);
+    {
+      text: t('profile.signOut', 'Sign Out'),
+      style: 'destructive',
+      onPress: async () => {
+        setIsSigningOut(true);
+        try {
+          await signOut();
+          router.replace('/login');
+        } catch {
+          Alert.alert(t('common.error', 'Error'), t('profile.signOutFailed', 'We could not sign you out. Please try again.'));
+        } finally {
+          setIsSigningOut(false);
+        }
+      },
+    },
+    ]);
+  };
 
   const handleReset = () => Alert.alert(
     t('profile.restartTitle', 'Restart Onboarding?'),
@@ -512,7 +530,7 @@ export default function ProfileScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={[s.scroll, { paddingBottom: Math.max(insets.bottom, 16) + 6 }]}
+        contentContainerStyle={[s.scroll, { paddingBottom: Math.max(insets.bottom, 8) }]}
         showsVerticalScrollIndicator={false}
       >
         {/* ── HERO CARD ── */}
@@ -610,184 +628,63 @@ export default function ProfileScreen() {
           />
         </Section>}
 
-        {/* ── ACTIVE WORKSPACE & TOOLS HUB ── */}
-        <Section title={t('profile.workspaceHub', 'Active Workspace & Tools')}>
-          {/* Preset selector pills */}
-          <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 14 }}>
-            <Text style={{ fontSize: 12, fontWeight: '700', color: themeColors.textMuted, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.8 }}>
-              {t('profile.quickPresets', 'Quick Presets')}
-            </Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+        {isPW('workspace') && <Section title={t('profile.workspaceHub', 'Workspace Configurator')}>
+          <View style={s.workspaceIntro}>
+            <Text style={s.workspaceLabel}>{t('profile.quickPresets', 'Quick presets')}</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.presetRow}>
               {[
-                { id: 'fitness', label: '🏋️ Fitness', focus: 'fitness' as PrimaryFocus },
-                { id: 'mental_health', label: '🧘 Mental Calm', focus: 'mental_health' as PrimaryFocus },
-                { id: 'hormonal', label: '🔄 Hormonal', focus: 'hormonal' as PrimaryFocus },
-                { id: 'holistic', label: '🌿 Holistic', focus: 'holistic' as PrimaryFocus },
-              ].map(preset => (
-                <TouchableOpacity
-                  key={preset.id}
-                  onPress={() => applyPreset(preset.focus)}
-                  style={{
-                    backgroundColor: themeColors.surfaceMuted,
-                    borderWidth: 1,
-                    borderColor: themeColors.border,
-                    paddingHorizontal: 14,
-                    paddingVertical: 8,
-                    borderRadius: 16,
-                  }}
-                  activeOpacity={0.75}
-                >
-                  <Text style={{ fontSize: 13, fontWeight: '700', color: themeColors.text }}>{preset.label}</Text>
+                { id: 'fitness', label: t('profile.presetFitness', 'Fitness'), icon: 'barbell-outline', focus: 'fitness' as PrimaryFocus },
+                { id: 'mental', label: t('profile.presetMental', 'Mental calm'), icon: 'leaf-outline', focus: 'mental_health' as PrimaryFocus },
+                { id: 'hormonal', label: t('profile.presetHormonal', 'Hormonal'), icon: 'pulse-outline', focus: 'hormonal' as PrimaryFocus },
+                { id: 'holistic', label: t('profile.presetHolistic', 'Holistic'), icon: 'sparkles-outline', focus: 'holistic' as PrimaryFocus },
+              ].map((preset) => (
+                <TouchableOpacity key={preset.id} style={s.presetChip} onPress={() => applyPreset(preset.focus)} activeOpacity={0.75}>
+                  <Ionicons name={preset.icon as any} size={15} color={themeColors.primary} />
+                  <Text style={s.presetChipText}>{preset.label}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
           </View>
           <View style={s.divider} />
-
-          {/* Individual tool toggle list */}
           {(() => {
             const allTools = [
-              { key: 'aiCoach' as ToolKey, icon: '💬', label: t('profile.aiCoach', 'AI Coach'), sub: t('profile.aiCoachSub', 'Intelligent health guidance') },
-              { key: 'fuel' as ToolKey, icon: '🍽️', label: t('profile.fuel', 'Nutrition (Fuel Tab)'), sub: t('profile.fuelSub', 'Calorie & macro management') },
-              { key: 'move' as ToolKey, icon: '💪', label: t('profile.move', 'Movement (Move Tab)'), sub: t('profile.moveSub', 'Workouts & step tracking') },
-              { key: 'wellness' as ToolKey, icon: '🧘', label: t('profile.wellness', 'Wellness (Mente Tab)'), sub: t('profile.wellnessSub', 'Mindfulness & sleep') },
-              { key: 'womens' as ToolKey, icon: '♀', label: t('profile.womensHealth', "Women's Health"), sub: t('profile.womensSub', 'Cycle & hormonal intelligence') },
-              { key: 'mens' as ToolKey, icon: '♂', label: t('profile.mensHealth', "Men's Health"), sub: t('profile.mensSub', 'Male vitality & performance') },
-              { key: 'fasting' as ToolKey, icon: '⏱️', label: t('profile.fastingTracker', 'Fasting Tracker'), sub: t('profile.fastingSub', 'Intermittent fasting protocols') },
-              { key: 'recipes' as ToolKey, icon: '🍳', label: t('profile.recipes', 'Recipe Library'), sub: t('profile.recipesSub', 'Macro-balanced meal ideas') },
-              { key: 'workouts' as ToolKey, icon: '🏋️', label: t('profile.workouts', 'Workout Library'), sub: t('profile.workoutsSub', 'Video workouts & routines') },
-              { key: 'metabolic' as ToolKey, icon: '📊', label: t('profile.metabolic', 'Metabolic Hub'), sub: t('profile.metabolicSub', 'Glucose & metabolic metrics') },
-              { key: 'dental' as ToolKey, icon: '🦷', label: t('profile.dentalHub', 'Dental Health Hub'), sub: t('profile.dentalSub', 'Oral hygiene routines') },
-              { key: 'pulse' as ToolKey, icon: '❤️', label: t('profile.pulseCheck', 'Pulse Check'), sub: t('profile.pulseSub', 'Heart & biometric sync') },
-              { key: 'tasks' as ToolKey, icon: '✅', label: t('profile.productivity', 'Productivity Hub'), sub: t('profile.productivitySub', 'Goals & daily focus tasks') },
-              { key: 'library' as ToolKey, icon: '📚', label: t('profile.library', 'Bluom Library'), sub: t('profile.librarySub', 'Science-backed guides') },
+              { key: 'aiCoach' as ToolKey, icon: 'chatbubble-outline', label: t('profile.aiCoach', 'AI Coach'), sub: t('profile.aiCoachSub', 'Personal health guidance') },
+              { key: 'fuel' as ToolKey, icon: 'nutrition-outline', label: t('profile.fuel', 'Fuel'), sub: t('profile.fuelSub', 'Meals, macros and nutrition') },
+              { key: 'move' as ToolKey, icon: 'barbell-outline', label: t('profile.move', 'Move'), sub: t('profile.moveSub', 'Workouts and activity') },
+              { key: 'wellness' as ToolKey, icon: 'heart-outline', label: t('profile.wellness', 'Wellness'), sub: t('profile.wellnessSub', 'Mood, sleep and meditation') },
+              { key: 'womens' as ToolKey, icon: 'woman-outline', label: t('profile.womensHealth', "Women's Health"), sub: t('profile.womensSub', 'Cycle and pelvic health') },
+              { key: 'mens' as ToolKey, icon: 'man-outline', label: t('profile.mensHealth', "Men's Health"), sub: t('profile.mensSub', 'Vitality and performance') },
+              { key: 'fasting' as ToolKey, icon: 'timer-outline', label: t('profile.fastingTracker', 'Fasting'), sub: t('profile.fastingSub', 'Fasting plans and timers') },
+              { key: 'recipes' as ToolKey, icon: 'restaurant-outline', label: t('profile.recipes', 'Recipes'), sub: t('profile.recipesSub', 'Meal ideas and saved recipes') },
+              { key: 'workouts' as ToolKey, icon: 'fitness-outline', label: t('profile.workouts', 'Workout Library'), sub: t('profile.workoutsSub', 'Video workouts and routines') },
+              { key: 'metabolic' as ToolKey, icon: 'analytics-outline', label: t('profile.metabolic', 'Metabolic Hub'), sub: t('profile.metabolicSub', 'Glucose and metabolic metrics') },
+              { key: 'dental' as ToolKey, icon: 'medkit-outline', label: t('profile.dentalHub', 'Dental Health'), sub: t('profile.dentalSub', 'Oral hygiene routines') },
+              { key: 'pulse' as ToolKey, icon: 'pulse-outline', label: t('profile.pulseCheck', 'Pulse Check'), sub: t('profile.pulseSub', 'Heart and biometric sync') },
+              { key: 'tasks' as ToolKey, icon: 'checkmark-circle-outline', label: t('profile.productivity', 'Productivity'), sub: t('profile.productivitySub', 'Goals and daily focus') },
+              { key: 'library' as ToolKey, icon: 'book-outline', label: t('profile.library', 'Bluom Library'), sub: t('profile.librarySub', 'Guides and protocols') },
             ];
-
             const displayedTools = showAllTools ? allTools : allTools.slice(0, 4);
-
-            return (
-              <>
-                {displayedTools.map((item, idx, arr) => {
-                  const active = isToolActive(item.key);
-                  return (
-                    <React.Fragment key={item.key}>
-                      <View style={[s.menuRow, { paddingVertical: 12 }]}>
-                        <View style={[s.menuIcon, { backgroundColor: active ? 'rgba(37,99,235,0.1)' : themeColors.surfaceMuted }]}>
-                          <Text style={{ fontSize: 18 }}>{item.icon}</Text>
-                        </View>
-                        <View style={s.menuText}>
-                          <Text style={[s.menuLabel, !active && { color: themeColors.textMuted }]}>{item.label}</Text>
-                          <Text style={s.menuSub}>{item.sub}</Text>
-                        </View>
-                        <Switch
-                          value={active}
-                          onValueChange={() => toggleTool(item.key)}
-                          trackColor={{ true: themeColors.primary, false: themeColors.surfaceMuted }}
-                          thumbColor="#ffffff"
-                        />
-                      </View>
-                      {idx < arr.length - 1 && <View style={s.divider} />}
-                    </React.Fragment>
-                  );
-                })}
-
-                {/* View More / Show Less Drawer Toggle */}
-                <View style={s.divider} />
-                <TouchableOpacity
-                  onPress={() => setShowAllTools(prev => !prev)}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingVertical: 12,
-                    gap: 6,
-                    backgroundColor: themeColors.surfaceMuted,
-                  }}
-                  activeOpacity={0.75}
-                >
-                  <Text style={{ fontSize: 13, fontWeight: '700', color: themeColors.primary }}>
-                    {showAllTools ? t('common.showLess', 'Show Less ▴') : `${t('common.viewMore', 'View More Tools')} (+${allTools.length - 4}) ▾`}
-                  </Text>
-                </TouchableOpacity>
-              </>
-            );
+            return <>
+              {displayedTools.map((tool, index) => <React.Fragment key={tool.key}>
+                <View style={s.workspaceToolRow}>
+                  <View style={[s.workspaceToolIcon, { backgroundColor: isToolActive(tool.key) ? 'rgba(37,99,235,0.12)' : themeColors.surfaceMuted }]}>
+                    <Ionicons name={tool.icon as any} size={18} color={isToolActive(tool.key) ? themeColors.primary : themeColors.textMuted} />
+                  </View>
+                  <View style={s.menuText}>
+                    <Text style={[s.menuLabel, !isToolActive(tool.key) && { color: themeColors.textMuted }]}>{tool.label}</Text>
+                    <Text style={s.menuSub} numberOfLines={1}>{tool.sub}</Text>
+                  </View>
+                  <Switch value={isToolActive(tool.key)} onValueChange={() => toggleTool(tool.key)} trackColor={{ true: themeColors.primary, false: themeColors.surfaceMuted }} thumbColor="#ffffff" />
+                </View>
+                {index < displayedTools.length - 1 && <View style={s.divider} />}
+              </React.Fragment>)}
+              <View style={s.divider} />
+              <TouchableOpacity style={s.moreToolsButton} onPress={() => setShowAllTools((previous) => !previous)} activeOpacity={0.75}>
+                <Text style={s.moreToolsText}>{showAllTools ? t('common.showLess', 'Show less') : t('profile.showMoreTools', 'Show more tools')}</Text>
+                <Ionicons name={showAllTools ? 'chevron-up' : 'chevron-down'} size={16} color={themeColors.primary} />
+              </TouchableOpacity>
+            </>;
           })()}
-        </Section>
-
-        {/* ── HEALTH & TRACKING ── */}
-        {isPW('health') && <Section title={t('profile.sectionHealth', 'Saúde e Monitorização')}>
-          <MenuRow
-            icon={<Scale size={18} color="#0ea5e9" />} iconBg="#f0f9ff"
-            label={t('profile.weightJourney', 'Jornada de Peso')} sub={t('profile.weightJourneySub', 'Registos, medidas e fotos de progresso')}
-            onPress={() => router.push('/weightmanagement' as any)}
-          />
-          <View style={s.divider} />
-          <MenuRow
-            icon={convexUser?.biologicalSex === 'female'
-              ? <Calendar size={18} color="#db2777" />
-              : <Zap size={18} color="#3b82f6" />}
-            iconBg={convexUser?.biologicalSex === 'female' ? '#fdf2f8' : '#eff6ff'}
-            label={convexUser?.biologicalSex === 'female' ? t('profile.womensHealth', "Women's Health") : t('profile.mensHealth', "Men's Health")}
-            sub={t('profile.hormonal', 'Plano hormonal e protocolos diários')}
-            onPress={() => router.push(convexUser?.biologicalSex === 'female' ? '/womens-health' : '/mens-health')}
-          />
-          <View style={s.divider} />
-          <MenuRow
-            icon={<Clock size={18} color="#f59e0b" />} iconBg="#fffbeb"
-            label={t('profile.fastingTracker', 'Rastreador de Jejum')} sub={t('profile.fastingTrackerSub', 'Protocolos, temporizadores e sequências')}
-            onPress={() => router.push('/fasting')}
-          />
-          <View style={s.divider} />
-          <MenuRow
-            icon={<TrendingDown size={18} color="#ef4444" />} iconBg="#fee2e2"
-            label={t('profile.sugarControl', 'Sugar Control')} sub={t('profile.sugarControlSub', '90-day reset + daily check-ins')}
-            onPress={() => router.push('/sugar-dashboard')}
-          />
-        </Section>}
-
-        {/* ── TOOLS ── */}
-        {isPW('tools') && <Section title={t('profile.sectionTools', 'Ferramentas')}>
-          <MenuRow
-            icon={<MessageSquare size={18} color="#2563eb" />} iconBg="#eff6ff"
-            label={t('profile.aiCoach', 'Treinador IA')} sub={t('profile.aiCoachSub', 'O teu especialista em saúde de precisão')}
-            onPress={() => router.push('/ai-coach')}
-          />
-          <View style={s.divider} />
-          <MenuRow
-            icon={<Dumbbell size={18} color="#7c3aed" />} iconBg="#ede9fe"
-            label={t('profile.move', 'Movimento')} sub={t('profile.moveSub', 'Treinos, passos e registo de exercício')}
-            onPress={() => router.push('/move')}
-          />
-          <View style={s.divider} />
-          <MenuRow
-            icon={<Utensils size={18} color="#16a34a" />} iconBg="#f0fdf4"
-            label={t('profile.fuel', 'Nutrição')} sub={t('profile.fuelSub', 'Plano de refeições e registo de alimentos')}
-            onPress={() => router.push('/fuel')}
-          />
-          <View style={s.divider} />
-          <MenuRow
-            icon={<Heart size={18} color="#8b5cf6" />} iconBg="#f5f3ff"
-            label={t('profile.wellness', 'Bem-estar')} sub={t('profile.wellnessSub', 'Humor, sono e meditação')}
-            onPress={() => router.push('/wellness')}
-          />
-          <View style={s.divider} />
-          <MenuRow
-            icon={<LayoutGrid size={18} color="#0ea5e9" />} iconBg="#f0f9ff"
-            label={t('profile.productivity', 'Hub de Produtividade')} sub={t('profile.productivitySub', 'Tarefas, foco e objetivos')}
-            onPress={() => router.push('/todo')}
-          />
-          <View style={s.divider} />
-          <MenuRow
-            icon={<BookOpen size={18} color="#10b981" />} iconBg="#ecfdf5"
-            label={t('profile.library', 'Bluom Library')} sub={t('profile.librarySub', 'Curated knowledge and protocols')}
-            onPress={() => router.push('/library')}
-          />
-          <View style={s.divider} />
-          <MenuRow
-            icon={<Trophy size={18} color="#d97706" />} iconBg="#fffbeb"
-            label={t('profile.achievements', 'Conquistas')} sub={`${unlockedCount} ${t('profile.achievementsUnlocked', 'desbloqueadas')} · ${t('profile.level', 'Level')} ${level}`}
-            onPress={() => router.push('/achievements' as any)}
-          />
         </Section>}
 
         {/* ── SUPPORT ── */}
@@ -824,9 +721,9 @@ export default function ProfileScreen() {
 
         {/* ── SIGN OUT ── */}
         <View style={s.section}>
-          <TouchableOpacity style={s.signOutBtn} onPress={handleSignOut} activeOpacity={0.8}>
+          <TouchableOpacity style={[s.signOutBtn, isSigningOut && { opacity: 0.6 }]} onPress={handleSignOut} activeOpacity={0.8} disabled={isSigningOut}>
             <LogOut size={18} color="#ef4444" />
-            <Text style={s.signOutTxt}>{t('profile.signOut', 'Sign Out')}</Text>
+            <Text style={s.signOutTxt}>{isSigningOut ? t('profile.signingOut', 'Signing out…') : t('profile.signOut', 'Sign Out')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -910,6 +807,17 @@ const createS = (c: ThemeColors) => StyleSheet.create({
   menuSub: { fontSize: 11, color: c.textMuted, marginTop: 1, fontWeight: '500' },
   menuBadge: { backgroundColor: '#fef9c3', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 },
   menuBadgeTxt: { fontSize: 10, fontWeight: '800', color: '#d97706' },
+
+  // Workspace configurator
+  workspaceIntro: { paddingHorizontal: 14, paddingTop: 14, paddingBottom: 12 },
+  workspaceLabel: { fontSize: 11, fontWeight: '800', color: c.textMuted, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 10 },
+  presetRow: { gap: 8, paddingRight: 6 },
+  presetChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 11, paddingVertical: 8, borderRadius: 12, borderWidth: 1, borderColor: c.border, backgroundColor: c.surfaceMuted },
+  presetChipText: { fontSize: 12, fontWeight: '700', color: c.text },
+  workspaceToolRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 12 },
+  workspaceToolIcon: { width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+  moreToolsButton: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, backgroundColor: c.surfaceMuted },
+  moreToolsText: { fontSize: 13, fontWeight: '700', color: c.primary },
 
   // Sign out
   signOutBtn: { backgroundColor: c.surface, borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, borderWidth: 1, borderColor: '#fecaca' },

@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform, Linking } from 'react-native';
+import { Alert, View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform, Linking } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Video, ResizeMode } from 'expo-av';
 import { getLocalizedExerciseName } from '@/utils/localize';
+import { useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { Id } from '@/convex/_generated/dataModel';
+import VoiceWorkoutLogModal, { type VoiceSetProposal } from './VoiceWorkoutLogModal';
 
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
@@ -34,6 +38,8 @@ interface ActiveWorkoutModalProps {
   onFinishWorkout: (timeSpentSeconds: number, totalVolume: number, totalSets: number, exercises: ActiveExercise[]) => void;
   onAddExercise?: () => void;
   onDeleteExercise?: (exIdx: number) => void;
+  userId?: Id<'users'>;
+  sessionTitle?: string;
 }
 
 export default function ActiveWorkoutModal({
@@ -42,7 +48,9 @@ export default function ActiveWorkoutModal({
   onClose,
   onFinishWorkout,
   onAddExercise,
-  onDeleteExercise
+  onDeleteExercise,
+  userId,
+  sessionTitle = 'Workout',
 }: ActiveWorkoutModalProps) {
   const { colors: themeColors } = useTheme();
   const styles = useMemo(() => createStyles(themeColors), [themeColors]);
@@ -53,6 +61,12 @@ export default function ActiveWorkoutModal({
   const [restTimer, setRestTimer] = useState(0);
   const [expandedIndex, setExpandedIndex] = useState(0);
   const [showRestPopup, setShowRestPopup] = useState(false);
+  const [sessionId, setSessionId] = useState<Id<'workoutSessions'> | null>(null);
+  const [voiceExerciseIndex, setVoiceExerciseIndex] = useState<number | null>(null);
+  const startSession = useMutation(api.workoutSessions.startSession);
+  const upsertSet = useMutation(api.workoutSessions.upsertSet);
+  const deleteSet = useMutation(api.workoutSessions.deleteSet);
+  const finishSession = useMutation(api.workoutSessions.finishSession);
 
   useEffect(() => {
     if (visible) {
@@ -62,10 +76,20 @@ export default function ActiveWorkoutModal({
       setTimeSpent(0);
       setRestTimer(0);
       setShowRestPopup(false);
+      setSessionId(null);
+      if (userId) {
+        startSession({
+          userId,
+          title: sessionTitle,
+          date: new Date().toISOString().slice(0, 10),
+          unit: 'kg',
+          source: 'manual',
+        }).then(setSessionId).catch(() => undefined);
+      }
       const interval = setInterval(() => setTimeSpent(t => t + 1), 1000);
       return () => clearInterval(interval);
     }
-  }, [visible, initialExercises]);
+  }, [visible, initialExercises, sessionTitle, startSession, userId]);
 
   useEffect(() => {
     let interval: any;
@@ -83,15 +107,36 @@ export default function ActiveWorkoutModal({
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
+  const persistCompletedSet = (exercise: ActiveExercise, set: SetData, setIndex: number, source: 'manual' | 'voice' | 'machine' = 'manual', transcript?: string) => {
+    if (!userId || !sessionId) return;
+    upsertSet({
+      userId,
+      sessionId,
+      exerciseId: exercise.id,
+      exerciseName: exercise.name,
+      setIndex,
+      weight: set.weight ? Number(set.weight) : undefined,
+      reps: set.reps ? Number(set.reps) : undefined,
+      completed: set.completed,
+      source,
+      clientEventId: set.id,
+      transcript,
+    }).catch(() => undefined);
+  };
+
   const handleToggleSet = (exIndex: number, setIndex: number) => {
     const newEx = [...exercises];
-    const s = newEx[exIndex].sets[setIndex];
+    const exercise = { ...newEx[exIndex], sets: [...newEx[exIndex].sets] };
+    const s = { ...exercise.sets[setIndex] };
+    exercise.sets[setIndex] = s;
+    newEx[exIndex] = exercise;
     s.completed = !s.completed;
     if (s.completed) {
       setRestTimer(90); // default 90s rest
       setShowRestPopup(true);
     }
     setExercises(newEx);
+    persistCompletedSet(exercise, s, setIndex, 'manual');
   };
 
   const handleUpdateSet = (exIndex: number, setIndex: number, field: 'weight'|'reps', val: string) => {
@@ -109,6 +154,75 @@ export default function ActiveWorkoutModal({
       completed: false
     });
     setExercises(newEx);
+  };
+
+  const handleDeleteSet = (exIndex: number, setIndex: number) => {
+    const exercise = exercises[exIndex];
+    const set = exercise?.sets[setIndex];
+    if (!exercise || !set || exercise.sets.length <= 1) return;
+    Alert.alert(
+      t('move.deleteSetTitle', 'Delete set?'),
+      t('move.deleteSetMessage', 'This set will be removed from this workout.'),
+      [
+        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
+        {
+          text: t('common.delete', 'Delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              if (userId && sessionId) await deleteSet({ userId, sessionId, clientEventId: set.id });
+              setExercises(previous => previous.map((item, index) => index === exIndex
+                ? { ...item, sets: item.sets.filter((_, rowIndex) => rowIndex !== setIndex) }
+                : item));
+            } catch {
+              Alert.alert(t('common.error', 'Could not delete set'), t('common.tryAgain', 'Please try again.'));
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  const applyVoiceProposal = (exIndex: number, proposal: VoiceSetProposal) => {
+    const next = exercises.map(ex => ({ ...ex, sets: [...ex.sets] }));
+    const exercise = next[exIndex];
+    if (!exercise) return;
+
+    if (proposal.operation === 'undo_last') {
+      const lastCompletedIndex = [...exercise.sets].map((set, index) => ({ set, index })).reverse().find(item => item.set.completed)?.index;
+      if (lastCompletedIndex === undefined) return;
+      const set = { ...exercise.sets[lastCompletedIndex], completed: false };
+      exercise.sets[lastCompletedIndex] = set;
+      setExercises(next);
+      persistCompletedSet(exercise, set, lastCompletedIndex, 'voice', proposal.transcript);
+      return;
+    }
+
+    const targetIndex = proposal.operation === 'add_set'
+      ? exercise.sets.length
+      : proposal.setIndex - 1;
+    if (targetIndex < 0 || targetIndex >= exercise.sets.length + (proposal.operation === 'add_set' ? 1 : 0)) return;
+    if (proposal.operation === 'add_set') {
+      exercise.sets.push({ id: `voice-${Date.now()}-${exercise.sets.length}`, weight: '', reps: '', completed: false });
+    }
+    const current = exercise.sets[targetIndex];
+    const set = {
+      ...current,
+      weight: proposal.weight === undefined ? current.weight : String(proposal.weight),
+      reps: proposal.reps === undefined ? current.reps : String(proposal.reps),
+      completed: proposal.operation === 'log_set' || proposal.operation === 'add_set'
+        ? proposal.complete !== false
+        : current.completed,
+    };
+    exercise.sets[targetIndex] = set;
+    setExercises(next);
+    if (proposal.operation === 'log_set' || proposal.operation === 'add_set') {
+      persistCompletedSet(exercise, set, targetIndex, 'voice', proposal.transcript);
+      if (set.completed) {
+        setRestTimer(90);
+        setShowRestPopup(true);
+      }
+    }
   };
 
   const calcVolume = () => {
@@ -156,10 +270,13 @@ export default function ActiveWorkoutModal({
           </View>
           <TouchableOpacity 
             style={[styles.finishBtn, !canFinish && styles.finishBtnDisabled]} 
-            onPress={() => onFinishWorkout(timeSpent, calcVolume(), calcCompletedSets(), exercises)}
+            onPress={() => {
+              if (userId && sessionId) finishSession({ userId, sessionId }).catch(() => undefined);
+              onFinishWorkout(timeSpent, calcVolume(), calcCompletedSets(), exercises);
+            }}
             disabled={!canFinish}
           >
-            <Text style={[styles.finishBtnText, !canFinish && styles.finishBtnTextDisabled]}>{t('move.finish', 'Finish')}</Text>
+            <Text style={[styles.finishBtnText, !canFinish && styles.finishBtnTextDisabled]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.72}>{t('move.finish', 'Finish')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -198,6 +315,15 @@ export default function ActiveWorkoutModal({
                       <Text style={styles.exNumBadgeText}>{exIdx + 1}</Text>
                     </View>
                     <Text style={styles.exName}>{getLocalizedExerciseName(ex.name, i18n.language)}</Text>
+
+                    <TouchableOpacity
+                      style={styles.voiceHeaderBtn}
+                      onPress={(e) => { e.stopPropagation(); setVoiceExerciseIndex(exIdx); }}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      accessibilityLabel={t('move.voiceLogSet', 'Log set by voice')}
+                    >
+                      <Ionicons name="mic-outline" size={20} color={themeColors.primary} />
+                    </TouchableOpacity>
 
                     {onDeleteExercise && (
                       <TouchableOpacity 
@@ -252,11 +378,11 @@ export default function ActiveWorkoutModal({
 
                       {/* Sets Header */}
                       <View style={styles.setsHeader}>
-                        <Text style={[styles.setsColHead, { width: 40 }]}>{t('move.setShort', 'SET')}</Text>
+                        <Text style={[styles.setsColHead, { width: 40 }]}>#</Text>
                         <Text style={[styles.setsColHead, { flex: 1 }]}>{t('move.previousShort', 'PREVIOUS')}</Text>
-                        <Text style={[styles.setsColHead, { width: 70, textAlign: 'center' }]}>{t('move.kgShort', 'KG')}</Text>
-                        <Text style={[styles.setsColHead, { width: 70, textAlign: 'center' }]}>{t('move.repsShort', 'REPS')}</Text>
-                        <View style={{ width: 44 }} />
+                        <Text style={[styles.setsColHead, { width: 60, textAlign: 'center' }]}>{t('move.kgShort', 'KG')}</Text>
+                        <Text style={[styles.setsColHead, { width: 60, textAlign: 'center' }]}>{t('move.repsShort', 'REPS')}</Text>
+                        <View style={{ width: 84 }} />
                       </View>
 
                       {/* Sets Rows */}
@@ -290,6 +416,14 @@ export default function ActiveWorkoutModal({
                             onPress={() => handleToggleSet(exIdx, setIdx)}
                           >
                             <Ionicons name="checkmark" size={20} color={set.completed ? '#ffffff' : '#cbd5e1'} />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={[styles.deleteSetBtn, ex.sets.length <= 1 && styles.deleteSetBtnDisabled]}
+                            onPress={() => handleDeleteSet(exIdx, setIdx)}
+                            disabled={ex.sets.length <= 1}
+                            accessibilityLabel={`Delete set ${setIdx + 1}`}
+                          >
+                            <Ionicons name="trash-outline" size={17} color={ex.sets.length <= 1 ? themeColors.textMuted : '#f43f5e'} />
                           </TouchableOpacity>
                         </View>
                       ))}
@@ -361,6 +495,20 @@ export default function ActiveWorkoutModal({
             </View>
           </View>
         )}
+        <VoiceWorkoutLogModal
+          visible={voiceExerciseIndex !== null}
+          exerciseName={voiceExerciseIndex === null ? '' : exercises[voiceExerciseIndex]?.name ?? ''}
+          targetSetIndex={voiceExerciseIndex === null ? 1 : (() => {
+            const sets = exercises[voiceExerciseIndex]?.sets ?? [];
+            return sets.findIndex(set => !set.completed) + 1 || sets.length;
+          })()}
+          existingSetIndexes={voiceExerciseIndex === null ? [] : (exercises[voiceExerciseIndex]?.sets ?? []).map((_, index) => index + 1)}
+          unit="kg"
+          onClose={() => setVoiceExerciseIndex(null)}
+          onApply={(proposal) => {
+            if (voiceExerciseIndex !== null) applyVoiceProposal(voiceExerciseIndex, proposal);
+          }}
+        />
       </View>
     </Modal>
   );
@@ -390,6 +538,9 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   finishBtn: {
     backgroundColor: '#3b82f6',
+    maxWidth: 104,
+    minWidth: 54,
+    minHeight: 40,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
@@ -481,6 +632,15 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   exExpandedContent: {
     padding: 16,
   },
+  voiceHeaderBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: c.surfaceMuted,
+    marginLeft: 8,
+  },
   videoBox: {
     alignSelf: 'center',
     width: '100%',
@@ -528,6 +688,16 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   setRowCompleted: {
     backgroundColor: c.surfaceMuted,
+  },
+  deleteSetBtn: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 4,
+  },
+  deleteSetBtnDisabled: {
+    opacity: 0.35,
   },
   setNum: {
     width: 40,

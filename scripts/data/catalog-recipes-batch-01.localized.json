@@ -1,0 +1,1096 @@
+[
+  {
+    "title": "Portuguese Creamy Cod Bake",
+    "description": "A lighter take on bacalhau com natas with flaky cod, tender potatoes, spinach, and a creamy baked finish.",
+    "imageUrl": "https://pub-e8204ad737dc4a5f93bd4f2b1f9f0a15.r2.dev/Bacalhau%20com%20natas.png",
+    "cookTimeMinutes": 45,
+    "servings": 4,
+    "calories": 480,
+    "protein": 34,
+    "carbs": 35,
+    "fat": 22,
+    "tags": [
+      "Portuguese",
+      "high protein",
+      "family dinner"
+    ],
+    "category": "Dinner",
+    "categories": [
+      "Dinner",
+      "High Protein"
+    ],
+    "mealType": [
+      "Dinner"
+    ],
+    "cuisine": "Portuguese",
+    "ingredients": [
+      "600 g cooked cod, flaked",
+      "600 g potatoes, thinly sliced",
+      "1 onion, sliced",
+      "2 cloves garlic, minced",
+      "150 g spinach",
+      "250 ml light cooking cream",
+      "100 ml low-sodium milk",
+      "1 tbsp olive oil",
+      "40 g grated Parmesan",
+      "Black pepper and nutmeg to taste"
+    ],
+    "instructions": [
+      "Heat the oven to 200 C and lightly oil a baking dish.",
+      "Boil the sliced potatoes for 8 minutes, then drain well.",
+      "Saute the onion and garlic in olive oil until soft, then fold in the spinach until wilted.",
+      "Layer half the potatoes, cod, and spinach mixture in the dish. Repeat once.",
+      "Whisk the cream, milk, pepper, and a pinch of nutmeg. Pour over the bake and top with Parmesan.",
+      "Bake for 25 to 30 minutes until golden and bubbling. Rest for 5 minutes before serving."
+    ],
+    "shoppingListItems": [
+      "cod",
+      "potatoes",
+      "onion",
+      "garlic",
+      "spinach",
+      "light cooking cream",
+      "milk",
+      "Parmesan"
+    ],
+    "titleLocalizations": {
+      "fr": "Gratin crémeux de morue à la portugaise",
+      "es": "Bacalao cremoso al horno al estilo portugués",
+      "pt": "Bacalhau Cremoso no Forno",
+      "bg": "Португалска запеканка с треска и сметана",
+      "de": "Portugiesischer cremiger Kabeljau-Auflauf",
+      "nl": "Romige Portugese kabeljauwschotel",
+      "da": "Portugisisk cremet torskefad",
+      "lt": "Portugališkas kreminis menkės apkepas",
+      "el": "Κρεμώδης πορτογαλικός μπακαλιάρος στον φούρνο",
+      "no": "Portugisisk kremet torskegrateng",
+      "pl": "Kremowa zapiekanka z dorszem po portugalsku",
+      "lv": "Portugāļu krēmīgais mencas sacepums",
+      "tr": "Fırında Portekiz Usulü Kremalı Morina Balığı",
+      "ro": "Cod cremos la cuptor în stil portughez",
+      "sv": "Portugisisk krämig torskgratäng"
+    },
+    "descriptionLocalizations": {
+      "fr": "Une version plus légère du bacalhau com natas avec de la morue effilochée, des pommes de terre fondantes, des épinards et une texture crémeuse et gratinée.",
+      "es": "Una versión más ligera del bacalhau com natas con bacalao desmigado, patatas tiernas, espinacas y un acabado cremoso al horno.",
+      "pt": "Uma versão mais leve do bacalhau com natas, com bacalhau lascado, batatas tenras, espinafres e um acabamento cremoso e gratinado.",
+      "bg": "По-лек вариант на bacalhau com natas с крехка треска на парченца, меки картофи, спанак и кремообразна запечена коричка.",
+      "de": "Eine leichtere Variante von Bacalhau com Natas mit zartem Kabeljau, feinen Kartoffeln, Spinat und einer cremigen, überbackenen Kruste.",
+      "nl": "Een lichtere variant van bacalhau com natas met malse kabeljauw, zachte aardappelen, spinazie en een romige afwerking uit de oven.",
+      "da": "En lettere udgave af bacalhau com natas med saftig torsk, møre kartofler, spinat og en cremet, ovnbagt finish.",
+      "lt": "Lengvesnė „bacalhau com natas“ versija su trapios menkės gabalėliais, minkštomis bulvėmis, špinatais ir kreminiu apskrudusiu sluoksniu.",
+      "el": "Μια πιο ελαφριά εκδοχή του Bacalhau com Natas με μπακαλιάρο σε κομμάτια, τρυφερές πατάτες, σπανάκι και κρεμώδες τελείωμα στον φούρνο.",
+      "no": "En lettere variant av bacalhau com natas med flaket torsk, møre poteter, spinat og en kremet, ovnsbakt finish.",
+      "pl": "Lżejsza wersja bacalhau com natas z kruchym dorszem, delikatnymi ziemniakami, szpinakiem i kremową, zapiekaną warstwą.",
+      "lv": "Vieglāka \"bacalhau com natas\" versija ar maigu mencu, mīkstiem kartupeļiem, spinātiem un krēmīgu, apceptu virskārtu.",
+      "tr": "Didiklenmiş morina balığı, yumuşacık patatesler, ıspanak ve fırınlanmış kremamsı dokusuyla bacalhau com natas tarifinin daha hafif bir yorumu.",
+      "ro": "O variantă mai ușoară de bacalhau com natas, cu bucăți fragede de cod, cartofi delicați, spanac și un strat cremos rumenit la cuptor.",
+      "sv": "En lättare variant av bacalhau com natas med mjäll torsk, mör potatis, spenat och en krämig, ugnsbakad yta."
+    },
+    "status": "published",
+    "ingredientsLocalizations": {
+      "fr": [
+        "600 g de morue cuite, effilochée",
+        "600 g de pommes de terre, coupées en fines tranches",
+        "1 oignon, émincé",
+        "2 gousses d'ail, hachées",
+        "150 g d'épinards",
+        "250 ml de crème légère de cuisson",
+        "100 ml de lait à faible teneur en sodium",
+        "1 c. à soupe d'huile d'olive",
+        "40 g de parmesan râpé",
+        "Poivre noir et noix de muscade, au goût"
+      ],
+      "es": [
+        "600 g de bacalao cocido, desmigado",
+        "600 g de patatas, cortadas en rodajas finas",
+        "1 cebolla, cortada en rodajas",
+        "2 dientes de ajo, picados",
+        "150 g de espinacas",
+        "250 ml de nata ligera para cocinar",
+        "100 ml de leche baja en sodio",
+        "1 cucharada de aceite de oliva",
+        "40 g de queso parmesano rallado",
+        "Pimienta negra y nuez moscada al gusto"
+      ],
+      "pt": [
+        "600 g de bacalhau cozido, em lascas",
+        "600 g de batatas, cortadas em rodelas finas",
+        "1 cebola, cortada em rodelas",
+        "2 dentes de alho, picados",
+        "150 g de espinafres",
+        "250 ml de natas de culinária magras",
+        "100 ml de leite com baixo teor de sódio",
+        "1 colher de sopa de azeite",
+        "40 g de queijo parmesão ralado",
+        "Pimenta-preta e noz-moscada a gosto"
+      ],
+      "bg": [
+        "600 г сготвена треска, накъсана на парченца",
+        "600 г картофи, нарязани на тънки резени",
+        "1 глава лук, нарязана",
+        "2 скилидки чесън, наситнени",
+        "150 г спанак",
+        "250 мл лека готварска сметана",
+        "100 мл нискомаслено прясно мляко с ниско съдържание на натрий",
+        "1 с.л. зехтин",
+        "40 г настърган пармезан",
+        "Черен пипер и индийско орехче на вкус"
+      ],
+      "de": [
+        "600 g gekochter Kabeljau, zerpflückt",
+        "600 g Kartoffeln, in dünne Scheiben geschnitten",
+        "1 Zwiebel, in Scheiben geschnitten",
+        "2 Knoblauchzehen, fein gehackt",
+        "150 g Spinat",
+        "250 ml leichte Kochsahne",
+        "100 ml natriumarme Milch",
+        "1 EL Olivenöl",
+        "40 g geriebener Parmesan",
+        "Schwarzer Pfeffer und Muskatnuss nach Geschmack"
+      ],
+      "nl": [
+        "600 g gekookte kabeljauw, in stukjes geplukt",
+        "600 g aardappelen, in dunne plakjes",
+        "1 ui, in ringen",
+        "2 teentjes knoflook, fijngehakt",
+        "150 g spinazie",
+        "250 ml kookroom light",
+        "100 ml natriumarme melk",
+        "1 el olijfolie",
+        "40 g geraspte Parmezaanse kaas",
+        "Zwarte peper en nootmuskaat naar smaak"
+      ],
+      "da": [
+        "600 g tilberedt torsk, delt i flager",
+        "600 g kartofler, i tynde skiver",
+        "1 løg, i skiver",
+        "2 fed hvidløg, finthakket",
+        "150 g spinat",
+        "250 ml let madlavningsfløde",
+        "100 ml natriumfattig mælk",
+        "1 spsk. olivenolie",
+        "40 g revet parmesan",
+        "Sort peber og muskatnød efter smag"
+      ],
+      "lt": [
+        "600 g paruoštos menkės, išskirstytos gabalėliais",
+        "600 g bulvių, supjaustytų plonais griežinėliais",
+        "1 svogūnas, supjaustytas griežinėliais",
+        "2 skiltelės česnako, susmulkintos",
+        "150 g špinatų",
+        "250 ml liesos grietinėlės maistui",
+        "100 ml pieno su sumažintu natrio kiekiu",
+        "1 v. š. alyvuogių aliejaus",
+        "40 g tarkuoto parmezano",
+        "Juodųjų pipirų ir muskato riešuto pagal skonį"
+      ],
+      "el": [
+        "600 γρ. μαγειρεμένος μπακαλιάρος, σε κομμάτια",
+        "600 γρ. πατάτες, κομμένες σε λεπτές φέτες",
+        "1 κρεμμύδι, κομμένο σε φέτες",
+        "2 σκελίδες σκόρδο, ψιλοκομμένες",
+        "150 γρ. σπανάκι",
+        "250 ml ελαφριά κρέμα μαγειρικής",
+        "100 ml γάλα χαμηλό σε νάτριο",
+        "1 κ.σ. ελαιόλαδο",
+        "40 γρ. τριμμένη παρμεζάνα",
+        "Μαύρο πιπέρι και μοσχοκάρυδο κατά βούληση"
+      ],
+      "no": [
+        "600 g kokt torsk, delt i flak",
+        "600 g poteter, i tynne skiver",
+        "1 løk, i skiver",
+        "2 fedd hvitløk, finhakket",
+        "150 g spinat",
+        "250 ml lett matfløte",
+        "100 ml natriumfattig melk",
+        "1 ss olivenolje",
+        "40 g revet parmesan",
+        "Svart pepper og muskatnøtt etter smak"
+      ],
+      "pl": [
+        "600 g ugotowanego dorsza, podzielonego na płatki",
+        "600 g ziemniaków, pokrojonych w cienkie plasterki",
+        "1 cebula, pokrojona w piórka",
+        "2 ząbki czosnku, posiekane",
+        "150 g szpinaku",
+        "250 ml lekkiej śmietanki kulinarnej",
+        "100 ml mleka niskosodowego",
+        "1 łyżka oliwy z oliwek",
+        "40 g tartego parmezanu",
+        "Czarny pieprz i gałka muszkatołowa do smaku"
+      ],
+      "lv": [
+        "600 g pagatavotas mencas, sadalītas gabaliņos",
+        "600 g kartupeļu, sagriezti plānās šķēlītēs",
+        "1 sīpols, sagriezts šķēlītēs",
+        "2 daiviņas ķiploka, sasmalcinātas",
+        "150 g spinātu",
+        "250 ml liesa kulinārijas krējuma",
+        "100 ml piena ar zemu nātrija saturu",
+        "1 ēd. k. olīveļļas",
+        "40 g rīvēta parmezāna",
+        "Melnie pipari un muskatrieksts pēc garšas"
+      ],
+      "tr": [
+        "600 g pişmiş morina balığı, didiklenmiş",
+        "600 g patates, ince dilimlenmiş",
+        "1 soğan, dilimlenmiş",
+        "2 diş sarımsak, ince kıyılmış",
+        "150 g ıspanak",
+        "250 ml hafif yemek kreması",
+        "100 ml az sodyumlu süt",
+        "1 yemek kaşığı zeytinyağı",
+        "40 g rendelenmiş Parmesan",
+        "Damak zevkine göre karabiber ve muskat rendesi"
+      ],
+      "ro": [
+        "600 g cod gătit, desfăcut în bucăți",
+        "600 g cartofi, tăiați felii subțiri",
+        "1 ceapă, feliată",
+        "2 căței de usturoi, tocați mărunt",
+        "150 g spanac",
+        "250 ml smântână ușoară pentru gătit",
+        "100 ml lapte cu conținut scăzut de sodiu",
+        "1 lingură ulei de măsline",
+        "40 g parmezan ras",
+        "Piper negru și nucșoară, după gust"
+      ],
+      "sv": [
+        "600 g tillagad torsk, delad i bitar",
+        "600 g potatis, tunt skivad",
+        "1 gul lök, skivad",
+        "2 vitlöksklyftor, finhackade",
+        "150 g spenat",
+        "250 ml lätt matlagningsgrädde",
+        "100 ml natriumfattig mjölk",
+        "1 msk olivolja",
+        "40 g riven parmesanost",
+        "Svartpeppar och muskotnöt efter smak"
+      ]
+    },
+    "instructionsLocalizations": {
+      "fr": [
+        "Préchauffez le four à 200 °C et huilez légèrement un plat à gratin.",
+        "Faites bouillir les tranches de pommes de terre pendant 8 minutes, puis égouttez-les bien.",
+        "Faites revenir l'oignon et l'ail dans l'huile d'olive jusqu'à ce qu'ils soient tendres, puis incorporez les épinards jusqu'à ce qu'ils réduisent.",
+        "Disposez la moitié des pommes de terre, de la morue et du mélange aux épinards dans le plat. Répétez l'opération une fois.",
+        "Fouettez la crème, le lait, le poivre et une pincée de muscade. Versez sur la préparation et recouvrez de parmesan.",
+        "Faites cuire au four pendant 25 à 30 minutes jusqu'à ce que le dessus soit bien doré et bouillonnant. Laissez reposer 5 minutes avant de servir."
+      ],
+      "es": [
+        "Precalienta el horno a 200 °C y engrasa ligeramente una fuente para hornear.",
+        "Hierve las rodajas de patata durante 8 minutos y escúrrelas bien.",
+        "Sofríe la cebolla y el ajo en aceite de oliva hasta que estén tiernos, luego incorpora las espinacas hasta que se reduzcan.",
+        "Coloca en capas la mitad de las patatas, el bacalao y la mezcla de espinacas en la fuente. Repite el proceso una vez más.",
+        "Bate la nata, la leche, la pimienta y una pizca de nuez moscada. Vierte sobre la fuente y cubre con el parmesano.",
+        "Hornea de 25 a 30 minutos hasta que esté dorado y burbujeante. Deja reposar 5 minutos antes de servir."
+      ],
+      "pt": [
+        "Pré-aqueça o forno a 200 °C e unte ligeiramente uma assadeira com azeite.",
+        "Coza as batatas em rodelas durante 8 minutos e escorra bem.",
+        "Refogue a cebola e o alho no azeite até ficarem macios e, em seguida, envolva os espinafres até murcharem.",
+        "Disponha metade das batatas, do bacalhau e do preparado de espinafres na assadeira. Repita o processo mais uma vez.",
+        "Misture as natas, o leite, a pimenta e uma pitada de noz-moscada. Verta sobre a assadeira e cubra com o queijo parmesão.",
+        "Leve ao forno durante 25 a 30 minutos, até ficar dourado e a borbulhar. Deixe repousar durante 5 minutos antes de servir."
+      ],
+      "bg": [
+        "Загрейте фурната до 200 °C и намазнете леко тава за печене.",
+        "Сварете нарязаните картофи за 8 минути, след което ги отцедете добре.",
+        "Задушете лука и чесъна в зехтина до омекване, след което добавете спанака, докато слегне.",
+        "Подредете на пластове половината от картофите, треската и спаначената смес в тавата. Повторете още веднъж.",
+        "Разбийте сметаната, прясното мляко, черния пипер и щипка индийско орехче. Залейте запеканката и поръсете отгоре с пармезана.",
+        "Печете от 25 до 30 минути, докато хване златиста коричка и закъкри. Оставете да почине за 5 минути преди сервиране."
+      ],
+      "de": [
+        "Den Ofen auf 200 °C vorheizen und eine Auflaufform leicht einölen.",
+        "Die Kartoffelscheiben 8 Minuten kochen, dann gut abtropfen lassen.",
+        "Zwiebel und Knoblauch in Olivenöl weich dünsten, dann den Spinat unterheben, bis er zusammenfällt.",
+        "Die Hälfte der Kartoffeln, des Kabeljaus und der Spinatmischung in die Form schichten. Einmal wiederholen.",
+        "Sahne, Milch, Pfeffer und eine Prise Muskatnuss verquirlen. Über den Auflauf gießen und mit Parmesan bestreuen.",
+        "25 bis 30 Minuten backen, bis er goldbraun ist und blubbert. Vor dem Servieren 5 Minuten ruhen lassen."
+      ],
+      "nl": [
+        "Verwarm de oven voor op 200 °C en vet een ovenschaal licht in met olie.",
+        "Kook de aardappelschijfjes 8 minuten en giet ze goed af.",
+        "Fruit de ui en knoflook in olijfolie tot ze zacht zijn en schep de spinazie erdoor tot deze geslonken is.",
+        "Verdeel de helft van de aardappelen, kabeljauw en het spinaziemengsel over de schaal. Herhaal dit nog een keer.",
+        "Klop de room, melk, peper en een snufje nootmuskaat door elkaar. Giet dit over de ovenschotel en bestrooi met Parmezaanse kaas.",
+        "Bak 25 tot 30 minuten tot de schotel goudbruin is en borrelt. Laat 5 minuten rusten voor het serveren."
+      ],
+      "da": [
+        "Varm ovnen op til 200 °C, og smør et ovnfast fad let med olie.",
+        "Kog kartoffelskiverne i 8 minutter, og lad dem dryppe godt af.",
+        "Svits løg og hvidløg i olivenolie, indtil det er blødt, og vend derefter spinaten i, til den falder sammen.",
+        "Læg halvdelen af kartoflerne, torsken og spinatblandingen i lag i fadet. Gentag én gang.",
+        "Pisk fløde, mælk, peber og en knivspids muskatnød sammen. Hæld det over retten, og top med parmesan.",
+        "Bag i 25 til 30 minutter, indtil overfladen er gylden og boblende. Lad retten hvile i 5 minutter inden servering."
+      ],
+      "lt": [
+        "Įkaitinkite orkaitę iki 200 °C ir lengvai patepkite kepimo indą aliejumi.",
+        "Bulvių griežinėlius virkite 8 minutes, tada gerai nupilkite vandenį.",
+        "Alyvuogių aliejuje pakepinkite svogūną ir česnaką, kol suminkštės, tada įmaišykite špinatus, kol jie sukris.",
+        "Į kepimo indą sluoksniuokite pusę bulvių, menkės ir špinatų mišinio. Pakartokite dar kartą su likusiais ingredientais.",
+        "Išplakite grietinėlę, pieną, pipirus ir žiupsnelį muskato riešuto. Užpilkite ant apkepo ir pabarstykite parmezanu.",
+        "Kepkite 25–30 minučių, kol gražiai apskrus ir ims burbuliuoti. Prieš patiekdami leiskite pastovėti 5 minutes."
+      ],
+      "el": [
+        "Προθερμάνετε τον φούρνο στους 200°C και λαδώστε ελαφρά ένα πυρίμαχο σκεύος.",
+        "Βράστε τις κομμένες πατάτες για 8 λεπτά και στη συνέχεια στραγγίστε τις καλά.",
+        "Σοτάρετε το κρεμμύδι και το σκόρδο στο ελαιόλαδο μέχρι να μαλακώσουν, και έπειτα προσθέστε ανακατεύοντας το σπανάκι μέχρι να μαραθεί.",
+        "Απλώστε σε στρώσεις τις μισές πατάτες, τον μπακαλιάρο και το μείγμα σπανακιού στο σκεύος. Επαναλάβετε άλλη μία φορά.",
+        "Χτυπήστε ελαφρά την κρέμα, το γάλα, το πιπέρι και μια πρέζα μοσχοκάρυδο. Περιχύστε το φαγητό και πασπαλίστε με την παρμεζάνα.",
+        "Ψήστε για 25 με 30 λεπτά μέχρι να ροδίσει και να κοχλάζει. Αφήστε το να σταθεί για 5 λεπτά πριν το σερβίρισμα."
+      ],
+      "no": [
+        "Varm ovnen til 200 °C og smør en ildfast form lett med olje.",
+        "Kok potetskivene i 8 minutter, og la dem renne godt av.",
+        "Fres løk og hvitløk i olivenolje til det er mykt, og vend deretter inn spinaten til den faller sammen.",
+        "Legg halvparten av potetene, torsken og spinatblandingen lagvis i formen. Gjenta én gang.",
+        "Visp sammen fløte, melk, pepper og en klype muskatnøtt. Hell over formen og topp med parmesan.",
+        "Stek i 25 til 30 minutter til formen er gyllen og boblende. La hvile i 5 minutter før servering."
+      ],
+      "pl": [
+        "Rozgrzej piekarnik do 200°C i lekko natłuść naczynie do zapiekania.",
+        "Gotuj pokrojone ziemniaki przez 8 minut, a następnie dokładnie je odcedź.",
+        "Podsmaż cebulę i czosnek na oliwie z oliwek, aż zmiękną, po czym dodaj szpinak i duś do zwiędnięcia.",
+        "Ułóż w naczyniu połowę ziemniaków, dorsza oraz mieszanki szpinakowej. Powtórz z resztą składników.",
+        "Wymieszaj śmietankę, mleko, pieprz i szczyptę gałki muszkatołowej. Polej zapiekankę i posyp parmezanem.",
+        "Piecz przez 25 do 30 minut, aż wierzch będzie rumiany i zapiekanka zacznie bulgotać. Odstaw na 5 minut przed podaniem."
+      ],
+      "lv": [
+        "Uzkarsējiet cepeškrāsni līdz 200 °C un viegli ieziediet cepamtrauku ar eļļu.",
+        "Vāriet kartupeļu šķēlītes 8 minūtes, pēc tam kārtīgi nokāsiet.",
+        "Olīveļļā apcepiet sīpolu un ķiplokus, līdz tie kļūst mīksti, tad iemaisiet spinātus, līdz tie noplok.",
+        "Kārtojiet traukā pusi kartupeļu, mencas un spinātu maisījuma. Atkārtojiet to pašu vēl vienā kārtā.",
+        "Sakuliet krējumu, pienu, piparus un šķipsniņu muskatrieksta. Pārlejiet pāri sacepumam un pārberiet ar parmezānu.",
+        "Cepiet 25 līdz 30 minūtes, līdz sacepums ir zeltains un burbuļo. Pirms pasniegšanas ļaujiet 5 minūtes nostāvēties."
+      ],
+      "tr": [
+        "Fırını 200°C'ye ısıtın ve bir fırın kabını hafifçe yağlayın.",
+        "Dilimlenmiş patatesleri 8 dakika haşlayın, ardından iyice süzün.",
+        "Soğan ve sarımsağı zeytinyağında yumuşayana kadar soteleyin, ardından ıspanakları ekleyip solana kadar karıştırın.",
+        "Patateslerin, morina balığının ve ıspanaklı karışımın yarısını fırın kabına kat kat dizin. Bu işlemi bir kez daha tekrarlayın.",
+        "Krema, süt, karabiber ve bir tutam muskatı çırpın. Karışımın üzerine dökün ve üstünü Parmesan ile kaplayın.",
+        "Üzeri altın sarısı olana ve fokurdayana kadar 25 ila 30 dakika fırınlayın. Servis yapmadan önce 5 dakika dinlendirin."
+      ],
+      "ro": [
+        "Preîncălziți cuptorul la 200 °C și ungeți ușor cu ulei o tavă de copt.",
+        "Fierbeți cartofii feliați timp de 8 minute, apoi scurgeți-i bine.",
+        "Sotați ceapa și usturoiul în ulei de măsline până se înmoaie, apoi încorporați spanacul până când se lasă.",
+        "Așezați în tavă jumătate din cartofi, cod și amestecul de spanac. Repetați încă o dată.",
+        "Bateți smântâna cu laptele, piperul și un praf de nucșoară. Turnați peste compoziție și presărați parmezanul deasupra.",
+        "Coaceți timp de 25-30 de minute, până când devine auriu și bolborosește. Lăsați să se odihnească 5 minute înainte de servire."
+      ],
+      "sv": [
+        "Värm ugnen till 200 °C och smörj en ugnsform lätt med olja.",
+        "Koka den skivade potatisen i 8 minuter och låt den rinna av väl.",
+        "Fräs lök och vitlök i olivolja tills de mjuknat, vänd sedan ner spenaten tills den har krympt ihop.",
+        "Varva hälften av potatisen, torsken och spenatblandningen i formen. Upprepa en gång.",
+        "Vispa ihop grädden, mjölken, peppar och en nypa muskotnöt. Häll över gratängen och toppa med parmesan.",
+        "Grädda i 25 till 30 minuter tills den är gyllene och bubblande. Låt vila i 5 minuter före servering."
+      ]
+    },
+    "shoppingListLocalizations": {
+      "fr": [
+        "morue",
+        "pommes de terre",
+        "oignon",
+        "ail",
+        "épinards",
+        "crème légère de cuisson",
+        "lait",
+        "parmesan"
+      ],
+      "es": [
+        "bacalao",
+        "patatas",
+        "cebolla",
+        "ajo",
+        "espinacas",
+        "nata ligera para cocinar",
+        "leche",
+        "parmesano"
+      ],
+      "pt": [
+        "bacalhau",
+        "batatas",
+        "cebola",
+        "alho",
+        "espinafres",
+        "natas de culinária magras",
+        "leite",
+        "queijo parmesão"
+      ],
+      "bg": [
+        "треска",
+        "картофи",
+        "лук",
+        "чесън",
+        "спанак",
+        "лека готварска сметана",
+        "прясно мляко",
+        "пармезан"
+      ],
+      "de": [
+        "Kabeljau",
+        "Kartoffeln",
+        "Zwiebel",
+        "Knoblauch",
+        "Spinat",
+        "leichte Kochsahne",
+        "Milch",
+        "Parmesan"
+      ],
+      "nl": [
+        "kabeljauw",
+        "aardappelen",
+        "ui",
+        "knoflook",
+        "spinazie",
+        "lichte kookroom",
+        "melk",
+        "Parmezaanse kaas"
+      ],
+      "da": [
+        "torsk",
+        "kartofler",
+        "løg",
+        "hvidløg",
+        "spinat",
+        "let madlavningsfløde",
+        "mælk",
+        "parmesan"
+      ],
+      "lt": [
+        "menkė",
+        "bulvės",
+        "svogūnas",
+        "česnakas",
+        "špinatai",
+        "liesa grietinėlė maistui",
+        "pienas",
+        "parmezanas"
+      ],
+      "el": [
+        "μπακαλιάρος",
+        "πατάτες",
+        "κρεμμύδι",
+        "σκόρδο",
+        "σπανάκι",
+        "ελαφριά κρέμα μαγειρικής",
+        "γάλα",
+        "παρμεζάνα"
+      ],
+      "no": [
+        "torsk",
+        "poteter",
+        "løk",
+        "hvitløk",
+        "spinat",
+        "lett matfløte",
+        "melk",
+        "parmesan"
+      ],
+      "pl": [
+        "dorsz",
+        "ziemniaki",
+        "cebula",
+        "czosnek",
+        "szpinak",
+        "lekka śmietanka kulinarna",
+        "mleko",
+        "parmezan"
+      ],
+      "lv": [
+        "menca",
+        "kartupeļi",
+        "sīpols",
+        "ķiploks",
+        "spināti",
+        "liess kulinārijas krējums",
+        "piens",
+        "parmezāns"
+      ],
+      "tr": [
+        "morina balığı",
+        "patates",
+        "soğan",
+        "sarımsak",
+        "ıspanak",
+        "hafif yemek kreması",
+        "süt",
+        "Parmesan"
+      ],
+      "ro": [
+        "cod",
+        "cartofi",
+        "ceapă",
+        "usturoi",
+        "spanac",
+        "smântână ușoară pentru gătit",
+        "lapte",
+        "parmezan"
+      ],
+      "sv": [
+        "torsk",
+        "potatis",
+        "lök",
+        "vitlök",
+        "spenat",
+        "lätt matlagningsgrädde",
+        "mjölk",
+        "parmesanost"
+      ]
+    }
+  },
+  {
+    "title": "Thai Green Papaya Chicken Salad",
+    "description": "A bright, high-protein salad with shredded green papaya, chicken, herbs, lime, and a crisp peanut finish.",
+    "imageUrl": "https://pub-e8204ad737dc4a5f93bd4f2b1f9f0a15.r2.dev/Thai%20Green%20Papaya%20Salad.png",
+    "cookTimeMinutes": 20,
+    "servings": 2,
+    "calories": 350,
+    "protein": 31,
+    "carbs": 28,
+    "fat": 13,
+    "tags": [
+      "Thai",
+      "high protein",
+      "fresh",
+      "meal prep"
+    ],
+    "category": "Lunch",
+    "categories": [
+      "Lunch",
+      "High Protein"
+    ],
+    "mealType": [
+      "Lunch",
+      "Dinner"
+    ],
+    "cuisine": "Thai",
+    "ingredients": [
+      "250 g cooked chicken breast, shredded",
+      "2 cups green papaya, shredded",
+      "1 carrot, julienned",
+      "1 cup cherry tomatoes, halved",
+      "2 tbsp fresh lime juice",
+      "1 tbsp fish sauce or tamari",
+      "1 tsp honey",
+      "1 small red chili, finely sliced",
+      "2 tbsp roasted peanuts, chopped",
+      "Fresh coriander and mint"
+    ],
+    "instructions": [
+      "Whisk the lime juice, fish sauce or tamari, honey, and chili in a large bowl.",
+      "Add the shredded papaya, carrot, tomatoes, and chicken.",
+      "Toss well so the dressing coats every ingredient.",
+      "Fold through the coriander and mint.",
+      "Finish with chopped peanuts and serve immediately."
+    ],
+    "shoppingListItems": [
+      "chicken breast",
+      "green papaya",
+      "carrot",
+      "cherry tomatoes",
+      "lime",
+      "fish sauce",
+      "peanuts",
+      "coriander",
+      "mint"
+    ],
+    "titleLocalizations": {
+      "fr": "Salade thaïlandaise de poulet à la papaye verte",
+      "es": "Ensalada tailandesa de pollo y papaya verde",
+      "pt": "Salada Tailandesa de Papaia Verde e Frango",
+      "de": "Thailändischer Hähnchensalat mit grüner Papaya",
+      "bg": "Тайландска салата със зелена папая и пиле",
+      "nl": "Thaise groene papajasalade met kip",
+      "da": "Thai kyllingesalat med grøn papaya",
+      "el": "Ταϊλανδέζικη σαλάτα με πράσινη παπάγια και κοτόπουλο",
+      "lt": "Tailandietiškos žaliosios papajos ir vištienos salotos",
+      "pl": "Tajska sałatka z zieloną papają i kurczakiem",
+      "no": "Thai kyllingsalat med grønn papaya",
+      "lv": "Taizemes zaļās papajas un vistas salāti",
+      "sv": "Thailändsk kycklingsallad med grön papaya",
+      "tr": "Tay Usulü Yeşil Papayalı Tavuk Salatası",
+      "ro": "Salată thailandeză de pui cu papaya verde"
+    },
+    "descriptionLocalizations": {
+      "fr": "Une salade éclatante et riche en protéines, composée de papaye verte râpée, de poulet, d'herbes aromatiques, de citron vert et d'une touche croquante de cacahuètes.",
+      "es": "Una ensalada fresca y rica en proteínas con papaya verde rallada, pollo, hierbas aromáticas, lima y un toque crujiente de cacahuetes.",
+      "pt": "Uma salada fresca e rica em proteínas, com papaia verde ralada, frango, ervas aromáticas, lima e um toque estaladiço de amendoins.",
+      "de": "Ein frischer, proteinreicher Salat mit geraspelter grüner Papaya, Hähnchen, Kräutern, Limette und knackigen Erdnüssen als Finish.",
+      "bg": "Свежа, богата на протеини салата с настъргана зелена папая, пилешко месо, пресни билки, лайм и хрупкав завършек от фъстъци.",
+      "nl": "Een frisse, eiwitrijke salade met geraspte groene papaja, kip, kruiden, limoen en een knapperige topping van pinda's.",
+      "da": "En frisk, proteinrig salat med strimlet grøn papaya, kylling, krydderurter, lime og sprøde peanuts på toppen.",
+      "el": "Μια δροσερή, πλούσια σε πρωτεΐνη σαλάτα με τριμμένη πράσινη παπάγια, κοτόπουλο, μυρωδικά, λάιμ και τραγανό τελείωμα από φιστίκια.",
+      "lt": "Ryškios, daug baltymų turinčios salotos su smulkinta žaliąja papaja, vištiena, šviežiomis žolelėmis, laimu ir traškiu žemės riešutų akcentu.",
+      "pl": "Wyrazista, wysokobiałkowa sałatka z poszatkowaną zieloną papają, kurczakiem, ziołami, limonką i chrupiącymi orzeszkami ziemnymi.",
+      "no": "En frisk, proteinrik salat med strimlet grønn papaya, kylling, urter, lime og sprø peanøtter.",
+      "lv": "Koši, olbaltumvielām bagāti salāti ar rīvētu zaļo papaju, vistu, zaļumiem, laimu un kraukšķīgiem zemesriekstiem.",
+      "sv": "En fräsch, proteinrik sallad med strimlad grön papaya, kyckling, örter, lime och krispiga jordnötter på toppen.",
+      "tr": "Rendelenmiş yeşil papaya, tavuk, taze otlar, misket limonu ve çıtır fıstık dokunuşuyla hazırlanan ferah, yüksek proteinli bir salata.",
+      "ro": "O salată proaspătă, bogată în proteine, cu fâșii de papaya verde, pui, verdețuri, lime și un final crocant de arahide."
+    },
+    "status": "published",
+    "ingredientsLocalizations": {
+      "fr": [
+        "250 g de blanc de poulet cuit, effiloché",
+        "2 tasses de papaye verte râpée",
+        "1 carotte, coupée en julienne",
+        "1 tasse de tomates cerises, coupées en deux",
+        "2 c. à soupe de jus de citron vert frais",
+        "1 c. à soupe de sauce poisson ou de tamari",
+        "1 c. à café de miel",
+        "1 petit piment rouge, finement émincé",
+        "2 c. à soupe de cacahuètes grillées, hachées",
+        "Coriandre et menthe fraîches"
+      ],
+      "es": [
+        "250 g de pechuga de pollo cocida, desmenuzada",
+        "2 tazas de papaya verde, rallada",
+        "1 zanahoria, cortada en juliana",
+        "1 taza de tomates cherry, cortados por la mitad",
+        "2 cdas. de zumo de lima fresco",
+        "1 cda. de salsa de pescado o tamari",
+        "1 cdta. de miel",
+        "1 chile rojo pequeño, cortado en rodajas finas",
+        "2 cdas. de cacahuetes tostados, picados",
+        "Cilantro y menta frescos"
+      ],
+      "pt": [
+        "250 g de peito de frango cozinhado, desfiado",
+        "2 chávenas de papaia verde, ralada",
+        "1 cenoura, cortada em juliana",
+        "1 chávena de tomates-cereja, cortados ao meio",
+        "2 c. de sopa de sumo de lima fresco",
+        "1 c. de sopa de molho de peixe ou tamari",
+        "1 c. de chá de mel",
+        "1 malagueta vermelha pequena, finamente fatiada",
+        "2 c. de sopa de amendoins torrados, picados",
+        "Coentros e hortelã frescos"
+      ],
+      "de": [
+        "250 g gegarte Hähnchenbrust, gezupft",
+        "2 Tassen grüne Papaya, geraspelt",
+        "1 Karotte, in feine Streifen geschnitten",
+        "1 Tasse Kirschtomaten, halbiert",
+        "2 EL frischer Limettensaft",
+        "1 EL Fischsauce oder Tamari",
+        "1 TL Honig",
+        "1 kleine rote Chilischote, fein geschnitten",
+        "2 EL geröstete Erdnüsse, gehackt",
+        "Frischer Koriander und Minze"
+      ],
+      "bg": [
+        "250 г сготвени пилешки гърди, накъсани",
+        "2 чаени чаши зелена папая, настъргана",
+        "1 морков, нарязан на жулиени",
+        "1 чаена чаша чери домати, разполовени",
+        "2 с.л. пресен сок от лайм",
+        "1 с.л. рибен сос или тамари",
+        "1 ч.л. мед",
+        "1 малка червена люта чушка, нарязана на ситно",
+        "2 с.л. печени фъстъци, накълцани",
+        "Пресен кориандър и мента"
+      ],
+      "nl": [
+        "250 g gekookte kipfilet, geplozen",
+        "2 kopjes groene papaja, geraspt",
+        "1 wortel, julienne gesneden",
+        "1 kopje cherrytomaatjes, gehalveerd",
+        "2 el vers limoensap",
+        "1 el vissaus of tamari",
+        "1 tl honing",
+        "1 kleine rode peper, fijngesneden",
+        "2 el geroosterde pinda's, fijngehakt",
+        "Verse koriander en munt"
+      ],
+      "da": [
+        "250 g tilberedt kyllingebryst, plukket i strimler",
+        "2 kopper grøn papaya, strimlet",
+        "1 gulerod, skåret i julienne",
+        "1 kop cherrytomater, halverede",
+        "2 spsk. frisk limesaft",
+        "1 spsk. fiskesauce eller tamari",
+        "1 tsk. honning",
+        "1 lille rød chili, fintsnittet",
+        "2 spsk. ristede peanuts, hakkede",
+        "Frisk koriander og mynte"
+      ],
+      "el": [
+        "250 γρ. μαγειρεμένο στήθος κοτόπουλου, ξεψαχνισμένο",
+        "2 φλιτζάνια πράσινη παπάγια, τριμμένη",
+        "1 καρότο, κομμένο σε λεπτά μπαστουνάκια (ζουλιέν)",
+        "1 φλιτζάνι ντοματίνια, κομμένα στη μέση",
+        "2 κ.σ. φρέσκος χυμός λάιμ",
+        "1 κ.σ. σάλτσα ψαριού ή ταμάρι",
+        "1 κ.γ. μέλι",
+        "1 μικρή κόκκινη πιπεριά τσίλι, κομμένη σε λεπτές φέτες",
+        "2 κ.σ. καβουρδισμένα φιστίκια, χοντροκομμένα",
+        "Φρέσκος κόλιανδρος και δυόσμος"
+      ],
+      "lt": [
+        "250 g paruoštos vištienos krūtinėlės, suplėšytos",
+        "2 puodeliai žaliosios papajos, sutarkuotos šiaudeliais",
+        "1 morka, supjaustyta šiaudeliais",
+        "1 puodelis vyšninių pomidorų, perpjautų perpus",
+        "2 v. š. šviežių laimo sulčių",
+        "1 v. š. žuvies padažo arba tamari",
+        "1 a. š. medaus",
+        "1 nedidelis raudonasis čili pipiras, plonai supjaustytas",
+        "2 v. š. kepintų žemės riešutų, sukapotų",
+        "Šviežios kalendros ir mėtos"
+      ],
+      "pl": [
+        "250 g ugotowanej piersi z kurczaka, poszarpanej",
+        "2 szklanki zielonej papai, poszatkowanej",
+        "1 marchewka, pokrojona w słupki",
+        "1 szklanka pomidorków koktajlowych, przekrojonych na pół",
+        "2 łyżki świeżego soku z limonki",
+        "1 łyżka sosu rybnego lub tamari",
+        "1 łyżeczka miodu",
+        "1 mała czerwona papryczka chili, pokrojona w cienkie plasterki",
+        "2 łyżki prażonych orzeszków ziemnych, posiekanych",
+        "Świeża kolendra i mięta"
+      ],
+      "no": [
+        "250 g tilberedt kyllingbryst, revet",
+        "2 kopper grønn papaya, revet",
+        "1 gulrot, kuttet i tynne strimler (julienne)",
+        "1 kopp cherrytomater, delt i to",
+        "2 ss fersk limesaft",
+        "1 ss fiskesaus eller tamari",
+        "1 ts honning",
+        "1 liten rød chili, i tynne skiver",
+        "2 ss ristede peanøtter, hakket",
+        "Frisk koriander og mynte"
+      ],
+      "lv": [
+        "250 g gatavas vistas krūtiņas, saplucinātas",
+        "2 glāzes zaļās papajas, sarīvētas",
+        "1 burkāns, sagriezts salmiņos",
+        "1 glāze ķiršu tomātu, pārgrieztu uz pusēm",
+        "2 ēd. k. svaigas laima sulas",
+        "1 ēd. k. zivju mērces vai tamari",
+        "1 tējk. medus",
+        "1 mazs sarkanais čili, smalki sagriezts",
+        "2 ēd. k. grauzdētu zemesriekstu, sakapātu",
+        "Svaigs koriandrs un piparmētras"
+      ],
+      "sv": [
+        "250 g tillagat kycklingbröst, strimlat",
+        "5 dl grön papaya, strimlad",
+        "1 morot, strimlad",
+        "2,5 dl körsbärstomater, halverade",
+        "2 msk färskpressad limejuice",
+        "1 msk fisksås eller tamari",
+        "1 tsk honung",
+        "1 liten röd chili, finhackad",
+        "2 msk rostade jordnötter, hackade",
+        "Färsk koriander och mynta"
+      ],
+      "tr": [
+        "250 g pişmiş tavuk göğsü, didiklenmiş",
+        "2 su bardağı yeşil papaya, rendelenmiş",
+        "1 havuç, jülyen doğranmış",
+        "1 su bardağı çeri domates, ikiye bölünmüş",
+        "2 yemek kaşığı taze misket limonu suyu",
+        "1 yemek kaşığı balık sosu veya tamari",
+        "1 çay kaşığı bal",
+        "1 küçük kırmızı acı biber, ince dilimlenmiş",
+        "2 yemek kaşığı kavrulmuş yer fıstığı, kıyılmış",
+        "Taze kişniş ve nane"
+      ],
+      "ro": [
+        "250 g piept de pui gătit, mărunțit fâșii",
+        "2 căni de papaya verde, dată pe răzătoare",
+        "1 morcov, tăiat julienne",
+        "1 cană de roșii cherry, tăiate în jumătăți",
+        "2 linguri de suc proaspăt de lime",
+        "1 lingură de sos de pește sau tamari",
+        "1 linguriță de miere",
+        "1 ardei iute roșu mic, feliat fin",
+        "2 linguri de arahide prăjite, tocate",
+        "Coriandru și mentă proaspătă"
+      ]
+    },
+    "instructionsLocalizations": {
+      "fr": [
+        "Fouetter le jus de citron vert, la sauce poisson ou le tamari, le miel et le piment dans un grand bol.",
+        "Ajouter la papaye râpée, la carotte, les tomates et le poulet.",
+        "Bien mélanger pour que l'assaisonnement enrobe tous les ingrédients.",
+        "Incorporer délicatement la coriandre et la menthe.",
+        "Terminer avec les cacahuètes hachées et servir immédiatement."
+      ],
+      "es": [
+        "Bate el zumo de lima, la salsa de pescado o tamari, la miel y el chile en un bol grande.",
+        "Añade la papaya rallada, la zanahoria, los tomates y el pollo.",
+        "Mezcla bien para que el aliño cubra todos los ingredientes.",
+        "Incorpora el cilantro y la menta.",
+        "Termina con los cacahuetes picados y sirve inmediatamente."
+      ],
+      "pt": [
+        "Misture o sumo de lima, o molho de peixe ou tamari, o mel e a malagueta numa taça grande.",
+        "Adicione a papaia ralada, a cenoura, os tomates e o frango.",
+        "Envolva bem para que o molho cubra todos os ingredientes.",
+        "Incorpore os coentros e a hortelã.",
+        "Termine com os amendoins picados e sirva de imediato."
+      ],
+      "de": [
+        "Den Limettensaft, die Fischsauce oder das Tamari, den Honig und die Chili in einer großen Schüssel verquirlen.",
+        "Die geraspelte Papaya, die Karotte, die Tomaten und das Hähnchen hinzufügen.",
+        "Alles gut vermengen, sodass alle Zutaten mit dem Dressing überzogen sind.",
+        "Den Koriander und die Minze unterheben.",
+        "Mit den gehackten Erdnüssen garnieren und sofort servieren."
+      ],
+      "bg": [
+        "Разбийте сока от лайм, рибния сос или тамари, меда и лютата чушка в голяма купа.",
+        "Добавете настърганата папая, моркова, доматите и пилешкото месо.",
+        "Разбъркайте добре, така че дресингът да покрие всички съставки.",
+        "Добавете кориандъра и ментата и разбъркайте внимателно.",
+        "Завършете с накълцаните фъстъци и сервирайте веднага."
+      ],
+      "nl": [
+        "Klop het limoensap, de vissaus of tamari, de honing en de rode peper door elkaar in een grote kom.",
+        "Voeg de geraspte papaja, wortel, tomaatjes en kip toe.",
+        "Schep goed om zodat de dressing alle ingrediënten bedekt.",
+        "Meng de koriander en munt erdoor.",
+        "Garneer met de fijngehakte pinda's en serveer direct."
+      ],
+      "da": [
+        "Pisk limesaft, fiskesauce eller tamari, honning og chili sammen i en stor skål.",
+        "Tilsæt strimlet papaya, gulerod, tomater og kylling.",
+        "Vend det hele godt rundt, så dressingen dækker alle ingredienser.",
+        "Vend koriander og mynte i.",
+        "Drys med hakkede peanuts på toppen, og server straks."
+      ],
+      "el": [
+        "Χτυπήστε με σύρμα τον χυμό λάιμ, τη σάλτσα ψαριού ή το ταμάρι, το μέλι και το τσίλι σε ένα μεγάλο μπολ.",
+        "Προσθέστε την τριμμένη παπάγια, το καρότο, τα ντοματίνια και το κοτόπουλο.",
+        "Ανακατέψτε καλά, ώστε το ντρέσινγκ να καλύψει όλα τα υλικά.",
+        "Ενσωματώστε απαλά τον κόλιανδρο και τον δυόσμο.",
+        "Ολοκληρώστε με τα χοντροκομμένα φιστίκια και σερβίρετε αμέσως."
+      ],
+      "lt": [
+        "Dideliame dubenyje išplakite laimo sultis, žuvies padažą arba tamari, medų ir čili pipirą.",
+        "Sudėkite smulkintą papają, morką, pomidorus ir vištieną.",
+        "Gerai išmaišykite, kad padažas padengtų visus ingredientus.",
+        "Įmaišykite kalendras ir mėtas.",
+        "Pabarstykite kapotais žemės riešutais ir patiekite iš karto."
+      ],
+      "pl": [
+        "W dużej misce wymieszaj trzepaczką sok z limonki, sos rybny lub tamari, miód oraz chili.",
+        "Dodaj poszatkowaną papaję, marchewkę, pomidorki i kurczaka.",
+        "Wymieszaj dokładnie, aby dressing pokrył wszystkie składniki.",
+        "Wmieszaj kolendrę i miętę.",
+        "Posyp posiekanymi orzeszkami ziemnymi i podawaj natychmiast."
+      ],
+      "no": [
+        "Pisk sammen limesaft, fiskesaus eller tamari, honning og chili i en stor bolle.",
+        "Tilsett revet papaya, gulrot, tomater og kylling.",
+        "Bland godt slik at dressingen dekker alle ingrediensene.",
+        "Vend inn koriander og mynte.",
+        "Topp med hakkede peanøtter og server umiddelbart."
+      ],
+      "lv": [
+        "Lielā bļodā sajauciet laima sulu, zivju mērci vai tamari, medu un čili.",
+        "Pievienojiet sarīvēto papaju, burkānu, tomātus un vistu.",
+        "Rūpīgi samaisiet, lai mērce pārklātu visas sastāvdaļas.",
+        "Iemaisiet koriandru un piparmētras.",
+        "Pārkaisiet ar sakapātiem zemesriekstiem un pasniedziet uzreiz."
+      ],
+      "sv": [
+        "Vispa ihop limejuice, fisksås eller tamari, honung och chili i en stor skål.",
+        "Tillsätt strimlad papaya, morot, tomater och kyckling.",
+        "Blanda väl så att dressingen täcker alla ingredienser.",
+        "Vänd ner koriander och mynta.",
+        "Toppa med hackade jordnötter och servera omedelbart."
+      ],
+      "tr": [
+        "Geniş bir kapta misket limonu suyu, balık sosu veya tamari, bal ve acı biberi çırpın.",
+        "Rendelenmiş papaya, havuç, domates ve tavuğu ekleyin.",
+        "Sosun tüm malzemelere bulanması için iyice harmanlayın.",
+        "Kişniş ve naneyi ekleyip hafifçe karıştırın.",
+        "Üzerine kıyılmış yer fıstığı serpiştirin ve bekletmeden servis yapın."
+      ],
+      "ro": [
+        "Amestecă bine cu un tel sucul de lime, sosul de pește sau tamari, mierea și ardeiul iute într-un bol mare.",
+        "Adaugă fâșiile de papaya, morcovul, roșiile și puiul.",
+        "Amestecă bine, astfel încât dressingul să acopere toate ingredientele.",
+        "Încorporează coriandrul și menta.",
+        "Presară arahidele tocate deasupra și servește imediat."
+      ]
+    },
+    "shoppingListLocalizations": {
+      "fr": [
+        "blanc de poulet",
+        "papaye verte",
+        "carotte",
+        "tomates cerises",
+        "citron vert",
+        "sauce poisson",
+        "cacahuètes",
+        "coriandre",
+        "menthe"
+      ],
+      "es": [
+        "pechuga de pollo",
+        "papaya verde",
+        "zanahoria",
+        "tomates cherry",
+        "lima",
+        "salsa de pescado",
+        "cacahuetes",
+        "cilantro",
+        "menta"
+      ],
+      "pt": [
+        "peito de frango",
+        "papaia verde",
+        "cenoura",
+        "tomates-cereja",
+        "lima",
+        "molho de peixe",
+        "amendoins",
+        "coentros",
+        "hortelã"
+      ],
+      "de": [
+        "Hähnchenbrust",
+        "grüne Papaya",
+        "Karotte",
+        "Kirschtomaten",
+        "Limette",
+        "Fischsauce",
+        "Erdnüsse",
+        "Koriander",
+        "Minze"
+      ],
+      "bg": [
+        "пилешки гърди",
+        "зелена папая",
+        "морков",
+        "чери домати",
+        "лайм",
+        "рибен сос",
+        "фъстъци",
+        "кориандър",
+        "мента"
+      ],
+      "nl": [
+        "kipfilet",
+        "groene papaja",
+        "wortel",
+        "cherrytomaatjes",
+        "limoen",
+        "vissaus",
+        "pinda's",
+        "koriander",
+        "munt"
+      ],
+      "da": [
+        "kyllingebryst",
+        "grøn papaya",
+        "gulerod",
+        "cherrytomater",
+        "lime",
+        "fiskesauce",
+        "peanuts",
+        "koriander",
+        "mynte"
+      ],
+      "el": [
+        "στήθος κοτόπουλου",
+        "πράσινη παπάγια",
+        "καρότο",
+        "ντοματίνια",
+        "λάιμ",
+        "σάλτσα ψαριού",
+        "φιστίκια",
+        "κόλιανδρος",
+        "δυόσμος"
+      ],
+      "lt": [
+        "vištienos krūtinėlė",
+        "žalioji papaja",
+        "morka",
+        "vyšniniai pomidorai",
+        "laimas",
+        "žuvies padažas",
+        "žemės riešutai",
+        "kalendra",
+        "mėta"
+      ],
+      "pl": [
+        "pierś z kurczaka",
+        "zielona papaja",
+        "marchewka",
+        "pomidorki koktajlowe",
+        "limonka",
+        "sos rybny",
+        "orzeszki ziemne",
+        "kolendra",
+        "mięta"
+      ],
+      "no": [
+        "kyllingbryst",
+        "grønn papaya",
+        "gulrot",
+        "cherrytomater",
+        "lime",
+        "fiskesaus",
+        "peanøtter",
+        "koriander",
+        "mynte"
+      ],
+      "lv": [
+        "vistas krūtiņa",
+        "zaļā papaja",
+        "burkāns",
+        "ķiršu tomāti",
+        "laims",
+        "zivju mērce",
+        "zemesrieksti",
+        "koriandrs",
+        "piparmētra"
+      ],
+      "sv": [
+        "kycklingbröst",
+        "grön papaya",
+        "morot",
+        "körsbärstomater",
+        "lime",
+        "fisksås",
+        "jordnötter",
+        "koriander",
+        "mynta"
+      ],
+      "tr": [
+        "tavuk göğsü",
+        "yeşil papaya",
+        "havuç",
+        "çeri domates",
+        "misket limonu",
+        "balık sosu",
+        "yer fıstığı",
+        "kişniş",
+        "nane"
+      ],
+      "ro": [
+        "piept de pui",
+        "papaya verde",
+        "morcov",
+        "roșii cherry",
+        "lime",
+        "sos de pește",
+        "arahide",
+        "coriandru",
+        "mentă"
+      ]
+    }
+  }
+]

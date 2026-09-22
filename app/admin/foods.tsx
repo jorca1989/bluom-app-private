@@ -17,6 +17,7 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Utensils, Plus, Search, Trash2, Edit3, X, Check, ShieldCheck } from 'lucide-react-native';
 import { ADMIN_TRANSLATION_LANGUAGES } from '@/constants/adminLanguages';
+import { R2_CONFIG } from '@/utils/r2Config';
 
 export const ADMIN_COUNTRIES = [
   { code: '', label: '🌐 Global' },
@@ -408,7 +409,7 @@ export default function AdminFoodsScreen() {
                             <TextInput style={styles.input} value={form.servingSize} onChangeText={v => updateField('servingSize', v)} placeholder="e.g. 100g" placeholderTextColor="#94a3b8" />
 
                              <Text style={styles.label}>Thumbnail R2 URL</Text>
-                             <TextInput style={styles.input} value={form.thumbnail} onChangeText={v => updateField('thumbnail', v)} placeholder="e.g. https://r2.bluom.app/foods/..." placeholderTextColor="#94a3b8" />
+                             <TextInput style={styles.input} value={form.thumbnail} onChangeText={v => updateField('thumbnail', v)} placeholder={`${R2_CONFIG.foodBaseUrl}/foods/image.jpg`} placeholderTextColor="#94a3b8" />
 
                              <Text style={styles.label}>Cuisine Country</Text>
                              <View style={styles.countryGrid}>

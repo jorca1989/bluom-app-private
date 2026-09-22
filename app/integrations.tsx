@@ -439,6 +439,7 @@ export default function IntegrationsScreen() {
     lastSync: healthLastSync,
     connect: connectHealth,
     disconnect: disconnectHealth,
+    openPermissionSettings,
     sync: syncHealth,
     source: healthSource,
   } = useHealthSync();
@@ -470,7 +471,7 @@ export default function IntegrationsScreen() {
               ? t('integrations.alerts.healthKitFailedIos', 'Bluom was unable to initialize HealthKit. This could be due to missing entitlements, a build configuration error, or the OS blocking the request. Ensure you have made a fresh native build with the latest config.')
               : t('integrations.alerts.healthConnectFailedAndroid', 'Please grant Health Connect permissions to sync your data.'),
             [
-              { text: t('common.checkSettings', 'Check Settings'), onPress: () => Linking.openSettings() },
+              { text: t('common.checkSettings', 'Check Settings'), onPress: openPermissionSettings },
               { text: t('common.cancel', 'Cancel'), style: 'cancel' },
             ]
           );
@@ -519,7 +520,7 @@ export default function IntegrationsScreen() {
       }
       return;
     }
-  }, [convexUser, healthConnected, connectHealth, disconnectHealth, syncHealth, stravaConnected, t]);
+  }, [convexUser, healthConnected, connectHealth, disconnectHealth, openPermissionSettings, syncHealth, stravaConnected, t]);
 
   const handleSync = useCallback(async (item: IntegrationDef) => {
     if (!convexUser?._id) return;
@@ -561,26 +562,30 @@ export default function IntegrationsScreen() {
 
   // ── Resolve per-item connection state ────────────────────────
   const isConnected = (item: IntegrationDef): boolean => {
-    if (item.id === 'apple_health' || item.id === 'google_health') return healthConnected;
+    if (item.id === 'apple_health') return healthConnected && healthSource === 'apple_health';
+    if (item.id === 'google_health') return healthConnected && healthSource === 'google_health';
     if (item.id === 'strava') return stravaConnected;
     return false;
   };
 
   const isSyncing = (item: IntegrationDef): boolean => {
-    if (item.id === 'apple_health' || item.id === 'google_health') return healthSyncing;
+    if (item.id === 'apple_health') return healthSyncing && healthSource === 'apple_health';
+    if (item.id === 'google_health') return healthSyncing && healthSource === 'google_health';
     if (item.id === 'strava') return stravaSyncing;
     return false;
   };
 
   const lastSyncFor = (item: IntegrationDef): number | null | undefined => {
-    if (item.id === 'apple_health' || item.id === 'google_health') return healthLastSync;
+    if (item.id === 'apple_health') return healthSource === 'apple_health' ? healthLastSync : null;
+    if (item.id === 'google_health') return healthSource === 'google_health' ? healthLastSync : null;
     if (item.id === 'strava') return stravaLastSync ?? convexUser?.stravaExpiresAt;
     return null;
   };
 
   // ── Show only platform-relevant integrations ─────────────────
   const visible = (item: IntegrationDef) => {
-    return true;
+    if (!item.available) return false;
+    return item.platform === 'both' || item.platform === Platform.OS;
   };
 
   const connectedCount = [healthConnected, stravaConnected].filter(Boolean).length;

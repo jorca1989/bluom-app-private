@@ -32,7 +32,7 @@ import { api } from '@/convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useTranslation } from 'react-i18next';
-import { translateValue } from '@/utils/translateHelper';
+import { translateValue, translateFoodSuggestion } from '@/utils/translateHelper';
 
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
 
@@ -419,7 +419,7 @@ function MealCard({
 
       <View style={mcS.suggestions}>
         {meal.suggestions.map((s, i) => (
-          <Text key={i} style={mcS.suggestion}>· {s}</Text>
+          <Text key={i} style={mcS.suggestion}>· {translateFoodSuggestion(s, i18n.language)}</Text>
         ))}
       </View>
 

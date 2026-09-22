@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query, action } from "./_generated/server";
 import { api } from "./_generated/api";
+import { checkAdminScriptKey } from "./functions";
 
 // -------------------------------------------------------------------------
 //  Backend Logic for Custom Foods
@@ -10,6 +11,112 @@ import { api } from "./_generated/api";
  * Search for foods in the local database.
  * Uses the search index on the 'searchName' field.
  */
+/**
+ * Bulk create/update global catalog foods (the customFoods table) from a trusted script.
+ * Auth: shared ADMIN_SCRIPT_KEY, same pattern as the workout/article/exercise importers.
+ * Matches an existing food by exact (case-insensitive) English name; patches it if found,
+ * otherwise inserts a new one. Safe to re-run -- it will not create duplicates.
+ */
+export const bulkInsertFoodsViaScript = mutation({
+  args: {
+    scriptKey: v.string(),
+    foods: v.array(
+      v.object({
+        name: v.object({
+        en: v.string(),
+        pt: v.optional(v.string()),
+        es: v.optional(v.string()),
+        nl: v.optional(v.string()),
+        de: v.optional(v.string()),
+        fr: v.optional(v.string()),
+        bg: v.optional(v.string()),
+        da: v.optional(v.string()),
+        el: v.optional(v.string()),
+        lt: v.optional(v.string()),
+        lv: v.optional(v.string()),
+        no: v.optional(v.string()),
+        pl: v.optional(v.string()),
+        ro: v.optional(v.string()),
+        sv: v.optional(v.string()),
+        tr: v.optional(v.string()),
+      }),
+        macros: v.object({
+        calories: v.float64(),
+        fat: v.float64(),
+        protein: v.float64(),
+        carbs: v.float64(),
+        fiber: v.float64(),
+        sugar: v.optional(v.float64()),
+        saturatedFat: v.optional(v.float64()),
+        polyunsaturatedFat: v.optional(v.float64()),
+        monounsaturatedFat: v.optional(v.float64()),
+        transFat: v.optional(v.float64()),
+        iron: v.optional(v.float64()),
+        calcium: v.optional(v.float64()),
+        potassium: v.optional(v.float64()),
+        vitaminA: v.optional(v.float64()),
+        vitaminC: v.optional(v.float64()),
+        addedSugar: v.optional(v.float64()),
+        sodium: v.optional(v.float64()),
+        magnesium: v.optional(v.float64()),
+        zinc: v.optional(v.float64()),
+      }),
+        isVerified: v.optional(v.boolean()),
+        barcode: v.optional(v.string()),
+        brand: v.optional(v.string()),
+        servingSize: v.optional(v.string()),
+        thumbnail: v.optional(v.string()),
+        countryCode: v.optional(v.string()),
+        mealType: v.optional(v.array(v.string())),
+        dietType: v.optional(v.array(v.string())),
+        nutrientType: v.optional(v.array(v.string())),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    checkAdminScriptKey(args.scriptKey);
+    let created = 0;
+    let updated = 0;
+    const ids = [];
+
+    for (const food of args.foods) {
+      const searchName = food.name.en.trim().toLowerCase();
+      const candidates = await ctx.db
+        .query("customFoods")
+        .withSearchIndex("search_name", (q) => q.search("searchName", searchName))
+        .take(5);
+      const existing = candidates.find((c) => c.searchName === searchName);
+
+      const payload = {
+        name: food.name,
+        macros: food.macros,
+        isVerified: food.isVerified ?? true,
+        barcode: food.barcode,
+        brand: food.brand,
+        servingSize: food.servingSize,
+        thumbnail: food.thumbnail,
+        searchName,
+        countryCode: food.countryCode,
+        mealType: food.mealType,
+        dietType: food.dietType,
+        nutrientType: food.nutrientType,
+      };
+
+      if (existing) {
+        await ctx.db.patch(existing._id, payload);
+        updated++;
+        ids.push(existing._id);
+      } else {
+        const id = await ctx.db.insert("customFoods", payload);
+        created++;
+        ids.push(id);
+      }
+    }
+
+    return { created, updated, ids };
+  },
+});
+
 export const searchLocalFoods = query({
     args: {
         query: v.string(),

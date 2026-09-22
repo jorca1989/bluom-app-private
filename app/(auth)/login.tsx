@@ -43,14 +43,16 @@ export default function LoginScreen() {
   const [mfaPending, setMfaPending] = useState(false);
   const [mfaCode, setMfaCode] = useState('');
   const submitLockRef = useRef(false);
+  const signInAttemptRef = useRef<any>(null);
 
-  const prepareEmailCodeMfa = async () => {
+  const prepareEmailCodeMfa = async (attemptOverride?: any) => {
     try {
       setLoading(true);
       setError('');
-      const factor = (signIn as any)?.supportedFirstFactors?.find?.((f: any) => f?.strategy === 'email_code');
+      const attempt = attemptOverride ?? signInAttemptRef.current ?? signIn;
+      const factor = attempt?.supportedFirstFactors?.find?.((f: any) => f?.strategy === 'email_code');
       if (factor && 'emailAddressId' in factor && (factor as any).emailAddressId) {
-        await (signIn as any).prepareFirstFactor({
+        await attempt.prepareFirstFactor({
           strategy: 'email_code',
           emailAddressId: (factor as any).emailAddressId,
         });
@@ -82,9 +84,11 @@ export default function LoginScreen() {
     try {
       setLoading(true);
       setError('');
-      const result = await (signIn as any).attemptFirstFactor({ strategy: 'email_code', code: mfaCode });
+      const attempt = signInAttemptRef.current ?? signIn;
+      const result = await attempt.attemptFirstFactor({ strategy: 'email_code', code: mfaCode.trim() });
       if (result?.status === 'complete') {
         await setActive({ session: result.createdSessionId });
+        signInAttemptRef.current = null;
         if (Platform.OS === 'web') {
           router.replace(isAdminEmail(email) ? '/admin' : '/(tabs)');
         }
@@ -114,13 +118,9 @@ export default function LoginScreen() {
         return;
       }
 
-      if ((signIn as any)?.status === 'needs_second_factor') {
-        try { await prepareEmailCodeMfa(); } catch (e) { console.error(e); }
-        return;
-      }
-
       try {
         const result = await signIn.create({ identifier: email, password });
+        signInAttemptRef.current = result;
 
         if (result.status === 'complete') {
           await setActive({ session: result.createdSessionId });
@@ -129,7 +129,7 @@ export default function LoginScreen() {
           }
         } else {
           if (result.status === 'needs_second_factor') {
-            try { await prepareEmailCodeMfa(); } catch (e) { console.error(e); }
+            try { await prepareEmailCodeMfa(result); } catch (e) { console.error(e); }
           } else {
             setError(`Login incomplete (${result.status}). Please try again.`);
           }
@@ -168,14 +168,19 @@ export default function LoginScreen() {
                   {t('auth.login.mfaTitle', 'Enter the code from your email')}
                 </Text>
                 <TextInput
-                  style={styles.input}
+                  style={styles.mfaCodeInput}
                   placeholder={t('auth.login.mfaPlaceholder', 'Email code')}
-                  placeholderTextColor={themeColors.textMuted}
+                  placeholderTextColor="#64748b"
                   value={mfaCode}
                   onChangeText={setMfaCode}
                   keyboardType="number-pad"
                   autoCapitalize="none"
+                  autoFocus
+                  autoComplete="one-time-code"
+                  textContentType="oneTimeCode"
+                  maxLength={6}
                   editable={!loading}
+                  accessibilityLabel={t('auth.login.mfaPlaceholder', 'Email code')}
                 />
                 <TouchableOpacity
                   style={[styles.primaryButton, { marginTop: 12 }, loading && styles.buttonDisabled]}
@@ -192,7 +197,7 @@ export default function LoginScreen() {
                     )}
                   </LinearGradient>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => { setMfaPending(false); setMfaCode(''); }} disabled={loading} style={{ marginTop: 12, alignItems: 'center' }}>
+                <TouchableOpacity onPress={() => { signInAttemptRef.current = null; setMfaPending(false); setMfaCode(''); }} disabled={loading} style={{ marginTop: 12, alignItems: 'center' }}>
                   <Text style={{ color: themeColors.primary, fontWeight: '700' }}>{t('auth.login.back', 'Back')}</Text>
                 </TouchableOpacity>
               </View>
@@ -300,6 +305,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   inputIconWrapper: { marginRight: 12 },
   eyeIconWrapper: { marginLeft: 12, padding: 4 },
   input: { flex: 1, height: 54, fontSize: 16, color: c.text },
+  mfaCodeInput: { height: 64, width: '100%', borderWidth: 2, borderColor: '#2563eb', borderRadius: 12, backgroundColor: c.surfaceMuted, color: c.text, fontSize: 28, fontWeight: '800', textAlign: 'center', letterSpacing: 8, paddingHorizontal: 12, shadowColor: '#2563eb', shadowOpacity: 0.16, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
   primaryButton: { marginTop: 8, marginBottom: 18, borderRadius: 14, overflow: 'hidden', shadowColor: c.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.25, shadowRadius: 8, elevation: 4 },
   gradientButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16, gap: 8 },
   primaryButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },

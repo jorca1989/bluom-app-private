@@ -1,0 +1,55 @@
+[
+  {
+    "name": {
+      "en": "Cod, cooked, plain",
+      "pt": "Bacalhau cozido simples",
+      "es": "Bacalao cocido simple",
+      "fr": "Morue cuite nature",
+      "de": "Gekochter Kabeljau natur",
+      "nl": "Gekookte kabeljauw naturel",
+      "bg": "Сготвена треска без добавки",
+      "da": "Kogt torsk naturel",
+      "el": "Μαγειρεμένος μπακαλιάρος σκέτος",
+      "lt": "Virta menkė be priedų",
+      "lv": "Vārīta menca bez piedevām",
+      "no": "Kokt torsk naturell",
+      "pl": "Gotowany dorsz bez dodatków",
+      "ro": "Cod gătit simplu",
+      "sv": "Kokt torsk naturell",
+      "tr": "Sade pişmiş morina"
+    },
+    "macros": { "calories": 105, "protein": 23, "carbs": 0, "fat": 0.9, "fiber": 0 },
+    "isVerified": true,
+    "servingSize": "100g",
+    "thumbnail": "https://pub-e8204ad737dc4a5f93bd4f2b1f9f0a15.r2.dev/Bacalhau%20com%20natas.png",
+    "mealType": ["Lunch", "Dinner"],
+    "nutrientType": ["High Protein"]
+  },
+  {
+    "name": {
+      "en": "Green Papaya, raw",
+      "pt": "Mamão verde cru",
+      "es": "Papaya verde cruda",
+      "fr": "Papaye verte crue",
+      "de": "Rohe grüne Papaya",
+      "nl": "Rauwe groene papaja",
+      "bg": "Сурова зелена папая",
+      "da": "Rå grøn papaya",
+      "el": "Ωμή πράσινη παπάγια",
+      "lt": "Žalia žalia papaja",
+      "lv": "Neapstrādāta zaļā papaija",
+      "no": "Rå grønn papaya",
+      "pl": "Surowa zielona papaja",
+      "ro": "Papaya verde crudă",
+      "sv": "Rå grön papaya",
+      "tr": "Çiğ yeşil papaya"
+    },
+    "macros": { "calories": 43, "protein": 0.5, "carbs": 10.8, "fat": 0.3, "fiber": 1.7 },
+    "isVerified": true,
+    "servingSize": "100g",
+    "thumbnail": "https://pub-e8204ad737dc4a5f93bd4f2b1f9f0a15.r2.dev/Thai%20Green%20Papaya%20Salad.png",
+    "countryCode": "TH",
+    "mealType": ["Lunch", "Dinner"],
+    "nutrientType": ["Fiber"]
+  }
+]

@@ -77,7 +77,7 @@ export default function MeditationsManager() {
     const { t } = useTranslation();
     const { user } = useUser();
 
-    const sessions = useQuery(api.meditation.getSessions, {});
+    const sessions = useQuery(api.meditation.getSessions, { includeDrafts: true });
     const createSession = useMutation(api.admin.createMeditationSession);
     const updateSession = useMutation(api.admin.updateMeditationSession);
     const deleteSession = useMutation(api.admin.deleteMeditationSession);
@@ -109,6 +109,7 @@ export default function MeditationsManager() {
     const [filterCat, setFilterCat] = useState('All');
     const [filterType, setFilterType] = useState('All'); // meditation | soundscape | All
     const [filterTier, setFilterTier] = useState('All'); // All | Pro | Free
+    const [filterStatus, setFilterStatus] = useState('All'); // All | Published | Draft
     const [search, setSearch] = useState('');
     const [showSearch, setShowSearch] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
@@ -122,9 +123,10 @@ export default function MeditationsManager() {
             const catOk = filterCat === 'All' || s.category === filterCat || (s.tags ?? []).includes(filterCat);
             const typeOk = filterType === 'All' || s.type === filterType;
             const tierOk = filterTier === 'All' || (filterTier === 'Pro' ? s.isPremium : !s.isPremium);
-            return matchSearch && catOk && typeOk && tierOk;
+            const statusOk = filterStatus === 'All' || (filterStatus === 'Draft' ? s.status === 'draft' : s.status !== 'draft');
+            return matchSearch && catOk && typeOk && tierOk && statusOk;
         });
-    }, [allItems, search, filterCat, filterType, filterTier]);
+    }, [allItems, search, filterCat, filterType, filterTier, filterStatus]);
 
     const resetForm = () => { 
         setForm(emptyForm); 
@@ -371,7 +373,7 @@ export default function MeditationsManager() {
                         <Search size={20} color={showSearch ? '#2563eb' : '#64748b'} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => setShowFilters(!showFilters)} style={{ padding: 6 }}>
-                        <Filter size={20} color={(filterCat !== 'All' || filterType !== 'All' || filterTier !== 'All' || showFilters) ? '#2563eb' : '#64748b'} />
+                        <Filter size={20} color={(filterCat !== 'All' || filterType !== 'All' || filterTier !== 'All' || filterStatus !== 'All' || showFilters) ? '#2563eb' : '#64748b'} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.addButton} onPress={() => { resetForm(); setIsModalOpen(true); }}>
                         <Plus color="#ffffff" size={20} />
@@ -402,6 +404,16 @@ export default function MeditationsManager() {
             {/* ── Filters Drawer ── */}
             {showFilters && (
                 <View style={styles.filterBlock}>
+                <View style={styles.filterRow}>
+                    <Text style={styles.filterLabel}>{t('admin.status', 'STATUS')}</Text>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillRow}>
+                        {['All', 'Published', 'Draft'].map(st => (
+                            <TouchableOpacity key={st} style={[styles.fPill, filterStatus === st && styles.fPillActive]} onPress={() => setFilterStatus(st)}>
+                                <Text style={[styles.fPillTxt, filterStatus === st && styles.fPillTxtActive]}>{st === 'All' ? t('admin.all', 'All') : st === 'Draft' ? t('admin.draft', 'Draft') : t('admin.published', 'Published')}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+                </View>
                 <View style={styles.filterRow}>
                     <Text style={styles.filterLabel}>{t('admin.type', 'TYPE')}</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillRow}>

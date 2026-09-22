@@ -2,6 +2,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import AIRoutineModal from '@/components/AIRoutineModal';
 import Tooltip from '@/components/Tooltip';
 import CoachMark from '@/components/CoachMark';
+import TabCoachOverlay from '@/components/TabCoachOverlay';
+import { useCoachMark } from '@/hooks/useCoachMark';
+import { useReviewTrigger } from '@/hooks/useReviewTrigger';
 import {
   View,
   Text,
@@ -12,6 +15,7 @@ import {
   Modal,
   Dimensions,
   ActivityIndicator,
+  AppState,
   Alert,
   Platform,
   Linking,
@@ -32,12 +36,11 @@ import { api } from '@/convex/_generated/api';
 import { getBottomContentPadding } from '@/utils/layout';
 import { SoundEffect, triggerSound } from '@/utils/soundEffects';
 import { useCelebration } from '@/context/CelebrationContext';
-// Health integrations disabled for Build 18 submission.
+import { useHealthSync } from '@/hooks/useHealthSync';
 import { useResponsive } from '@/utils/responsive';
 import ProgramWorkoutWidget from '@/components/move/ProgramWorkoutWidget';
 import MoveQuickActions from '@/components/move/MoveQuickActions';
 import MoveInsights from '@/components/move/MoveInsights';
-import OutdoorActivityBanner from '@/components/move/OutdoorActivityBanner';
 import { useActiveTools } from '@/hooks/useActiveTools';
 import SleeperView from '@/components/SleeperView';
 import OutdoorActivityModal from '@/components/move/modals/OutdoorActivityModal';
@@ -46,9 +49,10 @@ import WorkoutDetailModal from '@/components/move/modals/WorkoutDetailModal';
 import ExerciseSearchModal, { ExerciseLibraryItem as ESearchItem } from '@/components/move/modals/ExerciseSearchModal';
 import SingleExerciseLogModal from '@/components/move/modals/SingleExerciseLogModal';
 import ExerciseDetailModal from '@/components/move/modals/ExerciseDetailModal';
+import MachineIdentifierModal from '@/components/move/modals/MachineIdentifierModal';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { FREE_4_WEEK_PLAN, getWeekRoutineDays } from '@/utils/fourWeekPlanData';
-import { buildPlanFromDBWorkouts } from '@/utils/buildPlanFromDB';
+import { buildPlanFromDBWorkouts, resolveExerciseMedia } from '@/utils/buildPlanFromDB';
 import { useTheme } from '@/context/ThemeContext';
 import type { ThemeColors } from '@/context/ThemeContext';
 
@@ -57,18 +61,17 @@ import type { ThemeColors } from '@/context/ThemeContext';
 // ─────────────────────────────────────────────────────────────
 // WIDGET TOGGLE SYSTEM
 // ─────────────────────────────────────────────────────────────
-type MoveWidgetId = 'kpis' | 'swipeable' | 'quickActions' | 'todayActivities' | 'moveInsights' | 'proBanner' | 'outdoorBanner';
+type MoveWidgetId = 'kpis' | 'swipeable' | 'quickActions' | 'todayActivities' | 'moveInsights' | 'proBanner';
 const MOVE_WIDGETS: { id: MoveWidgetId; emoji: string; labelKey: string; defaultLabel: string }[] = [
   { id: 'kpis',            emoji: '📊', labelKey: 'move.widgets.kpis', defaultLabel: 'Activity KPIs' },
   { id: 'swipeable',       emoji: '🗓️', labelKey: 'move.widgets.swipeable', defaultLabel: 'Workout Plan' },
   { id: 'quickActions',    emoji: '⚡', labelKey: 'move.widgets.quickActions', defaultLabel: 'Quick Actions' },
   { id: 'todayActivities', emoji: '🏃', labelKey: 'move.widgets.todayActivities', defaultLabel: "Today's Activities" },
   { id: 'moveInsights',    emoji: '📈', labelKey: 'move.widgets.moveInsights', defaultLabel: 'Move Insights' },
-  { id: 'outdoorBanner',   emoji: '🗺️', labelKey: 'move.widgets.outdoorBanner', defaultLabel: 'Record Outdoor Activity' },
   { id: 'proBanner',       emoji: '🔒', labelKey: 'move.widgets.blueprintCompleteBanner', defaultLabel: 'Blueprint complete upgrade banner' },
 ];
 const ALL_MOVE_WIDGET_IDS = MOVE_WIDGETS.map(w => w.id);
-const DEFAULT_MOVE_WIDGET_IDS: MoveWidgetId[] = ['kpis', 'swipeable', 'quickActions', 'todayActivities', 'proBanner'];
+const DEFAULT_MOVE_WIDGET_IDS: MoveWidgetId[] = ['kpis', 'swipeable', 'quickActions', 'todayActivities', 'moveInsights', 'proBanner'];
 const MOVE_WIDGETS_KEY = 'bluom_move_widgets_v1';
 
 const safeNumber = (val: string | number, fallback = 0) => {
@@ -119,6 +122,35 @@ export default function MoveScreen() {
   const [visibleMoveWidgets, setVisibleMoveWidgets] = useState<Set<MoveWidgetId>>(new Set(DEFAULT_MOVE_WIDGET_IDS));
   const [showMoveWidgetConfig, setShowMoveWidgetConfig] = useState(false);
 
+  const { triggerReviewPrompt } = useReviewTrigger();
+  const moveCoach = useCoachMark('move');
+  const moveCoachSteps = useMemo(() => [
+    {
+      emoji: '🗓️',
+      title: t('move.coach.planTitle', 'Your Workout Plan'),
+      body: t('move.coach.planBody', 'Swipe through the daily workout routines. Tap any routine to view exercise demos, sets, and start your session.')
+    },
+    {
+      emoji: '⚡',
+      title: t('move.coach.quickLogTitle', 'Log & Quick Actions'),
+      body: t('move.coach.quickLogBody', 'Log single exercises, launch timed training, or track outdoor walking and running with real-time GPS.')
+    },
+    {
+      emoji: Platform.OS === 'ios' ? '🍎' : '👟',
+      title: Platform.OS === 'ios'
+        ? t('move.coach.healthTitle', 'Connect Apple Health')
+        : t('move.coach.healthTitleAndroid', 'Connect Health Data'),
+      body: Platform.OS === 'ios'
+        ? t('move.coach.healthBody', 'Sync steps, active burn, and heart rate to automatically power your daily activity KPIs.')
+        : t('move.coach.healthBodyAndroid', 'Sync steps, active burn, and workout metrics to automatically power your daily activity KPIs.')
+    },
+    {
+      emoji: '📈',
+      title: t('move.coach.consistencyTitle', 'Follow Your Fitness Plan'),
+      body: t('move.coach.consistencyBody', 'Stay consistent with your weekly workouts just like your nutrition goals to maximize physical adaptation and vitality.')
+    }
+  ], [t]);
+
   useEffect(() => {
     (async () => {
       try {
@@ -158,6 +190,28 @@ export default function MoveScreen() {
     api.users.getUserByClerkId,
     clerkUser?.id ? { clerkId: clerkUser.id } : 'skip'
   );
+  const { connected: healthConnected, sync: syncHealth, source: healthSource } = useHealthSync();
+  const lastMoveHealthSyncRef = useRef(0);
+
+  useEffect(() => {
+    if (!convexUser?._id || !healthConnected) return;
+    const refreshHealthMetrics = () => {
+      const now = Date.now();
+      // Pull on tab entry and after foregrounding, but avoid repeated writes during renders.
+      if (now - lastMoveHealthSyncRef.current < 3 * 60 * 1000) return;
+      lastMoveHealthSyncRef.current = now;
+      syncHealth(convexUser._id).catch(() => undefined);
+    };
+    refreshHealthMetrics();
+    const appStateSubscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') refreshHealthMetrics();
+    });
+    const interval = setInterval(refreshHealthMetrics, 3 * 60 * 1000);
+    return () => {
+      appStateSubscription.remove();
+      clearInterval(interval);
+    };
+  }, [convexUser?._id, healthConnected, syncHealth]);
 
   const isPro = convexUser?.subscriptionStatus === 'active' || clerkUser?.emailAddresses?.some(e => e.emailAddress === 'ggovsaas@gmail.com');
 
@@ -216,7 +270,7 @@ export default function MoveScreen() {
       icon: 'locate',
       color: '#2563eb',
       bgColor: '#dbeafe',
-      check: () => (todayTotals.steps ?? 0) >= 1000
+      check: () => (todayTotals.displayedSteps ?? 0) >= 1000
     },
     {
       id: 'calorie_burner',
@@ -320,7 +374,7 @@ export default function MoveScreen() {
       case 'first_workout':
         return Math.min(100, ((exerciseEntries?.length ?? 0) / 1) * 100);
       case 'step_goal':
-        return Math.min(100, ((todayTotals.steps ?? 0) / 1000) * 100);
+        return Math.min(100, ((todayTotals.displayedSteps ?? 0) / 1000) * 100);
       case 'calorie_burner':
         return Math.min(100, ((todayTotals.calories ?? 0) / 500) * 100);
       case 'workout_warrior':
@@ -421,6 +475,7 @@ export default function MoveScreen() {
   const [showWorkoutModal, setShowWorkoutModal] = useState(false);
   const [showAllActivities, setShowAllActivities] = useState(false);
   const [showOutdoor, setShowOutdoor] = useState(false);
+  const [showMachineIdentifier, setShowMachineIdentifier] = useState(false);
   const [workoutDetailTab, setWorkoutDetailTab] = useState(0);
   const dummyExercises: ActiveExercise[] = [{ id: "1", name: "Barbell Bench Press", sets: [{ id: "1a", weight: "", reps: "", completed: false }] }];
 
@@ -438,17 +493,36 @@ export default function MoveScreen() {
     const allEx: any[] = [];
     const seen = new Set<string>();
     for (const w of dbWorkouts) {
+      const userSex = convexUser?.biologicalSex;
+      const resolvedThumb = (userSex === 'female' ? w.thumbnailFemale : w.thumbnailMale) || w.thumbnail || '';
+      const resolvedVideo = (userSex === 'female' ? w.videoUrlFemale : w.videoUrlMale) || w.videoUrl || '';
+
+      if (w.title && !seen.has(w.title.toLowerCase())) {
+        seen.add(w.title.toLowerCase());
+        allEx.push({
+          _id: `${w._id}-main`,
+          name: w.title,
+          category: w.category || 'Various',
+          muscleGroups: w.muscleGroupTags || [],
+          thumbnailUrl: resolvedThumb || resolvedVideo,
+          videoUrl: resolvedVideo,
+          type: w.category || 'strength',
+          equipment: w.equipment?.length > 0 ? w.equipment[0] : 'Various',
+          instructions: w.exercises?.[0]?.instructions || [],
+        });
+      }
+
       if (w.exercises) {
         for (const ex of w.exercises) {
-          if (!seen.has(ex.name)) {
-            seen.add(ex.name);
+          if (ex.name && !seen.has(ex.name.toLowerCase())) {
+            seen.add(ex.name.toLowerCase());
             allEx.push({
               _id: `${w._id}-${ex.name}`,
               name: ex.name,
               category: ex.primaryMuscles?.[0] || w.category || 'Various',
               muscleGroups: ex.primaryMuscles && ex.primaryMuscles.length > 0 ? ex.primaryMuscles : w.muscleGroupTags || [],
-              thumbnailUrl: (convexUser?.biologicalSex === 'male' ? w.thumbnailMale : convexUser?.biologicalSex === 'female' ? w.thumbnailFemale : null) || w.thumbnail,
-              videoUrl: (convexUser?.biologicalSex === 'male' ? w.videoUrlMale : convexUser?.biologicalSex === 'female' ? w.videoUrlFemale : null) || w.videoUrl,
+              thumbnailUrl: resolvedThumb || resolvedVideo,
+              videoUrl: resolvedVideo,
               type: ex.exerciseType || 'strength',
               equipment: w.equipment?.length > 0 ? w.equipment[0] : 'Various',
               instructions: ex.instructions || [],
@@ -470,45 +544,31 @@ export default function MoveScreen() {
   }, [convexUser?.lifeStage, convexUser?.deliveryDate, convexUser?.postpartumStartDate]);
   const isEarlyPostpartum = convexUser?.lifeStage === 'postpartum' && postpartumWeeks <= 6;
 
-  const FALLBACK_MUSCLE_THUMBS: Record<string, string> = {
-    chest: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=400',
-    back: 'https://images.unsplash.com/photo-1603287681836-b174ce5074c2?auto=format&fit=crop&q=80&w=400',
-    legs: 'https://images.unsplash.com/photo-1574681533083-bf41eb47b2c0?auto=format&fit=crop&q=80&w=400',
-    glutes: 'https://images.unsplash.com/photo-1574681533083-bf41eb47b2c0?auto=format&fit=crop&q=80&w=400',
-    core: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=400',
-    shoulders: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=400',
-    arms: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=400',
-    cardio: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&q=80&w=400',
-    default: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=400',
-  };
-
-  const getFallbackThumb = (name?: string, muscle?: string): string => {
-    if (videoWorkoutExercises && videoWorkoutExercises.length > 0 && name) {
-      const match = videoWorkoutExercises.find(
-        (v: any) => v.name && v.name.toLowerCase().includes(name.toLowerCase()) && (v.thumbnailUrl || v.videoUrl)
-      );
-      if (match?.thumbnailUrl) return match.thumbnailUrl;
-      if (match?.videoUrl) return match.videoUrl;
-    }
-    const m = (muscle || '').toLowerCase();
-    for (const [k, url] of Object.entries(FALLBACK_MUSCLE_THUMBS)) {
-      if (m.includes(k)) return url;
-    }
-    return FALLBACK_MUSCLE_THUMBS.default;
+  const getExerciseMedia = (name?: string, muscle?: string) => {
+    return resolveExerciseMedia(name, muscle, dbWorkouts, convexUser?.biologicalSex || 'male');
   };
 
   // ── Workout display routine: Prioritize AI Plan > DB workouts > static ──
   const initialWorkouts = useMemo(() => {
+    const userSex = convexUser?.biologicalSex || 'male';
+
     // 0. Postpartum Recovery Override
     if (isEarlyPostpartum) {
+      const kegelMedia = resolveExerciseMedia('Kegel', 'Pelvic Floor', dbWorkouts, userSex);
+      const breathMedia = resolveExerciseMedia('Breathing', 'Core', dbWorkouts, userSex);
+      const tiltMedia = resolveExerciseMedia('Pelvic Tilt', 'Core', dbWorkouts, userSex);
+      const catCowMedia = resolveExerciseMedia('Cat-Cow', 'Back', dbWorkouts, userSex);
+      const birdDogMedia = resolveExerciseMedia('Bird-Dog', 'Core', dbWorkouts, userSex);
+      const bridgeMedia = resolveExerciseMedia('Glute Bridge', 'Glutes', dbWorkouts, userSex);
+
       return [{
         dayNum: 1,
         dayTitle: t('move.postpartumRecovery', 'Postpartum Recovery'),
         muscleGroups: t('move.pelvicFloor', 'Pelvic Floor & Core'),
         exercises: [
-          { id: 'pp-1', name: t('move.kegels', 'Kegel Holds'), primaryMuscle: 'Pelvic Floor', sets: 3, reps: '10 sec hold', equipment: 'None', thumbnailUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&q=80&w=400' },
-          { id: 'pp-2', name: t('move.diaphragmatic', 'Diaphragmatic Breathing'), primaryMuscle: 'Core', sets: 3, reps: '10', equipment: 'None', thumbnailUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=400' },
-          { id: 'pp-3', name: t('move.pelvicTilts', 'Pelvic Tilts'), primaryMuscle: 'Core', sets: 2, reps: '10', equipment: 'Mat', thumbnailUrl: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=400' },
+          { id: 'pp-1', name: t('move.kegels', 'Kegel Holds'), primaryMuscle: 'Pelvic Floor', sets: 3, reps: '10 sec hold', equipment: 'None', thumbnailUrl: kegelMedia.thumbnailUrl, videoUrl: kegelMedia.videoUrl },
+          { id: 'pp-2', name: t('move.diaphragmatic', 'Diaphragmatic Breathing'), primaryMuscle: 'Core', sets: 3, reps: '10', equipment: 'None', thumbnailUrl: breathMedia.thumbnailUrl, videoUrl: breathMedia.videoUrl },
+          { id: 'pp-3', name: t('move.pelvicTilts', 'Pelvic Tilts'), primaryMuscle: 'Core', sets: 2, reps: '10', equipment: 'Mat', thumbnailUrl: tiltMedia.thumbnailUrl, videoUrl: tiltMedia.videoUrl },
         ],
       },
       {
@@ -516,9 +576,9 @@ export default function MoveScreen() {
         dayTitle: t('move.gentleMobility', 'Gentle Mobility'),
         muscleGroups: t('move.fullBody', 'Full Body'),
         exercises: [
-          { id: 'pp-4', name: t('move.catCow', 'Cat-Cow Stretch'), primaryMuscle: 'Back', sets: 2, reps: '10', equipment: 'Mat', thumbnailUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=400' },
-          { id: 'pp-5', name: t('move.birdDogMod', 'Modified Bird-Dog'), primaryMuscle: 'Core', sets: 3, reps: '8 per side', equipment: 'Mat', thumbnailUrl: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=400' },
-          { id: 'pp-6', name: t('move.gluteBridge', 'Glute Bridges (No Weight)'), primaryMuscle: 'Glutes', sets: 3, reps: '12', equipment: 'Mat', thumbnailUrl: 'https://images.unsplash.com/photo-1574681533083-bf41eb47b2c0?auto=format&fit=crop&q=80&w=400' },
+          { id: 'pp-4', name: t('move.catCow', 'Cat-Cow Stretch'), primaryMuscle: 'Back', sets: 2, reps: '10', equipment: 'Mat', thumbnailUrl: catCowMedia.thumbnailUrl, videoUrl: catCowMedia.videoUrl },
+          { id: 'pp-5', name: t('move.birdDogMod', 'Modified Bird-Dog'), primaryMuscle: 'Core', sets: 3, reps: '8 per side', equipment: 'Mat', thumbnailUrl: birdDogMedia.thumbnailUrl, videoUrl: birdDogMedia.videoUrl },
+          { id: 'pp-6', name: t('move.gluteBridge', 'Glute Bridges (No Weight)'), primaryMuscle: 'Glutes', sets: 3, reps: '12', equipment: 'Mat', thumbnailUrl: bridgeMedia.thumbnailUrl, videoUrl: bridgeMedia.videoUrl },
         ],
       }];
     }
@@ -534,12 +594,14 @@ export default function MoveScreen() {
           : (w.muscleGroups || w.focus || 'Full Body')),
         exercises: (w.exercises || []).map((ex: any, j: number) => {
           const muscle = Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || 'Various');
-          const thumb = ex.thumbnailUrl || getFallbackThumb(ex.name, muscle);
+          const media = resolveExerciseMedia(ex.name, muscle, dbWorkouts, userSex);
+          const thumb = ex.thumbnailUrl || media.thumbnailUrl || media.videoUrl;
+          const video = ex.videoUrl || media.videoUrl;
           return {
             id: `ai-d${idx + 1}-e${j}`,
             name: t(`db.${(ex.name || '').replace(/\s+/g, '')}`, ex.name || 'Exercise'),
             thumbnailUrl: thumb,
-            videoUrl: ex.videoUrl || '',
+            videoUrl: video,
             primaryMuscle: t(`db.${(muscle).replace(/\s+/g, '')}`, muscle),
             equipment: t(`db.${(ex.equipment || '').replace(/\s+/g, '')}`, ex.equipment || 'Various'),
             sets: typeof ex.sets === 'number' ? ex.sets : (parseInt(String(ex.sets)) || 3),
@@ -551,10 +613,20 @@ export default function MoveScreen() {
     // 2. Try DB workouts (api.videoWorkouts.list) — undefined means still loading
     if (dbWorkouts !== undefined && dbWorkouts.length > 0) {
       const dbDaysPerWeek = Number(convexUser?.weeklyWorkoutTime) || 4;
-      return buildPlanFromDBWorkouts(dbWorkouts, currentWeekIndex, dbDaysPerWeek, convexUser?.biologicalSex || 'male', t);
+      return buildPlanFromDBWorkouts(dbWorkouts, currentWeekIndex, dbDaysPerWeek, userSex, t);
     }
-    // 3. Fall back to the static free template
-    return getWeekRoutineDays(currentWeekIndex);
+    // 3. Fall back to the static free template with DB media resolution
+    return getWeekRoutineDays(currentWeekIndex).map(day => ({
+      ...day,
+      exercises: day.exercises.map(ex => {
+        const media = resolveExerciseMedia(ex.name, ex.primaryMuscle, dbWorkouts, userSex);
+        return {
+          ...ex,
+          thumbnailUrl: media.thumbnailUrl || ex.thumbnailUrl,
+          videoUrl: media.videoUrl || '',
+        };
+      })
+    }));
   }, [isEarlyPostpartum, currentWeekIndex, activePlans?.fitnessPlan, dbWorkouts, convexUser, t]);
 
 
@@ -615,21 +687,23 @@ export default function MoveScreen() {
       },
       { workouts: 0, minutes: 0, calories: 0 }
     );
-    const steps = (stepsEntries ?? []).reduce((acc: number, e: any) => acc + e.steps, 0);
+    const manualSteps = (stepsEntries ?? []).reduce((acc: number, e: any) => acc + e.steps, 0);
     const stepsCalories = (stepsEntries ?? []).reduce((acc: number, e: any) => acc + e.caloriesBurned, 0);
     const syncedSteps = syncedMetrics?.steps ?? 0;
     const syncedCalories = syncedMetrics?.calories ?? 0;
+    const resolvedSyncedCalories = syncedCalories > 0 ? syncedCalories : Math.round(syncedSteps * 0.04);
     const manualCalories = Math.round(total.calories + stepsCalories);
     // Calories KPI should represent "total burned today" without double-counting.
     // If Health provides ActiveEnergyBurned totals, treat it as authoritative for the day.
-    const burnedToday = Math.round(Math.max(manualCalories, syncedCalories));
+    const burnedToday = Math.round(Math.max(manualCalories, resolvedSyncedCalories));
     return {
       workouts: total.workouts,
       minutes: Math.round(total.minutes),
       calories: burnedToday,
-      steps: Math.round(steps),
+      steps: Math.round(manualSteps),
+      displayedSteps: Math.round(syncedSteps > 0 ? syncedSteps : manualSteps),
       syncedSteps,
-      syncedCalories,
+      syncedCalories: resolvedSyncedCalories,
     };
   }, [exerciseEntries, stepsEntries, syncedMetrics]);
 
@@ -659,25 +733,41 @@ export default function MoveScreen() {
 
     const syncedSteps = syncedMetrics?.steps ?? 0;
     const syncedCalories = syncedMetrics?.calories ?? 0;
-    const hasSynced = syncedSteps > 0 || syncedCalories > 0;
+    const syncedDistanceKm = Number(syncedMetrics?.distanceKm ?? 0);
+    const resolvedSyncedCalories = syncedCalories > 0 ? syncedCalories : Math.round(syncedSteps * 0.04);
+    const syncedMetricSource = syncedMetrics?.sources?.steps
+      ?? syncedMetrics?.sources?.distanceKm
+      ?? syncedMetrics?.sources?.calories;
+    const hasSynced = syncedSteps > 0 || resolvedSyncedCalories > 0 || syncedDistanceKm > 0;
+    const syncedSource = syncedMetricSource === 'apple_health'
+      ? t('move.appleHealth', 'Apple Health')
+      : syncedMetricSource === 'google_health'
+        ? t('move.googleHealth', 'Health Connect')
+        : t('move.health', 'Health');
     const syncedActivity = hasSynced
       ? [
         {
           id: 'health-sync',
-          name: `${Math.round(syncedSteps).toLocaleString()} Steps (Health)`,
+          name: syncedSteps > 0
+            ? `${Math.round(syncedSteps).toLocaleString()} ${t('move.steps', 'Steps')} (${syncedSource})`
+            : `${Math.round(syncedDistanceKm * 100) / 100} km (${syncedSource})`,
           duration: 0,
-          calories: Math.round(syncedCalories),
-          timestamp: Date.now(),
+          calories: resolvedSyncedCalories,
+          distanceKm: syncedDistanceKm,
+          timestamp: syncedMetrics?.timestamps?.steps
+            ?? syncedMetrics?.timestamps?.distanceKm
+            ?? syncedMetrics?.timestamps?.calories
+            ?? Date.now(),
           activityType: 'steps' as const,
           synced: true as const,
-          origin: (Platform.OS === 'ios' ? 'apple' : 'google') as 'apple' | 'google',
+          origin: (syncedMetricSource === 'apple_health' ? 'apple' : 'google') as 'apple' | 'google',
           entry: null,
         },
       ]
       : [];
 
     return [...ex, ...syncedActivity, ...st].sort((a, b) => b.timestamp - a.timestamp);
-  }, [exerciseEntries, stepsEntries, syncedMetrics]);
+  }, [exerciseEntries, stepsEntries, syncedMetrics, t]);
 
   const weekDays = useMemo(() => {
     const now = today;
@@ -949,7 +1039,7 @@ export default function MoveScreen() {
           styles.scrollContent,
           {
             paddingTop: 12,
-            paddingBottom: Math.max(insets.bottom, 24) + 12,
+            paddingBottom: getBottomContentPadding(insets.bottom, 0),
             ...(isTablet ? { alignItems: 'center' as const } : {}),
           },
         ]}
@@ -1013,15 +1103,15 @@ export default function MoveScreen() {
                 <Text style={[styles.kpiLbl, { color: '#6d28d9' }]} numberOfLines={1}>{t('move.steps', 'Steps')}</Text>
               </View>
               <Text style={styles.kpiVal} numberOfLines={1} adjustsFontSizeToFit>
-                {todayTotals.syncedSteps > todayTotals.steps ? todayTotals.syncedSteps.toLocaleString() : todayTotals.steps.toLocaleString()}
+                {todayTotals.displayedSteps.toLocaleString()}
               </Text>
               <View style={styles.kpiBar}>
-                <View style={[styles.kpiFill, { width: `${Math.min(((todayTotals.syncedSteps > todayTotals.steps ? todayTotals.syncedSteps : todayTotals.steps) / 10000) * 100, 100)}%` as any, backgroundColor: '#8b5cf6' }]} />
+                <View style={[styles.kpiFill, { width: `${Math.min((todayTotals.displayedSteps / 10000) * 100, 100)}%` as any, backgroundColor: '#8b5cf6' }]} />
               </View>
               <Text style={styles.kpiSub} numberOfLines={1}>
-                {todayTotals.syncedSteps > 0 && todayTotals.syncedSteps > todayTotals.steps ? t('move.syncedFromHealth', 'Synced from Health') : t('common.today', 'Today')}
+                {todayTotals.syncedSteps > 0 ? (healthSource === 'apple_health' ? t('move.syncedFromAppleHealth', 'From Apple Health') : t('move.syncedFromHealth', 'Synced from Health')) : t('common.today', 'Today')}
               </Text>
-              {todayTotals.syncedSteps > 0 && todayTotals.syncedSteps > todayTotals.steps && (
+              {todayTotals.syncedSteps > 0 && (
                 <View style={{ position: 'absolute', top: 12, right: 12 }}>
                   <Ionicons name="link" size={14} color="#8b5cf6" />
                 </View>
@@ -1084,10 +1174,9 @@ export default function MoveScreen() {
             onViewPlan={() => {
               router.push('/four-week-plan');
             }}
+            onIdentifyMachine={() => setShowMachineIdentifier(true)}
+            onOutdoorActivity={() => setShowOutdoor(true)}
           />}
-
-          {/* Outdoor Activity - Re-enabled for testing GPS tracking */}
-          {isMW('outdoorBanner') && <OutdoorActivityBanner onStart={() => setShowOutdoor(true)} />}
 
           {/* Today's Activities */}
           {isMW('todayActivities') && <View style={styles.card}>
@@ -1172,6 +1261,9 @@ export default function MoveScreen() {
                             ? `${Math.round(activity.duration)} ${t('common.min', 'min')} • `
                             : ''}
                           {Math.round(activity.calories)} {t('common.cal', 'cal')}
+                          {(activity as any).distanceKm > 0
+                            ? ` • ${Math.round((activity as any).distanceKm * 100) / 100} km`
+                            : ''}
                           {activity.activityType === 'exercise' && activity.entry.sets && activity.entry.reps
                             ? ` • ${Math.round(activity.entry.sets)}x${Math.round(activity.entry.reps)}`
                             : ''}
@@ -1275,6 +1367,8 @@ export default function MoveScreen() {
             if (!isPro) return handleProFeature(t('move.removeExercise', 'Remove Exercise'), t('move.proRemoveExerciseDesc', 'Upgrade to Pro to remove exercises mid-workout.'));
             setActiveWorkoutExercises((prev) => prev.filter((_, i) => i !== exIdx));
           }}
+          userId={convexUser?._id}
+          sessionTitle={`Day ${selectedDayIndex + 1}: ${workouts[selectedDayIndex]?.dayTitle || 'Workout'}`}
         />
       )}
 
@@ -1484,6 +1578,16 @@ export default function MoveScreen() {
           onClose={() => setShowOutdoor(false)}
         />
       )}
+      <MachineIdentifierModal
+        visible={showMachineIdentifier}
+        onClose={() => setShowMachineIdentifier(false)}
+        onUseExercise={(name) => {
+          setShowMachineIdentifier(false);
+          setExerciseSearchTarget('log');
+          setSearchQuery(name);
+          setShowExerciseSearch(true);
+        }}
+      />
       <Modal
         visible={showWorkoutModal}
         animationType="slide"
@@ -1623,6 +1727,20 @@ export default function MoveScreen() {
         </SafeAreaView>
       </Modal>
 
+      <TabCoachOverlay
+        visible={moveCoach.isActive}
+        steps={moveCoachSteps}
+        stepIndex={moveCoach.stepIndex}
+        onNext={() => {
+          if (moveCoach.stepIndex >= moveCoachSteps.length - 1) {
+            moveCoach.dismiss();
+          } else {
+            moveCoach.advance();
+          }
+        }}
+        onSkip={moveCoach.dismiss}
+      />
+
     </SafeAreaView>
   );
 }
@@ -1704,13 +1822,13 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     marginHorizontal: 24,
-    marginBottom: 8,
+    marginBottom: 0,
   },
   summaryCard: {
     backgroundColor: c.surface,
     borderRadius: 18,
     padding: 14,
-    marginBottom: 16,
+    marginBottom: 8,
     minHeight: 100,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -1814,7 +1932,6 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     fontWeight: '600',
     color: c.text,
   },
-
   activitiesList: {
     gap: 12,
   },

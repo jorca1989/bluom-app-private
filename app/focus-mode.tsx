@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Animated, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -6,6 +6,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
+import { useUser } from '@clerk/clerk-expo';
+import { useMutation, useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { Id } from '@/convex/_generated/dataModel';
 
 import { useTheme, type ThemeColors } from '@/context/ThemeContext';
 
@@ -14,8 +18,21 @@ export default function FocusModeScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { isPro, promptUpgrade } = useAccessControl();
+  const { user: clerkUser } = useUser();
+  const convexUser = useQuery(api.users.getUserByClerkId, clerkUser?.id ? { clerkId: clerkUser.id } : 'skip');
+  const startFocusSession = useMutation(api.guidedSessions.startFocusSession);
+  const updateFocusSession = useMutation(api.guidedSessions.updateFocusSession);
+  const presets = [
+    { id: 'pomodoro', label: '25 / 5', focus: 25 * 60, break: 5 * 60 },
+    { id: 'deep-work', label: '50 / 10', focus: 50 * 60, break: 10 * 60 },
+    { id: 'sprint', label: '15 / 3', focus: 15 * 60, break: 3 * 60 },
+  ];
+  const [presetId, setPresetId] = useState('pomodoro');
+  const preset = presets.find(item => item.id === presetId) ?? presets[0];
   const [isActive, setIsActive] = useState(false);
-  const [seconds, setSeconds] = useState(1500); // 25 mins
+  const [seconds, setSeconds] = useState(preset.focus);
+  const [sessionId, setSessionId] = useState<Id<'focusSessions'> | null>(null);
+  const [pausedSeconds, setPausedSeconds] = useState(0);
   const fadeAnim = useRef(new Animated.Value(0.4)).current;
   const [showUpgrade, setShowUpgrade] = useState(false);
 
@@ -27,13 +44,16 @@ export default function FocusModeScreen() {
       }, 1000);
     } else if (seconds === 0) {
       setIsActive(false);
+      if (sessionId && convexUser?._id) {
+        updateFocusSession({ userId: convexUser._id, sessionId, completedCycles: 1, pausedSeconds, status: 'completed' }).catch(() => undefined);
+      }
       Alert.alert(
         t('focusMode.complete', 'Focus Complete!'),
         t('focusMode.completeMsg', 'Take a break, you earned it.')
       );
     }
     return () => clearInterval(interval);
-  }, [isActive, seconds]);
+  }, [convexUser?._id, isActive, pausedSeconds, seconds, sessionId, t, updateFocusSession]);
 
   // Calming pulse animation
   useEffect(() => {
@@ -55,14 +75,21 @@ export default function FocusModeScreen() {
     return `${m}:${rs < 10 ? '0' : ''}${rs}`;
   };
 
+  const endSession = async () => {
+    if (sessionId && convexUser?._id) {
+      await updateFocusSession({ userId: convexUser._id, sessionId, completedCycles: 0, pausedSeconds, status: 'ended' }).catch(() => undefined);
+    }
+    router.back();
+  };
+
   const handleBack = () => {
-    if (isActive) {
+    if (isActive || sessionId) {
       Alert.alert(
         t('focusMode.stayFocused', 'Stay Focused'),
         t('focusMode.endEarly', 'Are you sure you want to end your focus session early?'),
         [
           { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-          { text: t('focusMode.endSession', 'End Session'), style: 'destructive', onPress: () => router.back() },
+          { text: t('focusMode.endSession', 'End Session'), style: 'destructive', onPress: endSession },
         ]
       );
     } else {
@@ -70,11 +97,29 @@ export default function FocusModeScreen() {
     }
   };
 
-  const handleToggleSession = () => {
+  const handleToggleSession = async () => {
     if (!isPro) {
       promptUpgrade(t('focusMode.upgradeMsg', 'Upgrade to unlock deep focus sessions.'));
+    } else if (!isActive) {
+      if (!sessionId && convexUser?._id) {
+        try {
+          const id = await startFocusSession({ userId: convexUser._id, preset: preset.id, focusSeconds: preset.focus, breakSeconds: preset.break, plannedCycles: 1 });
+          setSessionId(id);
+        } catch {
+          Alert.alert('Could not start focus session', 'Please try again.');
+          return;
+        }
+      }
+      setIsActive(true);
+      if (sessionId && convexUser?._id) {
+        updateFocusSession({ userId: convexUser._id, sessionId, completedCycles: 0, pausedSeconds, status: 'active' }).catch(() => undefined);
+      }
     } else {
-      setIsActive(!isActive);
+      setIsActive(false);
+      setPausedSeconds(value => value + 1);
+      if (sessionId && convexUser?._id) {
+        updateFocusSession({ userId: convexUser._id, sessionId, completedCycles: 0, pausedSeconds: pausedSeconds + 1, status: 'paused' }).catch(() => undefined);
+      }
     }
   };
 
@@ -91,6 +136,15 @@ export default function FocusModeScreen() {
       </View>
 
       <View className="flex-1 items-center justify-center px-10">
+        {!isActive && !sessionId && (
+          <View style={{ flexDirection: 'row', gap: 8, marginBottom: 24 }}>
+            {presets.map(item => (
+              <TouchableOpacity key={item.id} onPress={() => { setPresetId(item.id); setSeconds(item.focus); }} style={{ paddingVertical: 9, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: presetId === item.id ? themeColors.primary : themeColors.border, backgroundColor: presetId === item.id ? themeColors.surfaceMuted : themeColors.surface }}>
+                <Text style={{ color: presetId === item.id ? themeColors.primary : themeColors.text, fontWeight: '800', fontSize: 12 }}>{item.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
         <Animated.View style={{ opacity: fadeAnim }} className="w-64 h-64 rounded-full border-2 border-blue-400/30 items-center justify-center">
           <View className="w-56 h-56 rounded-full bg-blue-500/10 items-center justify-center">
             <Text style={{ color: themeColors.text, fontSize: 60, fontWeight: '900', fontVariant: ['tabular-nums'] }}>
@@ -132,7 +186,7 @@ export default function FocusModeScreen() {
 
           {isActive && (
             <TouchableOpacity
-              onPress={handleBack}
+              onPress={endSession}
               activeOpacity={0.88}
               style={{
                 width: '100%',

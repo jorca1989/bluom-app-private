@@ -1,6 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { checkAdminPower } from "./functions";
+import { checkAdminPower, checkAdminScriptKey } from "./functions";
 
 /**
  * Dashboard Overview Stats
@@ -242,6 +242,90 @@ export const createPublicRecipe = mutation({
             updatedAt: now,
         });
         return id;
+    },
+});
+
+export const upsertPublicRecipeViaScript = mutation({
+    args: {
+        scriptKey: v.string(),
+        title: v.string(),
+        description: v.optional(v.string()),
+        titleLocalizations: localizationsValidator,
+        descriptionLocalizations: localizationsValidator,
+        imageUrl: v.optional(v.string()),
+        cookTimeMinutes: v.optional(v.float64()),
+        servings: v.float64(),
+        calories: v.float64(),
+        protein: v.float64(),
+        carbs: v.float64(),
+        fat: v.float64(),
+        tags: v.optional(v.array(v.string())),
+        category: v.optional(v.string()),
+        categories: v.optional(v.array(v.string())),
+        isPremium: v.optional(v.boolean()),
+        mealType: v.optional(v.array(v.string())),
+        dietType: v.optional(v.array(v.string())),
+        nutrientType: v.optional(v.array(v.string())),
+        cuisine: v.optional(v.string()),
+        ingredients: v.optional(v.array(v.string())),
+        instructions: v.optional(v.array(v.string())),
+        ingredientsLocalizations: listLocalizationsValidator,
+        instructionsLocalizations: listLocalizationsValidator,
+        shoppingListItems: v.optional(v.array(v.string())),
+        shoppingListLocalizations: listLocalizationsValidator,
+        status: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        checkAdminScriptKey(args.scriptKey);
+        const { scriptKey, ...data } = args;
+
+        const titleLower = data.title.trim().toLowerCase();
+        const existing = await ctx.db
+            .query("publicRecipes")
+            .withIndex("by_titleLower", q => q.eq("titleLower", titleLower))
+            .first();
+
+        const payload = {
+            title: data.title.trim(),
+            titleLower,
+            description: data.description?.trim(),
+            titleLocalizations: data.titleLocalizations,
+            descriptionLocalizations: data.descriptionLocalizations,
+            imageUrl: data.imageUrl,
+            cookTimeMinutes: data.cookTimeMinutes,
+            servings: data.servings,
+            calories: data.calories,
+            protein: data.protein,
+            carbs: data.carbs,
+            fat: data.fat,
+            tags: data.tags ?? [],
+            category: data.category,
+            categories: data.categories,
+            isPremium: data.isPremium,
+            mealType: data.mealType,
+            dietType: data.dietType,
+            nutrientType: data.nutrientType,
+            cuisine: data.cuisine,
+            ingredients: data.ingredients ?? [],
+            instructions: data.instructions ?? [],
+            ingredientsLocalizations: data.ingredientsLocalizations,
+            instructionsLocalizations: data.instructionsLocalizations,
+            shoppingListItems: data.shoppingListItems ?? [],
+            shoppingListLocalizations: data.shoppingListLocalizations,
+            status: data.status ?? "draft",
+            updatedAt: Date.now(),
+        };
+
+        if (existing) {
+            await ctx.db.patch(existing._id, payload);
+            return { action: "updated", id: existing._id };
+        } else {
+            const id = await ctx.db.insert("publicRecipes", {
+                ...payload,
+                createdAt: Date.now(),
+            });
+            return { action: "created", id };
+        }
     },
 });
 
@@ -524,6 +608,200 @@ export const deleteArticle = mutation({
         await checkAdminPower(ctx);
         await ctx.db.delete(args.articleId);
     }
+});
+
+// ─── Script Automation Mutations (Protected by ADMIN_SCRIPT_KEY) ─────────────
+
+export const upsertArticleViaScript = mutation({
+    args: {
+        scriptKey: v.string(),
+        title: v.string(),
+        slug: v.string(),
+        content: v.string(),
+        status: v.optional(v.union(v.literal("DRAFT"), v.literal("PENDING"), v.literal("PUBLISHED"))),
+        category: v.optional(v.string()),
+        featuredImage: v.optional(v.string()),
+        focusKeyphrase: v.optional(v.string()),
+        imageAlt: v.optional(v.string()),
+        metaDescription: v.optional(v.string()),
+        tags: v.optional(v.array(v.string())),
+        titlePt: v.optional(v.string()),
+        titleEs: v.optional(v.string()),
+        titleFr: v.optional(v.string()),
+        titleDe: v.optional(v.string()),
+        titleNl: v.optional(v.string()),
+        contentPt: v.optional(v.string()),
+        contentEs: v.optional(v.string()),
+        contentFr: v.optional(v.string()),
+        contentDe: v.optional(v.string()),
+        contentNl: v.optional(v.string()),
+        authorEmail: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        checkAdminScriptKey(args.scriptKey);
+        const { scriptKey, authorEmail, ...data } = args;
+
+        const cleanSlug = data.slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
+        const existing = await ctx.db
+            .query("blogArticles")
+            .withIndex("by_slug", q => q.eq("slug", cleanSlug))
+            .first();
+
+        const payload = {
+            title: data.title.trim(),
+            slug: cleanSlug,
+            content: data.content,
+            status: data.status ?? "PUBLISHED",
+            category: data.category ?? "Wellness",
+            featuredImage: data.featuredImage,
+            focusKeyphrase: data.focusKeyphrase,
+            imageAlt: data.imageAlt,
+            metaDescription: data.metaDescription,
+            tags: data.tags ?? [],
+            titlePt: data.titlePt,
+            titleEs: data.titleEs,
+            titleFr: data.titleFr,
+            titleDe: data.titleDe,
+            titleNl: data.titleNl,
+            contentPt: data.contentPt,
+            contentEs: data.contentEs,
+            contentFr: data.contentFr,
+            contentDe: data.contentDe,
+            contentNl: data.contentNl,
+            updatedAt: Date.now(),
+        };
+
+        if (existing) {
+            await ctx.db.patch(existing._id, payload);
+            return { action: "updated" as const, id: existing._id };
+        } else {
+            let author = null;
+            if (authorEmail) {
+                author = await ctx.db
+                    .query("users")
+                    .filter(q => q.eq(q.field("email"), authorEmail.toLowerCase().trim()))
+                    .first();
+            }
+            if (!author) {
+                author = await ctx.db
+                    .query("users")
+                    .filter(q => q.or(
+                        q.eq(q.field("role"), "admin"),
+                        q.eq(q.field("role"), "super_admin")
+                    ))
+                    .first();
+            }
+            if (!author) {
+                author = await ctx.db.query("users").first();
+            }
+
+            if (!author) {
+                throw new Error("Cannot create article: No users found in database to assign as author");
+            }
+
+            const id = await ctx.db.insert("blogArticles", {
+                ...payload,
+                authorId: author._id,
+                createdAt: Date.now(),
+            });
+            return { action: "created" as const, id };
+        }
+    },
+});
+
+export const createArticleViaScript = mutation({
+    args: {
+        scriptKey: v.string(),
+        title: v.string(),
+        slug: v.string(),
+        content: v.string(),
+        status: v.union(v.literal("DRAFT"), v.literal("PENDING"), v.literal("PUBLISHED")),
+        category: v.string(),
+        featuredImage: v.optional(v.string()),
+        focusKeyphrase: v.optional(v.string()),
+        imageAlt: v.optional(v.string()),
+        metaDescription: v.optional(v.string()),
+        tags: v.optional(v.array(v.string())),
+        titlePt: v.optional(v.string()),
+        titleEs: v.optional(v.string()),
+        titleFr: v.optional(v.string()),
+        titleDe: v.optional(v.string()),
+        titleNl: v.optional(v.string()),
+        contentPt: v.optional(v.string()),
+        contentEs: v.optional(v.string()),
+        contentFr: v.optional(v.string()),
+        contentDe: v.optional(v.string()),
+        contentNl: v.optional(v.string()),
+        authorEmail: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        checkAdminScriptKey(args.scriptKey);
+        const { scriptKey, authorEmail, ...data } = args;
+
+        let author = null;
+        if (authorEmail) {
+            author = await ctx.db
+                .query("users")
+                .filter(q => q.eq(q.field("email"), authorEmail.toLowerCase().trim()))
+                .first();
+        }
+        if (!author) {
+            author = await ctx.db
+                .query("users")
+                .filter(q => q.or(
+                    q.eq(q.field("role"), "admin"),
+                    q.eq(q.field("role"), "super_admin")
+                ))
+                .first();
+        }
+        if (!author) {
+            author = await ctx.db.query("users").first();
+        }
+
+        if (!author) {
+            throw new Error("Cannot create article: No users found in database to assign as author");
+        }
+
+        const id = await ctx.db.insert("blogArticles", {
+            ...data,
+            tags: data.tags ?? [],
+            authorId: author._id,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+        });
+        return id;
+    },
+});
+
+export const updateArticleViaScript = mutation({
+    args: {
+        scriptKey: v.string(),
+        articleId: v.id("blogArticles"),
+        title: v.optional(v.string()),
+        content: v.optional(v.string()),
+        status: v.optional(v.union(v.literal("DRAFT"), v.literal("PENDING"), v.literal("PUBLISHED"))),
+        category: v.optional(v.string()),
+        featuredImage: v.optional(v.string()),
+        focusKeyphrase: v.optional(v.string()),
+        imageAlt: v.optional(v.string()),
+        metaDescription: v.optional(v.string()),
+        titlePt: v.optional(v.string()),
+        titleEs: v.optional(v.string()),
+        titleFr: v.optional(v.string()),
+        titleDe: v.optional(v.string()),
+        titleNl: v.optional(v.string()),
+        contentPt: v.optional(v.string()),
+        contentEs: v.optional(v.string()),
+        contentFr: v.optional(v.string()),
+        contentDe: v.optional(v.string()),
+        contentNl: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        checkAdminScriptKey(args.scriptKey);
+        const { scriptKey, articleId, ...updates } = args;
+        await ctx.db.patch(articleId, { ...updates, updatedAt: Date.now() });
+        return { success: true };
+    },
 });
 
 export const getPublishedArticles = query({

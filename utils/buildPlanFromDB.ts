@@ -64,6 +64,100 @@ export interface RoutineDay {
 }
 
 /**
+ * Resolves videoUrl and thumbnailUrl from the admin/workouts database (videoWorkouts)
+ * matching by exact name, normalized tokens, or muscle group, taking into account userSex.
+ */
+export function resolveExerciseMedia(
+  name?: string,
+  primaryMuscle?: string,
+  dbWorkouts?: DBWorkoutDoc[] | null,
+  userSex: string = 'male'
+): { videoUrl: string; thumbnailUrl: string } {
+  if (!dbWorkouts || dbWorkouts.length === 0) {
+    return { videoUrl: '', thumbnailUrl: '' };
+  }
+
+  const cleanName = (name || '').toLowerCase().trim();
+  const cleanMuscle = (primaryMuscle || '').toLowerCase().trim();
+
+  // Helper to extract sex-specific media from a DB workout
+  const getMedia = (w: DBWorkoutDoc) => {
+    let video = w.videoUrl || '';
+    let thumb = w.thumbnail || '';
+    if (userSex === 'female') {
+      if (w.videoUrlFemale) video = w.videoUrlFemale;
+      if (w.thumbnailFemale) thumb = w.thumbnailFemale;
+    } else {
+      if (w.videoUrlMale) video = w.videoUrlMale;
+      if (w.thumbnailMale) thumb = w.thumbnailMale;
+    }
+    if (!video && w.videoUrl) video = w.videoUrl;
+    if (!thumb && w.thumbnail) thumb = w.thumbnail;
+    return { videoUrl: video, thumbnailUrl: thumb || video };
+  };
+
+  // 1. Direct match on workout title or nested exercise name
+  for (const w of dbWorkouts) {
+    const wTitle = (w.title || '').toLowerCase().trim();
+    if (cleanName && (wTitle === cleanName || cleanName.includes(wTitle) || wTitle.includes(cleanName))) {
+      const media = getMedia(w);
+      if (media.videoUrl || media.thumbnailUrl) return media;
+    }
+
+    if (w.exercises && w.exercises.length > 0) {
+      for (const ex of w.exercises) {
+        const exName = (ex.name || '').toLowerCase().trim();
+        if (cleanName && (exName === cleanName || cleanName.includes(exName) || exName.includes(cleanName))) {
+          const media = getMedia(w);
+          if (media.videoUrl || media.thumbnailUrl) return media;
+        }
+      }
+    }
+  }
+
+  // 2. Token / Keyword match (e.g. "bench", "squat", "pushup", "deadlift", "curl", "row", "pullup", "press", "lunge", "plank")
+  const tokens = cleanName.split(/[\s\-_,()]+/).filter(t => t.length > 2);
+  if (tokens.length > 0) {
+    for (const w of dbWorkouts) {
+      const wTitle = (w.title || '').toLowerCase();
+      if (tokens.some(t => wTitle.includes(t))) {
+        const media = getMedia(w);
+        if (media.videoUrl || media.thumbnailUrl) return media;
+      }
+      if (w.exercises) {
+        for (const ex of w.exercises) {
+          const exName = (ex.name || '').toLowerCase();
+          if (tokens.some(t => exName.includes(t))) {
+            const media = getMedia(w);
+            if (media.videoUrl || media.thumbnailUrl) return media;
+          }
+        }
+      }
+    }
+  }
+
+  // 3. Muscle group match from DB workouts
+  if (cleanMuscle) {
+    for (const w of dbWorkouts) {
+      const wCat = (w.category || '').toLowerCase();
+      const wTags = (w.muscleGroupTags || []).map(t => t.toLowerCase());
+      if (wCat.includes(cleanMuscle) || cleanMuscle.includes(wCat) || wTags.some(t => t.includes(cleanMuscle) || cleanMuscle.includes(t))) {
+        const media = getMedia(w);
+        if (media.videoUrl || media.thumbnailUrl) return media;
+      }
+    }
+  }
+
+  // 4. Fallback to any valid video/thumbnail in dbWorkouts
+  for (const w of dbWorkouts) {
+    const media = getMedia(w);
+    if (media.videoUrl || media.thumbnailUrl) return media;
+  }
+
+  return { videoUrl: '', thumbnailUrl: '' };
+}
+
+/**
  * Build a routine-day array from DB workouts for the Move tab swipable.
  * Each videoWorkout doc → one day card. Exercises inside each doc are
  * shown in that day's WorkoutDayCard thumbnail strip.
@@ -103,26 +197,41 @@ export function buildPlanFromDBWorkouts(
     if (!resolvedVideo && workout.videoUrl) resolvedVideo = workout.videoUrl;
     if (!resolvedThumb && workout.thumbnail) resolvedThumb = workout.thumbnail;
 
-    for (let exIdx = 0; exIdx < workout.exercises.length; exIdx++) {
-      const ex = workout.exercises[exIdx];
-      // Note: If exercises also eventually have their own video variants,
-      // you could apply similar logic here. We use the workout's resolved media.
+    if (workout.exercises && workout.exercises.length > 0) {
+      for (let exIdx = 0; exIdx < workout.exercises.length; exIdx++) {
+        const ex = workout.exercises[exIdx];
+        allExercises.push({
+          id: `${workout._id}-ex-${exIdx}`,
+          name: workout.titleLocalizations ? { en: ex.name, ...workout.titleLocalizations } : ex.name,
+          thumbnailUrl: resolvedThumb || resolvedVideo || '',
+          videoUrl: resolvedVideo || '',
+          category: workout.category ?? primaryMuscleFallback,
+          type: ex.exerciseType ?? ex.exerciseTypes?.[0] ?? workout.category ?? 'strength',
+          exerciseType: ex.exerciseType,
+          exerciseTypes: ex.exerciseTypes,
+          primaryMuscle: ex.primaryMuscles?.[0] ?? primaryMuscleFallback,
+          secondaryMuscles: ex.secondaryMuscles ?? [],
+          equipment: workout.equipment?.[0] ?? 'Various',
+          sets: typeof ex.sets === 'number' ? ex.sets : 3,
+          reps: ex.reps !== undefined ? String(ex.reps) : '10',
+          instructions: ex.instructions ?? [],
+          instructionsLocalizations: ex.instructionsLocalizations,
+        });
+      }
+    } else {
       allExercises.push({
-        id: `${workout._id}-ex-${exIdx}`,
-        name: workout.titleLocalizations ? { en: ex.name, ...workout.titleLocalizations } : ex.name,
-        thumbnailUrl: resolvedThumb,
-        videoUrl: resolvedVideo,
+        id: `${workout._id}-main`,
+        name: workout.titleLocalizations ? { en: workout.title, ...workout.titleLocalizations } : workout.title,
+        thumbnailUrl: resolvedThumb || resolvedVideo || '',
+        videoUrl: resolvedVideo || '',
         category: workout.category ?? primaryMuscleFallback,
-        type: ex.exerciseType ?? ex.exerciseTypes?.[0] ?? workout.category ?? 'strength',
-        exerciseType: ex.exerciseType,
-        exerciseTypes: ex.exerciseTypes,
-        primaryMuscle: ex.primaryMuscles?.[0] ?? primaryMuscleFallback,
-        secondaryMuscles: ex.secondaryMuscles ?? [],
+        type: workout.category ?? 'strength',
+        primaryMuscle: primaryMuscleFallback,
+        secondaryMuscles: [],
         equipment: workout.equipment?.[0] ?? 'Various',
-        sets: typeof ex.sets === 'number' ? ex.sets : 3,
-        reps: ex.reps !== undefined ? String(ex.reps) : '10',
-        instructions: ex.instructions ?? [],
-        instructionsLocalizations: ex.instructionsLocalizations,
+        sets: 3,
+        reps: '10',
+        instructions: [],
       });
     }
   }

@@ -29,11 +29,11 @@ const { width } = Dimensions.get('window');
 const habitCategories = ['health', 'fitness', 'mindfulness', 'social', 'learning'] as const;
 type HabitCategory = (typeof habitCategories)[number];
 const getCategoryLabels = (t: any): Record<string, string> => ({
-    health: t('wellness.habits.catHealth', 'Health'),
-    fitness: t('wellness.habits.catFitness', 'Fitness'),
-    mindfulness: t('wellness.habits.catMindfulness', 'Mindfulness'),
-    social: t('wellness.habits.catSocial', 'Social'),
-    learning: t('wellness.habits.catLearning', 'Learning'),
+    health: t('habits.catHealth', 'Health'),
+    fitness: t('habits.catFitness', 'Fitness'),
+    mindfulness: t('habits.catMindfulness', 'Mindfulness'),
+    social: t('habits.catSocial', 'Social'),
+    learning: t('habits.catLearning', 'Learning'),
 });
 
 function toDisplayCategory(cat: string): HabitCategory {
@@ -86,196 +86,196 @@ const getDefaultHabits = (): Array<{name: string; icon: string; displayCategory:
 // Maps default habit seed-names across ANY language to its i18n key.
 const DEFAULT_HABIT_NAME_MAP: Record<string, string> = {
     // English
-    'Drink 8 glasses of water': 'wellness.habits.defWater',
-    'Take daily vitamins': 'wellness.habits.defVitamins',
-    'Spend time in nature': 'wellness.habits.defNature',
-    'Get 8 hours of sleep': 'wellness.habits.defSleep',
-    'Limit screen time': 'wellness.habits.defScreen',
-    'Exercise for 30 minutes': 'wellness.habits.defExercise',
-    'Meditate for 10 minutes': 'wellness.habits.defMeditate',
-    'Practice gratitude': 'wellness.habits.defGratitude',
-    'Connect with friends/family': 'wellness.habits.defSocial',
-    'Read for 30 minutes': 'wellness.habits.defRead',
+    'Drink 8 glasses of water': 'habits.defWater',
+    'Take daily vitamins': 'habits.defVitamins',
+    'Spend time in nature': 'habits.defNature',
+    'Get 8 hours of sleep': 'habits.defSleep',
+    'Limit screen time': 'habits.defScreen',
+    'Exercise for 30 minutes': 'habits.defExercise',
+    'Meditate for 10 minutes': 'habits.defMeditate',
+    'Practice gratitude': 'habits.defGratitude',
+    'Connect with friends/family': 'habits.defSocial',
+    'Read for 30 minutes': 'habits.defRead',
 
     // German
-    '1.5L Wasser trinken': 'wellness.habits.defWater',
-    '8 Gläser Wasser trinken': 'wellness.habits.defWater',
-    'Vitamine nehmen': 'wellness.habits.defVitamins',
-    'Täglich Vitamine einnehmen': 'wellness.habits.defVitamins',
-    'Zeit in der Natur': 'wellness.habits.defNature',
-    'Zeit in der Natur verbringen': 'wellness.habits.defNature',
-    '8 Stunden Schlaf': 'wellness.habits.defSleep',
-    '8 Stunden schlafen': 'wellness.habits.defSleep',
-    'Bildschirmzeit begrenzen': 'wellness.habits.defScreen',
-    '30 Min Training': 'wellness.habits.defExercise',
-    '30 Minuten Sport treiben': 'wellness.habits.defExercise',
-    '10 Min Meditation': 'wellness.habits.defMeditate',
-    '10 Minuten meditieren': 'wellness.habits.defMeditate',
-    'Dankbarkeit üben': 'wellness.habits.defGratitude',
-    'Dankbarkeit praktizieren': 'wellness.habits.defGratitude',
-    'Freunde/Familie treffen': 'wellness.habits.defSocial',
-    'Mit Freunden/Familie austauschen': 'wellness.habits.defSocial',
-    '30 Min lesen': 'wellness.habits.defRead',
-    '30 Minuten lesen': 'wellness.habits.defRead',
+    '1.5L Wasser trinken': 'habits.defWater',
+    '8 Gläser Wasser trinken': 'habits.defWater',
+    'Vitamine nehmen': 'habits.defVitamins',
+    'Täglich Vitamine einnehmen': 'habits.defVitamins',
+    'Zeit in der Natur': 'habits.defNature',
+    'Zeit in der Natur verbringen': 'habits.defNature',
+    '8 Stunden Schlaf': 'habits.defSleep',
+    '8 Stunden schlafen': 'habits.defSleep',
+    'Bildschirmzeit begrenzen': 'habits.defScreen',
+    '30 Min Training': 'habits.defExercise',
+    '30 Minuten Sport treiben': 'habits.defExercise',
+    '10 Min Meditation': 'habits.defMeditate',
+    '10 Minuten meditieren': 'habits.defMeditate',
+    'Dankbarkeit üben': 'habits.defGratitude',
+    'Dankbarkeit praktizieren': 'habits.defGratitude',
+    'Freunde/Familie treffen': 'habits.defSocial',
+    'Mit Freunden/Familie austauschen': 'habits.defSocial',
+    '30 Min lesen': 'habits.defRead',
+    '30 Minuten lesen': 'habits.defRead',
 
     // French
-    "Boire 1.5 litres d'eau": 'wellness.habits.defWater',
-    "Prendre mes vitamines quotidiennes": 'wellness.habits.defVitamins',
-    "Passer du temps dehors dans la nature": 'wellness.habits.defNature',
-    "Dormir au moins 8 heures": 'wellness.habits.defSleep',
-    "Limiter mon temps d'ecran le soir": 'wellness.habits.defScreen',
-    "Limiter mon temps d'écran le soir": 'wellness.habits.defScreen',
-    "Faire une seance de sport ou marcher activement": 'wellness.habits.defExercise',
-    "Faire une séance de sport de 30 minutes": 'wellness.habits.defExercise',
-    "Méditer 10 minutes": 'wellness.habits.defMeditate',
-    "Pratiquer la gratitude": 'wellness.habits.defGratitude',
-    "Voir des amis / proches": 'wellness.habits.defSocial',
-    "Lire pendant 30 minutes": 'wellness.habits.defRead',
+    "Boire 1.5 litres d'eau": 'habits.defWater',
+    "Prendre mes vitamines quotidiennes": 'habits.defVitamins',
+    "Passer du temps dehors dans la nature": 'habits.defNature',
+    "Dormir au moins 8 heures": 'habits.defSleep',
+    "Limiter mon temps d'ecran le soir": 'habits.defScreen',
+    "Limiter mon temps d'écran le soir": 'habits.defScreen',
+    "Faire une seance de sport ou marcher activement": 'habits.defExercise',
+    "Faire une séance de sport de 30 minutes": 'habits.defExercise',
+    "Méditer 10 minutes": 'habits.defMeditate',
+    "Pratiquer la gratitude": 'habits.defGratitude',
+    "Voir des amis / proches": 'habits.defSocial',
+    "Lire pendant 30 minutes": 'habits.defRead',
 
     // Portuguese
-    'Beber 8 copos de água': 'wellness.habits.defWater',
-    'Beber 1.5L de água': 'wellness.habits.defWater',
-    'Tomar vitaminas diárias': 'wellness.habits.defVitamins',
-    'Tomar suplementação diária': 'wellness.habits.defVitamins',
-    'Passar tempo na natureza': 'wellness.habits.defNature',
-    'Dormir 8 horas': 'wellness.habits.defSleep',
-    'Limitar tempo de ecrã': 'wellness.habits.defScreen',
-    'Limitar o tempo de ecrã': 'wellness.habits.defScreen',
-    'Fazer 30 minutos de exercício': 'wellness.habits.defExercise',
-    'Exercitar 30 minutos': 'wellness.habits.defExercise',
-    'Meditar 10 minutos': 'wellness.habits.defMeditate',
-    'Praticar gratidão': 'wellness.habits.defGratitude',
-    'Ligar a amigos/família': 'wellness.habits.defSocial',
-    'Conectar com amigos/família': 'wellness.habits.defSocial',
-    'Ler 30 minutos': 'wellness.habits.defRead',
+    'Beber 8 copos de água': 'habits.defWater',
+    'Beber 1.5L de água': 'habits.defWater',
+    'Tomar vitaminas diárias': 'habits.defVitamins',
+    'Tomar suplementação diária': 'habits.defVitamins',
+    'Passar tempo na natureza': 'habits.defNature',
+    'Dormir 8 horas': 'habits.defSleep',
+    'Limitar tempo de ecrã': 'habits.defScreen',
+    'Limitar o tempo de ecrã': 'habits.defScreen',
+    'Fazer 30 minutos de exercício': 'habits.defExercise',
+    'Exercitar 30 minutos': 'habits.defExercise',
+    'Meditar 10 minutos': 'habits.defMeditate',
+    'Praticar gratidão': 'habits.defGratitude',
+    'Ligar a amigos/família': 'habits.defSocial',
+    'Conectar com amigos/família': 'habits.defSocial',
+    'Ler 30 minutos': 'habits.defRead',
 
     // Spanish
-    'Beber 1.5L agua': 'wellness.habits.defWater',
-    'Tomar suplementos': 'wellness.habits.defVitamins',
-    'Tiempo en la naturaleza': 'wellness.habits.defNature',
-    'Limitar pantallas': 'wellness.habits.defScreen',
-    '30 min ejercicio': 'wellness.habits.defExercise',
-    '10 min meditación': 'wellness.habits.defMeditate',
-    'Practicar gratitud': 'wellness.habits.defGratitude',
-    'Contactar con amigos/familia': 'wellness.habits.defSocial',
-    'Leer 30 min': 'wellness.habits.defRead',
+    'Beber 1.5L agua': 'habits.defWater',
+    'Tomar suplementos': 'habits.defVitamins',
+    'Tiempo en la naturaleza': 'habits.defNature',
+    'Limitar pantallas': 'habits.defScreen',
+    '30 min ejercicio': 'habits.defExercise',
+    '10 min meditación': 'habits.defMeditate',
+    'Practicar gratitud': 'habits.defGratitude',
+    'Contactar con amigos/familia': 'habits.defSocial',
+    'Leer 30 min': 'habits.defRead',
 
     // Dutch
-    '1,5L water drinken': 'wellness.habits.defWater',
-    'Vitamines innemen': 'wellness.habits.defVitamins',
-    'In de natuur zijn': 'wellness.habits.defNature',
-    '8 uur slapen': 'wellness.habits.defSleep',
-    'Schermtijd beperken': 'wellness.habits.defScreen',
-    '30 min bewegen': 'wellness.habits.defExercise',
-    '10 min mediteren': 'wellness.habits.defMeditate',
-    'Dankbaarheid oefenen': 'wellness.habits.defGratitude',
-    'Vrienden/familie contacten': 'wellness.habits.defSocial',
-    '30 min lezen': 'wellness.habits.defRead',
+    '1,5L water drinken': 'habits.defWater',
+    'Vitamines innemen': 'habits.defVitamins',
+    'In de natuur zijn': 'habits.defNature',
+    '8 uur slapen': 'habits.defSleep',
+    'Schermtijd beperken': 'habits.defScreen',
+    '30 min bewegen': 'habits.defExercise',
+    '10 min mediteren': 'habits.defMeditate',
+    'Dankbaarheid oefenen': 'habits.defGratitude',
+    'Vrienden/familie contacten': 'habits.defSocial',
+    '30 min lezen': 'habits.defRead',
 
     // Polish
-    'Wypij 1.5L wody': 'wellness.habits.defWater',
-    'Weź suplementy': 'wellness.habits.defVitamins',
-    'Spędź czas na naturze': 'wellness.habits.defNature',
-    'Śpij 8 godzin': 'wellness.habits.defSleep',
-    'Ogranicz czas przed ekranem': 'wellness.habits.defScreen',
-    'Ćwicz przez 30 minut': 'wellness.habits.defExercise',
-    'Medytuj przez 10 minut': 'wellness.habits.defMeditate',
-    'Praktykuj wdzięczność': 'wellness.habits.defGratitude',
-    'Spotkaj się ze znajomymi/rodziną': 'wellness.habits.defSocial',
-    'Czytaj przez 30 minut': 'wellness.habits.defRead',
+    'Wypij 1.5L wody': 'habits.defWater',
+    'Weź suplementy': 'habits.defVitamins',
+    'Spędź czas na naturze': 'habits.defNature',
+    'Śpij 8 godzin': 'habits.defSleep',
+    'Ogranicz czas przed ekranem': 'habits.defScreen',
+    'Ćwicz przez 30 minut': 'habits.defExercise',
+    'Medytuj przez 10 minut': 'habits.defMeditate',
+    'Praktykuj wdzięczność': 'habits.defGratitude',
+    'Spotkaj się ze znajomymi/rodziną': 'habits.defSocial',
+    'Czytaj przez 30 minut': 'habits.defRead',
 
     // Danish / Norwegian / Swedish
-    'Drik 1,5L vand': 'wellness.habits.defWater',
-    'Drikk 1.5L vann': 'wellness.habits.defWater',
-    'Drick 1.5L vatten': 'wellness.habits.defWater',
-    'Tag kosttilskud': 'wellness.habits.defVitamins',
-    'Ta daglige kosttilskudd': 'wellness.habits.defVitamins',
-    'Ta kosttillskott': 'wellness.habits.defVitamins',
-    'Brug tid i naturen': 'wellness.habits.defNature',
-    'Spendera tid i naturen': 'wellness.habits.defNature',
-    'Sove 8 timer': 'wellness.habits.defSleep',
-    'Sova 8 timmar': 'wellness.habits.defSleep',
-    'Begræns skærmtid': 'wellness.habits.defScreen',
-    'Begrens skjermtid': 'wellness.habits.defScreen',
-    'Begränsa skärmtid': 'wellness.habits.defScreen',
-    'Træn i 30 minutter': 'wellness.habits.defExercise',
-    'Tren i 30 minutter': 'wellness.habits.defExercise',
-    'Träna 30 minuter': 'wellness.habits.defExercise',
-    'Mediter i 10 minutter': 'wellness.habits.defMeditate',
-    'Meditera 10 minuter': 'wellness.habits.defMeditate',
-    'Praktiser taknemmelighed': 'wellness.habits.defGratitude',
-    'Praktiser takknemlighet': 'wellness.habits.defGratitude',
-    'Utöva tacksamhet': 'wellness.habits.defGratitude',
-    'Vær sammen med venner/familie': 'wellness.habits.defSocial',
-    'Vær sosial med venner/familie': 'wellness.habits.defSocial',
-    'Träffa vänner/familj': 'wellness.habits.defSocial',
-    'Læs i 30 minutter': 'wellness.habits.defRead',
-    'Les i 30 minutter': 'wellness.habits.defRead',
-    'Läs 30 minuter': 'wellness.habits.defRead',
+    'Drik 1,5L vand': 'habits.defWater',
+    'Drikk 1.5L vann': 'habits.defWater',
+    'Drick 1.5L vatten': 'habits.defWater',
+    'Tag kosttilskud': 'habits.defVitamins',
+    'Ta daglige kosttilskudd': 'habits.defVitamins',
+    'Ta kosttillskott': 'habits.defVitamins',
+    'Brug tid i naturen': 'habits.defNature',
+    'Spendera tid i naturen': 'habits.defNature',
+    'Sove 8 timer': 'habits.defSleep',
+    'Sova 8 timmar': 'habits.defSleep',
+    'Begræns skærmtid': 'habits.defScreen',
+    'Begrens skjermtid': 'habits.defScreen',
+    'Begränsa skärmtid': 'habits.defScreen',
+    'Træn i 30 minutter': 'habits.defExercise',
+    'Tren i 30 minutter': 'habits.defExercise',
+    'Träna 30 minuter': 'habits.defExercise',
+    'Mediter i 10 minutter': 'habits.defMeditate',
+    'Meditera 10 minuter': 'habits.defMeditate',
+    'Praktiser taknemmelighed': 'habits.defGratitude',
+    'Praktiser takknemlighet': 'habits.defGratitude',
+    'Utöva tacksamhet': 'habits.defGratitude',
+    'Vær sammen med venner/familie': 'habits.defSocial',
+    'Vær sosial med venner/familie': 'habits.defSocial',
+    'Träffa vänner/familj': 'habits.defSocial',
+    'Læs i 30 minutter': 'habits.defRead',
+    'Les i 30 minutter': 'habits.defRead',
+    'Läs 30 minuter': 'habits.defRead',
 
     // Turkish
-    '1.5L su iç': 'wellness.habits.defWater',
-    'Günlük takviyeleri al': 'wellness.habits.defVitamins',
-    'Doğada vakit geçir': 'wellness.habits.defNature',
-    '8 saat uyu': 'wellness.habits.defSleep',
-    'Ekran süresini sınırla': 'wellness.habits.defScreen',
-    '30 dakika egzersiz yap': 'wellness.habits.defExercise',
-    '10 dakika meditasyon yap': 'wellness.habits.defMeditate',
-    'Şükran pratiği yap': 'wellness.habits.defGratitude',
-    'Arkadaşlarla/aileyle bağ kur': 'wellness.habits.defSocial',
-    '30 dakika oku': 'wellness.habits.defRead',
+    '1.5L su iç': 'habits.defWater',
+    'Günlük takviyeleri al': 'habits.defVitamins',
+    'Doğada vakit geçir': 'habits.defNature',
+    '8 saat uyu': 'habits.defSleep',
+    'Ekran süresini sınırla': 'habits.defScreen',
+    '30 dakika egzersiz yap': 'habits.defExercise',
+    '10 dakika meditasyon yap': 'habits.defMeditate',
+    'Şükran pratiği yap': 'habits.defGratitude',
+    'Arkadaşlarla/aileyle bağ kur': 'habits.defSocial',
+    '30 dakika oku': 'habits.defRead',
 
     // Bulgarian, Greek, Lithuanian, Latvian, Romanian
-    'Пийте 8 чаши вода': 'wellness.habits.defWater',
-    'Вземайте витамини всеки ден': 'wellness.habits.defVitamins',
-    'Прекарвайте време сред природата': 'wellness.habits.defNature',
-    'Спете 8 часа': 'wellness.habits.defSleep',
-    'Ограничете времето пред екрана': 'wellness.habits.defScreen',
-    'Тренирайте 30 минути': 'wellness.habits.defExercise',
-    'Медитирайте 10 минути': 'wellness.habits.defMeditate',
-    'Практикувайте благодарност': 'wellness.habits.defGratitude',
-    'Общувайте с приятели/семейство': 'wellness.habits.defSocial',
-    'Четете 30 минути': 'wellness.habits.defRead',
-    'Πίνετε 8 ποτήρια νερό': 'wellness.habits.defWater',
-    'Λαμβάνετε καθημερινά βιταμίνες': 'wellness.habits.defVitamins',
-    'Περάστε χρόνο στη φύση': 'wellness.habits.defNature',
-    'Κοιμηθείτε 8 ώρες': 'wellness.habits.defSleep',
-    'Περιορίστε τον χρόνο οθόνης': 'wellness.habits.defScreen',
-    'Άσκηση για 30 λεπτά': 'wellness.habits.defExercise',
-    'Διαλογισμός για 10 λεπτά': 'wellness.habits.defMeditate',
-    'Εξασκηθείτε στην ευγνωμοσύνη': 'wellness.habits.defGratitude',
-    'Συνδεθείτε με φίλους/οικογένεια': 'wellness.habits.defSocial',
-    'Διαβάστε για 30 λεπτά': 'wellness.habits.defRead',
-    'Išgerkite 8 stiklines vandens': 'wellness.habits.defWater',
-    'Kasdien vartokite vitaminų': 'wellness.habits.defVitamins',
-    'Praleiskite laiką gamtoje': 'wellness.habits.defNature',
-    'Miegokite 8 valandas': 'wellness.habits.defSleep',
-    'Apribokite ekrano laiką': 'wellness.habits.defScreen',
-    'Mankštinkitės 30 minučių': 'wellness.habits.defExercise',
-    'Medituokite 10 minučių': 'wellness.habits.defMeditate',
-    'Praktikuokite dėkingumą': 'wellness.habits.defGratitude',
-    'Bendraukite su draugais / šeima': 'wellness.habits.defSocial',
-    'Skaitykite 30 minučių': 'wellness.habits.defRead',
-    'Izdzeriet 8 glāzes ūdens': 'wellness.habits.defWater',
-    'Lietojiet vitamīnus katru dienu': 'wellness.habits.defVitamins',
-    'Pavadiet laiku dabā': 'wellness.habits.defNature',
-    'Guliet 8 stundas': 'wellness.habits.defSleep',
-    'Ierobežojiet ekrāna laiku': 'wellness.habits.defScreen',
-    'Vingrojiet 30 minūtes': 'wellness.habits.defExercise',
-    'Meditējiet 10 minūtes': 'wellness.habits.defMeditate',
-    'Praktizējiet pateicību': 'wellness.habits.defGratitude',
-    'Sazinieties ar draugiem/ģimeni': 'wellness.habits.defSocial',
-    'Lasiet 30 minūtes': 'wellness.habits.defRead',
-    'Bea 8 pahare de apă': 'wellness.habits.defWater',
-    'Luați zilnic vitamine': 'wellness.habits.defVitamins',
-    'Petreceți timp în natură': 'wellness.habits.defNature',
-    'Dormiți 8 ore': 'wellness.habits.defSleep',
-    'Limitați timpul petrecut pe ecran': 'wellness.habits.defScreen',
-    'Faceți exerciții fizice timp de 30 de minute': 'wellness.habits.defExercise',
-    'Meditați timp de 10 minute': 'wellness.habits.defMeditate',
-    'Exersează-ți recunoștința': 'wellness.habits.defGratitude',
-    'Conectează-te cu prietenii/familia': 'wellness.habits.defSocial',
-    'Citește timp de 30 de minute': 'wellness.habits.defRead',
+    'Пийте 8 чаши вода': 'habits.defWater',
+    'Вземайте витамини всеки ден': 'habits.defVitamins',
+    'Прекарвайте време сред природата': 'habits.defNature',
+    'Спете 8 часа': 'habits.defSleep',
+    'Ограничете времето пред екрана': 'habits.defScreen',
+    'Тренирайте 30 минути': 'habits.defExercise',
+    'Медитирайте 10 минути': 'habits.defMeditate',
+    'Практикувайте благодарност': 'habits.defGratitude',
+    'Общувайте с приятели/семейство': 'habits.defSocial',
+    'Четете 30 минути': 'habits.defRead',
+    'Πίνετε 8 ποτήρια νερό': 'habits.defWater',
+    'Λαμβάνετε καθημερινά βιταμίνες': 'habits.defVitamins',
+    'Περάστε χρόνο στη φύση': 'habits.defNature',
+    'Κοιμηθείτε 8 ώρες': 'habits.defSleep',
+    'Περιορίστε τον χρόνο οθόνης': 'habits.defScreen',
+    'Άσκηση για 30 λεπτά': 'habits.defExercise',
+    'Διαλογισμός για 10 λεπτά': 'habits.defMeditate',
+    'Εξασκηθείτε στην ευγνωμοσύνη': 'habits.defGratitude',
+    'Συνδεθείτε με φίλους/οικογένεια': 'habits.defSocial',
+    'Διαβάστε για 30 λεπτά': 'habits.defRead',
+    'Išgerkite 8 stiklines vandens': 'habits.defWater',
+    'Kasdien vartokite vitaminų': 'habits.defVitamins',
+    'Praleiskite laiką gamtoje': 'habits.defNature',
+    'Miegokite 8 valandas': 'habits.defSleep',
+    'Apribokite ekrano laiką': 'habits.defScreen',
+    'Mankštinkitės 30 minučių': 'habits.defExercise',
+    'Medituokite 10 minučių': 'habits.defMeditate',
+    'Praktikuokite dėkingumą': 'habits.defGratitude',
+    'Bendraukite su draugais / šeima': 'habits.defSocial',
+    'Skaitykite 30 minučių': 'habits.defRead',
+    'Izdzeriet 8 glāzes ūdens': 'habits.defWater',
+    'Lietojiet vitamīnus katru dienu': 'habits.defVitamins',
+    'Pavadiet laiku dabā': 'habits.defNature',
+    'Guliet 8 stundas': 'habits.defSleep',
+    'Ierobežojiet ekrāna laiku': 'habits.defScreen',
+    'Vingrojiet 30 minūtes': 'habits.defExercise',
+    'Meditējiet 10 minūtes': 'habits.defMeditate',
+    'Praktizējiet pateicību': 'habits.defGratitude',
+    'Sazinieties ar draugiem/ģimeni': 'habits.defSocial',
+    'Lasiet 30 minūtes': 'habits.defRead',
+    'Bea 8 pahare de apă': 'habits.defWater',
+    'Luați zilnic vitamine': 'habits.defVitamins',
+    'Petreceți timp în natură': 'habits.defNature',
+    'Dormiți 8 ore': 'habits.defSleep',
+    'Limitați timpul petrecut pe ecran': 'habits.defScreen',
+    'Faceți exerciții fizice timp de 30 de minute': 'habits.defExercise',
+    'Meditați timp de 10 minute': 'habits.defMeditate',
+    'Exersează-ți recunoștința': 'habits.defGratitude',
+    'Conectează-te cu prietenii/familia': 'habits.defSocial',
+    'Citește timp de 30 de minute': 'habits.defRead',
 };
 
 function resolveHabitName(rawName: string, t: any): string {
@@ -293,34 +293,34 @@ function resolveHabitName(rawName: string, t: any): string {
 
     // Keyword heuristics to translate any seed name variation across languages
     if (lower.includes('wasser') || lower.includes('water') || lower.includes('eau') || lower.includes('água') || lower.includes('agua') || lower.includes('vand') || lower.includes('vann') || lower.includes('vatten') || lower.includes('su ') || lower.includes('su iç') || lower.includes('вода') || lower.includes('νερό') || lower.includes('vandens') || lower.includes('ūdens') || lower.includes('apă')) {
-        return t('wellness.habits.defWater', trimmed);
+        return t('habits.defWater', trimmed);
     }
     if (lower.includes('vitamin') || lower.includes('suplement') || lower.includes('kosttilskud') || lower.includes('takviye') || lower.includes('витамин') || lower.includes('βιταμίν')) {
-        return t('wellness.habits.defVitamins', trimmed);
+        return t('habits.defVitamins', trimmed);
     }
     if (lower.includes('natur') || lower.includes('nature') || lower.includes('natureza') || lower.includes('doğa') || lower.includes('природ') || lower.includes('φύση') || lower.includes('gamtoje') || lower.includes('dabā')) {
-        return t('wellness.habits.defNature', trimmed);
+        return t('habits.defNature', trimmed);
     }
     if (lower.includes('schlaf') || lower.includes('sleep') || lower.includes('sommeil') || lower.includes('dormir') || lower.includes('dormi') || lower.includes('slapen') || lower.includes('spędź') || lower.includes('śpij') || lower.includes('sov') || lower.includes('uyu') || lower.includes('сън') || lower.includes('сп') || lower.includes('ύπν') || lower.includes('mieg') || lower.includes('gul')) {
-        return t('wellness.habits.defSleep', trimmed);
+        return t('habits.defSleep', trimmed);
     }
     if (lower.includes('bildschirm') || lower.includes('screen') || lower.includes('ecran') || lower.includes('écran') || lower.includes('ecrã') || lower.includes('pantalla') || lower.includes('scherm') || lower.includes('ekran') || lower.includes('skærm') || lower.includes('skjerm') || lower.includes('skärm') || lower.includes('екран') || lower.includes('οθόν') || lower.includes('ekrano') || lower.includes('ekrāna')) {
-        return t('wellness.habits.defScreen', trimmed);
+        return t('habits.defScreen', trimmed);
     }
     if (lower.includes('training') || lower.includes('exercise') || lower.includes('sport') || lower.includes('exercício') || lower.includes('ejercicio') || lower.includes('bewegen') || lower.includes('ćwicz') || lower.includes('træn') || lower.includes('tren') || lower.includes('träna') || lower.includes('egzersiz') || lower.includes('тренир') || lower.includes('упражн') || lower.includes('άσκηση') || lower.includes('mankšt') || lower.includes('vingro')) {
-        return t('wellness.habits.defExercise', trimmed);
+        return t('habits.defExercise', trimmed);
     }
     if (lower.includes('medit') || lower.includes('médit') || lower.includes('medyt') || lower.includes('медитир') || lower.includes('διαλογισμ')) {
-        return t('wellness.habits.defMeditate', trimmed);
+        return t('habits.defMeditate', trimmed);
     }
     if (lower.includes('dankbar') || lower.includes('gratitude') || lower.includes('gratid') || lower.includes('gratitud') || lower.includes('dankbaar') || lower.includes('wdzięcz') || lower.includes('taknemmelig') || lower.includes('takknemlig') || lower.includes('tacksam') || lower.includes('şükran') || lower.includes('благодарност') || lower.includes('ευγνωμοσύνη') || lower.includes('dėkingum') || lower.includes('pateicīb') || lower.includes('recunoștință') || lower.includes('praktika')) {
-        return t('wellness.habits.defGratitude', trimmed);
+        return t('habits.defGratitude', trimmed);
     }
     if (lower.includes('freund') || lower.includes('famil') || lower.includes('friend') || lower.includes('amis') || lower.includes('proches') || lower.includes('amig') || lower.includes('vriend') || lower.includes('znajom') || lower.includes('venner') || lower.includes('vänner') || lower.includes('arkadaş') || lower.includes('aile') || lower.includes('приятел') || lower.includes('семейств') || lower.includes('φίλους') || lower.includes('οικογένει') || lower.includes('draug') || lower.includes('ģimen') || lower.includes('prieten')) {
-        return t('wellness.habits.defSocial', trimmed);
+        return t('habits.defSocial', trimmed);
     }
     if (lower.includes('lesen') || lower.includes('lese') || lower.includes('read') || lower.includes('lire') || lower.includes('ler') || lower.includes('leer') || lower.includes('lezen') || lower.includes('czytaj') || lower.includes('læs') || lower.includes('les ') || lower.includes('läs') || lower.includes('oku') || lower.includes('чет') || lower.includes('διαβάστε') || lower.includes('skait') || lower.includes('las ') || lower.includes('citește')) {
-        return t('wellness.habits.defRead', trimmed);
+        return t('habits.defRead', trimmed);
     }
 
     return trimmed;
@@ -397,7 +397,7 @@ export default function HabitHubScreen() {
                 setTimeout(() => setSparkleTrigger(null), 1000);
             }
         } catch (e) {
-            Alert.alert(t('wellness.common.error', 'Error'), t('wellness.habits.errorToggle', 'Failed to toggle habit'));
+            Alert.alert(t('wellness.common.error', 'Error'), t('habits.errorToggle', 'Failed to toggle habit'));
         } finally {
             setPendingHabitIds(prev => {
                 const next = new Set(prev);
@@ -419,9 +419,9 @@ export default function HabitHubScreen() {
             });
             setNewHabit({ name: '', icon: 'Target', category: 'health', targetDays: 7 });
             setShowHabitModal(false);
-            Alert.alert(t('wellness.common.success', 'Success'), t('wellness.habits.successAdd', 'Habit added!'));
+            Alert.alert(t('wellness.common.success', 'Success'), t('habits.successAdd', 'Habit added!'));
         } catch (e) {
-            Alert.alert(t('wellness.common.error', 'Error'), t('wellness.habits.errorAdd', 'Failed to add habit'));
+            Alert.alert(t('wellness.common.error', 'Error'), t('habits.errorAdd', 'Failed to add habit'));
         }
     };
 
@@ -429,7 +429,7 @@ export default function HabitHubScreen() {
         if (!user || !newBreakHabit.name.trim()) return;
         const cost = parseFloat(newBreakHabit.costPerDay);
         if (isNaN(cost) || cost < 0) {
-            Alert.alert(t('wellness.common.error', 'Error'), t('wellness.habits.errorValidCost', 'Please enter a valid cost per day'));
+            Alert.alert(t('wellness.common.error', 'Error'), t('habits.errorValidCost', 'Please enter a valid cost per day'));
             return;
         }
         try {
@@ -441,14 +441,14 @@ export default function HabitHubScreen() {
             });
             setNewBreakHabit({ name: '', costPerDay: '', icon: '🚭' });
             setShowBreakHabitModal(false);
-            Alert.alert(t('wellness.common.success', 'Success'), t('wellness.habits.successBreakAdd', 'Habit to break added!'));
+            Alert.alert(t('wellness.common.success', 'Success'), t('habits.successBreakAdd', 'Habit to break added!'));
         } catch (e) {
-            Alert.alert(t('wellness.common.error', 'Error'), t('wellness.habits.errorBreakAdd', 'Failed to add habit to break'));
+            Alert.alert(t('wellness.common.error', 'Error'), t('habits.errorBreakAdd', 'Failed to add habit to break'));
         }
     };
 
     const handleDeleteHabit = (habitId: Id<"habits">) => {
-        Alert.alert(t('wellness.habits.deleteTitle', 'Delete Habit'), t('wellness.habits.deletePrompt', 'Are you sure?'), [
+        Alert.alert(t('habits.deleteTitle', 'Delete Habit'), t('habits.deletePrompt', 'Are you sure?'), [
             { text: t('wellness.common.cancel', 'Cancel'), style: 'cancel' },
             { text: t('wellness.common.delete', 'Delete'), style: 'destructive', onPress: () => deleteHabitMutation({ habitId }) }
         ]);
@@ -486,11 +486,11 @@ export default function HabitHubScreen() {
     };
 
     const handleRelapse = (habitId: Id<"quittingHabits">, name: string) => {
-        Alert.alert(t('wellness.habits.resetTimerTitle', 'Reset Timer?'), t('wellness.habits.resetTimerPrompt', 'Are you sure you want to reset your progress for {{name}}?', { name }),
+        Alert.alert(t('habits.resetTimerTitle', 'Reset Timer?'), t('habits.resetTimerPrompt', 'Are you sure you want to reset your progress for {{name}}?', { name }),
             [
                 { text: t('wellness.common.cancel', 'Cancel'), style: 'cancel' },
                 {
-                    text: t('wellness.habits.relapseAction', 'Relapse'),
+                    text: t('habits.relapseAction', 'Relapse'),
                     style: 'destructive',
                     onPress: async () => {
                         await relapseHabit({ habitId });
@@ -502,7 +502,7 @@ export default function HabitHubScreen() {
     };
 
     const handleDeleteQuittingHabit = (habitId: Id<"quittingHabits">, name: string) => {
-        Alert.alert(t('wellness.habits.deleteTitle', 'Delete Habit'), t('wellness.habits.deletePrompt', 'Are you sure you want to delete {{name}}?', { name }), [
+        Alert.alert(t('habits.deleteTitle', 'Delete Habit'), t('habits.deletePrompt', 'Are you sure you want to delete {{name}}?', { name }), [
             { text: t('wellness.common.cancel', 'Cancel'), style: 'cancel' },
             { text: t('wellness.common.delete', 'Delete'), style: 'destructive', onPress: () => deleteQuittingHabit({ habitId }) }
         ]);
@@ -531,7 +531,7 @@ export default function HabitHubScreen() {
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color={themeColors.text} />
                 </TouchableOpacity>
-                <Text style={styles.title}>{t('wellness.habits.title', 'Behavioral Hub')}</Text>
+                <Text style={styles.title}>{t('habits.title', 'Behavioral Hub')}</Text>
                 <View style={{ width: 40 }} />
             </View>
 
@@ -540,13 +540,13 @@ export default function HabitHubScreen() {
                     style={[styles.segment, activeTab === 'build' && styles.activeSegment]}
                     onPress={() => setActiveTab('build')}
                 >
-                    <Text style={[styles.segmentText, activeTab === 'build' && styles.activeSegmentText]}>{t('wellness.habits.buildHabits', 'Build Habits')}</Text>
+                    <Text style={[styles.segmentText, activeTab === 'build' && styles.activeSegmentText]}>{t('habits.buildHabits', 'Build Habits')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.segment, activeTab === 'break' && styles.activeSegment]}
                     onPress={() => setActiveTab('break')}
                 >
-                    <Text style={[styles.segmentText, activeTab === 'break' && styles.activeSegmentText]}>{t('wellness.habits.breakHabits', 'Break Habits')}</Text>
+                    <Text style={[styles.segmentText, activeTab === 'break' && styles.activeSegmentText]}>{t('habits.breakHabits', 'Break Habits')}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -555,8 +555,8 @@ export default function HabitHubScreen() {
                     <View>
                         <View style={styles.cardHeader}>
                             <View>
-                                <Text style={styles.cardTitle}>{t('wellness.habits.dailyHabits', 'Daily Habits')}</Text>
-                                <Text style={styles.habitsSubtitle}>{t('wellness.habits.completedCount', '{{completed}} of {{total}} completed', { completed: completedHabitsToday, total: totalHabits })}</Text>
+                                <Text style={styles.cardTitle}>{t('habits.dailyHabits', 'Daily Habits')}</Text>
+                                <Text style={styles.habitsSubtitle}>{t('habits.completedCount', '{{completed}} of {{total}} completed', { completed: completedHabitsToday, total: totalHabits })}</Text>
                             </View>
                             <TouchableOpacity style={styles.addHabitButton} onPress={() => setShowHabitModal(true)}>
                                 <Ionicons name="add" size={20} color="#ffffff" />
@@ -565,7 +565,7 @@ export default function HabitHubScreen() {
 
                         <View style={styles.progressBarContainer}>
                             <View style={styles.progressBarLabel}>
-                                <Text style={styles.progressBarText}>{t('wellness.habits.todaysProgress', 'Today\'s Progress')}</Text>
+                                <Text style={styles.progressBarText}>{t('habits.todaysProgress', 'Today\'s Progress')}</Text>
                                 <Text style={styles.progressBarText}>{completionPercentage}%</Text>
                             </View>
                             <View style={styles.progressBar}>
@@ -599,7 +599,7 @@ export default function HabitHubScreen() {
                                                             {resolveHabitName(habit.name, t)}
                                                         </Text>
                                                         <Text style={styles.habitStreak}>
-                                                            {t('wellness.habits.dayStreak', {
+                                                            {t('habits.dayStreak', {
                                                                 count: habit.streak,
                                                                 streak: habit.streak,
                                                                 defaultValue: '{{count}} day streak',
@@ -634,7 +634,7 @@ export default function HabitHubScreen() {
                                         </View>
                                         <View style={styles.statusBadge}>
                                             <View style={[styles.statusDot, { backgroundColor: habit.status === 'relapsed' ? '#ef4444' : '#22c55e' }]} />
-                                            <Text style={styles.statusText}>{habit.status === 'active' ? t('wellness.habits.statusFree', 'Livre') : t('wellness.habits.statusRelapsed', 'Recaída')}</Text>
+                                            <Text style={styles.statusText}>{habit.status === 'active' ? t('habits.statusFree', 'Livre') : t('habits.statusRelapsed', 'Recaída')}</Text>
                                         </View>
                                         <TouchableOpacity onPress={() => handleDeleteQuittingHabit(habit._id, habit.name)} style={{ marginLeft: 8 }}>
                                             <Ionicons name="trash" size={18} color="#dc2626" />
@@ -642,28 +642,28 @@ export default function HabitHubScreen() {
                                     </View>
 
                                     <View style={styles.freedomClockContainer}>
-                                        <Text style={styles.freedomLabel}>{t('wellness.habits.freedomClock', 'FREEDOM CLOCK')}</Text>
+                                        <Text style={styles.freedomLabel}>{t('habits.freedomClock', 'FREEDOM CLOCK')}</Text>
                                         <View style={styles.clockRow}>
                                             <View style={styles.clockItem}>
                                                 <Text style={styles.clockValue}>{time.days}</Text>
-                                                <Text style={styles.clockUnit}>{t('wellness.habits.daysUnit', 'DAYS')}</Text>
+                                                <Text style={styles.clockUnit}>{t('habits.daysUnit', 'DAYS')}</Text>
                                             </View>
                                             <Text style={styles.clockSeparator}>:</Text>
                                             <View style={styles.clockItem}>
                                                 <Text style={styles.clockValue}>{time.hours}</Text>
-                                                <Text style={styles.clockUnit}>{t('wellness.habits.hrsUnit', 'HRS')}</Text>
+                                                <Text style={styles.clockUnit}>{t('habits.hrsUnit', 'HRS')}</Text>
                                             </View>
                                             <Text style={styles.clockSeparator}>:</Text>
                                             <View style={styles.clockItem}>
                                                 <Text style={styles.clockValue}>{time.minutes}</Text>
-                                                <Text style={styles.clockUnit}>{t('wellness.habits.minsUnit', 'MINS')}</Text>
+                                                <Text style={styles.clockUnit}>{t('habits.minsUnit', 'MINS')}</Text>
                                             </View>
                                         </View>
                                     </View>
 
                                     <View style={styles.impactRow}>
                                         <View style={styles.impactItem}>
-                                            <Text style={styles.impactLabel}>{t('wellness.habits.moneySaved', 'Money Saved')}</Text>
+                                            <Text style={styles.impactLabel}>{t('habits.moneySaved', 'Money Saved')}</Text>
                                             <Text style={styles.impactValue}>${saved}</Text>
                                         </View>
                                         <TouchableOpacity
@@ -671,7 +671,7 @@ export default function HabitHubScreen() {
                                             onPress={() => handleEmergency(habit.name)}
                                         >
                                             <Ionicons name="warning" size={16} color="#fff" />
-                                            <Text style={styles.emergencyText}>{t('wellness.habits.sosHelp', 'SOS Help')}</Text>
+                                            <Text style={styles.emergencyText}>{t('habits.sosHelp', 'SOS Help')}</Text>
                                         </TouchableOpacity>
                                     </View>
 
@@ -679,7 +679,7 @@ export default function HabitHubScreen() {
                                         style={styles.relapseButton}
                                         onPress={() => handleRelapse(habit._id, habit.name)}
                                     >
-                                        <Text style={styles.relapseText}>{t('wellness.habits.iRelapsed', 'I Relapsed')}</Text>
+                                        <Text style={styles.relapseText}>{t('habits.iRelapsed', 'I Relapsed')}</Text>
                                     </TouchableOpacity>
                                 </View>
                             );
@@ -688,9 +688,9 @@ export default function HabitHubScreen() {
                         {(!quittingHabits || quittingHabits.length === 0) && (
                             <View style={styles.emptyState}>
                                 <Ionicons name="shield-checkmark" size={48} color="#cbd5e1" />
-                                <Text style={styles.emptyStateText}>{t('wellness.habits.noBadHabits', 'No bad habits tracked yet.')}</Text>
+                                <Text style={styles.emptyStateText}>{t('habits.noBadHabits', 'No bad habits tracked yet.')}</Text>
                                 <TouchableOpacity style={styles.addBreakHabitButton} onPress={() => setShowBreakHabitModal(true)}>
-                                    <Text style={styles.addBreakHabitText}>{t('wellness.habits.addBreakHabit', 'Add Habit to Break')}</Text>
+                                    <Text style={styles.addBreakHabitText}>{t('habits.addBreakHabit', 'Add Habit to Break')}</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -702,29 +702,29 @@ export default function HabitHubScreen() {
             <Modal visible={showHabitModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowHabitModal(false)}>
                 <SafeAreaView style={styles.modalContent} edges={['top']}>
                     <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>{t('wellness.habits.addNewHabit', 'Add New Habit')}</Text>
+                        <Text style={styles.modalTitle}>{t('habits.addNewHabit', 'Add New Habit')}</Text>
                         <TouchableOpacity onPress={() => setShowHabitModal(false)}>
                             <Ionicons name="close" size={24} color={themeColors.text} />
                         </TouchableOpacity>
                     </View>
                     <View style={styles.modalScroll}>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>{t('wellness.habits.habitName', 'Habit Name')}</Text>
+                            <Text style={styles.inputLabel}>{t('habits.habitName', 'Habit Name')}</Text>
                             <TextInput
                                 style={styles.input}
-                                placeholder={t('wellness.habits.habitPlaceholder', 'e.g., Drink water')}
+                                placeholder={t('habits.habitPlaceholder', 'e.g., Drink water')}
                                 value={newHabit.name}
                                 onChangeText={(t) => setNewHabit({ ...newHabit, name: t })}
                             />
                         </View>
                         {user?.lifeStage === 'postpartum' && (
                             <View style={styles.inputGroup}>
-                                <Text style={styles.inputLabel}>{t('wellness.habits.postpartumSuggestions', 'Postpartum Suggestions')}</Text>
+                                <Text style={styles.inputLabel}>{t('habits.postpartumSuggestions', 'Postpartum Suggestions')}</Text>
                                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
                                     {[
-                                        { name: t('wellness.habits.ppHydration', 'Hydration for Lactation'), icon: 'Droplets', category: 'health' },
-                                        { name: t('wellness.habits.ppStretch', 'One Gentle Stretch'), icon: 'Leaf', category: 'health' },
-                                        { name: t('wellness.habits.ppProtein', 'Protein-Rich Meal'), icon: 'Apple', category: 'health' }
+                                        { name: t('habits.ppHydration', 'Hydration for Lactation'), icon: 'Droplets', category: 'health' },
+                                        { name: t('habits.ppStretch', 'One Gentle Stretch'), icon: 'Leaf', category: 'health' },
+                                        { name: t('habits.ppProtein', 'Protein-Rich Meal'), icon: 'Apple', category: 'health' }
                                     ].map(s => (
                                         <TouchableOpacity 
                                             key={s.name}
@@ -738,7 +738,7 @@ export default function HabitHubScreen() {
                             </View>
                         )}
                         <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>{t('wellness.habits.targetDays', 'Target Days per Week')}</Text>
+                            <Text style={styles.inputLabel}>{t('habits.targetDays', 'Target Days per Week')}</Text>
                             <View style={styles.daysSelector}>
                                 {[1, 2, 3, 4, 5, 6, 7].map((d) => (
                                     <TouchableOpacity
@@ -752,7 +752,7 @@ export default function HabitHubScreen() {
                             </View>
                         </View>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>{t('wellness.habits.category', 'Category')}</Text>
+                            <Text style={styles.inputLabel}>{t('habits.category', 'Category')}</Text>
                             <View style={styles.categorySelector}>
                                 {habitCategories.map((c) => (
                                     <TouchableOpacity
@@ -767,7 +767,7 @@ export default function HabitHubScreen() {
                         </View>
 
                         <TouchableOpacity style={[styles.modalButton, { backgroundColor: '#3b82f6', marginTop: 20 }]} onPress={handleAddCustomHabit}>
-                            <Text style={styles.modalButtonText}>{t('wellness.habits.createHabit', 'Create Habit')}</Text>
+                            <Text style={styles.modalButtonText}>{t('habits.createHabit', 'Create Habit')}</Text>
                         </TouchableOpacity>
                     </View>
                 </SafeAreaView>
@@ -777,23 +777,23 @@ export default function HabitHubScreen() {
             <Modal visible={showBreakHabitModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowBreakHabitModal(false)}>
                 <SafeAreaView style={styles.modalContent} edges={['top']}>
                     <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>{t('wellness.habits.addBreakHabit', 'Add Habit to Break')}</Text>
+                        <Text style={styles.modalTitle}>{t('habits.addBreakHabit', 'Add Habit to Break')}</Text>
                         <TouchableOpacity onPress={() => setShowBreakHabitModal(false)}>
                             <Ionicons name="close" size={24} color={themeColors.text} />
                         </TouchableOpacity>
                     </View>
                     <View style={styles.modalScroll}>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>{t('wellness.habits.habitName', 'Habit Name')}</Text>
+                            <Text style={styles.inputLabel}>{t('habits.habitName', 'Habit Name')}</Text>
                             <TextInput
                                 style={styles.input}
-                                placeholder={t('wellness.habits.breakPlaceholder', 'e.g., Smoking, Junk Food')}
+                                placeholder={t('habits.breakPlaceholder', 'e.g., Smoking, Junk Food')}
                                 value={newBreakHabit.name}
                                 onChangeText={(t) => setNewBreakHabit({ ...newBreakHabit, name: t })}
                             />
                         </View>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>{t('wellness.habits.costPerDay', 'Cost Per Day ($)')}</Text>
+                            <Text style={styles.inputLabel}>{t('habits.costPerDay', 'Cost Per Day ($)')}</Text>
                             <TextInput
                                 style={styles.input}
                                 placeholder="e.g., 5.50"
@@ -801,10 +801,10 @@ export default function HabitHubScreen() {
                                 onChangeText={(t) => setNewBreakHabit({ ...newBreakHabit, costPerDay: t })}
                                 keyboardType="numeric"
                             />
-                            <Text style={styles.helperText}>{t('wellness.habits.costHelper', 'How much you spend on this habit daily')}</Text>
+                            <Text style={styles.helperText}>{t('habits.costHelper', 'How much you spend on this habit daily')}</Text>
                         </View>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>{t('wellness.habits.iconEmoji', 'Icon/Emoji')}</Text>
+                            <Text style={styles.inputLabel}>{t('habits.iconEmoji', 'Icon/Emoji')}</Text>
                             <View style={styles.iconSelector}>
                                 {['🚭', '🍔', '🍺', '📱', '🎰', '☕', '🍬', '🚗'].map((icon) => (
                                     <TouchableOpacity
@@ -819,7 +819,7 @@ export default function HabitHubScreen() {
                         </View>
 
                         <TouchableOpacity style={[styles.modalButton, { backgroundColor: '#ef4444', marginTop: 20 }]} onPress={handleAddBreakHabit}>
-                            <Text style={styles.modalButtonText}>{t('wellness.habits.startBreaking', 'Start Breaking This Habit')}</Text>
+                            <Text style={styles.modalButtonText}>{t('habits.startBreaking', 'Start Breaking This Habit')}</Text>
                         </TouchableOpacity>
                     </View>
                 </SafeAreaView>

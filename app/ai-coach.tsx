@@ -19,6 +19,7 @@ type Message = {
   content: string;
   isQuickQuestion?: boolean;
   prompt?: string;
+  isStreaming?: boolean;
 };
 
 export default function AiCoachScreen() {
@@ -46,6 +47,11 @@ export default function AiCoachScreen() {
   const storedMessages = useQuery(
     api.aiCoachMessages.listAiCoachMessages,
     convexUser?._id ? { userId: convexUser._id, limit: 50 } : 'skip'
+  );
+  const today = new Date().toISOString().slice(0, 10);
+  const coachSnapshot = useQuery(
+    api.coachContext.getSnapshot,
+    convexUser?._id ? { userId: convexUser._id, date: today } : 'skip'
   );
 
   const [messages, setMessages] = useState<Message[]>([
@@ -119,6 +125,18 @@ export default function AiCoachScreen() {
     { id: 'stress', prompt: "Quick techniques to manage daily stress", display: "🧘 Quick techniques to manage daily stress" },
   ];
 
+  const revealCoachResponse = async (content: string) => {
+    const messageId = `stream-${Date.now()}`;
+    setMessages(prev => [...prev, { role: 'coach', content: '', isStreaming: true, prompt: messageId }]);
+    const chunkSize = 10;
+    for (let index = 0; index < content.length; index += chunkSize) {
+      const visible = content.slice(0, index + chunkSize);
+      setMessages(prev => prev.map(message => message.prompt === messageId ? { ...message, content: visible } : message));
+      await new Promise(resolve => setTimeout(resolve, 16));
+    }
+    setMessages(prev => prev.map(message => message.prompt === messageId ? { role: 'coach', content } : message));
+  };
+
   async function handleSend(manualInput?: string) {
     const textToSend = typeof manualInput === 'string' ? manualInput : input.trim();
     if (!textToSend || loading || !convexUser?._id) return;
@@ -152,7 +170,15 @@ export default function AiCoachScreen() {
         history: messages
           .filter(m => !m.isQuickQuestion)
           .map(m => ({ role: m.role === 'coach' ? 'model' : 'user', content: m.content })),
-        context: `User Goal: ${convexUser?.fitnessGoal ?? 'General Wellness'}, Weight: ${convexUser?.weight ?? 'Not specified'}kg, Height: ${convexUser?.height ?? 'Not specified'}cm`,
+        context: JSON.stringify({
+          profile: coachSnapshot?.profile ?? {
+            goal: convexUser?.fitnessGoal ?? 'General Wellness',
+            weightKg: convexUser?.weight,
+            heightCm: convexUser?.height,
+          },
+          today: coachSnapshot?.today,
+          instruction: 'Use this current Bluom snapshot when relevant. Do not claim to have data that is absent. Ask before changing any app record.',
+        }),
         platform: Platform.OS,
       });
 
@@ -162,7 +188,7 @@ export default function AiCoachScreen() {
       }
 
       const coachText = String(response?.text ?? '');
-      setMessages(prev => [...prev, { role: 'coach', content: coachText }]);
+      await revealCoachResponse(coachText);
       await addAiCoachMessage({ userId: convexUser._id, role: 'coach', content: coachText });
     } catch (e: any) {
       Alert.alert('Error', 'Coach is resting. Please try again later.');
@@ -231,7 +257,7 @@ export default function AiCoachScreen() {
                       blockquote: { borderLeftColor: '#cbd5e1', borderLeftWidth: 3, paddingLeft: 10, marginLeft: 0, marginBottom: 10 },
                     }}
                   >
-                    {m.content}
+                    {m.content || ' '}
                   </Markdown>
                 ) : (
                   <Text style={[
@@ -242,6 +268,9 @@ export default function AiCoachScreen() {
                   ]}>
                     {m.content}
                   </Text>
+                )}
+                {m.isStreaming && (
+                  <Text style={{ color: themeColors.primary, fontWeight: '900', marginTop: 2 }}>...</Text>
                 )}
                 {m.isQuickQuestion && (
                   <View className="flex-row items-center mt-1">

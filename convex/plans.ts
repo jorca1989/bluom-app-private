@@ -131,10 +131,39 @@ export const generateAllPlans = action({
     const user = await ctx.runQuery(internal.users.internalGetUserById, { userId: args.userId });
     if (!user) throw new Error("User not found via action"); // Should not happen
 
-    // 2. Construct Prompt for Gemini
+    const userLang = ((user as any).preferredLanguage || 'en').toLowerCase().trim();
+    const LANG_MAP: Record<string, string> = {
+      en: 'English',
+      sv: 'Swedish',
+      de: 'German',
+      fr: 'French',
+      pt: 'Portuguese',
+      es: 'Spanish',
+      it: 'Italian',
+      nl: 'Dutch',
+      da: 'Danish',
+      no: 'Norwegian',
+      fi: 'Finnish',
+      hu: 'Hungarian',
+      hg: 'Hungarian',
+      pl: 'Polish',
+      tr: 'Turkish',
+      ro: 'Romanian',
+      el: 'Greek',
+      bg: 'Bulgarian',
+      lt: 'Lithuanian',
+      lv: 'Latvian',
+    };
+    const targetLangName = LANG_MAP[userLang] || LANG_MAP[userLang.split('-')[0]] || 'English';
+
+    // 2. Construct Prompt for Gemini / DeepSeek
     const systemPrompt = `
     You are an expert AI Health Coach for the app "Bluom".
     Generate 3 distinct plans (Nutrition, Fitness, Wellness) for this user based on their profile.
+    
+    LANGUAGE REQUIREMENT:
+    - You MUST write ALL user-facing text, meal suggestions, habit names, and focus points in ${targetLangName}.
+    - For meal suggestions: use authentic, natural culinary names and ingredients typical of ${targetLangName} cuisine (e.g. in Swedish use "Havregrynsgröt", "Äggröra", "Ugnsbakad lax", "Keso", "Sötpotatis", "Proteinpannkakor", etc., not awkward literal word-for-word translations).
     
     USER PROFILE:
     - Age: ${user.age}, Sex: ${user.biologicalSex}, Weight: ${user.weight}kg, Height: ${user.height}cm
@@ -156,8 +185,8 @@ export const generateAllPlans = action({
        - Generate EXACTLY 7 days of meals (a weekly template).
        - Return an array called 'weeklyMeals' containing EXACTLY 7 objects.
        - Each object represents a day: { "day": number (1-7), "meals": array of EXACTLY ${user.mealsPerDay || 4} meals }.
-       - Each meal within 'meals' MUST include: mealType (string), calories (number), protein (number), carbs (number), fat (number), suggestions (array of 3-5 specific food items).
-       - Suggestions should be real, specific foods like "3 scrambled eggs with spinach", "grilled chicken breast 200g with sweet potato".
+       - Each meal within 'meals' MUST include: mealType (string), calories (number), protein (number), carbs (number), fat (number), suggestions (array of 3-5 specific food items written in ${targetLangName}).
+       - Suggestions should be real, specific foods with natural culinary terminology.
     
     2. FITNESS PLAN:
        - Determine best 'workoutSplit' (e.g. Full Body, UL, PPL)
@@ -347,9 +376,37 @@ export const regenerateSpecificMeal = action({
     const user = await ctx.runQuery(internal.users.internalGetUserById, { userId: args.userId });
     if (!user) throw new Error("User not found");
 
+    const userLang = ((user as any).preferredLanguage || 'en').toLowerCase().trim();
+    const LANG_MAP: Record<string, string> = {
+      en: 'English',
+      sv: 'Swedish',
+      de: 'German',
+      fr: 'French',
+      pt: 'Portuguese',
+      es: 'Spanish',
+      it: 'Italian',
+      nl: 'Dutch',
+      da: 'Danish',
+      no: 'Norwegian',
+      fi: 'Finnish',
+      hu: 'Hungarian',
+      hg: 'Hungarian',
+      pl: 'Polish',
+      tr: 'Turkish',
+      ro: 'Romanian',
+      el: 'Greek',
+      bg: 'Bulgarian',
+      lt: 'Lithuanian',
+      lv: 'Latvian',
+    };
+    const targetLangName = LANG_MAP[userLang] || LANG_MAP[userLang.split('-')[0]] || 'English';
+
     const systemPrompt = `
     You are an expert AI Health Coach. 
     Generate a SINGLE replacement meal for a ${args.currentMealType} for this user.
+    
+    LANGUAGE REQUIREMENT:
+    - You MUST write the food suggestions in ${targetLangName} using natural, authentic culinary names.
     
     USER PROFILE:
     - Age: ${user.age}, Weight: ${user.weight}kg, Goal: ${user.fitnessGoal}
@@ -358,7 +415,7 @@ export const regenerateSpecificMeal = action({
     
     REQUIREMENTS:
     - Provide exactly one meal object.
-    - MUST include: 'mealType' (should be "${args.currentMealType}"), 'calories', 'protein', 'carbs', 'fat', and 'suggestions' (array of 3-5 specific food items).
+    - MUST include: 'mealType' (should be "${args.currentMealType}"), 'calories', 'protein', 'carbs', 'fat', and 'suggestions' (array of 3-5 specific food items in ${targetLangName}).
     - Output ONLY valid JSON containing the meal object. Example:
       { "mealType": "${args.currentMealType}", "calories": 450, "protein": 35, "carbs": 40, "fat": 15, "suggestions": ["1 cup Greek yogurt", "Handful of almonds"] }
     `;

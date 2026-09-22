@@ -486,7 +486,7 @@ export default function VoiceLogModal({
                         <Text style={[
                           s.mealChipText,
                           selectedMeal === m && { color: '#fff' },
-                        ]}>
+                        ]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.72}>
                           {t(`common.${m.toLowerCase()}`, m)}
                         </Text>
                       </TouchableOpacity>
@@ -507,7 +507,7 @@ export default function VoiceLogModal({
                     >
                       {saving
                         ? <ActivityIndicator size="small" color="#fff" />
-                        : <Text style={s.confirmBtnText}>{t('modals.voice.logToMeal', 'Log to')} {t(`common.${selectedMeal.toLowerCase()}`, selectedMeal)}</Text>
+                        : <Text style={s.confirmBtnText} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.72}>{t('modals.voice.logToMeal', 'Log to')} {t(`common.${selectedMeal.toLowerCase()}`, selectedMeal)}</Text>
                       }
                     </TouchableOpacity>
                   </View>

@@ -7,7 +7,10 @@ import { isProOrAdmin } from "./access";
  * Get all active meditation sessions
  */
 export const getSessions = query({
-  args: { category: v.optional(v.string()) },
+  args: {
+    category: v.optional(v.string()),
+    includeDrafts: v.optional(v.boolean()),
+  },
   handler: async (ctx, args) => {
     let sessions;
     if (args.category) {
@@ -19,7 +22,7 @@ export const getSessions = query({
       sessions = await ctx.db.query("meditationSessions").collect();
     }
     return sessions
-      .filter(s => s.status !== 'draft')
+      .filter(s => args.includeDrafts || s.status !== 'draft')
       .map(s => ({ ...s, tags: s.tags ?? [] }));
   },
 });

@@ -32,14 +32,17 @@ export const generateAiMealFromIngredients = action({
   handler: async (_ctx, args) => {
     const apiKey = getGeminiKey(args.platform);
 
-    const lang = args.language ?? 'en';
+    const lang = (args.language ?? 'en').toLowerCase().trim();
     const LANG_NAMES: Record<string, string> = {
       'en': 'English', 'pt': 'European Portuguese', 'fr': 'French',
       'de': 'German', 'es': 'Spanish', 'it': 'Italian', 'nl': 'Dutch',
       'pl': 'Polish', 'da': 'Danish', 'sv': 'Swedish', 'no': 'Norwegian',
+      'fi': 'Finnish', 'hu': 'Hungarian', 'hg': 'Hungarian', 'tr': 'Turkish',
+      'ro': 'Romanian', 'el': 'Greek', 'bg': 'Bulgarian', 'lt': 'Lithuanian',
+      'lv': 'Latvian',
     };
-    const langName = LANG_NAMES[lang] ?? 'English';
-    const langInstruction = `IMPORTANT: You MUST write ALL text fields (title, description, steps, ingredient names, tags, imageSearchQuery) in ${langName}. Do not use any other language.\n\n`;
+    const langName = LANG_NAMES[lang] || LANG_NAMES[lang.split('-')[0]] || 'English';
+    const langInstruction = `IMPORTANT: You MUST write ALL text fields (title, description, steps, ingredient names, tags, imageSearchQuery) in ${langName} using natural culinary terminology. Do not use any other language.\n\n`;
 
     const prompt = `${langInstruction}You are a professional chef and nutritionist.
 Create ONE recipe using these ingredients (you may add basic pantry staples):

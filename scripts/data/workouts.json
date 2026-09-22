@@ -1,0 +1,106 @@
+[
+  {
+    "title": "Across Chest Shoulder Stretch",
+    "description": "Static stretch that opens the shoulder and releases tension across the chest and upper back.",
+    "category": "Stretching",
+    "categories": ["Stretching", "Mobility"],
+    "muscleGroupTags": ["Shoulders", "Chest", "Triceps"],
+    "equipment": [],
+    "difficulty": "Beginner",
+    "duration": 30,
+    "calories": 2,
+    "thumbnailMale": "https://pub-f21d719c948b41dd8ef5e188aceea102.r2.dev/Across%20Chest%20Shoulder%20Stretch.jpg",
+    "thumbnailFemale": "https://pub-f21d719c948b41dd8ef5e188aceea102.r2.dev/Across%20Chest%20Shoulder%20Stretch_Female.jpg",
+    "videoUrlMale": "https://pub-f21d719c948b41dd8ef5e188aceea102.r2.dev/Across%20Chest%20Shoulder%20Stretch.mp4",
+    "videoUrlFemale": "https://pub-f21d719c948b41dd8ef5e188aceea102.r2.dev/Across%20Chest%20Shoulder%20Stretch_Female.mp4",
+    "titleLocalizations": {
+      "es": "Estiramiento de Hombro Cruzando el Pecho",
+      "pt": "Alongamento de Ombro Cruzando o Peito",
+      "fr": "Étirement de l'Épaule en Travers de la Poitrine",
+      "de": "Schulterdehnung über die Brust",
+      "nl": "Schouderstretch over de Borst",
+      "da": "Skulderstrækning over Brystet",
+      "no": "Skulderstrekk over Brystet",
+      "sv": "Axelstrecking över Bröstet"
+    },
+    "descriptionLocalizations": {
+      "es": "Estiramiento estático que abre el hombro y libera tensión en el pecho y la parte superior de la espalda.",
+      "pt": "Alongamento estático que abre o ombro e libera a tensão no peito e na parte superior das costas.",
+      "fr": "Étirement statique qui ouvre l'épaule et relâche les tensions dans la poitrine et le haut du dos.",
+      "de": "Statische Dehnung, die die Schulter öffnet und Spannungen in Brust und oberem Rücken löst.",
+      "nl": "Statische stretch die de schouder opent en spanning in de borst en bovenrug loslaat.",
+      "da": "Statisk strækning, der åbner skulderen og løsner spændinger i brystet og den øvre ryg.",
+      "no": "Statisk tøying som åpner skulderen og løser spenninger i brystet og øvre rygg.",
+      "sv": "Statisk stretch som öppnar axeln och löser upp spänningar i bröstet och övre ryggen."
+    },
+    "exercises": [
+      {
+        "name": "Across Chest Shoulder Stretch",
+        "duration": 30,
+        "description": "Bring one arm across your chest and gently press it closer with the opposite hand until you feel a stretch in the shoulder.",
+        "primaryMuscles": ["Shoulders", "Chest"],
+        "secondaryMuscles": ["Triceps"],
+        "exerciseType": "Stretch",
+        "exerciseTypes": ["Stretch", "Mobility"],
+        "instructions": [
+          "Stand tall and relax your shoulders.",
+          "Bring one arm straight across your chest.",
+          "Use your other arm to gently pull it closer.",
+          "Hold for 20-30 seconds, then switch sides."
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Alternate Biceps Curl Standing Dumbbells",
+    "description": "Standing alternating dumbbell curl that isolates and builds the biceps.",
+    "category": "Strength",
+    "categories": ["Strength", "Arms"],
+    "muscleGroupTags": ["Biceps", "Forearms", "Shoulders"],
+    "equipment": ["Dumbbells"],
+    "difficulty": "Beginner",
+    "duration": 45,
+    "calories": 6,
+    "thumbnail": "https://pub-f21d719c948b41dd8ef5e188aceea102.r2.dev/Alternate%20Biceps%20Curl%20Standing%20Dumbbells.jpg",
+    "videoUrl": "https://pub-f21d719c948b41dd8ef5e188aceea102.r2.dev/Alternate%20Biceps%20Curl%20Standing%20Dumbbells.mp4",
+    "titleLocalizations": {
+      "es": "Curl de Bíceps Alterno de Pie con Mancuernas",
+      "pt": "Rosca Alternada de Bíceps em Pé com Halteres",
+      "fr": "Curl Biceps Alterné Debout avec Haltères",
+      "de": "Abwechselndes Bizeps-Curl im Stehen mit Kurzhanteln",
+      "nl": "Afwisselende Bicepscurl Staand met Dumbbells",
+      "da": "Skiftevis Biceps Curl Stående med Håndvægte",
+      "no": "Vekslende Bicepscurl Stående med Manualer",
+      "sv": "Växelvis Bicepscurl Stående med Hantlar"
+    },
+    "descriptionLocalizations": {
+      "es": "Curl de bíceps alterno de pie con mancuernas que aísla y desarrolla los bíceps.",
+      "pt": "Rosca de bíceps alternada em pé com halteres que isola e desenvolve os bíceps.",
+      "fr": "Curl biceps alterné debout avec haltères qui isole et développe les biceps.",
+      "de": "Abwechselndes Bizeps-Curl im Stehen mit Kurzhanteln, das den Bizeps isoliert und aufbaut.",
+      "nl": "Afwisselende bicepscurl staand met dumbbells die de biceps isoleert en opbouwt.",
+      "da": "Skiftevis biceps curl stående med håndvægte, der isolerer og opbygger biceps.",
+      "no": "Vekslende bicepscurl stående med manualer som isolerer og bygger biceps.",
+      "sv": "Växelvis bicepscurl stående med hantlar som isolerar och bygger biceps."
+    },
+    "exercises": [
+      {
+        "name": "Alternate Biceps Curl Standing Dumbbells",
+        "duration": 45,
+        "sets": 3,
+        "reps": 12,
+        "description": "Curl one dumbbell at a time while standing, alternating arms.",
+        "primaryMuscles": ["Biceps"],
+        "secondaryMuscles": ["Forearms", "Shoulders"],
+        "exerciseType": "Isolation",
+        "exerciseTypes": ["Isolation"],
+        "instructions": [
+          "Stand tall holding a dumbbell in each hand, arms at your sides.",
+          "Curl one dumbbell up toward your shoulder, keeping your elbow still.",
+          "Lower with control, then repeat with the other arm.",
+          "Continue alternating for the full set."
+        ]
+      }
+    ]
+  }
+]

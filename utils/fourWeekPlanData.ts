@@ -28,11 +28,11 @@ export interface PlanWeek {
     days: PlanDay[];
 }
 
-// ─── Default thumbnail (used when no GIF available) ───────────────────────────
-const THUMB = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=200';
-const THUMB2 = 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=200';
-const THUMB3 = 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=200';
-const THUMB4 = 'https://images.unsplash.com/photo-1574681533083-bf41eb47b2c0?auto=format&fit=crop&q=80&w=200';
+// ─── Default thumbnail (dynamically resolved from DB videoWorkouts) ───────────
+const THUMB = '';
+const THUMB2 = '';
+const THUMB3 = '';
+const THUMB4 = '';
 
 // ─── THE PLAN ─────────────────────────────────────────────────────────────────
 export const FREE_4_WEEK_PLAN: PlanWeek[] = [

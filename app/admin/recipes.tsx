@@ -721,7 +721,7 @@ export default function RecipesManager() {
                             style={styles.input}
                             value={newRecipe.imageUrl}
                             onChangeText={t => setNewRecipe((p: any) => ({ ...p, imageUrl: t }))}
-                            placeholder={`${R2_CONFIG.generalBaseUrl}/recipes/image.jpg`}
+                            placeholder={`${R2_CONFIG.recipeBaseUrl}/recipes/image.jpg`}
                             autoCapitalize="none"
                         />
                         <Text style={styles.label}>{t('admin.visibility', 'Visibility')}</Text>

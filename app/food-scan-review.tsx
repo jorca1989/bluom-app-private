@@ -370,7 +370,7 @@ export default function FoodScanReviewScreen() {
                 style={[styles.mealOption, meal === m && styles.mealOptionActive]}
                 onPress={() => setMeal(m)}
               >
-                <Text style={[styles.mealOptionText, meal === m && styles.mealOptionTextActive]}>
+                <Text style={[styles.mealOptionText, meal === m && styles.mealOptionTextActive]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.72}>
                   {t(`foodReview.${m.toLowerCase()}`, m)}
                 </Text>
               </TouchableOpacity>

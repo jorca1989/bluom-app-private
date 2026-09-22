@@ -32,3 +32,20 @@ export async function checkAdminPower(ctx: QueryCtx | MutationCtx) {
     console.warn(`Unauthorized admin access attempt by: ${email ?? "unknown"}`);
     throw new Error("Unauthorized: admin role required");
 }
+
+/**
+ * Server-side guard for automation/bulk scripts running via ConvexHttpClient.
+ * Validates scriptKey against process.env.ADMIN_SCRIPT_KEY.
+ */
+export function checkAdminScriptKey(scriptKey?: string) {
+    const configuredKey = process.env.ADMIN_SCRIPT_KEY;
+    if (!configuredKey) {
+        throw new Error(
+            "ADMIN_SCRIPT_KEY is not configured in Convex environment variables. " +
+            "Please run: npx convex env set ADMIN_SCRIPT_KEY <your-secret-key>"
+        );
+    }
+    if (!scriptKey || scriptKey !== configuredKey) {
+        throw new Error("Unauthorized: invalid or missing scriptKey");
+    }
+}

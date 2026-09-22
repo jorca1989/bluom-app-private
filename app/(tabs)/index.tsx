@@ -677,7 +677,7 @@ export default function HomeScreen() {
             <View style={[s.qaIcon, { backgroundColor: a.bg }]}>
               <a.icon size={19} color={a.color} />
             </View>
-            <Text style={s.qaLbl}>{a.label}</Text>
+            <Text style={s.qaLbl} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.68}>{a.label}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -720,7 +720,7 @@ export default function HomeScreen() {
   };
 
   const wDiscover = () => {
-    const rawDiscoverItems: { icon: any; label: string; path: string; color: string; bg: string; toolKey: ToolKey }[] = [
+    const rawDiscoverItems: { icon: any; label: string; path: string; color: string; bg: string; toolKey?: ToolKey; alwaysVisible?: boolean }[] = [
       { icon: MessageSquare, label: t('home.discover.aiCoach', 'AI Coach'), path: '/ai-coach', color: '#2563eb', bg: 'rgba(37,99,235,0.12)', toolKey: 'aiCoach' },
       {
         icon: ({ size, color }: any) => <Text style={{ fontSize: size + 2, color }}>♀</Text>,
@@ -739,9 +739,10 @@ export default function HomeScreen() {
       { icon: TrendingDown, label: t('home.discover.metabolic', 'Metabolic'), path: '/sugar-dashboard', color: '#ef4444', bg: 'rgba(239,68,68,0.12)', toolKey: 'metabolic' },
       { icon: ToothIcon, label: t('home.discover.dental', 'Dental Hub'), path: '/dental-hub', color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)', toolKey: 'dental' },
       { icon: Heart, label: t('home.discover.pulse', 'Pulse Check'), path: '/pulse-checker', color: '#f43f5e', bg: 'rgba(244,63,94,0.12)', toolKey: 'pulse' },
+      { icon: Scale, label: t('home.discover.weightJourney', 'Weight Journey'), path: '/weightmanagement', color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)', alwaysVisible: true },
     ];
 
-    const activeItems = rawDiscoverItems.filter(item => isToolActive(item.toolKey));
+    const activeItems = rawDiscoverItems.filter(item => item.alwaysVisible || (item.toolKey && isToolActive(item.toolKey)));
     
     // Always append permanent Customize Hub tile
     const discoverItems = [
@@ -874,7 +875,7 @@ export default function HomeScreen() {
         style={{ opacity: fadeAnim }}
         contentContainerStyle={[
           s.scroll,
-          { paddingBottom: Math.max(insets.bottom, 12) + 6 },
+          { paddingBottom: Math.max(insets.bottom, 8) },
           isTablet && { alignItems: 'center' as const },
         ]}
         showsVerticalScrollIndicator={false}
@@ -1054,7 +1055,7 @@ const createS = (c: ThemeColors) => StyleSheet.create({
   // Quick actions
   qaRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 },
   qaItem: { alignItems: 'center', flex: 1 },
-  qaIcon: { width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginBottom: 5 },
+  qaIcon: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', marginBottom: 5 },
   qaLbl: { fontSize: 10, fontWeight: '700', color: c.text, textAlign: 'center' },
 
   // Trends

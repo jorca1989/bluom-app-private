@@ -1,0 +1,105 @@
+[
+  {
+    "title": "Portuguese Creamy Cod Bake",
+    "description": "A lighter take on bacalhau com natas with flaky cod, tender potatoes, spinach, and a creamy baked finish.",
+    "imageUrl": "https://pub-e8204ad737dc4a5f93bd4f2b1f9f0a15.r2.dev/Bacalhau%20com%20natas.png",
+    "cookTimeMinutes": 45,
+    "servings": 4,
+    "calories": 480,
+    "protein": 34,
+    "carbs": 35,
+    "fat": 22,
+    "tags": ["Portuguese", "high protein", "family dinner"],
+    "category": "Dinner",
+    "categories": ["Dinner", "High Protein"],
+    "mealType": ["Dinner"],
+    "cuisine": "Portuguese",
+    "ingredients": [
+      "600 g cooked cod, flaked",
+      "600 g potatoes, thinly sliced",
+      "1 onion, sliced",
+      "2 cloves garlic, minced",
+      "150 g spinach",
+      "250 ml light cooking cream",
+      "100 ml low-sodium milk",
+      "1 tbsp olive oil",
+      "40 g grated Parmesan",
+      "Black pepper and nutmeg to taste"
+    ],
+    "instructions": [
+      "Heat the oven to 200 C and lightly oil a baking dish.",
+      "Boil the sliced potatoes for 8 minutes, then drain well.",
+      "Saute the onion and garlic in olive oil until soft, then fold in the spinach until wilted.",
+      "Layer half the potatoes, cod, and spinach mixture in the dish. Repeat once.",
+      "Whisk the cream, milk, pepper, and a pinch of nutmeg. Pour over the bake and top with Parmesan.",
+      "Bake for 25 to 30 minutes until golden and bubbling. Rest for 5 minutes before serving."
+    ],
+    "shoppingListItems": ["cod", "potatoes", "onion", "garlic", "spinach", "light cooking cream", "milk", "Parmesan"],
+    "titleLocalizations": {
+      "pt": "Bacalhau Cremoso no Forno",
+      "es": "Bacalao cremoso al horno",
+      "fr": "Gratin crémeux de morue",
+      "de": "Cremiger Kabeljauauflauf",
+      "nl": "Romige kabeljauwschotel"
+    },
+    "descriptionLocalizations": {
+      "pt": "Uma versão mais leve de bacalhau com natas, com bacalhau em lascas, batata macia, espinafres e um acabamento cremoso no forno.",
+      "es": "Una versión más ligera de bacalao con nata, con bacalao desmenuzado, patatas tiernas, espinacas y un acabado cremoso al horno.",
+      "fr": "Une version plus légère de la morue à la crème, avec de la morue effeuillée, des pommes de terre fondantes, des épinards et une finition crémeuse au four.",
+      "de": "Eine leichtere Variante von Kabeljau mit Sahne, mit zartem Kabeljau, Kartoffeln, Spinat und einer cremigen Ofenhaube.",
+      "nl": "Een lichtere versie van kabeljauw met room, met zachte kabeljauw, aardappelen, spinazie en een romige afwerking uit de oven."
+    },
+    "status": "published"
+  },
+  {
+    "title": "Thai Green Papaya Chicken Salad",
+    "description": "A bright, high-protein salad with shredded green papaya, chicken, herbs, lime, and a crisp peanut finish.",
+    "imageUrl": "https://pub-e8204ad737dc4a5f93bd4f2b1f9f0a15.r2.dev/Thai%20Green%20Papaya%20Salad.png",
+    "cookTimeMinutes": 20,
+    "servings": 2,
+    "calories": 350,
+    "protein": 31,
+    "carbs": 28,
+    "fat": 13,
+    "tags": ["Thai", "high protein", "fresh", "meal prep"],
+    "category": "Lunch",
+    "categories": ["Lunch", "High Protein"],
+    "mealType": ["Lunch", "Dinner"],
+    "cuisine": "Thai",
+    "ingredients": [
+      "250 g cooked chicken breast, shredded",
+      "2 cups green papaya, shredded",
+      "1 carrot, julienned",
+      "1 cup cherry tomatoes, halved",
+      "2 tbsp fresh lime juice",
+      "1 tbsp fish sauce or tamari",
+      "1 tsp honey",
+      "1 small red chili, finely sliced",
+      "2 tbsp roasted peanuts, chopped",
+      "Fresh coriander and mint"
+    ],
+    "instructions": [
+      "Whisk the lime juice, fish sauce or tamari, honey, and chili in a large bowl.",
+      "Add the shredded papaya, carrot, tomatoes, and chicken.",
+      "Toss well so the dressing coats every ingredient.",
+      "Fold through the coriander and mint.",
+      "Finish with chopped peanuts and serve immediately."
+    ],
+    "shoppingListItems": ["chicken breast", "green papaya", "carrot", "cherry tomatoes", "lime", "fish sauce", "peanuts", "coriander", "mint"],
+    "titleLocalizations": {
+      "pt": "Salada Tailandesa de Mamão Verde com Frango",
+      "es": "Ensalada tailandesa de papaya verde con pollo",
+      "fr": "Salade thaïlandaise de papaye verte au poulet",
+      "de": "Thailändischer grüner Papayasalat mit Hähnchen",
+      "nl": "Thaise groene papajasalade met kip"
+    },
+    "descriptionLocalizations": {
+      "pt": "Uma salada fresca e rica em proteína com mamão verde ralado, frango, ervas, lima e amendoins crocantes.",
+      "es": "Una ensalada fresca y rica en proteína con papaya verde rallada, pollo, hierbas, lima y cacahuetes crujientes.",
+      "fr": "Une salade fraîche et riche en protéines avec de la papaye verte râpée, du poulet, des herbes, du citron vert et des cacahuètes croquantes.",
+      "de": "Ein frischer, proteinreicher Salat mit geraspelter grüner Papaya, Hähnchen, Kräutern, Limette und knusprigen Erdnüssen.",
+      "nl": "Een frisse eiwitrijke salade met geraspte groene papaja, kip, kruiden, limoen en knapperige pinda's."
+    },
+    "status": "published"
+  }
+]

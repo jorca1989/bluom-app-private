@@ -236,7 +236,7 @@ export default function SingleExerciseLogModal({
                   <>
                     {/* Sets Header */}
                     <View style={styles.setsHeader}>
-                      <Text style={[styles.setsColHead, { minWidth: 48, flexShrink: 0 }]}>{t('move.setShort', 'SET')}</Text>
+                      <Text style={[styles.setsColHead, { minWidth: 48, flexShrink: 0 }]}>#</Text>
                       <Text style={[styles.setsColHead, { flex: 1, textAlign: 'center' }]}>{t('move.kgShort', 'KG')} / +{t('move.kgShort', 'KG')}</Text>
                       <Text style={[styles.setsColHead, { flex: 1, textAlign: 'center' }]}>{t('move.repsShort', 'REPS')}</Text>
                       <View style={{ width: 34 }} />
@@ -338,6 +338,9 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   finishBtn: {
     backgroundColor: '#3b82f6',
+    maxWidth: 104,
+    minWidth: 54,
+    minHeight: 40,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,

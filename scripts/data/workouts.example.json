@@ -1,0 +1,61 @@
+[
+  {
+    "title": "Barbell Squat",
+    "description": "Fundamental compound lower-body exercise targeting quadriceps, glutes, and core.",
+    "category": "Strength",
+    "categories": ["Strength", "Legs"],
+    "muscleGroupTags": ["Quads", "Glutes", "Core"],
+    "equipment": ["Barbell", "Squat Rack"],
+    "difficulty": "Intermediate",
+    "duration": 5,
+    "calories": 45,
+    "thumbnail": "https://pub-your-r2-id.r2.dev/workouts/squat-thumb.jpg",
+    "thumbnailMale": "https://pub-your-r2-id.r2.dev/workouts/squat-male-thumb.jpg",
+    "thumbnailFemale": "https://pub-your-r2-id.r2.dev/workouts/squat-female-thumb.jpg",
+    "videoUrl": "https://pub-your-r2-id.r2.dev/workouts/squat.mp4",
+    "videoUrlMale": "https://pub-your-r2-id.r2.dev/workouts/squat-male.mp4",
+    "videoUrlFemale": "https://pub-your-r2-id.r2.dev/workouts/squat-female.mp4",
+    "titleLocalizations": {
+      "es": "Sentadilla con Barra",
+      "pt": "Agachamento com Barra",
+      "fr": "Squat avec Barre",
+      "de": "Kniebeugen mit Langhantel",
+      "nl": "Barbell Squat",
+      "da": "Barbell Squat",
+      "no": "Knebøy med Stang",
+      "sv": "Knäböj med Skivstång"
+    },
+    "descriptionLocalizations": {
+      "es": "Ejercicio compuesto fundamental para el tren inferior que trabaja cuádriceps, glúteos y core.",
+      "pt": "Exercício composto fundamental para membros inferiores que trabalha quadríceps, glúteos e core.",
+      "fr": "Exercice composé fondamental pour le bas du corps ciblant les quadriceps, les fessiers et le gainage.",
+      "de": "Grundlegende Verbundübung für den Unterkörper, die Quadrizeps, Gesäß und Rumpf trainiert."
+    },
+    "exercises": [
+      {
+        "name": "Barbell Squat",
+        "duration": 60,
+        "sets": 4,
+        "reps": 10,
+        "description": "Lower until thighs are parallel to the ground.",
+        "primaryMuscles": ["Quads", "Glutes"],
+        "instructions": [
+          "Rest the barbell comfortably on your upper traps.",
+          "Keep feet shoulder-width apart, toes slightly turned out.",
+          "Inhale, brace your core, and sit back as if into a chair.",
+          "Lower until hips are parallel with knees.",
+          "Drive through mid-foot to stand back up, exhaling at the top."
+        ],
+        "instructionsLocalizations": {
+          "es": [
+            "Apoya la barra sobre los trapecios superiores.",
+            "Pies al ancho de hombros, puntas ligeramente hacia afuera.",
+            "Inhala, aprieta el abdomen y baja como si fueras a sentarte.",
+            "Baja hasta que los muslos queden paralelos al suelo.",
+            "Empuja con el medio pie para subir exhalando arriba."
+          ]
+        }
+      }
+    ]
+  }
+]

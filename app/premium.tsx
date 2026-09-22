@@ -26,134 +26,115 @@ import {
   pickProOffering,
   pickMonthlyAndAnnualPackages,
   purchasePackageSafe,
+  getTrialDuration,
 } from '@/utils/revenuecat';
 import { useUser as useAppUser } from '@/context/UserContext';
-import { BlurView } from 'expo-blur';
-import Svg, { Path } from 'react-native-svg';
 import * as SecureStore from 'expo-secure-store';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+import { useTheme, type ThemeColors } from '@/context/ThemeContext';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
-const HERO_IMAGE_URL = 'https://pub-df4415ed308d4c5c9617037ae2ddcbe9.r2.dev/Premiun.tsx%20hero.png';
-
-// ─── Feature list (translated) ──────────────────────────────────────────────
+// ─── Feature list ──────────────────────────────────────────────────────────────
 function getFeatures(t: any) {
   return [
     { icon: '🥗', title: t('premium.featNutritionTitle', 'Personalised Nutrition Plan'), desc: t('premium.featNutritionDesc', 'Custom macros, meals and daily protocols tailored to your goals') },
     { icon: '🏋️', title: t('premium.featFitnessTitle', 'Personalised Fitness Plan'), desc: t('premium.featFitnessDesc', '4-week progressive training programme built around your schedule') },
     { icon: '🧠', title: t('premium.featMentalTitle', 'Mental Health Plan'), desc: t('premium.featMentalDesc', 'Weekly mindset themes, stress protocols and meditation sessions') },
+    { icon: '♀️', title: t('premium.featWomensHealthTitle', "Women's Health Optimisation"), desc: t('premium.featWomensHealthDesc', 'Cycle tracking, phase-based protocols and pregnancy support') },
+    { icon: '♂️', title: t('premium.featMensHealthTitle', "Men's Health Optimisation"), desc: t('premium.featMensHealthDesc', 'Testosterone protocols and male performance tracking') },
+    { icon: '⚡', title: t('premium.featProductivityTitle', 'Productivity Tools'), desc: t('premium.featProductivityDesc', 'Deep work timers, focus states and schedule planners') },
+    { icon: '📈', title: t('premium.featHabitsTitle', 'Habits Tracker'), desc: t('premium.featHabitsDesc', 'Daily habit tracking and streak builder') },
+    { icon: '😴', title: t('premium.featSleepTitle', 'Sleep Analysis'), desc: t('premium.featSleepDesc', 'Sleep protocols and circadian rhythm optimisation') },
     { icon: '🤖', title: t('premium.featAiCoachTitle', 'AI Coach'), desc: t('premium.featAiCoachDesc', 'Unlimited personalised responses') },
     { icon: '👁️', title: t('premium.featVisionTitle', 'AI Vision'), desc: t('premium.featVisionDesc', 'Scan meals with your camera') },
-    { icon: '🎬', title: t('premium.featWorkoutsTitle', 'Video Workouts'), desc: t('premium.featWorkoutsDesc', 'Full exercise video library') },
     { icon: '📊', title: t('premium.featAnalyticsTitle', 'Advanced Analytics'), desc: t('premium.featAnalyticsDesc', 'Deep health and performance trends') },
-    { icon: '🌸', title: t('premium.featHormonesTitle', 'Hormonal Health'), desc: t('premium.featHormonesDesc', 'Cycle, supplements and guidance') },
-    { icon: '⚡', title: t('premium.featFastingTitle', 'Metabolic Fasting'), desc: t('premium.featFastingDesc', 'Advanced fasting protocols') },
-    { icon: '🏠', title: t('premium.featHouseholdTitle', 'Household Management'), desc: t('premium.featHouseholdDesc', 'Shared lists and partner sync') },
-    { icon: '🧪', title: t('premium.featCogLabTitle', 'Cognitive Lab'), desc: t('premium.featCogLabDesc', 'Brain training games and focus') },
   ];
 }
 
-// ─── Currency helpers ─────────────────────────────────────────────────────────
-function getTreatItems(code: string | null) {
-  if (code === 'USD') return { a: { icon: '🧋', label: 'Frappuccino', amount: 7.0 }, b: { icon: '🍨', label: 'McFlurry', amount: 5.25 } };
-  if (code === 'EUR') return { a: { icon: '🍺', label: 'Craft Beer', amount: 6.0 }, b: { icon: '🍨', label: 'Gelato', amount: 5.0 } };
-  if (code === 'GBP') return { a: { icon: '🍺', label: 'Pub Pint', amount: 6.5 }, b: { icon: '🥐', label: 'Pastry', amount: 3.0 } };
-  if (code === 'BRL') return { a: { icon: '🍕', label: 'Pizza', amount: 35.0 }, b: { icon: '🧋', label: 'Iced Coffee', amount: 15.0 } };
-  return { a: { icon: '🧋', label: 'Frappuccino', amount: 0 }, b: { icon: '🍨', label: 'McFlurry', amount: 0 } };
-}
-
-function fmt(amount: number, code: string | null) {
-  if (!code || amount === 0) return '—';
-  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: code }).format(amount); } catch { return String(amount); }
-}
-
-
-// ─── Plan card ────────────────────────────────────────────────────────────────
-function PlanCard({ title, subtitle, price, priceNote, popular, disabled, onPress }: {
-  title: string; subtitle: string; price: string; priceNote: string | null;
-  popular: boolean; disabled: boolean; onPress: () => void;
+// ─── Plan Option Component ───────────────────────────────────────────────────
+function PlanOptionRow({
+  title,
+  subtitle,
+  price,
+  priceNote,
+  popular,
+  selected,
+  disabled,
+  onPress,
+  isLifetime,
+}: {
+  title: string;
+  subtitle: string;
+  price: string;
+  priceNote: string | null;
+  popular: boolean;
+  selected: boolean;
+  disabled: boolean;
+  onPress: () => void;
+  isLifetime?: boolean;
 }) {
   const { t } = useTranslation();
-  const { colors: themeColors } = useTheme();
-  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
+  const { colors: themeColors, theme } = useTheme();
+  const styles = useMemo(() => createStyles(themeColors, theme), [themeColors, theme]);
   const scale = useRef(new Animated.Value(1)).current;
-  const press = () => { Animated.sequence([Animated.timing(scale, { toValue: 0.97, duration: 80, useNativeDriver: true }), Animated.timing(scale, { toValue: 1, duration: 120, useNativeDriver: true })]).start(); onPress(); };
+
+  const press = () => {
+    Animated.sequence([
+      Animated.timing(scale, { toValue: 0.98, duration: 70, useNativeDriver: true }),
+      Animated.timing(scale, { toValue: 1, duration: 100, useNativeDriver: true }),
+    ]).start();
+    onPress();
+  };
 
   return (
-    <Animated.View style={[styles.planCard, popular && styles.planCardPopular, disabled && { opacity: 0.5 }, { transform: [{ scale }] }]}>
-      <TouchableOpacity onPress={press} disabled={disabled} activeOpacity={1} style={styles.planInner}>
+    <Animated.View style={[{ transform: [{ scale }] }, disabled && { opacity: 0.6 }]}>
+      <TouchableOpacity
+        onPress={press}
+        disabled={disabled}
+        activeOpacity={0.88}
+        style={[styles.planCard, selected && styles.planCardSelected]}
+      >
         {popular && (
           <View style={styles.bestBadge}>
             <Text style={styles.bestBadgeText}>{t('premium.bestValue', '★ BEST VALUE')}</Text>
           </View>
         )}
         <View style={styles.planRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.planTitle}>{title}</Text>
+          {/* Radio indicator */}
+          <View style={[styles.radioCircle, selected && styles.radioCircleSelected]}>
+            {selected && <View style={styles.radioDot} />}
+          </View>
+
+          <View style={{ flex: 1, marginLeft: 12 }}>
+            <Text style={styles.planTitle}>{isLifetime ? `♾️ ${title}` : title}</Text>
             <Text style={styles.planSub}>{subtitle}</Text>
           </View>
+
           <View style={{ alignItems: 'flex-end' }}>
-            <Text style={[styles.planPrice, popular && styles.planPriceGold]}>{price}</Text>
+            <Text style={[styles.planPrice, selected && styles.planPriceSelected]}>{price}</Text>
             {priceNote ? <Text style={styles.planNote}>{priceNote}</Text> : null}
           </View>
-        </View>
-        <View style={[styles.planCta, popular && styles.planCtaGold]}>
-          <Text style={[styles.planCtaText, popular && styles.planCtaTextDark]}>
-            {popular ? t('premium.startAnnual', '★ Start Annual Pro') : t('premium.startMonthly', 'Start Monthly')}
-          </Text>
         </View>
       </TouchableOpacity>
     </Animated.View>
   );
 }
 
-// ─── Feature row ──────────────────────────────────────────────────────────────
-function FeatureRow({ icon, title, desc, index }: { icon: string; title: string; desc: string; index: number }) {
-  const { colors: themeColors } = useTheme();
-  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
-  const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(16)).current;
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(opacity, { toValue: 1, duration: 400, delay: index * 60, useNativeDriver: true }),
-      Animated.timing(translateY, { toValue: 0, duration: 400, delay: index * 60, useNativeDriver: true }),
-    ]).start();
-  }, []);
-
-  return (
-    <Animated.View style={[styles.featureRow, { opacity, transform: [{ translateY }] }]}>
-      <View style={styles.featureIconWrap}>
-        <Text style={styles.featureEmoji}>{icon}</Text>
-      </View>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.featureTitle}>{title}</Text>
-        <Text style={styles.featureDesc}>{desc}</Text>
-      </View>
-      <View style={styles.featureCheck}>
-        <Ionicons name="checkmark" size={14} color="#d4af37" />
-      </View>
-    </Animated.View>
-  );
-}
-
-// ─── Main screen ──────────────────────────────────────────────────────────────
+// ─── Main Screen ───────────────────────────────────────────────────────────────
 export default function PremiumScreen() {
-  const { colors: themeColors } = useTheme();
-  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
+  const { colors: themeColors, theme } = useTheme();
+  const isDark = themeColors.scheme === 'dark';
+  const styles = useMemo(() => createStyles(themeColors, theme), [themeColors, theme]);
   const { t } = useTranslation();
   const FEATURES = useMemo(() => getFeatures(t), [t]);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user: clerkUser, isLoaded: isClerkLoaded } = useUser();
-  const scrollY = useRef(new Animated.Value(0)).current;
 
   const convexUser = useQuery(api.users.getUserByClerkId, clerkUser?.id ? { clerkId: clerkUser.id } : 'skip');
   const updateUser = useMutation(api.users.updateUser);
-
   const { refresh: refreshAppUser } = useAppUser();
 
   const isPro = useMemo(() => (
@@ -164,7 +145,8 @@ export default function PremiumScreen() {
   const [offerings, setOfferings] = useState<any>(null);
   const [upgrading, setUpgrading] = useState(false);
   const [restoring, setRestoring] = useState(false);
-  const [loadingOfferings, setLoadingOfferings] = useState(true);
+  const [showOtherOptions, setShowOtherOptions] = useState(false);
+  const [selectedPlanType, setSelectedPlanType] = useState<'annual' | 'monthly' | 'lifetime'>('annual');
 
   useEffect(() => {
     let mounted = true;
@@ -175,22 +157,50 @@ export default function PremiumScreen() {
         const o = await Purchases.getOfferings();
         if (mounted) setOfferings(o);
       } catch (e) { console.error('Offerings error:', e); }
-      if (mounted) setLoadingOfferings(false);
     })();
     return () => { mounted = false; };
   }, [isClerkLoaded, clerkUser?.id]);
 
   const offering = useMemo(() => pickProOffering(offerings), [offerings]);
   const pkgs = useMemo(() => pickMonthlyAndAnnualPackages(offering), [offering]);
-  const currencyCode = pkgs?.monthly?.product?.currencyCode ?? pkgs?.annual?.product?.currencyCode ?? null;
-  const treats = getTreatItems(currencyCode);
+  const lifetimePkg = pkgs?.lifetime;
+  const trialText = getTrialDuration(pkgs?.annual) ?? '7-day free trial';
 
-  let annualMonthlyNote: string | null = null;
-  let annualWeeklyNote: string | null = null;
-  if (pkgs?.annual?.product) {
-    annualMonthlyNote = fmt(pkgs.annual.product.price / 12, pkgs.annual.product.currencyCode);
-    annualWeeklyNote = fmt(pkgs.annual.product.price / 52, pkgs.annual.product.currencyCode);
-  }
+  const annualFormattedPrice = pkgs?.annual?.product?.priceString ?? '—';
+  const annualPriceNumber = pkgs?.annual?.product?.price ?? 0;
+  const monthlyFormattedPrice = pkgs?.monthly?.product?.priceString ?? '—';
+  const monthlyPriceNumber = pkgs?.monthly?.product?.price ?? 0;
+  const lifetimePriceNumber = lifetimePkg?.product?.price ?? 0;
+  const currencySymbol = annualFormattedPrice.replace(/[\d.,\s]/g, '') || '$';
+
+  const perWk = t('premium.perWeek', '/wk');
+  const weeklyEquivalent = annualPriceNumber > 0
+    ? `${currencySymbol}${(annualPriceNumber / 52).toFixed(2)}${perWk}`
+    : '—';
+
+  const weeklyEquivalentMonthly = monthlyPriceNumber > 0
+    ? `${currencySymbol}${(monthlyPriceNumber / 4.33).toFixed(2)}${perWk}`
+    : '—';
+
+  const paidOffText = t('premium.lifetimePaidOff', 'paid off in 1 yr');
+  const weeklyEquivalentLifetime = lifetimePriceNumber > 0
+    ? `${currencySymbol}${(lifetimePriceNumber / 52).toFixed(2)}${perWk} (${paidOffText})`
+    : '—';
+
+  // Calculate dynamic trial dates
+  const dates = useMemo(() => {
+    const today = new Date();
+    const day5 = new Date(today);
+    day5.setDate(today.getDate() + 5);
+    const day7 = new Date(today);
+    day7.setDate(today.getDate() + 7);
+
+    const fmtDate = (d: Date) => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    return {
+      day5Str: fmtDate(day5),
+      day7Str: fmtDate(day7),
+    };
+  }, []);
 
   async function handleDismiss() {
     try { await SecureStore.deleteItemAsync('bluom_show_premium'); } catch { }
@@ -198,511 +208,699 @@ export default function PremiumScreen() {
   }
 
   async function makePurchase(pkg: any) {
-    if (!pkg) { Alert.alert('Unavailable', 'Please check your connection and try again.'); return; }
+    if (!pkg) { 
+      Alert.alert(
+        t('premium.unavailableTitle', 'Unavailable'), 
+        t('premium.unavailableMsg', 'Please check your connection and try again.')
+      ); 
+      return; 
+    }
     setUpgrading(true);
     try {
       const info = await purchasePackageSafe(pkg);
       if (!info) return;
-      // Sync entitlements in global user context
       await refreshAppUser().catch(() => {});
-      Alert.alert('Welcome to Pro ✦', 'Your journey just levelled up. Full access is now unlocked.');
+      Alert.alert(
+        t('premium.welcomeProTitle', 'Welcome to Pro ✦'), 
+        t('premium.welcomeProMsg', 'Your trial is active. Full access is unlocked!')
+      );
       handleDismiss();
     } catch (e: any) {
-      if (!e?.userCancelled) Alert.alert('Purchase failed', e?.message ?? 'Please try again.');
+      if (!e?.userCancelled) {
+        Alert.alert(
+          t('premium.purchaseFailedTitle', 'Purchase failed'), 
+          e?.message ?? t('premium.pleaseTryAgain', 'Please try again.')
+        );
+      }
     } finally { setUpgrading(false); }
   }
 
-  // Hero image parallax
-  const heroScale = scrollY.interpolate({ inputRange: [-100, 0], outputRange: [1.15, 1], extrapolate: 'clamp' });
-  const heroOpacity = scrollY.interpolate({ inputRange: [0, 200], outputRange: [1, 0.3], extrapolate: 'clamp' });
-  const heroTranslateY = scrollY.interpolate({ inputRange: [0, 300], outputRange: [0, -60], extrapolate: 'clamp' });
-
-  const annualFormattedPrice = pkgs?.annual?.product?.priceString ?? '—';
-  const annualPriceNumber = pkgs?.annual?.product?.price ?? 0;
-  const monthlyFormattedPrice = pkgs?.monthly?.product?.priceString ?? '—';
-  const currencySymbol = annualFormattedPrice.replace(/[\d.,\s]/g, '') || '$';
-  
-  const weeklyPriceStr = "Just " + currencySymbol + (annualPriceNumber / 52).toFixed(2) + " / wk — save 50%";
-
-  const params = useLocalSearchParams<{ focus?: string }>();
-  const effectiveFocus = params.focus || convexUser?.primaryFocus || 'holistic';
-
-  const heroSubtitle = useMemo(() => {
-    switch (effectiveFocus) {
-      case 'fitness':
-        return t('premium.heroSubFitness', 'Your AI-powered fitness & nutrition engine');
-      case 'mental_health':
-        return t('premium.heroSubMental', 'Your calm, focus & emotional wellness companion');
-      case 'hormonal':
-        return t('premium.heroSubHormonal', 'Sync your health with your hormonal rhythm');
-      default:
-        return t('premium.heroSub', 'A comprehensive system for peak human performance.');
-    }
-  }, [effectiveFocus, t]);
-
-  const sortedFeatures = useMemo(() => {
-    const raw = getFeatures(t);
-    if (effectiveFocus === 'mental_health') {
-      return [
-        raw.find(f => f.icon === '🧠')!,
-        raw.find(f => f.icon === '🤖')!,
-        raw.find(f => f.icon === '🧪')!,
-        ...raw.filter(f => !['🧠', '🤖', '🧪'].includes(f.icon)),
-      ].filter(Boolean);
-    }
-    if (effectiveFocus === 'hormonal') {
-      return [
-        raw.find(f => f.icon === '🌸')!,
-        raw.find(f => f.icon === '🥗')!,
-        raw.find(f => f.icon === '⚡')!,
-        ...raw.filter(f => !['🌸', '🥗', '⚡'].includes(f.icon)),
-      ].filter(Boolean);
-    }
-    if (effectiveFocus === 'fitness') {
-      return [
-        raw.find(f => f.icon === '🏋️')!,
-        raw.find(f => f.icon === '🥗')!,
-        raw.find(f => f.icon === '👁️')!,
-        ...raw.filter(f => !['🏋️', '🥗', '👁️'].includes(f.icon)),
-      ].filter(Boolean);
-    }
-    return raw;
-  }, [effectiveFocus, t]);
+  const selectedPkg = useMemo(() => {
+    if (selectedPlanType === 'lifetime') return lifetimePkg;
+    if (selectedPlanType === 'monthly') return pkgs?.monthly;
+    return pkgs?.annual;
+  }, [selectedPlanType, lifetimePkg, pkgs]);
 
   if (!isClerkLoaded || convexUser === undefined) {
-    return <View style={[styles.root, styles.center]}><ActivityIndicator color="#d4af37" size="large" /></View>;
+    return <View style={[styles.root, styles.center]}><ActivityIndicator color={themeColors.primary} size="large" /></View>;
   }
 
   return (
-    <View style={styles.root}>
-      {/* ── Hero image (fixed behind scroll) ── */}
-      <Animated.View style={[styles.heroContainer, { transform: [{ scale: heroScale }, { translateY: heroTranslateY }], opacity: heroOpacity }]}>
-        <Image source={{ uri: HERO_IMAGE_URL }} style={styles.heroImage} resizeMode="cover" />
-        
-        {/* Semi-dark overall overlay + fade-to-background transition */}
-        <LinearGradient
-          colors={['rgba(15,23,42,0.3)', 'rgba(15,23,42,0.45)', 'rgba(15,23,42,0.75)', themeColors.bg]}
-          locations={[0, 0.5, 0.8, 1]}
-          style={StyleSheet.absoluteFillObject}
-        />
-      </Animated.View>
-
-      {/* Close button — always on top */}
-      <View style={[styles.closeBtn, { top: insets.top + 12 }]}>
-        <TouchableOpacity onPress={handleDismiss} style={styles.closeBtnInner} activeOpacity={0.8}>
-          <Ionicons name="close" size={20} color="#fff" />
+    <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
+      {/* ── Top Header ── */}
+      <View style={styles.topNav}>
+        <View />
+        <TouchableOpacity onPress={handleDismiss} style={styles.closeBtn} activeOpacity={0.75}>
+          <Ionicons name="close" size={22} color={themeColors.text} />
         </TouchableOpacity>
       </View>
 
-      {/* ── Scrollable content ── */}
-      <Animated.ScrollView
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
-        scrollEventThrottle={16}
+      <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom, 20) + 100 }]}
       >
-        {/* Spacer so content starts below hero */}
-        <View style={styles.heroSpacer}>
-          {/* Hero text overlay */}
-          <View style={styles.heroTextWrap}>
-            <Text style={styles.heroEyebrow}>✦ BLUOM PRO</Text>
-            <Text style={styles.heroHeadline}>{t('premium.heroTitle', 'Peak Biology,')}{`\n`}{t('premium.heroTitle2', 'Fully Unlocked.')}</Text>
-            <Text style={styles.heroSub}>{heroSubtitle}</Text>
+        {isPro ? (
+          <View style={styles.proAlready}>
+            <Text style={styles.proAlreadyTitle}>{t('premium.alreadyPro', "✦ You're Pro")}</Text>
+            <Text style={styles.proAlreadySub}>{t('premium.alreadyProSub', 'Full access is active. Keep optimising.')}</Text>
+            <TouchableOpacity style={styles.primaryCta} onPress={handleDismiss}>
+              <Text style={styles.primaryCtaTxt}>{t('premium.continue', 'Continue')}</Text>
+            </TouchableOpacity>
           </View>
-        </View>
-
-        {/* ── Main content card ── */}
-        <View style={styles.contentCard}>
-
-          {isPro ? (
-            <View style={styles.proAlready}>
-              <Text style={styles.proAlreadyTitle}>{t('premium.alreadyPro', "✦ You're Pro")}</Text>
-              <Text style={styles.proAlreadySub}>{t('premium.alreadyProSub', 'Full access is active. Keep optimising.')}</Text>
-              <TouchableOpacity style={styles.goldBtn} onPress={handleDismiss}>
-                <Text style={styles.goldBtnText}>{t('premium.continue', 'Continue')}</Text>
-              </TouchableOpacity>
+        ) : (
+          <>
+            {/* ── Main Headline ── */}
+            <View style={styles.headlineWrap}>
+              <Text style={styles.headlineTitle}>
+                {t('premium.trialHeader', "Here's how your free trial works")}
+              </Text>
             </View>
-          ) : (
-            <>
-              {/* ── Features (The Pro Advantage) ── */}
-              <View style={styles.section}>
-                <Text style={styles.sectionEyebrow}>{t('premium.everythingLabel', 'EVERYTHING INCLUDED')}</Text>
-                <Text style={styles.sectionTitle}>{t('premium.featuresTitle', 'The Pro Advantage')}</Text>
-                {sortedFeatures.map((f, i) => <FeatureRow key={f.title} {...f} index={i} />)}
+
+            {/* ── Fig+ Style Trial Timeline Card ── */}
+            <View style={styles.timelineCard}>
+              <View style={styles.timelineLineContainer}>
+                <View style={styles.timelineLine} />
               </View>
 
-              {/* ── Divider ── */}
-              <View style={styles.divider} />
-
-              {/* ── Value comparison (For less than your daily treat) ── */}
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>{t('premium.mathTitle', 'For less than your daily treat')}</Text>
-                <View style={styles.compareRow}>
-                  <View style={styles.compareItem}>
-                    <Text style={styles.compareEmoji}>{treats.a.icon}</Text>
-                    <Text style={styles.compareAmount}>{fmt(treats.a.amount, currencyCode)}</Text>
-                    <Text style={styles.compareLabel}>{treats.a.label}</Text>
-                  </View>
-                  <View style={styles.comparePlus}>
-                    <Text style={styles.comparePlusText}>+</Text>
-                  </View>
-                  <View style={styles.compareItem}>
-                    <Text style={styles.compareEmoji}>{treats.b.icon}</Text>
-                    <Text style={styles.compareAmount}>{fmt(treats.b.amount, currencyCode)}</Text>
-                    <Text style={styles.compareLabel}>{treats.b.label}</Text>
-                  </View>
-                  <View style={styles.compareEquals}>
-                    <Text style={styles.compareEqualsText}>=</Text>
-                  </View>
-                  <View style={[styles.compareItem, styles.compareHighlight]}>
-                    <Text style={styles.compareEmoji}>💎</Text>
-                    <Text style={[styles.compareAmount, { color: '#d4af37' }]}>Pro</Text>
-                    <Text style={[styles.compareLabel, { color: '#d4af37' }]}>{t('premium.forever', 'Forever')}</Text>
-                  </View>
+              {/* Step 1: Today */}
+              <View style={styles.timelineStep}>
+                <View style={[styles.iconBubble, styles.iconBubblePrimary]}>
+                  <Ionicons name="lock-open-outline" size={18} color="#fff" />
+                </View>
+                <View style={styles.stepContent}>
+                  <Text style={styles.stepTitle}>
+                    {t('premium.step1Title', 'Today: Start Your Free Trial')}
+                  </Text>
+                  <Text style={styles.stepSub}>
+                    {t('premium.step1Sub', 'Get instant access to unlimited AI meal scans, custom workouts, mental health protocols & cycle intelligence.')}
+                  </Text>
                 </View>
               </View>
 
-              {/* ── Divider ── */}
-              <View style={styles.divider} />
-
-              {/* ── Pricing plans (CHOOSE YOUR PLAN) ── */}
-              <View style={styles.section}>
-                <Text style={styles.sectionEyebrow}>{t('premium.choosePlan', 'CHOOSE YOUR PLAN')}</Text>
-                <PlanCard
-                  title="Pro Annual"
-                  subtitle={weeklyPriceStr}
-                  price={annualFormattedPrice ? `${annualFormattedPrice} / yr` : '—'}
-                  priceNote={`Billed annually at ${annualFormattedPrice}`}
-                  popular={true}
-                  disabled={upgrading || !pkgs?.annual}
-                  onPress={() => makePurchase(pkgs?.annual)}
-                />
-                <PlanCard
-                  title="Pro Monthly"
-                  subtitle={t('premium.monthlySub', 'Full access, billed monthly')}
-                  price={monthlyFormattedPrice ? `${monthlyFormattedPrice} / mo` : '—'}
-                  priceNote={null}
-                  popular={false}
-                  disabled={upgrading || !pkgs?.monthly}
-                  onPress={() => makePurchase(pkgs?.monthly)}
-                />
-                {upgrading && (
-                  <View style={styles.upgradingRow}>
-                    <ActivityIndicator color="#d4af37" size="small" />
-                    <Text style={styles.upgradingText}>{t('premium.processing', 'Processing…')}</Text>
-                  </View>
-                )}
+              {/* Step 2: Day 5 */}
+              <View style={styles.timelineStep}>
+                <View style={[styles.iconBubble, styles.iconBubbleMuted]}>
+                  <Ionicons name="notifications-outline" size={18} color={themeColors.primary} />
+                </View>
+                <View style={styles.stepContent}>
+                  <Text style={styles.stepTitle}>
+                    {t('premium.step2Title', `Day 5: Trial Reminder (${dates.day5Str})`, { date: dates.day5Str })}
+                  </Text>
+                  <Text style={styles.stepSub}>
+                    {t('premium.step2Sub', "You'll receive a push notification and email reminder that your free trial is ending soon.")}
+                  </Text>
+                </View>
               </View>
 
-              {/* ── Social proof ── */}
-              <View style={styles.socialProof}>
-                <Text style={styles.socialProofText}>{t('premium.socialProof', '🔥 Join 10,000+ people already optimising their biology')}</Text>
+              {/* Step 3: Day 7 */}
+              <View style={styles.timelineStep}>
+                <View style={[styles.iconBubble, styles.iconBubbleGold]}>
+                  <Ionicons name="star-outline" size={18} color="#fff" />
+                </View>
+                <View style={styles.stepContent}>
+                  <Text style={styles.stepTitle}>
+                    {t('premium.step3Title', `Day 7: Trial Ends (${dates.day7Str})`, { date: dates.day7Str })}
+                  </Text>
+                  <Text style={styles.stepSub}>
+                    {t('premium.step3Sub', `You'll be billed for your selected plan. Cancel anytime before in App Store / Play Store settings.`)}
+                  </Text>
+                </View>
               </View>
+            </View>
 
-              {/* ── Divider ── */}
-              <View style={styles.divider} />
+            {/* ── Featured Plan Card (Default Selected) ── */}
+            <View style={styles.plansContainer}>
+              <PlanOptionRow
+                title={t('premium.annualTitle', 'Pro Annual')}
+                subtitle={t('premium.annualSubWithPrice', 'Billed annually ({{price}})', { price: weeklyEquivalent })}
+                price={annualFormattedPrice ? `${annualFormattedPrice} ${t('premium.perYear', '/ yr')}` : '—'}
+                priceNote={trialText}
+                popular={true}
+                selected={selectedPlanType === 'annual'}
+                disabled={upgrading || !pkgs?.annual}
+                onPress={() => setSelectedPlanType('annual')}
+              />
 
-              {/* ── Secondary actions ── */}
-              <TouchableOpacity style={styles.ghostBtn} onPress={handleDismiss} activeOpacity={0.7}>
-                <Text style={styles.ghostBtnText}>{t('premium.continueFree', 'Continue with the free plan')}</Text>
-              </TouchableOpacity>
+              {/* Expandable Other Options (Monthly / Lifetime) */}
+              {showOtherOptions && (
+                <View style={styles.extraPlansWrap}>
+                  <PlanOptionRow
+                    title={t('premium.monthlyTitle', 'Pro Monthly')}
+                    subtitle={t('premium.monthlySubWithPrice', 'Full access, billed monthly ({{price}})', { price: weeklyEquivalentMonthly })}
+                    price={monthlyFormattedPrice ? `${monthlyFormattedPrice} ${t('premium.perMonth', '/ mo')}` : '—'}
+                    priceNote={null}
+                    popular={false}
+                    selected={selectedPlanType === 'monthly'}
+                    disabled={upgrading || !pkgs?.monthly}
+                    onPress={() => setSelectedPlanType('monthly')}
+                  />
 
+                  {lifetimePkg && (
+                    <PlanOptionRow
+                      title={t('premium.lifetimeTitle', 'Pro Lifetime')}
+                      subtitle={t('premium.lifetimeSubWithPrice', 'Pay once, own it forever ({{price}})', { price: weeklyEquivalentLifetime })}
+                      price={lifetimePkg.product?.priceString ?? '—'}
+                      priceNote={t('premium.oneTimePayment', 'One-time payment')}
+                      popular={false}
+                      selected={selectedPlanType === 'lifetime'}
+                      disabled={upgrading || !lifetimePkg}
+                      onPress={() => setSelectedPlanType('lifetime')}
+                      isLifetime={true}
+                    />
+                  )}
+                </View>
+              )}
+
+              {/* Toggle secondary plan options button */}
               <TouchableOpacity
-                style={styles.ghostBtn}
-                disabled={restoring}
+                onPress={() => setShowOtherOptions(prev => !prev)}
+                style={styles.seeOtherBtn}
                 activeOpacity={0.7}
+              >
+                <Text style={styles.seeOtherTxt}>
+                  {showOtherOptions ? t('premium.hideOtherOptions', 'Hide Other Options') : t('premium.seeOtherOptions', 'See Other Options')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* ── Collapsible Feature Checklist Teaser ── */}
+            <View style={styles.featuresSection}>
+              <Text style={styles.featuresTitle}>{t('premium.includedInTrial', 'Included in your trial:')}</Text>
+              {FEATURES.map((f) => (
+                <View key={f.title} style={styles.featureRow}>
+                  <Ionicons name="checkmark-circle" size={18} color={themeColors.primary} />
+                  <Text style={styles.featureTxt}>{f.title}</Text>
+                </View>
+              ))}
+            </View>
+
+            {/* ── Price Comparison ── */}
+            <LinearGradient 
+              colors={isDark ? ['#1e1e2d', '#1a1a24'] : ['#ffffff', '#f8fafc']}
+              style={styles.priceComparisonCard}
+            >
+              <Text style={styles.priceCompTitle}>
+                {t('premium.priceCompTitle', 'Peak biology & mind for less than a daily treat')}
+              </Text>
+              
+              {/* 2 Treat Cards Side-by-Side */}
+              <View style={styles.priceCompTreatsRow}>
+                <View style={styles.priceCompTreatCard}>
+                  <Text style={styles.priceCompEmoji}>🍦</Text>
+                  <Text style={styles.priceCompLabel}>{t('premium.gelato', 'Gelato')}</Text>
+                  <Text style={styles.priceCompPrice}>{currencySymbol}5</Text>
+                </View>
+                <View style={styles.priceCompTreatCard}>
+                  <Text style={styles.priceCompEmoji}>🍺</Text>
+                  <Text style={styles.priceCompLabel}>{t('premium.pint', 'Pint')}</Text>
+                  <Text style={styles.priceCompPrice}>{currencySymbol}7</Text>
+                </View>
+              </View>
+
+              {/* Full Width Subcard / Highlight Banner for Bluom Pro */}
+              <View style={styles.priceCompHighlightBanner}>
+                <View style={styles.priceCompHighlightLeft}>
+                  <Text style={styles.priceCompHighlightIcon}>✦</Text>
+                  <Text style={styles.priceCompHighlightLabel}>{t('premium.bluomPro', 'Bluom Pro')}</Text>
+                </View>
+                <Text style={styles.priceCompHighlightPrice}>{weeklyEquivalent}</Text>
+              </View>
+            </LinearGradient>
+
+            {/* ── Restore & Terms links ── */}
+            <View style={styles.secondaryLinks}>
+              <TouchableOpacity
+                disabled={restoring}
                 onPress={async () => {
                   setRestoring(true);
                   try {
                     const info = await Purchases.restorePurchases();
                     const active = info?.entitlements?.active;
-                    const hasPro = active && (active['pro'] || active['premium'] || Object.keys(active).length > 0);
-                    if (hasPro && convexUser?._id) {
-                      await updateUser({ userId: convexUser._id, updates: { isPremium: true } });
-                      Alert.alert('Restored ✦', 'Pro access has been restored.');
+                    if (active && (active['pro'] || active['premium'] || Object.keys(active).length > 0)) {
+                      if (convexUser?._id) await updateUser({ userId: convexUser._id, updates: { isPremium: true } });
+                      Alert.alert(
+                        t('premium.restoredTitle', 'Restored ✦'), 
+                        t('premium.restoredMsg', 'Pro access has been restored.')
+                      );
                       handleDismiss();
                     } else {
-                      Alert.alert('Nothing to restore', 'No previous Pro purchase found on this account.');
+                      Alert.alert(
+                        t('premium.nothingToRestoreTitle', 'Nothing to restore'), 
+                        t('premium.nothingToRestoreMsg', 'No active Pro purchase found.')
+                      );
                     }
                   } catch (e: any) {
-                    Alert.alert('Restore failed', e?.message ?? 'Please try again.');
+                    Alert.alert(
+                      t('premium.restoreFailedTitle', 'Restore failed'), 
+                      e?.message ?? t('premium.pleaseTryAgain', 'Please try again.')
+                    );
                   } finally { setRestoring(false); }
                 }}
               >
-                <Text style={[styles.ghostBtnText, { color: '#d4af37' }]}>
-                  {restoring ? t('premium.restoring', 'Restoring…') : t('premium.restore', 'Restore purchases')}
+                <Text style={styles.secondaryTxt}>
+                  {restoring ? t('premium.restoring', 'Restoring…') : t('premium.restorePurchases', 'Restore Purchases')}
                 </Text>
               </TouchableOpacity>
+              <Text style={styles.dotSeparator}>·</Text>
+              <TouchableOpacity onPress={() => Linking.openURL('https://www.bluom.app/legal/terms')}>
+                <Text style={styles.secondaryTxt}>{t('premium.terms', 'Terms')}</Text>
+              </TouchableOpacity>
+              <Text style={styles.dotSeparator}>·</Text>
+              <TouchableOpacity onPress={() => Linking.openURL('https://www.bluom.app/legal/privacy')}>
+                <Text style={styles.secondaryTxt}>{t('premium.privacy', 'Privacy')}</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+      </ScrollView>
 
-              {/* ── Legal footer ── */}
-              <View style={styles.legal}>
-                <Text style={styles.legalText}>
-                  {Platform.OS === 'ios'
-                    ? 'Payment charged to Apple ID at purchase confirmation. Subscription auto-renews unless cancelled 24+ hours before period end. Manage in App Store settings.'
-                    : 'Payment charged to Google Play at purchase confirmation. Subscription auto-renews unless cancelled 24+ hours before period end. Manage in Google Play settings.'}
-                </Text>
-                <View style={styles.legalLinks}>
-                  <TouchableOpacity onPress={() => Linking.openURL('https://www.bluom.app/legal/privacy')}>
-                    <Text style={styles.legalLink}>Privacy Policy</Text>
-                  </TouchableOpacity>
-                  <Text style={styles.legalDot}> · </Text>
-                  <TouchableOpacity onPress={() => Linking.openURL(Platform.OS === 'ios' ? 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/' : 'https://www.bluom.app/legal/terms')}>
-                    <Text style={styles.legalLink}>Terms{Platform.OS === 'ios' ? ' (EULA)' : ''}</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </>
-          )}
+      {/* ── Sticky Bottom CTA Bar ── */}
+      {!isPro && (
+        <View style={[styles.bottomCtaBar, { paddingBottom: Math.max(insets.bottom, 12) + 8 }]}>
+          <TouchableOpacity
+            style={styles.primaryCta}
+            disabled={upgrading}
+            activeOpacity={0.88}
+            onPress={() => makePurchase(selectedPkg)}
+          >
+            {upgrading ? (
+              <ActivityIndicator color={themeColors.onPrimary} size="small" />
+            ) : (
+              <Text style={styles.primaryCtaTxt}>
+                {selectedPlanType === 'annual'
+                  ? t('premium.startTrialAndContinue', 'Start Free Trial & Continue')
+                  : selectedPlanType === 'lifetime'
+                  ? t('premium.getLifetimeAccess', 'Get Lifetime Access')
+                  : t('premium.subscribeMonthly', 'Subscribe Monthly')}
+              </Text>
+            )}
+          </TouchableOpacity>
+          <Text style={styles.noCommitmentTxt}>
+            {t('premium.noCommitment', 'No commitment · Cancel anytime in Settings')}
+          </Text>
         </View>
-      </Animated.ScrollView>
-    </View>
+      )}
+    </SafeAreaView>
   );
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
-const HERO_HEIGHT = height * 0.52;
-const GOLD = '#d4af37';
-const GOLD_LIGHT = '#f0d060';
-const createStyles = (c: ThemeColors) => StyleSheet.create({
-  root: { flex: 1, backgroundColor: c.bg },
-  center: { alignItems: 'center', justifyContent: 'center' },
+// ─── Theme Aware Styles ────────────────────────────────────────────────────────
+const createStyles = (c: ThemeColors, themeName: string) => {
+  const isDark = c.scheme === 'dark' || themeName === 'black' || themeName === 'navy';
 
-  // Hero
-  heroContainer: {
-    position: 'absolute',
-    top: 0, left: 0, right: 0,
-    height: HERO_HEIGHT,
-    zIndex: 0,
-  },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-  },
-  heroOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(15,23,42,0.4)',
-  },
-  heroSpacer: {
-    height: HERO_HEIGHT - 180,
-    justifyContent: 'flex-end',
-  },
-  heroTextWrap: {
-    paddingHorizontal: 28,
-    paddingBottom: 32,
-  },
-  heroEyebrow: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: GOLD,
-    letterSpacing: 3,
-    marginBottom: 10,
-  },
-  heroHeadline: {
-    fontSize: 40,
-    fontWeight: '900',
-    color: '#ffffff',
-    lineHeight: 44,
-    marginBottom: 10,
-  },
-  heroSub: {
-    fontSize: 15,
-    color: 'rgba(255,255,255,0.85)',
-    lineHeight: 22,
-  },
-
-  // Wave (removed, integrated into gradient)
-
-  // Close button
-  closeBtn: {
-    position: 'absolute',
-    right: 20,
-    zIndex: 100,
-  },
-  closeBtnInner: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-
-  // Content card
-  contentCard: {
-    backgroundColor: c.bg,
-    zIndex: 2,
-    paddingTop: 8,
-  },
-
-  section: {
-    paddingHorizontal: 24,
-    paddingVertical: 24,
-  },
-  sectionEyebrow: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: GOLD,
-    letterSpacing: 3,
-    marginBottom: 6,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '900',
-    color: c.scheme === 'dark' ? '#ffffff' : '#1e293b',
-    marginBottom: 20,
-  },
-
-  divider: {
-    height: 1,
-    backgroundColor: c.border,
-    marginHorizontal: 24,
-  },
-
-  // Compare
-  compareRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  compareItem: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: c.surface,
-    borderRadius: 14,
-    paddingVertical: 16,
-    borderWidth: 1,
-    borderColor: c.border,
-  },
-  compareHighlight: {
-    borderColor: GOLD,
-    backgroundColor: 'rgba(212,175,55,0.08)',
-  },
-  compareEmoji: { fontSize: 24, marginBottom: 6 },
-  compareAmount: { fontSize: 13, fontWeight: '900', color: c.text, marginBottom: 2 },
-  compareLabel: { fontSize: 10, fontWeight: '700', color: c.textMuted },
-  comparePlus: { alignItems: 'center' },
-  comparePlusText: { fontSize: 18, fontWeight: '300', color: c.textMuted },
-  compareEquals: { alignItems: 'center' },
-  compareEqualsText: { fontSize: 18, fontWeight: '300', color: c.textMuted },
-
-  // Plan cards
-  planCard: {
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: c.border,
-    backgroundColor: c.surface,
-    marginBottom: 12,
-    overflow: 'hidden',
-  },
-  planCardPopular: {
-    borderColor: GOLD,
-    backgroundColor: 'rgba(212,175,55,0.06)',
-  },
-  planInner: { padding: 20 },
-  bestBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: GOLD,
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    marginBottom: 14,
-  },
-  bestBadgeText: { fontSize: 10, fontWeight: '900', color: '#0a0a0f', letterSpacing: 1.5 },
-  planRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16 },
-  planTitle: { fontSize: 17, fontWeight: '900', color: c.scheme === 'dark' ? '#ffffff' : '#1e293b', marginBottom: 4 },
-  planSub: { fontSize: 12, fontWeight: '600', color: c.textMuted, lineHeight: 16 },
-  planPrice: { fontSize: 20, fontWeight: '900', color: c.scheme === 'dark' ? '#ffffff' : c.text },
-  planPriceGold: { color: GOLD_LIGHT },
-  planNote: { fontSize: 11, fontWeight: '700', color: GOLD, marginTop: 2 },
-  planCta: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: GOLD,
-    borderRadius: 12,
-    paddingVertical: 13,
-    alignItems: 'center',
-  },
-  planCtaGold: {
-    backgroundColor: GOLD,
-    borderColor: GOLD,
-  },
-  planCtaText: { fontSize: 14, fontWeight: '800', color: GOLD },
-  planCtaTextDark: { color: '#0a0a0f' }, // Always dark text on gold button
-
-  upgradingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 8 },
-  upgradingText: { fontSize: 13, color: c.textMuted },
-
-  // Social proof
-  socialProof: { alignItems: 'center', paddingVertical: 16 },
-  socialProofText: { fontSize: 13, fontWeight: '700', color: GOLD },
-
-  // Features
-  featureRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    paddingVertical: 13,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-  },
-  featureIconWrap: {
-    width: 42,
-    height: 42,
-    borderRadius: 12,
-    backgroundColor: c.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: c.border,
-  },
-  featureEmoji: { fontSize: 20 },
-  featureTitle: { fontSize: 14, fontWeight: '800', color: c.scheme === 'dark' ? '#ffffff' : '#1e293b', marginBottom: 2 },
-  featureDesc: { fontSize: 12, color: c.textMuted, lineHeight: 16 },
-  featureCheck: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: 'rgba(212,175,55,0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(212,175,55,0.3)',
-  },
-
-  // Ghost buttons
-  ghostBtn: {
-    alignItems: 'center',
-    paddingVertical: 14,
-    marginHorizontal: 24,
-    marginTop: 8,
-  },
-  ghostBtnText: { fontSize: 13, fontWeight: '700', color: c.textMuted },
-
-  // Gold button
-  goldBtn: {
-    backgroundColor: GOLD,
-    borderRadius: 14,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  goldBtnText: { fontSize: 15, fontWeight: '900', color: '#0a0a0f' },
-
-  // Pro already
-  proAlready: { padding: 32, alignItems: 'center' },
-  proAlreadyTitle: { fontSize: 22, fontWeight: '900', color: GOLD, marginBottom: 8 },
-  proAlreadySub: { fontSize: 15, color: c.textMuted, textAlign: 'center', marginBottom: 8 },
-
-  // Legal
-  legal: { paddingHorizontal: 24, paddingTop: 24, alignItems: 'center' },
-  legalText: { fontSize: 10, color: c.textMuted, textAlign: 'center', lineHeight: 15, marginBottom: 12 },
-  legalLinks: { flexDirection: 'row', alignItems: 'center' },
-  legalLink: { fontSize: 11, fontWeight: '700', color: '#3b82f6' },
-  legalDot: { color: c.textMuted, paddingHorizontal: 4 },
-
-});
-
-// Static module-scope fallbacks (default theme) for helper components.
-const styles = createStyles(THEMES.default.colors);
+  return StyleSheet.create({
+    root: {
+      flex: 1,
+      backgroundColor: c.bg,
+    },
+    center: {
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    topNav: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 24,
+      paddingVertical: 12,
+    },
+    brandTitle: {
+      fontSize: 22,
+      fontWeight: '900',
+      color: c.text,
+      letterSpacing: -0.5,
+    },
+    brandPlus: {
+      color: c.primary,
+      fontWeight: '900',
+    },
+    closeBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: c.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    scrollContent: {
+      paddingHorizontal: 24,
+      paddingTop: 8,
+    },
+    headlineWrap: {
+      alignItems: 'center',
+      marginVertical: 18,
+    },
+    headlineTitle: {
+      fontSize: 26,
+      fontWeight: '900',
+      color: c.text,
+      textAlign: 'center',
+      letterSpacing: -0.5,
+      lineHeight: 32,
+    },
+    // Timeline Card
+    timelineCard: {
+      backgroundColor: c.surface,
+      borderRadius: 24,
+      paddingHorizontal: 20,
+      paddingVertical: 22,
+      marginBottom: 20,
+      borderWidth: 1,
+      borderColor: c.border,
+      shadowColor: c.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.06,
+      shadowRadius: 12,
+      elevation: 3,
+    },
+    timelineLineContainer: {
+      position: 'absolute',
+      top: 40,
+      bottom: 40,
+      left: 39,
+      width: 2,
+      zIndex: 0,
+    },
+    timelineLine: {
+      flex: 1,
+      backgroundColor: c.border,
+      borderRadius: 1,
+    },
+    timelineStep: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      marginVertical: 10,
+      zIndex: 1,
+    },
+    iconBubble: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 14,
+    },
+    iconBubblePrimary: {
+      backgroundColor: c.primary,
+    },
+    iconBubbleMuted: {
+      backgroundColor: c.surfaceMuted,
+      borderWidth: 1.5,
+      borderColor: c.primary,
+    },
+    iconBubbleGold: {
+      backgroundColor: '#f59e0b',
+    },
+    stepContent: {
+      flex: 1,
+      paddingTop: 2,
+    },
+    stepTitle: {
+      fontSize: 15,
+      fontWeight: '800',
+      color: c.text,
+      marginBottom: 4,
+    },
+    stepSub: {
+      fontSize: 13,
+      color: c.textMuted,
+      lineHeight: 19,
+    },
+    // Plan Options
+    plansContainer: {
+      marginBottom: 16,
+    },
+    planCard: {
+      backgroundColor: c.surface,
+      borderRadius: 20,
+      padding: 16,
+      marginBottom: 10,
+      borderWidth: 1.5,
+      borderColor: c.border,
+    },
+    planCardSelected: {
+      borderColor: c.primary,
+      backgroundColor: isDark ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.04)',
+    },
+    bestBadge: {
+      alignSelf: 'flex-start',
+      backgroundColor: c.primary,
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      borderRadius: 6,
+      marginBottom: 8,
+    },
+    bestBadgeText: {
+      color: c.onPrimary,
+      fontSize: 10,
+      fontWeight: '800',
+      letterSpacing: 0.5,
+    },
+    planRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    radioCircle: {
+      width: 22,
+      height: 22,
+      borderRadius: 11,
+      borderWidth: 2,
+      borderColor: c.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    radioCircleSelected: {
+      borderColor: c.primary,
+    },
+    radioDot: {
+      width: 10,
+      height: 10,
+      borderRadius: 5,
+      backgroundColor: c.primary,
+    },
+    planTitle: {
+      fontSize: 16,
+      fontWeight: '800',
+      color: c.text,
+    },
+    planSub: {
+      fontSize: 12,
+      color: c.textMuted,
+      marginTop: 2,
+    },
+    planPrice: {
+      fontSize: 15,
+      fontWeight: '800',
+      color: c.text,
+    },
+    planPriceSelected: {
+      color: c.primary,
+    },
+    planNote: {
+      fontSize: 11,
+      fontWeight: '700',
+      color: '#16a34a',
+      marginTop: 2,
+    },
+    extraPlansWrap: {
+      marginTop: 4,
+    },
+    seeOtherBtn: {
+      alignSelf: 'center',
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+    },
+    seeOtherTxt: {
+      fontSize: 13,
+      fontWeight: '700',
+      color: c.textMuted,
+    },
+    // Features Section
+    featuresSection: {
+      backgroundColor: c.surface,
+      borderRadius: 20,
+      padding: 18,
+      marginBottom: 20,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    featuresTitle: {
+      fontSize: 14,
+      fontWeight: '800',
+      color: c.text,
+      marginBottom: 12,
+    },
+    featureRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+      marginBottom: 10,
+    },
+    featureTxt: {
+      fontSize: 13,
+      fontWeight: '600',
+      color: c.text,
+    },
+    // Price Comparison
+    priceComparisonCard: {
+      borderRadius: 24,
+      padding: 24,
+      marginBottom: 20,
+      borderWidth: 1,
+      borderColor: c.border,
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.05,
+      shadowRadius: 10,
+      elevation: 2,
+    },
+    priceCompTitle: {
+      fontSize: 15,
+      fontWeight: '800',
+      color: c.text,
+      textAlign: 'center',
+      marginBottom: 12,
+      lineHeight: 21,
+    },
+    priceCompTreatsRow: {
+      flexDirection: 'row',
+      gap: 12,
+      width: '100%',
+      marginBottom: 10,
+    },
+    priceCompTreatCard: {
+      flex: 1,
+      backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#f8fafc',
+      borderRadius: 16,
+      paddingVertical: 14,
+      paddingHorizontal: 8,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    priceCompEmoji: {
+      fontSize: 34,
+      marginBottom: 4,
+    },
+    priceCompLabel: {
+      fontSize: 13,
+      fontWeight: '700',
+      color: c.textMuted,
+      marginBottom: 2,
+    },
+    priceCompPrice: {
+      fontSize: 15,
+      fontWeight: '800',
+      color: c.text,
+    },
+    priceCompHighlightBanner: {
+      width: '100%',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: isDark ? 'rgba(99,102,241,0.18)' : 'rgba(99,102,241,0.08)',
+      borderRadius: 16,
+      borderWidth: 1.5,
+      borderColor: 'rgba(99,102,241,0.35)',
+      paddingVertical: 14,
+      paddingHorizontal: 16,
+    },
+    priceCompHighlightLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    priceCompHighlightIcon: {
+      fontSize: 18,
+      color: c.primary,
+      fontWeight: '900',
+    },
+    priceCompHighlightLabel: {
+      fontSize: 15,
+      fontWeight: '800',
+      color: c.primary,
+    },
+    priceCompHighlightPrice: {
+      fontSize: 16,
+      fontWeight: '900',
+      color: c.primary,
+    },
+    // Secondary links
+    secondaryLinks: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 10,
+      marginTop: 10,
+    },
+    secondaryTxt: {
+      fontSize: 12,
+      color: c.textMuted,
+      fontWeight: '600',
+    },
+    dotSeparator: {
+      color: c.textMuted,
+      fontSize: 12,
+    },
+    // Bottom Sticky CTA
+    bottomCtaBar: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: c.surface,
+      paddingHorizontal: 24,
+      paddingTop: 14,
+      borderTopWidth: 1,
+      borderColor: c.border,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: -4 },
+      shadowOpacity: 0.1,
+      shadowRadius: 10,
+      elevation: 12,
+    },
+    primaryCta: {
+      backgroundColor: c.primary,
+      borderRadius: 18,
+      paddingVertical: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: c.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    primaryCtaTxt: {
+      color: c.onPrimary,
+      fontSize: 17,
+      fontWeight: '900',
+      letterSpacing: -0.2,
+    },
+    noCommitmentTxt: {
+      fontSize: 12,
+      color: c.textMuted,
+      textAlign: 'center',
+      marginTop: 8,
+      fontWeight: '600',
+    },
+    proAlready: {
+      padding: 30,
+      alignItems: 'center',
+    },
+    proAlreadyTitle: {
+      fontSize: 24,
+      fontWeight: '900',
+      color: c.text,
+      marginBottom: 8,
+    },
+    proAlreadySub: {
+      fontSize: 14,
+      color: c.textMuted,
+      marginBottom: 24,
+    },
+  });
+};

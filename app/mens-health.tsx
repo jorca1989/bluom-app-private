@@ -418,12 +418,30 @@ const LEARN_ARTICLES = [
 // HEALTH MARKERS (Enhanced mode)
 // ─────────────────────────────────────────────────────────────
 const HEALTH_MARKERS = [
-  { id: 'bp', label: 'Blood Pressure', unit: 'mmHg', normal: '< 120/80', warning: '> 130/85', icon: '❤️', tip: 'Check weekly on cycle. Hawthorn berry + celery seed if elevated.' },
+  { id: 'bp_systolic', label: 'Blood pressure (systolic)', unit: 'mmHg', normal: '< 120', warning: '≥ 130', icon: '❤️', tip: 'Use a validated cuff and rest quietly for five minutes before measuring.' },
+  { id: 'bp_diastolic', label: 'Blood pressure (diastolic)', unit: 'mmHg', normal: '< 80', warning: '≥ 85', icon: '❤️', tip: 'Log the lower number from the same reading as systolic blood pressure.' },
   { id: 'hct', label: 'Haematocrit', unit: '%', normal: '38–50%', warning: '> 52%', icon: '🩸', tip: 'Elevated HCT = blood clot risk. Donate blood or reduce compound dose.' },
   { id: 'ldl', label: 'LDL Cholesterol', unit: 'mg/dL', normal: '< 100', warning: '> 130', icon: '🧪', tip: 'AAS crush HDL and raise LDL. Niacin + fish oil + cardio are your tools.' },
   { id: 'liver', label: 'ALT (Liver)', unit: 'U/L', normal: '7–56', warning: '> 80', icon: '🫀', tip: 'Elevated ALT = hepatic stress. TUDCA + NAC mandatory. Stop orals if > 3x normal.' },
   { id: 'psa', label: 'PSA (40+)', unit: 'ng/mL', normal: '< 4', warning: '> 4', icon: '🔬', tip: 'AAS can accelerate prostate growth. Annual PSA test for all enhanced users over 40.' },
 ];
+
+type PelvicProgram = 'gentle' | 'strength' | 'release';
+
+const PELVIC_PROGRAMS: Record<PelvicProgram, { label: string; description: string; contractionSeconds: number; relaxationSeconds: number }> = {
+  gentle: { label: 'Gentle foundation', description: '3 seconds contract, 6 seconds relax. A calm place to begin.', contractionSeconds: 3, relaxationSeconds: 6 },
+  strength: { label: 'Strength', description: '6 seconds contract, 6 seconds relax. Controlled effort, never strain.', contractionSeconds: 6, relaxationSeconds: 6 },
+  release: { label: 'Relaxation', description: '2 seconds engage, 8 seconds fully relax. Useful when the area feels tense.', contractionSeconds: 2, relaxationSeconds: 8 },
+};
+
+const DEMO_MARKERS = [
+  { marker: 'bp_systolic', value: 118, unit: 'mmHg' },
+  { marker: 'bp_diastolic', value: 76, unit: 'mmHg' },
+  { marker: 'hct', value: 46, unit: '%' },
+  { marker: 'ldl', value: 92, unit: 'mg/dL' },
+  { marker: 'liver', value: 24, unit: 'U/L' },
+  { marker: 'psa', value: 0.8, unit: 'ng/mL' },
+] as const;
 
 // ─────────────────────────────────────────────────────────────
 // MAIN COMPONENT
@@ -452,6 +470,11 @@ export default function MensHealthScreen() {
   const logSession = useMutation(api.mensHealth.logSession);
   // @ts-ignore
   const logSupps = useMutation(api.mensHealth.logSupplement);
+  const logMarker = useMutation(api.healthProtocols.logMarker);
+  const markerMeasurements = useQuery(api.healthProtocols.recentMarkerMeasurements, convexUser?._id ? { userId: convexUser._id, limit: 100 } : 'skip');
+  const deleteDemoMarkers = useMutation(api.healthProtocols.deleteDemoMarkers);
+  const logPelvicFloorSession = useMutation(api.guidedSessions.logPelvicFloorSession);
+  const pelvicSessionHistory = useQuery(api.guidedSessions.listPelvicFloorSessions, convexUser?._id ? { userId: convexUser._id, limit: 5 } : 'skip');
 
   // ── Quiz state ──
   const [quizLoading, setQuizLoading] = useState(true);
@@ -494,7 +517,9 @@ export default function MensHealthScreen() {
   // ── Pelvic timer ──
   const [kegelActive, setKegelActive] = useState(false);
   const [kegelSecs, setKegelSecs] = useState(0);
-  const [kegelMsg, setKegelMsg] = useState('READY');
+  const [kegelMsg, setKegelMsg] = useState('ready');
+  const [pelvicProgram, setPelvicProgram] = useState<PelvicProgram>('gentle');
+  const [pelvicStarted, setPelvicStarted] = useState(false);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -514,29 +539,31 @@ export default function MensHealthScreen() {
     if (quizDone) Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
   }, [quizDone]);
 
-  // ── Kegel timer ──
+  const pelvicProgramConfig = PELVIC_PROGRAMS[pelvicProgram];
+
+  // ── Pelvic timer ──
   useEffect(() => {
     let interval: any;
     if (kegelActive) {
       Animated.loop(Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.1, duration: 4000, useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 1, duration: 4000, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1.1, duration: pelvicProgramConfig.contractionSeconds * 1000, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1, duration: pelvicProgramConfig.relaxationSeconds * 1000, useNativeDriver: true }),
       ])).start();
       interval = setInterval(() => {
         setKegelSecs(s => {
           const next = s + 1;
-          const cycle = next % 10;
-          setKegelMsg(cycle < 5 ? 'SQUEEZE ⚡' : 'RELAX 🌬️');
+          const cycle = next % (pelvicProgramConfig.contractionSeconds + pelvicProgramConfig.relaxationSeconds);
+          setKegelMsg(cycle < pelvicProgramConfig.contractionSeconds ? 'squeeze' : 'relax');
           return next;
         });
       }, 1000);
     } else {
+      pulseAnim.stopAnimation();
       pulseAnim.setValue(1);
-      setKegelSecs(0);
-      setKegelMsg('READY');
+      setKegelMsg(pelvicStarted ? 'paused' : 'ready');
     }
     return () => clearInterval(interval);
-  }, [kegelActive]);
+  }, [kegelActive, pelvicProgramConfig, pelvicStarted, pulseAnim]);
 
   // ── Derived ──
   const mc = useMemo(() => {
@@ -578,12 +605,31 @@ export default function MensHealthScreen() {
   // ── Save pelvic ──
   const handleFinishPelvic = async () => {
     if (!convexUser?._id) return;
+    const roundLength = pelvicProgramConfig.contractionSeconds + pelvicProgramConfig.relaxationSeconds;
+    if (kegelSecs < roundLength) {
+      Alert.alert(t('mensHealth.startBeforeSave', 'Finish one full round'), t('mensHealth.startBeforeSaveSub', 'Complete one contract-and-relax round before saving this session.'));
+      return;
+    }
     setKegelActive(false);
     try {
-      await logSession({ userId: convexUser._id, date: today, duration: kegelSecs, drive, recovery, focus });
+      await logPelvicFloorSession({
+        userId: convexUser._id,
+        audience: 'men',
+        program: pelvicProgram,
+        plannedRounds: Math.max(1, Math.ceil(kegelSecs / roundLength)),
+        completedRounds: Math.floor(kegelSecs / roundLength),
+        contractionSeconds: pelvicProgramConfig.contractionSeconds,
+        relaxationSeconds: pelvicProgramConfig.relaxationSeconds,
+        durationSeconds: kegelSecs,
+        status: 'completed',
+      });
       Alert.alert(t('mensHealth.protocolComplete', 'Protocol Complete'), `${Math.floor(kegelSecs / 60)}:${String(kegelSecs % 60).padStart(2, '0')} ${t('common.logged', 'logged')}.`);
+      setKegelSecs(0);
+      setPelvicStarted(false);
       setShowPelvic(false);
-    } catch { }
+    } catch {
+      Alert.alert(t('common.error', 'Could not save'), t('common.tryAgain', 'Please try again.'));
+    }
   };
 
   // ── Save supps ──
@@ -595,6 +641,79 @@ export default function MensHealthScreen() {
       setShowSupps(false);
     } catch { }
   };
+
+  const handleSaveMarkers = async () => {
+    if (!convexUser?._id) return;
+    const values = HEALTH_MARKERS
+      .map(marker => ({ marker, value: Number(markerValues[marker.id]) }))
+      .filter(item => Number.isFinite(item.value));
+    if (!values.length) {
+      Alert.alert(t('common.error', 'Nothing to save'), t('mensHealth.markerPlaceholder', 'Enter at least one value.'));
+      return;
+    }
+    try {
+      await Promise.all(values.map(({ marker, value }) => logMarker({
+        userId: convexUser._id,
+        marker: marker.id,
+        value,
+        unit: marker.unit,
+        measuredAt: Date.now(),
+        source: 'manual',
+      })));
+      Alert.alert(t('common.saved', 'Saved'), t('mensHealth.markersLogged', 'Health markers logged.'));
+      setShowMarkers(false);
+    } catch {
+      Alert.alert(t('common.error', 'Could not save'), t('common.tryAgain', 'Please try again.'));
+    }
+  };
+
+  const handleLoadDemoMarkers = async () => {
+    if (!convexUser?._id) return;
+    try {
+      await deleteDemoMarkers({ userId: convexUser._id });
+      const measuredAt = Date.now();
+      await Promise.all(DEMO_MARKERS.map(sample => logMarker({
+        userId: convexUser._id,
+        ...sample,
+        measuredAt,
+        source: 'manual',
+        note: 'Bluom demo data',
+      })));
+      setMarkerValues(Object.fromEntries(DEMO_MARKERS.map(sample => [sample.marker, String(sample.value)])));
+    } catch {
+      Alert.alert(t('common.error', 'Could not load demo data'), t('common.tryAgain', 'Please try again.'));
+    }
+  };
+
+  const handleClearDemoMarkers = async () => {
+    if (!convexUser?._id) return;
+    try {
+      await deleteDemoMarkers({ userId: convexUser._id });
+      setMarkerValues(previous => {
+        const next = { ...previous };
+        DEMO_MARKERS.forEach(sample => delete next[sample.marker]);
+        return next;
+      });
+    } catch {
+      Alert.alert(t('common.error', 'Could not clear demo data'), t('common.tryAgain', 'Please try again.'));
+    }
+  };
+
+  const handleClosePelvic = () => {
+    setKegelActive(false);
+    setKegelSecs(0);
+    setPelvicStarted(false);
+    setShowPelvic(false);
+  };
+
+  const latestMarkerValues = useMemo(() => {
+    const latest: Record<string, { value: number; unit: string; measuredAt: number; note?: string }> = {};
+    for (const row of markerMeasurements ?? []) {
+      if (!latest[row.marker]) latest[row.marker] = row;
+    }
+    return latest;
+  }, [markerMeasurements]);
+  const hasDemoMarkers = (markerMeasurements ?? []).some(row => row.note === 'Bluom demo data');
 
   // ─────────────────────────────────────────────────────────
   // QUIZ SCREEN
@@ -693,13 +812,13 @@ export default function MensHealthScreen() {
         <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top']}>
           <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 60 }} showsVerticalScrollIndicator={false}>
             <View style={s.modalHeader}>
-              <Text style={s.modalTitle}>{t('mensHealth.vitalityCheckin','Registo de Vitalidade')}</Text>
+              <Text style={s.modalTitle}>{t('mensHealth.vitalityCheckin','Vitality Check-in')}</Text>
               <TouchableOpacity onPress={() => setShowVitality(false)} style={s.modalClose}>
                 <Ionicons name="close" size={20} color={themeColors.textMuted} />
               </TouchableOpacity>
             </View>
 
-            <Text style={s.modalSub}>{t('mensHealth.vitalitySub','Avalia cada pilar honestamente. O teu T-Opt score atualiza em tempo real.')}</Text>
+            <Text style={s.modalSub}>{t('mensHealth.vitalitySub','Assess each pillar honestly. Your T-Opt score updates in real-time.')}</Text>
 
             {/* T-Opt live score */}
             <View style={s.tOptLive}>
@@ -707,10 +826,10 @@ export default function MensHealthScreen() {
               <Text style={[s.tOptLiveVal, { color: tOpt.score >= 70 ? '#4ade80' : tOpt.score >= 50 ? '#fcd34d' : '#f87171' }]}>{tOpt.score}%</Text>
             </View>
             {[
-              { label: t('mensHealth.drivePillar','Vitalidade / Líbido'), value: drive, onChange: setDrive, icon: 'flame-outline', color: '#ef4444' },
-              { label: t('mensHealth.recoveryPillar','Estado de Recuperação'), value: recovery, onChange: setRecovery, icon: 'battery-charging-outline', color: '#4ade80' },
-              { label: t('mensHealth.focusPillar','Foco Mental'), value: focus, onChange: setFocus, icon: 'eye-outline', color: '#60a5fa' },
-              { label: t('mensHealth.sleepPillar','Qualidade do Sono'), value: sleep, onChange: setSleep, icon: 'moon-outline', color: '#a78bfa' },
+              { label: t('mensHealth.drivePillar','Drive / Libido'), value: drive, onChange: setDrive, icon: 'flame-outline', color: '#ef4444' },
+              { label: t('mensHealth.recoveryPillar','Recovery State'), value: recovery, onChange: setRecovery, icon: 'battery-charging-outline', color: '#4ade80' },
+              { label: t('mensHealth.focusPillar','Mental Focus'), value: focus, onChange: setFocus, icon: 'eye-outline', color: '#60a5fa' },
+              { label: t('mensHealth.sleepPillar','Sleep Quality'), value: sleep, onChange: setSleep, icon: 'moon-outline', color: '#a78bfa' },
             ].map(item => (
               <View key={item.label} style={s.sliderWrap}>
                 <View style={s.sliderHeader}>
@@ -736,11 +855,11 @@ export default function MensHealthScreen() {
             {/* Mood sync */}
             <View style={s.moodSync}>
               <Ionicons name="sync" size={14} color="#a78bfa" />
-              <Text style={s.moodSyncTxt}>{t('mensHealth.moodSynced','Humor sincronizado do Wellness')}: {wellnessLog?.moodEmoji ?? '—'}</Text>
+              <Text style={s.moodSyncTxt}>{t('mensHealth.moodSynced','Mood synced from Wellness')}: {wellnessLog?.moodEmoji ?? '—'}</Text>
             </View>
 
               <TouchableOpacity style={[s.saveBtn, { backgroundColor: mc.gradient[0] }]} onPress={handleSaveVitality}>
-                <Text style={s.saveBtnTxt}>{t('mensHealth.updateStatus','Atualizar Estado do Sistema')}</Text>
+                <Text style={s.saveBtnTxt}>{t('mensHealth.updateStatus','Update System Status')}</Text>
               </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>
@@ -748,29 +867,68 @@ export default function MensHealthScreen() {
 
       {/* Pelvic Protocol Modal */}
       <Modal visible={showPelvic} animationType="slide" presentationStyle="pageSheet">
-        <View style={{ flex: 1, backgroundColor: themeColors.bg, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <Text style={[s.pelvicTitle, { color: themeColors.text }]}>{t('mensHealth.pelvicTitle','Protocolo de Poder Pélvico')}</Text>
-          <Text style={[s.pelvicSub, { color: themeColors.textMuted }]}>{t('mensHealth.pelvicSub','Melhora a função erétil, controlo urinário, desempenho sexual e estabilidade do core.')}</Text>
-          <Animated.View style={[s.timerCircle, { transform: [{ scale: pulseAnim }], borderColor: kegelActive ? '#60a5fa' : themeColors.border, backgroundColor: kegelActive ? 'rgba(96,165,250,0.12)' : themeColors.surfaceMuted }]}>
-            <Text style={[s.timerTime, { color: themeColors.text }]}>{String(Math.floor(kegelSecs / 60)).padStart(2, '0')}:{String(kegelSecs % 60).padStart(2, '0')}</Text>
-            <Text style={[s.timerMsg, { color: kegelActive ? '#60a5fa' : themeColors.textMuted }]}>{kegelMsg}</Text>
-          </Animated.View>
-          <Text style={[s.pelvicInstructions, { color: themeColors.textMuted }]}>{t('mensHealth.pelvicInstructions','Contrai 5s → Relaxa 5s → Repete. 10–15 ciclos. Prática diária dá resultados em 4–6 semanas.')}</Text>
-          <View style={s.pelvicActions}>
-            {!kegelActive ? (
-              <TouchableOpacity style={[s.pelvicStartBtn, { backgroundColor: mc.gradient[0] }]} onPress={() => setKegelActive(true)}>
-                <Text style={s.pelvicStartTxt}>{t('mensHealth.startProtocol','Iniciar Protocolo')}</Text>
+        <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.bg }} edges={['top', 'bottom']}>
+          <ScrollView contentContainerStyle={s.pelvicModalContent}>
+            <View style={s.modalHeader}>
+              <View style={{ flex: 1 }}>
+                <Text style={s.modalTitle}>{t('mensHealth.pelvicTitle', 'Pelvic floor training')}</Text>
+                <Text style={s.modalSub}>{t('mensHealth.pelvicSub', 'A guided, private session for control, relaxation, and core coordination.')}</Text>
+              </View>
+              <TouchableOpacity onPress={handleClosePelvic} style={s.modalClose} accessibilityLabel={t('common.close', 'Close')}>
+                <Ionicons name="close" size={20} color={themeColors.textMuted} />
               </TouchableOpacity>
-            ) : (
-              <TouchableOpacity style={[s.pelvicFinishBtn, { borderColor: mc.gradient[0] }]} onPress={handleFinishPelvic}>
-                <Text style={s.pelvicFinishTxt}>{t('mensHealth.finishLog','Terminar & Registar')}</Text>
-              </TouchableOpacity>
+            </View>
+
+            <Text style={s.pelvicSectionTitle}>{t('mensHealth.choosePace', 'Choose your pace')}</Text>
+            <View style={s.pelvicProgramRow}>
+              {(Object.keys(PELVIC_PROGRAMS) as PelvicProgram[]).map(program => {
+                const selected = program === pelvicProgram;
+                const item = PELVIC_PROGRAMS[program];
+                return (
+                  <TouchableOpacity
+                    key={program}
+                    style={[s.pelvicProgramButton, selected && { borderColor: mc.gradient[0], backgroundColor: `${mc.gradient[0]}15` }]}
+                    onPress={() => !pelvicStarted && setPelvicProgram(program)}
+                    disabled={pelvicStarted}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={[s.pelvicProgramLabel, selected && { color: mc.gradient[0] }]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.72}>{item.label}</Text>
+                    <Text style={s.pelvicProgramTiming}>{item.contractionSeconds}s / {item.relaxationSeconds}s</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            <Animated.View style={[s.timerCircle, { transform: [{ scale: pulseAnim }], borderColor: kegelActive ? '#60a5fa' : themeColors.border, backgroundColor: kegelActive ? 'rgba(96,165,250,0.12)' : themeColors.surfaceMuted }]}>
+              <Text style={s.timerTime}>{String(Math.floor(kegelSecs / 60)).padStart(2, '0')}:{String(kegelSecs % 60).padStart(2, '0')}</Text>
+              <Text adjustsFontSizeToFit numberOfLines={1} style={[s.timerMsg, { color: kegelActive ? '#60a5fa' : themeColors.textMuted, width: '90%', textAlign: 'center' }]}>
+                {kegelMsg === 'squeeze' ? t('mensHealth.squeeze', 'CONTRACT') : kegelMsg === 'relax' ? t('mensHealth.relax', 'RELAX') : kegelMsg === 'paused' ? t('common.paused', 'PAUSED') : t('mensHealth.ready', 'READY')}
+              </Text>
+            </Animated.View>
+            <Text style={s.pelvicInstructions}>{pelvicProgramConfig.description} Stop if you feel pain, dizziness, or new symptoms.</Text>
+            {pelvicSessionHistory?.[0] && (
+              <Text style={s.pelvicHistory}>Last saved: {Math.floor(pelvicSessionHistory[0].durationSeconds / 60)}:{String(pelvicSessionHistory[0].durationSeconds % 60).padStart(2, '0')} · {pelvicSessionHistory[0].completedRounds} rounds</Text>
             )}
-            <TouchableOpacity onPress={() => { setKegelActive(false); setShowPelvic(false); }} style={{ marginTop: 16 }}>
-              <Text style={{ color: themeColors.textMuted, fontWeight: '600' }}>{t('common.cancel', 'Cancel')}</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+            <View style={s.pelvicActions}>
+              <TouchableOpacity
+                style={[s.pelvicStartBtn, { backgroundColor: mc.gradient[0] }]}
+                onPress={() => { setPelvicStarted(true); setKegelActive(active => !active); }}
+              >
+                <Text style={s.pelvicStartTxt}>
+                  {kegelActive ? t('common.pause', 'Pause') : pelvicStarted ? t('common.resume', 'Resume') : t('mensHealth.startProtocol', 'Start session')}
+                </Text>
+              </TouchableOpacity>
+              {pelvicStarted && (
+                <TouchableOpacity style={[s.pelvicFinishBtn, { borderColor: mc.gradient[0] }]} onPress={handleFinishPelvic}>
+                  <Text style={s.pelvicFinishTxt}>{t('mensHealth.finishLog', 'Finish & save')}</Text>
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity onPress={handleClosePelvic} style={{ marginTop: 16 }}>
+                <Text style={{ color: themeColors.textMuted, fontWeight: '600' }}>{t('common.cancel', 'Cancel')}</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
       </Modal>
 
       {/* Supplement Stack Modal */}
@@ -851,6 +1009,20 @@ export default function MensHealthScreen() {
             <Text style={[s.modalSub, { marginBottom: 20 }]}>
               {t('mensHealth.healthMarkersSub', 'Log your most recent lab values and blood pressure readings. Track trends over time.')}
             </Text>
+            {__DEV__ && (
+              <View style={s.demoMarkerRow}>
+                <TouchableOpacity style={[s.demoMarkerButton, { flex: 1 }]} onPress={handleLoadDemoMarkers}>
+                  <Ionicons name="flask-outline" size={16} color={themeColors.primary} />
+                  <Text style={[s.demoMarkerButtonText, { color: themeColors.primary }]}>Load demo values</Text>
+                </TouchableOpacity>
+                {hasDemoMarkers && (
+                  <TouchableOpacity style={[s.demoMarkerButton, { flex: 1 }]} onPress={handleClearDemoMarkers}>
+                    <Ionicons name="trash-outline" size={16} color={themeColors.textMuted} />
+                    <Text style={[s.demoMarkerButtonText, { color: themeColors.textMuted }]}>Clear demo data</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
             {HEALTH_MARKERS.map(marker => (
               <View key={marker.id} style={s.markerCard}>
                 <View style={s.markerTop}>
@@ -868,10 +1040,15 @@ export default function MensHealthScreen() {
                   onChangeText={val => setMarkerValues(p => ({ ...p, [marker.id]: val }))}
                   keyboardType="numbers-and-punctuation"
                 />
+                {latestMarkerValues[marker.id] && (
+                  <Text style={s.markerHistoryText}>
+                    Last: {latestMarkerValues[marker.id].value} {latestMarkerValues[marker.id].unit} · {new Date(latestMarkerValues[marker.id].measuredAt).toLocaleDateString()}{latestMarkerValues[marker.id].note === 'Bluom demo data' ? ' · Demo' : ''}
+                  </Text>
+                )}
                 <Text style={s.markerTip}>💡 {t(`mensHealth.markers.${marker.id}.tip`, marker.tip)}</Text>
               </View>
             ))}
-            <TouchableOpacity style={[s.saveBtn, { backgroundColor: mc.gradient[0] }]} onPress={() => { Alert.alert(t('common.saved', 'Saved'), t('mensHealth.markersLogged', 'Health markers logged.')); setShowMarkers(false); }}>
+            <TouchableOpacity style={[s.saveBtn, { backgroundColor: mc.gradient[0] }]} onPress={handleSaveMarkers}>
               <Text style={s.saveBtnTxt}>{t('mensHealth.saveMarkers','Guardar Marcadores')}</Text>
             </TouchableOpacity>
           </ScrollView>
@@ -1151,8 +1328,8 @@ export default function MensHealthScreen() {
                       <Text style={s.markerChipName}>{t(`mensHealth.markers.${m.id}.label`, m.label)}</Text>
                       <Text style={s.markerChipNormal}>{t('mensHealth.normal', 'Normal')}: {m.normal}</Text>
                     </View>
-                    <Text style={markerValues[m.id] ? s.markerChipLogged : s.markerChipEmpty}>
-                      {markerValues[m.id] ? markerValues[m.id] : '—'}
+                    <Text style={latestMarkerValues[m.id] ? s.markerChipLogged : s.markerChipEmpty}>
+                      {latestMarkerValues[m.id] ? `${latestMarkerValues[m.id].value} ${latestMarkerValues[m.id].unit}` : '—'}
                     </Text>
                   </View>
                 ))}
@@ -1403,12 +1580,19 @@ const createS = (c: ThemeColors) => StyleSheet.create({
   saveBtnTxt: { color: '#fff', fontSize: 16, fontWeight: '800' },
 
   // Pelvic modal
+  pelvicModalContent: { padding: 20, paddingBottom: 48, alignItems: 'center' },
   pelvicTitle: { fontSize: 24, fontWeight: '900', color: c.text, textAlign: 'center', marginBottom: 6 },
-  pelvicSub: { fontSize: 13, color: c.textMuted, textAlign: 'center', marginBottom: 32, lineHeight: 19, paddingHorizontal: 20 },
-  timerCircle: { width: 200, height: 200, borderRadius: 100, borderWidth: 5, alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
+  pelvicSub: { fontSize: 13, color: c.textMuted, textAlign: 'center', marginBottom: 20, lineHeight: 19, paddingHorizontal: 20 },
+  pelvicSectionTitle: { alignSelf: 'flex-start', fontSize: 13, fontWeight: '800', color: c.text, marginBottom: 8 },
+  pelvicProgramRow: { flexDirection: 'row', width: '100%', gap: 8, marginBottom: 22 },
+  pelvicProgramButton: { flex: 1, minHeight: 66, justifyContent: 'center', padding: 8, borderRadius: 8, backgroundColor: c.surface, borderWidth: 1, borderColor: c.border },
+  pelvicProgramLabel: { fontSize: 12, fontWeight: '800', color: c.text, textAlign: 'center' },
+  pelvicProgramTiming: { fontSize: 11, color: c.textMuted, textAlign: 'center', marginTop: 4 },
+  timerCircle: { width: 200, height: 200, borderRadius: 100, borderWidth: 5, alignItems: 'center', justifyContent: 'center', marginBottom: 18 },
   timerTime: { fontSize: 44, fontWeight: '900', color: c.text },
   timerMsg: { fontSize: 13, fontWeight: '800', marginTop: 4, letterSpacing: 1 },
-  pelvicInstructions: { fontSize: 12, color: c.textMuted, textAlign: 'center', marginBottom: 28, lineHeight: 18, paddingHorizontal: 24 },
+  pelvicInstructions: { fontSize: 12, color: c.textMuted, textAlign: 'center', marginBottom: 12, lineHeight: 18, paddingHorizontal: 16 },
+  pelvicHistory: { fontSize: 12, color: c.textMuted, textAlign: 'center', marginBottom: 18 },
   pelvicActions: { alignItems: 'center', width: '100%' },
   pelvicStartBtn: { borderRadius: 18, paddingHorizontal: 48, paddingVertical: 16, width: '80%', alignItems: 'center' },
   pelvicStartTxt: { color: '#fff', fontWeight: '800', fontSize: 16 },
@@ -1436,7 +1620,11 @@ const createS = (c: ThemeColors) => StyleSheet.create({
   markerName: { fontSize: 14, fontWeight: '800', color: c.text },
   markerNormal: { fontSize: 11, color: c.textMuted, marginTop: 2 },
   markerInput: { backgroundColor: c.surfaceMuted, borderRadius: 10, borderWidth: 1, borderColor: c.border, padding: 12, fontSize: 15, color: c.text, marginBottom: 8, fontWeight: '600' },
+  markerHistoryText: { fontSize: 11, color: c.textMuted, marginBottom: 8 },
   markerTip: { fontSize: 12, color: c.textMuted, lineHeight: 17 },
+  demoMarkerRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
+  demoMarkerButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 42, borderRadius: 8, borderWidth: 1, borderColor: c.border, backgroundColor: c.surface, paddingHorizontal: 12 },
+  demoMarkerButtonText: { fontSize: 13, fontWeight: '700' },
 
   // Peak week modal
   peakDayRow: { flexDirection: 'row', gap: 6, marginBottom: 20, flexWrap: 'wrap' },

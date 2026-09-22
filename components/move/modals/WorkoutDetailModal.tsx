@@ -157,8 +157,8 @@ export default function WorkoutDetailModal({
                 onPress={() => onExercisePress?.(ex)}
               >
                 <View style={styles.thumbBox}>
-                  {ex.thumbnailUrl ? (
-                    <Image source={{ uri: ex.thumbnailUrl }} style={styles.thumbImage} contentFit="cover" cachePolicy="memory-disk" />
+                  {ex.thumbnailUrl || ex.videoUrl ? (
+                    <Image source={{ uri: ex.thumbnailUrl || ex.videoUrl }} style={styles.thumbImage} contentFit="cover" cachePolicy="memory-disk" />
                   ) : (
                     <Ionicons name="barbell-outline" size={22} color="#94a3b8" />
                   )}

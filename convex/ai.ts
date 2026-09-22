@@ -593,6 +593,49 @@ export const scanSugarProductFromImage = action({
   },
 });
 
+/**
+ * Identifies gym equipment only. It intentionally returns a suggestion, never a
+ * logged set or an asserted safety clearance.
+ */
+export const recognizeGymMachine = action({
+  args: { imageBase64: v.string(), mimeType: v.optional(v.string()), platform: v.string(), language: v.optional(v.string()) },
+  handler: async (_ctx, args) => {
+    const { apiKey } = getGeminiApiKeyForPlatform(args.platform);
+    const prompt = `Identify the primary gym machine or training equipment in this photo. Reply ONLY with JSON:
+{
+ "confidence": number,
+ "equipmentName": string,
+ "exerciseName": string,
+ "primaryMuscles": [string],
+ "setupSteps": [string],
+ "safetyNote": string,
+ "uncertain": boolean
+}
+Use ${args.language ?? 'English'} for every string. Do not identify people, do not guess resistance/load, do not diagnose pain or clear a user for exercise. If unsure, set uncertain true and explain how to find a staff member or manufacturer label.`;
+    const result = await generateContentWithFallback([
+      { text: prompt },
+      { inlineData: { mimeType: args.mimeType ?? "image/jpeg", data: args.imageBase64 } },
+    ], apiKey);
+    const text = result.response.text();
+    let parsed = safeJsonParse<any>(text);
+    if (!parsed) {
+      const start = text.indexOf("{");
+      const end = text.lastIndexOf("}");
+      if (start >= 0 && end > start) parsed = safeJsonParse(text.slice(start, end + 1));
+    }
+    if (!parsed) return { confidence: 0, equipmentName: "", exerciseName: "", primaryMuscles: [], setupSteps: [], safetyNote: "Unable to identify this machine.", uncertain: true };
+    return {
+      confidence: Math.max(0, Math.min(1, Number(parsed.confidence) || 0)),
+      equipmentName: String(parsed.equipmentName ?? "").slice(0, 120),
+      exerciseName: String(parsed.exerciseName ?? "").slice(0, 120),
+      primaryMuscles: Array.isArray(parsed.primaryMuscles) ? parsed.primaryMuscles.map((value: unknown) => String(value).slice(0, 40)).slice(0, 5) : [],
+      setupSteps: Array.isArray(parsed.setupSteps) ? parsed.setupSteps.map((value: unknown) => String(value).slice(0, 200)).slice(0, 5) : [],
+      safetyNote: String(parsed.safetyNote ?? "Check the machine label and ask gym staff if unsure.").slice(0, 300),
+      uncertain: parsed.uncertain === true || Number(parsed.confidence) < 0.6,
+    };
+  },
+});
+
 export const generateAiRecipe = action({
   args: {
     calories: v.float64(),

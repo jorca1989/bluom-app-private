@@ -73,6 +73,7 @@ export function pickProOffering(offerings: PurchasesOfferings | null): Purchases
 export function pickMonthlyAndAnnualPackages(offering: PurchasesOffering | null): {
   monthly?: PurchasesPackage;
   annual?: PurchasesPackage;
+  lifetime?: PurchasesPackage;
   all: PurchasesPackage[];
 } {
   if (!offering) return { all: [] };
@@ -81,6 +82,7 @@ export function pickMonthlyAndAnnualPackages(offering: PurchasesOffering | null)
 
   const monthlyProductId = process.env.EXPO_PUBLIC_REVENUECAT_MONTHLY_PRODUCT_ID;
   const yearlyProductId = process.env.EXPO_PUBLIC_REVENUECAT_YEARLY_PRODUCT_ID;
+  const lifetimeProductId = process.env.EXPO_PUBLIC_REVENUECAT_LIFETIME_PRODUCT_ID;
 
   const getProductId = (p: PurchasesPackage) =>
     String(((p as any)?.product?.identifier ?? (p as any)?.product?.productIdentifier ?? '') || '');
@@ -97,7 +99,33 @@ export function pickMonthlyAndAnnualPackages(offering: PurchasesOffering | null)
       : undefined) ??
     pkgs.find((p: PurchasesPackage) => String(p.packageType).toLowerCase().includes('annual'));
 
-  return { monthly, annual, all: pkgs };
+  const lifetime =
+    (lifetimeProductId
+      ? pkgs.find((p: PurchasesPackage) => getProductId(p) === String(lifetimeProductId))
+      : undefined) ??
+    pkgs.find((p: PurchasesPackage) => {
+      const pType = String(p.packageType).toLowerCase();
+      const pId = getProductId(p).toLowerCase();
+      return pType.includes('lifetime') || pId.includes('lifetime');
+    });
+
+  return { monthly, annual, lifetime, all: pkgs };
+}
+
+/**
+ * Returns a human-readable free trial string from a package's introductory pricing.
+ * Returns null if the package has no free trial.
+ */
+export function getTrialDuration(pkg: PurchasesPackage | undefined): string | null {
+  if (!pkg) return null;
+  const intro = (pkg as any)?.product?.introPrice;
+  if (!intro || !intro.periodUnit || !intro.periodNumberOfUnits) return null;
+  const n = intro.periodNumberOfUnits;
+  const unit = String(intro.periodUnit).toLowerCase();
+  if (unit === 'day') return `${n}-day free trial`;
+  if (unit === 'week') return `${n}-week free trial`;
+  if (unit === 'month') return `${n}-month free trial`;
+  return 'free trial';
 }
 
 export async function purchasePackageSafe(pkg: PurchasesPackage): Promise<CustomerInfo | null> {

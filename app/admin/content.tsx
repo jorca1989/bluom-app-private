@@ -510,34 +510,40 @@ export default function ContentCMS() {
     setIsModalOpen(true);
   };
   const openEdit = (item: any) => {
-    setEditId(item._id);
-    // category may be stored as comma-separated string from multi-select
-    const cats = item.category
-      ? item.category.split(',').map((c: string) => c.trim()).filter(Boolean)
-      : ['Wellness'];
-    setForm({
-      title: item.title ?? '',
-      titlePt: item.titlePt ?? '',
-      titleEs: item.titleEs ?? '',
-      titleFr: item.titleFr ?? '',
-      titleDe: item.titleDe ?? '',
-      titleNl: item.titleNl ?? '',
-      content: item.content ?? '',
-      contentPt: item.contentPt ?? '',
-      contentEs: item.contentEs ?? '',
-      contentFr: item.contentFr ?? '',
-      contentDe: item.contentDe ?? '',
-      contentNl: item.contentNl ?? '',
-      categories: cats,
-      featuredImage: item.featuredImage ?? '',
-      status: item.status ?? 'PUBLISHED',
-      focusKeyphrase: item.focusKeyphrase ?? '',
-      imageAlt: item.imageAlt ?? '',
-      metaDescription: item.metaDescription ?? '',
-    });
-    setActiveLang('en');
-    setContentSelection({ start: 0, end: 0 }); setPreviewMode(false);
-    setIsModalOpen(true);
+    try {
+      console.log('[AdminContent] openEdit called for article:', item?.title);
+      setEditId(item._id);
+      // category may be stored as comma-separated string from multi-select
+      const cats = item.category
+        ? item.category.split(',').map((c: string) => c.trim()).filter(Boolean)
+        : ['Wellness'];
+      setForm({
+        title: item.title ?? '',
+        titlePt: item.titlePt ?? '',
+        titleEs: item.titleEs ?? '',
+        titleFr: item.titleFr ?? '',
+        titleDe: item.titleDe ?? '',
+        titleNl: item.titleNl ?? '',
+        content: item.content ?? '',
+        contentPt: item.contentPt ?? '',
+        contentEs: item.contentEs ?? '',
+        contentFr: item.contentFr ?? '',
+        contentDe: item.contentDe ?? '',
+        contentNl: item.contentNl ?? '',
+        categories: cats,
+        featuredImage: item.featuredImage ?? '',
+        status: item.status ?? 'PUBLISHED',
+        focusKeyphrase: item.focusKeyphrase ?? '',
+        imageAlt: item.imageAlt ?? '',
+        metaDescription: item.metaDescription ?? '',
+      });
+      setActiveLang('en');
+      setContentSelection({ start: 0, end: 0 }); setPreviewMode(false);
+      setIsModalOpen(true);
+    } catch (err: any) {
+      console.error('[AdminContent] Error opening edit modal:', err);
+      Alert.alert('Error', 'Could not open edit modal: ' + (err?.message || 'Unknown error'));
+    }
   };
 
   const handleSave = async () => {
@@ -712,7 +718,12 @@ export default function ContentCMS() {
       </ScrollView>
 
       {/* ── Create / Edit Modal ── */}
-      <Modal visible={isModalOpen} animationType="slide">
+      <Modal 
+        visible={isModalOpen} 
+        animationType={Platform.OS === 'web' ? 'none' : 'slide'}
+        transparent={Platform.OS === 'web'}
+        onRequestClose={() => setIsModalOpen(false)}
+      >
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setIsModalOpen(false)}>
@@ -996,7 +1007,18 @@ const styles = StyleSheet.create({
   legalPreview: { fontSize: 12, color: '#64748b', lineHeight: 18, marginTop: 8 },
   legalDate: { fontSize: 11, color: '#94a3b8', marginTop: 8 },
 
-  modalContainer: { flex: 1, backgroundColor: '#fff' },
+  modalContainer: { 
+    flex: 1, 
+    backgroundColor: '#fff',
+    ...(Platform.OS === 'web' ? {
+      position: 'fixed' as any,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 99999,
+    } : {}),
+  },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
   modalTitle: { fontSize: 17, fontWeight: '800', color: '#1e293b' },
   modalCancel: { fontSize: 15, color: '#64748b', fontWeight: '600' },

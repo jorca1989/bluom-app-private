@@ -1752,7 +1752,7 @@ function CalmColorsGame({ onBack, onComplete }: { onBack: () => void; onComplete
           ]}
         />
         <Text style={styles.breathingPhase}>
-          {breathingPhase === 'inhale' ? 'Breathe In...' : 'Breathe Out...'}
+          {breathingPhase === 'inhale' ? t('wellness.meditationHub.breatheInDots', 'Breathe In...') : t('wellness.meditationHub.breatheOutDots', 'Breathe Out...')}
         </Text>
       </View>
 

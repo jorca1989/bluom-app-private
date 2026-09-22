@@ -34,6 +34,9 @@ import { useTheme } from '@/context/ThemeContext';
 import type { ThemeColors } from '@/context/ThemeContext';
 
 import CoachMark from '@/components/CoachMark';
+import TabCoachOverlay from '@/components/TabCoachOverlay';
+import { useCoachMark } from '@/hooks/useCoachMark';
+import { useReviewTrigger } from '@/hooks/useReviewTrigger';
 import PhotoRecognitionModal from '@/components/PhotoRecognitionModal';
 import FoodDetailsModal from '@/components/fuel/modals/FoodDetailsModal';
 import { useActiveTools } from '@/hooks/useActiveTools';
@@ -76,6 +79,14 @@ function titleFromMealType(mealType: MealTypeLower): MealName {
     case 'dinner': return 'Dinner';
     default: return 'Snack';
   }
+}
+
+function getCurrentMealSlot(now = new Date()): MealName {
+  const hour = now.getHours();
+  if (hour >= 5 && hour < 11) return 'Breakfast';
+  if (hour < 16) return 'Lunch';
+  if (hour < 21) return 'Dinner';
+  return 'Snack';
 }
 
 // ─── Fuel widget config ───────────────────────────────────────
@@ -171,7 +182,8 @@ export default function FuelScreen() {
   const { isToolActive, toggleTool } = useActiveTools();
 
   // Modals & State
-  const [selectedMeal, setSelectedMeal] = useState<MealName>('Lunch');
+  const [selectedMeal, setSelectedMeal] = useState<MealName>(() => getCurrentMealSlot());
+  const [showAllMealSlots, setShowAllMealSlots] = useState(false);
   const [showFoodSearch, setShowFoodSearch] = useState(false);
   const [foodSearchInitialTab, setFoodSearchInitialTab] = useState<'search' | 'recipes' | 'create'>('search');
   const [showPhotoCapture, setShowPhotoCapture] = useState(false);
@@ -186,7 +198,7 @@ export default function FuelScreen() {
   // Log Recipe Modal
   const [showLogRecipeModal, setShowLogRecipeModal] = useState(false);
   const [logRecipe, setLogRecipe] = useState<any>(null);
-  const [logMeal, setLogMeal] = useState<MealName>('Lunch');
+  const [logMeal, setLogMeal] = useState<MealName>(() => getCurrentMealSlot());
   const [logQuantity, setLogQuantity] = useState(1);
   const [logSuccess, setLogSuccess] = useState(false);
   const [isLoggingFood, setIsLoggingFood] = useState(false);
@@ -195,7 +207,30 @@ export default function FuelScreen() {
   const [editingFood, setEditingFood] = useState<any>(null);
   const [editingRecipe, setEditingRecipe] = useState<any>(null);
 
-  const [showTooltip, setShowTooltip] = useState(false);
+  const { triggerReviewPrompt } = useReviewTrigger();
+  const fuelCoach = useCoachMark('fuel');
+  const fuelCoachSteps = useMemo(() => [
+    {
+      emoji: '📸',
+      title: t('fuel.coach.mealScanTitle', 'Scan Your Meals'),
+      body: t('fuel.coach.mealScanBody', 'Tap the camera button to snap any meal. AI instantly identifies ingredients and calculates your calories and macros.')
+    },
+    {
+      emoji: '👨‍🍳',
+      title: t('fuel.coach.chefTitle', 'AI Chef & Meal Planning'),
+      body: t('fuel.coach.chefBody', 'Use the AI Chef in Quick Actions to craft delicious, high-protein recipes aligned with your dietary preferences.')
+    },
+    {
+      emoji: '📊',
+      title: t('fuel.coach.macrosTitle', 'How to Read Your Macros'),
+      body: t('fuel.coach.macrosBody', 'Track Protein, Carbs, and Fats live throughout the day. Tap any macro card for comprehensive nutrient breakdowns.')
+    },
+    {
+      emoji: '🍽️',
+      title: t('fuel.coach.logTitle', 'Log Every Meal'),
+      body: t('fuel.coach.logBody', 'Tap any meal slot to log meals, recipes, or custom foods to keep your metabolic equation perfectly calibrated.')
+    }
+  ], [t]);
 
   // ── Widget config ──
   const [showFuelConfig, setShowFuelConfig] = useState(false);
@@ -216,6 +251,10 @@ export default function FuelScreen() {
     });
   }, []);
   const isFW = (id: FuelWidgetId) => fuelWidgets.has(id);
+
+  useEffect(() => {
+    setShowAllMealSlots(false);
+  }, [selectedDate]);
 
   // Loading
   const isLoading =
@@ -386,6 +425,17 @@ export default function FuelScreen() {
     { name: 'Dinner' as MealName, label: t('fuel.meals.dinner', 'Dinner'), icon: 'moon-outline' as const, key: 'Dinner' },
     { name: 'Snack' as MealName, label: t('fuel.meals.snack', 'Snack'), icon: 'nutrition-outline' as const, key: 'Snack' },
   ];
+  const primaryMeal = selectedDate === todayISO
+    ? getCurrentMealSlot()
+    : mealConfigs.find((meal) => (dateEntries ?? []).some((entry) => entry.mealType === toMealTypeLower(meal.name)))?.name ?? 'Breakfast';
+  const displayedMealConfigs = mealConfigs
+    .filter((meal) => showAllMealSlots || meal.name === primaryMeal || (dateEntries ?? []).some((entry) => entry.mealType === toMealTypeLower(meal.name)))
+    .sort((left, right) => {
+      if (left.name === primaryMeal) return -1;
+      if (right.name === primaryMeal) return 1;
+      return mealConfigs.indexOf(left) - mealConfigs.indexOf(right);
+    });
+  const hiddenMealSlotCount = mealConfigs.length - displayedMealConfigs.length;
 
   const macroCardsData = [
     {
@@ -424,7 +474,7 @@ export default function FuelScreen() {
           styles.scrollContent,
           {
             paddingTop: 12,
-            paddingBottom: getBottomContentPadding(insets.bottom, 20),
+            paddingBottom: getBottomContentPadding(insets.bottom, 0),
             ...(isTablet ? { alignItems: 'center' as const } : {}),
           },
         ]}
@@ -474,12 +524,6 @@ export default function FuelScreen() {
 
           <View style={styles.header}>
             <Text style={styles.title}>{t('fuel.title', 'Fuel')}</Text>
-            <CoachMark
-              visible={showTooltip}
-              message={t('fuel.coachMark', 'Snap a photo to track macros instantly.')}
-              onClose={() => { setShowTooltip(false); SecureStore.deleteItemAsync('bluom_show_coach_marks'); }}
-              position="bottom"
-            />
             <TouchableOpacity onPress={() => setShowFuelConfig(true)} style={fuelCBtn} activeOpacity={0.75}>
               <Settings2 size={17} color={themeColors.textMuted} />
             </TouchableOpacity>
@@ -496,7 +540,7 @@ export default function FuelScreen() {
           )}
 
           {isFW('calories') && (
-          <View style={styles.section}>
+          <View style={[styles.section, styles.calendarAdjacentSection]}>
              <CalorieSummary
                consumed={todayTotals.calories}
                goal={daily?.target?.calories ?? 2000}
@@ -544,7 +588,7 @@ export default function FuelScreen() {
             </View>
           ) : isFW('meals') ? (
             <View style={styles.mealsSection}>
-              {mealConfigs.map(m => {
+              {displayedMealConfigs.map(m => {
                  const typeLower = toMealTypeLower(m.name);
                  const mealEntries = (dateEntries ?? []).filter(e => e.mealType === typeLower);
                  const foods = mealEntries.map(e => ({
@@ -590,46 +634,75 @@ export default function FuelScreen() {
                  );
               })}
 
-              {/* ── 5th card: Extra Meal — Pro only ── */}
-              <TouchableOpacity
-                style={[styles.extraMealCard, isPro && styles.extraMealCardPro]}
-                activeOpacity={0.8}
-                onPress={() => {
-                  if (!isPro) {
-                    setProGateMessage(t('fuel.proGate', 'This feature is available on Pro.'));
-                    setShowProUpgrade(true);
-                  } else {
-                    setSelectedMeal('Snack');
-                    setShowFoodSearch(true);
-                  }
-                }}
-              >
-                <View style={styles.extraMealLeft}>
-                  <View style={[styles.extraMealIconWrap, isPro ? styles.extraMealIconWrapPro : styles.extraMealIconWrapLocked]}>
-                    {isPro
-                      ? <Ionicons name="add" size={22} color={themeColors.primary} />
-                      : <Ionicons name="lock-closed" size={18} color="#94a3b8" />
-                    }
-                  </View>
-                  <View style={{ flex: 1, paddingRight: 8 }}>
-                    <Text style={[styles.extraMealTitle, !isPro && styles.extraMealTitleLocked]}>
-                      {t('fuel.extraMeal.title', 'Add Extra Meal')}
+              {hiddenMealSlotCount > 0 && (
+                <TouchableOpacity
+                  style={styles.mealSlotsToggle}
+                  onPress={() => setShowAllMealSlots(true)}
+                  activeOpacity={0.75}
+                >
+                  <Ionicons name="add-circle-outline" size={17} color={themeColors.primary} />
+                  <Text style={[styles.mealSlotsToggleText, { color: themeColors.primary }]}>
+                    {t('home.discover.viewAll', 'View All')}
+                  </Text>
+                  <Ionicons name="chevron-down" size={16} color={themeColors.primary} />
+                </TouchableOpacity>
+              )}
+
+              {showAllMealSlots && (
+                <>
+                  {/* Extra Meal stays with the optional meal slots instead of crowding the default view. */}
+                  <TouchableOpacity
+                    style={[styles.extraMealCard, isPro && styles.extraMealCardPro]}
+                    activeOpacity={0.8}
+                    onPress={() => {
+                      if (!isPro) {
+                        setProGateMessage(t('fuel.proGate', 'This feature is available on Pro.'));
+                        setShowProUpgrade(true);
+                      } else {
+                        setSelectedMeal('Snack');
+                        setShowFoodSearch(true);
+                      }
+                    }}
+                  >
+                    <View style={styles.extraMealLeft}>
+                      <View style={[styles.extraMealIconWrap, isPro ? styles.extraMealIconWrapPro : styles.extraMealIconWrapLocked]}>
+                        {isPro
+                          ? <Ionicons name="add" size={22} color={themeColors.primary} />
+                          : <Ionicons name="lock-closed" size={18} color="#94a3b8" />
+                        }
+                      </View>
+                      <View style={{ flex: 1, paddingRight: 8 }}>
+                        <Text style={[styles.extraMealTitle, !isPro && styles.extraMealTitleLocked]}>
+                          {t('fuel.extraMeal.title', 'Add Extra Meal')}
+                        </Text>
+                        <Text style={styles.extraMealSub}>
+                          {isPro ? t('fuel.extraMeal.subPro', 'Log another snack or custom meal') : t('fuel.extraMeal.subLocked', 'Upgrade to Pro for unlimited meals')}
+                        </Text>
+                      </View>
+                    </View>
+                    {!isPro && (
+                      <View style={styles.proCrown}>
+                        <Ionicons name="star" size={11} color="#ffffff" />
+                        <Text style={styles.proCrownText}>PRO</Text>
+                      </View>
+                    )}
+                    {isPro && (
+                      <Ionicons name="chevron-forward" size={18} color={themeColors.primary} />
+                    )}
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.mealSlotsToggle}
+                    onPress={() => setShowAllMealSlots(false)}
+                    activeOpacity={0.75}
+                  >
+                    <Text style={[styles.mealSlotsToggleText, { color: themeColors.textMuted }]}>
+                      {t('home.discover.showLess', 'Show Less')}
                     </Text>
-                    <Text style={styles.extraMealSub}>
-                      {isPro ? t('fuel.extraMeal.subPro', 'Log another snack or custom meal') : t('fuel.extraMeal.subLocked', 'Upgrade to Pro for unlimited meals')}
-                    </Text>
-                  </View>
-                </View>
-                {!isPro && (
-                  <View style={styles.proCrown}>
-                    <Ionicons name="star" size={11} color="#ffffff" />
-                    <Text style={styles.proCrownText}>PRO</Text>
-                  </View>
-                )}
-                {isPro && (
-                  <Ionicons name="chevron-forward" size={18} color={themeColors.primary} />
-                )}
-              </TouchableOpacity>
+                    <Ionicons name="chevron-up" size={16} color={themeColors.textMuted} />
+                  </TouchableOpacity>
+                </>
+              )}
             </View>
           ) : null}
 
@@ -639,8 +712,10 @@ export default function FuelScreen() {
             <QuickActions
               onPhoto={() => { setShowPhotoCapture(true); }}
               onVoice={() => { setShowVoiceLog(true); }}
-              onSearch={() => { setSelectedMeal('Lunch'); setShowFoodSearch(true); }}
+              onSearch={() => { setSelectedMeal(primaryMeal); setShowFoodSearch(true); }}
               onManual={() => setShowAddFoodModal(true)}
+              onLibrary={() => router.push('/recipes')}
+              onAiChef={() => router.push('/ai-meal-maker')}
             />
           </View>
           )}
@@ -649,14 +724,12 @@ export default function FuelScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('fuel.sections.utilities', 'Utilities')}</Text>
             <UtilityCards
-              onLibrary={() => router.push('/recipes')}
               onMyRecipes={() => {
-                setSelectedMeal('Lunch');
+                setSelectedMeal(primaryMeal);
                 setFoodSearchInitialTab('recipes');
                 setShowFoodSearch(true);
               }}
               onShoppingList={() => router.push('/shopping-list')}
-              onAiChef={() => { router.push('/ai-meal-maker'); }}
               onMonthlyPlan={() => router.push('/meal-hub')}
               onNutritionInsights={() => setShowNutritionInsightsModal(true)}
             />
@@ -741,7 +814,7 @@ export default function FuelScreen() {
         onRecipeCreated={(recipe) => {
           setLogRecipe(recipe);
           setShowRecipeModal(false);
-          setLogMeal('Lunch');
+          setLogMeal(primaryMeal);
           setLogQuantity(1);
           setLogSuccess(false);
           setShowLogRecipeModal(true);
@@ -822,6 +895,7 @@ export default function FuelScreen() {
             });
 
             triggerSound(SoundEffect.LOG_MEAL);
+            triggerReviewPrompt().catch(() => {});
             setLogSuccess(true);
             setTimeout(() => {
               setShowLogRecipeModal(false);
@@ -886,6 +960,20 @@ export default function FuelScreen() {
         }}
       />
 
+      <TabCoachOverlay
+        visible={fuelCoach.isActive}
+        steps={fuelCoachSteps}
+        stepIndex={fuelCoach.stepIndex}
+        onNext={() => {
+          if (fuelCoach.stepIndex >= fuelCoachSteps.length - 1) {
+            fuelCoach.dismiss();
+          } else {
+            fuelCoach.advance();
+          }
+        }}
+        onSkip={fuelCoach.dismiss}
+      />
+
     </SafeAreaView>
   );
 }
@@ -921,13 +1009,16 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   section: {
     paddingHorizontal: 20,
-    marginTop: 24,
+    marginTop: 16,
+  },
+  calendarAdjacentSection: {
+    marginTop: 4,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '800',
     color: c.text,
-    marginBottom: 16,
+    marginBottom: 10,
   },
   detailedInsightsBtn: {
     flexDirection: 'row',
@@ -944,7 +1035,21 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   mealsSection: {
     paddingHorizontal: 20,
-    marginTop: 24,
+    marginTop: 16,
+  },
+  mealSlotsToggle: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginTop: -6,
+    marginBottom: 4,
+  },
+  mealSlotsToggleText: {
+    fontSize: 13,
+    fontWeight: '700',
   },
   extraMealCard: {
     flexDirection: 'row',

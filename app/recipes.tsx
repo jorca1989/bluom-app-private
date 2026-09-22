@@ -142,7 +142,7 @@ function LogMealModal({
                   <View style={[lmStyles.mealIcon, { backgroundColor: cfg.color }]}>
                     <Ionicons name={cfg.icon as any} size={20} color={cfg.iconColor} />
                   </View>
-                  <Text style={[lmStyles.mealName, active && lmStyles.mealNameActive]}>{t(`common.${meal.toLowerCase()}`, meal)}</Text>
+                  <Text style={[lmStyles.mealName, active && lmStyles.mealNameActive]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.72}>{t(`common.${meal.toLowerCase()}`, meal)}</Text>
                 </TouchableOpacity>
               );
             })}
@@ -169,7 +169,7 @@ function LogMealModal({
             >
               {saving
                 ? <ActivityIndicator size="small" color="#fff" />
-                : <Text style={lmStyles.logText}>{t('recipes.logToMealBtn', 'Log to {{meal}}', { meal: t(`common.${selectedMeal.toLowerCase()}`, selectedMeal) })}</Text>
+                : <Text style={lmStyles.logText} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.72}>{t('recipes.logToMealBtn', 'Log to {{meal}}', { meal: t(`common.${selectedMeal.toLowerCase()}`, selectedMeal) })}</Text>
               }
             </TouchableOpacity>
           </View>

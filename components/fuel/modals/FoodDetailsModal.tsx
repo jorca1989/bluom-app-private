@@ -100,7 +100,7 @@ export default function FoodDetailsModal({ visible, onClose, item, itemType, onL
         <SafeAreaView style={[styles.modalContainer, { backgroundColor: themeColors.bg }]} edges={['top', 'bottom']}>
           {/* Header */}
           <View style={[styles.header, { backgroundColor: themeColors.surface, borderBottomColor: themeColors.border }]}>
-            <Text style={[styles.headerTitle, { color: themeColors.text }]} numberOfLines={1}>Food Details</Text>
+            <Text style={[styles.headerTitle, { color: themeColors.text }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{t('foodReview.foodDetails', 'Food Details')}</Text>
             <TouchableOpacity onPress={onClose} style={[styles.closeBtn, { backgroundColor: themeColors.surfaceMuted }]}>
               <Ionicons name="close" size={24} color={themeColors.textMuted} />
             </TouchableOpacity>
@@ -118,8 +118,8 @@ export default function FoodDetailsModal({ visible, onClose, item, itemType, onL
                )}
                
                <View style={styles.titleSection}>
-                  <Text style={styles.foodName}>{name}</Text>
-                  <Text style={styles.foodSub}>{brand}{servingSize}</Text>
+                  <Text style={styles.foodName} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.75}>{name}</Text>
+                  <Text style={styles.foodSub} numberOfLines={2}>{brand}{servingSize}</Text>
                   
                   <View style={styles.badgesRow}>
                      {activeItem.countryCode ? (
@@ -214,7 +214,7 @@ export default function FoodDetailsModal({ visible, onClose, item, itemType, onL
           </ScrollView>
 
           {!hideLogButton && (
-            <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom + 16, 32) }]}>
+            <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
                <TouchableOpacity 
                   style={[styles.addBtn, isLoggingRef.current && { opacity: 0.5 }]}
                   activeOpacity={0.8}
@@ -254,6 +254,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     borderBottomColor: c.border,
   },
   headerTitle: {
+    flex: 1,
+    marginRight: 12,
     fontSize: 18,
     fontWeight: '800',
     color: c.text,
@@ -436,7 +438,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
+    minHeight: 52,
+    paddingVertical: 14,
     borderRadius: 16,
     shadowColor: '#3b82f6',
     shadowOffset: { width: 0, height: 4 },
@@ -448,5 +451,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     color: '#ffffff',
     fontSize: 14,
     fontWeight: '800',
+    flexShrink: 1,
+    textAlign: 'center',
   },
 });

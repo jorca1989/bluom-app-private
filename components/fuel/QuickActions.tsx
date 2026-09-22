@@ -1,106 +1,61 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Dimensions, ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/context/ThemeContext';
+
+const FUEL_ACTION_WIDTH = (Dimensions.get('window').width - 100) / 4;
 
 interface QuickActionsProps {
   onPhoto: () => void;
   onVoice: () => void;
   onSearch: () => void;
   onManual: () => void;
+  onLibrary: () => void;
+  onAiChef: () => void;
 }
 
-export const QuickActions = ({ onPhoto, onVoice, onSearch, onManual }: QuickActionsProps) => {
+export const QuickActions = ({ onPhoto, onVoice, onSearch, onManual, onLibrary, onAiChef }: QuickActionsProps) => {
   const { t } = useTranslation();
+  const { colors } = useTheme();
+  const actions = [
+    { icon: 'camera', label: t('fuel.quickActions.photoLog', 'Photo Log'), color: '#10b981', bgColor: 'rgba(16, 185, 129, 0.15)', onPress: onPhoto },
+    { icon: 'mic', label: t('fuel.quickActions.voiceLog', 'Voice Log'), color: '#a855f7', bgColor: 'rgba(168, 85, 247, 0.15)', onPress: onVoice },
+    { icon: 'search', label: t('fuel.quickActions.search', 'Search'), color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.15)', onPress: onSearch },
+    { icon: 'create', label: t('fuel.quickActions.manual', 'Manual'), color: '#eab308', bgColor: 'rgba(234, 179, 8, 0.15)', onPress: onManual },
+    { icon: 'book', label: t('profile.recipes', 'Recipes'), color: '#ef4444', bgColor: 'rgba(239, 68, 68, 0.15)', onPress: onLibrary },
+    { icon: 'sparkles', label: t('fuel.quickActions.aiChef', 'AI Chef'), color: '#ca8a04', bgColor: 'rgba(234, 179, 8, 0.15)', onPress: onAiChef },
+  ];
+
   return (
-    <View style={styles.gridContainer}>
-      <ActionCard 
-        icon="camera" 
-        label={t('fuel.quickActions.photoLog', 'Photo Log')} 
-        color="#10b981" 
-        bgColor="rgba(16, 185, 129, 0.15)" 
-        onPress={onPhoto} 
-      />
-      <ActionCard 
-        icon="mic" 
-        label={t('fuel.quickActions.voiceLog', 'Voice Log')} 
-        color="#a855f7" 
-        bgColor="rgba(168, 85, 247, 0.15)" 
-        onPress={onVoice} 
-      />
-      <ActionCard 
-        icon="search" 
-        label={t('fuel.quickActions.search', 'Search')} 
-        color="#3b82f6" 
-        bgColor="rgba(59, 130, 246, 0.15)" 
-        onPress={onSearch} 
-      />
-      <ActionCard 
-        icon="create" 
-        label={t('fuel.quickActions.manual', 'Manual')} 
-        color="#eab308" 
-        bgColor="rgba(234, 179, 8, 0.15)" 
-        onPress={onManual} 
-      />
+    <View style={[styles.quickActionsCard, { backgroundColor: colors.surface }]}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.actionRow}>
+        {actions.map((action) => <ActionCard key={action.label} {...action} labelColor={colors.text} />)}
+      </ScrollView>
     </View>
   );
 };
 
 interface UtilityCardsProps {
-  onLibrary: () => void;
   onMyRecipes: () => void;
   onShoppingList: () => void;
-  onAiChef: () => void;
   onMonthlyPlan: () => void;
   onNutritionInsights: () => void;
 }
 
-export const UtilityCards = ({ onLibrary, onMyRecipes, onShoppingList, onAiChef, onMonthlyPlan, onNutritionInsights }: UtilityCardsProps) => {
+export const UtilityCards = ({ onMyRecipes, onShoppingList, onMonthlyPlan, onNutritionInsights }: UtilityCardsProps) => {
   const { t } = useTranslation();
+  const { colors } = useTheme();
+  const utilities = [
+    { icon: 'restaurant', label: t('fuel.quickActions.myRecipes', 'My Recipes'), color: '#2563eb', bgColor: 'rgba(37, 99, 235, 0.14)', onPress: onMyRecipes },
+    { icon: 'cart', label: t('fuel.quickActions.shoppingList', 'Shopping List'), color: '#8b5cf6', bgColor: 'rgba(139, 92, 246, 0.14)', onPress: onShoppingList },
+    { icon: 'calendar', label: t('fuel.quickActions.personalPlan', 'My Personalized Plan'), color: '#10b981', bgColor: 'rgba(16, 185, 129, 0.14)', onPress: onMonthlyPlan },
+    { icon: 'pie-chart', label: t('fuel.quickActions.nutritionInsights', 'Nutrition Insights'), color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.14)', onPress: onNutritionInsights },
+  ];
+
   return (
-    <View style={styles.utilGridContainer}>
-      <UtilCard 
-        icon="book" 
-        label={t('fuel.quickActions.recipeLib', 'Recipe Library')} 
-        desc={t('fuel.quickActions.recipeLibDesc', 'Guided recipes')} 
-        bgColor="#ff4b4b" 
-        onPress={onLibrary} 
-      />
-      <UtilCard 
-        icon="restaurant" 
-        label={t('fuel.quickActions.myRecipes', 'My Recipes')} 
-        desc={t('fuel.quickActions.myRecipesDesc', 'Create & save')} 
-        bgColor="#2563eb" 
-        onPress={onMyRecipes} 
-      />
-      <UtilCard 
-        icon="cart" 
-        label={t('fuel.quickActions.shoppingList', 'Shopping List')} 
-        desc={t('fuel.quickActions.shoppingListDesc', 'Plan your week')} 
-        bgColor="#8b5cf6" 
-        onPress={onShoppingList} 
-      />
-      <UtilCard 
-        icon="sparkles" 
-        label={t('fuel.quickActions.aiChef', 'AI Chef')} 
-        desc={t('fuel.quickActions.aiChefDesc', 'Scan & create')} 
-        bgColor="#eab308" 
-        onPress={onAiChef} 
-      />
-      <UtilCard 
-        icon="calendar" 
-        label={t('fuel.quickActions.personalPlan', 'My Personalized Plan')} 
-        desc={t('fuel.quickActions.personalPlanDesc', '30-Day AI routine')} 
-        bgColor="#10b981" 
-        onPress={onMonthlyPlan} 
-      />
-      <UtilCard 
-        icon="pie-chart" 
-        label={t('fuel.quickActions.nutritionInsights', 'Nutrition Insights')} 
-        desc={t('fuel.quickActions.nutritionInsightsDesc', 'Deep macro dive')} 
-        bgColor="#f59e0b" 
-        onPress={onNutritionInsights} 
-      />
+    <View style={styles.utilityGrid} accessibilityLabel={t('fuel.utilities', 'Nutrition utilities')}>
+      {utilities.map((utility) => <UtilButton key={utility.label} {...utility} textColor={colors.text} surfaceColor={colors.surfaceMuted} borderColor={colors.border} />)}
     </View>
   );
 };
@@ -111,100 +66,93 @@ interface ActionCardProps {
   color: string;
   bgColor: string;
   onPress: () => void;
+  labelColor: string;
 }
 
-const ActionCard = ({ icon, label, color, bgColor, onPress }: ActionCardProps) => (
+const ActionCard = ({ icon, label, color, bgColor, onPress, labelColor }: ActionCardProps) => (
   <TouchableOpacity style={styles.actionCard} onPress={onPress} activeOpacity={0.7}>
     <View style={[styles.actionIconContainer, { backgroundColor: bgColor }]}>
       <Ionicons name={icon} size={24} color={color} />
     </View>
-    <Text style={styles.actionLabel}>{label}</Text>
+    <Text style={[styles.actionLabel, { color: labelColor }]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.62}>{label}</Text>
   </TouchableOpacity>
 );
 
-interface UtilCardProps {
+interface UtilButtonProps {
   icon: any;
   label: string;
-  desc: string;
+  color: string;
   bgColor: string;
   onPress: () => void;
-  fullWidth?: boolean;
+  textColor: string;
+  surfaceColor: string;
+  borderColor: string;
 }
 
-const UtilCard = ({ icon, label, desc, bgColor, onPress, fullWidth }: UtilCardProps) => (
-  <TouchableOpacity style={[styles.utilCard, { backgroundColor: bgColor }, fullWidth && { width: '100%' }]} onPress={onPress} activeOpacity={0.8}>
-    <View style={styles.utilIconContainer}>
-      <Ionicons name={icon} size={20} color="#ffffff" />
+const UtilButton = ({ icon, label, color, bgColor, onPress, textColor, surfaceColor, borderColor }: UtilButtonProps) => (
+  <TouchableOpacity style={[styles.utilityButton, { backgroundColor: surfaceColor, borderColor }]} onPress={onPress} activeOpacity={0.75}>
+    <View style={[styles.utilityIcon, { backgroundColor: bgColor }]}>
+      <Ionicons name={icon} size={18} color={color} />
     </View>
-    <View style={styles.utilTextContainer}>
-      <Text style={styles.utilLabel} adjustsFontSizeToFit numberOfLines={1} minimumFontScale={0.7} ellipsizeMode="tail">{label}</Text>
-      <Text style={styles.utilDesc} adjustsFontSizeToFit numberOfLines={1} minimumFontScale={0.7} ellipsizeMode="tail">{desc}</Text>
-    </View>
+    <Text style={[styles.utilityLabel, { color: textColor }]} adjustsFontSizeToFit numberOfLines={2} minimumFontScale={0.62}>{label}</Text>
   </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
-  gridContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 8,
-    marginBottom: 24,
+  quickActionsCard: {
+    padding: 17,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 10,
+    elevation: 1,
   },
-  utilGridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
+  actionRow: { gap: 6 },
+  utilityGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 8 },
   actionCard: {
-    flex: 1,
+    width: FUEL_ACTION_WIDTH,
+    minWidth: 0,
     alignItems: 'center',
-    gap: 6,
+    gap: 5,
   },
   actionIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     justifyContent: 'center',
     alignItems: 'center',
   },
   actionLabel: {
-    fontSize: 11,
-    fontWeight: '500',
-    color: '#64748b',
+    width: '100%',
+    fontSize: 9,
+    lineHeight: 11,
+    fontWeight: '600',
     textAlign: 'center',
   },
-  utilCard: {
-    width: '48%', // roughly half
+  utilityButton: {
+    width: '48.5%',
+    minHeight: 54,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    padding: 10,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
   },
-  utilIconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  utilityIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  utilTextContainer: {
+  utilityLabel: {
     flex: 1,
     flexShrink: 1,
-  },
-  utilLabel: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  utilDesc: {
-    fontSize: 9,
-    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 10,
+    lineHeight: 12,
+    fontWeight: '700',
   },
 });

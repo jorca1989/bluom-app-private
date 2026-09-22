@@ -1,6 +1,6 @@
 import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
-import { checkAdminPower } from "./functions";
+import { checkAdminPower, checkAdminScriptKey } from "./functions";
 
 // --- Admin Mutations ---
 
@@ -116,9 +116,12 @@ export const bulkInsertExercises = mutation({
                     tr: v.optional(v.string()),
                 }),
                 category: v.string(),
+                categories: v.optional(v.array(v.string())),
                 met: v.float64(),
                 caloriesPerMinute: v.optional(v.float64()),
                 muscleGroups: v.array(v.string()),
+                thumbnailUrl: v.optional(v.string()),
+                videoUrl: v.optional(v.string()),
             })
         ),
     },
@@ -132,6 +135,71 @@ export const bulkInsertExercises = mutation({
                 updatedAt: Date.now(),
             });
         }
+    },
+});
+
+export const bulkInsertExercisesViaScript = mutation({
+    args: {
+        scriptKey: v.string(),
+        exercises: v.array(
+            v.object({
+                name: v.object({
+                    en: v.string(),
+                    es: v.optional(v.string()),
+                    pt: v.optional(v.string()),
+                    nl: v.optional(v.string()),
+                    de: v.optional(v.string()),
+                    fr: v.optional(v.string()),
+                    bg: v.optional(v.string()),
+                    da: v.optional(v.string()),
+                    el: v.optional(v.string()),
+                    lt: v.optional(v.string()),
+                    lv: v.optional(v.string()),
+                    no: v.optional(v.string()),
+                    pl: v.optional(v.string()),
+                    ro: v.optional(v.string()),
+                    sv: v.optional(v.string()),
+                    tr: v.optional(v.string()),
+                }),
+                category: v.string(),
+                categories: v.optional(v.array(v.string())),
+                met: v.float64(),
+                caloriesPerMinute: v.optional(v.float64()),
+                muscleGroups: v.array(v.string()),
+                thumbnailUrl: v.optional(v.string()),
+                videoUrl: v.optional(v.string()),
+            })
+        ),
+    },
+    handler: async (ctx, args) => {
+        checkAdminScriptKey(args.scriptKey);
+        let inserted = 0;
+        let updated = 0;
+        for (const ex of args.exercises) {
+            const nameLower = ex.name.en.toLowerCase().trim();
+            const existing = await ctx.db
+                .query("exerciseLibrary")
+                .filter(q => q.eq(q.field("nameLower"), nameLower))
+                .first();
+
+            if (existing) {
+                await ctx.db.patch(existing._id, {
+                    ...ex,
+                    nameLower,
+                    updatedAt: Date.now(),
+                });
+                updated++;
+            } else {
+                await ctx.db.insert("exerciseLibrary", {
+                    ...ex,
+                    nameLower,
+                    createdAt: Date.now(),
+                    updatedAt: Date.now(),
+                });
+                inserted++;
+            }
+        }
+        return { inserted, updated, total: args.exercises.length };
     },
 });
 

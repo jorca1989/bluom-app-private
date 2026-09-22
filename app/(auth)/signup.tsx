@@ -39,6 +39,7 @@ export default function SignupScreen() {
   const [error, setError] = useState('');
   const insets = useSafeAreaInsets();
   const submitLockRef = useRef(false);
+  const signUpAttemptRef = useRef<any>(null);
 
   const getFriendlyErrorMessage = (error: any): string => {
     const err = error?.errors?.[0];
@@ -62,6 +63,7 @@ export default function SignupScreen() {
         return;
       }
       const result = await signUp.create({ emailAddress: email, password, firstName, lastName });
+      signUpAttemptRef.current = result;
       await result.prepareEmailAddressVerification({ strategy: 'email_code' });
       setPendingVerification(true);
     } catch (err: any) {
@@ -78,9 +80,11 @@ export default function SignupScreen() {
     setLoading(true);
 
     try {
-      const result = await signUp.attemptEmailAddressVerification({ code });
+      const attempt = signUpAttemptRef.current ?? signUp;
+      const result = await attempt.attemptEmailAddressVerification({ code: code.trim() });
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId });
+        signUpAttemptRef.current = null;
       } else {
         setError(`Verification incomplete: ${result.status}`);
       }
@@ -114,13 +118,20 @@ export default function SignupScreen() {
           <View style={styles.form}>
             {pendingVerification ? (
               <>
+                <Text style={styles.codeLabel}>{t('auth.signup.codeLabel', 'Verification code')}</Text>
                 <TextInput
                   style={[styles.input, styles.codeInput]}
                   placeholder="000000"
+                  placeholderTextColor="#64748b"
                   value={code}
                   onChangeText={setCode}
                   keyboardType="number-pad"
                   maxLength={6}
+                  autoFocus
+                  autoComplete="one-time-code"
+                  textContentType="oneTimeCode"
+                  editable={!loading}
+                  accessibilityLabel={t('auth.signup.codeLabel', 'Verification code')}
                 />
                 <TouchableOpacity style={styles.primaryButton} onPress={handleVerifyCode} disabled={loading}>
                   <LinearGradient colors={['#2563eb', '#1d4ed8']} style={styles.gradientButton}>
@@ -235,21 +246,27 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: c.surfaceMuted, borderRadius: 14, marginBottom: 16, paddingHorizontal: 16, borderWidth: 1, borderColor: c.border },
   input: { flex: 1, height: 54, fontSize: 16, color: c.text },
+  codeLabel: { fontSize: 13, fontWeight: '800', color: c.text, marginBottom: 8 },
   codeInput: {
     flex: 0,
     width: '100%',
     height: 64,
-    backgroundColor: c.surface,
+    backgroundColor: c.surfaceMuted,
     borderWidth: 2,
-    borderColor: c.primary,
+    borderColor: '#2563eb',
     borderRadius: 14,
     color: c.text,
     textAlign: 'center',
-    fontSize: 26,
-    fontWeight: '700',
-    letterSpacing: 7,
+    fontSize: 28,
+    fontWeight: '800',
+    letterSpacing: 8,
     paddingHorizontal: 12,
     marginBottom: 16,
+    shadowColor: '#2563eb',
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
   primaryButton: { borderRadius: 14, overflow: 'hidden', marginTop: 8 },
   gradientButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16, gap: 8 },

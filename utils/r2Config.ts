@@ -6,6 +6,13 @@
 
 export const R2_CONFIG = {
   /**
+   * Content catalog storage: public recipe images and food thumbnails.
+   * Objects are separated by `recipes/` and `foods/` prefixes in fooddatabase.
+   */
+  recipeBaseUrl: 'https://pub-e8204ad737dc4a5f93bd4f2b1f9f0a15.r2.dev',
+  foodBaseUrl: 'https://pub-e8204ad737dc4a5f93bd4f2b1f9f0a15.r2.dev',
+
+  /**
    * Account 1: General Storage
    * Used for Meditations, Recipes, and other general app assets.
    */

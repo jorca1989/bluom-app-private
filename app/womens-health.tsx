@@ -479,6 +479,7 @@ export default function WomensHealthScreen() {
   const todayStatus     = useQuery(api.womensHealth.getOptimizationStatus,  convexUser?._id ? { userId: convexUser._id, date: today } : 'skip');
   // @ts-ignore
   const logBioCheck     = useMutation(api.womensHealth.logBioCheck);
+  const logPelvicFloorSession = useMutation(api.guidedSessions.logPelvicFloorSession);
   // @ts-ignore
   const wellnessLog     = useQuery(api.wellness.getTodayLog, convexUser?._id ? { userId: convexUser._id, date: today } : 'skip');
 
@@ -514,7 +515,8 @@ export default function WomensHealthScreen() {
   // ── Pelvic timer ──
   const [kegelActive,  setKegelActive]  = useState(false);
   const [kegelSecs,    setKegelSecs]    = useState(0);
-  const [kegelMsg,     setKegelMsg]     = useState('Ready?');
+  const [kegelMsg, setKegelMsg] = useState('ready');
+  const [pelvicProgram, setPelvicProgram] = useState<'gentle' | 'strength' | 'relax'>('gentle');
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -546,18 +548,42 @@ export default function WomensHealthScreen() {
       interval = setInterval(() => {
         setKegelSecs(s => {
           const next = s + 1;
-          const cycle = next % 10;
-          setKegelMsg(cycle < 5 ? 'HOLD 🔒' : 'RELAX 🌬️');
+          const cycleLength = pelvicProgram === 'strength' ? 10 : pelvicProgram === 'relax' ? 12 : 8;
+          const holdLength = pelvicProgram === 'strength' ? 6 : pelvicProgram === 'relax' ? 3 : 4;
+          const cycle = next % cycleLength;
+          setKegelMsg(cycle < holdLength ? 'hold' : 'relax');
           return next;
         });
       }, 1000);
     } else {
       pulseAnim.setValue(1);
       setKegelSecs(0);
-      setKegelMsg('Ready?');
+      setKegelMsg('ready');
     }
     return () => clearInterval(interval);
-  }, [kegelActive]);
+  }, [kegelActive, pelvicProgram]);
+
+  const finishPelvicSession = async (status: 'completed' | 'stopped') => {
+    setKegelActive(false);
+    if (!convexUser?._id || kegelSecs < 3) return;
+    const timing = pelvicProgram === 'strength' ? { hold: 6, relax: 4 } : pelvicProgram === 'relax' ? { hold: 3, relax: 9 } : { hold: 4, relax: 4 };
+    try {
+      await logPelvicFloorSession({
+        userId: convexUser._id,
+        audience: 'women',
+        lifeStage,
+        program: pelvicProgram,
+        plannedRounds: 10,
+        completedRounds: Math.floor(kegelSecs / (timing.hold + timing.relax)),
+        contractionSeconds: timing.hold,
+        relaxationSeconds: timing.relax,
+        durationSeconds: kegelSecs,
+        status,
+      });
+    } catch {
+      Alert.alert(t('common.error', 'Could not save'), t('common.tryAgain', 'Please try again.'));
+    }
+  };
 
   // ── Derived ──
   const phase = useMemo(() => {
@@ -965,17 +991,31 @@ export default function WomensHealthScreen() {
       {/* Pelvic Modal */}
       <Modal visible={showPelvicModal} animationType="slide" presentationStyle="pageSheet">
         <View style={{ flex: 1, backgroundColor: themeColors.bg, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <Text style={[s.pelvicTitle, { color: themeColors.text }]}>{t('womensHealth.pelvicTitle', 'Protocolo de Poder Pélvico')}</Text>
-          <Text style={[s.pelvicSub, { color: themeColors.textMuted }]}>{t('womensHealth.pelvicSub', 'Fortalece o pavimento pélvico, reduz cólicas e apoia o core')}</Text>
+          <Text style={[s.pelvicTitle, { color: themeColors.text }]}>{t('womensHealth.pelvicTitle', 'Pelvic Health')}</Text>
+          <Text style={[s.pelvicSub, { color: themeColors.textMuted }]}>{lifeStage === 'postpartum' ? t('womensHealth.pelvicPostpartum', 'Gentle coordination and full relaxation for your recovery.') : t('womensHealth.pelvicSub', 'Guided strength, relaxation, and core awareness.')}</Text>
+          {!kegelActive && (
+            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 22, width: '100%' }}>
+              {([
+                { id: 'gentle', label: t('womensHealth.pelvicGentle', 'Gentle') },
+                { id: 'strength', label: t('womensHealth.pelvicStrength', 'Strength') },
+                { id: 'relax', label: t('womensHealth.pelvicRelaxation', 'Relax') },
+              ] as const).map(program => (
+                <TouchableOpacity key={program.id} onPress={() => setPelvicProgram(program.id)} style={{ flex: 1, minHeight: 42, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderWidth: 1, borderColor: pelvicProgram === program.id ? '#e11d48' : themeColors.border, backgroundColor: pelvicProgram === program.id ? '#fdf2f8' : themeColors.surface }}>
+                  <Text numberOfLines={1} style={{ color: pelvicProgram === program.id ? '#e11d48' : themeColors.text, fontSize: 12, fontWeight: '800' }}>{program.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
           <Animated.View style={[s.timerCircle, { transform: [{ scale: pulseAnim }], borderColor: kegelActive ? '#e11d48' : themeColors.border, backgroundColor: kegelActive ? 'rgba(225,29,72,0.1)' : themeColors.surfaceMuted }]}>
             <Text style={[s.timerTime, { color: themeColors.text }]}>{String(Math.floor(kegelSecs / 60)).padStart(2,'0')}:{String(kegelSecs % 60).padStart(2,'0')}</Text>
-            <Text style={[s.timerMsg, { color: kegelActive ? '#e11d48' : themeColors.textMuted }]}>{kegelMsg}</Text>
+            <Text adjustsFontSizeToFit numberOfLines={1} style={[s.timerMsg, { color: kegelActive ? '#e11d48' : themeColors.textMuted, width: '90%', textAlign: 'center' }]}>{kegelMsg === 'hold' ? t('womensHealth.hold', 'HOLD ⚡') : kegelMsg === 'relax' ? t('womensHealth.relax', 'RELAX 🌬️') : t('womensHealth.ready', 'READY?')}</Text>
           </Animated.View>
-          <Text style={[s.pelvicInstructions, { color: themeColors.textMuted }]}>{t('womensHealth.pelvicInstructions', 'Contrai 5s → Relaxa 5s → Repete. Faz 10 ciclos por sessão.')}</Text>
-          <TouchableOpacity style={[s.pelvicBtn, { backgroundColor: kegelActive ? themeColors.text : '#e11d48' }]} onPress={() => setKegelActive(p => !p)}>
-            <Text style={[s.pelvicBtnTxt, { color: kegelActive ? themeColors.bg : '#fff' }]}>{kegelActive ? t('womensHealth.stopSession', 'Parar Sessão') : t('womensHealth.startTimer', 'Iniciar Timer')}</Text>
+          <Text style={[s.pelvicInstructions, { color: themeColors.textMuted }]}>{pelvicProgram === 'strength' ? t('womensHealth.pelvicStrengthCue', 'Lift for 6 seconds, then fully release for 4 seconds.') : pelvicProgram === 'relax' ? t('womensHealth.pelvicRelaxCue', 'Gentle 3-second lift, then 9 seconds of complete release.') : t('womensHealth.pelvicGentleCue', 'Lift gently for 4 seconds, then release fully for 4 seconds.')}</Text>
+          <TouchableOpacity style={[s.pelvicBtn, { backgroundColor: kegelActive ? themeColors.text : '#e11d48' }]} onPress={() => kegelActive ? finishPelvicSession('completed') : setKegelActive(true)}>
+            <Text style={[s.pelvicBtnTxt, { color: kegelActive ? themeColors.bg : '#fff' }]}>{kegelActive ? t('womensHealth.finishSession', 'Finish & Save') : t('womensHealth.startTimer', 'Start Session')}</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => { setKegelActive(false); setShowPelvicModal(false); }} style={{ marginTop: 16 }}>
+          <Text style={{ color: themeColors.textMuted, textAlign: 'center', fontSize: 11, lineHeight: 16, marginTop: 14 }}>Stop if this causes pain, pressure, or worsening symptoms. Bluom does not replace pelvic-health care.</Text>
+          <TouchableOpacity onPress={() => { if (kegelActive) finishPelvicSession('stopped'); setShowPelvicModal(false); }} style={{ marginTop: 16 }}>
             <Text style={{ color: themeColors.textMuted, fontWeight: '600' }}>{t('common.close', 'Fechar')}</Text>
           </TouchableOpacity>
         </View>

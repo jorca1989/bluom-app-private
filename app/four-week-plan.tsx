@@ -20,11 +20,10 @@ import WorkoutDetailModal from '@/components/move/modals/WorkoutDetailModal';
 import ActiveWorkoutModal, { ActiveExercise } from '@/components/move/modals/ActiveWorkoutModal';
 import ExerciseDetailModal from '@/components/move/modals/ExerciseDetailModal';
 import { FREE_4_WEEK_PLAN, getWeekRoutineDays, PlanWeek } from '@/utils/fourWeekPlanData';
-import { buildWeekFromDBWorkouts } from '@/utils/buildPlanFromDB';
+import { buildWeekFromDBWorkouts, resolveExerciseMedia } from '@/utils/buildPlanFromDB';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import { translateValue } from '@/utils/translateHelper';
 
-// ─── Week colours ─────────────────────────────────────────────────────────────
 const WEEK_COLORS = ['#1e293b', '#4c1d95', '#065f46', '#92400e'];
 
 export default function FourWeekPlanScreen() {
@@ -73,22 +72,12 @@ export default function FourWeekPlanScreen() {
       .join(', ');
   }, [t, i18n.language]);
 
-  // ── Resolve days: AI plan > static plan ─────────────────────────────────────
+  // ── Resolve days: AI plan > DB workouts > static plan ───────────────────────
   // The AI plan's `workouts` represents ONE week's template, repeated for all 4 weeks.
   const aiWorkouts = activePlans?.fitnessPlan?.workouts;
 
   const getWeekDays = useMemo(() => {
-    const findDbMediaForExercise = (exName: string, sex: string = 'male') => {
-      if (!dbWorkouts) return { thumbnailUrl: '', videoUrl: '' };
-      for (const w of dbWorkouts) {
-        if (w.exercises?.some((ex: any) => ex.name.toLowerCase() === exName.toLowerCase())) {
-          const video = (sex === 'female' ? w.videoUrlFemale : w.videoUrlMale) || w.videoUrl || '';
-          const thumb = (sex === 'female' ? w.thumbnailFemale : w.thumbnailMale) || w.thumbnail || '';
-          return { thumbnailUrl: thumb, videoUrl: video };
-        }
-      }
-      return { thumbnailUrl: '', videoUrl: '' };
-    };
+    const userSex = convexUser?.biologicalSex || 'male';
 
     return (weekIdx: number) => {
       // For rotation beyond 4 weeks, map the index onto the 4-week cycle
@@ -102,13 +91,14 @@ export default function FourWeekPlanScreen() {
             ? translateMuscleList(w.muscleGroups.join(', '))
             : translateMuscleList(w.muscleGroups || w.focus || 'Full Body'),
           exercises: (w.exercises || []).map((ex: any, j: number) => {
-            const media = findDbMediaForExercise(ex.name || '', convexUser?.biologicalSex || 'male');
+            const muscle = Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || ex.muscleGroup || 'Various');
+            const media = resolveExerciseMedia(ex.name, muscle, dbWorkouts, userSex);
             return {
               id: `ai-w${weekIdx + 1}-d${i + 1}-e${j}`,
               name: ex.name || 'Exercise',
-              thumbnailUrl: ex.thumbnailUrl || media.thumbnailUrl || '',
+              thumbnailUrl: ex.thumbnailUrl || media.thumbnailUrl || media.videoUrl || '',
               videoUrl: ex.videoUrl || media.videoUrl || '',
-              primaryMuscle: Array.isArray(ex.primaryMuscles) ? ex.primaryMuscles[0] : (ex.primaryMuscles || ex.muscleGroup || 'Various'),
+              primaryMuscle: muscle,
               equipment: ex.equipment || 'Various',
               sets: typeof ex.sets === 'number' ? ex.sets : (parseInt(String(ex.sets)) || 3),
               reps: ex.reps !== undefined ? String(ex.reps) : '10',
@@ -119,13 +109,21 @@ export default function FourWeekPlanScreen() {
       // 2. DB workouts
       if (dbWorkouts && dbWorkouts.length > 0) {
         const dbDaysPerWeek = Number(convexUser?.weeklyWorkoutTime) || 4;
-        return buildWeekFromDBWorkouts(dbWorkouts, rotatedIdx, dbDaysPerWeek, convexUser?.biologicalSex || 'male', t);
+        return buildWeekFromDBWorkouts(dbWorkouts, rotatedIdx, dbDaysPerWeek, userSex, t);
       }
-      // 3. Static fallback — use rotated index for Week 5+ cycling
+      // 3. Static fallback with DB media resolution
       return getWeekRoutineDays(rotatedIdx).map(day => ({
         ...day,
         dayTitle: translateWorkoutLabel(day.dayTitle),
         muscleGroups: translateMuscleList(day.muscleGroups),
+        exercises: day.exercises.map(ex => {
+          const media = resolveExerciseMedia(ex.name, ex.primaryMuscle, dbWorkouts, userSex);
+          return {
+            ...ex,
+            thumbnailUrl: media.thumbnailUrl || media.videoUrl || ex.thumbnailUrl,
+            videoUrl: media.videoUrl || '',
+          };
+        }),
       }));
     };
   }, [aiWorkouts, dbWorkouts, convexUser, translateMuscleList, translateWorkoutLabel, t]);
@@ -155,6 +153,7 @@ export default function FourWeekPlanScreen() {
       id: String(ex.id),
       name: ex.name,
       thumbnailUrl: ex.thumbnailUrl,
+      videoUrl: ex.videoUrl,
       sets: Array.from({ length: typeof ex.sets === 'number' ? ex.sets : 3 }).map((_, i) => ({
         id: `${ex.id}-set-${i}`,
         weight: '',
@@ -214,10 +213,10 @@ export default function FourWeekPlanScreen() {
                 activeOpacity={0.85}
               >
                 <Text style={styles.weekLabel}>{t('common.weekNum', 'Week {{num}}', { num: weekIdx + 1 })}</Text>
-                <Text style={styles.weekTheme} numberOfLines={1}>{theme}</Text>
+                <Text style={styles.weekTheme} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.75}>{theme}</Text>
                 <View style={styles.daysSummary}>
                   {days.slice(0, 3).map((d: any, dIdx: number) => (
-                    <Text key={`d-${weekIdx}-${dIdx}`} style={styles.daySummaryText} numberOfLines={1}>
+                    <Text key={`d-${weekIdx}-${dIdx}`} style={styles.daySummaryText} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.75}>
                       {dIdx + 1}. {d.dayTitle}
                     </Text>
                   ))}
@@ -365,7 +364,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     width: '47%',
     borderRadius: 16,
     padding: 16,
-    minHeight: 160,
+    minHeight: 196,
   },
   weekLabel: { fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.6)', marginBottom: 4 },
   weekTheme: { fontSize: 18, fontWeight: '900', color: '#ffffff', marginBottom: 10 },

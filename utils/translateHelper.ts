@@ -781,3 +781,5 @@ export function translateValue(value: string | undefined, lang: string, t: any):
 
   return value;
 }
+
+export { translateFoodSuggestion } from './foodDictionary';

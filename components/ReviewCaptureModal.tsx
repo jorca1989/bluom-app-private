@@ -4,6 +4,7 @@ import { useMutation } from "convex/react";
 import { Star } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import { ActivityIndicator, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { api } from "@/convex/_generated/api";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -17,6 +18,7 @@ const categories: { value: FeedbackCategory; label: string }[] = [
 ];
 
 export default function ReviewCaptureModal({ visible, onDismiss, onSubmitted }: Props) {
+  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const submitReview = useMutation(api.reviews.submitReview);
   const [rating, setRating] = useState<number | null>(null);
@@ -28,7 +30,7 @@ export default function ReviewCaptureModal({ visible, onDismiss, onSubmitted }: 
   const isLowRating = !!rating && rating <= 3;
   const storeUrl = Platform.OS === "android"
     ? process.env.EXPO_PUBLIC_PLAY_STORE_URL || "market://details?id=com.jwfca.bluom"
-    : process.env.EXPO_PUBLIC_APP_STORE_URL;
+    : process.env.EXPO_PUBLIC_APP_STORE_URL || "itms-apps://itunes.apple.com/app/id6759072102?action=write-review";
 
   const reset = () => { setRating(null); setCategory("general_experience"); setComment(""); setError(""); };
   const dismiss = () => { reset(); onDismiss(); };
@@ -44,6 +46,19 @@ export default function ReviewCaptureModal({ visible, onDismiss, onSubmitted }: 
         appVersion: Application.nativeApplicationVersion ?? Constants.expoConfig?.version ?? "unknown",
         platform: Platform.OS,
       });
+      if (rating >= 4) {
+        try {
+          const StoreReview = require("expo-store-review");
+          if (StoreReview && typeof StoreReview.requestReview === "function") {
+            const available = await StoreReview.isAvailableAsync?.();
+            if (available) {
+              await StoreReview.requestReview();
+            }
+          }
+        } catch {
+          // Native module not linked in current binary, fallback safely to storeUrl
+        }
+      }
       reset();
       onSubmitted();
     } catch (cause: any) {
@@ -56,7 +71,7 @@ export default function ReviewCaptureModal({ visible, onDismiss, onSubmitted }: 
 
   return <Modal visible={visible} transparent animationType="slide" onRequestClose={dismiss}>
     <View style={styles.backdrop}><View style={styles.sheet}>
-      <ScrollView bounces={false} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
+      <ScrollView bounces={false} keyboardShouldPersistTaps="handled" contentContainerStyle={[styles.content, { paddingBottom: Math.max(insets.bottom, 24) + 12 }]}>
         <Text style={styles.title}>{rating && rating >= 4 ? "That made our day" : "How is Bluom feeling?"}</Text>
         <Text style={styles.subtitle}>{rating && rating >= 4 ? "Thanks for sharing the love. Your feedback helps Bluom grow." : "A quick rating helps us make your wellness space better."}</Text>
         <View style={styles.stars}>{[1, 2, 3, 4, 5].map((value) => <Pressable key={value} onPress={() => { setRating(value); setError(""); }} accessibilityRole="button" accessibilityLabel={`${value} star rating`} style={styles.starButton}><Star size={36} fill={rating && value <= rating ? colors.primary : "transparent"} color={rating && value <= rating ? colors.primary : colors.border} /></Pressable>)}</View>

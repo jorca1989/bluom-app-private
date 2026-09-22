@@ -57,7 +57,7 @@ export default function WorkoutDayCard({
 
       <View style={styles.thumbRow}>
         {displayExercises.map((ex, i) => {
-          const mediaUrl = ex.thumbnailUrl || (ex as any).gifUrl || (ex as any).imageUrl || (ex as any).image || (ex as any).thumbnail;
+          const mediaUrl = ex.thumbnailUrl || (ex as any).videoUrl || (ex as any).gifUrl || (ex as any).imageUrl || (ex as any).image || (ex as any).thumbnail;
           return (
             <View key={ex.id || i} style={styles.thumbBox}>
               {mediaUrl ? (

@@ -13,10 +13,10 @@ export default ({ config }) => {
             name: "Bluom",
             slug: "bolt-expo-nativewind",
             owner: "ggovsaas",
-            version: "1.0.45",
+            version: "1.0.48",
             scheme: "bluom",
             userInterfaceStyle: "automatic",
-            runtimeVersion: "1.0.45",
+            runtimeVersion: "1.0.48",
             // New Architecture DISABLED — react-native-maps 1.20.1 doesn't support Fabric
             // (AIRMap view manager fails to register). Re-enable when react-native-maps ships
             // New Arch support, or after migrating to @teovilla/react-native-web-maps.
@@ -24,16 +24,24 @@ export default ({ config }) => {
             privacyPolicyUrl: "https://www.bluom.app/legal/privacy",
             ios: {
                 bundleIdentifier: "com.jwfca.bluom",
-                buildNumber: "70",
+                buildNumber: "73",
                 appleTeamId: "TJSGDC6873",
                 googleServicesFile: "./GoogleService-Info.plist",
                 entitlements: {
                     // ── Associated Domains (deep links) ──────────────────────────
                     "com.apple.developer.associated-domains": ["applinks:bluom.app"],
+                    "com.apple.developer.healthkit": true,
+                    "com.apple.developer.healthkit.access": [],
                 },
                 infoPlist: {
                     ITSAppUsesNonExemptEncryption: false,
                     SKIncludeConsumableInAppPurchaseHistory: true,
+
+                    // ── HealthKit ────────────────────────────────────────────────
+                    NSHealthShareUsageDescription:
+                        "Bluom reads your step count, active calories, walking distance, body weight, body composition, sleep duration, and heart rate from Apple Health to automatically update your daily goals and generate personalised wellness insights.",
+                    NSHealthUpdateUsageDescription:
+                        "Bluom writes health data only when you explicitly choose to share a supported Bluom record with Apple Health.",
 
                     // ── Background Modes ──────────────────────────────────────────
                     UIBackgroundModes: ["audio", "fetch", "remote-notification", "location"],
@@ -51,6 +59,16 @@ export default ({ config }) => {
                         "Bluom uses your photo library to scan food labels for nutrition insights and to save or upload body progress photos for the Body Scan feature.",
                     NSCameraUsageDescription:
                         "Bluom uses the camera to scan food items for nutrition insights and to take body progress photos for AI-powered body composition analysis.",
+                    NSMicrophoneUsageDescription:
+                        "Bluom uses your microphone when you choose to log a workout set or food by voice.",
+
+                    // ── SKAdNetwork Items (AppLovin & AppsFlyer MMP) ────────────────
+                    SKAdNetworkItems: [
+                        { SKAdNetworkIdentifier: "ludvb6z3bs.skadnetwork" }, // AppLovin
+                        { SKAdNetworkIdentifier: "v9wttpbfk9.skadnetwork" }, // AppsFlyer
+                        { SKAdNetworkIdentifier: "n38lu8d635.skadnetwork" }, // AppsFlyer
+                        { SKAdNetworkIdentifier: "cstr6suwn9.skadnetwork" }, // Google
+                    ],
 
                     // ── URL Schemes ───────────────────────────────────────────────
                     CFBundleURLTypes: [
@@ -78,7 +96,7 @@ export default ({ config }) => {
             },
             android: {
                 package: "com.jwfca.bluom",
-                versionCode: 70,
+                versionCode: 73,
                 googleServicesFile: "./google-services.json",
                 splash: {
                     image: "./assets/images/logo.png",
@@ -106,6 +124,15 @@ export default ({ config }) => {
                     // ── Notifications ─────────────────────────────────────────────
                     "android.permission.POST_NOTIFICATIONS",
                     "android.permission.RECEIVE_BOOT_COMPLETED",
+                    // ── Health Connect ─────────────────────────────────────────────
+                    "android.permission.health.READ_STEPS",
+                    "android.permission.health.READ_DISTANCE",
+                    "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
+                    "android.permission.health.READ_WEIGHT",
+                    "android.permission.health.READ_BODY_FAT",
+                    "android.permission.health.READ_HEART_RATE",
+                    "android.permission.health.READ_RESTING_HEART_RATE",
+                    "android.permission.health.READ_SLEEP",
                 ],
             },
             icon: "./assets/images/icon.png",
@@ -156,6 +183,16 @@ export default ({ config }) => {
                         isAndroidForegroundServiceEnabled: true,
                     }
                 ],
+
+                // ── Health Integration ────────────────────────────────────────────
+                [
+                    "@kingstinct/react-native-healthkit",
+                    {
+                        NSHealthShareUsageDescription: "Bluom reads your step count, active calories, walking distance, body weight, body composition, sleep duration, and heart rate from Apple Health to automatically update your daily goals and generate personalised wellness insights.",
+                        NSHealthUpdateUsageDescription: "Bluom writes health data only when you explicitly choose to share a supported Bluom record with Apple Health.",
+                    }
+                ],
+                "react-native-health-connect",
             ],
             extra: {
                 router: {},

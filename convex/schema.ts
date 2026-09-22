@@ -1216,6 +1216,117 @@ export default defineSchema({
     .index("by_user_exercise", ["userId", "exerciseName"])
     .index("by_user_workout", ["userId", "workoutId"]),
 
+  // Durable workout state. Keep this separate from the legacy aggregate logs so
+  // an active workout can be resumed and individual sets can be corrected safely.
+  workoutSessions: defineTable({
+    userId: v.id("users"),
+    title: v.string(),
+    date: v.string(),
+    startedAt: v.number(),
+    finishedAt: v.optional(v.number()),
+    status: v.union(v.literal("active"), v.literal("completed"), v.literal("discarded")),
+    unit: v.union(v.literal("kg"), v.literal("lb")),
+    source: v.union(v.literal("manual"), v.literal("voice"), v.literal("machine")),
+    totalVolume: v.optional(v.number()),
+    totalSets: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user_status", ["userId", "status"])
+    .index("by_user_date", ["userId", "date"]),
+
+  workoutSetEvents: defineTable({
+    userId: v.id("users"),
+    sessionId: v.id("workoutSessions"),
+    exerciseId: v.optional(v.string()),
+    exerciseName: v.string(),
+    setIndex: v.number(),
+    weight: v.optional(v.number()),
+    reps: v.optional(v.number()),
+    rpe: v.optional(v.number()),
+    completedAt: v.optional(v.number()),
+    source: v.union(v.literal("manual"), v.literal("voice"), v.literal("machine")),
+    clientEventId: v.string(),
+    transcript: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_session", ["sessionId"])
+    .index("by_user_exercise", ["userId", "exerciseName"])
+    .index("by_client_event", ["userId", "clientEventId"]),
+
+  focusSessions: defineTable({
+    userId: v.id("users"),
+    title: v.optional(v.string()),
+    preset: v.string(),
+    focusSeconds: v.number(),
+    breakSeconds: v.number(),
+    plannedCycles: v.number(),
+    completedCycles: v.number(),
+    startedAt: v.number(),
+    endedAt: v.optional(v.number()),
+    pausedSeconds: v.number(),
+    status: v.union(v.literal("active"), v.literal("paused"), v.literal("completed"), v.literal("ended")),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user_status", ["userId", "status"])
+    .index("by_user_started", ["userId", "startedAt"]),
+
+  pelvicFloorSessions: defineTable({
+    userId: v.id("users"),
+    audience: v.union(v.literal("women"), v.literal("men")),
+    lifeStage: v.optional(v.string()),
+    program: v.string(),
+    plannedRounds: v.number(),
+    completedRounds: v.number(),
+    contractionSeconds: v.number(),
+    relaxationSeconds: v.number(),
+    durationSeconds: v.number(),
+    discomfort: v.optional(v.number()),
+    status: v.union(v.literal("completed"), v.literal("stopped")),
+    createdAt: v.number(),
+  })
+    .index("by_user_created", ["userId", "createdAt"]),
+
+  // Tracking only: these records deliberately do not prescribe medication or doses.
+  healthProtocols: defineTable({
+    userId: v.id("users"),
+    name: v.string(),
+    category: v.string(),
+    isActive: v.boolean(),
+    notes: v.optional(v.string()),
+    reminderTime: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_user_active", ["userId", "isActive"]),
+
+  protocolEvents: defineTable({
+    userId: v.id("users"),
+    protocolId: v.id("healthProtocols"),
+    scheduledFor: v.number(),
+    completedAt: v.optional(v.number()),
+    route: v.optional(v.string()),
+    site: v.optional(v.string()),
+    notes: v.optional(v.string()),
+    status: v.union(v.literal("planned"), v.literal("completed"), v.literal("skipped")),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_protocol_scheduled", ["protocolId", "scheduledFor"]),
+
+  healthMarkerMeasurements: defineTable({
+    userId: v.id("users"),
+    marker: v.string(),
+    value: v.number(),
+    unit: v.string(),
+    measuredAt: v.number(),
+    source: v.union(v.literal("manual"), v.literal("lab"), v.literal("device")),
+    note: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("by_user_marker_time", ["userId", "marker", "measuredAt"])
+    .index("by_user_measuredAt", ["userId", "measuredAt"]),
+
   // Pill Reminders (Vitality Stack)
   pillSchedules: defineTable({
     userId: v.id("users"),

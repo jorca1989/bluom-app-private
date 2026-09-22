@@ -433,37 +433,50 @@ export default function WorkoutsManager() {
     };
 
     const openEdit = (w: any) => {
-        const ex = w.exercises?.[0] ?? {};
-        const tl = w.titleLocalizations || {};
-        const dl = w.descriptionLocalizations || {};
-        setSelectedAdminLang('en');
-        setShowLangDropdown(false);
-        setEditingWorkout(w);
-        setForm({
-            exerciseName: ex.name ?? w.title ?? '',
-            ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`title_${code}`, tl[code] || ''])),
-            exerciseDescription: ex.description ?? w.description ?? '',
-            ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`desc_${code}`, dl[code] || ''])),
-            exerciseTypes: w.categories ?? (ex.exerciseTypes ?? (ex.exerciseType ? [ex.exerciseType] : ['Strength'])),
-            instructions: (ex.instructions ?? []).join('\n'),
-            ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`instr_${code}`, (ex.instructionsLocalizations?.[code] ?? []).join('\n')])),
-            primaryMuscles: (ex.primaryMuscles ?? []).join(', '),
-            ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`pm_${code}`, (ex.primaryMusclesLocalizations?.[code] ?? []).join(', ')])),
-            secondaryMuscles: (ex.secondaryMuscles ?? []).join(', '),
-            ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`sm_${code}`, (ex.secondaryMusclesLocalizations?.[code] ?? []).join(', ')])),
-            muscleGroupTags: w.muscleGroupTags ?? [],
-            equipment: (w.equipment ?? []).join(', '),
-            optionalEquipment: (w.optionalEquipment ?? []).join(', '),
-            difficulty: w.difficulty ?? 'Beginner',
-            thumbnail: w.thumbnail ?? '',
-            thumbnailMale: w.thumbnailMale ?? '',
-            thumbnailFemale: w.thumbnailFemale ?? '',
-            videoUrl: w.videoUrl ?? '',
-            videoUrlMale: w.videoUrlMale ?? '',
-            videoUrlFemale: w.videoUrlFemale ?? '',
-            hasGenderVariants: !!(w.videoUrlMale || w.videoUrlFemale || w.thumbnailMale || w.thumbnailFemale),
-        });
-        setIsModalOpen(true);
+        try {
+            console.log('[AdminWorkouts] openEdit called for:', w?.title);
+            const ex = w.exercises?.[0] ?? {};
+            const tl = w.titleLocalizations || {};
+            const dl = w.descriptionLocalizations || {};
+            setSelectedAdminLang('en');
+            setShowLangDropdown(false);
+            setEditingWorkout(w);
+
+            const safeJoin = (val: any, sep = ', ') => {
+                if (Array.isArray(val)) return val.join(sep);
+                if (typeof val === 'string') return val;
+                return '';
+            };
+
+            setForm({
+                exerciseName: ex.name ?? w.title ?? '',
+                ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`title_${code}`, tl[code] || ''])),
+                exerciseDescription: ex.description ?? w.description ?? '',
+                ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`desc_${code}`, dl[code] || ''])),
+                exerciseTypes: Array.isArray(w.categories) ? w.categories : (Array.isArray(ex.exerciseTypes) ? ex.exerciseTypes : [ex.exerciseType || 'Strength']),
+                instructions: safeJoin(ex.instructions, '\n'),
+                ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`instr_${code}`, safeJoin(ex.instructionsLocalizations?.[code], '\n')])),
+                primaryMuscles: safeJoin(ex.primaryMuscles, ', '),
+                ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`pm_${code}`, safeJoin(ex.primaryMusclesLocalizations?.[code], ', ')])),
+                secondaryMuscles: safeJoin(ex.secondaryMuscles, ', '),
+                ...Object.fromEntries(ADMIN_TRANSLATION_LANGUAGES.map(({ code }) => [`sm_${code}`, safeJoin(ex.secondaryMusclesLocalizations?.[code], ', ')])),
+                muscleGroupTags: Array.isArray(w.muscleGroupTags) ? w.muscleGroupTags : [],
+                equipment: safeJoin(w.equipment, ', '),
+                optionalEquipment: safeJoin(w.optionalEquipment, ', '),
+                difficulty: w.difficulty ?? 'Beginner',
+                thumbnail: w.thumbnail ?? '',
+                thumbnailMale: w.thumbnailMale ?? '',
+                thumbnailFemale: w.thumbnailFemale ?? '',
+                videoUrl: w.videoUrl ?? '',
+                videoUrlMale: w.videoUrlMale ?? '',
+                videoUrlFemale: w.videoUrlFemale ?? '',
+                hasGenderVariants: !!(w.videoUrlMale || w.videoUrlFemale || w.thumbnailMale || w.thumbnailFemale),
+            });
+            setIsModalOpen(true);
+        } catch (err: any) {
+            console.error('[AdminWorkouts] Error opening edit modal:', err);
+            Alert.alert('Error', 'Could not open edit modal: ' + (err?.message || 'Unknown error'));
+        }
     };
 
     const openNew = () => {
@@ -631,7 +644,12 @@ export default function WorkoutsManager() {
             )}
 
             {/* ── Modal ──────────────────────────────────────────────────────── */}
-            <Modal visible={isModalOpen} animationType="slide">
+            <Modal 
+                visible={isModalOpen} 
+                animationType={Platform.OS === 'web' ? 'none' : 'slide'}
+                transparent={Platform.OS === 'web'}
+                onRequestClose={() => setIsModalOpen(false)}
+            >
                 <View style={styles.modal}>
                     <View style={styles.modalHeader}>
                         <TouchableOpacity onPress={() => setIsModalOpen(false)}>
@@ -984,10 +1002,26 @@ const styles = StyleSheet.create({
     },
     tagChipText: { fontSize: 10, fontWeight: '700', color: '#10b981' },
     actions: { flexDirection: 'row', gap: 6, marginLeft: 8 },
-    actionBtn: { padding: 8, backgroundColor: '#f8fafc', borderRadius: 8 },
+    actionBtn: { 
+        padding: 8, 
+        backgroundColor: '#f8fafc', 
+        borderRadius: 8,
+        ...(Platform.OS === 'web' ? { cursor: 'pointer' as any } : {}),
+    },
 
     // Modal
-    modal: { flex: 1, backgroundColor: '#ffffff' },
+    modal: { 
+        flex: 1, 
+        backgroundColor: '#ffffff',
+        ...(Platform.OS === 'web' ? {
+            position: 'fixed' as any,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 99999,
+        } : {}),
+    },
     modalHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',

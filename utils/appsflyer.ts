@@ -82,3 +82,24 @@ export function logAppsFlyerEvent(eventName: string, eventValues: Record<string,
     if (__DEV__) console.warn('[AppsFlyer] logEvent failed:', e);
   }
 }
+
+/**
+ * Log verified purchase event for AppLovin / MMP checkout mapping
+ */
+export function logAppsFlyerPurchase(revenue: number, currency: string, productId: string): void {
+  logAppsFlyerEvent('af_purchase', {
+    af_revenue: revenue,
+    af_currency: currency,
+    af_content_id: productId,
+  });
+}
+
+/**
+ * Log user registration event for AppLovin / MMP post-install mapping
+ */
+export function logAppsFlyerRegistration(method: string): void {
+  logAppsFlyerEvent('af_complete_registration', {
+    af_registration_method: method,
+  });
+}
+

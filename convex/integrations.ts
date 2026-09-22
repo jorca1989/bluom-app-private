@@ -33,13 +33,14 @@ export const getTodayMetrics = query({
         .order("desc")
         .first();
 
-    const [steps, calories, distance, weight, sleep, hr, bodyFat, menstrualFlow, ovulationTest] = await Promise.all([
+    const [steps, calories, distance, weight, sleep, hr, restingHeartRate, bodyFat, menstrualFlow, ovulationTest] = await Promise.all([
       latest("steps"),
       latest("active_calories"),
       latest("distance_km"),
       latest("weight_kg"),
       latest("sleep_hours"),
       latest("heart_rate_avg"),
+      latest("resting_heart_rate"),
       latest("body_fat_pct"),
       latest("menstrual_flow"),
       latest("ovulation_test_result"),
@@ -48,6 +49,14 @@ export const getTodayMetrics = query({
     const lastSync = Math.max(
       steps?.timestamp    ?? 0,
       calories?.timestamp ?? 0,
+      distance?.timestamp ?? 0,
+      weight?.timestamp ?? 0,
+      sleep?.timestamp ?? 0,
+      hr?.timestamp ?? 0,
+      restingHeartRate?.timestamp ?? 0,
+      bodyFat?.timestamp ?? 0,
+      menstrualFlow?.timestamp ?? 0,
+      ovulationTest?.timestamp ?? 0,
     );
 
     return {
@@ -58,6 +67,7 @@ export const getTodayMetrics = query({
       bodyFatPct:     bodyFat?.value ?? null,
       sleepHours:     sleep?.value   ?? null,
       heartRateAvg:   hr?.value      ?? null,
+      restingHeartRate: restingHeartRate?.value ?? null,
       menstrualFlow:  menstrualFlow?.value ?? null,
       ovulationTestResult: ovulationTest?.value ?? null,
       lastSync:       lastSync > 0 ? lastSync : null,
@@ -71,6 +81,7 @@ export const getTodayMetrics = query({
         bodyFatPct: bodyFat?.source ?? null,
         sleepHours: sleep?.source ?? null,
         heartRateAvg: hr?.source ?? null,
+        restingHeartRate: restingHeartRate?.source ?? null,
         menstrualFlow: menstrualFlow?.source ?? null,
         ovulationTestResult: ovulationTest?.source ?? null,
       },
@@ -82,6 +93,7 @@ export const getTodayMetrics = query({
         bodyFatPct: bodyFat?.unit ?? "%",
         sleepHours: sleep?.unit ?? "hours",
         heartRateAvg: hr?.unit ?? "bpm",
+        restingHeartRate: restingHeartRate?.unit ?? "bpm",
         menstrualFlow: menstrualFlow?.unit ?? "level",
         ovulationTestResult: ovulationTest?.unit ?? "result",
       },
@@ -93,6 +105,7 @@ export const getTodayMetrics = query({
         bodyFatPct: bodyFat?.timestamp ?? null,
         sleepHours: sleep?.timestamp ?? null,
         heartRateAvg: hr?.timestamp ?? null,
+        restingHeartRate: restingHeartRate?.timestamp ?? null,
         menstrualFlow: menstrualFlow?.timestamp ?? null,
         ovulationTestResult: ovulationTest?.timestamp ?? null,
       },
@@ -111,6 +124,7 @@ export const saveExternalData = mutation({
     bodyFatPct:   v.optional(v.number()),
     sleepHours:   v.optional(v.number()),
     heartRateAvg: v.optional(v.number()),
+    restingHeartRate: v.optional(v.number()),
     menstrualFlow: v.optional(v.number()),
     ovulationTestResult: v.optional(v.number()),
     source:       v.optional(v.string()), // 'apple_health' | 'google_health'
@@ -121,40 +135,48 @@ export const saveExternalData = mutation({
 
     const inserts: Promise<any>[] = [];
 
-    if (args.steps > 0) {
+    if (Number.isFinite(args.steps) && args.steps >= 0) {
       inserts.push(ctx.db.insert("integrationsData", {
         userId: args.userId, source,
         type: "steps", value: args.steps, unit: "count", timestamp: ts,
       }));
     }
-    if (args.calories > 0) {
+    if (Number.isFinite(args.calories) && args.calories >= 0) {
       inserts.push(ctx.db.insert("integrationsData", {
         userId: args.userId, source,
         type: "active_calories", value: args.calories, unit: "kcal", timestamp: ts,
       }));
     }
-    if (args.distanceKm && args.distanceKm > 0) {
+    if (args.distanceKm !== undefined && Number.isFinite(args.distanceKm) && args.distanceKm >= 0) {
       inserts.push(ctx.db.insert("integrationsData", {
         userId: args.userId, source,
         type: "distance_km", value: args.distanceKm, unit: "km", timestamp: ts,
       }));
     }
-    if (args.weightKg && args.weightKg > 0) {
+    if (args.weightKg !== undefined && Number.isFinite(args.weightKg) && args.weightKg > 0) {
       inserts.push(ctx.db.insert("integrationsData", {
         userId: args.userId, source,
         type: "weight_kg", value: args.weightKg, unit: "kg", timestamp: ts,
       }));
-      // Mirror weight to weightLogs for the body metrics tracker
-      inserts.push(ctx.db.insert("weightLogs", {
-        userId:    args.userId,
-        weightKg:  args.weightKg,
-        date:      new Date(ts).toISOString().split("T")[0],
-        timestamp: ts,
-        createdAt: ts,
-        note:      `Synced from ${source}`,
-      }));
+      // Keep one provider-owned weight observation per source/day. Manual
+      // body-metric entries are never overwritten by a background sync.
+      const date = new Date(ts).toISOString().split("T")[0];
+      const existingSyncedWeight = await ctx.db
+        .query("weightLogs")
+        .withIndex("by_user_date", q => q.eq("userId", args.userId).eq("date", date))
+        .filter(q => q.eq(q.field("note"), `Synced from ${source}`))
+        .first();
+      if (existingSyncedWeight) {
+        inserts.push(ctx.db.patch(existingSyncedWeight._id, { weightKg: args.weightKg, timestamp: ts }));
+      } else {
+        inserts.push(ctx.db.insert("weightLogs", {
+          userId: args.userId, weightKg: args.weightKg, date, timestamp: ts,
+          createdAt: ts, note: `Synced from ${source}`,
+        }));
+      }
+      inserts.push(ctx.db.patch(args.userId, { weight: args.weightKg, updatedAt: ts }));
     }
-    if (args.bodyFatPct && args.bodyFatPct > 0) {
+    if (args.bodyFatPct !== undefined && Number.isFinite(args.bodyFatPct) && args.bodyFatPct > 0) {
       inserts.push(ctx.db.insert("integrationsData", {
         userId: args.userId, source,
         type: "body_fat_pct", value: args.bodyFatPct, unit: "%", timestamp: ts,
@@ -172,16 +194,22 @@ export const saveExternalData = mutation({
         type: "ovulation_test_result", value: args.ovulationTestResult, unit: "result", timestamp: ts,
       }));
     }
-    if (args.sleepHours && args.sleepHours > 0) {
+    if (args.sleepHours !== undefined && Number.isFinite(args.sleepHours) && args.sleepHours >= 0) {
       inserts.push(ctx.db.insert("integrationsData", {
         userId: args.userId, source,
         type: "sleep_hours", value: args.sleepHours, unit: "hours", timestamp: ts,
       }));
     }
-    if (args.heartRateAvg && args.heartRateAvg > 0) {
+    if (args.heartRateAvg !== undefined && Number.isFinite(args.heartRateAvg) && args.heartRateAvg > 0) {
       inserts.push(ctx.db.insert("integrationsData", {
         userId: args.userId, source,
         type: "heart_rate_avg", value: args.heartRateAvg, unit: "bpm", timestamp: ts,
+      }));
+    }
+    if (args.restingHeartRate !== undefined && Number.isFinite(args.restingHeartRate) && args.restingHeartRate > 0) {
+      inserts.push(ctx.db.insert("integrationsData", {
+        userId: args.userId, source,
+        type: "resting_heart_rate", value: args.restingHeartRate, unit: "bpm", timestamp: ts,
       }));
     }
 
@@ -207,6 +235,7 @@ export const getRecentImportedData = query({
       "body_fat_pct",
       "sleep_hours",
       "heart_rate_avg",
+      "resting_heart_rate",
       "menstrual_flow",
       "ovulation_test_result",
     ] as const;

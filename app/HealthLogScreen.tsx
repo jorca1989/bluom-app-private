@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Platform, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,8 +14,10 @@ type MetricKey =
   | 'calories'
   | 'distanceKm'
   | 'weightKg'
+  | 'bodyFatPct'
   | 'sleepHours'
-  | 'heartRateAvg';
+  | 'heartRateAvg'
+  | 'restingHeartRate';
 
 function sourceLabel(source: string | null | undefined) {
   if (source === 'apple_health') return 'Imported from Apple Health';
@@ -38,10 +40,12 @@ function formatMetricValue(key: MetricKey, value: any): string {
     case 'distanceKm':
       return `${Math.round((Number(value) || 0) * 100) / 100}`;
     case 'weightKg':
-      return `${Math.round((Number(value) || 0) * 10) / 10}`;
+    case 'bodyFatPct':
+    return `${Math.round((Number(value) || 0) * 10) / 10}`;
     case 'sleepHours':
       return `${Math.round((Number(value) || 0) * 10) / 10}`;
     case 'heartRateAvg':
+    case 'restingHeartRate':
       return `${Math.round(Number(value) || 0)}`;
   }
 }
@@ -104,8 +108,10 @@ export default function HealthLogScreen() {
       { key: 'calories',    label: 'Active Calories', value: (metrics as any)?.calories ?? 0, unit: units.calories ?? 'kcal', source: src.calories ?? null,    timestamp: ts.calories ?? null },
       { key: 'distanceKm',  label: 'Distance',    value: (metrics as any)?.distanceKm ?? 0,  unit: units.distanceKm ?? 'km', source: src.distanceKm ?? null,  timestamp: ts.distanceKm ?? null },
       { key: 'weightKg',    label: 'Weight',      value: (metrics as any)?.weightKg ?? null, unit: units.weightKg ?? 'kg',   source: src.weightKg ?? null,    timestamp: ts.weightKg ?? null },
+      { key: 'bodyFatPct',  label: 'Body Fat',    value: (metrics as any)?.bodyFatPct ?? null, unit: units.bodyFatPct ?? '%',  source: src.bodyFatPct ?? null,  timestamp: ts.bodyFatPct ?? null },
       { key: 'sleepHours',  label: 'Sleep',       value: (metrics as any)?.sleepHours ?? null, unit: units.sleepHours ?? 'hours', source: src.sleepHours ?? null, timestamp: ts.sleepHours ?? null },
       { key: 'heartRateAvg',label: 'Heart Rate',  value: (metrics as any)?.heartRateAvg ?? null, unit: units.heartRateAvg ?? 'bpm', source: src.heartRateAvg ?? null, timestamp: ts.heartRateAvg ?? null },
+      { key: 'restingHeartRate', label: 'Resting Heart Rate', value: (metrics as any)?.restingHeartRate ?? null, unit: units.restingHeartRate ?? 'bpm', source: src.restingHeartRate ?? null, timestamp: ts.restingHeartRate ?? null },
     ];
 
     return list;
@@ -157,7 +163,7 @@ export default function HealthLogScreen() {
         </TouchableOpacity>
       </View>
 
-      <View style={s.content}>
+      <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
         <View style={s.card}>
           <Text style={s.sectionTitle}>Activity & Biometrics</Text>
           {rows.map((r) => {
@@ -212,7 +218,7 @@ export default function HealthLogScreen() {
             We only display data types that you grant permission for. You can manage access anytime in device settings.
           </Text>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -239,7 +245,7 @@ const s = StyleSheet.create({
     gap: 8,
   },
   syncBtnText: { color: '#ffffff', fontWeight: '800', fontSize: 12 },
-  content: { flex: 1, paddingHorizontal: 20, paddingTop: 8, gap: 12 },
+  content: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 24, gap: 12 },
   card: {
     backgroundColor: '#ffffff',
     borderRadius: 16,

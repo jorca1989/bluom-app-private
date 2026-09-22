@@ -173,3 +173,67 @@ Rules:
     };
   },
 });
+
+/**
+ * Turns a short gym voice command into a proposed set change. The client must
+ * show the proposal and explicitly apply it through workoutSessions.upsertSet.
+ */
+export const parseVoiceWorkoutLog = action({
+  args: {
+    audioBase64: v.string(),
+    mimeType: v.string(),
+    platform: v.string(),
+    language: v.optional(v.string()),
+    exerciseName: v.string(),
+    targetSetIndex: v.number(),
+    allowAddSet: v.boolean(),
+    unit: v.union(v.literal("kg"), v.literal("lb")),
+  },
+  handler: async (_ctx, args) => {
+    const { apiKey } = getGeminiApiKeyForPlatform(args.platform);
+    const language = args.language ?? "en";
+    const finalMimeType = args.mimeType === "audio/m4a" ? "audio/mp4" : args.mimeType;
+    const prompt = `You transcribe a short gym command in ${language}. The active exercise is "${args.exerciseName}". The selected existing set is ${args.targetSetIndex}. Return ONLY valid JSON:
+{
+  "transcript":"what the user said",
+  "operation":"log_set"|"undo_last"|"add_set"|"unknown",
+  "setIndex":number,
+  "weight":number|null,
+  "reps":number|null,
+  "rpe":number|null,
+  "complete":boolean,
+  "confidence":number
+}
+Rules: use ${args.unit} for weight; default to selected set ${args.targetSetIndex} unless the speaker explicitly names another set; use "add_set" only when the speaker explicitly asks to add an extra set or add mode is ${args.allowAddSet}; never invent weight, reps, or RPE; confidence is 0-1; command words may be in the user's language.`;
+
+    const result = await generateContentWithFallback([
+      { text: prompt },
+      { inlineData: { mimeType: finalMimeType, data: args.audioBase64 } },
+    ], apiKey);
+    const text = result.response.text();
+    let parsed = safeJsonParse<any>(text);
+    if (!parsed) {
+      const start = text.indexOf("{");
+      const end = text.lastIndexOf("}");
+      if (start >= 0 && end > start) parsed = safeJsonParse(text.slice(start, end + 1));
+    }
+    if (!parsed) return { status: "ok" as const, transcript: text.slice(0, 300), operation: "unknown" as const, setIndex: args.targetSetIndex, confidence: 0 };
+
+    const finite = (value: unknown, min: number, max: number) => {
+      const n = Number(value);
+      return Number.isFinite(n) && n >= min && n <= max ? n : undefined;
+    };
+    const operation = ["log_set", "undo_last", "add_set"].includes(parsed.operation) ? parsed.operation : "unknown";
+    return {
+      status: "ok" as const,
+      transcript: String(parsed.transcript ?? "").slice(0, 500),
+      operation,
+      setIndex: Math.max(1, Math.min(100, Math.round(finite(parsed.setIndex, 1, 100) ?? args.targetSetIndex))),
+      weight: finite(parsed.weight, 0, 2000),
+      reps: finite(parsed.reps, 0, 1000),
+      rpe: finite(parsed.rpe, 1, 10),
+      complete: parsed.complete === true,
+      confidence: Math.max(0, Math.min(1, finite(parsed.confidence, 0, 1) ?? 0)),
+    };
+  },
+});

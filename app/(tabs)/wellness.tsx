@@ -18,13 +18,16 @@ import GamesHub from '../../components/GamesHub';
 import LifeGoalsHub from '../../components/LifeGoalsHub';
 import AdvancedSleepTracker from '../../components/wellness/AdvancedSleepTracker';
 import { triggerSound, SoundEffect } from '../../utils/soundEffects';
-import { getBottomContentPadding, TAB_BAR_HEIGHT } from '../../utils/layout';
+import { getBottomContentPadding } from '../../utils/layout';
 import { useTheme } from '@/context/ThemeContext';
 import { THEMES } from '@/context/ThemeContext';
 import type { ThemeColors } from '@/context/ThemeContext';
 import * as SecureStore from 'expo-secure-store';
 import { useActiveTools } from '@/hooks/useActiveTools';
 import SleeperView from '@/components/SleeperView';
+import TabCoachOverlay from '@/components/TabCoachOverlay';
+import { useCoachMark } from '@/hooks/useCoachMark';
+import { useReviewTrigger } from '@/hooks/useReviewTrigger';
 
 const { width } = Dimensions.get('window');
 
@@ -99,18 +102,20 @@ function QuickActionBtn({
   const { colors } = useTheme();
   const qaStyles = useMemo(() => createQaStyles(colors), [colors]);
   return (
-    <TouchableOpacity style={[qaStyles.btn, { backgroundColor: bg }]} onPress={onPress} activeOpacity={0.8}>
-      <Ionicons name={icon as any} size={20} color={color} />
-      <Text style={[qaStyles.label, { color }]}>{label}</Text>
+    <TouchableOpacity style={qaStyles.btn} onPress={onPress} activeOpacity={0.8}>
+      <View style={[qaStyles.icon, { backgroundColor: bg }]}>
+        <Ionicons name={icon as any} size={20} color={color} />
+      </View>
+      <Text style={qaStyles.label} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.68}>{label}</Text>
     </TouchableOpacity>
   );
 }
 const createQaStyles = (c: ThemeColors) => StyleSheet.create({
   btn: {
-    flex: 1, alignItems: 'center', justifyContent: 'center',
-    paddingVertical: 14, borderRadius: 14, gap: 6, minWidth: 70,
+    flex: 1, minWidth: 0, alignItems: 'center', justifyContent: 'flex-start', gap: 5,
   },
-  label: { fontSize: 11, fontWeight: '700', textAlign: 'center' },
+  icon: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center' },
+  label: { width: '100%', fontSize: 10, lineHeight: 12, fontWeight: '700', textAlign: 'center', color: c.text },
 });
 
 // ─── Hub Card ─────────────────────────────────────────────────────────────────
@@ -160,7 +165,7 @@ const createHubStyles = (c: ThemeColors) => StyleSheet.create({
 function SectionHeader({ title, sub }: { title: string; sub?: string }) {
   const { colors } = useTheme();
   return (
-    <View style={{ marginBottom: 14 }}>
+    <View style={{ marginBottom: 10 }}>
       <Text style={{ fontSize: 18, fontWeight: '800', color: colors.text, letterSpacing: -0.3 }}>
         {title}
       </Text>
@@ -199,6 +204,7 @@ export default function WellnessScreen() {
   const sleepLogs = useQuery(api.wellness.getSleepLogs, user ? { userId: user._id, startDate: last7Days[0], endDate: today } : 'skip');
   const moodLogs = useQuery(api.wellness.getMoodLogs, user ? { userId: user._id, startDate: last7Days[0], endDate: today } : 'skip');
   const meditationLogs = useQuery(api.wellness.getMeditationLogs, user ? { userId: user._id, limit: 50 } : 'skip');
+  const syncedMetrics = useQuery(api.integrations.getTodayMetrics, user ? { userId: user._id } : 'skip');
 
   const logSleep = useMutation(api.wellness.logSleep);
   const logMood = useMutation(api.wellness.logMood);
@@ -212,6 +218,31 @@ export default function WellnessScreen() {
   const [showGamesHub, setShowGamesHub] = useState(false);
   const [showLifeGoals, setShowLifeGoals] = useState(params.showLifeGoals === 'true');
   const [sleepInput, setSleepInput] = useState('');
+
+  const { triggerReviewPrompt } = useReviewTrigger();
+  const wellnessCoach = useCoachMark('wellness');
+  const wellnessCoachSteps = useMemo(() => [
+    {
+      emoji: '😴',
+      title: t('wellness.coach.sleepTitle', 'Track Your Sleep'),
+      body: t('wellness.coach.sleepBody', 'Log your bedtime, wake time, and sleep quality. Sleep optimization directly accelerates physical recovery and cognitive performance.')
+    },
+    {
+      emoji: '🧘',
+      title: t('wellness.coach.meditationTitle', 'Meditate Daily'),
+      body: t('wellness.coach.meditationBody', 'Explore the Meditation Hub for soundscapes, breathwork, and deep focus sessions designed to regulate your autonomic nervous system.')
+    },
+    {
+      emoji: '😊',
+      title: t('wellness.coach.moodTitle', 'Log Your Mood'),
+      body: t('wellness.coach.moodBody', 'Track daily emotional states. Discover how your workouts, nutrition, and sleep directly influence your mood trends.')
+    },
+    {
+      emoji: '✅',
+      title: t('wellness.coach.habitsTitle', 'Build Keystone Habits'),
+      body: t('wellness.coach.habitsBody', 'Complete your daily habits and maintain your streak. Consistency unlocks personal XP bonuses and milestones.')
+    }
+  ], [t]);
 
   // ── Widget config ──
   const [showWellnessConfig, setShowWellnessConfig] = useState(false);
@@ -247,6 +278,8 @@ export default function WellnessScreen() {
   ];
 
   const todaySleep = useMemo(() => sleepLogs?.find(l => l.date === today), [sleepLogs, today]);
+  const displayedSleepHours = todaySleep?.hours ?? syncedMetrics?.sleepHours ?? null;
+  const displayedSleepSource = todaySleep ? null : syncedMetrics?.sources?.sleepHours ?? null;
   const todayMood = useMemo(() => moodLogs?.find(l => l.date === today), [moodLogs, today]);
   const moodConfig = useMemo(() => todayMood ? MOODS.find(m => m.value === todayMood.mood) : null, [todayMood]);
   const completedHabits = useMemo(() => habits?.filter(h => h.completedToday).length ?? 0, [habits]);
@@ -305,7 +338,8 @@ export default function WellnessScreen() {
     );
   }
 
-  const bottomPad = getBottomContentPadding(insets.bottom, 0) + TAB_BAR_HEIGHT;
+  // The tab navigator already reserves its own height; only leave a small visual gap.
+  const bottomPad = getBottomContentPadding(insets.bottom, 0);
 
   // Theme-aware gear button
   const wellCBtn = {
@@ -375,10 +409,14 @@ export default function WellnessScreen() {
             <KpiCard
               icon="moon" iconBg="#ede9fe" iconColor="#7c3aed"
               label={t('wellness.sleep', 'Sleep')} labelColor="#5b21b6"
-              value={todaySleep ? `${todaySleep.hours}h` : '--'}
-              progress={todaySleep ? (todaySleep.hours / 8) * 100 : 0}
+              value={displayedSleepHours !== null ? `${displayedSleepHours}h` : '--'}
+              progress={displayedSleepHours !== null ? (displayedSleepHours / 8) * 100 : 0}
               barColor="#7c3aed"
-              sub={t('wellness.lastNight', 'Last night')}
+              sub={displayedSleepSource === 'apple_health'
+                ? t('move.appleHealth', 'Apple Health')
+                : displayedSleepSource === 'google_health'
+                  ? t('move.googleHealth', 'Health Connect')
+                  : t('wellness.lastNight', 'Last night')}
             />
           </TouchableOpacity>
           <KpiCard
@@ -413,23 +451,29 @@ export default function WellnessScreen() {
         {/* ── Quick Actions ── */}
         {isWW('quickActions') && <View style={s.section}>
           <SectionHeader title={t('wellness.quickLog', 'Quick Log')} sub={t('wellness.trackDaily', 'Track your daily wellness')} />
-          <View style={s.quickActions}>
-            <QuickActionBtn
-              icon="moon-outline" label={t('wellness.sleep', 'Sleep')} color="#7c3aed" bg="#ede9fe"
-              onPress={() => setShowAdvancedSleepTracker(true)}
-            />
-            <QuickActionBtn
-              icon="happy-outline" label={t('wellness.mood', 'Mood')} color="#eab308" bg="#fef9c3"
-              onPress={() => setShowMoodModal(true)}
-            />
-            <QuickActionBtn
-              icon="stats-chart" label={t('wellness.insights', 'Insights')} color="#0891b2" bg="#cffafe"
-              onPress={() => setShowInsightsModal(true)}
-            />
-            <QuickActionBtn
-              icon="leaf-outline" label={t('wellness.meditate', 'Meditate')} color="#059669" bg="#d1fae5"
-              onPress={() => { triggerSound(SoundEffect.UI_TAP); setShowMeditationHub(true); }}
-            />
+          <View style={s.quickActionsCard}>
+            <View style={s.quickActions}>
+              <QuickActionBtn
+                icon="moon-outline" label={t('wellness.sleep', 'Sleep')} color="#7c3aed" bg="#ede9fe"
+                onPress={() => setShowAdvancedSleepTracker(true)}
+              />
+              <QuickActionBtn
+                icon="happy-outline" label={t('wellness.mood', 'Mood')} color="#eab308" bg="#fef9c3"
+                onPress={() => setShowMoodModal(true)}
+              />
+              <QuickActionBtn
+                icon="stats-chart" label={t('wellness.insights', 'Insights')} color="#0891b2" bg="#cffafe"
+                onPress={() => setShowInsightsModal(true)}
+              />
+              <QuickActionBtn
+                icon="leaf-outline" label={t('wellness.meditate', 'Meditate')} color="#059669" bg="#d1fae5"
+                onPress={() => { triggerSound(SoundEffect.UI_TAP); setShowMeditationHub(true); }}
+              />
+              <QuickActionBtn
+                icon="library-outline" label={t('wellness.libraryLabel', 'Library')} color="#2563eb" bg="#dbeafe"
+                onPress={() => router.push('/library' as any)}
+              />
+            </View>
           </View>
         </View>}
 
@@ -501,11 +545,6 @@ export default function WellnessScreen() {
               icon="flag" label={t('wellness.lifeGoals', 'Life Goals')} sub={t('wellness.dreamAchieve', 'Dream & achieve')}
               gradient={['#d97706', '#92400e']}
               onPress={() => setShowLifeGoals(true)}
-            />
-            <HubCard
-              icon="library" label={t('wellness.libraryLabel', 'Library')} sub={t('wellness.curatedKnowledge', 'Curated knowledge')}
-              gradient={['#2563eb', '#1e3a8a']}
-              onPress={() => router.push('/library' as any)}
             />
           </View>
         </View>}
@@ -636,6 +675,20 @@ export default function WellnessScreen() {
         />
       )}
       {/* <PanicButton userId={user._id} /> */}
+
+      <TabCoachOverlay
+        visible={wellnessCoach.isActive}
+        steps={wellnessCoachSteps}
+        stepIndex={wellnessCoach.stepIndex}
+        onNext={() => {
+          if (wellnessCoach.stepIndex >= wellnessCoachSteps.length - 1) {
+            wellnessCoach.dismiss();
+          } else {
+            wellnessCoach.advance();
+          }
+        }}
+        onSkip={wellnessCoach.dismiss}
+      />
     </SafeAreaView>
   );
 }
@@ -658,9 +711,13 @@ const createS = (c: ThemeColors) => StyleSheet.create({
     marginTop: 8,
   },
 
-  section: { paddingHorizontal: 24, marginTop: 24 },
+  section: { paddingHorizontal: 24, marginTop: 12 },
 
-  quickActions: { flexDirection: 'row', gap: 10 },
+  quickActions: { flexDirection: 'row', justifyContent: 'space-between', gap: 4 },
+  quickActionsCard: {
+    backgroundColor: c.surface, borderRadius: 20, padding: 17,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.03, shadowRadius: 10, elevation: 1,
+  },
 
   // ── Plan Banner ──────────────────────────────────────────────────
   planBanner: {

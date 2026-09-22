@@ -14,6 +14,7 @@ function typeIcon(type: string): { name: keyof typeof Ionicons.glyphMap; color: 
     case 'body_fat_pct': return { name: 'body', color: '#0891b2' } as any;
     case 'sleep_hours': return { name: 'moon', color: '#8b5cf6' } as any;
     case 'heart_rate_avg': return { name: 'heart', color: '#ef4444' } as any;
+    case 'resting_heart_rate': return { name: 'heart-half', color: '#e11d48' } as any;
     case 'menstrual_flow': return { name: 'water', color: '#db2777' } as any;
     case 'ovulation_test_result': return { name: 'flask', color: '#16a34a' } as any;
     default: return { name: 'analytics', color: '#64748b' } as any;
@@ -110,4 +111,3 @@ const s = StyleSheet.create({
   unit: { fontSize: 11, fontWeight: '700', color: '#64748b' },
   meta: { fontSize: 11, color: '#64748b', marginTop: 2 },
 });
-

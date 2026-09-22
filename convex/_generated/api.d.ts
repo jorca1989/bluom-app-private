@@ -19,6 +19,7 @@ import type * as ai from "../ai.js";
 import type * as aiCoachMessages from "../aiCoachMessages.js";
 import type * as aiVoice from "../aiVoice.js";
 import type * as aimind from "../aimind.js";
+import type * as coachContext from "../coachContext.js";
 import type * as crons from "../crons.js";
 import type * as customFoods from "../customFoods.js";
 import type * as daily from "../daily.js";
@@ -35,8 +36,10 @@ import type * as food from "../food.js";
 import type * as foodCatalog from "../foodCatalog.js";
 import type * as forceSeed from "../forceSeed.js";
 import type * as functions from "../functions.js";
+import type * as guidedSessions from "../guidedSessions.js";
 import type * as habits from "../habits.js";
 import type * as healthHubs from "../healthHubs.js";
+import type * as healthProtocols from "../healthProtocols.js";
 import type * as http from "../http.js";
 import type * as httpHandlers from "../httpHandlers.js";
 import type * as integrations from "../integrations.js";
@@ -79,6 +82,7 @@ import type * as videoWorkouts from "../videoWorkouts.js";
 import type * as wellness from "../wellness.js";
 import type * as womensHealth from "../womensHealth.js";
 import type * as workoutExerciseLogs from "../workoutExerciseLogs.js";
+import type * as workoutSessions from "../workoutSessions.js";
 
 import type {
   ApiFromModules,
@@ -98,6 +102,7 @@ declare const fullApi: ApiFromModules<{
   aiCoachMessages: typeof aiCoachMessages;
   aiVoice: typeof aiVoice;
   aimind: typeof aimind;
+  coachContext: typeof coachContext;
   crons: typeof crons;
   customFoods: typeof customFoods;
   daily: typeof daily;
@@ -114,8 +119,10 @@ declare const fullApi: ApiFromModules<{
   foodCatalog: typeof foodCatalog;
   forceSeed: typeof forceSeed;
   functions: typeof functions;
+  guidedSessions: typeof guidedSessions;
   habits: typeof habits;
   healthHubs: typeof healthHubs;
+  healthProtocols: typeof healthProtocols;
   http: typeof http;
   httpHandlers: typeof httpHandlers;
   integrations: typeof integrations;
@@ -158,6 +165,7 @@ declare const fullApi: ApiFromModules<{
   wellness: typeof wellness;
   womensHealth: typeof womensHealth;
   workoutExerciseLogs: typeof workoutExerciseLogs;
+  workoutSessions: typeof workoutSessions;
 }>;
 
 /**
