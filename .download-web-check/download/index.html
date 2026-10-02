@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Download Bluom</title>
+  <meta name="theme-color" content="#ffffff">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; min-height: 100svh; display: grid; place-items: center; padding: 24px; background: #f8fafc; color: #0f172a; font-family: Inter, system-ui, sans-serif; }
+    main { width: 100%; max-width: 440px; text-align: center; background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px 24px; }
+    img { width: 180px; max-width: 100%; height: auto; }
+    h1 { font-size: 28px; margin: 24px 0 12px; }
+    p { color: #475569; line-height: 1.6; }
+    nav { display: grid; gap: 12px; margin-top: 24px; }
+    nav a { padding: 16px; border-radius: 12px; background: #0f172a; color: white; font-weight: 600; text-decoration: none; }
+    a:focus-visible { outline: 3px solid #2563eb; outline-offset: 4px; }
+    .home { display: inline-block; margin-top: 24px; color: #2563eb; }
+    .spinner { display: none; width: 24px; height: 24px; margin: 16px auto; border: 3px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 1s linear infinite; }
+    .redirecting .spinner { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+  </style>
+  <script src="/download/redirect.js" defer></script>
+</head>
+<body>
+  <main>
+    <img src="/logo.png" alt="Bluom">
+    <h1>Download Bluom</h1>
+    <div class="spinner" aria-hidden="true"></div>
+    <p id="status" role="status" aria-live="polite">Choose your app store to get started.</p>
+    <nav aria-label="Download the Bluom app">
+      <a id="ios" href="https://apps.apple.com/app/bluom-calorie-counter-diet/id6759072102">Download for iOS</a>
+      <a id="android" href="https://play.google.com/store/apps/details?id=com.jwfca.bluom">Download for Android</a>
+    </nav>
+    <a class="home" href="/#download">Back to Bluom</a>
+  </main>
+</body>
+</html>

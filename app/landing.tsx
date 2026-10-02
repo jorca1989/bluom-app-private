@@ -65,7 +65,7 @@ export default function LandingPage() {
     url: 'https://www.bluom.app',
     logo: 'https://www.bluom.app/logo.png',
     sameAs: [
-      'https://apps.apple.com/pt/app/bluom-nutrition-fitness-ai/id6759072102',
+      'https://apps.apple.com/app/bluom-calorie-counter-diet/id6759072102',
       'https://play.google.com/store/apps/details?id=com.jwfca.bluom',
     ],
   };
@@ -210,14 +210,32 @@ export default function LandingPage() {
               {status === 'error' && <p className="text-rose-600 font-bold text-sm mb-4">Couldn't save. Try again.</p>}
 
               <div id="download" className="flex flex-wrap items-center gap-3">
-                <a href="https://apps.apple.com/pt/app/bluom-nutrition-fitness-ai/id6759072102?l=en-GB" target="_blank" rel="noopener noreferrer"
+                <a href="https://apps.apple.com/app/bluom-calorie-counter-diet/id6759072102" target="_blank" rel="noopener noreferrer"
                   className="bg-slate-900 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:scale-105 transition-all no-underline">
                   <div className="text-left"><p className="text-[9px] uppercase font-bold opacity-60 m-0">Download on the</p><p className="text-base font-bold leading-none m-0">App Store</p></div>
                 </a>
                 <a href="https://play.google.com/store/apps/details?id=com.jwfca.bluom" target="_blank" rel="noopener noreferrer" className="bg-slate-900 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:scale-105 transition-all no-underline">
                   <div className="text-left"><p className="text-[9px] uppercase font-bold opacity-60 m-0">Get it on</p><p className="text-base font-bold leading-none m-0">Google Play</p></div>
                 </a>
-                <a href="https://startupbase.io/products/bluom-app?utm_source=startupbase&utm_medium=badge&utm_campaign=launch-badge-dark" target="_blank" rel="noopener noreferrer" className="hover:scale-105 transition-all">
+                <a
+                  href="https://startupbase.io/products/bluom-app?utm_source=startupbase&utm_medium=badge&utm_campaign=launch-badge-dark"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:scale-105 transition-all"
+                  onClick={(e) => {
+                    // On iOS, direct taps on startupbase.io links get intercepted by
+                    // Universal Links and open their native app (which 404s on /products/*).
+                    // Forcing via window.open bypasses OS-level interception on mobile browsers.
+                    if (typeof window !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                      e.preventDefault();
+                      window.open(
+                        'https://startupbase.io/products/bluom-app?utm_source=startupbase&utm_medium=badge&utm_campaign=launch-badge-dark',
+                        '_blank',
+                        'noopener,noreferrer'
+                      );
+                    }
+                  }}
+                >
                   <img src="https://statics.startupbase.io/site/badges/launched-on-sb-dark.svg" alt="Launched on StartupBase" height="55" style={{ height: '55px', width: 'auto' }} />
                 </a>
               </div>
@@ -560,7 +578,7 @@ export default function LandingPage() {
                 <img src={logoSrc} alt="Bluom" className="h-9 w-auto mb-4" />
                 <p className="text-slate-500 font-inter font-medium max-w-xs">Precision Living. Power in Bloom. Live with vigor — optimize with precision.</p>
                 <div className="flex gap-3 mt-6">
-                  <a href="https://apps.apple.com/pt/app/bluom-nutrition-fitness-ai/id6759072102?l=en-GB" target="_blank" rel="noopener noreferrer" className="bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-lg no-underline">App Store</a>
+                  <a href="https://apps.apple.com/app/bluom-calorie-counter-diet/id6759072102" target="_blank" rel="noopener noreferrer" className="bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-lg no-underline">App Store</a>
                   <a href="https://play.google.com/store/apps/details?id=com.jwfca.bluom" target="_blank" rel="noopener noreferrer" className="bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-lg no-underline">Google Play</a>
                 </div>
               </div>

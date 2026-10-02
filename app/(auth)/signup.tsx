@@ -20,6 +20,7 @@ import AppleSignInButton from '@/components/AppleSignInButton';
 import GoogleSignInButton from '@/components/GoogleSignInButton';
 import { useTranslation } from 'react-i18next';
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+import { isDisposableEmail } from '@/utils/tempEmailDomains';
 
 export default function SignupScreen() {
   const { t } = useTranslation();
@@ -60,6 +61,10 @@ export default function SignupScreen() {
     try {
       if (!firstName || !lastName || !email || !password) {
         setError(t('auth.signup.errFillFields', 'Please fill in all fields'));
+        return;
+      }
+            if (isDisposableEmail(email.trim())) {
+        setError(t('auth.signup.errDisposableEmail', 'Disposable or temporary email addresses are not allowed. Please use your real email.'));
         return;
       }
       const result = await signUp.create({ emailAddress: email, password, firstName, lastName });

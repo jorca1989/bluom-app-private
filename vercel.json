@@ -1,5 +1,23 @@
 {
+  "headers": [
+    {
+      "source": "/download/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/download",
+      "destination": "/download/index.html"
+    },
+    {
+      "source": "/download/",
+      "destination": "/download/index.html"
+    },
+    {
+      "source": "/download/:file",
+      "destination": "/download/:file"
+    },
     {
       "source": "/legal/(.*)",
       "destination": "/legal/$1"

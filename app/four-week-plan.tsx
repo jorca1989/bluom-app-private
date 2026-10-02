@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useUser as useClerkUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +25,13 @@ import { buildWeekFromDBWorkouts, resolveExerciseMedia } from '@/utils/buildPlan
 import { useAccessControl } from '@/hooks/useAccessControl';
 import { translateValue } from '@/utils/translateHelper';
 
-const WEEK_COLORS = ['#1e293b', '#4c1d95', '#065f46', '#92400e'];
+// Premium gradient pairs — (start, end, text accent)
+const WEEK_GRADIENTS: [string, string][] = [
+  ['#4f46e5', '#2563eb'],   // Week 1 — Indigo → Blue
+  ['#10b981', '#0d9488'],   // Week 2 — Emerald → Teal
+  ['#f43f5e', '#ec4899'],   // Week 3 — Rose → Pink
+  ['#f59e0b', '#f97316'],   // Week 4 — Amber → Orange
+];
 
 export default function FourWeekPlanScreen() {
   const { colors: themeColors } = useTheme();
@@ -205,30 +212,45 @@ export default function FourWeekPlanScreen() {
           {[0, 1, 2, 3].map((weekIdx) => {
             const days = getWeekDays(weekIdx);
             const theme = getWeekTheme(weekIdx);
+            const gradient = WEEK_GRADIENTS[weekIdx % WEEK_GRADIENTS.length];
             return (
               <TouchableOpacity
                 key={`week-${weekIdx}`}
-                style={[styles.weekCard, { backgroundColor: WEEK_COLORS[weekIdx % WEEK_COLORS.length] }]}
+                style={styles.weekCard}
                 onPress={() => handleViewWeek(weekIdx)}
-                activeOpacity={0.85}
+                activeOpacity={0.88}
               >
-                <Text style={styles.weekLabel}>{t('common.weekNum', 'Week {{num}}', { num: weekIdx + 1 })}</Text>
-                <Text style={styles.weekTheme} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.75}>{theme}</Text>
-                <View style={styles.daysSummary}>
-                  {days.slice(0, 3).map((d: any, dIdx: number) => (
-                    <Text key={`d-${weekIdx}-${dIdx}`} style={styles.daySummaryText} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.75}>
-                      {dIdx + 1}. {d.dayTitle}
-                    </Text>
-                  ))}
-                </View>
-                <View style={styles.viewWeekBtn}>
-                  <Text style={styles.viewWeekBtnText}>{t('move.viewWeek', 'View week')}</Text>
-                  <Ionicons name="chevron-forward" size={14} color="#ffffff" />
-                </View>
+                <LinearGradient
+                  colors={gradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.weekCardGradient}
+                >
+                  {/* Week pill */}
+                  <View style={styles.weekPill}>
+                    <Text style={styles.weekPillText}>{t('common.weekNum', 'Week {{num}}', { num: weekIdx + 1 })}</Text>
+                  </View>
+                  <Text style={styles.weekTheme} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7}>{theme}</Text>
+                  <View style={styles.daysSummary}>
+                    {days.slice(0, 3).map((d: any, dIdx: number) => (
+                      <View key={`d-${weekIdx}-${dIdx}`} style={styles.daySummaryRow}>
+                        <View style={styles.daySummaryDot} />
+                        <Text style={styles.daySummaryText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
+                          {d.dayTitle}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                  <View style={styles.viewWeekBtn}>
+                    <Text style={styles.viewWeekBtnText}>{t('move.viewWeek', 'View week')}</Text>
+                    <Ionicons name="chevron-forward" size={13} color="rgba(255,255,255,0.9)" />
+                  </View>
+                </LinearGradient>
               </TouchableOpacity>
             );
           })}
         </View>
+
 
         {/* Pro upgrade banner (free users) / Pro rotating plan (pro users) */}
         {isPro ? (
@@ -359,22 +381,51 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   heroTitle: { fontSize: 26, fontWeight: '900', color: c.text, marginBottom: 10 },
   heroSub: { fontSize: 14, color: c.textMuted, lineHeight: 20 },
 
-  weekGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  weekGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 14 },
   weekCard: {
     width: '47%',
-    borderRadius: 16,
+    borderRadius: 20,
+    minHeight: 210,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  weekCardGradient: {
+    flex: 1,
+    minHeight: 210,
     padding: 16,
-    minHeight: 196,
+    borderRadius: 20,
+    justifyContent: 'space-between',
   },
-  weekLabel: { fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.6)', marginBottom: 4 },
-  weekTheme: { fontSize: 18, fontWeight: '900', color: '#ffffff', marginBottom: 10 },
-  daysSummary: { gap: 3, marginBottom: 12 },
-  daySummaryText: { fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: '600' },
+  weekPill: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginBottom: 10,
+  },
+  weekPillText: { fontSize: 11, fontWeight: '800', color: '#ffffff', letterSpacing: 0.5 },
+  weekTheme: { fontSize: 19, fontWeight: '900', color: '#ffffff', marginBottom: 10, letterSpacing: -0.3 },
+  daysSummary: { gap: 5, marginBottom: 10, flex: 1 },
+  daySummaryRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  daySummaryDot: {
+    width: 4, height: 4, borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    flexShrink: 0,
+  },
+  daySummaryText: { fontSize: 11.5, color: 'rgba(255,255,255,0.88)', fontWeight: '600', flex: 1 },
   viewWeekBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    marginTop: 12,
+    flexDirection: 'row', alignItems: 'center', gap: 3,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.2)',
+    marginTop: 4,
   },
-  viewWeekBtnText: { fontSize: 13, fontWeight: '700', color: '#ffffff' },
+  viewWeekBtnText: { fontSize: 12.5, fontWeight: '700', color: 'rgba(255,255,255,0.9)' },
 
   unlockBanner: {
     backgroundColor: '#2563eb',

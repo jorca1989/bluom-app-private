@@ -29,6 +29,7 @@ import { triggerSound, SoundEffect } from '@/utils/soundEffects';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { useUser as useAppUser } from '@/context/UserContext';
 import { getTodayISO } from '@/utils/dates'; // ← ADD THIS IMPORT
+import MedicalDisclaimer from '@/components/MedicalDisclaimer';
 import { getLocalizedField, getLocalizedListField } from '@/utils/localize';
 
 const { width } = Dimensions.get('window');
@@ -368,6 +369,19 @@ export default function RecipesScreen() {
     [selectedRecipe?._id, selectedRecipe?.imageUrl, selectedRecipe?.title]
   );
 
+  // Prefetch first 12 recipe images as soon as the list loads so they're
+  // already cached when users start scrolling — no more blank cards on load.
+  React.useEffect(() => {
+    if (!recipes || recipes.length === 0) return;
+    const toPrefetch = recipes.slice(0, 12);
+    toPrefetch.forEach((r) => {
+      const src = getRecipeImageSource(r);
+      if (src?.uri) {
+        Image.prefetch(src.uri).catch(() => {});
+      }
+    });
+  }, [recipes]);
+
   const n = (value: unknown, fallback = 0) => {
     const num = typeof value === 'number' ? value : Number(value);
     return Number.isFinite(num) ? num : fallback;
@@ -434,6 +448,7 @@ export default function RecipesScreen() {
             : Math.max(insets.top, 12) + 8,
         }}
         showsVerticalScrollIndicator={false}
+        ListFooterComponent={<MedicalDisclaimer />}
         ListHeaderComponent={
           <>
             <View style={styles.header}>
@@ -504,8 +519,7 @@ export default function RecipesScreen() {
                     contentFit="cover"
                     cachePolicy="memory-disk"
                     recyclingKey={recipe._id}
-                    priority="normal"
-                    transition={150}
+                    priority={imageSources.size < 8 ? "high" : "normal"}
                   />
                 ) : (
                   <View style={styles.recipeCardImagePlaceholder}>

@@ -23,6 +23,7 @@ import { api } from '../convex/_generated/api';
 import { useUser } from '@clerk/clerk-expo';
 
 import { useTheme, type ThemeColors, THEMES } from '@/context/ThemeContext';
+import MedicalDisclaimer from '@/components/MedicalDisclaimer';
 
 const { width } = Dimensions.get('window');
 
@@ -989,6 +990,7 @@ export default function MentalHealthPlanScreen() {
           </View>
         </View>
 
+            <MedicalDisclaimer />
       </ScrollView>
 
       {showDetail && selectedDay && (

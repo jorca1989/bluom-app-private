@@ -431,8 +431,12 @@ export default function FuelScreen() {
   const displayedMealConfigs = mealConfigs
     .filter((meal) => showAllMealSlots || meal.name === primaryMeal || (dateEntries ?? []).some((entry) => entry.mealType === toMealTypeLower(meal.name)))
     .sort((left, right) => {
-      if (left.name === primaryMeal) return -1;
-      if (right.name === primaryMeal) return 1;
+      // When fully expanded, always use canonical order: Breakfast → Lunch → Dinner → Snack
+      // When collapsed, show the current meal slot first so it's immediately actionable
+      if (!showAllMealSlots) {
+        if (left.name === primaryMeal) return -1;
+        if (right.name === primaryMeal) return 1;
+      }
       return mealConfigs.indexOf(left) - mealConfigs.indexOf(right);
     });
   const hiddenMealSlotCount = mealConfigs.length - displayedMealConfigs.length;

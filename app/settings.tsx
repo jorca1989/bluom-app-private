@@ -214,14 +214,9 @@ export default function SettingsScreen() {
 
     const openExternalUrl = async (url: string) => {
         try {
-            const can = await Linking.canOpenURL(url);
-            if (!can) {
-                Alert.alert('Unable to open link', url);
-                return;
-            }
             await Linking.openURL(url);
         } catch {
-            Alert.alert('Unable to open link', url);
+            Alert.alert(t('common.error', 'Error'), t('settings.cannotOpenLink', 'Could not open the link. Please visit bluom.app'));
         }
     };
 
@@ -463,17 +458,25 @@ export default function SettingsScreen() {
                         <TouchableOpacity
                             style={styles.item}
                             activeOpacity={0.7}
-                            onPress={() => {
-                                Alert.alert('Legal', 'Open in browser', [
-                                    { text: 'Cancelar', style: 'cancel' },
-                                    { text: 'Termos', onPress: () => openExternalUrl('https://www.bluom.app/legal/terms') },
-                                    { text: 'Privacidade', onPress: () => openExternalUrl('https://www.bluom.app/legal/privacy') },
-                                ]);
-                            }}
+                            onPress={() => openExternalUrl('https://www.bluom.app/legal/terms')}
                         >
                             <View style={styles.itemLeft}>
-                                <Text style={styles.itemLabel}>{t('settings.legal', 'Legal')}</Text>
-                                <Text style={styles.itemValue}>{t('settings.legalDesc', 'Terms & Privacy')}</Text>
+                                <Text style={styles.itemLabel}>{t('settings.terms', 'Terms of Service')}</Text>
+                                <Text style={styles.itemValue}>{t('settings.termsDesc', 'Read our terms')}</Text>
+                            </View>
+                            <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
+                        </TouchableOpacity>
+
+                        <View style={styles.divider} />
+
+                        <TouchableOpacity
+                            style={styles.item}
+                            activeOpacity={0.7}
+                            onPress={() => openExternalUrl('https://www.bluom.app/legal/privacy')}
+                        >
+                            <View style={styles.itemLeft}>
+                                <Text style={styles.itemLabel}>{t('settings.privacy', 'Privacy Policy')}</Text>
+                                <Text style={styles.itemValue}>{t('settings.privacyDesc', 'How we use your data')}</Text>
                             </View>
                             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
                         </TouchableOpacity>

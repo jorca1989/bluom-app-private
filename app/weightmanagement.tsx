@@ -33,6 +33,7 @@ import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import * as ImagePicker from 'expo-image-picker';
+import MedicalDisclaimer from '@/components/MedicalDisclaimer';
 
 const { width } = Dimensions.get('window');
 
@@ -1104,7 +1105,8 @@ export default function WeightManagementScreen() {
                 </View>
               </View>
             ))}
-          </ScrollView>
+                <MedicalDisclaimer />
+      </ScrollView>
         </SafeAreaView>
       </Modal>
 

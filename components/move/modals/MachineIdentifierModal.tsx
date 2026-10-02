@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, Alert, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -24,7 +24,7 @@ export default function MachineIdentifierModal({ visible, onClose, onUseExercise
         : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.65, base64: true });
       if (image.canceled || !image.assets[0]?.base64) return;
       setLoading(true);
-      const output = await recognize({ imageBase64: image.assets[0].base64, mimeType: image.assets[0].mimeType ?? 'image/jpeg', platform: 'mobile', language: i18n.language });
+      const output = await recognize({ imageBase64: image.assets[0].base64, mimeType: image.assets[0].mimeType ?? 'image/jpeg', platform: Platform.OS, language: i18n.language });
       setResult(output);
     } catch {
       Alert.alert(

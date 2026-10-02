@@ -43,6 +43,7 @@ import { useUser as useClerkUser } from '@clerk/clerk-expo';
 import { ProUpgradeModal } from '@/components/ProUpgradeModal';
 import { BlurView } from 'expo-blur';
 import { useUser as useAppUser } from '@/context/UserContext';
+import MedicalDisclaimer from '@/components/MedicalDisclaimer';
 import SingleExerciseLogModal from '@/components/move/modals/SingleExerciseLogModal';
 import { getLocalizedField, getLocalizedExerciseName } from '@/utils/localize';
 import { Video, ResizeMode } from 'expo-av';
@@ -86,6 +87,17 @@ export default function WorkoutsScreen() {
     });
 
     const muscleGroupImagesDb = useQuery(api.muscleGroupImages.listAll);
+
+  // Prefetch first 10 workout thumbnails immediately when the list loads
+  // so images are cache-warm before the user scrolls. Fixes blank card bug on Android.
+  React.useEffect(() => {
+    if (!workouts || workouts.length === 0) return;
+    workouts.slice(0, 10).forEach((w) => {
+      const thumbUrl = (userSex === 'male' ? w.thumbnailMale : userSex === 'female' ? w.thumbnailFemale : null) || w.thumbnail;
+      if (thumbUrl) Image.prefetch(thumbUrl).catch(() => {});
+    });
+  }, [workouts, userSex]);
+
 
     const FALLBACK_MUSCLE_CARDS = [
         { title: 'Chest', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=400' },
@@ -361,7 +373,8 @@ export default function WorkoutsScreen() {
                                 initialNumToRender={6}
                                 windowSize={5}
                                 maxToRenderPerBatch={5}
-                                removeClippedSubviews={Platform.OS === 'android'}
+                                removeClippedSubviews={false}
+                ListFooterComponent={<MedicalDisclaimer />}
                                 renderItem={({ item }) => {
                                     const isItemSaved = savedIds.has(item._id);
                                     return (

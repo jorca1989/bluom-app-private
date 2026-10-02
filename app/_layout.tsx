@@ -344,6 +344,42 @@ function ThemedRoot() {
         <Stack.Screen name="meal-hub" options={{ headerShown: false, presentation: 'card' }} />
         <Stack.Screen name="ai-meal-maker" options={{ headerShown: false, presentation: 'card' }} />
         <Stack.Screen name="settings" options={{ headerShown: false, presentation: 'modal' }} />
+        {/* Sub-screens reachable from settings or elsewhere — must be registered so
+            router.back() correctly returns to the previous screen on both iOS & Android */}
+        <Stack.Screen name="integrations" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="four-week-plan" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="workouts" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="recipes" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="fasting" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="ai-coach" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="mental-health-plan" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="weightmanagement" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="womens-health" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="mens-health" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="shopping-list" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="sugar-dashboard" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="sugar-control" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="sugar-scan-result" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="dental-hub" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="pulse-checker" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="habit-hub" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="reflections-hub" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="music-hub" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="focus-mode" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="meditation-player" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="pill-reminder" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="life-goals" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="todo" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="achievements" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="move-insights" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="food-scan-review" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="personalized-plan" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="support" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="about" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="shop" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="library" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="HealthLogScreen" options={{ headerShown: false, presentation: 'card' }} />
+        <Stack.Screen name="strava-callback" options={{ headerShown: false, presentation: 'card' }} />
         <Stack.Screen name="admin" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" options={{ headerShown: false }} />

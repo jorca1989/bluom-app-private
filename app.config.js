@@ -13,10 +13,10 @@ export default ({ config }) => {
             name: "Bluom",
             slug: "bolt-expo-nativewind",
             owner: "ggovsaas",
-            version: "1.0.48",
+            version: "1.0.51",
             scheme: "bluom",
             userInterfaceStyle: "automatic",
-            runtimeVersion: "1.0.48",
+            runtimeVersion: "1.0.51",
             // New Architecture DISABLED — react-native-maps 1.20.1 doesn't support Fabric
             // (AIRMap view manager fails to register). Re-enable when react-native-maps ships
             // New Arch support, or after migrating to @teovilla/react-native-web-maps.
@@ -24,7 +24,7 @@ export default ({ config }) => {
             privacyPolicyUrl: "https://www.bluom.app/legal/privacy",
             ios: {
                 bundleIdentifier: "com.jwfca.bluom",
-                buildNumber: "73",
+                buildNumber: "71",
                 appleTeamId: "TJSGDC6873",
                 googleServicesFile: "./GoogleService-Info.plist",
                 entitlements: {
@@ -96,7 +96,7 @@ export default ({ config }) => {
             },
             android: {
                 package: "com.jwfca.bluom",
-                versionCode: 73,
+                versionCode: 71,
                 googleServicesFile: "./google-services.json",
                 splash: {
                     image: "./assets/images/logo.png",
@@ -236,6 +236,37 @@ export default ({ config }) => {
     };
 
     plugins.push(withAppsFlyerKotlinFix);
+
+    // Custom plugin to strip the AD_ID (Advertising ID) permission that react-native-appsflyer's
+    // own library AndroidManifest.xml auto-merges into the app's manifest by default. This keeps
+    // the built app consistent with the "No" answer given in Play Console's Advertising ID
+    // declaration. AppsFlyer attribution still works via the Play Install Referrer API (Android)
+    // and SKAdNetwork (iOS); this only removes GAID-based tracking on Android.
+    const withRemoveAdIdPermission = (config) => {
+        return require('@expo/config-plugins').withAndroidManifest(config, (cfg) => {
+            const manifest = cfg.modResults.manifest;
+            if (manifest.$ && !manifest.$['xmlns:tools']) {
+                manifest.$['xmlns:tools'] = 'http://schemas.android.com/tools';
+            }
+            if (!manifest['uses-permission']) {
+                manifest['uses-permission'] = [];
+            }
+            const alreadyRemoved = manifest['uses-permission'].some(
+                (perm) => perm.$ && perm.$['android:name'] === 'com.google.android.gms.permission.AD_ID' && perm.$['tools:node'] === 'remove'
+            );
+            if (!alreadyRemoved) {
+                manifest['uses-permission'].push({
+                    $: {
+                        'android:name': 'com.google.android.gms.permission.AD_ID',
+                        'tools:node': 'remove',
+                    },
+                });
+            }
+            return cfg;
+        });
+    };
+
+    plugins.push(withRemoveAdIdPermission);
 
     return {
         ...base.expo,
