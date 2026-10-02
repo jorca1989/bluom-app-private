@@ -29,6 +29,19 @@ async function main() {
     fs.writeFileSync(path.join(out, `${name}.svg`), content);
     await sharp(Buffer.from(content)).png().withMetadata({ density: 300 }).toFile(path.join(out, `${name}.png`));
   }
+  for (const [variant, ink] of [['white-dark-clothes', '#ffffff'], ['black-light-clothes', '#000000']]) {
+    // Use the original logo's alpha silhouette without redrawing its letterforms.
+    const front = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200"><defs><filter id="ink" color-interpolation-filters="sRGB"><feFlood flood-color="${ink}"/><feComposite in2="SourceGraphic" operator="in"/></filter></defs><image href="data:image/png;base64,${logo.toString('base64')}" x="90" y="${(1200-logoHeight)/2}" width="1020" height="${logoHeight}" filter="url(#ink)"/></svg>`;
+    // Transparent surrounding canvas; retain an opaque white QR quiet zone.
+    const rear = back.replace('<rect width="1200" height="1600" fill="white"/>', '').replace('fill="black" font-family', `fill="${ink}" font-family`);
+    for (const [name, content] of [[`front-chest-${variant}`, front], [`back-neck-${variant}`, rear]]) {
+      fs.writeFileSync(path.join(out, `${name}.svg`), content);
+      await sharp(Buffer.from(content)).png().withMetadata({ density: 300 }).toFile(path.join(out, `${name}.png`));
+    }
+    const fabric = variant.startsWith('white') ? '#202024' : '#f3f1eb';
+    const preview = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><rect width="1200" height="900" fill="${fabric}"/><svg x="0" y="150" width="600" height="600" viewBox="0 0 1200 1200">${front.replace(/^<svg[^>]*>|<\/svg>$/g, '')}</svg><svg x="650" y="50" width="550" height="800" viewBox="0 0 1200 1600">${rear.replace(/^<svg[^>]*>|<\/svg>$/g, '')}</svg></svg>`;
+    await sharp(Buffer.from(preview)).png().toFile(path.join(out, `preview-${variant}.png`));
+  }
   console.log(JSON.stringify({ url, errorCorrection: 'H', qrModules: n, logoSource: `${meta.width}x${meta.height}`, output: out }));
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

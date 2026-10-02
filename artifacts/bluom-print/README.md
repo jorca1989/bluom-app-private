@@ -2,6 +2,14 @@
 
 Target encoded in the QR: https://bluom.app/download
 
+## Fabric colour variants
+
+- `front-chest-white-dark-clothes.png` and `back-neck-white-dark-clothes.png`: white logo/text for dark fabric.
+- `front-chest-black-light-clothes.png` and `back-neck-black-light-clothes.png`: black logo/text for light fabric.
+- Both have transparent surrounding canvases. Both back designs retain black QR modules on an opaque white square, including its quiet zone. The supplier must print that white backing on dark fabric.
+- Matching SVGs are included; previews show a simulated fabric background and are NOT production files.
+- These monochrome chest versions preserve the original logo silhouette and the same source-resolution limitation described below.
+
 - `bluom-download-qr.svg`: scalable black/white vector QR, error correction H, four-module quiet zone.
 - `bluom-download-qr.png`: 2400 × 2400 pixels.
 - `front-chest.png`: 1200 × 1200, transparent background. Print the visible logo approximately 8–9 cm wide. The source logo is only 437 × 130 pixels; this enlargement does not add detail. Replace with the original vector/high-resolution brand asset for best print quality.

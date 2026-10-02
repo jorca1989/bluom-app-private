@@ -182,7 +182,7 @@ export default function LandingPage() {
                 <Link href={"/admin" as any} className="text-[#2563eb] font-black border-l border-slate-200 pl-6">ADMIN</Link>
               )}
             </nav>
-            <a href="#download" className="bg-[#2563eb] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:shadow-lg hover:shadow-blue-200 transition-all hover:scale-105">Get the app</a>
+            <a href="/download" className="bg-[#2563eb] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:shadow-lg hover:shadow-blue-200 transition-all hover:scale-105">Get the app</a>
           </div>
         </header>
 
@@ -586,6 +586,7 @@ export default function LandingPage() {
               <div>
                 <h4 className="text-slate-900 font-black uppercase tracking-widest text-xs mb-4">Product</h4>
                 <div className="space-y-2.5 text-slate-500 text-sm font-semibold">
+                  <a href="/download" className="block text-blue-600 font-bold hover:text-blue-800">Download Bluom</a>
                   <a href="#fuel" className="block hover:text-[#2563eb]">Fuel & AI Scanner</a>
                   <a href="#move" className="block hover:text-[#2563eb]">Move & Workouts</a>
                   <a href="#plans" className="block hover:text-[#2563eb]">Personalized Plans</a>
